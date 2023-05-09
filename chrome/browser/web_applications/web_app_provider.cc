@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
@@ -256,7 +256,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   install_manager_ = std::make_unique<WebAppInstallManager>(profile);
   manifest_update_manager_ = std::make_unique<ManifestUpdateManager>();
   externally_managed_app_manager_ =
-      std::make_unique<ExternallyManagedAppManagerImpl>(profile);
+      std::make_unique<ExternallyManagedAppManager>(profile);
   preinstalled_web_app_manager_ =
       std::make_unique<PreinstalledWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);

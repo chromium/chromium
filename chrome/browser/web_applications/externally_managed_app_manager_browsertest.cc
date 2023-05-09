@@ -1,9 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -44,7 +44,7 @@
 
 namespace web_app {
 
-class ExternallyManagedAppManagerImplBrowserTest
+class ExternallyManagedAppManagerBrowserTest
     : public WebAppControllerBrowserTest {
  protected:
   void SetUpOnMainThread() override {
@@ -86,7 +86,7 @@ class ExternallyManagedAppManagerImplBrowserTest
 };
 
 class ExternallyManagedBrowserTestWithPrefMigrationRead
-    : public ExternallyManagedAppManagerImplBrowserTest,
+    : public ExternallyManagedAppManagerBrowserTest,
       public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
  public:
   ExternallyManagedBrowserTestWithPrefMigrationRead() {
@@ -303,7 +303,7 @@ std::unique_ptr<net::test_server::HttpResponse> FailFirstRequest(
 // Installing a placeholder app with a custom icon should succeed, even we have
 // to retry fetching the icon once.
 // This feature is ChromeOS-only.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        PlaceholderInstallSucceedsWithCustomIconAfterRetry) {
   // Fail the first time that this URL is loaded.
   std::string kIconRelativeUrl = "/banners/192x192-green.png";
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
 // Tests that the browser doesn't crash if it gets shutdown with a pending
 // installation.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        ShutdownWithPendingInstallation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   // installation.
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        BypassServiceWorkerCheck) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(*app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        PerformServiceWorkerCheck) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -395,8 +395,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   EXPECT_TRUE(registrar().GetAppScopeInternal(app_id.value()).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
-                       ForceReinstall) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest, ForceReinstall) {
   ASSERT_TRUE(embedded_test_server()->Start());
   absl::optional<AppId> app_id;
   {
@@ -426,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        PolicyAppOverridesUserInstalledApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
   absl::optional<AppId> app_id;
@@ -491,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
   ASSERT_FALSE(id.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        RegistrationSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -512,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        RegistrationAlternateUrlSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -535,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        RegistrationSkipped) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -557,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                            content::ServiceWorkerCapability::NO_SERVICE_WORKER);
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        AlreadyRegistered) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -596,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        CannotFetchManifest) {
   // With a flaky network connection, clients may request an app whose manifest
   // cannot currently be retrieved. The app display mode is then assumed to be
@@ -644,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   EXPECT_FALSE(registrar().GetAppThemeColor(*app_id).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        RegistrationTimeout) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExternallyManagedAppRegistrationTask::SetTimeoutForTesting(0);
@@ -713,11 +712,11 @@ INSTANTIATE_TEST_SUITE_P(
         test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
     test::GetExternalPrefMigrationTestName);
 
-class ExternallyManagedAppManagerImplBrowserTestShortcut
-    : public ExternallyManagedAppManagerImplBrowserTest,
+class ExternallyManagedAppManagerBrowserTestShortcut
+    : public ExternallyManagedAppManagerBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  ExternallyManagedAppManagerImplBrowserTestShortcut() {
+  ExternallyManagedAppManagerBrowserTestShortcut() {
     scoped_feature_list_.InitWithFeatures(
         {webapps::features::kCreateShortcutIgnoresManifest}, {});
   }
@@ -727,7 +726,7 @@ class ExternallyManagedAppManagerImplBrowserTestShortcut
 };
 
 // Tests behavior when ExternalInstallOptions.install_as_shortcut is enabled
-IN_PROC_BROWSER_TEST_P(ExternallyManagedAppManagerImplBrowserTestShortcut,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedAppManagerBrowserTestShortcut,
                        InstallAsShortcut) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL install_url(
@@ -758,7 +757,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedAppManagerImplBrowserTestShortcut,
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ExternallyManagedAppManagerImplBrowserTestShortcut,
+                         ExternallyManagedAppManagerBrowserTestShortcut,
                          ::testing::Bool());
 
 }  // namespace web_app

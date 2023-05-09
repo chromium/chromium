@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
 #include <map>
 #include <memory>
@@ -148,7 +148,7 @@ class TestExternallyManagedAppInstallTaskManager {
   bool should_save_requests_ = false;
 };
 
-class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
+class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
  public:
   struct TestTaskResult {
     webapps::InstallResultCode code;
@@ -159,7 +159,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
       Profile* profile,
       FakeWebAppProvider& provider,
       TestExternallyManagedAppInstallTaskManager& test_install_task_manager)
-      : ExternallyManagedAppManagerImpl(profile),
+      : ExternallyManagedAppManager(profile),
         provider_(provider),
         test_install_task_manager_(test_install_task_manager) {}
 
@@ -250,7 +250,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
   }
 
   void ReleaseWebContents() override {
-    ExternallyManagedAppManagerImpl::ReleaseWebContents();
+    ExternallyManagedAppManager::ReleaseWebContents();
 
     // May be called more than once, if ExternallyManagedAppManager finishes all
     // tasks before it is shutdown.
@@ -406,6 +406,15 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
 
 }  // namespace
 
+// Why is this called ExternallyManagedAppManagerImplTest and exists along side
+// ExternallyManagedAppManagerTest unit tests?
+// - Because ExternallyManagedAppManager used to be split up into
+//   ExternallyManagedAppManager and ExternallyManagedAppManagerImpl and each
+//   had tests written for them separately.
+// - These tests are too volumous and baked with their own test suite class
+//   semantics that there's no easy way to merge them together.
+// Let this file be legacy unit tests and prefer adding to the
+// ExternallyManagedAppManagerTest unit test suite instead.
 class ExternallyManagedAppManagerImplTest
     : public WebAppTest,
       public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
@@ -552,7 +561,7 @@ class ExternallyManagedAppManagerImplTest
     return externally_managed_app_manager_impl_->install_run_count();
   }
 
-  // Number of times ExternallyManagedAppManagerImpl::StartRegistration was
+  // Number of times ExternallyManagedAppManager::StartRegistration was
   // called. Reflects how many times we've tried to cache service worker
   // resources for a web app.
   size_t registration_run_count() {

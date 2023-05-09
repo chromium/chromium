@@ -19,7 +19,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
@@ -302,7 +302,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     url_loader_ = url_loader.get();
 
     auto externally_managed_app_manager =
-        std::make_unique<web_app::ExternallyManagedAppManagerImpl>(profile());
+        std::make_unique<web_app::ExternallyManagedAppManager>(profile());
     externally_managed_app_manager->SetUrlLoaderForTesting(
         std::move(url_loader));
 

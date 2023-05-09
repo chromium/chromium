@@ -21,7 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -394,8 +394,8 @@ class ExternallyAppManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     provider_ = web_app::FakeWebAppProvider::Get(profile());
-    std::unique_ptr<ExternallyManagedAppManagerImpl> external_app_manager =
-        std::make_unique<ExternallyManagedAppManagerImpl>(profile());
+    std::unique_ptr<ExternallyManagedAppManager> external_app_manager =
+        std::make_unique<ExternallyManagedAppManager>(profile());
     external_app_manager->SetUrlLoaderForTesting(
         web_contents_manager_.CreateUrlLoader());
 
@@ -438,8 +438,8 @@ class ExternallyAppManagerTest : public WebAppTest {
 
   WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
 
-  ExternallyManagedAppManagerImpl& external_mananager() {
-    return static_cast<ExternallyManagedAppManagerImpl&>(
+  ExternallyManagedAppManager& external_mananager() {
+    return static_cast<ExternallyManagedAppManager&>(
         provider().externally_managed_app_manager());
   }
 

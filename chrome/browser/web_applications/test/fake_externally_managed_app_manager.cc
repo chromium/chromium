@@ -11,7 +11,7 @@ namespace web_app {
 
 FakeExternallyManagedAppManager::FakeExternallyManagedAppManager(
     Profile* profile)
-    : ExternallyManagedAppManagerImpl(profile) {}
+    : ExternallyManagedAppManager(profile) {}
 
 FakeExternallyManagedAppManager::~FakeExternallyManagedAppManager() = default;
 
@@ -33,8 +33,7 @@ void FakeExternallyManagedAppManager::Install(
             base::BindOnce(std::move(callback), install_options.install_url));
     return;
   }
-  ExternallyManagedAppManagerImpl::Install(install_options,
-                                           std::move(callback));
+  ExternallyManagedAppManager::Install(install_options, std::move(callback));
 }
 
 void FakeExternallyManagedAppManager::InstallApps(
@@ -49,8 +48,7 @@ void FakeExternallyManagedAppManager::InstallApps(
   base::ranges::copy(install_options_list,
                      std::back_inserter(install_requests_));
   if (!drop_requests_for_testing_) {
-    ExternallyManagedAppManagerImpl::InstallApps(install_options_list,
-                                                 callback);
+    ExternallyManagedAppManager::InstallApps(install_options_list, callback);
   }
 }
 
@@ -70,8 +68,8 @@ void FakeExternallyManagedAppManager::UninstallApps(
     }
     return;
   }
-  ExternallyManagedAppManagerImpl::UninstallApps(uninstall_urls, install_source,
-                                                 callback);
+  ExternallyManagedAppManager::UninstallApps(uninstall_urls, install_source,
+                                             callback);
 }
 
 void FakeExternallyManagedAppManager::SetHandleInstallRequestCallback(
