@@ -69,6 +69,7 @@ include_rules = [
   "+chromeos/ash/components/local_search_service",
   "+chromeos/ash/components/login/auth",
   "+chromeos/ash/components/multidevice",
+  "+chromeos/ash/components/osauth/public",
   "+chromeos/ash/components/peripheral_notification",
   "+chromeos/ash/components/proximity_auth",
   "+chromeos/ash/components/system",
