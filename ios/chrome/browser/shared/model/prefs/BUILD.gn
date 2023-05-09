@@ -1,0 +1,15 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("pref_names") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "pref_names.h" ]
+  public_deps = [ "//ios/chrome/browser/prefs:pref_names" ]
+}
+
+source_set("browser_prefs") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "browser_prefs.h" ]
+  public_deps = [ "//ios/chrome/browser/prefs:browser_prefs" ]
+}
