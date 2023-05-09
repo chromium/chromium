@@ -5534,6 +5534,30 @@ class UndoCommitNavigationBrowserTest : public NavigationBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// A helper that invokes `functor` on the next `DidStartNavigation()`.
+template <typename F>
+void OnNextDidStartNavigation(WebContents* web_contents, F&& functor) {
+  class Observer : public WebContentsObserver {
+   public:
+    using Callback = base::OnceCallback<void(NavigationHandle*)>;
+
+    explicit Observer(WebContents* web_contents, Callback callback)
+        : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+    // WebContentsObserver overrides:
+    void DidStartNavigation(NavigationHandle* handle) override {
+      std::move(callback_).Run(handle);
+      delete this;
+    }
+
+   private:
+    Callback callback_;
+  };
+
+  new Observer(web_contents,
+               base::BindLambdaForTesting(std::forward<F>(functor)));
+}
+
 IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
                        PerformanceManagerFrameTreeConsistency) {
   // PerformanceManager reports when a remote frame is attached to a local
@@ -5573,22 +5597,9 @@ IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
   EXPECT_EQ(a_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Simulates a race where a new navigation to c.com begins after the browser
-  // sends `CommitNavigation() to the a.com renderer, but before
-  // `DidCommitNavigation()` has been received from the a.com renderer.
-  //
-  // Note that the actual race is only triggered when the browser process
-  // receives the `DidCommitProvisionalLoad()` IPC from the renderer, which has
-  // not occurred yet. However, the interceptor needs to be installed now,
-  // before the `ExecJs()` call below, since `ExecJs()` runs the message loop,
-  // and the `DidCommitProvisionalLoad()` message could be received inside that
-  // message loop.
-  const GURL final_url =
-      embedded_test_server()->GetURL("c.com", "/title1.html");
-  BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
-                                                         final_url);
-  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
-      &interceptor);
+  // Pause (and ignore) the next `DidCommitProvisionalLoad()` for a.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
 
   // Update the id attribute to exercise a PerformanceManager-specific code
   // path: when the renderer swaps in a `blink::RemoteFrame` to undo the
@@ -5600,6 +5611,12 @@ IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents,
                      "document.querySelector('iframe').id = 'new-name';"));
 
+  // Now begin a new navigation to c.com while the previous a.com navigation
+  // above is paused in the pending commit state.
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node, final_url));
+
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(final_url, first_subframe_node->render_manager()
                            ->current_frame_host()
@@ -5607,6 +5624,8 @@ IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
 
   auto results = logger.results();
   ASSERT_EQ(2u, results.size());
+  // This test always uses UndoCommitNavigation, so navigation corresponding to
+  // the paused commit should never commit.
   EXPECT_FALSE(results[0].committed);
   EXPECT_EQ(absl::nullopt, results[0].origin);
   EXPECT_EQ(infinitely_loading_url, results[0].url);
@@ -5614,51 +5633,6 @@ IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
   EXPECT_EQ(embedded_test_server()->GetOrigin("c.com"), results[1].origin);
   EXPECT_EQ(final_url, results[1].url);
 }
-
-// Helper that ignores a request from the renderer to commit a navigation and
-// detaches the nth child (0-indexed) of `frame_tree_node` instead.
-class DetachChildFrameInCommitCallbackInterceptor
-    : public RenderFrameHostImpl::CommitCallbackInterceptor {
- public:
-  DetachChildFrameInCommitCallbackInterceptor(FrameTreeNode* frame_tree_node,
-                                              int child_to_detach)
-      : frame_tree_node_(frame_tree_node), child_to_detach_(child_to_detach) {}
-
-  bool WillProcessDidCommitNavigation(
-      NavigationRequest* request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
-      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
-      override {
-    request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
-        nullptr);
-    // At this point, the renderer has already committed the RenderFrame, but
-    // on the browser side, the RenderFrameHost is still speculative.
-
-    // Intentionally do not wait for script completion here. This runs an event
-    // loop that pumps incoming messages, but that would cause us to process
-    // IPCs from b.com out of order (since process DidCommitNavigation has been
-    // interrupted by this hook).
-    ExecuteScriptAsync(
-        frame_tree_node_.get(),
-        JsReplace("document.querySelectorAll('iframe')[$1].remove()",
-                  child_to_detach_));
-
-    // However, since it's not possible to wait for `remove()` to take effect,
-    // the test must cheat a little and directly call the Mojo IPC that the JS
-    // above would eventually trigger.
-    frame_tree_node_->child_at(child_to_detach_)
-        ->render_manager()
-        ->current_frame_host()
-        ->Detach();
-
-    // Ignore the commit message and pretend it never arrived.
-    return false;
-  }
-
- private:
-  const raw_ptr<FrameTreeNode> frame_tree_node_;
-  const int child_to_detach_;
-};
 
 // Regression test for https://crbug.com/1223837. Previously, if a child frame
 // was in the middle of committing a navigation to a provisional frame in render
@@ -5695,12 +5669,25 @@ IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Simulates a race where the a.com renderer detaches the second child frame
-  // after the browser sends `CommitNavigation()` to the b.com renderer.
-  DetachChildFrameInCommitCallbackInterceptor interceptor(
-      web_contents->GetPrimaryFrameTree().root(), 1);
-  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
-      &interceptor);
+  // Pause (and ignore) the next `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  // At this point, the b.com renderer has already committed the RenderFrame,
+  // but on the browser side, the RenderFrameHost is still speculative.
+
+  // Intentionally do not wait for script completion here. This runs an event
+  // loop that pumps incoming messages, but IPCs from b.com would be processed
+  // out of order, since the `DidCommitProvisionalLoad()` attempt was previously
+  // paused above.
+  ExecuteScriptAsync(
+      web_contents,
+      JsReplace("document.querySelectorAll('iframe')[1].remove()"));
+
+  // However, since it's not possible to wait for `remove()` to take effect,
+  // the test must cheat a little and directly call the Mojo IPC that the JS
+  // above would eventually trigger.
+  second_subframe_node->render_manager()->current_frame_host()->Detach();
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   // Validate that render process for b.com has handled the detach message for
@@ -5743,8 +5730,34 @@ class CommitNavigationRaceBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class ResumeCommitClosureSetWaiter {
+ public:
+  explicit ResumeCommitClosureSetWaiter(NavigationHandle* handle) {
+    // `Helper` "observes" the set via its own destruction, since the navigation
+    // code setting a resume commit closure will replace the testing one
+    // installed here.
+    NavigationRequest::From(handle)->set_resume_commit_closure(
+        base::DoNothingWithBoundArgs(std::make_unique<Helper>(loop_)));
+  }
+
+  void Wait() { loop_.Run(); }
+
+ private:
+  class Helper {
+   public:
+    explicit Helper(base::RunLoop& loop) : loop_(loop) {}
+
+    ~Helper() { loop_->Quit(); }
+
+   private:
+    raw_ref<base::RunLoop> loop_;
+  };
+
+  base::RunLoop loop_;
+};
+
 IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
-                       BeginNewNavigationAfterCommitNavigationInMainFrame) {
+                       BeginNewNavigationDuringCommitNavigationInMainFrame) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -5782,15 +5795,32 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Simulates a race where a new navigation to c.com begins after the browser
-  // sends `CommitNavigation() to the b.com renderer, but before
-  // `DidCommitNavigation()` has been received from the b.com renderer.
+  // Pause (and potentially ignore, if navigation queueing is disabled) the next
+  // `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  absl::optional<ResumeCommitClosureSetWaiter> resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the next navigation, since the resume commit closure may synchronously
+    // set while handling the `BeginNavigation()` IPC in the browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  // Now begin a new navigation to c.com while the previous b.com navigation
+  // above is paused in the pending commit state.
   const GURL final_url =
       embedded_test_server()->GetURL("c.com", "/title1.html");
-  BeginNavigationInCommitCallbackInterceptor interceptor(
-      web_contents->GetPrimaryFrameTree().root(), final_url);
-  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
-      &interceptor);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, final_url));
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    resume_commit_closure_set_waiter->Wait();
+    commit_pauser.ResumePausedCommit();
+  }
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
@@ -5815,7 +5845,7 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
-                       BeginNewNavigationAfterCommitNavigationInSubFrame) {
+                       BeginNewNavigationDuringCommitNavigationInSubFrame) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "b.com", "/cross_site_iframe_factory.html?b(a)")));
@@ -5847,15 +5877,32 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Simulates a race where a new navigation to c.com begins after the browser
-  // sends `CommitNavigation() to the b.com renderer, but before
-  // `DidCommitNavigation()` has been received from the b.com renderer.
+  // Pause (and potentially ignore, if navigation queueing is disabled) the next
+  // `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  absl::optional<ResumeCommitClosureSetWaiter> resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the next navigation, since the resume commit closure may synchronously
+    // set while handling the `BeginNavigation()` IPC in the browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  // Now begin a new navigation to c.com while the previous b.com navigation
+  // above is paused in the pending commit state.
   const GURL final_url =
       embedded_test_server()->GetURL("c.com", "/title1.html");
-  BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
-                                                         final_url);
-  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
-      &interceptor);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node, final_url));
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    resume_commit_closure_set_waiter->Wait();
+    commit_pauser.ResumePausedCommit();
+  }
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(final_url, first_subframe_node->render_manager()
@@ -5885,7 +5932,7 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
 // different path to commit the navigation in the renderer.
 IN_PROC_BROWSER_TEST_P(
     CommitNavigationRaceBrowserTest,
-    BeginNewNavigationWithNoUrlLoaderAfterCommitNavigationInMainFrame) {
+    BeginNewNavigationWithNoUrlLoaderDuringCommitNavigationInMainFrame) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -5923,17 +5970,31 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Simulates a race where a new navigation to about:blank begins after the
-  // browser sends `CommitNavigation() to the b.com renderer, but before
-  // `DidCommitNavigation()` has been received from the b.com renderer. The
-  // navigation should be treated as if it started in the FrameTreeNode's
-  // current frame host, which has origin a.com, since the aforementioned
-  // navigation to b.com should not be treated as committed yet.
+  // Pause (and potentially ignore, if navigation queueing is disabled) the next
+  // `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  absl::optional<ResumeCommitClosureSetWaiter> resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the next navigation, since the resume commit closure may synchronously
+    // set while handling the `BeginNavigation()` IPC in the browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  // Note that this navigation is initiated by the a.com renderer, as the a.com
+  // renderer is still the current frame host for the main frame.
   const GURL final_url("about:blank");
-  BeginNavigationInCommitCallbackInterceptor interceptor(
-      web_contents->GetPrimaryFrameTree().root(), final_url);
-  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
-      &interceptor);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, final_url));
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    resume_commit_closure_set_waiter->Wait();
+    commit_pauser.ResumePausedCommit();
+  }
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
@@ -5959,7 +6020,7 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(
     CommitNavigationRaceBrowserTest,
-    BeginNewNavigationWithNoUrlLoaderAfterCommitNavigationInSubFrame) {
+    BeginNewNavigationWithNoUrlLoaderDuringCommitNavigationInSubFrame) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "b.com", "/cross_site_iframe_factory.html?b(a)")));
@@ -5991,17 +6052,29 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Simulates a race where a new navigation to about:blank begins after the
-  // browser sends `CommitNavigation() to the b.com renderer, but before
-  // `DidCommitNavigation()` has been received from the b.com renderer. The
-  // navigation should be treated as if it started in the FrameTreeNode's
-  // current frame host, which has origin a.com, since the aforementioned
-  // navigation to b.com should not be treated as committed yet.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  absl::optional<ResumeCommitClosureSetWaiter> resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the next navigation, since the resume commit closure may synchronously
+    // set while handling the `BeginNavigation()` IPC in the browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  // Note that this navigation is initiated by the a.com renderer, as the a.com
+  // renderer is still the current frame host for the main frame.
   const GURL final_url("about:blank");
-  BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
-                                                         final_url);
-  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
-      &interceptor);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node, final_url));
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    resume_commit_closure_set_waiter->Wait();
+    commit_pauser.ResumePausedCommit();
+  }
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(final_url, first_subframe_node->render_manager()

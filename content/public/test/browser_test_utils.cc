@@ -717,7 +717,11 @@ bool NavigateToURLFromRendererWithoutUserGesture(
 
 bool BeginNavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
                                     const GURL& url) {
-  return ExecJs(adapter, JsReplace("location = $1", url));
+  ExecuteScriptAsync(adapter, JsReplace("location = $1", url));
+  DidStartNavigationObserver observer(
+      WebContents::FromRenderFrameHost(adapter.render_frame_host()));
+  observer.Wait();
+  return observer.observed();
 }
 
 bool NavigateIframeToURL(WebContents* web_contents,

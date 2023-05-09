@@ -229,10 +229,8 @@ void NavigateToURLBlockUntilNavigationsComplete(
     const GURL& url,
     const GURL& expected_commit_url);
 
-// Perform a renderer-initiated navigation of |window| to |url|. Unlike the
-// previous set of helpers, does not block. The navigation is done by assigning
-// location.href in the frame |adapter|. Returns the result of executing the IPC
-// to evaluate the JS that assigns location.href.
+// Perform a renderer-initiated navigation of `window` to `url`. Returns true if
+// the navigation started successfully and false otherwise.
 [[nodiscard]] bool BeginNavigateToURLFromRenderer(
     const ToRenderFrameHost& adapter,
     const GURL& url);
