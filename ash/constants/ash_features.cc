@@ -1102,6 +1102,12 @@ BASE_FEATURE(kHelpAppAppsDiscovery,
              "HelpAppAppsDiscovery",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the logic that auto triggers the install dialog during the web app
+// install flow initiated from the Help App.
+BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
+             "HelpAppAutoTriggerInstallDialog",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables the Help App Discover tab notifications on non-stable
 // ChromeOS channels. Used for testing.
 BASE_FEATURE(kHelpAppDiscoverTabNotificationAllChannels,

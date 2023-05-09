@@ -5837,6 +5837,12 @@ const char kHelpAppAppsDiscoveryName[] = "Help App Apps Discovery";
 const char kHelpAppAppsDiscoveryDescription[] =
     "Enables the ChromeOS Apps Discovery experience in the Help App.";
 
+const char kHelpAppAutoTriggerInstallDialogName[] =
+    "Help App Auto Trigger Install Dialog";
+const char kHelpAppAutoTriggerInstallDialogDescription[] =
+    "Enables the logic that auto triggers the install dialog during the web "
+    "app install flow initiated from the Help App.";
+
 const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";

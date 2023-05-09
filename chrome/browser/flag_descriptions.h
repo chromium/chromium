@@ -3352,6 +3352,9 @@ extern const char kFuseBoxDebugDescription[];
 extern const char kHelpAppAppsDiscoveryName[];
 extern const char kHelpAppAppsDiscoveryDescription[];
 
+extern const char kHelpAppAutoTriggerInstallDialogName[];
+extern const char kHelpAppAutoTriggerInstallDialogDescription[];
+
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 

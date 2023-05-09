@@ -61696,6 +61696,7 @@ from previous Chrome versions.
   <int value="-390624541" label="RestrictedApiOrigins:disabled"/>
   <int value="-389664522"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
+  <int value="-389601101" label="HelpAppAutoTriggerInstallDialog:enabled"/>
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
   <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>
@@ -65740,6 +65741,7 @@ from previous Chrome versions.
   <int value="1800375282" label="UseDMSAAForTiles:disabled"/>
   <int value="1800509458" label="DriveFsChromeNetworking:disabled"/>
   <int value="1800603694" label="DXGIWaitableSwapChain:disabled"/>
+  <int value="1801297618" label="HelpAppAutoTriggerInstallDialog:disabled"/>
   <int value="1801585504" label="ContextMenuShopWithGoogleLens:enabled"/>
   <int value="1802821192" label="VCBackgroundReplace:disabled"/>
   <int value="1802874714" label="QueryTilesEnableQueryEditing:disabled"/>

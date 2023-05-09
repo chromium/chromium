@@ -87,6 +87,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       "HelpAppAppsDiscovery",
       base::FeatureList::IsEnabled(features::kHelpAppAppsDiscovery));
   source->AddBoolean(
+      "HelpAppAutoTriggerInstallDialog",
+      base::FeatureList::IsEnabled(features::kHelpAppAutoTriggerInstallDialog));
+  source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean("isCloudGamingDevice",

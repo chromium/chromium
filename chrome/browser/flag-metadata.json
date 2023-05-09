@@ -4300,6 +4300,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "help-app-auto-trigger-install-dialog",
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "help-app-launcher-search",
     "owners": [ "//ash/webui/help_app_ui/OWNERS", "//chrome/browser/ash/app_list/search/OWNERS" ],
     "expiry_milestone": 115
