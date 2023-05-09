@@ -8,8 +8,10 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -20,6 +22,7 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -27,22 +30,19 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-using content::BrowserThread;
-using content::DesktopMediaID;
-
 ShareThisTabDialogView::ShareThisTabDialogView(
     const DesktopMediaPicker::Params& params,
     ShareThisTabDialogViews* parent)
     : web_contents_(params.web_contents->GetWeakPtr()),
       app_name_(params.app_name),
       parent_(parent) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SetModalType(params.modality);
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](ShareThisTabDialogView* dialog) {
         // If the dialog is being closed then notify the parent about it.
         if (dialog->parent_) {
-          dialog->parent_->NotifyDialogResult(DesktopMediaID());
+          dialog->parent_->NotifyDialogResult(content::DesktopMediaID());
         }
       },
       this));
@@ -61,8 +61,23 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   description_label_->SetText(
       l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_TEXT));
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
+  View* source_container = AddChildView(std::make_unique<views::View>());
+  views::BoxLayout* source_layout =
+      source_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  source_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  source_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  source_view_ = source_container->AddChildView(
+      std::make_unique<ShareThisTabSourceView>());
+
+  activation_timer_.Start(
+      FROM_HERE,
+      base::Milliseconds(media::kShareThisTabDialogActivationDelayMs.Get()),
+      base::BindOnce(&ShareThisTabDialogView::Activate,
+                     weak_factory_.GetWeakPtr()));
 
   // If |params.web_contents| is set and it's not a background page then the
   // picker will be shown modal to the web contents. Otherwise the picker is
@@ -86,32 +101,40 @@ ShareThisTabDialogView::ShareThisTabDialogView(
 #endif
     CreateDialogWidget(this, params.context, nullptr)->Show();
   }
+
+  source_view_->SetBorder(
+      views::CreateThemedSolidBorder(1, kColorShareThisTabSourceViewBorder));
+
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
 }
 
 ShareThisTabDialogView::~ShareThisTabDialogView() = default;
 
 void ShareThisTabDialogView::DetachParent() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   parent_ = nullptr;
 }
 
 gfx::Size ShareThisTabDialogView::CalculatePreferredSize() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static constexpr size_t kDialogViewWidth = 600;
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
 }
 
 std::u16string ShareThisTabDialogView::GetWindowTitle() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return l10n_util::GetStringFUTF16(IDS_SHARE_THIS_TAB_DIALOG_TITLE, app_name_);
 }
 
 bool ShareThisTabDialogView::Accept() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(!activation_timer_.IsRunning());
+  CHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
   if (parent_ && web_contents_) {
-    parent_->NotifyDialogResult(DesktopMediaID(
+    parent_->NotifyDialogResult(content::DesktopMediaID(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
@@ -124,24 +147,31 @@ bool ShareThisTabDialogView::Accept() {
 }
 
 bool ShareThisTabDialogView::Cancel() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  activation_timer_.Stop();
   return views::DialogDelegateView::Cancel();
 }
 
 bool ShareThisTabDialogView::ShouldShowCloseButton() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return false;
+}
+
+void ShareThisTabDialogView::Activate() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  source_view_->Activate();
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
 }
 
 BEGIN_METADATA(ShareThisTabDialogView, views::DialogDelegateView)
 END_METADATA
 
 ShareThisTabDialogViews::ShareThisTabDialogViews() : dialog_(nullptr) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 ShareThisTabDialogViews::~ShareThisTabDialogViews() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (dialog_) {
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
@@ -152,7 +182,7 @@ void ShareThisTabDialogViews::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
     DoneCallback done_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!callback_);
   CHECK(!dialog_);
 
@@ -161,8 +191,9 @@ void ShareThisTabDialogViews::Show(
   dialog_ = new ShareThisTabDialogView(params, this);
 }
 
-void ShareThisTabDialogViews::NotifyDialogResult(const DesktopMediaID& source) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+void ShareThisTabDialogViews::NotifyDialogResult(
+    const content::DesktopMediaID& source) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Once this method is called the |dialog_| will close and destroy itself.
   dialog_->DetachParent();

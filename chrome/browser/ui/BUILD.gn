@@ -4650,6 +4650,8 @@ static_library("ui") {
       "views/desktop_capture/desktop_media_tab_list.h",
       "views/desktop_capture/share_this_tab_dialog_views.cc",
       "views/desktop_capture/share_this_tab_dialog_views.h",
+      "views/desktop_capture/share_this_tab_source_view.cc",
+      "views/desktop_capture/share_this_tab_source_view.h",
       "views/device_chooser_content_view.cc",
       "views/device_chooser_content_view.h",
       "views/devtools_process_observer.cc",

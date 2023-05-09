@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
+#include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
@@ -38,12 +39,22 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   bool ShouldShowCloseButton() const override;
 
  private:
+  void Activate();
+
   const base::WeakPtr<content::WebContents> web_contents_;
   const std::u16string app_name_;
 
   raw_ptr<ShareThisTabDialogViews> parent_;
 
   raw_ptr<views::Label> description_label_ = nullptr;
+
+  // Child view displaying a preview, icon and title for the tab being shared,
+  // or a throbber while the dialog is not yet activated.
+  raw_ptr<ShareThisTabSourceView> source_view_ = nullptr;
+
+  // Timer for an initial delay during which the allow-button is disabled.
+  base::OneShotTimer activation_timer_;
+  base::WeakPtrFactory<ShareThisTabDialogView> weak_factory_{this};
 };
 
 // Implementation of DesktopMediaPicker for the ShareThisTabDialogView.
