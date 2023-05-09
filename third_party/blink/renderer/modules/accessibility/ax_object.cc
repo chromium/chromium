@@ -7182,11 +7182,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   String string_builder = InternalRoleName(RoleValue()).EncodeForDebugging();
 
   if (IsDetached()) {
-    string_builder = string_builder + " (detached)";
-  }
-
-  if (AXObjectCache().HasBeenDisposed()) {
-    return string_builder + " (doc shutdown) #" + String::Number(AXObjectID());
+    return string_builder + " (detached)";
   }
 
   if (verbose) {
