@@ -743,6 +743,15 @@ testcase.selectionPath = async () => {
   ]);
   chrome.test.assertTrue(threeFilesSelectedPath.hidden);
   chrome.test.assertEq('', threeFilesSelectedPath.attributes.path);
+
+  // Close search. Select any file. Confirm that the path display is not shown,
+  // now that the search is inactive.
+  await remoteCall.waitAndClickElement(appId, '#search-box .clear');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
+  const pathDisplayWhileNotSearching = await remoteCall.waitForElement(appId, [
+    'xf-path-display',
+  ]);
+  chrome.test.assertTrue(pathDisplayWhileNotSearching.hidden);
 };
 
 /**

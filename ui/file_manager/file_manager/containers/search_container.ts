@@ -366,8 +366,8 @@ export class SearchContainer extends EventTarget {
     }
     if (util.isSearchV2Enabled()) {
       if (search.status === PropStatus.STARTED && query) {
-        this.showOptions_(state);
-        this.showPathDisplay_();
+        this.showOptionsElement_(state);
+        this.showPathDisplayElement_();
       }
     }
   }
@@ -377,16 +377,20 @@ export class SearchContainer extends EventTarget {
    * to set the path of the currently selected element.
    */
   private handleSelectionState_(state: State) {
-    if (!this.pathDisplay_) {
+    const search = state.search;
+    if (!search || !search.query) {
       return;
+    }
+    if (!this.pathDisplay_) {
+      this.showPathDisplayElement_();
     }
     const path = this.getSelectedPath_(state);
     if (path) {
-      this.pathDisplay_.removeAttribute('hidden');
-      this.pathDisplay_.path = path;
+      this.pathDisplay_!.removeAttribute('hidden');
+      this.pathDisplay_!.path = path;
     } else {
-      this.pathDisplay_.path = '';
-      this.pathDisplay_.setAttribute('hidden', '');
+      this.pathDisplay_!.path = '';
+      this.pathDisplay_!.setAttribute('hidden', '');
     }
   }
 
@@ -412,7 +416,7 @@ export class SearchContainer extends EventTarget {
   /**
    * Hides the element that allows users to manipulate search options.
    */
-  private hideOptions_() {
+  private hideOptionsElement_() {
     if (this.searchOptions_) {
       this.searchOptions_.remove();
       this.searchOptions_ = null;
@@ -423,7 +427,7 @@ export class SearchContainer extends EventTarget {
    * Shows or creates the element that allows the user to manipulate search
    * options.
    */
-  private showOptions_(state: State) {
+  private showOptionsElement_(state: State) {
     let element = this.getSearchOptionsElement_();
     if (!element) {
       element = this.createSearchOptionsElement_(state);
@@ -431,14 +435,14 @@ export class SearchContainer extends EventTarget {
     element.hidden = false;
   }
 
-  private hidePathDisplay_() {
+  private hidePathDisplayElement_() {
     const element = this.getPathDisplayElement_();
     if (element) {
       element.hidden = true;
     }
   }
 
-  private showPathDisplay_() {
+  private showPathDisplayElement_() {
     let element = this.getPathDisplayElement_();
     if (!element) {
       element = this.createPathDisplayElement_();
@@ -652,8 +656,8 @@ export class SearchContainer extends EventTarget {
     // Do not initiate close transition if we are not open. This would leave us
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
-      this.hideOptions_();
-      this.hidePathDisplay_();
+      this.hideOptionsElement_();
+      this.hidePathDisplayElement_();
       this.store_.dispatch(clearSearch());
       this.inputState_ = SearchInputState.CLOSING;
       this.inputElement_.tabIndex = -1;
