@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
@@ -182,11 +183,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched
     // as well.
-    id mockApplicationCommandHandler =
+    mockApplicationCommandHandler_ =
         OCMProtocolMock(@protocol(ApplicationCommands));
     id mockApplicationSettingsCommandHandler =
         OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler_
                              forProtocol:@protocol(ApplicationCommands)];
     [dispatcher
         startDispatchingToTarget:mockApplicationSettingsCommandHandler
@@ -293,12 +294,16 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                        type:ToolbarContainerType::kSecondary];
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
+    dependencies.applicationCommandsHandler = mockApplicationCommandHandler_;
 
     bvc_ = [[BrowserViewController alloc]
         initWithBrowserContainerViewController:container_
                            keyCommandsProvider:key_commands_provider_
                                   dependencies:dependencies];
     bvc_.webUsageEnabled = YES;
+
+    id mockReauthHandler = OCMProtocolMock(@protocol(IncognitoReauthCommands));
+    bvc_.reauthHandler = mockReauthHandler;
 
     id NTPCoordinator_ = [[NewTabPageCoordinator alloc]
          initWithBrowser:browser_.get()
@@ -398,6 +403,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   WebNavigationBrowserAgent* web_navigation_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
   PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
+  id mockApplicationCommandHandler_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
@@ -454,6 +460,22 @@ TEST_F(BrowserViewControllerTest, didInsertWebStateWithoutAnimation) {
         ->DisableNewTabAnimation();
     InsertWebState(std::move(web_state));
   });
+}
+
+TEST_F(BrowserViewControllerTest,
+       presentIncognitoReauthDismissesPresentedState) {
+  // Add a presented VC so dismiss modal dialogs is dispatched.
+  [bvc_ presentViewController:[[UIViewController alloc] init]
+                     animated:NO
+                   completion:nil];
+
+  OCMExpect([mockApplicationCommandHandler_ dismissModalDialogs]);
+
+  // Present incognito authentication must dismiss presented state.
+  [bvc_ setItemsRequireAuthentication:YES];
+
+  // Verify that the command was dispatched.
+  EXPECT_OCMOCK_VERIFY(mockApplicationCommandHandler_);
 }
 
 }  // namespace
