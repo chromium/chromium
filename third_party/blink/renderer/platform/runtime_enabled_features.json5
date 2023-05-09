@@ -1185,15 +1185,13 @@
     // Support for registered custom properties with <image> syntax.
     {
       name: "CSSVariables2ImageValues",
-      status: "test",
-      base_feature: "none",
+      status: "experimental",
     },
     // Support for registered custom properties with <transform-list> and
     // <transform-function> syntax.
     {
       name: "CSSVariables2TransformValues",
-      status: "test",
-      base_feature: "none",
+      status: "experimental",
     },
     {
       name: "CSSVideoDynamicRangeMediaQueries",
