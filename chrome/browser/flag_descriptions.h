@@ -3603,11 +3603,15 @@ extern const char kShortcutCustomizationJellyDescription[];
 
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
+
 extern const char kSchedulerConfigurationConservative[];
 extern const char kSchedulerConfigurationPerformance[];
 
 extern const char kMediaDynamicCgroupName[];
 extern const char kMediaDynamicCgroupDescription[];
+
+extern const char kMissiveStorageName[];
+extern const char kMissiveStorageDescription[];
 
 extern const char kShowBluetoothDebugLogToggleName[];
 extern const char kShowBluetoothDebugLogToggleDescription[];

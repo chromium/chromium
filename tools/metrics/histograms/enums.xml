@@ -61593,6 +61593,7 @@ from previous Chrome versions.
   <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
   <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
+  <int value="-458090289" label="CrOSLateBootMissiveStorage:disabled"/>
   <int value="-457584339" label="TemporaryHoldingSpace:enabled"/>
   <int value="-457174225" label="Av1Decoder:enabled"/>
   <int value="-456990813" label="Glanceables:enabled"/>
@@ -64914,6 +64915,7 @@ from previous Chrome versions.
   <int value="1338864675" label="EnableTouchableAppContextMenu:disabled"/>
   <int value="1339191800" label="OmniboxMaxZeroSuggestMatches:disabled"/>
   <int value="1339426771" label="TopSitesFromSiteEngagement:disabled"/>
+  <int value="1340525505" label="CrOSLateBootMissiveStorage:enabled"/>
   <int value="1340690624" label="WebPaymentsMethodSectionOrderV2:disabled"/>
   <int value="1340970682" label="WebViewSendVariationsHeaders:enabled"/>
   <int value="1343050930" label="ContextualSearchUnityIntegration:enabled"/>

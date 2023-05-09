@@ -3590,6 +3590,32 @@ const FeatureEntry::FeatureVariation kVcSegmentationModelVariations[] = {
 };
 #endif  // BUILDFLAG(IS_CHROME_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::FeatureParam
+    kCrOSLateBootMissiveDisableStorageDegradation[] = {
+        {"controlled_degradation", "false"}};
+const FeatureEntry::FeatureParam
+    kCrOSLateBootMissiveEnableStorageDegradation[] = {
+        {"controlled_degradation", "true"}};
+const FeatureEntry::FeatureParam kCrOSLateBootMissiveDisableLegacyStorage[] = {
+    {"legacy_storage_enabled", "false"}};
+const FeatureEntry::FeatureParam kCrOSLateBootMissiveEnableLegacyStorage[] = {
+    {"legacy_storage_enabled", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kCrOSLateBootMissiveStorageDefaultVariations[] = {
+        {"Enable storage degradation",
+         kCrOSLateBootMissiveEnableStorageDegradation,
+         std::size(kCrOSLateBootMissiveEnableStorageDegradation), nullptr},
+        {"Disable storage degradation",
+         kCrOSLateBootMissiveDisableStorageDegradation,
+         std::size(kCrOSLateBootMissiveDisableStorageDegradation), nullptr},
+        {"Enable legacy storage", kCrOSLateBootMissiveEnableLegacyStorage,
+         std::size(kCrOSLateBootMissiveEnableLegacyStorage), nullptr},
+        {"Disable legacy storage", kCrOSLateBootMissiveDisableLegacyStorage,
+         std::size(kCrOSLateBootMissiveDisableLegacyStorage), nullptr}};
+#endif  // BUILDFLAG(IS_CHROME_ASH)
+
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
     {flag_descriptions::kCastMirroringTargetPlayoutDelayDefault, "", ""},
@@ -10169,6 +10195,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCCTTextFragmentLookupApiEnabled)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-missive-storage-config", flag_descriptions::kMissiveStorageName,
+     flag_descriptions::kMissiveStorageDescription, kOsCrOS,
+     PLATFORM_FEATURE_WITH_PARAMS_VALUE_TYPE(
+         "CrOSLateBootMissiveStorage",
+         kCrOSLateBootMissiveStorageDefaultVariations,
+         "CrOSLateBootMissiveStorage")},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"cast-mirroring-target-playout-delay",

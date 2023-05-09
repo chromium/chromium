@@ -2851,6 +2851,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "enable-missive-storage-config",
+    "owners" : [ "chrome-reporting-team@google.com", "lbaraz" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-nacl",
     "owners": [ "dschuff", "native-client-dev@googlegroups.com" ],
     "expiry_milestone": 128

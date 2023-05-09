@@ -6290,6 +6290,10 @@ const char kMediaDynamicCgroupDescription[] =
     "Dynamic Cgroup allows tasks from media workload to be consolidated on "
     "limited cpuset";
 
+const char kMissiveStorageName[] = "Missive Daemon Storage Configuration";
+const char kMissiveStorageDescription[] =
+    "Provides missive daemon with custom storage configuration parameters";
+
 const char kShowBluetoothDebugLogToggleName[] =
     "Show Bluetooth debug log toggle";
 const char kShowBluetoothDebugLogToggleDescription[] =
