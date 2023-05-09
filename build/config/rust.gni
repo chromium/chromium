@@ -155,6 +155,11 @@ if (enable_rust) {
   } else {
     rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
   }
+
+  # Prebuilt toolchains won't come with bindgen, so we unconditionally use the
+  # bindgen we ship with the Rust toolchain. This could be made configurable
+  # if folks want to supply a bindgen with their toolchain.
+  rust_bindgen_root = "//third_party/rust-toolchain"
 }
 
 # Figure out the Rust target triple (aka 'rust_abi_target')
