@@ -1105,13 +1105,13 @@
     1 folder selected
   </message>
   <message name="IDS_FILE_BROWSER_MANY_FILES_SELECTED" desc="Many files selected.">
-    <ph name="SELCTED_FILE_COUNT">$1<ex>13</ex></ph> files selected
+    <ph name="SELECTED_FILE_COUNT">$1<ex>13</ex></ph> files selected
   </message>
   <message name="IDS_FILE_BROWSER_MANY_DIRECTORIES_SELECTED" desc="Many directories selected.">
-    <ph name="SELCTED_FOLDERS_COUNT">$1<ex>2</ex></ph> folders selected
+    <ph name="SELECTED_FOLDERS_COUNT">$1<ex>2</ex></ph> folders selected
   </message>
   <message name="IDS_FILE_BROWSER_MANY_ENTRIES_SELECTED" desc="Many items (both files and directories) selected.">
-    <ph name="SELCTED_FILES_COUNT">$1<ex>21</ex></ph> items selected
+    <ph name="SELECTED_FILES_COUNT">$1<ex>21</ex></ph> items selected
   </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_ALBUM_TITLE" desc="Label for audio album title.">
     Album
