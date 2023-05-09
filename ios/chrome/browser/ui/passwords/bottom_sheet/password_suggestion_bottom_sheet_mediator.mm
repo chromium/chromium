@@ -135,9 +135,9 @@
   _passwordsPresenterObserver.reset();
   _prefService = nullptr;
   _faviconLoader = nullptr;
-  _webStateList = nullptr;
   _forwarder = nullptr;
   _observer = nullptr;
+  _webStateList = nullptr;
 }
 
 - (BOOL)hasSuggestions {
