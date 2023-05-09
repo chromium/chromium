@@ -173,6 +173,30 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
     return SmartCardProviderPrivateAPI::Get(*profile());
   }
 
+  using ContextAndConnection =
+      std::tuple<mojo::Remote<device::mojom::SmartCardContext>,
+                 mojo::Remote<device::mojom::SmartCardConnection>>;
+
+  ContextAndConnection CreateContextAndConnection() {
+    ContextAndConnection result;
+    auto context_result = CreateContext();
+    if (!context_result->is_context()) {
+      ADD_FAILURE() << "Failed to create a smart card context.";
+      return ContextAndConnection();
+    }
+    mojo::Remote<device::mojom::SmartCardContext> context(
+        std::move(context_result->get_context()));
+
+    mojo::Remote<device::mojom::SmartCardConnection> connection =
+        CreateConnection(*context.get());
+    if (!connection.is_bound()) {
+      ADD_FAILURE() << "Failed to create a smart card connection,";
+      return ContextAndConnection();
+    }
+
+    return ContextAndConnection(std::move(context), std::move(connection));
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
@@ -649,13 +673,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
       }
     )"});
 
-  auto context_result = CreateContext();
-  ASSERT_TRUE(context_result->is_context());
-  mojo::Remote<device::mojom::SmartCardContext> context(
-      std::move(context_result->get_context()));
-
-  mojo::Remote<device::mojom::SmartCardConnection> connection =
-      CreateConnection(*context.get());
+  auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
 
   base::test::TestFuture<SmartCardResultPtr> result_future;
@@ -670,13 +688,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectNoProvider) {
   LoadFakeProviderExtension({kEstablishContextJs, kConnectJs});
 
-  auto context_result = CreateContext();
-  ASSERT_TRUE(context_result->is_context());
-  mojo::Remote<device::mojom::SmartCardContext> context(
-      std::move(context_result->get_context()));
-
-  mojo::Remote<device::mojom::SmartCardConnection> connection =
-      CreateConnection(*context.get());
+  auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
 
   base::test::TestFuture<SmartCardResultPtr> result_future;
@@ -698,13 +710,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectTimeout) {
         });
     )"});
 
-  auto context_result = CreateContext();
-  ASSERT_TRUE(context_result->is_context());
-  mojo::Remote<device::mojom::SmartCardContext> context(
-      std::move(context_result->get_context()));
-
-  mojo::Remote<device::mojom::SmartCardConnection> connection =
-      CreateConnection(*context.get());
+  auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
 
   base::test::TestFuture<SmartCardResultPtr> result_future;
@@ -998,13 +1004,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
       EventRouterFactory::GetForBrowserContext(profile());
   event_router->AddObserverForTesting(&event_observer);
 
-  auto context_result = CreateContext();
-  ASSERT_TRUE(context_result->is_context());
-  mojo::Remote<device::mojom::SmartCardContext> context(
-      std::move(context_result->get_context()));
-
-  mojo::Remote<device::mojom::SmartCardConnection> connection =
-      CreateConnection(*context.get());
+  auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
 
   // ListReaders() won't be answered until told so.
@@ -1088,13 +1088,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Transmit) {
       }
       )"});
 
-  auto context_result = CreateContext();
-  ASSERT_TRUE(context_result->is_context());
-  mojo::Remote<device::mojom::SmartCardContext> context(
-      std::move(context_result->get_context()));
-
-  mojo::Remote<device::mojom::SmartCardConnection> connection =
-      CreateConnection(*context.get());
+  auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
 
   base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
@@ -1119,13 +1113,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, TransmitTimeout) {
           });
       )"});
 
-  auto context_result = CreateContext();
-  ASSERT_TRUE(context_result->is_context());
-  mojo::Remote<device::mojom::SmartCardContext> context(
-      std::move(context_result->get_context()));
-
-  mojo::Remote<device::mojom::SmartCardConnection> connection =
-      CreateConnection(*context.get());
+  auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
 
   base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
