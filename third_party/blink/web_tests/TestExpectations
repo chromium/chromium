@@ -1639,7 +1639,6 @@ crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-te
 crbug.com/1351020 [ Mac ] external/wpt/compat/webkit-text-fill-color-property-002.html [ Failure ]
 
 # CSS highlight painting (HighlightOverlayPainting)
-crbug.com/1147859 [ Mac ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-text-decoration-001.html [ Failure ]
 crbug.com/1147859 [ Mac ] external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]
 crbug.com/1321114 paint/markers/suggestion-marker-basic.html [ Failure ]
 
@@ -5044,10 +5043,8 @@ crbug.com/1216139 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failu
 
 # CSS Highlight API painting issues related to general CSS highlight
 # pseudo-elements painting
-crbug.com/1147859 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-004.html [ Failure ]
 crbug.com/1163437 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-grammar.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-target-text.html [ Failure ]
-crbug.com/1147859 [ Linux ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-004-2.html [ Failure ]
 crbug.com/1147859 [ Mac ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-53.html [ Failure ]
 
 
