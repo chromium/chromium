@@ -517,28 +517,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-#if !BUILDFLAG(IS_ANDROID)
-// Deprecated 05/2022.
-const char kAccessCodeCastDiscoveredNetworks[] =
-    "media_router.access_code_cast.discovered_networks";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated on non-ChromeOS on 05/2022.
-extern const char kAccountIdMigrationState[] = "account_id_migration_state";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 05/2022.
-const char kColorModeThemed[] = "ash.dark_mode.color_mode_themed";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 05/2022.
-const char kNativeBridge64BitSupportExperimentEnabled[] =
-    "arc.native_bridge_64bit_support_experiment";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 06/2022.
 const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
 const char kStabilityGpuCrashCount[] =
@@ -828,12 +806,6 @@ const char kLastChromadMigrationAttemptTime[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Deprecated 05/2022.
-  registry->RegisterBooleanPref(kNativeBridge64BitSupportExperimentEnabled,
-                                false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Deprecated 06/2022.
   registry->RegisterInt64Pref(kBackgroundTracingLastUpload, 0);
   registry->RegisterIntegerPref(kStabilityGpuCrashCount, 0);
@@ -948,18 +920,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterDictionaryPref(kAccessCodeCastDiscoveredNetworks);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kAccountIdMigrationState, 0);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kColorModeThemed, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterBooleanPref(kTokenServiceDiceCompatible, false);
@@ -1814,16 +1774,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 05/2022.
-#if !BUILDFLAG(IS_ANDROID)
-  local_state->ClearPref(prefs::kTabFreezingEnabled);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 05/2022.
-  local_state->ClearPref(kNativeBridge64BitSupportExperimentEnabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Added 06/2022.
   local_state->ClearPref(kBackgroundTracingLastUpload);
   local_state->ClearPref(kStabilityGpuCrashCount);
@@ -1946,21 +1896,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 05/2022
-  profile_prefs->ClearPref(kAccessCodeCastDiscoveredNetworks);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 05/2022
-  profile_prefs->ClearPref(kAccountIdMigrationState);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 05/2022.
-  profile_prefs->ClearPref(kColorModeThemed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Added 06/2022.
