@@ -4941,7 +4941,7 @@
       },
       'Cast Linux': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'cast_shell',
