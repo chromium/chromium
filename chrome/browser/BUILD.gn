@@ -3781,6 +3781,8 @@ static_library("browser") {
       "media/webrtc/desktop_media_picker_controller.h",
       "media/webrtc/desktop_media_picker_factory_impl.cc",
       "media/webrtc/desktop_media_picker_factory_impl.h",
+      "media/webrtc/desktop_media_picker_utils.cc",
+      "media/webrtc/desktop_media_picker_utils.h",
       "media/webrtc/display_media_access_handler.cc",
       "media/webrtc/display_media_access_handler.h",
       "media/webrtc/media_stream_focus_delegate.cc",
