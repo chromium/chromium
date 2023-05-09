@@ -1164,53 +1164,53 @@
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2" desc="Alternate label on the button that closes the dialog while not agreeing to sync.">
     No thanks
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TITLE" desc="Title of the screen that explains Chrome Sync and privacy options."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TITLE" desc="Title of the screen that explains Chrome Sync and privacy options.">
     Back up and restore your apps and settings
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE" desc="Subtitle of the dialog that explains Chrome Sync and privacy options."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE" desc="Subtitle of the dialog that explains Chrome Sync and privacy options.">
     Turn on device sync to restore your apps, settings, Wi-Fi networks, and wallpaper from your previous Chromebook. Make changes anytime in Settings > Accounts.
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog that explains Chrome Sync and privacy options."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog that explains Chrome Sync and privacy options.">
     New to Chromebook? Turn on sync so your preferences will be backed up.
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS" desc="The label on the button that displays the manage sync option screen." translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS" desc="The label on the button that displays the manage sync option screen.">
     Manage sync options
   </message>
   <!-- Strings for OS sync consent screen options -->
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_TITLE" desc="Title of the os sync screen option Apps."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_TITLE" desc="Title of the os sync screen option Apps.">
     Apps
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_SUBTITLE" desc="Subtitle of the os sync screen option Apps."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_SUBTITLE" desc="Subtitle of the os sync screen option Apps.">
     Apps installed from the Play Store and web apps from Chrome browser
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_TITLE" desc="Title of the os sync screen option Settings."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_TITLE" desc="Title of the os sync screen option Settings.">
     Settings
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_SUBTITLE" desc="Subtitle of the os sync screen option Settings."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_SUBTITLE" desc="Subtitle of the os sync screen option Settings.">
     Keyboard and mouse behavior, language preferences, and more
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_TITLE" desc="Title of the os sync screen option Wifi networks."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_TITLE" desc="Title of the os sync screen option Wifi networks.">
     Wi-Fi networks
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_SUBTITLE" desc="Subtitle of the os sync screen option Wifi networks."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_SUBTITLE" desc="Subtitle of the os sync screen option Wifi networks.">
     Saved networks and passwords so you can connect instantly
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_TITLE" desc="Title of the os sync screen option Wallpaper."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_TITLE" desc="Title of the os sync screen option Wallpaper.">
     Wallpaper
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_SUBTITLE" desc="Subtitle of the os sync screen option Wallpaper."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_SUBTITLE" desc="Subtitle of the os sync screen option Wallpaper.">
     Remember your desktop background across devices
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option." >
     Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account.  Web apps will be synced through Chrome even if other browser sync features are turned off.
   </message>
-   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option."  translateable="false">
+   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option.">
     If you also chose to send diagnostic and usage data in the previous step, this data will be collected for installed apps.
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_TITLE" desc="Title of the screen that displays sync options and allows user to control them."  translateable="false">
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_TITLE" desc="Title of the screen that displays sync options and allows user to control them.">
     Manage sync options
   </message>
-   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_SUBTITLE" desc="Subtitle of the dialog that displays sync options and allows user to control them."  translateable="false">
+   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_SUBTITLE" desc="Subtitle of the dialog that displays sync options and allows user to control them.">
     Selected items will be available on this Chromebook. If you're new to Chromebook, sync all items so your preferences will be backed up. Make changes anytime in Settings > Accounts.
   </message>
   <!-- Strings for recommend apps screen -->
