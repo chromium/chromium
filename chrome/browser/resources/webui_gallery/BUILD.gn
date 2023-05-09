@@ -33,6 +33,8 @@ build_webui("build") {
     "demos/progress_indicator_nonpolymer_demo.html",
     "demos/progress_indicator_polymer_demo.html",
     "demos/scroll_view/index.html",
+    "demos/side_panel/empty.svg",
+    "demos/side_panel/empty_dark.svg",
     "demos/side_panel/index.html",
     "webui_gallery.html",
   ]

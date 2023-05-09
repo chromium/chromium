@@ -89,14 +89,17 @@
 }
 
 .sp-icon-buttons-row {
-  --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 24px;
   align-items: center;
   display: grid;
   gap: 8px;
-  grid-auto-columns: var(--cr-icon-button-icon-size);
+  grid-auto-columns: 16px;
   grid-auto-flow: column;
   justify-items: center;
+}
+
+.sp-icon-buttons-row cr-icon-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
 }
 
 .sp-hr {
