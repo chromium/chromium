@@ -186,9 +186,6 @@
       <message desc="Label for the help button." name="IDS_HELP_BUTTON">
         Help
       </message>
-      <message desc="Label for the dismissing button in the dialog." name="IDS_DIALOG_CANCEL_BUTTON">
-        Cancel
-      </message>
       <message desc="Label for the gallery button." name="IDS_GALLERY_BUTTON">
         Go to Gallery
       </message>
@@ -591,7 +588,7 @@ If your feedback is about image or video quality, please attach a sample photo o
         Full resolution
       </message>
       <message desc="Label of the option to specify the medium resolution in the resolution settings" name="IDS_LABEL_MEDIUM_RESOLUTION">
-        Medium resolution
+        Medium
       </message>
       <message desc="Label of the option to select other aspect ratio rather than the common ones (4:3, 16:9)." name="IDS_LABEL_OTHER_ASPECT_RATIO">
         Others

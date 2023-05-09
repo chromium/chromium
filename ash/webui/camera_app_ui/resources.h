@@ -40,7 +40,6 @@ const struct {
     {"confirm_review_button", IDS_CONFIRM_REVIEW_BUTTON},
     {"delete_page_button", IDS_DELETE_PAGE_BUTTON},
     {"delete_page_message", IDS_DELETE_PAGE_MESSAGE},
-    {"dialog_cancel_button", IDS_DIALOG_CANCEL_BUTTON},
     {"dialog_ok_button", IDS_DIALOG_OK_BUTTON},
     {"doc_scan_menu_button", IDS_DOC_SCAN_MENU_BUTTON},
     {"document_corner_move_desc", IDS_DOCUMENT_CORNER_MOVE_DESC},

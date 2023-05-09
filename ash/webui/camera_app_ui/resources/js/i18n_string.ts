@@ -31,7 +31,6 @@ export enum I18nString {
   CONFIRM_REVIEW_BUTTON = 'confirm_review_button',
   DELETE_PAGE_BUTTON = 'delete_page_button',
   DELETE_PAGE_MESSAGE = 'delete_page_message',
-  DIALOG_CANCEL_BUTTON = 'dialog_cancel_button',
   DIALOG_OK_BUTTON = 'dialog_ok_button',
   DOC_SCAN_MENU_BUTTON = 'doc_scan_menu_button',
   DOCUMENT_CORNER_MOVE_DESC = 'document_corner_move_desc',
