@@ -46,20 +46,18 @@ try_.builder(
     ),
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "fuchsia-arm64-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
-    compilator = "fuchsia-arm64-rel-compilator",
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
     main_list_view = "try",
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     tryjob = try_.job(
         location_filters = [
             # Covers //fuchsia_web and //fuchsia changes, including
@@ -74,14 +72,6 @@ try_.orchestrator_builder(
             "components/viz/viz.gni",
         ],
     ),
-)
-
-try_.compilator_builder(
-    name = "fuchsia-arm64-rel-compilator",
-    branch_selector = branches.selector.FUCHSIA_BRANCHES,
-    # TODO(crbug.com/1298110): Set to True once compilator bots are moved
-    ssd = None,
-    main_list_view = "try",
 )
 
 try_.builder(

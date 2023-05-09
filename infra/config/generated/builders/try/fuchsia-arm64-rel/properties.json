@@ -1,8 +1,4 @@
 {
-  "$build/chromium_orchestrator": {
-    "compilator": "fuchsia-arm64-rel-compilator",
-    "compilator_watcher_git_revision": "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -47,6 +43,11 @@
       ]
     }
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 300,
+    "metrics_project": "chromium-reclient-metrics"
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -56,5 +57,5 @@
   },
   "builder_group": "tryserver.chromium.fuchsia",
   "cq": "path-based",
-  "recipe": "chromium/orchestrator"
+  "recipe": "chromium_trybot"
 }
