@@ -623,12 +623,17 @@ void WorkerThread::InitializeOnWorkerThread(
     base::AutoLock locker(lock_);
     DCHECK_EQ(ThreadState::kNotStarted, thread_state_);
 
+    if (!recordreplay::AreEventsDisallowed())
+      recordreplay::Assert("[RUN-1691] WorkerThread::InitializeOnWorkerThread A %d",
+                           IsOwningBackingThread());
     if (IsOwningBackingThread()) {
       DCHECK(thread_startup_data.has_value());
       GetWorkerBackingThread().InitializeOnBackingThread(*thread_startup_data);
     } else {
       DCHECK(!thread_startup_data.has_value());
     }
+    if (!recordreplay::AreEventsDisallowed())
+      recordreplay::Assert("[RUN-1691] WorkerThread::InitializeOnWorkerThread B");
     GetWorkerBackingThread().BackingThread().AddTaskObserver(this);
 
     // TODO(crbug.com/866666): Ideally this URL should be the response URL of

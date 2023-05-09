@@ -373,8 +373,12 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
       PostMessageHelper::SerializeMessageByMove(script_state->GetIsolate(),
                                                 message, options, transferables,
                                                 exception_state);
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-1691] DedicatedWorkerGlobalScope::postMessage A");
   if (exception_state.HadException())
     return;
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-1691] DedicatedWorkerGlobalScope::postMessage B");
   DCHECK(serialized_message);
   BlinkTransferableMessage transferable_message;
   transferable_message.message = serialized_message;
@@ -390,8 +394,14 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
       WorkerThreadDebugger::From(script_state->GetIsolate());
   transferable_message.sender_stack_trace_id =
       debugger->StoreCurrentStackTrace("postMessage");
+
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-1691] DedicatedWorkerGlobalScope::postMessage C");
   WorkerObjectProxy().PostMessageToWorkerObject(
       std::move(transferable_message));
+
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-1691] DedicatedWorkerGlobalScope::postMessage D");
 }
 
 void DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript(
