@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
+
 /**
  * This class provides a 'bridge' for communicating between javascript and the
  * browser. When run outside of WebUI, e.g. as a regular webpage, it provides
@@ -10,14 +12,18 @@
 export class BrowserBridge extends EventTarget {
   constructor() {
     super();
-    this.nextRequestId_ = 0;
-    this.pendingCallbacks_ = [];
+    this.clientInfo_ = null;
+    this.gpuInfo_ = null;
     this.logMessages_ = [];
 
-    // Tell c++ code that we are ready to receive GPU Info.
-    chrome.send('browserBridgeInitialized');
-    this.beginRequestClientInfo_();
-    this.beginRequestLogMessages_();
+    // Request initial gpu info from the C++ backend.
+    sendWithPromise('getGpuInfo').then(this.onGpuInfoUpdate_.bind(this));
+
+    // Register a listener to receive future gpu info updates.
+    addWebUiListener('gpu-info-updated', this.onGpuInfoUpdate_.bind(this));
+
+    this.updateClientInfo_();
+    this.updateLogMessages_();
   }
 
   dispatchEvent_(eventName) {
@@ -36,34 +42,6 @@ export class BrowserBridge extends EventTarget {
   }
 
   /**
-   * Sends a message to the browser with specified args. The
-   * browser will reply asynchronously via the provided callback.
-   */
-  callAsync(submessage, args, callback) {
-    const requestId = this.nextRequestId_;
-    this.nextRequestId_ += 1;
-    this.pendingCallbacks_[requestId] = callback;
-    if (!args) {
-      chrome.send('callAsync', [requestId.toString(), submessage]);
-    } else {
-      const allArgs = [requestId.toString(), submessage].concat(args);
-      chrome.send('callAsync', allArgs);
-    }
-  }
-
-  /**
-   * Called by gpu c++ code when client info is ready.
-   */
-  onCallAsyncReply(requestId, args) {
-    if (this.pendingCallbacks_[requestId] === undefined) {
-      throw new Error('requestId ' + requestId + ' is not pending');
-    }
-    const callback = this.pendingCallbacks_[requestId];
-    callback(args);
-    delete this.pendingCallbacks_[requestId];
-  }
-
-  /**
    * Get gpuInfo data.
    */
   get gpuInfo() {
@@ -71,9 +49,9 @@ export class BrowserBridge extends EventTarget {
   }
 
   /**
-   * Called from gpu c++ code when GPU Info is updated.
+   * Called when GPU Info is updated.
    */
-  onGpuInfoUpdate(gpuInfo) {
+  onGpuInfoUpdate_(gpuInfo) {
     this.gpuInfo_ = gpuInfo;
     this.dispatchEvent_('gpuInfoUpdate');
   }
@@ -82,17 +60,15 @@ export class BrowserBridge extends EventTarget {
    * This function begins a request for the ClientInfo. If it comes back
    * as undefined, then we will issue the request again in 250ms.
    */
-  beginRequestClientInfo_() {
-    this.callAsync(
-        'requestClientInfo', undefined,
-        (function(data) {
-          if (data === undefined) {  // try again in 250 ms
-            window.setTimeout(this.beginRequestClientInfo_.bind(this), 250);
-          } else {
-            this.clientInfo_ = data;
-            this.dispatchEvent_('clientInfoChange');
-          }
-        }).bind(this));
+  async updateClientInfo_() {
+    const data = await sendWithPromise('getClientInfo');
+
+    if (data === undefined) {  // try again in 250 ms
+      window.setTimeout(this.updateClientInfo_.bind(this), 250);
+    } else {
+      this.clientInfo_ = data;
+      this.dispatchEvent_('clientInfoChange');
+    }
   }
 
   /**
@@ -106,17 +82,15 @@ export class BrowserBridge extends EventTarget {
    * This function checks for new GPU_LOG messages.
    * If any are found, a refresh is triggered.
    */
-  beginRequestLogMessages_() {
-    this.callAsync(
-        'requestLogMessages', undefined,
-        (function(messages) {
-          if (messages.length !== this.logMessages_.length) {
-            this.logMessages_ = messages;
-            this.dispatchEvent_('logMessagesChange');
-          }
-          // check again in 250 ms
-          window.setTimeout(this.beginRequestLogMessages_.bind(this), 250);
-        }).bind(this));
+  async updateLogMessages_() {
+    const messages = await sendWithPromise('getLogMessages');
+
+    if (messages.length !== this.logMessages_.length) {
+      this.logMessages_ = messages;
+      this.dispatchEvent_('logMessagesChange');
+    }
+    // check again in 250 ms
+    window.setTimeout(this.updateLogMessages_.bind(this), 250);
   }
 
   /**
