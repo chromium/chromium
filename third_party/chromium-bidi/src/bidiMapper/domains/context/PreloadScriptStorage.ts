@@ -36,13 +36,21 @@ export type BidiPreloadScript = {
 /** BidiPreloadScripts can be filtered by either context ID or BiDi ID. */
 export type BidiPreloadScriptFilter = Partial<
   Pick<BidiPreloadScript, 'contextId'> & Pick<BidiPreloadScript, 'id'>
->;
+> & {contextIds?: (CommonDataTypes.BrowsingContext | null)[]};
 
 export type CdpPreloadScript = {
-  /** CDP target. */
+  /** CDP target. Includes session ID and target ID. */
   target: CdpTarget;
   /** CDP preload script ID. */
   preloadScriptId: Script.PreloadScript;
+};
+
+/** CdpPreloadScripts can be filtered by CDP session ID or target ID. */
+export type CdpPreloadScriptFilter = {
+  /** CDP session ID. */
+  sessionId?: string;
+  /** CDP target ID. */
+  targetId?: string;
 };
 
 /**
@@ -59,7 +67,6 @@ export type CdpPreloadScript = {
  *
  * This class does not concern itself with the validity of the IDs.
  */
-// TODO: add unit tests.
 export class PreloadScriptStorage {
   /** Tracks all BiDi preload scripts.  */
   readonly #scripts = new Set<BidiPreloadScript>();
@@ -77,6 +84,12 @@ export class PreloadScriptStorage {
       if (
         filter?.contextId !== undefined &&
         filter?.contextId !== script.contextId
+      ) {
+        return false;
+      }
+      if (
+        filter?.contextIds !== undefined &&
+        !filter?.contextIds.includes(script.contextId)
       ) {
         return false;
       }
@@ -119,17 +132,40 @@ export class PreloadScriptStorage {
    * Keeps track of the given CDP preload script in the given BiDi preload
    * script.
    */
-  appendPreloadScript(
+  appendCdpPreloadScript(
     script: BidiPreloadScript,
     cdpPreloadScript: CdpPreloadScript
   ) {
     script.cdpPreloadScripts.push(cdpPreloadScript);
   }
 
-  /** Deletes all entries that match the given filter. */
-  removePreloadScripts(filter?: BidiPreloadScriptFilter) {
+  /** Deletes all BiDi preload script entries that match the given filter. */
+  removeBiDiPreloadScripts(filter?: BidiPreloadScriptFilter) {
     for (const preloadScript of this.findPreloadScripts(filter)) {
       this.#scripts.delete(preloadScript);
+    }
+  }
+
+  /** Deletes all CDP preload script entries that match the given filter. */
+  removeCdpPreloadScripts(filter?: CdpPreloadScriptFilter) {
+    for (const preloadScript of this.#scripts) {
+      preloadScript.cdpPreloadScripts = preloadScript.cdpPreloadScripts.filter(
+        (cdpPreloadScript) => {
+          if (
+            filter?.targetId !== undefined &&
+            filter?.targetId !== cdpPreloadScript.target.targetId
+          ) {
+            return true;
+          }
+          if (
+            filter?.sessionId !== undefined &&
+            filter?.sessionId !== cdpPreloadScript.target.cdpSessionId
+          ) {
+            return true;
+          }
+          return false;
+        }
+      );
     }
   }
 }

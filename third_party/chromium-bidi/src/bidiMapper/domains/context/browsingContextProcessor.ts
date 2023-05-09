@@ -91,10 +91,6 @@ export class BrowsingContextProcessor {
     );
   }
 
-  // { "method": "Page.frameAttached",
-  //   "params": {
-  //     "frameId": "0A639AB1D9A392DF2CE02C53CC4ED3A6",
-  //     "parentFrameId": "722BB0526C73B067A479BED6D0DB1156" } }
   #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
     const parentBrowsingContext = this.#browsingContextStorage.findContext(
       params.parentFrameId
@@ -112,10 +108,6 @@ export class BrowsingContextProcessor {
     }
   }
 
-  // { "method": "Page.frameDetached",
-  //   "params": {
-  //     "frameId": "0A639AB1D9A392DF2CE02C53CC4ED3A6",
-  //     "reason": "swap" } }
   #handleFrameDetachedEvent(params: Protocol.Page.FrameDetachedEvent) {
     // In case of OOPiF no need in deleting BrowsingContext.
     if (params.reason === 'swap') {
@@ -124,18 +116,6 @@ export class BrowsingContextProcessor {
     this.#browsingContextStorage.findContext(params.frameId)?.delete();
   }
 
-  // { "method": "Target.attachedToTarget",
-  //   "params": {
-  //     "sessionId": "EA999F39BDCABD7D45C9FEB787413BBA",
-  //     "targetInfo": {
-  //       "targetId": "722BB0526C73B067A479BED6D0DB1156",
-  //       "type": "page",
-  //       "title": "about:blank",
-  //       "url": "about:blank",
-  //       "attached": true,
-  //       "canAccessOpener": false,
-  //       "browserContextId": "1B5244080EC3FF28D03BBDA73138C0E2" },
-  //     "waitingForDebugger": false } }
   #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
     parentSessionCdpClient: CdpClient
@@ -163,19 +143,23 @@ export class BrowsingContextProcessor {
 
     this.#setEventListeners(targetCdpClient);
 
+    const maybeContext = this.#browsingContextStorage.findContext(
+      targetInfo.targetId
+    );
+
     const cdpTarget = CdpTarget.create(
       targetInfo.targetId,
+      maybeContext?.parentId ?? null,
       targetCdpClient,
       sessionId,
       this.#realmStorage,
-      this.#eventManager
+      this.#eventManager,
+      this.#preloadScriptStorage
     );
 
-    if (this.#browsingContextStorage.hasContext(targetInfo.targetId)) {
+    if (maybeContext) {
       // OOPiF.
-      this.#browsingContextStorage
-        .getContext(targetInfo.targetId)
-        .updateCdpTarget(cdpTarget);
+      maybeContext.updateCdpTarget(cdpTarget);
     } else {
       // New context.
       BrowsingContextImpl.create(
@@ -190,10 +174,6 @@ export class BrowsingContextProcessor {
     }
   }
 
-  // { "method": "Target.detachedFromTarget",
-  //   "params": {
-  //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
-  //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
   #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
@@ -202,6 +182,8 @@ export class BrowsingContextProcessor {
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
     this.#browsingContextStorage.findContext(contextId)?.delete();
+
+    this.#preloadScriptStorage.removeCdpPreloadScripts({targetId: contextId});
   }
 
   async #getRealm(target: Script.Target): Promise<Realm> {
@@ -295,13 +277,14 @@ export class BrowsingContextProcessor {
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
     if (params.arguments !== undefined && params.arguments.length > 0) {
-      throw new Message.UnsupportedOperationException(
-        'add preload script arguments are not supported'
-      );
+      // TODO: Handle arguments.
+      throw new Error('add preload script arguments are not supported');
     }
 
     const cdpTargets = new Set<CdpTarget>(
-      // TODO: flatten children and deduplicate.
+      // TODO: The unique target can be in a non-top-level browsing context.
+      // We need all the targets.
+      // To get them, we can walk through all the contexts and collect their targets into the set.
       params.context === undefined || params.context === null
         ? this.#browsingContextStorage
             .getTopLevelContexts()
@@ -361,7 +344,7 @@ export class BrowsingContextProcessor {
       }
     }
 
-    this.#preloadScriptStorage.removePreloadScripts({
+    this.#preloadScriptStorage.removeBiDiPreloadScripts({
       id: bidiId,
     });
 

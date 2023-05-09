@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CdpClient} from '../../CdpConnection.js';
@@ -26,56 +25,68 @@ import {CDP, Script} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 
+import {PreloadScriptStorage} from './PreloadScriptStorage.js';
+
 export class CdpTarget {
   readonly #targetId: string;
+  readonly #parentTargetId: string | null;
   readonly #cdpClient: CdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
+  readonly #preloadScriptStorage: PreloadScriptStorage;
 
   readonly #targetUnblocked: Deferred<void>;
   #networkDomainActivated: boolean;
 
   static create(
     targetId: string,
+    parentTargetId: string | null,
     cdpClient: CdpClient,
     cdpSessionId: string,
     realmStorage: RealmStorage,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    preloadScriptStorage: PreloadScriptStorage
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
+      parentTargetId,
       cdpClient,
       cdpSessionId,
-      eventManager
+      eventManager,
+      preloadScriptStorage
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
 
     cdpTarget.#setEventListeners();
 
-    // No need in waiting. Deferred will be resolved when the target is unblocked.
+    // No need to await.
+    // Deferred will be resolved when the target is unblocked.
     void cdpTarget.#unblock();
+
     return cdpTarget;
   }
 
   private constructor(
     targetId: string,
+    parentTargetId: string | null,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#targetId = targetId;
+    this.#parentTargetId = parentTargetId;
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
+    this.#preloadScriptStorage = preloadScriptStorage;
 
     this.#networkDomainActivated = false;
     this.#targetUnblocked = new Deferred();
   }
 
-  /**
-   * Returns a promise that resolves when the target is unblocked.
-   */
+  /** Returns a promise that resolves when the target is unblocked. */
   get targetUnblocked(): Deferred<void> {
     return this.#targetUnblocked;
   }
@@ -116,7 +127,10 @@ export class CdpTarget {
       flatten: true,
     });
 
+    await this.loadPreloadScripts();
+
     await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+
     this.#targetUnblocked.resolve();
   }
 
@@ -145,6 +159,27 @@ export class CdpTarget {
         null
       );
     });
+  }
+
+  /** Loads all top-level and parent preload scripts. */
+  async loadPreloadScripts() {
+    for (const script of this.#preloadScriptStorage.findPreloadScripts({
+      contextIds: [null, this.#parentTargetId],
+    })) {
+      const functionDeclaration = script.functionDeclaration;
+      const sandbox = script.sandbox;
+
+      // The spec provides a function, and CDP expects an evaluation.
+      const cdpPreloadScriptId = await this.addPreloadScript(
+        `(${functionDeclaration})();`,
+        sandbox
+      );
+
+      this.#preloadScriptStorage.appendCdpPreloadScript(script, {
+        target: this,
+        preloadScriptId: cdpPreloadScriptId,
+      });
+    }
   }
 
   /**

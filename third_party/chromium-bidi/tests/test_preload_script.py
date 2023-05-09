@@ -414,7 +414,6 @@ async def test_addPreloadScript_loadedInMultipleContexts(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: fail")
 async def test_addPreloadScriptGlobally_loadedInNewContexts(
         websocket, context_id, create_context, html):
     await execute_command(

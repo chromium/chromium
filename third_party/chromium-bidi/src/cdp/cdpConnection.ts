@@ -94,9 +94,9 @@ export class CdpConnection {
         resolve,
         reject,
         error: new Error(
-          `${method} ${JSON.stringify(
-            params
-          )} ${sessionId} call rejected because the connection has been closed.`
+          `${method} ${JSON.stringify(params)} ${
+            sessionId ?? ''
+          } call rejected because the connection has been closed.`
         ),
       });
       const messageObj: CdpMessage<CdpMethod> = {id, method, params};
