@@ -51,6 +51,33 @@ void ExtractVisualFeaturesAndReplyOnUIThread(
 
 }  // namespace
 
+// static
+scoped_refptr<PasswordProtectionRequest>
+PasswordProtectionRequestContent::CreateForTesting(
+    content::WebContents* web_contents,
+    const GURL& main_frame_url,
+    const GURL& password_form_action,
+    const GURL& password_form_frame_url,
+    const std::string& mime_type,
+    const std::string& username,
+    PasswordType password_type,
+    const std::vector<password_manager::MatchingReusedCredential>&
+        matching_reused_credentials,
+    LoginReputationClientRequest::TriggerType type,
+    bool password_field_exists,
+    PasswordProtectionServiceBase* pps,
+    int request_timeout_in_ms) {
+  scoped_refptr<PasswordProtectionRequest> request(
+      new PasswordProtectionRequestContent(
+          web_contents, main_frame_url, password_form_action,
+          password_form_frame_url, mime_type, username, password_type,
+          matching_reused_credentials, type, password_field_exists, pps,
+          request_timeout_in_ms));
+  static_cast<PasswordProtectionRequestContent*>(request.get())
+      ->prevent_initiating_url_loader_for_testing_ = true;
+  return request;
+}
+
 PasswordProtectionRequestContent::PasswordProtectionRequestContent(
     content::WebContents* web_contents,
     const GURL& main_frame_url,

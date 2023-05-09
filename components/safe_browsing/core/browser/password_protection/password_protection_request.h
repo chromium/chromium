@@ -164,6 +164,10 @@ class PasswordProtectionRequest
 
   std::unique_ptr<LoginReputationClientRequest> request_proto_;
 
+  // Used in tests to avoid dispatching a real request. Tests using this must
+  // manually finish the request.
+  bool prevent_initiating_url_loader_for_testing_ = false;
+
  private:
   friend base::RefCountedDeleteOnSequence<PasswordProtectionRequest>;
   friend base::DeleteHelper<PasswordProtectionRequest>;

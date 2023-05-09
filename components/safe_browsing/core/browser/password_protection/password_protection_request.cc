@@ -393,10 +393,12 @@ void PasswordProtectionRequest::SendRequestWithToken(
   url_loader_->AttachStringForUpload(serialized_request,
                                      "application/octet-stream");
   request_start_time_ = base::TimeTicks::Now();
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      password_protection_service_->url_loader_factory().get(),
-      base::BindOnce(&PasswordProtectionRequest::OnURLLoaderComplete,
-                     AsWeakPtr()));
+  if (!prevent_initiating_url_loader_for_testing_) {
+    url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        password_protection_service_->url_loader_factory().get(),
+        base::BindOnce(&PasswordProtectionRequest::OnURLLoaderComplete,
+                       AsWeakPtr()));
+  }
 }
 
 void PasswordProtectionRequest::StartTimeout() {

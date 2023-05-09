@@ -905,13 +905,10 @@ class ChromePasswordProtectionServiceNavigationDeferralBrowserTest
     std::vector<password_manager::MatchingReusedCredential> credentials = {
         {kSignonRealm, kUsername}};
 
-    // TODO(bokan): This issues a real request, via a URLLoader, that actually
-    // gets a response. It'd be better if this test could control the response
-    // instead of manually calling Finish.
-    service->StartRequest(GetWebContents(), GURL(), GURL(), GURL(), "",
-                          PasswordType::SAVED_PASSWORD, credentials,
-                          LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-                          true);
+    service->StartRequestForTesting(
+        GetWebContents(), GURL(), GURL(), GURL(), "",
+        PasswordType::SAVED_PASSWORD, credentials,
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
     if (service->get_pending_requests_for_testing().size() != 1ul)
       return nullptr;
 
