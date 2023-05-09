@@ -789,7 +789,6 @@ public class FakeUrlRequestTest {
         }
     }
 
-    @DisabledTest(message = "crbug.com/994722")
     @Test
     @SmallTest
     public void testReadWhileRedirectingFails() {
@@ -808,6 +807,8 @@ public class FakeUrlRequestTest {
         } catch (IllegalStateException e) {
             assertEquals("Invalid state transition - expected 4 but was 3", e.getMessage());
         }
+        callback.waitForNextStep();
+        assertEquals(callback.mResponseStep, ResponseStep.ON_RECEIVED_REDIRECT);
         callback.setAutoAdvance(true);
         request.followRedirect();
         callback.blockForDone();
