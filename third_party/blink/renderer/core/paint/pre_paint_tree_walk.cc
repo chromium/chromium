@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
+#include "third_party/blink/renderer/core/paint/pre_paint_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -330,10 +331,10 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
 NGPrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
     const NGLink& child,
     const PrePaintTreeWalkContext& context) {
-  const auto& fragment = *To<NGPhysicalBoxFragment>(child.fragment.Get());
+  const auto* fragment = To<NGPhysicalBoxFragment>(child.fragment.Get());
   return NGPrePaintInfo(fragment, child.offset,
                         context.current_container.fragmentainer_idx,
-                        fragment.IsFirstForNode(), !fragment.BreakToken(),
+                        fragment->IsFirstForNode(), !fragment->BreakToken(),
                         /* is_inside_fragment_child */ false,
                         context.current_container.IsInFragmentationContext());
 }
@@ -562,12 +563,77 @@ bool PrePaintTreeWalk::CollectMissableChildren(
 void PrePaintTreeWalk::RebuildContextForMissedDescendant(
     const LayoutObject& ancestor,
     const LayoutObject& object,
+    bool update_tree_builder_context,
     PrePaintTreeWalkContext& context) {
   // Walk up to the ancestor and, on the way down again, adjust the context with
   // info about OOF containing blocks.
   if (&object == &ancestor)
     return;
-  RebuildContextForMissedDescendant(ancestor, *object.Parent(), context);
+  RebuildContextForMissedDescendant(ancestor, *object.Parent(),
+                                    update_tree_builder_context, context);
+
+  if (object.IsLayoutFlowThread()) {
+    // A flow threads doesn't create fragments. Just ignore it.
+    return;
+  }
+
+  if (context.tree_builder_context && update_tree_builder_context) {
+    // TODO(crbug.com/1442211): Attempt to find the right physical fragment for
+    // the ancestor (rather than using nullptr), because there are cases where
+    // we'll miss a descendant, even though the ancestor is represented in the
+    // current fragmentainer.
+    //
+    // E.g.:
+    //   <div style="columns:3; column-fill:auto; height:100px;">
+    //     <div id="outer" style="height:300px; transform:rotate(10deg);">
+    //       <div id="middle">
+    //         <div id="abspos" style="position:absolute; top:250px;">
+    //
+    // #middle only exists in the first fragmentainer, whereas #outer and
+    // #abspos exist in three. We're going to miss #abspos in the second and
+    // third fragmentainer, since it's a child of #middle, which doesn't exist
+    // in those fragmentainers. Providing the correct fragment is important for
+    // transforms, and especially for clipping.
+    const NGPhysicalBoxFragment* box_fragment = nullptr;
+    wtf_size_t fragmentainer_idx = context.current_container.fragmentainer_idx;
+
+    // TODO(mstensho): Some of the bool parameters here are meaningless when
+    // only used with PaintPropertyTreeBuilder (only used by
+    // PrePaintTreeWalker). Consider cleaning this up, by splitting up
+    // NGPrePaintInfo into one walker part and one builder part, so that we
+    // don't have to specify them as false here.
+    NGPrePaintInfo pre_paint_info(
+        box_fragment, PhysicalOffset(), fragmentainer_idx,
+        /* is_first_for_node */ false, /* is_last_for_node */ false,
+        /* is_inside_fragment_child */ false,
+        context.current_container.IsInFragmentationContext());
+
+    // We're going to set up paint properties for the missing ancestors, and
+    // update the context, but it should have no side-effects. That is, the
+    // LayoutObject(s) should be left untouched. PaintPropertyTreeBuilder
+    // normally calls LayoutObject::GetMutableForPainting() and does stuff, but
+    // we need to avoid that in this case.
+    PrePaintDisableSideEffectsScope leave_layout_object_alone_kthanksbye;
+
+    // Also just create a dummy FragmentData object. We don't want any
+    // side-effect, but the paint property tree builder requires a FragmentData
+    // object to write stuff into.
+    pre_paint_info.fragment_data = MakeGarbageCollected<FragmentData>();
+
+    PaintPropertyTreeBuilderContext& builder_context =
+        context.tree_builder_context.value();
+    auto original_force_update = builder_context.force_subtree_update_reasons;
+    // Since we're running without any old paint properties (since we're passing
+    // a dummy FragmentData object), we need to recalculate all properties.
+    builder_context.force_subtree_update_reasons |=
+        PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+
+    PaintPropertyTreeBuilder property_tree_builder(object, &pre_paint_info,
+                                                   builder_context);
+    property_tree_builder.UpdateForSelf();
+    property_tree_builder.UpdateForChildren();
+    builder_context.force_subtree_update_reasons = original_force_update;
+  }
 
   // We don't need to pass a fragment here, since we're not actually going to
   // search for any descendant fragment. We've already determined which fragment
@@ -600,6 +666,19 @@ void PrePaintTreeWalk::WalkMissedChildren(
   if (pending_missables_.empty())
     return;
 
+  // Missing fragments are assumed to be at the start block edge of the
+  // fragmentainer. When generating fragments, layout sets their correct
+  // block-offset (obviously), as a physical offset. But since we're just
+  // pretending to have a fragment in this case, we have to do it ourselves. For
+  // vertical-rl, the block-start offset is at the right edge of the
+  // fragmentainer, not at the left (vertical-lr) (which is zero), and not at
+  // the top (horizontal-tb) (also zero). So we need to adjust for vertical-rl.
+  PhysicalOffset offset_to_block_start_edge;
+  if (fragment.IsFragmentainerBox() &&
+      fragment.Style().GetWritingMode() == WritingMode::kVerticalRl) {
+    offset_to_block_start_edge.left = fragment.Size().width;
+  }
+
   for (const NGLink& child : fragment.Children()) {
     if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
       continue;
@@ -611,7 +690,19 @@ void PrePaintTreeWalk::WalkMissedChildren(
     PrePaintTreeWalkContext descendant_context(
         context, NeedsTreeBuilderContextUpdate(descendant_object, context));
     if (child->IsOutOfFlowPositioned()) {
+      if (descendant_context.tree_builder_context.has_value()) {
+        PaintPropertyTreeBuilderContext* builder_context =
+            &descendant_context.tree_builder_context.value();
+        builder_context->fragments[0].current.paint_offset +=
+            offset_to_block_start_edge;
+      }
+
+      bool update_tree_builder_context =
+          RuntimeEnabledFeatures::PrePaintAncestorsOfMissedOOFEnabled() &&
+          NeedsTreeBuilderContextUpdate(descendant_object, descendant_context);
+
       RebuildContextForMissedDescendant(ancestor, *descendant_object.Parent(),
+                                        update_tree_builder_context,
                                         descendant_context);
     }
 
@@ -949,7 +1040,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         is_in_different_fragmentation_context = true;
       }
       NGPrePaintInfo pre_paint_info(
-          *box_fragment, paint_offset, fragmentainer_idx, is_first_for_node,
+          box_fragment, paint_offset, fragmentainer_idx, is_first_for_node,
           is_last_for_node, is_inside_fragment_child,
           container_for_child->IsInFragmentationContext());
       if (is_in_different_fragmentation_context) {
@@ -1061,7 +1152,8 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   const NGPhysicalBoxFragment* physical_fragment = nullptr;
   bool is_inside_fragment_child = false;
   if (pre_paint_info) {
-    physical_fragment = &pre_paint_info->box_fragment;
+    physical_fragment = pre_paint_info->box_fragment;
+    DCHECK(physical_fragment);
     is_inside_fragment_child = pre_paint_info->is_inside_fragment_child;
   }
 

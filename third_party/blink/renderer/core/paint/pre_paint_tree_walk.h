@@ -187,6 +187,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // for |object|, at least as far as OOF containing block info is concerned.
   void RebuildContextForMissedDescendant(const LayoutObject& ancestor,
                                          const LayoutObject& object,
+                                         bool update_tree_builder_context,
                                          PrePaintTreeWalkContext&);
 
   // Walk any missed children (i.e. those collected by CollectMissableChildren()

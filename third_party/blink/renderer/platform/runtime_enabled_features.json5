@@ -2732,6 +2732,12 @@
       base_feature: "none",
     },
     {
+      // Attempt to set up paint properties for ancestors when pre-painting a
+      // missed descendant, so that paint effects like transforms aren't lost.
+      name: "PrePaintAncestorsOfMissedOOF",
+      status: "stable",
+    },
+    {
       // https://crbug.com/1126305
       name: "Prerender2",
       status: "stable",

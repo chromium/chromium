@@ -142,6 +142,8 @@ blink_core_sources_paint = [
   "paint_property_tree_printer.cc",
   "paint_property_tree_printer.h",
   "paint_result.h",
+  "pre_paint_disable_side_effects_scope.cc",
+  "pre_paint_disable_side_effects_scope.h",
   "pre_paint_tree_walk.cc",
   "pre_paint_tree_walk.h",
   "replaced_painter.cc",

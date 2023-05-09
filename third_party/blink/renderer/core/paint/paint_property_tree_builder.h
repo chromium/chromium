@@ -255,7 +255,7 @@ struct NGPrePaintInfo {
   STACK_ALLOCATED();
 
  public:
-  NGPrePaintInfo(const NGPhysicalBoxFragment& box_fragment,
+  NGPrePaintInfo(const NGPhysicalBoxFragment* box_fragment,
                  PhysicalOffset paint_offset,
                  wtf_size_t fragmentainer_idx,
                  bool is_first_for_node,
@@ -273,7 +273,8 @@ struct NGPrePaintInfo {
 
   // The fragment for the LayoutObject currently being processed, or, in the
   // case of text and non-atomic inlines: the fragment of the containing block.
-  const NGPhysicalBoxFragment& box_fragment;
+  // Is nullptr if we're rebuilding the property tree for a missed descendant.
+  const NGPhysicalBoxFragment* box_fragment;
 
   FragmentData* fragment_data = nullptr;
   PhysicalOffset paint_offset;

@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/pre_paint_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -3300,6 +3301,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   };
   MutableForPainting GetMutableForPainting() const {
     NOT_DESTROYED();
+    DCHECK(!PrePaintDisableSideEffectsScope::IsDisabled());
     return MutableForPainting(*this);
   }
 
