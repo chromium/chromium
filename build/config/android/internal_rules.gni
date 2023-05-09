@@ -4162,10 +4162,6 @@ if (enable_java_templates) {
           # new SDK classes, so providing our normal SDK will allow these
           # classes to resolve. For an example, see crbug.com/1350963.
           extra_classpath_jars = [ android_sdk_jar ]
-
-          # Mockito bug with JDK17 requires us to use JDK11 until we find a fix
-          # for crbug.com/1409661.
-          use_jdk_11 = true
         }
       }
     }
