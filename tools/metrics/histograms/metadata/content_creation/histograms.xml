@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2023-08-27">
+    enum="LinkGenerationError" expires_after="2023-11-05">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor.LinkOpenSource"
-    enum="TextFragmentLinkOpenSource" expires_after="2023-09-03">
+    enum="TextFragmentLinkOpenSource" expires_after="2023-11-05">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>

@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>

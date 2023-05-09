@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LowLatencyCallbackError"
-    enum="BooleanError" expires_after="2023-09-03">
+    enum="BooleanError" expires_after="2023-11-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -507,7 +507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1009,7 +1009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceStatus"
-    enum="OutputDeviceStatus" expires_after="2023-09-03">
+    enum="OutputDeviceStatus" expires_after="2023-11-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -3395,7 +3395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.LowLatencyAudioCaptureStartupSuccess"
-    enum="AudioCaptureStartupResult" expires_after="2023-08-27">
+    enum="AudioCaptureStartupResult" expires_after="2023-11-05">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -5191,7 +5191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.DelayUntilFirstFrame" units="ms"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>armax@chromium.org</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
@@ -5228,7 +5228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Error" enum="VideoCaptureError"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -5416,7 +5416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Start" enum="Boolean"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
@@ -5439,7 +5439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartOutcome"
-    enum="VideoCaptureStartOutcome" expires_after="2023-09-03">
+    enum="VideoCaptureStartOutcome" expires_after="2023-11-05">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
@@ -5510,7 +5510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.ErrorEvent" enum="Hresult"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>toprice@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <summary>

@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialSourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2023-08-31">
+    enum="LocaleCodeISO639" expires_after="2023-11-05">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

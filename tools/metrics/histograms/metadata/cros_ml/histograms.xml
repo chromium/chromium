@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.NumWorkerProcess" units="count"
-    expires_after="2023-08-27">
+    expires_after="2023-11-05">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessAcceptMojoConnectionTime"
-    units="microseconds" expires_after="2023-08-27">
+    units="microseconds" expires_after="2023-11-05">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>

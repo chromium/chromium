@@ -1709,7 +1709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMax4" units="microseconds"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1739,7 +1739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeTotal4" units="microseconds"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1754,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TimeToDeferredPumpTokenizer4"
-    units="microseconds" expires_after="2023-09-03">
+    units="microseconds" expires_after="2023-11-05">
   <owner>sky@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -3605,7 +3605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2"
-    enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
+    enum="NQEEffectiveConnectionType" expires_after="2023-11-05">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

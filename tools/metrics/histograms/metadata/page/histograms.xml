@@ -1247,7 +1247,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3"
-    units="ms" expires_after="2023-09-03">
+    units="ms" expires_after="2023-11-05">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -1494,7 +1494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.DocumentTiming.NavigationToLoadEventFired" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2867,7 +2867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>ksakamoto@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3044,7 +3044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.ParseTiming.NavigationToParseStart" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

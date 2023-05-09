@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2023-09-03">
+    enum="FeedLoadStreamStatus" expires_after="2023-11-05">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>

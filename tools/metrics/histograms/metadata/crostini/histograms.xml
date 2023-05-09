@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RestarterResult" enum="CrostiniResult"
-    expires_after="2023-09-03">
+    expires_after="2023-11-05">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
