@@ -66,7 +66,6 @@ struct CompanionScriptBuilder {
   absl::optional<size_t> child_element_count;
   absl::optional<std::string> text_directive;
   absl::optional<std::vector<std::string>> cq_text_directives;
-  absl::optional<size_t> click_position;
 
   // Useful in case chrome sends a postmessage in response. Companion waits for
   // the message in response and resolves the promise that was sent back to
@@ -121,11 +120,6 @@ struct CompanionScriptBuilder {
         joined_text.append("'" + text + "',");
       }
       ss << "message['cqTextDirectives'] = [" << joined_text << "];";
-    }
-
-    if (click_position.has_value()) {
-      ss << "message['clickPosition'] = "
-         << base::NumberToString(click_position.value()) << ";";
     }
 
     ss << "window.parent.postMessage(message, '*');";
@@ -357,8 +351,6 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        PostMessageForUiSurfaceMetrics) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
@@ -385,22 +377,11 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Post message for click metrics. Verify histograms.
   CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceClicked);
   builder2.ui_surface = UiSurface::kCQ;
-  builder2.click_position = 3;
   EXPECT_TRUE(ExecJs(builder2.Build()));
   WaitForHistogram("Companion.CQ.Clicked");
   histogram_tester_->ExpectBucketCount("Companion.CQ.Clicked",
                                        /*sample=*/true,
                                        /*expected_count=*/1);
-  histogram_tester_->ExpectBucketCount("Companion.CQ.ClickPosition",
-                                       /*sample=*/3,
-                                       /*expected_count=*/1);
-
-  side_panel_coordinator()->Close();
-  ExpectUkmEntry(&ukm_recorder,
-                 ukm::builders::Companion_PageView::kCQ_LastEventName,
-                 static_cast<int>(companion::UiEvent::kClicked));
-  ExpectUkmEntry(&ukm_recorder,
-                 ukm::builders::Companion_PageView::kCQ_ClickPositionName, 3);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
@@ -433,39 +414,6 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kPromoEventName,
                  static_cast<int>(companion::PromoEvent::kMsbbRejected));
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
-
-  // Open companion companion via toolbar entry point.
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
-
-  WaitForCompanionToBeLoaded();
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
-
-  // Post message for click metrics. Verify histograms.
-  CompanionScriptBuilder builder(MethodType::kRecordUiSurfaceClicked);
-  builder.ui_surface = UiSurface::kRegionSearch;
-  EXPECT_TRUE(ExecJs(builder.Build()));
-  WaitForHistogram("Companion.RegionSearch.Clicked");
-
-  histogram_tester_->ExpectBucketCount("Companion.RegionSearch.Clicked",
-                                       /*sample=*/true,
-                                       /*expected_count=*/1);
-  histogram_tester_->ExpectTotalCount("Companion.RegionSearch.ClickPosition",
-                                      0);
-
-  side_panel_coordinator()->Close();
-  ExpectUkmEntry(
-      &ukm_recorder,
-      ukm::builders::Companion_PageView::kRegionSearch_ClickCountName, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,

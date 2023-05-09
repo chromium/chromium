@@ -17,9 +17,6 @@ using side_panel::mojom::UiSurface;
 
 namespace companion {
 
-// Invalid position inside a list.
-const int32_t kInvalidPosition = -1;
-
 // Types of events on the UI surfaces. Keep in sync with Companion.UiEvent in
 // enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -69,10 +66,6 @@ struct UiSurfaceMetrics {
 
   // The number of times user clicked on the surface.
   size_t click_count = 0;
-
-  // The position of the clicked UI element within its parent list. Applicable
-  // to surfaces that show a list.
-  int32_t click_position = kInvalidPosition;
 };
 
 // Various types of events happening on the promo surfaces on the companion
@@ -105,7 +98,7 @@ class CompanionMetricsLogger {
 
   void RecordOpenTrigger(OpenTrigger open_trigger);
   void RecordUiSurfaceShown(UiSurface ui_surface, uint32_t child_element_count);
-  void RecordUiSurfaceClicked(UiSurface ui_surface, int32_t click_position);
+  void RecordUiSurfaceClicked(UiSurface ui_surface);
   void OnPromoAction(PromoType promo_type, PromoAction promo_action);
   void OnPhFeedback(PhFeedback ph_feedback);
 

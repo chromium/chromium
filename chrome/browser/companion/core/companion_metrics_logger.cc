@@ -20,24 +20,6 @@
 namespace companion {
 namespace {
 
-// The ceiling to use when clamping the number of child elements that a list
-// surface can have for UMA/UKM collection.
-const int kMaxNumChildElements = 10;
-
-// Helper method to determine whether a UI surface is a list surface. List
-// surfaces are surfaces that take the form of a list with one or more items
-// inside it, e.g page entities.
-bool IsListSurface(UiSurface ui_surface) {
-  switch (ui_surface) {
-    case UiSurface::kUnknown:
-    case UiSurface::kRegionSearch:
-      return false;
-    case UiSurface::kCQ:
-    case UiSurface::kPH:
-      return true;
-  }
-}
-
 std::string UiSurfaceToHistogramVariant(UiSurface ui_surface) {
   switch (ui_surface) {
     case UiSurface::kUnknown:
@@ -111,8 +93,7 @@ void CompanionMetricsLogger::RecordUiSurfaceShown(
   UiSurfaceMetrics& surface = ui_surface_metrics_[ui_surface];
   surface.last_event = UiEvent::kShown;
   // Clamped to record as having max 10 child elements.
-  surface.child_element_count = std::clamp(
-      child_element_count, 0u, static_cast<unsigned int>(kMaxNumChildElements));
+  surface.child_element_count = std::clamp(child_element_count, 0u, 10u);
 
   if (child_element_count > 0) {
     base::UmaHistogramBoolean(
@@ -121,23 +102,14 @@ void CompanionMetricsLogger::RecordUiSurfaceShown(
   }
 }
 
-void CompanionMetricsLogger::RecordUiSurfaceClicked(UiSurface ui_surface,
-                                                    int32_t click_position) {
+void CompanionMetricsLogger::RecordUiSurfaceClicked(UiSurface ui_surface) {
   UiSurfaceMetrics& surface = ui_surface_metrics_[ui_surface];
   surface.last_event = UiEvent::kClicked;
   surface.click_count++;
-  surface.click_position = click_position;
 
   base::UmaHistogramBoolean(
       "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Clicked",
       true);
-  if (!IsListSurface(ui_surface)) {
-    return;
-  }
-
-  base::UmaHistogramExactLinear(
-      "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".ClickPosition",
-      click_position, kMaxNumChildElements);
 }
 
 void CompanionMetricsLogger::OnPromoAction(PromoType promo_type,
@@ -164,11 +136,6 @@ void CompanionMetricsLogger::FlushStats() {
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetCQ_LastEvent(static_cast<int64_t>(iter->second.last_event));
     ukm_builder.SetCQ_ChildElementCount(iter->second.child_element_count);
-
-    auto click_position = iter->second.click_position;
-    if (click_position != kInvalidPosition) {
-      ukm_builder.SetCQ_ClickPosition(click_position);
-    }
   }
 
   // PH surface.
