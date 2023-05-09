@@ -18,7 +18,7 @@
 
 /* layout */
 
-.top {
+#top {
   background-color: white;
   border: 1px solid var(--border-color);
   display: flex;
@@ -234,17 +234,19 @@ input[type=checkbox] {
 
 /* drag */
 
-.drag-container * {
-  pointer-events: none;
-}
-
 .drag-container input[type=file] {
   display: none;
 }
 
-.drag-container.drag-hover {
+.drag-container.drag-silence *  {
+  pointer-events: none;
+}
+
+.drag-container.drag-background {
   background: lightblue;
 }
+
+/* misc */
 
 .accesskey {
   text-decoration: underline;
