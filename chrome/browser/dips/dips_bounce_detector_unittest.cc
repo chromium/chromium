@@ -32,6 +32,7 @@ using testing::Eq;
 using testing::Gt;
 using testing::IsEmpty;
 using testing::Pair;
+using testing::SizeIs;
 
 // Encodes data about a bounce (the url, time of bounce, and
 // whether it's stateful) for use when testing that the bounce is
@@ -54,9 +55,10 @@ std::string FormatURL(const GURL& url) {
 
 void AppendRedirect(std::vector<std::string>* redirects,
                     const DIPSRedirectInfo& redirect,
-                    const DIPSRedirectChainInfo& chain) {
+                    const DIPSRedirectChainInfo& chain,
+                    size_t redirect_index) {
   redirects->push_back(base::StringPrintf(
-      "[%d/%d] %s -> %s (%s) -> %s", redirect.index + 1, chain.length,
+      "[%zu/%zu] %s -> %s (%s) -> %s", redirect_index + 1, chain.length,
       FormatURL(chain.initial_url).c_str(), FormatURL(redirect.url).c_str(),
       SiteDataAccessTypeToString(redirect.access_type).data(),
       FormatURL(chain.final_url).c_str()));
@@ -78,15 +80,18 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
                            DIPSRedirectChainInfoPtr chain) override {
     chain->cookie_mode = DIPSCookieMode::kStandard;
+    size_t redirect_index = chain->length - redirects.size();
     for (auto& redirect : redirects) {
       redirect->has_interaction = GetSiteHasInteraction(redirect->url);
       DCHECK(redirect->access_type != SiteDataAccessType::kUnknown);
-      AppendRedirect(&redirects_, *redirect, *chain);
+      AppendRedirect(&redirects_, *redirect, *chain, redirect_index);
 
       DIPSService::HandleRedirectForTesting(
           *redirect, *chain,
           base::BindRepeating(&TestBounceDetectorDelegate::RecordBounce,
                               base::Unretained(this)));
+
+      redirect_index++;
     }
   }
 
@@ -1000,16 +1005,14 @@ void AppendChainPair(std::vector<ChainPair>& vec,
 }
 
 std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
-    size_t offset,
     std::vector<std::string> urls,
     SiteDataAccessType access_type = SiteDataAccessType::kReadWrite) {
   std::vector<DIPSRedirectInfoPtr> redirects;
-  for (size_t i = 0; i < urls.size(); i++) {
+  for (const auto& url : urls) {
     redirects.push_back(std::make_unique<DIPSRedirectInfo>(
-        /*url=*/GURL(urls[i]),
+        /*url=*/GURL(url),
         /*redirect_type=*/DIPSRedirectType::kServer,
         /*access_type=*/access_type,
-        /*index=*/offset + i,
         /*source_id=*/ukm::SourceId(),
         /*time=*/base::Time::Now()));
   }
@@ -1017,14 +1020,12 @@ std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
 }
 
 DIPSRedirectInfoPtr MakeClientRedirect(
-    size_t offset,
     std::string url,
     SiteDataAccessType access_type = SiteDataAccessType::kReadWrite) {
   return std::make_unique<DIPSRedirectInfo>(
       /*url=*/GURL(url),
       /*redirect_type=*/DIPSRedirectType::kClient,
       /*access_type=*/access_type,
-      /*index=*/offset,
       /*source_id=*/ukm::SourceId(),
       /*time=*/base::Time::Now(),
       /*client_bounce_delay=*/base::Seconds(1),
@@ -1064,15 +1065,21 @@ MATCHER_P(HasLength, length, "") {
   return ExplainMatchResult(Eq(length), arg->length, result_listener);
 }
 
+MATCHER_P(HasChainIndex, chain_index, "") {
+  *result_listener << "whose index is " << arg->chain_index;
+  return ExplainMatchResult(Eq(chain_index), arg->chain_index, result_listener);
+}
+
 TEST(DIPSRedirectContextTest, OneAppend) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      MakeServerRedirects({"http://b.test/", "http://c.test/"}),
       GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.EndChain(GURL("http://d.test/"));
@@ -1080,7 +1087,7 @@ TEST(DIPSRedirectContextTest, OneAppend) {
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://d.test/"), HasLength(2)));
+                    HasFinalUrl("http://d.test/"), HasLength(2u)));
   EXPECT_THAT(chains[0].second,
               ElementsAre(HasUrl("http://b.test/"), HasUrl("http://c.test/")));
 }
@@ -1089,15 +1096,16 @@ TEST(DIPSRedirectContextTest, TwoAppends_NoClientRedirect) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      MakeServerRedirects({"http://b.test/", "http://c.test/"}),
       GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(GURL("http://d.test/"),
-                          MakeServerRedirects(0, {"http://e.test/"}),
+                          MakeServerRedirects({"http://e.test/"}),
                           GURL("http://f.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.EndChain(GURL("http://f.test/"));
@@ -1105,13 +1113,13 @@ TEST(DIPSRedirectContextTest, TwoAppends_NoClientRedirect) {
   ASSERT_EQ(chains.size(), 2u);
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://d.test/"), HasLength(2)));
+                    HasFinalUrl("http://d.test/"), HasLength(2u)));
   EXPECT_THAT(chains[0].second,
               ElementsAre(HasUrl("http://b.test/"), HasUrl("http://c.test/")));
 
   EXPECT_THAT(chains[1].first,
               AllOf(HasInitialUrl("http://d.test/"),
-                    HasFinalUrl("http://f.test/"), HasLength(1)));
+                    HasFinalUrl("http://f.test/"), HasLength(1u)));
   EXPECT_THAT(chains[1].second, ElementsAre(HasUrl("http://e.test/")));
 }
 
@@ -1119,16 +1127,17 @@ TEST(DIPSRedirectContextTest, TwoAppends_WithClientRedirect) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      MakeServerRedirects({"http://b.test/", "http://c.test/"}),
       GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
-      MakeClientRedirect(2, "http://d.test/"),
-      MakeServerRedirects(3, {"http://e.test/", "http://f.test/"}),
+      MakeClientRedirect("http://d.test/"),
+      MakeServerRedirects({"http://e.test/", "http://f.test/"}),
       GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.EndChain(GURL("http://g.test/"));
@@ -1136,7 +1145,7 @@ TEST(DIPSRedirectContextTest, TwoAppends_WithClientRedirect) {
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://g.test/"), HasLength(5)));
+                    HasFinalUrl("http://g.test/"), HasLength(5u)));
   EXPECT_THAT(chains[0].second,
               ElementsAre(AllOf(HasUrl("http://b.test/"),
                                 HasRedirectType(DIPSRedirectType::kServer)),
@@ -1154,14 +1163,15 @@ TEST(DIPSRedirectContextTest, OnlyClientRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"));
   ASSERT_EQ(chains.size(), 0u);
-  context.AppendCommitted(MakeClientRedirect(0, "http://b.test/"), {},
+  context.AppendCommitted(MakeClientRedirect("http://b.test/"), {},
                           GURL("http://c.test/"));
   ASSERT_EQ(chains.size(), 0u);
-  context.AppendCommitted(MakeClientRedirect(1, "http://c.test/"), {},
+  context.AppendCommitted(MakeClientRedirect("http://c.test/"), {},
                           GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.EndChain(GURL("http://d.test"));
@@ -1169,29 +1179,84 @@ TEST(DIPSRedirectContextTest, OnlyClientRedirects) {
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://d.test/"), HasLength(2)));
+                    HasFinalUrl("http://d.test/"), HasLength(2u)));
   EXPECT_THAT(chains[0].second,
               ElementsAre(HasUrl("http://b.test/"), HasUrl("http://c.test/")));
+}
+
+TEST(DIPSRedirectContextTest, OverflowMaxChain_TrimsFromFront) {
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL(),
+      /*redirect_prefix_count=*/0);
+  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://c.test/"));
+  for (size_t ind = 0; ind < kDIPSRedirectChainMax; ind++) {
+    std::string redirect_url =
+        base::StrCat({"http://", base::NumberToString(ind), ".test/"});
+    context.AppendCommitted(MakeClientRedirect(redirect_url), {},
+                            GURL("http://c.test/"));
+  }
+  // Each redirect was added to the chain.
+  ASSERT_EQ(context.size(), kDIPSRedirectChainMax);
+  ASSERT_EQ(chains.size(), 0u);
+
+  // The next redirect overflows the chain and evicts the first one.
+  context.AppendCommitted(MakeClientRedirect("http://b.test/"), {},
+                          GURL("http://c.test/"));
+  ASSERT_EQ(context.size(), kDIPSRedirectChainMax);
+  ASSERT_EQ(chains.size(), 1u);
+  context.EndChain(GURL("http://c.test/"));
+
+  // Expect two chains handled: one partial chain with the dropped redirect, and
+  // one with the other redirects.
+  ASSERT_EQ(chains.size(), 2u);
+  EXPECT_THAT(chains[0].first, AllOf(HasInitialUrl("http://a.test/"),
+                                     HasLength(kDIPSRedirectChainMax + 1)));
+  ASSERT_THAT(chains[0].second, SizeIs(1));
+  EXPECT_THAT(
+      chains[0].second.at(0),
+      AllOf(HasUrl("http://0.test/"),
+            HasRedirectType(DIPSRedirectType::kClient), HasChainIndex(0u)));
+
+  // DIPSRedirectChainInfo.length is computed from DIPSRedirectInfo.index, so it
+  // includes the length of the partial chains.
+  EXPECT_THAT(chains[1].first, AllOf(HasInitialUrl("http://a.test/"),
+                                     HasFinalUrl("http://c.test/"),
+                                     HasLength(kDIPSRedirectChainMax + 1)));
+  ASSERT_THAT(chains[1].second, SizeIs(kDIPSRedirectChainMax));
+  // Check that the first redirect in the chain is the second that was added in
+  // the setup.
+  EXPECT_THAT(
+      chains[1].second.at(0),
+      AllOf(HasUrl("http://1.test/"),
+            HasRedirectType(DIPSRedirectType::kClient), HasChainIndex(1u)));
+  // Check the last redirect in the full chain.
+  EXPECT_THAT(chains[1].second.back(),
+              AllOf(HasUrl("http://b.test/"),
+                    HasRedirectType(DIPSRedirectType::kClient),
+                    HasChainIndex(kDIPSRedirectChainMax)));
 }
 
 TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      MakeServerRedirects({"http://b.test/", "http://c.test/"}),
       GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.HandleUncommitted(
       GURL("http://d.test/"),
-      MakeServerRedirects(0, {"http://e.test/", "http://f.test/"}),
+      MakeServerRedirects({"http://e.test/", "http://f.test/"}),
       GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.AppendCommitted(GURL("http://h.test/"),
-                          MakeServerRedirects(0, {"http://i.test/"}),
+                          MakeServerRedirects({"http://i.test/"}),
                           GURL("http://j.test/"));
   ASSERT_EQ(chains.size(), 2u);
   context.EndChain(GURL("http://j.test/"));
@@ -1200,19 +1265,19 @@ TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
   // First, the uncommitted (middle) chain.
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://d.test/"),
-                    HasFinalUrl("http://g.test/"), HasLength(2)));
+                    HasFinalUrl("http://g.test/"), HasLength(2u)));
   EXPECT_THAT(chains[0].second,
               ElementsAre(HasUrl("http://e.test/"), HasUrl("http://f.test/")));
   // Then the initially-started chain.
   EXPECT_THAT(chains[1].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://h.test/"), HasLength(2)));
+                    HasFinalUrl("http://h.test/"), HasLength(2u)));
   EXPECT_THAT(chains[1].second,
               ElementsAre(HasUrl("http://b.test/"), HasUrl("http://c.test/")));
   // Then the last chain.
   EXPECT_THAT(chains[2].first,
               AllOf(HasInitialUrl("http://h.test/"),
-                    HasFinalUrl("http://j.test/"), HasLength(1)));
+                    HasFinalUrl("http://j.test/"), HasLength(1u)));
   EXPECT_THAT(chains[2].second, ElementsAre(HasUrl("http://i.test/")));
 }
 
@@ -1220,21 +1285,22 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      MakeServerRedirects({"http://b.test/", "http://c.test/"}),
       GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   // Uncommitted navigation:
   context.HandleUncommitted(
-      MakeClientRedirect(2, "http://d.test/"),
-      MakeServerRedirects(3, {"http://e.test/", "http://f.test/"}),
+      MakeClientRedirect("http://d.test/"),
+      MakeServerRedirects({"http://e.test/", "http://f.test/"}),
       GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 1u);
-  context.AppendCommitted(MakeClientRedirect(2, "http://h.test/"),
-                          MakeServerRedirects(3, {"http://i.test/"}),
+  context.AppendCommitted(MakeClientRedirect("http://h.test/"),
+                          MakeServerRedirects({"http://i.test/"}),
                           GURL("http://j.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.EndChain(GURL("http://j.test/"));
@@ -1245,7 +1311,7 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   // plus the uncommitted part (3 redirects, starting from d.test).
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://g.test/"), HasLength(5)));
+                    HasFinalUrl("http://g.test/"), HasLength(5u)));
   // But only the 3 uncommitted redirects are included in the vector.
   EXPECT_THAT(chains[0].second,
               ElementsAre(HasUrl("http://d.test/"), HasUrl("http://e.test/"),
@@ -1253,7 +1319,7 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   // Then the initially-started chain.
   EXPECT_THAT(chains[1].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://j.test/"), HasLength(4)));
+                    HasFinalUrl("http://j.test/"), HasLength(4u)));
   // Committed chains include all redirects in the vector.
   EXPECT_THAT(chains[1].second,
               ElementsAre(HasUrl("http://b.test/"), HasUrl("http://c.test/"),
@@ -1264,7 +1330,8 @@ TEST(DIPSRedirectContextTest, NoRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
 
   context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"));
@@ -1281,17 +1348,17 @@ TEST(DIPSRedirectContextTest, NoRedirects) {
 
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://b.test/"), HasLength(0)));
+                    HasFinalUrl("http://b.test/"), HasLength(0u)));
   EXPECT_THAT(chains[0].second, IsEmpty());
 
   EXPECT_THAT(chains[1].first,
               AllOf(HasInitialUrl("http://c.test/"),
-                    HasFinalUrl("http://d.test/"), HasLength(0)));
+                    HasFinalUrl("http://d.test/"), HasLength(0u)));
   EXPECT_THAT(chains[1].second, IsEmpty());
 
   EXPECT_THAT(chains[2].first,
               AllOf(HasInitialUrl("http://b.test/"),
-                    HasFinalUrl("http://e.test/"), HasLength(0)));
+                    HasFinalUrl("http://e.test/"), HasLength(0u)));
   EXPECT_THAT(chains[2].second, IsEmpty());
 }
 
@@ -1299,12 +1366,13 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      GURL());
+      GURL(),
+      /*redirect_prefix_count=*/0);
 
   context.AppendCommitted(
       GURL("http://a.test/"),
       MakeServerRedirects(
-          0, {"http://b.test/", "http://c.test/", "http://d.test/"},
+          {"http://b.test/", "http://c.test/", "http://d.test/"},
           SiteDataAccessType::kNone),
       GURL("http://e.test/"));
 
@@ -1324,8 +1392,8 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
                                            CookieOperation::kRead));
 
   context.AppendCommitted(
-      MakeClientRedirect(3, "http://e.test/", SiteDataAccessType::kNone),
-      MakeServerRedirects(4, {"http://f.test/", "http://g.test/"},
+      MakeClientRedirect("http://e.test/", SiteDataAccessType::kNone),
+      MakeServerRedirects({"http://f.test/", "http://g.test/"},
                           SiteDataAccessType::kRead),
       GURL("http://h.test/"));
 
@@ -1334,8 +1402,8 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
                                           CookieOperation::kChange));
 
   context.AppendCommitted(
-      MakeClientRedirect(6, "http://h.test/", SiteDataAccessType::kNone),
-      MakeServerRedirects(7, {"http://i.test/"}, SiteDataAccessType::kRead),
+      MakeClientRedirect("http://h.test/", SiteDataAccessType::kNone),
+      MakeServerRedirects({"http://i.test/"}, SiteDataAccessType::kRead),
       GURL("http://j.test/"));
 
   // Can't modify h.test since i.test already has a known cookie access.
@@ -1347,7 +1415,7 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://j.test/"), HasLength(8)));
+                    HasFinalUrl("http://j.test/"), HasLength(8u)));
   EXPECT_THAT(
       chains[0].second,
       ElementsAre(AllOf(HasUrl("http://b.test/"),

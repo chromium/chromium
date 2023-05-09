@@ -150,9 +150,10 @@ std::string FormatURL(const GURL& url) {
 
 void AppendRedirect(std::vector<std::string>* redirects,
                     const DIPSRedirectInfo& redirect,
-                    const DIPSRedirectChainInfo& chain) {
+                    const DIPSRedirectChainInfo& chain,
+                    size_t redirect_index) {
   redirects->push_back(base::StringPrintf(
-      "[%d/%d] %s -> %s (%s) -> %s", redirect.index + 1, chain.length,
+      "[%zu/%zu] %s -> %s (%s) -> %s", redirect_index + 1, chain.length,
       FormatURL(chain.initial_url).c_str(), FormatURL(redirect.url).c_str(),
       SiteDataAccessTypeToString(redirect.access_type).data(),
       FormatURL(chain.final_url).c_str()));
@@ -161,8 +162,10 @@ void AppendRedirect(std::vector<std::string>* redirects,
 void AppendRedirects(std::vector<std::string>* vec,
                      std::vector<DIPSRedirectInfoPtr> redirects,
                      DIPSRedirectChainInfoPtr chain) {
+  size_t redirect_index = chain->length - redirects.size();
   for (const auto& redirect : redirects) {
-    AppendRedirect(vec, *redirect, *chain);
+    AppendRedirect(vec, *redirect, *chain, redirect_index);
+    redirect_index++;
   }
 }
 

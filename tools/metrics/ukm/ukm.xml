@@ -7455,6 +7455,12 @@ be describing additional metrics about the same event.
       the end of the chain.
     </summary>
   </metric>
+  <metric name="IsPartialRedirectChain">
+    <summary>
+      True if the chain is missing the end URL. Any comparisons to the final
+      site are invalid for this redirect.
+    </summary>
+  </metric>
   <metric name="RedirectAndFinalSiteSame" enum="BooleanSameSite">
     <summary>
       True when the redirect site is the same as the site at the end of the

@@ -70,6 +70,7 @@ RedirectChainObserver::~RedirectChainObserver() = default;
 
 void RedirectChainObserver::OnChainHandled(
     const DIPSRedirectChainInfoPtr& chain) {
+  handle_call_count++;
   if (chain->final_url == final_url_) {
     run_loop_.Quit();
   }

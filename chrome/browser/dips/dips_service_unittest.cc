@@ -13,10 +13,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_file_util.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_features.h"
+#include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_test_utils.h"
@@ -29,8 +31,10 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 class DIPSServiceTest : public testing::Test {
  protected:
@@ -224,10 +228,61 @@ class DIPSServiceStateRemovalTest : public testing::Test {
 
  private:
   base::SimpleTestClock clock_;
+
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<content_settings::CookieSettings> cookie_settings_ = nullptr;
   raw_ptr<DIPSService> service_ = nullptr;
 };
+
+TEST_F(DIPSServiceStateRemovalTest,
+       CompleteChain_NotifiesRedirectChainObservers) {
+  GetService()->SetStorageClockForTesting(base::DefaultClock::GetInstance());
+  auto observer = std::make_unique<RedirectChainObserver>(
+      GetService(), /*final_url=*/GURL("http://c.test/"));
+
+  std::vector<DIPSRedirectInfoPtr> complete_redirects;
+  complete_redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      /*url=*/GURL("http://b.test/"),
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*source_id=*/ukm::SourceId(),
+      /*time=*/Now()));
+  auto complete_chain = std::make_unique<DIPSRedirectChainInfo>(
+      /*initial_url=*/GURL("http://a.test/"),
+      /*final_url=*/GURL("http://c.test/"),
+      /*length=*/1, /*is_partial_chain=*/false);
+
+  GetService()->HandleRedirectChain(std::move(complete_redirects),
+                                    std::move(complete_chain));
+  WaitOnStorage();
+  // Expect one call to Observer.OnChainHandled when handling a complete chain.
+  EXPECT_EQ(observer->handle_call_count, 1u);
+}
+
+TEST_F(DIPSServiceStateRemovalTest,
+       PartialChain_DoesNotNotifyRedirectChainObservers) {
+  GetService()->SetStorageClockForTesting(base::DefaultClock::GetInstance());
+  auto observer = std::make_unique<RedirectChainObserver>(
+      GetService(), /*final_url=*/GURL("http://c.test/"));
+
+  std::vector<DIPSRedirectInfoPtr> partial_redirects;
+  partial_redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      /*url=*/GURL("http://b.test/"),
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*source_id=*/ukm::SourceId(),
+      /*time=*/Now()));
+  auto partial_chain = std::make_unique<DIPSRedirectChainInfo>(
+      /*initial_url=*/GURL("http://a.test/"),
+      /*final_url=*/GURL("http://c.test/"),
+      /*length=*/1, /*is_partial_chain=*/true);
+
+  GetService()->HandleRedirectChain(std::move(partial_redirects),
+                                    std::move(partial_chain));
+  WaitOnStorage();
+  // Expect no calls to Observer.OnChainHandled when handling a partial chain.
+  EXPECT_EQ(observer->handle_call_count, 0u);
+}
 
 // NOTE: The use of a MockBrowsingDataRemoverDelegate in this test fixture
 // means that when DIPS deletion is enabled, the row for 'url' is not actually

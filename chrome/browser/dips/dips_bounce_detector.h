@@ -63,13 +63,19 @@ class ClientBounceDetectionState {
 // redirect connecting the navigation to the currently-committed chain.
 using DIPSNavigationStart = absl::variant<GURL, DIPSRedirectInfoPtr>;
 
+// In case of a client-side redirect loop, we need to impose a limit on the
+// stored redirect chain to avoid boundless memory use. Past this limit,
+// redirects are trimmed from the front of the list.
+constexpr size_t kDIPSRedirectChainMax = 1000;
+
 // A redirect-chain-in-progress. It grows by calls to Append() and restarts by
 // calls to EndChain().
 class DIPSRedirectContext {
  public:
   DIPSRedirectContext(DIPSRedirectChainHandler handler,
                       DIPSIssueHandler issue_handler,
-                      const GURL& initial_url);
+                      const GURL& initial_url,
+                      size_t redirect_prefix_count);
   ~DIPSRedirectContext();
 
   // Immediately calls the `DIPSRedirectChainHandler` for the uncommitted
@@ -85,6 +91,11 @@ class DIPSRedirectContext {
   void AppendCommitted(DIPSNavigationStart navigation_start,
                        std::vector<DIPSRedirectInfoPtr> server_redirects,
                        const GURL& final_url);
+
+  // Trims |trim_count| redirect from the front of the in-progress redirect
+  // chain. Passes the redirects as partial chains to the
+  // `DIPSRedirectChainHandler`.
+  void TrimAndHandleRedirects(size_t trim_count);
 
   // Terminates the in-progress redirect chain, ending it with `final_url`, and
   // parsing it to the `DIPSRedirectChainHandler` iff the chain is valid. It
@@ -105,20 +116,31 @@ class DIPSRedirectContext {
     handler_ = handler;
   }
 
+  size_t GetRedirectChainLength() {
+    return redirects_.size() + redirect_prefix_count_;
+  }
+
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
   void AppendServerRedirects(std::vector<DIPSRedirectInfoPtr> server_redirects);
+  void TrimRedirectsFromFront();
 
   DIPSRedirectChainHandler handler_;
   DIPSIssueHandler issue_handler_;
   // Represents the start of a chain and also indicates the presence of a valid
   // chain.
   GURL initial_url_;
+  // TODO(amaliev): Make redirects_ a circular queue to handle the memory bound
+  // more gracefully.
   std::vector<DIPSRedirectInfoPtr> redirects_;
   std::set<std::string> redirectors_;
   // The index of the last redirect to have a known cookie access. When adding
   // late cookie accesses, we only consider redirects from this offset onwards.
   size_t update_offset_ = 0;
+  // The number of redirects preceding this chain, that should be counted toward
+  // this chain's total length. Includes both committed redirects (for an
+  // uncommitted chain) and trimmed redirects.
+  size_t redirect_prefix_count_ = 0;
 };
 
 // A simplified interface to WebContents and DIPSService that can be faked in
@@ -218,7 +240,7 @@ class DIPSBounceDetector {
   // Use the passed handler instead of
   // DIPSBounceDetectorDelegate::HandleRedirect().
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
-    redirect_context_.SetRedirectChainHandlerForTesting(handler);
+    committed_redirect_context_.SetRedirectChainHandlerForTesting(handler);
   }
   // Makes a call to process the current chain on
   // `client_bounce_detection_timer_`'s timeout.
@@ -235,7 +257,7 @@ class DIPSBounceDetector {
   raw_ptr<const base::Clock> clock_;
   raw_ptr<DIPSBounceDetectorDelegate> delegate_;
   absl::optional<ClientBounceDetectionState> client_detection_state_;
-  DIPSRedirectContext redirect_context_;
+  DIPSRedirectContext committed_redirect_context_;
   base::RetainingOneShotTimer client_bounce_detection_timer_;
 };
 

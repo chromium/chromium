@@ -76,6 +76,8 @@ class RedirectChainObserver : public DIPSService::Observer {
 
   void Wait();
 
+  size_t handle_call_count = 0;
+
  private:
   GURL final_url_;
   base::RunLoop run_loop_;

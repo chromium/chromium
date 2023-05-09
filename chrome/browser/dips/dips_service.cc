@@ -295,6 +295,7 @@ void DIPSService::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain) {
   if (redirects.empty()) {
+    DCHECK(!chain->is_partial_chain);
     for (auto& observer : observers_) {
       observer.OnChainHandled(chain);
     }
@@ -319,14 +320,17 @@ void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
   DIPSRedirectInfo* redirect = redirects[index].get();
   // If there's any user interaction recorded in the DIPS DB, that's engagement.
   redirect->has_interaction = url_state.user_interaction_times().has_value();
+
   HandleRedirect(
       *redirect, *chain,
       base::BindRepeating(&DIPSService::RecordBounce, base::Unretained(this)));
 
   if (index + 1 >= redirects.size()) {
     // All redirects handled.
-    for (auto& observer : observers_) {
-      observer.OnChainHandled(chain);
+    if (!chain->is_partial_chain) {
+      for (auto& observer : observers_) {
+        observer.OnChainHandled(chain);
+      }
     }
     return;
   }
@@ -368,8 +372,7 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
   const std::string site = GetSiteForDIPS(redirect.url);
   bool initial_site_same = (site == chain.initial_site);
   bool final_site_same = (site == chain.final_site);
-  DCHECK_LE(0, redirect.index);
-  DCHECK_LT(redirect.index, chain.length);
+  DCHECK_LT(redirect.chain_index, chain.length);
 
   if (base::FeatureList::IsEnabled(kDipsUkm)) {
     ukm::builders::DIPS_Redirect(redirect.source_id)
@@ -379,8 +382,9 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
         .SetRedirectAndInitialSiteSame(initial_site_same)
         .SetRedirectAndFinalSiteSame(final_site_same)
         .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
-        .SetRedirectChainIndex(redirect.index)
+        .SetRedirectChainIndex(redirect.chain_index)
         .SetRedirectChainLength(chain.length)
+        .SetIsPartialRedirectChain(chain.is_partial_chain)
         .SetClientBounceDelay(
             BucketizeBounceDelay(redirect.client_bounce_delay))
         .SetHasStickyActivation(redirect.has_sticky_activation)
