@@ -282,6 +282,7 @@ namespace autotestPrivate {
     Unavailable,
     Stopped,
     CreatingLogFile,
+    PreLaunched,
     Starting,
     Running,
     Terminating

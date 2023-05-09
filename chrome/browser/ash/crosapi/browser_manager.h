@@ -419,7 +419,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Lacros-chrome is creating a new log file to log to.
     CREATING_LOG_FILE,
 
-    // Lacros-chrome is launching.
+    // Lacros-chrome has been pre-launched at login screen, and it's waiting to
+    // be unblocked post-login.
+    PRE_LAUNCHED,
+
+    // Lacros-chrome is launching, or resuming a pre-launched instance.
     STARTING,
 
     // Mojo connection to lacros-chrome is established so, it's in

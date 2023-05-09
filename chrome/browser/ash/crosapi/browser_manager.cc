@@ -1222,7 +1222,7 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
     SetState(State::UNAVAILABLE);
     return;
   }
-  SetState(State::STARTING);
+  SetState(pass_post_login_params ? State::PRE_LAUNCHED : State::STARTING);
   LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
   channel.RemoteProcessLaunchAttempted();
 }
@@ -1314,7 +1314,8 @@ void BrowserManager::HandleLacrosChromeTermination(base::TimeDelta timeout) {
     return;
   }
 
-  DCHECK(state_ == State::STARTING || state_ == State::RUNNING);
+  DCHECK(state_ == State::PRE_LAUNCHED || state_ == State::STARTING ||
+         state_ == State::RUNNING);
   DCHECK(lacros_process_.IsValid());
 
   browser_service_.reset();
@@ -1483,6 +1484,7 @@ void BrowserManager::ResumeLaunch() {
   DCHECK_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);
   DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+  DCHECK_EQ(state_, State::PRE_LAUNCHED);
 
   // Ensure this isn't run multiple times.
   ash::SessionManagerClient::Get()->RemoveObserver(this);
@@ -1518,6 +1520,9 @@ void BrowserManager::ResumeLaunch() {
           mojom::InitialBrowserAction::kDoNotOpenWindow));
   DPCHECK(write_success);
   postlogin_pipe_fd_.reset();
+
+  // Lacros launch is unblocked now.
+  SetState(State::STARTING);
 
   // Post `DryRunToCollectUMA()` to send UMA stats about sizes of files/dirs
   // inside the profile data directory.
@@ -1765,6 +1770,7 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
       pending_actions_.PushOrCancel(std::move(action));
       return;
     case State::CREATING_LOG_FILE:
+    case State::PRE_LAUNCHED:
     case State::STARTING:
       LOG(WARNING) << "lacros-chrome is in the process of launching";
       pending_actions_.PushOrCancel(std::move(action));
