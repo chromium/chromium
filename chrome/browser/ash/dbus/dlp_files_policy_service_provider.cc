@@ -57,6 +57,8 @@ policy::DlpRulesManager::Component MapProtoToPolicyComponent(
       return policy::DlpRulesManager::Component::kUsb;
     case ::dlp::DlpComponent::GOOGLE_DRIVE:
       return policy::DlpRulesManager::Component::kDrive;
+    case ::dlp::DlpComponent::MICROSOFT_ONEDRIVE:  // TODO(b/280575394): Handle
+                                                   // OneDrive properly.
     case ::dlp::DlpComponent::UNKNOWN_COMPONENT:
     case ::dlp::DlpComponent::SYSTEM:
       return policy::DlpRulesManager::Component::kUnknownComponent;
