@@ -327,6 +327,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   if (src.GetDevToolsId().has_value()) {
     dest->devtools_request_id = src.GetDevToolsId().value().Ascii();
+    recordreplay::Assert("[RUN-1725-1903] PopulateResourceRequest %s", dest->devtools_request_id->c_str());
   }
 
   if (src.GetDevToolsStackId().has_value()) {
