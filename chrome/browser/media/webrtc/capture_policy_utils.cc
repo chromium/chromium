@@ -123,8 +123,7 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
   return AllowedScreenCaptureLevel::kDisallowed;
 }
 
-bool IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
-    content::BrowserContext* context) {
+bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
@@ -159,9 +158,8 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
 #endif
 }
 
-bool IsGetDisplayMediaSetSelectAllScreensAllowed(
-    content::BrowserContext* context,
-    const GURL& url) {
+bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
+                                 const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {

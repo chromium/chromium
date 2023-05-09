@@ -947,8 +947,8 @@ class MediaStreamManager::DeviceRequest {
                                               video_type_, is_secure);
   }
 
-  // This function checks if the request is for the getDisplayMediaSet API.
-  bool IsGetDisplayMediaSet() const {
+  // This function checks if the request is for the getAllScreensMedia API.
+  bool IsGetAllScreensMedia() const {
     return stream_controls_.video.stream_type ==
            blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
   }
@@ -1078,7 +1078,7 @@ class MediaStreamManager::DeviceRequest {
   }
 
   void NotifyMultiCaptureStateChanged(MediaRequestState new_state) {
-    if (!IsGetDisplayMediaSet()) {
+    if (!IsGetAllScreensMedia()) {
       return;
     }
     switch (new_state) {
@@ -2535,7 +2535,7 @@ void MediaStreamManager::DeleteRequest(
   SendLogMessage(base::StringPrintf("DeleteRequest([label=%s])",
                                     request_it->first.c_str()));
 #if BUILDFLAG(IS_CHROMEOS)
-  if (request_it->second->IsGetDisplayMediaSet()) {
+  if (request_it->second->IsGetAllScreensMedia()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(NotifyMultiCaptureStopped, request_it->first));
@@ -3000,7 +3000,7 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
       request->stream_devices_set.Clone();
 
-  if (request->IsGetDisplayMediaSet()) {
+  if (request->IsGetAllScreensMedia()) {
     PanTiltZoomPermissionChecked(label, MediaStreamDevice(),
                                  /*pan_tilt_zoom_allowed=*/false);
     return;
@@ -3078,7 +3078,7 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
 
   request->PanTiltZoomPermissionChecked(label, pan_tilt_zoom_allowed);
 
-  if (request->IsGetDisplayMediaSet()) {
+  if (request->IsGetAllScreensMedia()) {
     return;
   }
 

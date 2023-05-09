@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
   TabStripModel* current_tab_strip_model = current_browser->tab_strip_model();
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
-  EXPECT_FALSE(capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
+  EXPECT_FALSE(capture_policy::IsGetAllScreensMediaAllowed(
       current_web_contents->GetBrowserContext(), GURL("")));
 }
 
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
   TabStripModel* current_tab_strip_model = current_browser->tab_strip_model();
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
-  EXPECT_FALSE(capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
+  EXPECT_FALSE(capture_policy::IsGetAllScreensMediaAllowed(
       current_web_contents->GetBrowserContext(), GURL("")));
 }
 
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
   const bool multi_capture_allowed =
-      capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
+      capture_policy::IsGetAllScreensMediaAllowed(
           current_web_contents->GetBrowserContext(),
           GURL("https://www.chromium.org"));
   EXPECT_EQ(multi_capture_allowed, MULTI_CAPTURE_SUPPORTED_ON_PLATFORM);
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
   const bool multi_capture_allowed =
-      capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
+      capture_policy::IsGetAllScreensMediaAllowed(
           current_web_contents->GetBrowserContext(),
           GURL("https://sub.chromium.org"));
   EXPECT_EQ(multi_capture_allowed, MULTI_CAPTURE_SUPPORTED_ON_PLATFORM);
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
   TabStripModel* current_tab_strip_model = current_browser->tab_strip_model();
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
-  EXPECT_FALSE(capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
+  EXPECT_FALSE(capture_policy::IsGetAllScreensMediaAllowed(
       current_web_contents->GetBrowserContext(),
       GURL("https://www.chromium.org")));
 }
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
   const bool multi_capture_allowed =
-      capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
+      capture_policy::IsGetAllScreensMediaAllowed(
           current_web_contents->GetBrowserContext(),
           GURL("https://www.chromium.org"));
   EXPECT_EQ(multi_capture_allowed, MULTI_CAPTURE_SUPPORTED_ON_PLATFORM);
@@ -193,10 +193,9 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
 
-  bool multi_capture_allowed =
-      capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
-          current_web_contents->GetBrowserContext(),
-          GURL("https://www.chromium.org"));
+  bool multi_capture_allowed = capture_policy::IsGetAllScreensMediaAllowed(
+      current_web_contents->GetBrowserContext(),
+      GURL("https://www.chromium.org"));
   EXPECT_FALSE(multi_capture_allowed);
 
   policies.Clear();
@@ -211,10 +210,9 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop().RunUntilIdle();
 
-  multi_capture_allowed =
-      capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
-          current_web_contents->GetBrowserContext(),
-          GURL("https://www.chromium.org"));
+  multi_capture_allowed = capture_policy::IsGetAllScreensMediaAllowed(
+      current_web_contents->GetBrowserContext(),
+      GURL("https://www.chromium.org"));
   EXPECT_EQ(multi_capture_allowed, MULTI_CAPTURE_SUPPORTED_ON_PLATFORM);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

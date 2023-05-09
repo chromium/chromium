@@ -78,9 +78,9 @@ MediaStreamComponent* MakeMockVideoComponent() {
 }
 
 // This test checks if |MediaStreamSet| calls the initialized callback if used
-// for getDisplayMediaSet with a single stream requested, i.e. one descriptor
+// for getAllScreensMedia with a single stream requested, i.e. one descriptor
 // with one video source passed in the constructor.
-TEST_F(MediaStreamSetTest, GetDisplayMediaSetSingleMediaStreamInitialized) {
+TEST_F(MediaStreamSetTest, GetAllScreensMediaSingleMediaStreamInitialized) {
   V8TestingScope v8_scope;
   MediaStreamComponentVector audio_component_vector;
   MediaStreamComponentVector video_component_vector = {
@@ -92,7 +92,7 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSetSingleMediaStreamInitialized) {
   base::RunLoop run_loop;
   media_stream_set_ = MakeGarbageCollected<MediaStreamSet>(
       v8_scope.GetExecutionContext(), descriptors,
-      UserMediaRequestType::kDisplayMediaSet,
+      UserMediaRequestType::kAllScreensMedia,
       base::BindLambdaForTesting([&run_loop](MediaStreamVector streams) {
         EXPECT_EQ(streams.size(), 1u);
         run_loop.Quit();
@@ -101,9 +101,9 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSetSingleMediaStreamInitialized) {
 }
 
 // This test checks if |MediaStreamSet| calls the initialized callback if used
-// for getDisplayMediaSet with a multiple streams requested, i.e.
+// for getAllScreensMedia with a multiple streams requested, i.e.
 // multiple descriptors with one video source each passed in the constructor.
-TEST_F(MediaStreamSetTest, GetDisplayMediaSetMultipleMediaStreamsInitialized) {
+TEST_F(MediaStreamSetTest, GetAllScreensMediaMultipleMediaStreamsInitialized) {
   V8TestingScope v8_scope;
   MediaStreamComponentVector audio_component_vector;
   MediaStreamComponentVector video_component_vector = {
@@ -116,7 +116,7 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSetMultipleMediaStreamsInitialized) {
   base::RunLoop run_loop;
   media_stream_set_ = MakeGarbageCollected<MediaStreamSet>(
       v8_scope.GetExecutionContext(), descriptors,
-      UserMediaRequestType::kDisplayMediaSet,
+      UserMediaRequestType::kAllScreensMedia,
       base::BindLambdaForTesting([&run_loop](MediaStreamVector streams) {
         EXPECT_EQ(streams.size(), 4u);
         run_loop.Quit();
@@ -125,15 +125,15 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSetMultipleMediaStreamsInitialized) {
 }
 
 // This test checks if |MediaStreamSet| calls the initialized callback if used
-// for getDisplayMediaSet with a no streams requested, i.e.
+// for getAllScreensMedia with a no streams requested, i.e.
 // an empty descriptors list.
-TEST_F(MediaStreamSetTest, GetDisplayMediaSetNoMediaStreamInitialized) {
+TEST_F(MediaStreamSetTest, GetAllScreensMediaNoMediaStreamInitialized) {
   V8TestingScope v8_scope;
   MediaStreamDescriptorVector descriptors;
   base::RunLoop run_loop;
   media_stream_set_ = MakeGarbageCollected<MediaStreamSet>(
       v8_scope.GetExecutionContext(), descriptors,
-      UserMediaRequestType::kDisplayMediaSet,
+      UserMediaRequestType::kAllScreensMedia,
       base::BindLambdaForTesting([&run_loop](MediaStreamVector streams) {
         EXPECT_TRUE(streams.empty());
         run_loop.Quit();

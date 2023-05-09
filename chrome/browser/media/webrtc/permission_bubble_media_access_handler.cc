@@ -326,7 +326,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
   }
 
   // At most one stream is expected as this function is not used with the
-  // getDisplayMediaSet API (only used with getUserMedia).
+  // getAllScreensMedia API (only used with getUserMedia).
   DCHECK_LE(stream_devices_set.stream_devices.size(), 1u);
   blink::mojom::StreamDevices devices;
   if (!stream_devices_set.stream_devices.empty()) {

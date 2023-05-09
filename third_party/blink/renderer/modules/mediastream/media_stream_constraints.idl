@@ -39,7 +39,7 @@ dictionary DisplayMediaStreamOptions {
     // https://wicg.github.io/prefer-current-tab/#prefer-current-tab
     boolean preferCurrentTab = false;
     [
-      RuntimeEnabled = GetDisplayMediaSetAutoSelectAllScreens
+      RuntimeEnabled = GetAllScreensMedia
     ] boolean autoSelectAllScreens = false;
 
     // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-controller

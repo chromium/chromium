@@ -448,7 +448,7 @@ UserMediaRequest* UserMediaRequest::Create(
       }
     }
   } else if (media_type == UserMediaRequestType::kDisplayMedia ||
-             media_type == UserMediaRequestType::kDisplayMediaSet) {
+             media_type == UserMediaRequestType::kAllScreensMedia) {
     // https://w3c.github.io/mediacapture-screen-share/#mediadevices-additions
     // MediaDevices Additions
     // The user agent MUST reject audio-only requests.
@@ -462,7 +462,7 @@ UserMediaRequest* UserMediaRequest::Create(
     //   newly created TypeError.
     // 3. Let requestedMediaTypes be the set of media types in constraints with
     // either a dictionary value or a value of true.
-    if (media_type == UserMediaRequestType::kDisplayMediaSet) {
+    if (media_type == UserMediaRequestType::kAllScreensMedia) {
       if (!audio.IsNull()) {
         exception_state.ThrowTypeError("Audio requests are not supported");
         return nullptr;
@@ -640,7 +640,7 @@ MediaStreamType UserMediaRequest::AudioMediaStreamType() const {
   if (MediaRequestType() == UserMediaRequestType::kDisplayMedia) {
     return MediaStreamType::DISPLAY_AUDIO_CAPTURE;
   }
-  if (MediaRequestType() == UserMediaRequestType::kDisplayMediaSet) {
+  if (MediaRequestType() == UserMediaRequestType::kAllScreensMedia) {
     return MediaStreamType::NO_SERVICE;
   }
   DCHECK_EQ(UserMediaRequestType::kUserMedia, MediaRequestType());
@@ -674,7 +674,7 @@ MediaStreamType UserMediaRequest::VideoMediaStreamType() const {
                ? MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB
                : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
   }
-  if (MediaRequestType() == UserMediaRequestType::kDisplayMediaSet) {
+  if (MediaRequestType() == UserMediaRequestType::kAllScreensMedia) {
     DCHECK(!should_prefer_current_tab());
     return MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
   }
@@ -788,7 +788,7 @@ void UserMediaRequest::OnMediaStreamsInitialized(MediaStreamVector streams) {
         PeerConnectionTracker::From(*window).TrackGetUserMediaSuccess(this,
                                                                       stream);
       } else if (media_type_ == UserMediaRequestType::kDisplayMedia ||
-                 media_type_ == UserMediaRequestType::kDisplayMediaSet) {
+                 media_type_ == UserMediaRequestType::kAllScreensMedia) {
         PeerConnectionTracker::From(*window).TrackGetDisplayMediaSuccess(
             this, stream);
       } else {
@@ -814,7 +814,7 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
       PeerConnectionTracker::From(*window).TrackGetUserMediaFailure(
           this, "OverConstrainedError", message);
     } else if (media_type_ == UserMediaRequestType::kDisplayMedia ||
-               media_type_ == UserMediaRequestType::kDisplayMediaSet) {
+               media_type_ == UserMediaRequestType::kAllScreensMedia) {
       PeerConnectionTracker::From(*window).TrackGetDisplayMediaFailure(
           this, "OverConstrainedError", message);
     } else {
@@ -882,7 +882,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       PeerConnectionTracker::From(*window).TrackGetUserMediaFailure(
           this, DOMException::GetErrorName(exception_code), message);
     } else if (media_type_ == UserMediaRequestType::kDisplayMedia ||
-               media_type_ == UserMediaRequestType::kDisplayMediaSet) {
+               media_type_ == UserMediaRequestType::kAllScreensMedia) {
       PeerConnectionTracker::From(*window).TrackGetDisplayMediaFailure(
           this, DOMException::GetErrorName(exception_code), message);
     } else {

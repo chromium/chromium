@@ -80,8 +80,8 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
   void OnSuccess(const MediaStreamVector& streams,
                  CaptureController* capture_controller) override {
-    if (media_type_ == UserMediaRequestType::kDisplayMediaSet) {
-      OnSuccessGetDisplayMediaSet(streams);
+    if (media_type_ == UserMediaRequestType::kAllScreensMedia) {
+      OnSuccessGetAllScreensMedia(streams);
       return;
     }
 
@@ -127,9 +127,9 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
   }
 
  private:
-  void OnSuccessGetDisplayMediaSet(const MediaStreamVector& streams) {
+  void OnSuccessGetAllScreensMedia(const MediaStreamVector& streams) {
     DCHECK(!streams.empty());
-    DCHECK_EQ(UserMediaRequestType::kDisplayMediaSet, media_type_);
+    DCHECK_EQ(UserMediaRequestType::kAllScreensMedia, media_type_);
     resolver_->Resolve(streams);
   }
 
@@ -528,33 +528,8 @@ ScriptPromise MediaDevices::getAllScreensMedia(
   constraints->setVideo(
       MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
   constraints->setAutoSelectAllScreens(true);
-  return SendUserMediaRequest(UserMediaRequestType::kDisplayMediaSet, resolver,
+  return SendUserMediaRequest(UserMediaRequestType::kAllScreensMedia, resolver,
                               constraints, exception_state);
-}
-
-ScriptPromise MediaDevices::getDisplayMediaSet(
-    ScriptState* script_state,
-    const DisplayMediaStreamOptions* options,
-    ExceptionState& exception_state) {
-  // This timeout of base::Seconds(6) is an initial value and based on the data
-  // in Media.MediaDevices.GetDisplayMediaSet.Latency, it should be iterated
-  // upon.
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
-      script_state, "Media.MediaDevices.GetDisplayMediaSet", base::Seconds(6));
-
-  ExecutionContext* const context = GetExecutionContext();
-  if (!context) {
-    resolver->RecordAndThrowDOMException(
-        exception_state, DOMExceptionCode::kInvalidStateError,
-        "No media device client available; is this a detached window?",
-        UserMediaRequestResult::kContextDestroyed);
-    return ScriptPromise();
-  }
-
-  return SendUserMediaRequest(UserMediaRequestType::kDisplayMediaSet, resolver,
-                              ToMediaStreamConstraints(options),
-                              exception_state);
 }
 
 ScriptPromise MediaDevices::getDisplayMedia(

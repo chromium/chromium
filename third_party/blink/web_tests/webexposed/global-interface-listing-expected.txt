@@ -5803,7 +5803,6 @@ interface MediaDevices : EventTarget
     method enumerateDevices
     method getAllScreensMedia
     method getDisplayMedia
-    method getDisplayMediaSet
     method getSupportedConstraints
     method getUserMedia
     method setCaptureHandleConfig

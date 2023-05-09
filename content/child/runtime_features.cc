@@ -323,9 +323,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
     {wf::EnableRemoveMobileViewportDoubleTap,
      raw_ref(features::kRemoveMobileViewportDoubleTap)},
-    {wf::EnableGetDisplayMediaSet, raw_ref(features::kGetDisplayMediaSet)},
-    {wf::EnableGetDisplayMediaSetAutoSelectAllScreens,
-     raw_ref(features::kGetDisplayMediaSetAutoSelectAllScreens)},
     {wf::EnableServiceWorkerBypassFetchHandler,
      raw_ref(features::kServiceWorkerBypassFetchHandler)},
   };

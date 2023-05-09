@@ -117,7 +117,7 @@ void MediaStreamDeviceObserver::OnDeviceChanged(
     // time as the underlying media device is unplugged from the system.
     return;
   }
-  // OnDeviceChanged cannot only happen in combination with getDisplayMediaSet,
+  // OnDeviceChanged cannot only happen in combination with getAllScreensMedia,
   // which is the only API that handles multiple streams at once.
   DCHECK_EQ(1u, it->value.size());
 
@@ -197,7 +197,7 @@ void MediaStreamDeviceObserver::OnDeviceCaptureHandleChange(
     return;
   }
   // OnDeviceCaptureHandleChange cannot only happen in combination with
-  // getDisplayMediaSet, which is the only API that handles multiple streams
+  // getAllScreensMedia, which is the only API that handles multiple streams
   // at once.
   DCHECK_EQ(1u, it->value.size());
 

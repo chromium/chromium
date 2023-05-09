@@ -90931,7 +90931,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="VideoCaptureStream"/>
   <int value="8" label="GetDisplayMedia"/>
   <int value="9" label="OBSOLETE_GetCurrentBrowsingContextMedia"/>
-  <int value="10" label="GetDisplayMediaSet"/>
+  <int value="10" label="OBSOLETE_GetDisplayMediaSet"/>
+  <int value="11" label="GetAllScreensMedia"/>
 </enum>
 
 <enum name="RTCQuicStreamReadIntoResult">

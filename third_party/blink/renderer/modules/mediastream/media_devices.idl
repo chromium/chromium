@@ -30,11 +30,6 @@
     getDisplayMedia(optional DisplayMediaStreamOptions constraints = {});
 
     [
-      RuntimeEnabled = GetDisplayMediaSet, CallWith = ScriptState, RaisesException
-    ] Promise<sequence<MediaStream>>
-    getDisplayMediaSet(optional DisplayMediaStreamOptions constraints = {});
-
-    [
       RuntimeEnabled = GetAllScreensMedia, CallWith = ScriptState, RaisesException
     ] Promise<sequence<MediaStream>>
     getAllScreensMedia();

@@ -670,10 +670,9 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Check if applications whose origin is |origin| are allowed to perform
   // all-screens-auto-selection, which allows automatic capturing of all
-  // screens with the getDisplayMediaSet API.
-  virtual bool IsGetDisplayMediaSetSelectAllScreensAllowed(
-      content::BrowserContext* context,
-      const url::Origin& origin);
+  // screens with the getAllScreensMedia API.
+  virtual bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
+                                           const url::Origin& origin);
 
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,

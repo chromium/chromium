@@ -533,17 +533,6 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
              "NetworkQualityEstimatorWebHoldback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the getDisplayMediaSet API for capturing multiple screens at once.
-BASE_FEATURE(kGetDisplayMediaSet,
-             "GetDisplayMediaSet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables auto selection of all screens in combination with the
-// getDisplayMediaSet API.
-BASE_FEATURE(kGetDisplayMediaSetAutoSelectAllScreens,
-             "GetDisplayMediaSetAutoSelectAllScreens",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Determines if an extra brand version pair containing possibly escaped double
 // quotes and escaped backslashed should be added to the Sec-CH-UA header
 // (activated by kUserAgentClientHint)

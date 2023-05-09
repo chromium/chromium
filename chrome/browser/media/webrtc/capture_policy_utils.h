@@ -61,12 +61,10 @@ void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
 void ShowCaptureTerminatedDialog(content::WebContents* contents);
 
 // TODO(crbug.com/1342069): Use Origin instead of GURL.
-bool IsGetDisplayMediaSetSelectAllScreensAllowed(
-    content::BrowserContext* context,
-    const GURL& url);
+bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
+                                 const GURL& url);
 
-bool IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
-    content::BrowserContext* context);
+bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context);
 
 #if !BUILDFLAG(IS_ANDROID)
 bool IsTransientActivationRequiredForGetDisplayMedia(

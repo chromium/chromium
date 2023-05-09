@@ -2543,11 +2543,10 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
 #endif
 }
 
-bool ChromeContentBrowserClient::IsGetDisplayMediaSetSelectAllScreensAllowed(
+bool ChromeContentBrowserClient::IsGetAllScreensMediaAllowed(
     content::BrowserContext* context,
     const url::Origin& origin) {
-  return capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
-      context, origin.GetURL());
+  return capture_policy::IsGetAllScreensMediaAllowed(context, origin.GetURL());
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

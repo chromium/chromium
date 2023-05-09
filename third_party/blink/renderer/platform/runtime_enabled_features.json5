@@ -1868,26 +1868,6 @@
       status: "experimental",
     },
     {
-      // Enables the getDisplayMediaSet API for multi surface capture.
-      name: "GetDisplayMediaSet",
-      depends_on: ["GetDisplayMedia"],
-      public: true,
-      status: "test",
-      base_feature: "none",
-    },
-    {
-      name: "GetDisplayMediaSetAutoSelectAllScreens",
-      depends_on: ["GetDisplayMediaSet"],
-      public: true,
-      status: {
-        "ChromeOS_Ash": "test",
-        "ChromeOS_Lacros": "test",
-        "Linux": "test",
-        "default": "",
-      },
-      base_feature: "none",
-    },
-    {
       name: "GroupEffect",
       status: "test",
       base_feature: "none",

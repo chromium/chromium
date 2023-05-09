@@ -30,7 +30,7 @@ class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
     enumerator_ = std::make_unique<ChromeScreenEnumerator>();
     scoped_feature_list_.InitFromCommandLine(
         /*enable_features=*/
-        "GetDisplayMediaSet,GetDisplayMediaSetAutoSelectAllScreens",
+        "GetAllScreensMedia",
         /*disable_features=*/"");
   }
 

@@ -91,13 +91,12 @@ bool CheckScreenDetailedExists(content::WebContents* tab,
 
 class ContentBrowserClientMock : public ChromeContentBrowserClient {
  public:
-  bool IsGetDisplayMediaSetSelectAllScreensAllowed(
-      content::BrowserContext* context,
-      const url::Origin& origin) override {
+  bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
+                                   const url::Origin& origin) override {
     return is_get_display_media_set_select_all_screens_allowed_;
   }
 
-  void SetIsGetDisplayMediaSetSelectAllScreensAllowed(bool is_allowed) {
+  void SetIsGetAllScreensMediaAllowed(bool is_allowed) {
     is_get_display_media_set_select_all_screens_allowed_ = is_allowed;
   }
 
@@ -222,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
 IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
                        AutoSelectAllScreensNotAllowed) {
   SetScreens(/*screen_count=*/1u);
-  browser_client_->SetIsGetDisplayMediaSetSelectAllScreensAllowed(
+  browser_client_->SetIsGetAllScreensMediaAllowed(
       /*is_allowed=*/false);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
