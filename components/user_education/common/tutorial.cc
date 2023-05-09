@@ -210,12 +210,14 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
          absl::optional<std::pair<int, int>> progress_, bool is_last_step_,
          bool can_be_restarted_,
          TutorialDescription::NextButtonCallback next_button_callback,
+         HelpBubbleParams::ExtendedProperties extended_properties,
          ui::InteractionSequence* sequence, ui::TrackedElement* element) {
         DCHECK(tutorial_service);
 
         tutorial_service->HideCurrentBubbleIfShowing();
 
         HelpBubbleParams params;
+        params.extended_properties = std::move(extended_properties);
         params.title_text = title_text_;
         params.body_text = body_text_;
         params.progress = progress_;
@@ -286,7 +288,8 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
         tutorial_service->SetCurrentBubble(std::move(bubble), is_last_step_);
       },
       base::Unretained(tutorial_service), title_text, body_text, step_.arrow,
-      progress, is_last_step, can_be_restarted, step_.next_button_callback);
+      progress, is_last_step, can_be_restarted, step_.next_button_callback,
+      step_.extended_properties);
 }
 
 ui::InteractionSequence::StepEndCallback

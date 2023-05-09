@@ -538,6 +538,46 @@ TEST_F(TutorialTest, TutorialWithNamedElement) {
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
 
+TEST_F(TutorialTest, TutorialWithExtendedProperties) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // Build and show test element.
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Configure extended properties.
+  HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set("string", "v1");
+  extended_properties.values().Set("bool", true);
+  extended_properties.values().Set("int", 1);
+
+  // Build the tutorial `description`.
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK)
+          .SetExtendedProperties(extended_properties));
+
+  // Register and start the tutorial.
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+
+  // Verify the bubble has been forwarded the extended properties.
+  auto* bubble = service.currently_displayed_bubble_for_testing();
+  ASSERT_TRUE(bubble);
+  EXPECT_THAT(
+      static_cast<test::TestHelpBubble*>(bubble)->params().extended_properties,
+      extended_properties);
+
+  // Close the bubble to complete the tutorial.
+  EXPECT_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
+}
+
 TEST_F(TutorialTest, SingleStepRestartTutorial) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
 

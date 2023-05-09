@@ -219,6 +219,11 @@ struct TutorialDescription {
     // 2. if this step is the last step of a tutorial
     NextButtonCallback next_button_callback = NextButtonCallback();
 
+    // Platform-specific properties that can be set for a bubble step. If an
+    // extended property evolves to warrant cross-platform support, it should be
+    // promoted out of extended properties.
+    HelpBubbleParams::ExtendedProperties extended_properties;
+
     // returns true iff all of the required parameters exist to display a
     // bubble.
     bool ShouldShowBubble() const;
@@ -283,6 +288,12 @@ struct TutorialDescription {
 
     BubbleStep& SetBubbleArrow(HelpBubbleArrow arrow_) {
       arrow = arrow_;
+      return *this;
+    }
+
+    BubbleStep& SetExtendedProperties(
+        HelpBubbleParams::ExtendedProperties extended_properties_) {
+      extended_properties = std::move(extended_properties_);
       return *this;
     }
 

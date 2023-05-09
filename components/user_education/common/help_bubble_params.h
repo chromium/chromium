@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -53,6 +54,28 @@ struct HelpBubbleButtonParams {
 };
 
 struct HelpBubbleParams {
+  // Platform-specific properties that can be set for a help bubble. If an
+  // extended property evolves to warrant cross-platform support, it should be
+  // promoted out of extended properties.
+  class ExtendedProperties {
+   public:
+    ExtendedProperties();
+    ExtendedProperties(const ExtendedProperties&);
+    ExtendedProperties(ExtendedProperties&&);
+    ExtendedProperties& operator=(const ExtendedProperties&);
+    ExtendedProperties& operator=(ExtendedProperties&&);
+    ~ExtendedProperties();
+
+    bool operator==(const ExtendedProperties&) const;
+    bool operator!=(const ExtendedProperties&) const;
+
+    base::Value::Dict& values() { return dict_; }
+    const base::Value::Dict& values() const { return dict_; }
+
+   private:
+    base::Value::Dict dict_;
+  };
+
   HelpBubbleParams();
   HelpBubbleParams(HelpBubbleParams&&);
   ~HelpBubbleParams();
@@ -93,6 +116,11 @@ struct HelpBubbleParams {
 
   // Called when the bubble times out.
   base::OnceClosure timeout_callback = base::DoNothing();
+
+  // Platform-specific properties that can be set for a help bubble. If an
+  // extended property evolves to warrant cross-platform support, it should be
+  // promoted out of extended properties.
+  ExtendedProperties extended_properties;
 };
 
 }  // namespace user_education
