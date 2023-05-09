@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -40,10 +41,9 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   explicit TestAtomicMiddleNameAddressComponent(AddressComponent* parent)
       : AddressComponent(NAME_MIDDLE, parent, MergeMode::kDefault) {}
 
-  void GetAdditionalSupportedFieldTypes(
-      ServerFieldTypeSet* supported_types) const override {
-    CHECK(supported_types->find(NAME_MIDDLE_INITIAL) == supported_types->end());
-    supported_types->insert(NAME_MIDDLE_INITIAL);
+  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override {
+    constexpr ServerFieldTypeSet supported_types{NAME_MIDDLE_INITIAL};
+    return supported_types;
   }
 
   void SetValueForOtherSupportedType(
@@ -324,18 +324,16 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetRootNode) {
 
 // Tests that additional field types are correctly retrieved.
 TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedFieldType) {
-  ServerFieldTypeSet field_type_set;
-
   TestAtomicFirstNameAddressComponent first_name_component;
   TestAtomicMiddleNameAddressComponent middle_name_component;
 
   // The first name does not have an additional supported field type.
-  first_name_component.GetAdditionalSupportedFieldTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, ServerFieldTypeSet({}));
+  EXPECT_EQ(first_name_component.GetAdditionalSupportedFieldTypes(),
+            ServerFieldTypeSet({}));
 
   // The middle name supports an initial.
-  middle_name_component.GetAdditionalSupportedFieldTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_MIDDLE_INITIAL}));
+  EXPECT_EQ(middle_name_component.GetAdditionalSupportedFieldTypes(),
+            ServerFieldTypeSet({NAME_MIDDLE_INITIAL}));
 }
 
 // Tests setting an additional field type.

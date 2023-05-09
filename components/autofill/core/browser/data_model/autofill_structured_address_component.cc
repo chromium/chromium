@@ -211,9 +211,8 @@ void AddressComponent::UnsetValue() {
 }
 
 bool AddressComponent::IsSupportedType(ServerFieldType field_type) const {
-  ServerFieldTypeSet supported_types{storage_type_};
-  GetAdditionalSupportedFieldTypes(&supported_types);
-  return supported_types.contains(field_type);
+  return field_type == storage_type_ ||
+         GetAdditionalSupportedFieldTypes().contains(field_type);
 }
 
 void AddressComponent::GetSupportedTypes(
@@ -224,10 +223,16 @@ void AddressComponent::GetSupportedTypes(
          "type: "
       << storage_type_;
   supported_types->insert(storage_type_);
-  GetAdditionalSupportedFieldTypes(supported_types);
+  supported_types->insert_all(GetAdditionalSupportedFieldTypes());
   for (auto* subcomponent : subcomponents_) {
     subcomponent->GetSupportedTypes(supported_types);
   }
+}
+
+const ServerFieldTypeSet AddressComponent::GetAdditionalSupportedFieldTypes()
+    const {
+  constexpr ServerFieldTypeSet additional_supported_field_types;
+  return additional_supported_field_types;
 }
 
 void AddressComponent::SetValueForOtherSupportedType(

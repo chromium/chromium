@@ -259,8 +259,7 @@ class AddressComponent {
 
   // Adds the additional supported field types to |supported_types|.
   // The method should DCHECK that the added types are not part of the set yet.
-  virtual void GetAdditionalSupportedFieldTypes(
-      ServerFieldTypeSet* supported_types) const {}
+  virtual const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const;
 
   // Unassigns all nodes with parsed or formatted values.
   void UnsetParsedAndFormattedValuesInEntireTree();

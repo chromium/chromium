@@ -105,8 +105,7 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   explicit StreetAddressNode(AddressComponent* parent);
   ~StreetAddressNode() override;
 
-  void GetAdditionalSupportedFieldTypes(
-      ServerFieldTypeSet* supported_types) const override;
+  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
 
   void SetValue(std::u16string value, VerificationStatus status) override;
 

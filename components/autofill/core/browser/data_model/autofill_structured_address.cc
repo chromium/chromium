@@ -267,11 +267,11 @@ void StreetAddressNode::PostAssignSanitization() {
   CalculateAddressLines();
 }
 
-void StreetAddressNode::GetAdditionalSupportedFieldTypes(
-    ServerFieldTypeSet* supported_types) const {
-  supported_types->insert(ADDRESS_HOME_LINE1);
-  supported_types->insert(ADDRESS_HOME_LINE2);
-  supported_types->insert(ADDRESS_HOME_LINE3);
+const ServerFieldTypeSet StreetAddressNode::GetAdditionalSupportedFieldTypes()
+    const {
+  constexpr ServerFieldTypeSet additional_supported_field_types{
+      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
+  return additional_supported_field_types;
 }
 
 // Country codes are mergeable if they are the same of if one is empty.

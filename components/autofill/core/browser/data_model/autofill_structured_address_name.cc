@@ -52,9 +52,10 @@ NameMiddle::NameMiddle(AddressComponent* parent)
 
 NameMiddle::~NameMiddle() = default;
 
-void NameMiddle::GetAdditionalSupportedFieldTypes(
-    ServerFieldTypeSet* supported_types) const {
-  supported_types->insert(NAME_MIDDLE_INITIAL);
+const ServerFieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
+  constexpr ServerFieldTypeSet additional_supported_field_types{
+      NAME_MIDDLE_INITIAL};
+  return additional_supported_field_types;
 }
 
 std::u16string NameMiddle::GetValueForOtherSupportedType(
