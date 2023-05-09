@@ -92,9 +92,9 @@ constexpr char kDefaultTasksResponseContent[] = R"(
         },
         {
           "id": "zxc",
-          "title": "Child task, level 3",
-          "parent": "qwe",
-          "status": "completed"
+          "title": "Parent task 2, level 1",
+          "status": "needsAction",
+          "links": [{"type": "email"}]
         }
       ]
     }
@@ -287,26 +287,22 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   ASSERT_TRUE(future.Wait());
 
   const auto* const root_tasks = future.Get();
-  EXPECT_EQ(root_tasks->item_count(), 1u);
+  ASSERT_EQ(root_tasks->item_count(), 2u);
+
   EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(root_tasks->GetItemAt(0)->title, "Parent task, level 1");
   EXPECT_EQ(root_tasks->GetItemAt(0)->completed, false);
   EXPECT_EQ(FormatTimeAsString(root_tasks->GetItemAt(0)->due.value()),
             "2023-04-19T00:00:00.000Z");
+  EXPECT_TRUE(root_tasks->GetItemAt(0)->has_subtasks);
+  EXPECT_FALSE(root_tasks->GetItemAt(0)->has_email_link);
 
-  const auto& subtasks_level_2 = root_tasks->GetItemAt(0)->subtasks;
-  EXPECT_EQ(subtasks_level_2.size(), 1u);
-  EXPECT_EQ(subtasks_level_2.at(0)->id, "qwe");
-  EXPECT_EQ(subtasks_level_2.at(0)->title, "Child task, level 2");
-  EXPECT_EQ(subtasks_level_2.at(0)->completed, false);
-  EXPECT_FALSE(subtasks_level_2.at(0)->due);
-
-  const auto& subtasks_level_3 = subtasks_level_2.at(0)->subtasks;
-  EXPECT_EQ(subtasks_level_3.size(), 1u);
-  EXPECT_EQ(subtasks_level_3.at(0)->id, "zxc");
-  EXPECT_EQ(subtasks_level_3.at(0)->title, "Child task, level 3");
-  EXPECT_EQ(subtasks_level_3.at(0)->completed, true);
-  EXPECT_FALSE(subtasks_level_3.at(0)->due);
+  EXPECT_EQ(root_tasks->GetItemAt(1)->id, "zxc");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->title, "Parent task 2, level 1");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->completed, false);
+  EXPECT_FALSE(root_tasks->GetItemAt(1)->due);
+  EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
+  EXPECT_TRUE(root_tasks->GetItemAt(1)->has_email_link);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
@@ -330,36 +326,6 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
 TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
-
-  TestFuture<ui::ListModel<GlanceablesTask>*> future;
-  client()->GetTasks("test-task-list-id", future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-
-  const auto* const root_tasks = future.Get();
-  EXPECT_EQ(root_tasks->item_count(), 0u);
-}
-
-TEST_F(GlanceablesTasksClientImplTest,
-       GetTasksReturnsEmptyVectorOnConversionError) {
-  EXPECT_CALL(request_handler(), HandleRequest(_))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
-          {
-            "kind": "tasks#tasks",
-            "items": [
-              {
-                "id": "asd",
-                "title": "Parent task",
-                "status": "needsAction"
-              },
-              {
-                "id": "qwe",
-                "title": "Child task",
-                "parent": "asd1",
-                "status": "needsAction"
-              }
-            ]
-          }
-        )"))));
 
   TestFuture<ui::ListModel<GlanceablesTask>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
@@ -410,11 +376,13 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
   ASSERT_TRUE(future.Wait());
 
   const auto* const root_tasks = future.Get();
-  EXPECT_EQ(root_tasks->item_count(), 2u);
+  ASSERT_EQ(root_tasks->item_count(), 2u);
+
   EXPECT_EQ(root_tasks->GetItemAt(0)->id, "parent-task-from-page-2");
-  EXPECT_EQ(root_tasks->GetItemAt(0)->subtasks.at(0)->id,
-            "child-task-from-page-1");
+  EXPECT_TRUE(root_tasks->GetItemAt(0)->has_subtasks);
+
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "parent-task-from-page-3");
+  EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {

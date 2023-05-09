@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
@@ -38,16 +37,15 @@ struct ASH_EXPORT GlanceablesTaskList {
 };
 
 // Lightweight Task definition to separate API and ash/ui-friendly types.
-// The most significant difference is that API tasks are flat (subtask-task
-// relationship is expressed by parent id property), but here they are
-// represented as a tree structure. All values are from the API resource
+// All values are from the API resource
 // https://developers.google.com/tasks/reference/rest/v1/tasks.
 struct ASH_EXPORT GlanceablesTask {
   GlanceablesTask(const std::string& id,
                   const std::string& title,
                   bool completed,
                   const absl::optional<base::Time>& due,
-                  std::vector<std::unique_ptr<GlanceablesTask>> subtasks);
+                  bool has_subtasks,
+                  bool has_email_link);
   GlanceablesTask(const GlanceablesTask&) = delete;
   GlanceablesTask& operator=(const GlanceablesTask&) = delete;
   ~GlanceablesTask();
@@ -65,9 +63,11 @@ struct ASH_EXPORT GlanceablesTask {
   // Optional due date of the task.
   const absl::optional<base::Time> due;
 
-  // Subtasks of the task (pre-grouped tasks that have "parent" field equals to
-  // `id` on the API side).
-  const std::vector<std::unique_ptr<GlanceablesTask>> subtasks;
+  // Indicates whether the task has subtasks in it.
+  const bool has_subtasks;
+
+  // Indicates whether the task has an attached email link.
+  const bool has_email_link;
 };
 
 }  // namespace ash
