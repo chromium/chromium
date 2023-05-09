@@ -109,6 +109,8 @@ struct Globals {
   std::unique_ptr<zxdg_output_manager_v1> zxdg_output_manager_v1;
   std::unique_ptr<weston_test> weston_test;
   std::unique_ptr<zwp_idle_inhibit_manager_v1> zwp_idle_inhibit_manager_v1;
+  std::unique_ptr<wp_single_pixel_buffer_manager_v1>
+      wp_single_pixel_buffer_manager_v1;
 };
 
 typedef void (*InterfaceRegistryCallback)(Globals*,
@@ -175,6 +177,8 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(wl_data_device_manager, wl_data_device_manager),
           REGISTRY_CALLBACK(wp_content_type_manager_v1,
                             wp_content_type_manager_v1),
+          REGISTRY_CALLBACK(wp_single_pixel_buffer_manager_v1,
+                            wp_single_pixel_buffer_manager_v1),
           REGISTRY_CALLBACK(wp_viewporter, wp_viewporter),
           REGISTRY_CALLBACK(zxdg_shell_v6, zxdg_shell_v6),
           REGISTRY_CALLBACK(xdg_wm_base, xdg_wm_base),

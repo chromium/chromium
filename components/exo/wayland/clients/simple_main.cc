@@ -14,6 +14,8 @@
 namespace switches {
 // Specifies if VSync timing updates should be logged on the output.
 const char kLogVSyncTimingUpdates[] = "log-vsync-timing-updates";
+
+const char kSinglePixelBuffer[] = "single-pixel-buffer";
 }  // namespace switches
 
 int main(int argc, char* argv[]) {
@@ -29,10 +31,11 @@ int main(int argc, char* argv[]) {
   if (!client.Init(params))
     return 1;
 
-  bool log_vsync_timing_updates =
-      command_line->HasSwitch(switches::kLogVSyncTimingUpdates);
+  const exo::wayland::clients::Simple::RunParam run_params = {
+      command_line->HasSwitch(switches::kLogVSyncTimingUpdates),
+      command_line->HasSwitch(switches::kSinglePixelBuffer)};
 
-  client.Run(std::numeric_limits<int>::max(), log_vsync_timing_updates);
+  client.Run(std::numeric_limits<int>::max(), run_params);
 
   return 0;
 }

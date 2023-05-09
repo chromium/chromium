@@ -73,6 +73,8 @@ struct Globals {
   Object<zcr_remote_shell_v1> cr_remote_shell_v1;
   Object<zcr_remote_shell_v2> cr_remote_shell_v2;
   Object<surface_augmenter> surface_augmenter;
+  Object<wp_single_pixel_buffer_manager_v1> wp_single_pixel_buffer_manager_v1;
+  Object<wp_viewporter> wp_viewporter;
 
   base::flat_map<std::string, uint32_t> requested_versions;
 };

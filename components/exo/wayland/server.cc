@@ -27,6 +27,7 @@
 #include <remote-shell-unstable-v1-server-protocol.h>
 #include <remote-shell-unstable-v2-server-protocol.h>
 #include <secure-output-unstable-v1-server-protocol.h>
+#include <single-pixel-buffer-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <stylus-unstable-v2-server-protocol.h>
 #include <surface-augmenter-server-protocol.h>
@@ -76,6 +77,7 @@
 #include "components/exo/wayland/wl_shm.h"
 #include "components/exo/wayland/wl_subcompositor.h"
 #include "components/exo/wayland/wp_presentation.h"
+#include "components/exo/wayland/wp_single_pixel_buffer.h"
 #include "components/exo/wayland/wp_viewporter.h"
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/wayland/zaura_output_manager.h"
@@ -282,6 +284,9 @@ void Server::Initialize() {
 
   wl_global_create(wl_display_.get(), &surface_augmenter_interface,
                    kSurfaceAugmenterVersion, display_, bind_surface_augmenter);
+  wl_global_create(
+      wl_display_.get(), &wp_single_pixel_buffer_manager_v1_interface,
+      kSinglePixelBufferVersion, display_, bind_single_pixel_buffer);
   wl_global_create(wl_display_.get(), &overlay_prioritizer_interface, 1,
                    display_, bind_overlay_prioritizer);
   wl_global_create(wl_display_.get(), &wp_viewporter_interface, 1, display_,
