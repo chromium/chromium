@@ -528,6 +528,9 @@
 // Returns a matcher to password table view.
 + (id<GREYMatcher>)passwordsTableViewMatcher;
 
+// Returns a matcher to default browser settings table view.
++ (id<GREYMatcher>)defaultBrowserSettingsTableViewMatcher;
+
 #pragma mark - Overflow Menu Destinations
 
 // Returns matcher for the bookmarks destination button in the overflow menu

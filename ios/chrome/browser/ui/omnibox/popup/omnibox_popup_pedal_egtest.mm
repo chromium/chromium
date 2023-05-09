@@ -176,6 +176,43 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that the default browser pedal is present and it opens the set default
+// browser page.
+- (void)testSetDefaultBrowserPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedaldefaultbrowser"];
+
+  NSString* defaultBrowserPedalString =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_DEFAULT_BROWSER);
+
+  // Matcher for the set default browser pedal suggestion.
+  id<GREYMatcher> setDefaultBrowserPedal =
+      popupRowWithString(defaultBrowserPedalString);
+
+  // Set default browser pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:setDefaultBrowserPedal];
+
+  // Tap on Set default browser pedal.
+  [[EarlGrey selectElementWithMatcher:setDefaultBrowserPedal]
+      performAction:grey_tap()];
+
+  // Set default browser page should be displayed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::DefaultBrowserSettingsTableViewMatcher()];
+
+  // Close the set default browser page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          chrome_test_util::DefaultBrowserSettingsTableViewMatcher()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {

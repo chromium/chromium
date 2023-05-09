@@ -563,6 +563,9 @@ id<GREYMatcher> CellCanBeSwipedToDismissed();
 // Returns a matcher for passwords table view.
 id<GREYMatcher> PasswordsTableViewMatcher();
 
+// Returns a mather for default browser settings table view.
+id<GREYMatcher> DefaultBrowserSettingsTableViewMatcher();
+
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.

@@ -697,6 +697,10 @@ id<GREYMatcher> PasswordsTableViewMatcher() {
   return [ChromeMatchersAppInterface passwordsTableViewMatcher];
 }
 
+id<GREYMatcher> DefaultBrowserSettingsTableViewMatcher() {
+  return [ChromeMatchersAppInterface defaultBrowserSettingsTableViewMatcher];
+}
+
 #pragma mark - Overflow Menu Destinations
 
 id<GREYMatcher> BookmarksDestinationButton() {
