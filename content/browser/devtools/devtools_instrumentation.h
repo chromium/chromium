@@ -401,7 +401,8 @@ void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
                           bool* intercept,
                           bool* disable_delay);
 void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host);
+void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host,
+                                bool auto_reauthn);
 
 }  // namespace devtools_instrumentation
 

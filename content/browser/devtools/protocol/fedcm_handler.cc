@@ -46,7 +46,7 @@ DispatchResponse FedCmHandler::Disable() {
   return DispatchResponse::Success();
 }
 
-void FedCmHandler::OnDialogShown() {
+void FedCmHandler::OnDialogShown(bool auto_reauthn) {
   static int next_dialog_id_ = 0;
 
   dialog_id_ = base::NumberToString(next_dialog_id_++);
@@ -113,13 +113,17 @@ void FedCmHandler::OnDialogShown() {
   }
   IdentityRequestDialogController* dialog = auth_request->GetDialogController();
   CHECK(dialog);
+
+  FedCm::DialogType dialog_type = auto_reauthn
+                                      ? FedCm::DialogTypeEnum::AutoReauthn
+                                      : FedCm::DialogTypeEnum::AccountChooser;
   Maybe<String> maybe_subtitle;
   absl::optional<std::string> subtitle = dialog->GetSubtitle();
   if (subtitle) {
     maybe_subtitle = *subtitle;
   }
-  frontend_->DialogShown(dialog_id_, std::move(accounts), dialog->GetTitle(),
-                         std::move(maybe_subtitle));
+  frontend_->DialogShown(dialog_id_, dialog_type, std::move(accounts),
+                         dialog->GetTitle(), std::move(maybe_subtitle));
 }
 
 DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
