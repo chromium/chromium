@@ -151,14 +151,12 @@ public class InstantStartTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
     // clang-format off
-    @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
-        UiRestriction.RESTRICTION_TYPE_PHONE, UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            "force-fieldtrial-params=Study.Group:allow_to_refetch/true/thumbnail_aspect_ratio/2.0"})
+            "force-fieldtrial-params=Study.Group:thumbnail_aspect_ratio/2.0"})
     public void fetchThumbnailsPreNativeTest() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        Assert.assertTrue(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION.getValue());
 
         int tabId = 0;
         mThumbnailFetchCount = 0;

@@ -6690,6 +6690,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GridTabSwitcher.ThumbnailFetchingResult"
     enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2021-02-14">
+  <obsolete>
+    Expired 2021-02-14 replaced superceded by
+    Android.GridTabSwitcher.ThumbnailFetchingResult.
+  </obsolete>
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>

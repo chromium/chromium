@@ -1586,6 +1586,17 @@ chromium-metrics-reviews@google.com.
   <token key="ActivityType" variants="ActivityType"/>
 </histogram>
 
+<histogram name="Android.GridTabSwitcher.ThumbnailFetchingResult"
+    enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2023-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-isochron-team@google.com</owner>
+  <summary>
+    This histogram records the result of thumbnail fetching in the Grid Tab
+    Switcher on Android. This is recorded once per thumbnail fetch when a Tab
+    card with a thumbnail is shown onscreen.
+  </summary>
+</histogram>
+
 <histogram name="Android.HistoryPage.ClearBrowsingData.PerProfileType"
     enum="BrowserProfileType" expires_after="2023-10-08">
   <owner>roagarwal@chromium.org</owner>

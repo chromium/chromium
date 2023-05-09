@@ -1297,7 +1297,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/2.0/allow_to_refetch/true"})
-    @DisabledTest(message = "crbug.com/1315676#c20")
     public void testThumbnailFetchingResult_changingAspectRatio(
             boolean isStartSurfaceRefactorEnabled) throws Exception {
         var histograms = HistogramWatcher.newSingleRecordWatcher(
@@ -1306,7 +1305,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         prepareTabs(1, 0, "about:blank");
         // Simulate Jpeg has cached with default aspect ratio.
-        simulateJpegHasCachedWithDefaultAspectRatio();
+        simulateJpegHasCachedWithAspectRatio(0.85);
         enterTabSwitcher(mActivityTestRule.getActivity());
         // There might be an additional one from capturing thumbnail for the live layer.
         CriteriaHelper.pollUiThread(
@@ -1539,12 +1538,15 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                             (ViewLookupCachingFrameLayout) viewHolder.itemView;
                     TabGridThumbnailView thumbnail =
                             (TabGridThumbnailView) tabView.fastFindViewById(R.id.tab_thumbnail);
-                    double thumbnailViewRatio = thumbnail.getWidth() * 1.0 / thumbnail.getHeight();
 
-                    assertTrue("Actual ratio: " + thumbnailViewRatio
-                                    + "; Expected ratio: " + mExpectedRatio,
-                            Math.abs(thumbnailViewRatio - mExpectedRatio)
-                                    <= TabContentManager.ASPECT_RATIO_PRECISION);
+                    double thumbnailViewRatio = thumbnail.getWidth() * 1.0 / thumbnail.getHeight();
+                    int pixelDelta =
+                            Math.abs((int) Math.round(thumbnail.getHeight() * mExpectedRatio)
+                                    - thumbnail.getWidth());
+                    assertTrue("Actual ratio: " + thumbnailViewRatio + "; Expected ratio: "
+                                    + mExpectedRatio + "; Pixel delta: " + pixelDelta,
+                            pixelDelta <= thumbnail.getWidth()
+                                            * TabContentManager.PIXEL_TOLERANCE_PERCENT);
                 }
             }
             assertTrue("should have at least one valid ViewHolder", hasAtLeastOneValidViewHolder);
@@ -2209,16 +2211,20 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         return true;
     }
 
-    private void simulateJpegHasCachedWithDefaultAspectRatio() throws IOException {
+    private void simulateJpegHasCachedWithAspectRatio(double aspectRatio) throws IOException {
         TabModel currentModel = mActivityTestRule.getActivity().getCurrentTabModel();
         int jpegWidth = 125;
-        int jpegHeight = (int) (jpegWidth * 1.0
-                / TabUtils.getTabThumbnailAspectRatio(mActivityTestRule.getActivity()));
+        int jpegHeight = (int) (jpegWidth * 1.0 / aspectRatio);
         for (int i = 0; i < currentModel.getCount(); i++) {
             Tab tab = currentModel.getTabAt(i);
             Bitmap bitmap = Bitmap.createBitmap(jpegWidth, jpegHeight, Config.ARGB_8888);
             encodeJpeg(tab, bitmap);
         }
+    }
+
+    private void simulateJpegHasCachedWithDefaultAspectRatio() throws IOException {
+        simulateJpegHasCachedWithAspectRatio(
+                TabUtils.getTabThumbnailAspectRatio(mActivityTestRule.getActivity()));
     }
 
     private void simulateAspectRatioChangedToPoint75() throws IOException {
@@ -2245,8 +2251,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             Tab tab = currentModel.getTabAt(i);
             Bitmap bitmap = TabContentManager.getJpegForTab(tab.getId(), null);
             double bitmapRatio = bitmap.getWidth() * 1.0 / bitmap.getHeight();
-            assertTrue("Actual ratio: " + bitmapRatio + "; Expected ratio: " + ratio,
-                    Math.abs(bitmapRatio - ratio) <= TabContentManager.ASPECT_RATIO_PRECISION);
+            int pixelDelta =
+                    Math.abs((int) Math.round(bitmap.getHeight() * ratio) - bitmap.getWidth());
+            assertTrue("Actual ratio: " + bitmapRatio + "; Expected ratio: " + ratio
+                            + "; Pixel delta: " + pixelDelta,
+                    pixelDelta <= bitmap.getWidth() * TabContentManager.PIXEL_TOLERANCE_PERCENT);
         }
     }
 

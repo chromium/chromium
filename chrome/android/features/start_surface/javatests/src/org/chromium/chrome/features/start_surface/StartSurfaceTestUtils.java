@@ -41,6 +41,7 @@ import org.hamcrest.Matcher;
 import org.junit.Assert;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -358,7 +360,10 @@ public class StartSurfaceTestUtils {
      * @return The bitmap created.
      */
     public static Bitmap createThumbnailBitmapAndWriteToFile(int tabId) {
-        final Bitmap thumbnailBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        final int height = 100;
+        final int width = (int) Math.round(
+                height * TabUtils.getTabThumbnailAspectRatio(ContextUtils.getApplicationContext()));
+        final Bitmap thumbnailBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         try {
             File thumbnailFile = TabContentManager.getTabThumbnailFileJpeg(tabId);
