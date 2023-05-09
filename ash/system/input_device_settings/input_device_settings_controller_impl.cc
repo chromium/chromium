@@ -144,6 +144,15 @@ bool KeyboardSettingsAreValid(
                                   kDefaultSuppressMetaFKeyRewrites);
 }
 
+// The haptic_enabled and haptic_sensitivity are allowed to change only if the
+// touchpad is haptic.
+bool TouchpadSettingsAreValid(const mojom::Touchpad& touchpad,
+                              const mojom::TouchpadSettings& settings) {
+  return touchpad.is_haptic ||
+         (touchpad.settings->haptic_enabled == settings.haptic_enabled &&
+          touchpad.settings->haptic_sensitivity == settings.haptic_sensitivity);
+}
+
 void RecordSetKeyboardSetttingsValidMetric(bool is_valid) {
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Keyboard.SetSettingsSucceeded", is_valid);
@@ -623,11 +632,13 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
     RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/false);
     return;
   }
-  RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/true);
 
-  // TODO(dpad): Validate incoming settings to make sure the settings can
-  // apply to the given device.
   auto& found_touchpad = *found_touchpad_iter->second;
+  if (!TouchpadSettingsAreValid(found_touchpad, *settings)) {
+    RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/false);
+    return;
+  }
+  RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/true);
   const auto old_settings = std::move(found_touchpad.settings);
   found_touchpad.settings = settings.Clone();
   touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
