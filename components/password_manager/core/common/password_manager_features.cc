@@ -178,10 +178,15 @@ BASE_FEATURE(kPasswordReuseDetectionEnabled,
 
 // Enables requesting and saving passwords grouping information from the
 // affiliation service.
-// TODO(crbug.com/1359392): Remove once launched.
+// TODO(crbug.com/1359392): Remove once launched on all platforms.
 BASE_FEATURE(kPasswordsGrouping,
              "PasswordsGrouping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
