@@ -4,7 +4,10 @@
 
 import {LegacyElementMixin} from '//resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
-interface SetupPinKeyboardElement extends LegacyElementMixin, HTMLElement {}
+interface SetupPinKeyboardElement extends LegacyElementMixin, HTMLElement {
+  doSubmit(): void;
+  resetState(): void;
+}
 
 export {SetupPinKeyboardElement};
 
