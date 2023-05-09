@@ -75,6 +75,12 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   // its embedder).
   static std::vector<std::string> GetWebUISchemes();
 
+  // When this is true, GetWebUISchemes() bypasses the caching of its result
+  // and always recomputes the list of WebUI schemes.  This should be used in
+  // tests that inject custom WebUI schemes, which may otherwise not be seen.
+  CONTENT_EXPORT static void SetDisallowWebUISchemeCachingForTesting(
+      bool disallow_caching);
+
  private:
   typedef std::map<std::string, scoped_refptr<URLDataSourceImpl>> DataSourceMap;
 

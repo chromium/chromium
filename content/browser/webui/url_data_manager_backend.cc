@@ -65,6 +65,31 @@ bool SchemeIsInSchemes(const std::string& scheme,
   return base::Contains(schemes, scheme);
 }
 
+bool g_disallow_webui_scheme_caching_for_testing = false;
+
+std::vector<std::string> GetWebUISchemesSlow() {
+  std::vector<std::string> schemes;
+  schemes.emplace_back(kChromeUIScheme);
+  schemes.emplace_back(kChromeUIUntrustedScheme);
+  GetContentClient()->browser()->GetAdditionalWebUISchemes(&schemes);
+  return schemes;
+}
+
+std::vector<std::string> GetWebUISchemesCached() {
+  // It's OK to cache this in a static because the class implementing
+  // GetAdditionalWebUISchemes() won't change while the application is
+  // running, and because those methods always add the same items.
+  //
+  // However, be careful using this with unit tests which use
+  // GetAdditionalWebUISchemes() to change the list of WebUI schemes, since
+  // this caching may persist across tests. For those, this caching should be
+  // disabled via SetDisallowWebUISchemeCachingForTesting().
+  static base::NoDestructor<std::vector<std::string>> webui_schemes(
+      GetWebUISchemesSlow());
+
+  return *webui_schemes;
+}
+
 }  // namespace
 
 URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
@@ -268,18 +293,16 @@ bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
 }
 
 std::vector<std::string> URLDataManagerBackend::GetWebUISchemes() {
-  // It's OK to cache this in a static because the class implementing
-  // GetAdditionalWebUISchemes() won't change while the application is
-  // running, and because those methods always add the same items.
-  static base::NoDestructor<std::vector<std::string>> webui_schemes([]() {
-    std::vector<std::string> schemes;
-    schemes.emplace_back(kChromeUIScheme);
-    schemes.emplace_back(kChromeUIUntrustedScheme);
-    GetContentClient()->browser()->GetAdditionalWebUISchemes(&schemes);
-    return schemes;
-  }());
+  if (g_disallow_webui_scheme_caching_for_testing) {
+    return GetWebUISchemesSlow();
+  }
 
-  return *webui_schemes;
+  return GetWebUISchemesCached();
+}
+
+void URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(
+    bool disallow_caching) {
+  g_disallow_webui_scheme_caching_for_testing = disallow_caching;
 }
 
 }  // namespace content

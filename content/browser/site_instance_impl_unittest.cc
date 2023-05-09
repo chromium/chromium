@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -1799,14 +1800,13 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
   EXPECT_EQ(instance2->GetStoragePartitionConfig(), kGuestConfig);
 }
 
-// TODO(https://crbug.com/1377466): Test is flaky for android builders.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DoesSiteRequireDedicatedProcess \
-  DISABLED_DoesSiteRequireDedicatedProcess
-#else
-#define MAYBE_DoesSiteRequireDedicatedProcess DoesSiteRequireDedicatedProcess
-#endif
-TEST_F(SiteInstanceTest, MAYBE_DoesSiteRequireDedicatedProcess) {
+TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {
+  // Since this test injects a custom WebUI scheme below, ensure that the
+  // list of WebUI schemes isn't cached.  Otherwise, a random unit test running
+  // before this test may triggers caching, causing the custom WebUI scheme to
+  // never be seen.
+  URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(true);
+
   class CustomBrowserClient : public EffectiveURLContentBrowserClient {
    public:
     CustomBrowserClient(const GURL& url_to_modify,
@@ -1863,14 +1863,17 @@ TEST_F(SiteInstanceTest, MAYBE_DoesSiteRequireDedicatedProcess) {
       IsolatedOriginSource::TEST);
 
   for (const auto& url : kUrlsThatAlwaysRequireADedicatedProcess) {
-    EXPECT_TRUE(DoesURLRequireDedicatedProcess(isolation_context, GURL(url)));
+    EXPECT_TRUE(DoesURLRequireDedicatedProcess(isolation_context, GURL(url)))
+        << " failing url: " << url;
   }
 
   for (const auto& url : kUrlsThatDoNotRequireADedicatedProcess) {
     EXPECT_EQ(AreAllSitesIsolatedForTesting(),
-              DoesURLRequireDedicatedProcess(isolation_context, GURL(url)));
+              DoesURLRequireDedicatedProcess(isolation_context, GURL(url)))
+        << " failing url: " << url;
   }
   SetBrowserClientForTesting(regular_client);
+  URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(false);
 }
 
 TEST_F(SiteInstanceTest, DoWebUIURLsWithSubdomainsUseTLDForProcessLock) {
