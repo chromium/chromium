@@ -38,10 +38,9 @@ class ArgumentSpec {
  public:
   using PropertiesMap = std::map<std::string, std::unique_ptr<ArgumentSpec>>;
 
-  // Reads the description from |value| and sets associated fields.
+  // Reads the description from |dict| and sets associated fields.
   // TODO(devlin): We should strongly think about generating these instead of
   // populating them at runtime.
-  explicit ArgumentSpec(const base::Value& value);
   explicit ArgumentSpec(const base::Value::Dict& dict);
   explicit ArgumentSpec(ArgumentType type);
 

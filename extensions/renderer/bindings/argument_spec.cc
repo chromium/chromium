@@ -77,9 +77,6 @@ bool CheckFundamentalBounds(T value,
 
 }  // namespace
 
-ArgumentSpec::ArgumentSpec(const base::Value& value)
-    : ArgumentSpec(value.GetDict()) {}
-
 ArgumentSpec::ArgumentSpec(const base::Value::Dict& dict) {
   optional_ = dict.FindBool("optional").value_or(optional_);
   if (const std::string* name = dict.FindString("name"))
@@ -102,7 +99,7 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
     type_ = ArgumentType::CHOICES;
     choices_.reserve(choices->size());
     for (const auto& choice : *choices)
-      choices_.push_back(std::make_unique<ArgumentSpec>(choice));
+      choices_.push_back(std::make_unique<ArgumentSpec>(choice.GetDict()));
     return;
   }
 
@@ -154,7 +151,8 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
     if (const base::Value::Dict* properties_value =
             dict.FindDict("properties")) {
       for (const auto item : *properties_value) {
-        properties_[item.first] = std::make_unique<ArgumentSpec>(item.second);
+        properties_[item.first] =
+            std::make_unique<ArgumentSpec>(item.second.GetDict());
       }
     }
 

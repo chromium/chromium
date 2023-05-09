@@ -44,8 +44,7 @@ std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
     size++;
   signatures.reserve(size);
   for (const auto& signature : specification_list) {
-    CHECK(signature.is_dict());
-    signatures.push_back(std::make_unique<ArgumentSpec>(signature));
+    signatures.push_back(std::make_unique<ArgumentSpec>(signature.GetDict()));
   }
 
   return signatures;
