@@ -58,6 +58,10 @@ class DownloadDisplayController : public FullscreenObserver,
     int in_progress_count = 0;
     // Count of in-progress downloads (by the above definition) that are paused.
     int paused_count = 0;
+
+    // Returns a reference to a singleton empty struct. This is for callers who
+    // return references but don't have anything to return in some cases.
+    static const AllDownloadUIModelsInfo& EmptyInfo();
   };
 
   struct ProgressInfo {

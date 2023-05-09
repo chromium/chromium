@@ -157,19 +157,12 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
     return;
   }
 
-  Browser* browser_to_show_animation =
-      FindBrowserToShowAnimation(item, profile_);
-  BrowserList* browser_list = BrowserList::GetInstance();
-  if (!browser_list)
+  DownloadBubbleUpdateService* download_bubble_update_service =
+      DownloadBubbleUpdateServiceFactory::GetForProfile(profile_);
+  if (!download_bubble_update_service) {
     return;
-
-  for (auto* browser : *browser_list) {
-    if (browser && browser->window() &&
-        browser->window()->GetDownloadBubbleUIController()) {
-      browser->window()->GetDownloadBubbleUIController()->OnDownloadItemAdded(
-          item, /*may_show_animation=*/(browser == browser_to_show_animation));
-    }
   }
+  download_bubble_update_service->NotifyWindowsOfDownloadItemAdded(item);
 }
 
 void DownloadBubbleUIControllerDelegate::OnButtonClicked() {

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -67,30 +68,43 @@ class DownloadBubbleUpdateService
   ~DownloadBubbleUpdateService() override;
 
   // Gets models for the top GetMaxNumItemsToShow() combined download items
-  // and offline items, in sorted order. May cause items to be pruned from the
-  // cache, if they have grown too old to be included. May trigger backfilling
-  // the caches, but does not wait for backfill results, unless
-  // |force_backfill_download_items| is true (in which case download items will
-  // be backfilled synchronously if necessary; offline items will not be
-  // backfilled synchronously). |models| is cleared. Returns whether results are
-  // complete. Results may not be complete if there might be more items to be
-  // returned after backfilling. Virtual for testing.
+  // and offline items, in sorted order. If |web_app_id| is non-null, the
+  // results are limited to downloads initiated by the specified web app,
+  // otherwise the results are limited to downloads initiated by normal Chrome
+  // windows. May cause items to be pruned from the cache, if they have grown
+  // too old to be included. May trigger backfilling the caches, but does not
+  // wait for backfill results, unless |force_backfill_download_items| is true
+  // (in which case download items will be backfilled synchronously if
+  // necessary; offline items will not be backfilled synchronously). |models| is
+  // cleared. Returns whether results are complete. Results may not be complete
+  // if there might be more items to be returned after backfilling. Virtual for
+  // testing.
   virtual bool GetAllModelsToDisplay(
       std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
+      const web_app::AppId* web_app_id,
       bool force_backfill_download_items = false);
 
   // Returns information relevant to the display state of the download button.
-  // Does not prune the cache or backfill missing items. May be slightly
-  // inaccurate in edge cases. Virtual for testing.
+  // If |web_app_id| is non-null, the results are limited to downloads initiated
+  // by the specified web app, otherwise the results are limited to downloads
+  // initiated by normal Chrome windows. Does not prune the cache or backfill
+  // missing items. May be slightly inaccurate in edge cases. Virtual for
+  // testing.
   virtual const DownloadDisplayController::AllDownloadUIModelsInfo&
-  GetAllModelsInfo();
+  GetAllModelsInfo(const web_app::AppId* web_app_id);
 
-  // Computes progress info based on in-progress downloads. Does not prune the
-  // cache or backfill missing items, so the returned progress info may be
-  // slightly inaccurate in edge cases. This is ok, as it is only for the
-  // purpose of showing a progress ring around the icon, which is not precise
-  // anyway. Virtual for testing.
-  virtual DownloadDisplayController::ProgressInfo GetProgressInfo() const;
+  // Computes progress info based on in-progress downloads. If |web_app_id| is
+  // non-null, the results are limited to downloads initiated by the specified
+  // web app, otherwise the results are limited to downloads initiated by normal
+  // Chrome windows. Does not prune the cache or backfill missing items, so the
+  // returned progress info may be slightly inaccurate in edge cases. This is
+  // ok, as it is only for the purpose of showing a progress ring around the
+  // icon, which is not precise anyway. Virtual for testing.
+  virtual DownloadDisplayController::ProgressInfo GetProgressInfo(
+      const web_app::AppId* web_app_id) const;
+
+  // Notifies the appropriate browser windows that a download item was added.
+  void NotifyWindowsOfDownloadItemAdded(download::DownloadItem* item);
 
   // Initializes AllDownloadItemNotifier for the current profile, and
   // initializes caches. This is called when the manager is ready, to signal
@@ -218,8 +232,8 @@ class DownloadBubbleUpdateService
     bool GetAllModelsToDisplay(
         std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
         bool force_backfill_download_items = false);
-    const DownloadDisplayController::AllDownloadUIModelsInfo&
-    GetAllModelsInfo();
+    const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo()
+        const;
     DownloadDisplayController::ProgressInfo GetProgressInfo() const;
 
     // Adds an item to the cache if it is recent enough and meets other criteria
@@ -344,13 +358,25 @@ class DownloadBubbleUpdateService
   template <typename Item>
   using SortedItems = CacheManager::SortedItems<Item>;
 
+  // Checks whether |cache| is the main cache, used for CHECKs to ensure that
+  // offline items only go into the main cache.
+  bool IsMainCache(const CacheManager& cache) const;
+
  private:
-  // Finds the appropriate CacheManager for an item.
-  // TODO(crbug.com/1420454): Add separate caches for web app windows.
+  // Finds the appropriate CacheManager for a web app, creating one if it
+  // doesn't exist.
+  CacheManager& GetCacheForWebApp(const web_app::AppId& app_id);
+  // As above, but does not create one if it doesn't exist (in which case it
+  // returns nullptr).
+  const CacheManager* GetExistingCacheForWebApp(
+      const web_app::AppId& app_id) const;
+
+  // Finds the appropriate CacheManager for a download item, creating one if it
+  // doesn't exist.
   CacheManager& GetCacheForItem(download::DownloadItem* item);
 
-  // Returns pointers to all CacheManagers this object owns.
-  // TODO(crbug.com/1420454): Add separate caches for web app windows.
+  // Returns pointers to all CacheManagers this object owns, in no particular
+  // order.
   std::vector<CacheManager*> GetAllCacheManagers();
 
   // Populate the cache from items fetched from the download manager or
@@ -403,8 +429,10 @@ class DownloadBubbleUpdateService
   // The cache for all regular Chrome windows. Note that offline items all go
   // here, whereas download items may end up in other CacheManagers depending
   // on whether they were downloaded by a web app.
-  // TODO(crbug.com/1420454): Add separate caches for web app windows.
   CacheManager main_cache_;
+
+  // A separate cache for each web app.
+  std::map<web_app::AppId, CacheManager> web_app_caches_;
 
   // Observes the offline content provider.
   base::ScopedObservation<

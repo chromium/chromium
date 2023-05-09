@@ -53,6 +53,13 @@ bool IsAllDone(const DownloadDisplayController::AllDownloadUIModelsInfo& info) {
 
 }  // namespace
 
+// static
+const DownloadDisplayController::AllDownloadUIModelsInfo&
+DownloadDisplayController::AllDownloadUIModelsInfo::EmptyInfo() {
+  static AllDownloadUIModelsInfo empty_info;
+  return empty_info;
+}
+
 DownloadDisplayController::DownloadDisplayController(
     DownloadDisplay* display,
     Browser* browser,
@@ -233,7 +240,8 @@ void DownloadDisplayController::UpdateDownloadIconToInactive() {
 const DownloadDisplayController::AllDownloadUIModelsInfo&
 DownloadDisplayController::UpdateButtonStateFromAllModelsInfo() {
   const AllDownloadUIModelsInfo& info =
-      bubble_controller_->update_service()->GetAllModelsInfo();
+      bubble_controller_->update_service()->GetAllModelsInfo(
+          GetWebAppIdForBrowser(browser_));
   UpdateToolbarButtonState(info);
   return info;
 }
@@ -295,5 +303,6 @@ bool DownloadDisplayController::IsDisplayShowingDetails() {
 
 DownloadDisplayController::ProgressInfo
 DownloadDisplayController::GetProgress() {
-  return bubble_controller_->update_service()->GetProgressInfo();
+  return bubble_controller_->update_service()->GetProgressInfo(
+      GetWebAppIdForBrowser(browser_));
 }

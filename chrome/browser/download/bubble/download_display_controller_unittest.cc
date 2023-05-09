@@ -155,8 +155,8 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
     }
   }
 
-  const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo()
-      override {
+  const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo(
+      const web_app::AppId* web_app_id) override {
     info_ = DownloadDisplayController::AllDownloadUIModelsInfo{};
     int download_item_index = 0, offline_item_index = 0;
     // Compose a list of models from the items stored in the test fixture.
@@ -197,7 +197,7 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   MOCK_METHOD(DownloadDisplayController::ProgressInfo,
               GetProgressInfo,
-              (),
+              (const web_app::AppId*),
               (const override));
 
  private:
@@ -346,7 +346,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     DownloadDisplayController::ProgressInfo progress_info;
     progress_info.download_count = in_progress_count_;
     progress_info.progress_percentage = in_progress_count_ > 0 ? 50 : 0;
-    EXPECT_CALL(*mock_update_service_, GetProgressInfo())
+    EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
         .WillRepeatedly(Return(progress_info));
     controller().OnNewItem(/*show_animation=*/false);
   }
@@ -362,7 +362,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     progress_info.download_count = in_progress_count_;
     progress_info.progress_percentage = in_progress_count_ > 0 ? 50 : 0;
     progress_info.progress_certain = false;
-    EXPECT_CALL(*mock_update_service_, GetProgressInfo())
+    EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
         .WillRepeatedly(Return(progress_info));
     mock_update_service_->AddModel(
         MockDownloadBubbleUpdateService::ModelType::kOfflineItem);
