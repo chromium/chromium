@@ -473,6 +473,17 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools sidebar pane was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
+    expires_after="2023-12-31">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>szuend@chromium.org</owner>
+  <summary>
+    Records the media types of files debugged in the DevTools Sources panel.
+    This means the user eiter sets a breakpoint, pauses or steps in a file of
+    the recorded media type.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.SourcesPanelFileOpened" enum="DevToolsMediaType"
     expires_after="2023-12-31">
   <owner>yangguo@chromium.org</owner>
