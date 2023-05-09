@@ -13,57 +13,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace {
 
 // Tests of window placement for popup browser windows.
 using PopupTest = PopupTestBase;
-
-// A helper class to wait for the bounds of two widgets to become equal.
-class WidgetBoundsEqualWaiter final : public views::WidgetObserver {
- public:
-  WidgetBoundsEqualWaiter(views::Widget* widget, views::Widget* widget_cmp)
-      : widget_(widget), widget_cmp_(widget_cmp) {
-    widget_->AddObserver(this);
-    widget_cmp_->AddObserver(this);
-  }
-
-  WidgetBoundsEqualWaiter(const WidgetBoundsEqualWaiter&) = delete;
-  WidgetBoundsEqualWaiter& operator=(const WidgetBoundsEqualWaiter&) = delete;
-  ~WidgetBoundsEqualWaiter() final {
-    widget_->RemoveObserver(this);
-    widget_cmp_->RemoveObserver(this);
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& rect) final {
-    if (WidgetsBoundsEqual()) {
-      widget_->RemoveObserver(this);
-      widget_cmp_->RemoveObserver(this);
-      run_loop_.Quit();
-    }
-  }
-
-  // Wait for changes to occur, or return immediately if they already have.
-  void Wait() {
-    if (!WidgetsBoundsEqual()) {
-      run_loop_.Run();
-    }
-  }
-
- private:
-  bool WidgetsBoundsEqual() {
-    return widget_->GetWindowBoundsInScreen() ==
-           widget_cmp_->GetWindowBoundsInScreen();
-  }
-  const raw_ptr<views::Widget> widget_ = nullptr;
-  const raw_ptr<views::Widget> widget_cmp_ = nullptr;
-  base::RunLoop run_loop_;
-};
 
 // Ensure `left=0,top=0` popup window feature coordinates are respected.
 IN_PROC_BROWSER_TEST_F(PopupTest, OpenLeftAndTopZeroCoordinates) {
@@ -189,12 +143,6 @@ IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
       browser(), "open('.', '', `noopener=1," + std::string(kFeatures) + "`)");
   Browser* opener_popup =
       OpenPopup(browser(), "open('.', '', `" + std::string(kFeatures) + "`)");
-
-  WidgetBoundsEqualWaiter(views::Widget::GetWidgetForNativeWindow(
-                              noopener_popup->window()->GetNativeWindow()),
-                          views::Widget::GetWidgetForNativeWindow(
-                              opener_popup->window()->GetNativeWindow()))
-      .Wait();
 
   EXPECT_EQ(noopener_popup->window()->GetBounds().ToString(),
             opener_popup->window()->GetBounds().ToString());
