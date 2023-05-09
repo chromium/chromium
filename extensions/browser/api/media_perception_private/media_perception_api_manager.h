@@ -83,6 +83,8 @@ class MediaPerceptionAPIManager : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI:
   static const char* service_name() { return "MediaPerceptionAPIManager"; }
 
+  static const bool kServiceIsNULLWhileTesting = true;
+
   enum class AnalyticsProcessState {
     // The process is not running.
     IDLE,

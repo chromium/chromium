@@ -108,6 +108,8 @@ class CrostiniInstaller : public KeyedService,
     skip_launching_terminal_for_testing_ = true;
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   enum class State {
     IDLE,

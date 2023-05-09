@@ -140,12 +140,20 @@ MediaPerceptionAPIManager::MediaPerceptionAPIManager(
     content::BrowserContext* context)
     : browser_context_(context),
       analytics_process_state_(AnalyticsProcessState::IDLE) {
-  scoped_observation_.Observe(ash::MediaAnalyticsClient::Get());
+  // `MediaAnalyticsClient` can be null in tests (browser_tests or
+  // extensions_browsertests).
+  if (auto* client = ash::MediaAnalyticsClient::Get()) {
+    scoped_observation_.Observe(client);
+  }
 }
 
 MediaPerceptionAPIManager::~MediaPerceptionAPIManager() {
   // Stop the separate media analytics process.
-  ash::UpstartClient::Get()->StopMediaAnalytics();
+  // `UpstartClient` can be null in tests (browser_tests or
+  // extensions_browsertests).
+  if (auto* client = ash::UpstartClient::Get()) {
+    client->StopMediaAnalytics();
+  }
 }
 
 void MediaPerceptionAPIManager::ActivateMediaPerception(
