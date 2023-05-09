@@ -269,9 +269,14 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
   RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time,
                 /* success= */ content_node_ids.has_value());
 
-  VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids.";
+  if (content_node_ids.has_value()) {
+    VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids.";
+    std::move(callback).Run(*content_node_ids);
+    return;
+  }
 
-  std::move(callback).Run(*content_node_ids);
+  VLOG(0) << "Screen2x returned no results.";
+  std::move(callback).Run(std::vector<int32_t>());
 }
 
 // static
