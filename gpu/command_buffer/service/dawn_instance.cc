@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/dawn_instance.h"
 
+#include <dawn/webgpu_cpp.h>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -53,29 +55,25 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
     require_instance_disabled_toggles.push_back(toggles.c_str());
   }
 
-  WGPUDawnTogglesDescriptor dawn_toggles_desc = {
-      .chain = {.sType = WGPUSType_DawnTogglesDescriptor},
-      .enabledTogglesCount =
-          static_cast<uint32_t>(require_instance_enabled_toggles.size()),
-      .enabledToggles = require_instance_enabled_toggles.data(),
-      .disabledTogglesCount =
-          static_cast<uint32_t>(require_instance_disabled_toggles.size()),
-      .disabledToggles = require_instance_disabled_toggles.data(),
-  };
-  WGPUDawnInstanceDescriptor dawn_instance_desc = {
-      .chain =
-          {
-              .next = &dawn_toggles_desc.chain,
-              .sType = WGPUSType_DawnInstanceDescriptor,
-          },
-      .additionalRuntimeSearchPathsCount = dawn_search_path.empty() ? 0u : 1u,
-      .additionalRuntimeSearchPaths = &dawn_search_path_c_str,
-  };
-  WGPUInstanceDescriptor instance_desc = {
-      .nextInChain = &dawn_instance_desc.chain,
-  };
+  wgpu::DawnTogglesDescriptor dawn_toggle_desc;
+  dawn_toggle_desc.enabledTogglesCount =
+      static_cast<uint32_t>(require_instance_enabled_toggles.size());
+  dawn_toggle_desc.enabledToggles = require_instance_enabled_toggles.data();
+  dawn_toggle_desc.disabledTogglesCount =
+      static_cast<uint32_t>(require_instance_disabled_toggles.size());
+  dawn_toggle_desc.disabledToggles = require_instance_disabled_toggles.data();
 
-  auto instance = std::make_unique<DawnInstance>(&instance_desc);
+  wgpu::DawnInstanceDescriptor dawn_instance_desc;
+  dawn_instance_desc.additionalRuntimeSearchPathsCount =
+      dawn_search_path.empty() ? 0u : 1u;
+  dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
+  dawn_instance_desc.nextInChain = &dawn_toggle_desc;
+
+  wgpu::InstanceDescriptor instance_desc;
+  instance_desc.nextInChain = &dawn_instance_desc;
+
+  auto instance = std::make_unique<DawnInstance>(
+      reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
   instance->SetPlatform(platform);
 
   switch (gpu_preferences.enable_dawn_backend_validation) {
