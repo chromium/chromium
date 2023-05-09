@@ -63,9 +63,9 @@ id<GREYMatcher> GetMatcherForRegularCellWithTitle(NSString* title) {
 
 // Matcher for the pinned cell at the given `index`.
 id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
-  return grey_allOf(grey_accessibilityLabel(title),
-                    grey_kindOfClassName(@"PinnedCell"),
-                    grey_sufficientlyVisible(), nil);
+  return grey_allOf(
+      grey_accessibilityLabel([NSString stringWithFormat:@"Pinned, %@", title]),
+      grey_kindOfClassName(@"PinnedCell"), grey_sufficientlyVisible(), nil);
 }
 
 // Matcher for the "Done" button on the Tab Grid.
