@@ -1398,7 +1398,7 @@ if (enable_java_templates) {
   #
   template("java_binary_script") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
       _main_class = invoker.main_class
       _build_config = invoker.build_config
@@ -1423,6 +1423,10 @@ if (enable_java_templates) {
         "--max-heap-size=$_max_heap_size",
       ]
       data = []
+      deps = [ "//third_party/jdk:java_data" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
 
       if (use_jacoco_coverage) {
         args += [
@@ -1443,12 +1447,6 @@ if (enable_java_templates) {
       }
       if (defined(invoker.wrapper_script_args)) {
         args += [ "--" ] + invoker.wrapper_script_args
-      }
-      if (defined(invoker.use_jdk_11) && invoker.use_jdk_11) {
-        args += [ "--use-jdk-11" ]
-        deps += [ "//third_party/jdk11:java_data" ]
-      } else {
-        deps += [ "//third_party/jdk:java_data" ]
       }
     }
   }
