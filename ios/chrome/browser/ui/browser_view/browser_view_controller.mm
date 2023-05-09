@@ -678,8 +678,7 @@ enum HeaderBehaviour {
 
 - (void)setPrimary:(BOOL)primary {
   if (_tabUsageRecorderBrowserAgent) {
-    _tabUsageRecorderBrowserAgent->RecordPrimaryBrowserChange(
-        primary, self.currentWebState);
+    _tabUsageRecorderBrowserAgent->RecordPrimaryBrowserChange(primary);
   }
   if (primary) {
     [self updateBroadcastState];

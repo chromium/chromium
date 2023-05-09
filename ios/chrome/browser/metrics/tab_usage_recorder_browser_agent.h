@@ -54,12 +54,10 @@ class TabUsageRecorderBrowserAgent
                          web::WebState* new_web_state);
 
   // Called when the Browser which the user is primarily interacting with has
-  // changed. The `active_web_state` is the active tab of the browser's
-  // webStateList. If the user began interacting with `active_web_state`,
+  // changed. If the user began interacting with `active_web_state`,
   // `primary_browser` should be true. If the user stopped interacting with
   // `active_web_state`, `primary_browser` should be false.
-  void RecordPrimaryBrowserChange(bool primary_browser,
-                                  web::WebState* active_web_state);
+  void RecordPrimaryBrowserChange(bool primary_browser);
 
   // Called when a page load begins, to keep track of how many page loads
   // happen before an evicted tab is seen.
