@@ -537,11 +537,12 @@ def MakeVersionStamp(git_hash):
 
 def GetLatestRustCommit():
     """Get the latest commit hash in the LLVM monorepo."""
+    url = (
+        'https://chromium.googlesource.com/external/' +
+        'github.com/rust-lang/rust/+/refs/heads/master?format=JSON'  # nocheck
+    )
     main = json.loads(
-        urllib.request.urlopen('https://chromium.googlesource.com/external/' +
-                               'github.com/rust-lang/rust/' +
-                               '+/refs/heads/main?format=JSON').read().decode(
-                                   "utf-8").replace(")]}'", ""))
+        urllib.request.urlopen(url).read().decode("utf-8").replace(")]}'", ""))
     return main['commit']
 
 
