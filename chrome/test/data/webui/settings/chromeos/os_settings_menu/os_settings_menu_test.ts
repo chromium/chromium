@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
+
+import {osPageAvailability, OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -37,6 +39,7 @@ suite('<os-settings-menu>', () => {
   setup(() => {
     setupRouter();
     settingsMenu = document.createElement('os-settings-menu');
+    settingsMenu.pageAvailability = osPageAvailability;
     document.body.appendChild(settingsMenu);
   });
 
@@ -112,6 +115,7 @@ suite('<os-settings-menu> reset', () => {
     setupRouter();
     Router.getInstance().navigateTo(routes.OS_RESET);
     settingsMenu = document.createElement('os-settings-menu');
+    settingsMenu.pageAvailability = osPageAvailability;
     document.body.appendChild(settingsMenu);
     flush();
   });
@@ -150,4 +154,49 @@ suite('<os-settings-menu> reset', () => {
     // BASIC has no sub page selected.
     assertEquals('', selector.selected);
   });
+});
+
+suite('<os-settings-menu> page availability', () => {
+  let settingsMenu: OsSettingsMenuElement;
+
+  setup(() => {
+    settingsMenu = document.createElement('os-settings-menu');
+    settingsMenu.pageAvailability = osPageAvailability;
+    document.body.appendChild(settingsMenu);
+    flush();
+  });
+
+  teardown(() => {
+    settingsMenu.remove();
+  });
+
+  const pageNames = Object.keys(osPageAvailability);
+  for (const pageName of pageNames) {
+    [true, false].forEach((available) => {
+      suite(
+          `When ${pageName} page is ${available ? 'available' : 'unavailable'}`,
+          () => {
+            setup(() => {
+              settingsMenu.pageAvailability = {
+                ...osPageAvailability,
+                [pageName]: available,
+              };
+              flush();
+            });
+
+            test(
+                `respective menu item should ${
+                    available ? 'exist' : 'not exist'}`,
+                () => {
+                  const menuItem = settingsMenu.shadowRoot!.querySelector(
+                      `a.item[data-page-name='${pageName}']`);
+                  if (available) {
+                    assertTrue(!!menuItem, 'Menu item should exist.');
+                  } else {
+                    assertEquals(null, menuItem, 'Menu item should not exist.');
+                  }
+                });
+          });
+    });
+  }
 });

@@ -29,7 +29,6 @@ export interface OsPageAvailability {
   kerberos: boolean;
   languages: boolean;
   multidevice: boolean;
-  onStartup: boolean;
   people: boolean|{
     googleAccounts: boolean,
     lockScreen: boolean,
@@ -47,6 +46,7 @@ const isAccountManagerEnabled =
     loadTimeData.getBoolean('isAccountManagerEnabled');
 const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&
     loadTimeData.getBoolean('isKerberosEnabled');
+const isPowerwashAllowed = loadTimeData.getBoolean('allowPowerwash');
 
 export let osPageAvailability: OsPageAvailability;
 if (isGuestMode) {
@@ -62,12 +62,11 @@ if (isGuestMode) {
     kerberos: isKerberosEnabled,
     languages: true,
     multidevice: false,
-    onStartup: false,
     people: false,
     personalization: false,
     printing: true,
     privacy: true,
-    reset: false,
+    reset: isPowerwashAllowed,
     search: true,
   };
 } else {
@@ -83,7 +82,6 @@ if (isGuestMode) {
     kerberos: isKerberosEnabled,
     languages: true,
     multidevice: true,
-    onStartup: true,
     people: {
       googleAccounts: isAccountManagerEnabled,
       lockScreen: true,
@@ -91,7 +89,7 @@ if (isGuestMode) {
     personalization: true,
     printing: true,
     privacy: true,
-    reset: true,
+    reset: isPowerwashAllowed,
     search: true,
   };
 }

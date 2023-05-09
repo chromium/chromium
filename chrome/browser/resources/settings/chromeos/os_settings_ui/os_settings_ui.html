@@ -119,10 +119,9 @@
     <div slot="body">
       <template is="dom-if" id="drawerTemplate">
         <os-settings-menu
+            page-availability="[[pageAvailability_]]"
             on-iron-activate="onSectionSelect_"
-            advanced-opened="{{advancedOpenedInMenu_}}"
-            show-kerberos-section="[[showKerberosSection_]]"
-            show-reset="[[showReset_]]">
+            advanced-opened="{{advancedOpenedInMenu_}}">
         </os-settings-menu>
       </template>
     </div>
@@ -134,9 +133,7 @@
       <os-settings-menu
           page-availability="[[pageAvailability_]]"
           on-iron-activate="onSectionSelect_"
-          advanced-opened="{{advancedOpenedInMenu_}}"
-          show-kerberos-section="[[showKerberosSection_]]"
-          show-reset="[[showReset_]]">
+          advanced-opened="{{advancedOpenedInMenu_}}">
       </os-settings-menu>
     </template>
   </div>
