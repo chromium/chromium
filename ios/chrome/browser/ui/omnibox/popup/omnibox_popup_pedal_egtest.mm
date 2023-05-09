@@ -213,6 +213,41 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that manage settings pedal is present and it opens the manage settings
+// page.
+- (void)testManageSettingsPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalsettings"];
+
+  NSString* manageSettingsPedalString = l10n_util::GetNSString(
+      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_CHROME_SETTINGS);
+
+  // Matcher for the manage settings pedal suggestion.
+  id<GREYMatcher> manageSettingsPedal =
+      popupRowWithString(manageSettingsPedalString);
+
+  // Manage settings pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:manageSettingsPedal];
+
+  // Tap on manage settings pedal.
+  [[EarlGrey selectElementWithMatcher:manageSettingsPedal]
+      performAction:grey_tap()];
+
+  // Manage settings page should be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SettingsCollectionView()];
+
+  // Close the Manage settings page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SettingsCollectionView()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {
