@@ -680,6 +680,7 @@ void Connector::CancelWait() {
 }
 
 void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
+  recordreplay::Assert("[RUN-1209-1900] Connector::HandleError A %d", !!paused_);
   if (error_ || !message_pipe_.is_valid())
     return;
 
@@ -707,6 +708,7 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     if (!paused_)
       WaitToReadMore();
   } else {
+    recordreplay::Assert("[RUN-1209-1900] Connector::HandleError B");
     error_ = true;
     if (connection_error_handler_)
       std::move(connection_error_handler_).Run();
