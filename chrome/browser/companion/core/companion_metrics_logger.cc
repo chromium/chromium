@@ -182,19 +182,21 @@ void CompanionMetricsLogger::FlushStats() {
     ukm_builder.SetOpenTrigger(static_cast<int>(open_trigger_.value()));
   }
 
-  // CQ surface.
-  auto iter = ui_surface_metrics_.find(UiSurface::kCQ);
+  // Text search.
+  auto iter = ui_surface_metrics_.find(UiSurface::kSearchBox);
   if (iter != ui_surface_metrics_.end()) {
-    ukm_builder.SetCQ_LastEvent(static_cast<int64_t>(iter->second.last_event));
-    ukm_builder.SetCQ_ComponentPosition(iter->second.ui_surface_position);
-    ukm_builder.SetCQ_NumEntriesAvailable(
-        iter->second.child_element_available_count);
-    ukm_builder.SetCQ_NumEntriesShown(iter->second.child_element_shown_count);
+    ukm_builder.SetTextSearchCount(iter->second.click_count);
+  }
 
-    auto click_position = iter->second.click_position;
-    if (click_position != kInvalidPosition) {
-      ukm_builder.SetCQ_ClickPosition(click_position);
-    }
+  // Region search.
+  iter = ui_surface_metrics_.find(UiSurface::kRegionSearch);
+  if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetRegionSearch_ClickCount(iter->second.click_count);
+  }
+
+  // Promo state.
+  if (last_promo_event_.has_value()) {
+    ukm_builder.SetPromoEvent(static_cast<int>(last_promo_event_.value()));
   }
 
   // PH surface.
@@ -209,15 +211,93 @@ void CompanionMetricsLogger::FlushStats() {
     ukm_builder.SetPH_Feedback(static_cast<int>(last_ph_feedback_.value()));
   }
 
-  // Region search.
-  iter = ui_surface_metrics_.find(UiSurface::kRegionSearch);
+  // CQ surface.
+  iter = ui_surface_metrics_.find(UiSurface::kCQ);
   if (iter != ui_surface_metrics_.end()) {
-    ukm_builder.SetRegionSearch_ClickCount(iter->second.click_count);
+    ukm_builder.SetCQ_LastEvent(static_cast<int64_t>(iter->second.last_event));
+    ukm_builder.SetCQ_ComponentPosition(iter->second.ui_surface_position);
+    ukm_builder.SetCQ_NumEntriesAvailable(
+        iter->second.child_element_available_count);
+    ukm_builder.SetCQ_NumEntriesShown(iter->second.child_element_shown_count);
+
+    auto click_position = iter->second.click_position;
+    if (click_position != kInvalidPosition) {
+      ukm_builder.SetCQ_ClickPosition(click_position);
+    }
   }
 
-  // Promo state.
-  if (last_promo_event_.has_value()) {
-    ukm_builder.SetPromoEvent(static_cast<int>(last_promo_event_.value()));
+  // VQ surface.
+  iter = ui_surface_metrics_.find(UiSurface::kVQ);
+  if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetVQ_LastEvent(static_cast<int64_t>(iter->second.last_event));
+    ukm_builder.SetVQ_ComponentPosition(iter->second.ui_surface_position);
+    ukm_builder.SetVQ_NumEntriesAvailable(
+        iter->second.child_element_available_count);
+    ukm_builder.SetVQ_NumEntriesShown(iter->second.child_element_shown_count);
+
+    auto click_position = iter->second.click_position;
+    if (click_position != kInvalidPosition) {
+      ukm_builder.SetVQ_ClickPosition(click_position);
+    }
+  }
+
+  // RelQr surface.
+  iter = ui_surface_metrics_.find(UiSurface::kRelQr);
+  if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetRelQr_LastEvent(
+        static_cast<int64_t>(iter->second.last_event));
+    ukm_builder.SetRelQr_ComponentPosition(iter->second.ui_surface_position);
+    ukm_builder.SetRelQr_NumEntriesAvailable(
+        iter->second.child_element_available_count);
+    ukm_builder.SetRelQr_NumEntriesShown(
+        iter->second.child_element_shown_count);
+
+    auto click_position = iter->second.click_position;
+    if (click_position != kInvalidPosition) {
+      ukm_builder.SetRelQr_ClickPosition(click_position);
+    }
+  }
+
+  // RelQs surface.
+  iter = ui_surface_metrics_.find(UiSurface::kRelQs);
+  if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetRelQs_LastEvent(
+        static_cast<int64_t>(iter->second.last_event));
+    ukm_builder.SetRelQs_ComponentPosition(iter->second.ui_surface_position);
+    ukm_builder.SetRelQs_NumEntriesAvailable(
+        iter->second.child_element_available_count);
+    ukm_builder.SetRelQs_NumEntriesShown(
+        iter->second.child_element_shown_count);
+
+    auto click_position = iter->second.click_position;
+    if (click_position != kInvalidPosition) {
+      ukm_builder.SetRelQs_ClickPosition(click_position);
+    }
+  }
+
+  // Page entities surface.
+  iter = ui_surface_metrics_.find(UiSurface::kPageEntities);
+  if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetPageEntities_LastEvent(
+        static_cast<int64_t>(iter->second.last_event));
+    ukm_builder.SetPageEntities_ComponentPosition(
+        iter->second.ui_surface_position);
+    ukm_builder.SetPageEntities_NumEntriesAvailable(
+        iter->second.child_element_available_count);
+    ukm_builder.SetPageEntities_NumEntriesShown(
+        iter->second.child_element_shown_count);
+
+    auto click_position = iter->second.click_position;
+    if (click_position != kInvalidPosition) {
+      ukm_builder.SetPageEntities_ClickPosition(click_position);
+    }
+  }
+
+  // ATX surface.
+  iter = ui_surface_metrics_.find(UiSurface::kATX);
+  if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetATX_LastEvent(static_cast<int64_t>(iter->second.last_event));
+    ukm_builder.SetATX_ComponentPosition(iter->second.ui_surface_position);
   }
 
   ukm_builder.Record(ukm::UkmRecorder::Get());

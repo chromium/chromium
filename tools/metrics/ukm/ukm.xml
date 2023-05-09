@@ -6676,6 +6676,16 @@ be describing additional metrics about the same event.
     navigates away. For most of the UI surfaces, only the last event (e.g.
     displayed or clicked) is recorded.
   </summary>
+  <metric name="ATX.ComponentPosition">
+    <summary>
+      The position of the ATX surface in the page.
+    </summary>
+  </metric>
+  <metric name="ATX.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the ATX surface.
+    </summary>
+  </metric>
   <metric name="CQ.ClickPosition">
     <summary>
       The position of the CQ element that was clicked with respect to its parent
@@ -6709,6 +6719,34 @@ be describing additional metrics about the same event.
       The UI location from which the companion page was opened.
     </summary>
   </metric>
+  <metric name="PageEntities.ClickPosition">
+    <summary>
+      The position of the page entities element that was clicked with respect to
+      its parent list.
+    </summary>
+  </metric>
+  <metric name="PageEntities.ComponentPosition">
+    <summary>
+      The position of the page entities surface in the page.
+    </summary>
+  </metric>
+  <metric name="PageEntities.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the page entities surface.
+    </summary>
+  </metric>
+  <metric name="PageEntities.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the page entities suface.
+      Clamped to a max value of 10.
+    </summary>
+  </metric>
+  <metric name="PageEntities.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the page entities suface.
+      Clamped to a max value of 10.
+    </summary>
+  </metric>
   <metric name="PH.ComponentPosition">
     <summary>
       The position of the PH surface in the page.
@@ -6732,6 +6770,95 @@ be describing additional metrics about the same event.
   <metric name="RegionSearch.ClickCount">
     <summary>
       The number of times region search in the multimodal box was clicked.
+    </summary>
+  </metric>
+  <metric name="RelQr.ClickPosition">
+    <summary>
+      The position of the RelQr element that was clicked with respect to its
+      parent list.
+    </summary>
+  </metric>
+  <metric name="RelQr.ComponentPosition">
+    <summary>
+      The position of the RelQr surface in the page.
+    </summary>
+  </metric>
+  <metric name="RelQr.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the RelQr surface.
+    </summary>
+  </metric>
+  <metric name="RelQr.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the RelQr suface. Clamped to
+      a max value of 10.
+    </summary>
+  </metric>
+  <metric name="RelQr.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the RelQr suface. Clamped to a
+      max value of 10.
+    </summary>
+  </metric>
+  <metric name="RelQs.ClickPosition">
+    <summary>
+      The position of the RelQs element that was clicked with respect to its
+      parent list.
+    </summary>
+  </metric>
+  <metric name="RelQs.ComponentPosition">
+    <summary>
+      The position of the RelQs surface in the page.
+    </summary>
+  </metric>
+  <metric name="RelQs.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the RelQs surface.
+    </summary>
+  </metric>
+  <metric name="RelQs.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the RelQs suface. Clamped to
+      a max value of 10.
+    </summary>
+  </metric>
+  <metric name="RelQs.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the RelQs suface. Clamped to a
+      max value of 10.
+    </summary>
+  </metric>
+  <metric name="TextSearchCount">
+    <summary>
+      The number of times text search box was used.
+    </summary>
+  </metric>
+  <metric name="VQ.ClickPosition">
+    <summary>
+      The position of the VQ element that was clicked with respect to its parent
+      list.
+    </summary>
+  </metric>
+  <metric name="VQ.ComponentPosition">
+    <summary>
+      The position of the VQ surface in the page.
+    </summary>
+  </metric>
+  <metric name="VQ.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the VQ surface.
+    </summary>
+  </metric>
+  <metric name="VQ.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the VQ suface. Clamped to a
+      max value of 10.
+    </summary>
+  </metric>
+  <metric name="VQ.NumEntriesShown">
+    <summary>
+      The number of child elements shown within the VQ suface. Clamped to a max
+      value of 10.
     </summary>
   </metric>
 </event>
