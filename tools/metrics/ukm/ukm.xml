@@ -6683,6 +6683,12 @@ be describing additional metrics about the same event.
       value of 10.
     </summary>
   </metric>
+  <metric name="CQ.ClickPosition">
+    <summary>
+      The position of the CQ element that was clicked with respect to its parent
+      list.
+    </summary>
+  </metric>
   <metric name="CQ.LastEvent" enum="Companion.UiEvent">
     <summary>
       The last event on the CQ surface.

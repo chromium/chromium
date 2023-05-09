@@ -48,7 +48,8 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void OnOpenInNewTabButtonURLChanged(const ::GURL& url_to_open) override;
   void RecordUiSurfaceShown(side_panel::mojom::UiSurface ui_surface,
                             uint32_t child_element_count) override;
-  void RecordUiSurfaceClicked(side_panel::mojom::UiSurface ui_surface) override;
+  void RecordUiSurfaceClicked(side_panel::mojom::UiSurface ui_surface,
+                              int32_t click_position) override;
   void OnCqCandidatesAvailable(
       const std::vector<std::string>& text_directives) override;
   void OnPhFeedback(side_panel::mojom::PhFeedback ph_feedback) override;
