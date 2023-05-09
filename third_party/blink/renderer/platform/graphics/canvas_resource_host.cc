@@ -42,7 +42,6 @@ void CanvasResourceHost::DiscardResourceProvider() {
 }
 
 void CanvasResourceHost::InitializeForRecording(cc::PaintCanvas* canvas) {
-  canvas->save();
   RestoreCanvasMatrixClipStack(canvas);
 }
 

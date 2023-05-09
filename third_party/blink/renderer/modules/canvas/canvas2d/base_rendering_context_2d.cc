@@ -353,12 +353,11 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
   if (!c)
     return;
   for (Member<CanvasRenderingContext2DState> curr_state : state_stack_) {
+    c->save();
     c->setMatrix(SkM44());
     curr_state->PlaybackClips(c);
     c->setMatrix(AffineTransformToSkM44(curr_state->GetTransform()));
-    c->save();
   }
-  c->restore();
   ValidateStateStackWithCanvas(c);
 }
 

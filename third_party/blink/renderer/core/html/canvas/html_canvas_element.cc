@@ -1768,7 +1768,6 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   // is re-applied, it needs to remove clip from canvas and restore it after the
   // image is drawn.
   canvas->restoreToCount(1);
-  canvas->save();
 
   // TODO(jochin): Consider using ResourceProvider()->RestoreBackBuffer() here
   // to avoid all of this clip stack manipulation.

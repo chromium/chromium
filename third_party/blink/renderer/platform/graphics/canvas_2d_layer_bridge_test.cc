@@ -1036,12 +1036,14 @@ TEST_F(Canvas2DLayerBridgeTest,
                                                    &release_callback2));
   EXPECT_FALSE(release_callback2);
 }
+
 class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
  public:
   explicit CustomFakeCanvasResourceHost(const gfx::Size& size)
       : FakeCanvasResourceHost(size) {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* canvas) const override {
-    // Alter canvas' matrix to emulate a restore
+    // Restore the canvas stack to hold a simple matrix transform.
+    canvas->save();
     canvas->translate(5, 0);
   }
 };
