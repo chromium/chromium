@@ -116,9 +116,6 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   UnifiedMediaControlsContainer* media_controls_container_for_testing() {
     return media_controls_container_;
   }
-  QuickSettingsMediaViewContainer* media_view_container_for_testing() {
-    return media_view_container_;
-  }
   QuickSettingsFooter* footer_for_testing() { return footer_; }
 
  private:
