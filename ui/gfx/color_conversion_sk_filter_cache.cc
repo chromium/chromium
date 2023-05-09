@@ -134,7 +134,6 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     if (src_bit_depth) {
       options.src_bit_depth = src_bit_depth.value();
     }
-    options.sdr_max_luminance_nits = sdr_max_luminance_nits;
     value.transform = gfx::ColorTransform::NewColorTransform(src, dst, options);
     value.effect = value.transform->GetSkRuntimeEffect();
   }

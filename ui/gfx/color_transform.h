@@ -33,10 +33,6 @@ class COLOR_SPACE_EXPORT ColorTransform {
     // If set to true, then map PQ and HLG inputs such that their maximum
     // luminance will be `dst_max_luminance_relative`.
     bool tone_map_pq_and_hlg_to_dst = false;
-
-    // Used for interpreting color spaces whose definition depends on an SDR
-    // white point.
-    float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
   };
 
   // Parameters that may be specified when the transform is applied. Changing
@@ -46,7 +42,8 @@ class COLOR_SPACE_EXPORT ColorTransform {
     float offset = 0.f;
     float multiplier = 1.f;
 
-    // Used for tone mapping.
+    // Used for interpreting color spaces whose definition depends on an SDR
+    // white point and for tone mapping.
     float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
 
     // Used for tone mapping PQ sources.
