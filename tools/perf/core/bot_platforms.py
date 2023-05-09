@@ -423,7 +423,7 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('rendering.desktop'),
+    _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_PRO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
