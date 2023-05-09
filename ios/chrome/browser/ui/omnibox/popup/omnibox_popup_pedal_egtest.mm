@@ -106,6 +106,41 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that the manage passwords pedal is present and it opens the password
+// manager page.
+- (void)testManagePasswordsPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"passwords"];
+
+  NSString* managePasswordsPedalString =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_PASSWORDS);
+
+  // Matcher for the manage passwords pedal suggestion.
+  id<GREYMatcher> managePasswordsPedal =
+      popupRowWithString(managePasswordsPedalString);
+
+  // Manage passwords pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:managePasswordsPedal];
+
+  // Tap on Manage passwords pedal.
+  [[EarlGrey selectElementWithMatcher:managePasswordsPedal]
+      performAction:grey_tap()];
+
+  // Password Manager page should be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::PasswordsTableViewMatcher()];
+
+  // Close the password manager.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::PasswordsTableViewMatcher()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {

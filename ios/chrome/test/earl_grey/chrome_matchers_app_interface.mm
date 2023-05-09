@@ -1068,6 +1068,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                                               descriptionBlock:describe];
 }
 
++ (id<GREYMatcher>)passwordsTableViewMatcher {
+  return grey_accessibilityID(kPasswordsTableViewId);
+}
+
 #pragma mark - Overflow Menu Destinations
 
 + (id<GREYMatcher>)bookmarksDestinationButton {

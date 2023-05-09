@@ -693,6 +693,10 @@ id<GREYMatcher> CellCanBeSwipedToDismissed() {
   return [ChromeMatchersAppInterface cellCanBeSwipedToDismissed];
 }
 
+id<GREYMatcher> PasswordsTableViewMatcher() {
+  return [ChromeMatchersAppInterface passwordsTableViewMatcher];
+}
+
 #pragma mark - Overflow Menu Destinations
 
 id<GREYMatcher> BookmarksDestinationButton() {

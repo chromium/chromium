@@ -525,6 +525,9 @@
 // Returns a matcher matching cells that can be swiped-to-dismiss.
 + (id<GREYMatcher>)cellCanBeSwipedToDismissed;
 
+// Returns a matcher to password table view.
++ (id<GREYMatcher>)passwordsTableViewMatcher;
+
 #pragma mark - Overflow Menu Destinations
 
 // Returns matcher for the bookmarks destination button in the overflow menu

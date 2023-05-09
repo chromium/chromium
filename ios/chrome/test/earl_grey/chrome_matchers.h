@@ -560,6 +560,9 @@ id<GREYMatcher> SettingsToolbarAddButton();
 // Returns a matcher matching cells that can be swiped-to-dismiss.
 id<GREYMatcher> CellCanBeSwipedToDismissed();
 
+// Returns a matcher for passwords table view.
+id<GREYMatcher> PasswordsTableViewMatcher();
+
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.
