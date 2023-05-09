@@ -188,7 +188,6 @@ public class WebappModeTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @DisabledTest(message = "crbug.com/1064395")
     public void testBringTabToFront() {
         // Start the WebappActivity.
         final WebappActivity firstActivity =
