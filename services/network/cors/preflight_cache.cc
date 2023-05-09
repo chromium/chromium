@@ -58,9 +58,8 @@ base::Value::Dict NetLogCacheStatusParams(const CacheMetric metric) {
   return dict;
 }
 
-void ReportCacheMetricAndRecordNetLog(CacheMetric metric,
-                                      const net::NetLogWithSource& net_log) {
-  UMA_HISTOGRAM_ENUMERATION("Net.Cors.PreflightCacheResult", metric);
+void RecordCacheMetricNetLog(CacheMetric metric,
+                             const net::NetLogWithSource& net_log) {
   net_log.AddEvent(net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE,
                    [&] { return NetLogCacheStatusParams(metric); });
 }
@@ -93,9 +92,6 @@ void PreflightCache::AppendEntry(
     // kMaxCacheEntries at maximum.
     MayPurge(kMaxCacheEntries - 1, kPurgeUnit);
   }
-  UMA_HISTOGRAM_COUNTS_10000("Net.Cors.PreflightCacheKeySize",
-                             url_spec.length());
-
   cache_[key] = std::move(preflight_result);
 }
 
@@ -115,7 +111,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
                              target_ip_address_space);
   auto cache_entry = cache_.find(key);
   if (cache_entry == cache_.end()) {
-    ReportCacheMetricAndRecordNetLog(CacheMetric::kMiss, net_log);
+    RecordCacheMetricNetLog(CacheMetric::kMiss, net_log);
     return false;
   }
 
@@ -130,15 +126,15 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
       // Note that we always use the "with non-wildcard request headers"
       // variant, because it is hard to generate the correct error information
       // from here, and cache miss is in most case recoverable.
-      ReportCacheMetricAndRecordNetLog(CacheMetric::kHitAndPass, net_log);
+      RecordCacheMetricNetLog(CacheMetric::kHitAndPass, net_log);
       net_log.AddEvent(
           net::NetLogEventType::CORS_PREFLIGHT_CACHED_RESULT,
           [&cache_entry] { return cache_entry->second->NetLogParams(); });
       return true;
     }
-    ReportCacheMetricAndRecordNetLog(CacheMetric::kHitAndFail, net_log);
+    RecordCacheMetricNetLog(CacheMetric::kHitAndFail, net_log);
   } else {
-    ReportCacheMetricAndRecordNetLog(CacheMetric::kStale, net_log);
+    RecordCacheMetricNetLog(CacheMetric::kStale, net_log);
   }
 
   // The cache entry is either stale or not sufficient. Remove the item from the

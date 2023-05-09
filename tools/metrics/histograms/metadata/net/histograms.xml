@@ -736,50 +736,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Cors.AccessCheckResult" enum="CorsAccessCheckResult"
-    expires_after="2023-06-04">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>src/services/network/OWNERS</owner>
-  <summary>
-    The distribution of CORS access check results. This reports whenever CORS
-    AccessCheck runs. This is recorded when a CORS enabled request receives a
-    response and completes CORS checks.
-  </summary>
-</histogram>
-
-<histogram name="Net.Cors.AccessCheckResult.NotSecureRequestor"
-    enum="CorsAccessCheckResult" expires_after="2023-06-04">
-  <owner>carlosil@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <owner>toyoshim@chromium.org</owner>
-  <owner>src/services/network/OWNERS</owner>
-  <summary>
-    The distribution of CORS access check results for not potentially
-    trustworthy requestors. This reports whenever CORS AccessCheck runs and the
-    requesting site origin is not potentially trustworthy.
-  </summary>
-</histogram>
-
-<histogram name="Net.Cors.PreflightCacheKeySize" units="bytes"
-    expires_after="2023-06-04">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>src/services/network/OWNERS</owner>
-  <summary>
-    The distribution of the key size in the CORS preflight cache. This counts
-    each key size when a new entry is added to the cache.
-  </summary>
-</histogram>
-
-<histogram name="Net.Cors.PreflightCacheResult" enum="CorsPreflightCacheResult"
-    expires_after="2023-06-04">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>src/services/network/OWNERS</owner>
-  <summary>
-    The distribution of the CORS preflight cache query results. This counts on
-    each cache query.
-  </summary>
-</histogram>
-
 <histogram name="Net.Cors.PreflightCheckError2" enum="CorsAccessCheckError"
     expires_after="2023-10-08">
   <owner>toyoshim@chromium.org</owner>

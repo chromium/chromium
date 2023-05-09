@@ -228,15 +228,6 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
                   actual_credentials_mode, origin);
   const bool has_ok_status = IsSuccessfulStatus(response_status_code);
 
-  AccessCheckResult result = (!cors_result.has_value() || !has_ok_status)
-                                 ? AccessCheckResult::kNotPermittedInPreflight
-                                 : AccessCheckResult::kPermittedInPreflight;
-  UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckResult", result);
-  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckResult.NotSecureRequestor",
-                              result);
-  }
-
   if (cors_result.has_value()) {
     if (has_ok_status) {
       return base::ok();
