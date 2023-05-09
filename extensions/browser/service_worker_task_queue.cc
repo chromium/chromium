@@ -172,11 +172,8 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
   // this callback with stale processes.
   // https://crbug.com/1335821.
   if (!content::RenderProcessHost::FromID(process_id)) {
-    // NOTE: The following is an antipattern [1]. We have this as a temporary
-    // hack to avoid crashing for stable users while the bug is addressed.
-    // [1]
-    // https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/c++/c++-dos-and-donts.md#guarding-with-dcheck_is_on
-    NOTREACHED();
+    // Leave a debug trace without crashing while the bug is addressed.
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
