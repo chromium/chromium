@@ -140,6 +140,9 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       first_endpoint_metadata.supported_protocol_alpns = {"http/1.1", "h2"};
       second_endpoint_metadata.supported_protocol_alpns = {"http/1.1", "h2",
                                                            "h3"};
+    } else if (hostname == "ech.com") {
+      first_endpoint_metadata.supported_protocol_alpns = {"http/1.1", "h2"};
+      first_endpoint_metadata.ech_config_list = {0x01, 0x02, 0x03, 0x04};
     } else {
       response_client->OnComplete(
           0, net::ResolveErrorInfo(net::OK),

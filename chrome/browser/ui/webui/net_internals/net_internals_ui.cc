@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -70,33 +71,7 @@ base::Value::List IPEndpointsToBaseList(
   return resolved_addresses_list;
 }
 
-// This function converts net::ConnectionEndpointMetadata to base::Value::Dict.
-base::Value::Dict ConnectionEndpointMetadataToBaseDict(
-    const net::ConnectionEndpointMetadata& metadata) {
-  base::Value::Dict connection_endpoint_metadata;
-
-  base::Value::List supported_protocol_alpns;
-  base::Value::List ech_config_list;
-  for (const std::string& supported_protocol_alpn :
-       metadata.supported_protocol_alpns) {
-    supported_protocol_alpns.Append(supported_protocol_alpn);
-  }
-
-  for (uint8_t ech_config : metadata.ech_config_list) {
-    ech_config_list.Append(ech_config);
-  }
-
-  connection_endpoint_metadata.Set("supported_protocol_alpns",
-                                   std::move(supported_protocol_alpns));
-  connection_endpoint_metadata.Set("ech_config_list",
-                                   std::move(ech_config_list));
-  connection_endpoint_metadata.Set("target_name", metadata.target_name);
-
-  return connection_endpoint_metadata;
-}
-
-// This function converts
-// absl::optional<net::HostResolverEndpointResults> to
+// This function converts absl::optional<net::HostResolverEndpointResults> to
 // base::Value::List.
 base::Value::List HostResolverEndpointResultsToBaseList(
     const absl::optional<net::HostResolverEndpointResults>& endpoint_results) {
@@ -106,13 +81,22 @@ base::Value::List HostResolverEndpointResultsToBaseList(
     return endpoint_results_list;
   }
 
-  for (const auto& endpoint_result : *endpoint_results) {
-    base::Value::Dict endpoint_results_dict;
-    endpoint_results_dict.Set(
-        "ip_endpoints", IPEndpointsToBaseList(endpoint_result.ip_endpoints));
-    endpoint_results_dict.Set("metadata", ConnectionEndpointMetadataToBaseDict(
-                                              endpoint_result.metadata));
-    endpoint_results_list.Append(std::move(endpoint_results_dict));
+  for (const auto& endpoint : *endpoint_results) {
+    base::Value::Dict dict;
+    dict.Set("ip_endpoints", IPEndpointsToBaseList(endpoint.ip_endpoints));
+
+    base::Value::List alpns;
+    for (const std::string& alpn : endpoint.metadata.supported_protocol_alpns) {
+      alpns.Append(alpn);
+    }
+    dict.Set("alpns", std::move(alpns));
+
+    if (!endpoint.metadata.ech_config_list.empty()) {
+      dict.Set("ech_config_list",
+               base::Base64Encode(endpoint.metadata.ech_config_list));
+    }
+
+    endpoint_results_list.Append(std::move(dict));
   }
   return endpoint_results_list;
 }
@@ -389,10 +373,12 @@ void NetInternalsMessageHandler::OnResolveHostDone(
       IPEndpointsToBaseList(resolved_addresses->endpoints());
   result.Set("resolved_addresses", std::move(resolved_addresses_list));
 
-  base::Value::List endpoint_result_with_metadata =
+  // TODO(crbug.com/1416410): Rename `endpoint_results_with_metadata` in the
+  // Mojo API to `alternative_endpoints`, to match the terminology used in the
+  // specification.
+  base::Value::List alternative_endpoints_list =
       HostResolverEndpointResultsToBaseList(endpoint_results_with_metadata);
-  result.Set("endpoint_results_with_metadata",
-             std::move(endpoint_result_with_metadata));
+  result.Set("alternative_endpoints", std::move(alternative_endpoints_list));
 
   ResolveJavascriptCallback(base::Value(callback_id), std::move(result));
 }

@@ -14,11 +14,14 @@ const dns_view_test = window.dns_view_test;
 dns_view_test.suiteName = 'NetInternalsDnsViewTests';
 /** @enum {string} */
 dns_view_test.TestNames = {
-  ResolveSingleHostWithoutMetadata: 'resolve single host without metadata',
-  ResolveSingleHostWithHTTP2Alpn: 'resolve single host with http2 alpn',
-  ResolveSingleHostWithHTTP3Alpn: 'resolve single host with http3 alpn',
-  ResolveMultipleHostWithMultipleAlpns:
-      'resolve multiple host with multiple alpns',
+  ResolveHostWithoutAlternative: 'resolve host with no alternative endpoints',
+  ResolveHostWithHTTP2Alternative:
+      'resolve host with http2 alternative endpoint',
+  ResolveHostWithHTTP3Alternative:
+      'resolve host with http3 alternative endpoint',
+  ResolveHostWithECHAlternative: 'resolve host with ECH alternative endpoint',
+  ResolveHostWithMultipleAlternatives:
+      'resolve host with multiple alternative endpoints',
   ErrorNameNotResolved: 'error name not resolved',
   ClearCache: 'clear cache',
 };
@@ -93,72 +96,81 @@ suite(dns_view_test.suiteName, function() {
   }
 
   /**
-   * Checks a single host resolve without metadata.
+   * Checks a host resolve without alternative endpoints.
    */
-  test(dns_view_test.TestNames.ResolveSingleHostWithoutMetadata, function() {
+  test(dns_view_test.TestNames.ResolveHostWithoutAlternative, function() {
     switchToView('dns');
     const taskQueue = new TaskQueue(true);
-
-    // Make sure a successful lookup of single address without metadata.
     taskQueue.addTask(new ResolveHostTask('somewhere.com'));
     taskQueue.addFunctionTask(assertEquals.bind(
         null,
         'Resolved IP addresses of "somewhere.com": ["127.0.0.1"].' +
-            'No data on which protocols are supported.'));
+            'No alternative endpoints.'));
     return taskQueue.run();
   });
 
   /**
-   * Checks a single host resolve with supported protocol alpns {"http/1.1",
-   * "h2"}.
+   * Checks a host resolve with an alternative endpoint that supports "http/1.1"
+   * and "h2".
    */
-  test(dns_view_test.TestNames.ResolveSingleHostWithHTTP2Alpn, function() {
+  test(dns_view_test.TestNames.ResolveHostWithHTTP2Alternative, function() {
     switchToView('dns');
     const taskQueue = new TaskQueue(true);
-
-    // Make sure a successful lookup of single address with supported protocol
-    // alpns {"http/1.1","h2"}.
     taskQueue.addTask(new ResolveHostTask('http2.com'));
     taskQueue.addFunctionTask(assertEquals.bind(
         null,
         'Resolved IP addresses of "http2.com": ["127.0.0.1"].' +
-            'Supported protocol alpns of "["127.0.0.1"]": ["http/1.1","h2"].'));
+            'Alternative endpoint: ' +
+            '{"alpns":["http/1.1","h2"],"ip_endpoints":["127.0.0.1"]}.'));
     return taskQueue.run();
   });
 
   /**
-   * Checks a single host resolve with supported protocol alpns {"http/1.1",
-   * "h2", "h3"}.
+   * Checks a host resolve with an alternative endpoint that supports
+   * "http/1.1", "h2", and "h3".
    */
-  test(dns_view_test.TestNames.ResolveSingleHostWithHTTP3Alpn, function() {
+  test(dns_view_test.TestNames.ResolveHostWithHTTP3Alternative, function() {
     switchToView('dns');
     const taskQueue = new TaskQueue(true);
-
-    // Make sure a successful lookup of single address with supported protocol
-    // alpns {"http/1.1","h2","h3"}.
     taskQueue.addTask(new ResolveHostTask('http3.com'));
     taskQueue.addFunctionTask(assertEquals.bind(
         null,
         'Resolved IP addresses of "http3.com": ["127.0.0.1"].' +
-            'Supported protocol alpns of "["127.0.0.1"]": ["http/1.1","h2","h3"].'));
+            'Alternative endpoint: ' +
+            '{"alpns":["http/1.1","h2","h3"],"ip_endpoints":["127.0.0.1"]}.'));
     return taskQueue.run();
   });
 
   /**
-   * Checks a multiple host resolve with multiple supported protocol alpns.
+   * Checks a host resolve with an alternative endpoint that supports ECH.
    */
-  test(dns_view_test.TestNames.ResolveMultipleHostWithMultipleAlpns, function() {
+  test(dns_view_test.TestNames.ResolveHostWithECHAlternative, function() {
     switchToView('dns');
     const taskQueue = new TaskQueue(true);
+    taskQueue.addTask(new ResolveHostTask('ech.com'));
+    taskQueue.addFunctionTask(assertEquals.bind(
+        null,
+        'Resolved IP addresses of "ech.com": ["127.0.0.1"].' +
+            'Alternative endpoint: ' +
+            '{"alpns":["http/1.1","h2"],"ech_config_list":"AQIDBA==",' +
+            '"ip_endpoints":["127.0.0.1"]}.'));
+    return taskQueue.run();
+  });
 
-    // Make sure a successful lookup of multiple addresses with multiple
-    // supported protocol alpns.
+  /**
+   * Checks a host resolve with multiple alternative endpoints.
+   */
+  test(dns_view_test.TestNames.ResolveHostWithMultipleAlternatives, function() {
+    switchToView('dns');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new ResolveHostTask('multihost.com'));
     taskQueue.addFunctionTask(assertEquals.bind(
         null,
         'Resolved IP addresses of "multihost.com": ["127.0.0.1","127.0.0.2"].' +
-            'Supported protocol alpns of "["127.0.0.1"]": ["http/1.1","h2"].' +
-            'Supported protocol alpns of "["127.0.0.2"]": ["http/1.1","h2","h3"].'));
+            'Alternative endpoint: ' +
+            '{"alpns":["http/1.1","h2"],"ip_endpoints":["127.0.0.1"]}.' +
+            'Alternative endpoint: ' +
+            '{"alpns":["http/1.1","h2","h3"],"ip_endpoints":["127.0.0.2"]}.'));
     return taskQueue.run();
   });
 
