@@ -106,36 +106,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduling.Renderer.FrameProduction.TimeOverused"
-    units="microseconds" expires_after="2023-04-23">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metrics@chromium.org</owner>
-  <summary>
-    Measures the difference in time allotted to the Renderer, by the Scheduler,
-    for frame production, from the time elapsed when the compositor frame is
-    submitted. This value would show the time used after the anticipated
-    deadline.
-
-    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES so only users with
-    high resolution clocks will report this metric.
-  </summary>
-</histogram>
-
-<histogram name="Scheduling.Renderer.FrameProduction.TimeUnused"
-    units="microseconds" expires_after="2023-04-23">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metrics@chromium.org</owner>
-  <summary>
-    Measures the difference in time allotted to the Renderer, by the Scheduler,
-    for frame production, from the time elapsed when the compositor frame is
-    submitted. This value would show the time remaining after submit before the
-    anticipated deadline.
-
-    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES so only users with
-    high resolution clocks will report this metric.
-  </summary>
-</histogram>
-
 <histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
     expires_after="M85">
   <owner>fdoray@chromium.org</owner>

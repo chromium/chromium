@@ -411,10 +411,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   void UpdatePowerModeVote();
 
-  // Used only for UMa metric calculations.
-  base::TimeDelta cc_frame_time_available_;
-  base::TimeTicks cc_frame_start_;  // Begin impl frame time.
-
   // Temporary for production debugging of renderer hang (crbug.com/1159366).
   std::vector<SchedulerStateMachine::Action> commit_debug_action_sequence_;
   bool trace_actions_ = false;
