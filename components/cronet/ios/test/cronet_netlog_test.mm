@@ -10,6 +10,10 @@
 #include "net/test/quic_simple_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace cronet {
 
 class NetLogTest : public ::testing::Test {
