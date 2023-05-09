@@ -1262,6 +1262,19 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "view-transition-mpa-serialization",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/css/css-view-transitions",
+              "wpt_internal/view-transition",
+              "view-transition",
+              "inspector-protocol/css/css-get-styles-for-view-transition.js",
+              "external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-threaded-compositing",
+             "--enable-blink-features=SerializeViewTransitionStateInSPA"],
+    "expires": "Feb 1, 2024"
+  },
+  {
     "prefix": "popover-hint-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/popovers/"],

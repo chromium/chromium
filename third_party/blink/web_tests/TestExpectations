@@ -252,8 +252,36 @@ crbug.com/1225630 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Sk
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip Timeout ]
 
+# View transition failures
 crbug.com/1351556 virtual/view-transition/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/view-transition-wide-gamut/view-transition/capture-callback-exception.html [ Failure ]
+crbug.com/1308431 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-clip-path.html [ Failure ]
+crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
+crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
+crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
+crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
+
+# View transition SPA failures with MPA serialization.
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/japanese-tag.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-below-and-on-top-of-viewport-partially-onscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-below-viewport-offscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-below-viewport-partially-onscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-left-of-viewport-offscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-left-of-viewport-partially-onscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-partially-onscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-partially-onscreen-old.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/view-transition/capture-callback-exception.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/old-content-captures-clip-path.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/only-child-new.html [ Timeout ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/only-child-old.html [ Timeout ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/root-to-shared-animation-end.html [ Timeout ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/root-to-shared-animation-incoming.html [ Timeout ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/root-to-shared-animation-start.html [ Timeout ]
+crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 
 ########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
@@ -666,7 +694,6 @@ crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-003.htm
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-004.html [ Failure ]
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-interpolation-001.html [ Failure ]
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-interpolation-002.html [ Failure ]
-crbug.com/1308431 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-clip-path.html [ Failure ]
 
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
@@ -6607,9 +6634,6 @@ crbug.com/1289550 fast/block/float/4145535-crash.html [ Failure Pass ]
 # WPT for checking if the browser supports lazy loading of non matching media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 
-crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
-crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
-
 # Sheriff 2023-02-07
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.worker.html [ Failure Pass ]
 
@@ -6648,9 +6672,6 @@ crbug.com/1384162 [ Mac10.14 ] external/wpt/css/css-fonts/matching/style-ranges-
 
 # TODO(crbug.com/1428795): Re-enable this test
 crbug.com/1428795 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Failure Pass ]
-
-crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
-crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 
 # Sheriff 2023-04-05
 crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Failure Pass ]
