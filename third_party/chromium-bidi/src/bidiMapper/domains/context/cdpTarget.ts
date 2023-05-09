@@ -16,6 +16,8 @@
  *
  */
 
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+
 import {CdpClient} from '../../CdpConnection.js';
 import {LogManager} from '../log/logManager.js';
 import {RealmStorage} from '../script/realmStorage.js';
@@ -135,7 +137,7 @@ export class CdpTarget {
         {
           method: CDP.EventNames.EventReceivedEvent,
           params: {
-            cdpMethod,
+            cdpMethod: cdpMethod as keyof ProtocolMapping.Commands,
             cdpParams: params ?? {},
             cdpSession: this.#cdpSessionId,
           },

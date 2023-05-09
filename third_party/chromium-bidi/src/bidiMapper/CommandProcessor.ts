@@ -285,10 +285,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(
-            new Message.ErrorResponse(
-              Message.ErrorCode.UnknownError,
-              error.message
-            ).toErrorResponse(command.id),
+            new Message.UnknownErrorException(error.message).toErrorResponse(
+              command.id
+            ),
             command.channel ?? null
           )
         );

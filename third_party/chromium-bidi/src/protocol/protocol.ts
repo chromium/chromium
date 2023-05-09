@@ -29,27 +29,11 @@ export interface EventResponse<MethodType, ParamsType> {
   params: ParamsType;
 }
 
-export type BiDiMethod =
-  // keep-sorted start
-  | 'browsingContext.captureScreenshot'
-  | 'browsingContext.close'
-  | 'browsingContext.create'
-  | 'browsingContext.getTree'
-  | 'browsingContext.navigate'
-  | 'browsingContext.print'
-  | 'cdp.getSession'
-  | 'cdp.sendCommand'
-  | 'cdp.sendMessage'
-  | 'script.addPreloadScript'
-  | 'script.callFunction'
-  | 'script.disown'
-  | 'script.evaluate'
-  | 'script.getRealms'
-  | 'script.removePreloadScript'
-  | 'session.status'
-  | 'session.subscribe'
-  | 'session.unsubscribe';
-// keep-sorted end
+export type BiDiCommand =
+  | BrowsingContext.Command
+  | CDP.Command
+  | Script.Command
+  | Session.Command;
 
 export namespace Message {
   export type OutgoingMessage =
@@ -59,14 +43,12 @@ export namespace Message {
 
   export type RawCommandRequest = {
     id: number;
-    method: BiDiMethod;
-    params: object;
+    method: BiDiCommand['method'];
+    params: BiDiCommand['params'];
     channel?: string;
   };
 
-  export type CommandRequest = Pick<RawCommandRequest, 'id'> &
-    (BrowsingContext.Command | CDP.Command | Script.Command | Session.Command);
-
+  export type CommandRequest = Pick<RawCommandRequest, 'id'> & BiDiCommand;
   export type CommandResponse = Pick<RawCommandRequest, 'id'> & ResultData;
 
   export type EmptyParams = Record<string, never>;
@@ -1171,7 +1153,7 @@ export namespace CDP {
   >;
 
   export type EventReceivedParams = {
-    cdpMethod: string;
+    cdpMethod: keyof ProtocolMapping.Commands;
     cdpParams: object;
     cdpSession: string;
   };
