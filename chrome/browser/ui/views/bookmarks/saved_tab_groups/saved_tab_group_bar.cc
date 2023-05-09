@@ -185,6 +185,12 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
     : saved_tab_group_model_(saved_tab_group_model),
       browser_(browser),
       animations_enabled_(animations_enabled) {
+  SetAccessibilityProperties(
+      ax::mojom::Role::kToolbar,
+      /*name=*/l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS),
+      /*description=*/absl::nullopt,
+      /*role_description=*/absl::nullopt);
+
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupBarElementId);
 
   std::unique_ptr<views::LayoutManager> layout_manager =
@@ -229,7 +235,7 @@ SavedTabGroupBar::~SavedTabGroupBar() {
 void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetNameChecked(
-      l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS));
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
 }
 
 void SavedTabGroupBar::UpdateDropIndex() {
