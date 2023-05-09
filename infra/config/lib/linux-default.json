@@ -19,8 +19,6 @@
     "chromeos-amd64-generic-rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel-compilator": "Ubuntu-22.04",
     "chromeos-arm-generic-rel": "Ubuntu-22.04",
-    "fuchsia-arm64-rel": "Ubuntu-22.04",
-    "fuchsia-arm64-rel-compilator": "Ubuntu-22.04",
     "fuchsia-x64-cast-receiver-rel": "Ubuntu-22.04",
     "fuchsia-x64-cast-receiver-rel-compilator": "Ubuntu-22.04",
     "ios-simulator": "Ubuntu-22.04",
