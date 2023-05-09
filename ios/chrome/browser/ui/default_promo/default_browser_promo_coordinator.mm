@@ -77,6 +77,8 @@
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithFullscreenPromo();
   [self recordDefaultBrowserPromoShown];
+
+  [self.handler hidePromo];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
