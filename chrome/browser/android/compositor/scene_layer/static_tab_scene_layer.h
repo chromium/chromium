@@ -36,17 +36,15 @@ class StaticTabSceneLayer : public SceneLayer {
   SkColor GetBackgroundColor() override;
 
   // Update StaticTabSceneLayer with the new parameters.
-  void UpdateTabLayer(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
-      jint id,
-      jboolean can_use_live_layer,
-      jint default_background_color,
-      jfloat x,
-      jfloat y,
-      jfloat static_to_view_blend,
-      jfloat saturation,
-      jfloat brightness);
+  void UpdateTabLayer(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& jobj,
+                      jint id,
+                      jboolean can_use_live_layer,
+                      jint default_background_color,
+                      jfloat x,
+                      jfloat y,
+                      jfloat static_to_view_blend,
+                      jfloat saturation);
 
   void SetTabContentManager(
       JNIEnv* env,
@@ -59,7 +57,6 @@ class StaticTabSceneLayer : public SceneLayer {
   raw_ptr<TabContentManager> tab_content_manager_;
   int last_set_tab_id_;
   int background_color_;
-  float brightness_;
 };
 
 }  // namespace android

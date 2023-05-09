@@ -161,7 +161,6 @@ public class StaticLayout extends Layout {
                          .with(LayoutTab.RENDER_Y, 0.0f)
                          .with(LayoutTab.SATURATION, 1.0f)
                          .with(LayoutTab.STATIC_TO_VIEW_BLEND, 0.0f)
-                         .with(LayoutTab.BRIGHTNESS, 1.0f)
                          .build();
 
         mAnimationHandler = updateHost.getAnimationHandler();

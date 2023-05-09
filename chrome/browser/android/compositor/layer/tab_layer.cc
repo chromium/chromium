@@ -14,7 +14,6 @@
 #include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
-#include "chrome/browser/android/compositor/layer/tabgroup_content_layer.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "ui/android/resources/nine_patch_resource.h"
@@ -91,7 +90,6 @@ static void PositionPadding(
 }
 
 void TabLayer::SetProperties(int id,
-                             const std::vector<int>& ids,
                              bool can_use_live_layer,
                              int toolbar_resource_id,
                              int shadow_resource_id,
@@ -103,8 +101,6 @@ void TabLayer::SetProperties(int id,
                              float y,
                              float width,
                              float height,
-                             float shadow_x,
-                             float shadow_y,
                              float shadow_width,
                              float shadow_height,
                              float alpha,
@@ -114,7 +110,6 @@ void TabLayer::SetProperties(int id,
                              float shadow_alpha,
                              float border_scale,
                              float saturation,
-                             float brightness,
                              float static_to_view_blend,
                              float content_width,
                              float content_height,
@@ -156,8 +151,6 @@ void TabLayer::SetProperties(int id,
   //----------------------------------------------------------------------------
   width /= border_scale;
   height /= border_scale;
-  shadow_x /= border_scale;
-  shadow_y /= border_scale;
   shadow_width /= border_scale;
   shadow_height /= border_scale;
 
@@ -172,8 +165,7 @@ void TabLayer::SetProperties(int id,
 
   const float content_scale = width / content_width;
   gfx::RectF content_area(0.f, 0.f, content_width, content_height);
-  gfx::RectF scaled_local_content_area(shadow_x, shadow_y, shadow_width,
-                                       shadow_height);
+  gfx::RectF scaled_local_content_area(0.f, 0.f, shadow_width, shadow_height);
   gfx::RectF descaled_local_content_area(
       scaled_local_content_area.x() / content_scale,
       scaled_local_content_area.y() / content_scale,
@@ -358,9 +350,9 @@ void TabLayer::SetProperties(int id,
       base::ClampRound(descaled_local_content_area.y()),
       desired_content_size.width(), desired_content_size.height());
 
-  SetContentProperties(id, ids, can_use_live_layer, static_to_view_blend, true,
-                       alpha, saturation, true, rounded_descaled_content_area,
-                       border_inner_shadow_resource, border_inner_shadow_alpha);
+  content_->SetProperties(id, can_use_live_layer, static_to_view_blend, true,
+                          alpha, saturation, true,
+                          rounded_descaled_content_area);
 
   //----------------------------------------------------------------------------
   // Push Size, Position, Alpha and Transformations to Layers
@@ -457,18 +449,6 @@ void TabLayer::SetProperties(int id,
     transform.Scale(border_scale, border_scale);
     layer_->SetTransform(transform);
   }
-
-  // Only applies the brightness filter if the value has changed and is less
-  // than 1.
-  if (brightness != brightness_) {
-    brightness_ = brightness;
-
-    std::vector<cc::slim::Filter> filters;
-    if (brightness_ < 1.f) {
-      filters.push_back(cc::slim::Filter::CreateBrightness(brightness_));
-    }
-    layer_->SetFilters(std::move(filters));
-  }
 }
 
 scoped_refptr<cc::slim::Layer> TabLayer::layer() {
@@ -489,8 +469,7 @@ TabLayer::TabLayer(bool incognito,
       front_border_(cc::slim::NinePatchLayer::Create()),
       front_border_inner_shadow_(cc::slim::NinePatchLayer::Create()),
       contour_shadow_(cc::slim::NinePatchLayer::Create()),
-      shadow_(cc::slim::NinePatchLayer::Create()),
-      brightness_(1.f) {
+      shadow_(cc::slim::NinePatchLayer::Create()) {
   layer_->AddChild(shadow_);
   layer_->AddChild(contour_shadow_);
   layer_->AddChild(side_padding_);
@@ -511,39 +490,6 @@ TabLayer::TabLayer(bool incognito,
 }
 
 TabLayer::~TabLayer() {
-}
-
-void TabLayer::SetContentProperties(
-    int id,
-    const std::vector<int>& tab_ids,
-    bool can_use_live_layer,
-    float static_to_view_blend,
-    bool should_override_content_alpha,
-    float content_alpha_override,
-    float saturation,
-    bool should_clip,
-    const gfx::Rect& clip,
-    ui::NinePatchResource* inner_shadow_resource,
-    float inner_shadow_alpha) {
-  if (tab_ids.size() == 0) {
-    content_->SetProperties(id, can_use_live_layer, static_to_view_blend,
-                            should_override_content_alpha,
-                            content_alpha_override, saturation, should_clip,
-                            clip);
-  } else {
-    scoped_refptr<TabGroupContentLayer> tabgroup_content_layer =
-        TabGroupContentLayer::Create(tab_content_manager_);
-    layer_->ReplaceChild(content_->layer().get(),
-                         tabgroup_content_layer->layer());
-    content_ = tabgroup_content_layer;
-
-    tabgroup_content_layer->SetProperties(
-        id, tab_ids, can_use_live_layer, static_to_view_blend,
-        should_override_content_alpha, content_alpha_override, saturation,
-        should_clip, clip, inner_shadow_resource, inner_shadow_alpha);
-
-    front_border_inner_shadow_->SetIsDrawable(false);
-  }
 }
 
 }  //  namespace android
