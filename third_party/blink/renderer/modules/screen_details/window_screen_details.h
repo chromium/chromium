@@ -46,12 +46,15 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
   // Returns the supplement, creating one as needed.
   static WindowScreenDetails* From(LocalDOMWindow* window);
 
-  // Requests permission to resolve the returned Screens interface promise.
+  // Returns a ScreenDetails interface promise, and inquires about permission.
   ScriptPromise GetScreenDetails(ScriptState* script_state,
                                  ExceptionState& exception_state);
 
-  // Handles the permission request result, to reject or resolve the promise.
-  void OnPermissionRequestComplete(ScriptPromiseResolver* resolver,
+  // Handles permission inquiry results, to reject or resolve the promise above.
+  // `permission_requested` is true for inquiries that prompt users as needed,
+  // and false for silent checks made without transient user activation.
+  void OnPermissionInquiryComplete(ScriptPromiseResolver* resolver,
+                                   bool permission_requested,
                                    mojom::blink::PermissionStatus status);
 
   Member<ScreenDetails> screen_details_;
