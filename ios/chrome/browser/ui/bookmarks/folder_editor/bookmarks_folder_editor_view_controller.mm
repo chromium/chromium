@@ -20,6 +20,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -100,6 +101,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   __strong BookmarkParentFolderItem* _parentFolderItem;
   // The action sheet coordinator, if one is currently being shown.
   __strong ActionSheetCoordinator* _actionSheetCoordinator;
+  // Whether the user manually changed the folder. In which case it must be
+  // saved as last used folder on "save".
+  BOOL _manuallyChangedTheFolder;
 }
 
 #pragma mark - Initialization
@@ -218,6 +222,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)updateParentFolder:(const BookmarkNode*)parent {
   DCHECK(parent);
   _parentFolder = parent;
+  _manuallyChangedTheFolder = YES;
   [self updateParentFolderState];
 }
 
@@ -343,6 +348,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     DCHECK(!_folder);
     _folder = modelForParentFolder->AddFolder(
         _parentFolder, _parentFolder->children().size(), folderTitle);
+  }
+
+  if (_manuallyChangedTheFolder) {
+    bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+        _folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+    SetLastUsedBookmarkFolder(_browserState->GetPrefs(), _folder, type);
   }
   [self.view endEditing:YES];
   [self.delegate bookmarksFolderEditor:self didFinishEditingFolder:_folder];
