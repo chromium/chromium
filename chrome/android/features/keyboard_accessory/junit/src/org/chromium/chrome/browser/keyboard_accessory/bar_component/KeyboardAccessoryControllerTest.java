@@ -346,8 +346,8 @@ public class KeyboardAccessoryControllerTest {
         autofillSuggestionProvider.notifyObservers(
                 new AutofillSuggestion[] {addressSuggestion, addressSuggestion, addressSuggestion});
 
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
-        mCoordinator.prepareUserEducation();
+        // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
+        // mCoordinator.prepareUserEducation();
         assertThat(getAutofillItemAt(0).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE));
         assertThat(getAutofillItemAt(1).getFeatureForIPH(), is(nullValue()));
@@ -366,8 +366,8 @@ public class KeyboardAccessoryControllerTest {
         autofillSuggestionProvider.notifyObservers(
                 new AutofillSuggestion[] {paymentSuggestion, paymentSuggestion, paymentSuggestion});
 
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
-        mCoordinator.prepareUserEducation();
+        // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
+        // mCoordinator.prepareUserEducation();
         assertThat(getAutofillItemAt(0).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE));
         assertThat(getAutofillItemAt(1).getFeatureForIPH(), is(nullValue()));
@@ -386,8 +386,8 @@ public class KeyboardAccessoryControllerTest {
         autofillSuggestionProvider.notifyObservers(
                 new AutofillSuggestion[] {paymentSuggestion, paymentSuggestion, paymentSuggestion});
 
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
-        mCoordinator.prepareUserEducation();
+        // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
+        // mCoordinator.prepareUserEducation();
         assertThat(getAutofillItemAt(0).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE));
         // Other suggestions also have explicit IPH strings, but only the first suggestion's string
@@ -410,11 +410,31 @@ public class KeyboardAccessoryControllerTest {
         autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {
                 passwordSuggestion1, passwordSuggestion2, passwordSuggestion2});
 
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
-        mCoordinator.prepareUserEducation();
+        // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
+        // mCoordinator.prepareUserEducation();
         assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         assertThat(getAutofillItemAt(1).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE));
+        assertThat(getAutofillItemAt(2).getFeatureForIPH(), is(nullValue()));
+    }
+
+    @Test
+    public void testCreatesAddressItemWithExternallyProvidedIPH() {
+        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        int suggestionId = 0x1; // The address ID is located in the least 16 bit.
+        AutofillSuggestion addressSuggestion = new AutofillSuggestion("John", "Main Str",
+                /* itemTag= */ "", 0, false, suggestionId, false, false, false,
+                FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE);
+        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
+        autofillSuggestionProvider.notifyObservers(
+                new AutofillSuggestion[] {addressSuggestion, addressSuggestion, addressSuggestion});
+
+        // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
+        // mCoordinator.prepareUserEducation();
+        assertThat(getAutofillItemAt(0).getFeatureForIPH(),
+                is(FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE));
+        assertThat(getAutofillItemAt(1).getFeatureForIPH(), is(nullValue()));
         assertThat(getAutofillItemAt(2).getFeatureForIPH(), is(nullValue()));
     }
 

@@ -501,9 +501,6 @@ class ManualFillingMediator
         } else {
             mKeyboardAccessory.dismiss();
         }
-        if (extensionState == getCompatibleState(EXTENDING_KEYBOARD)) {
-            mKeyboardAccessory.prepareUserEducation();
-        }
         if (requiresVisibleSheet(extensionState)) {
             mAccessorySheet.show();
             // TODO(crbug.com/853768): Enable animation that works with sheet (if possible).
