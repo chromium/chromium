@@ -66,6 +66,8 @@ class DataDecoder {
       base::OnceCallback<void(base::expected<T, std::string>)>;
   using StructuredHeaderParseItemCallback =
       ResultCallback<net::structured_headers::ParameterizedItem>;
+  using StructuredHeaderParseListCallback =
+      ResultCallback<net::structured_headers::List>;
   using ValueParseCallback = ResultCallback<base::Value>;
   using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
   using CancellationFlag = base::RefCountedData<bool>;
@@ -105,6 +107,22 @@ class DataDecoder {
   static void ParseStructuredHeaderItemIsolated(
       const std::string& header,
       StructuredHeaderParseItemCallback callback);
+
+  // Parses the potentially unsafe string in |header| as a structured header
+  // list using this DataDecoder's service instance or some other
+  // platform-specific decoding facility.
+  //
+  // Note that |callback| will only be called if the parsing operation succeeds
+  // or fails before this DataDecoder is destroyed.
+  void ParseStructuredHeaderList(const std::string& header,
+                                 StructuredHeaderParseListCallback callback);
+
+  // Parses the potentially unsafe string in |header| as a structured header
+  // list. This static helper uses a dedicated instance of the Data Decoder
+  // service on applicable platforms.
+  static void ParseStructuredHeaderListIsolated(
+      const std::string& header,
+      StructuredHeaderParseListCallback callback);
 
   // Parses the potentially unsafe XML string in |xml| using this
   // DataDecoder's service instance. The Value provided to the callback

@@ -1335,12 +1335,20 @@ INSTANTIATE_TEST_SUITE_P(
         OsRegistrationTestCase{
             .name = "source",
             .header = "Attribution-Reporting-Register-OS-Source",
-            .expected_os_sources = {GURL("https://r.test/x")},
+            .expected_os_sources =
+                {
+                    GURL("https://r1.test/x"),
+                    GURL("https://r2.test/y"),
+                },
         },
         OsRegistrationTestCase{
             .name = "trigger",
             .header = "Attribution-Reporting-Register-OS-Trigger",
-            .expected_os_triggers = {GURL("https://r.test/x")},
+            .expected_os_triggers =
+                {
+                    GURL("https://r1.test/x"),
+                    GURL("https://r2.test/y"),
+                },
         }),
     [](const auto& info) { return info.param.name; });  // test name generator
 
@@ -1388,7 +1396,8 @@ IN_PROC_BROWSER_TEST_P(
   register_response->WaitForRequest();
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->AddCustomHeader(test_case.header, R"("https://r.test/x")");
+  http_response->AddCustomHeader(test_case.header,
+                                 R"("https://r1.test/x", "https://r2.test/y")");
   register_response->Send(http_response->ToResponseString());
   register_response->Done();
 

@@ -151,7 +151,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void HandleNextOsDecode(const SourceRegistrations&);
 
   using OsParseResult =
-      base::expected<net::structured_headers::ParameterizedItem, std::string>;
+      base::expected<net::structured_headers::List, std::string>;
   void OnOsSourceParsed(SourceRegistrationsId, OsParseResult);
 
   void MaybeOnRegistrationsFinished(

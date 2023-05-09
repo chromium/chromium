@@ -292,6 +292,41 @@ void DataDecoder::ParseStructuredHeaderItemIsolated(
                   std::move(decoder), std::move(callback)));
 }
 
+void DataDecoder::ParseStructuredHeaderList(
+    const std::string& header,
+    StructuredHeaderParseListCallback callback) {
+  auto request =
+      base::MakeRefCounted<ValueParseRequest<mojom::StructuredHeadersParser,
+                                             net::structured_headers::List>>(
+          std::move(callback), cancel_requests_);
+  GetService()->BindStructuredHeadersParser(request->BindRemote());
+  request->remote()->ParseList(
+      header,
+      base::BindOnce(
+          &ValueParseRequest<mojom::StructuredHeadersParser,
+                             net::structured_headers::List>::OnServiceValue,
+          request));
+}
+
+// static
+void DataDecoder::ParseStructuredHeaderListIsolated(
+    const std::string& header,
+    StructuredHeaderParseListCallback callback) {
+  auto decoder = std::make_unique<DataDecoder>();
+  auto* raw_decoder = decoder.get();
+
+  // We bind the DataDecoder's ownership into the result callback to ensure that
+  // it stays alive until the operation is complete.
+  raw_decoder->ParseStructuredHeaderList(
+      header,
+      base::BindOnce(
+          [](std::unique_ptr<DataDecoder>,
+             StructuredHeaderParseListCallback callback,
+             base::expected<net::structured_headers::List, std::string>
+                 result) { std::move(callback).Run(std::move(result)); },
+          std::move(decoder), std::move(callback)));
+}
+
 void DataDecoder::ParseXml(
     const std::string& xml,
     mojom::XmlParser::WhitespaceBehavior whitespace_behavior,

@@ -788,16 +788,19 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-  GURL registration_url = attribution_reporting::ParseOsSourceOrTriggerHeader(
-      StringUTF8Adaptor(headers.os_source).AsStringPiece());
-  if (!registration_url.is_valid()) {
+  std::vector<GURL> registration_urls =
+      attribution_reporting::ParseOsSourceOrTriggerHeader(
+          StringUTF8Adaptor(headers.os_source).AsStringPiece());
+  if (registration_urls.empty()) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
                   AttributionReportingIssueType::kInvalidRegisterOsSourceHeader,
                   /*element=*/nullptr, headers.request_id,
                   /*invalid_parameter=*/headers.os_source);
     return;
   }
-  data_host_->OsSourceDataAvailable(KURL(registration_url));
+  for (const GURL& registration_url : registration_urls) {
+    data_host_->OsSourceDataAvailable(KURL(registration_url));
+  }
   ++num_registrations_;
 }
 
@@ -845,9 +848,10 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-  GURL registration_url = attribution_reporting::ParseOsSourceOrTriggerHeader(
-      StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
-  if (!registration_url.is_valid()) {
+  std::vector<GURL> registration_urls =
+      attribution_reporting::ParseOsSourceOrTriggerHeader(
+          StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
+  if (registration_urls.empty()) {
     LogAuditIssue(
         loader_->local_frame_->DomWindow(),
         AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader,
@@ -855,7 +859,9 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         /*invalid_parameter=*/headers.os_trigger);
     return;
   }
-  data_host_->OsTriggerDataAvailable(KURL(registration_url));
+  for (const GURL& registration_url : registration_urls) {
+    data_host_->OsTriggerDataAvailable(KURL(registration_url));
+  }
   ++num_registrations_;
 }
 

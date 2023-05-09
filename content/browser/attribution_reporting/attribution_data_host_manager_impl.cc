@@ -9,6 +9,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -518,7 +519,7 @@ void AttributionDataHostManagerImpl::HandleNextOsDecode(
 
   const auto& header = registrations.pending_os_decodes().front();
 
-  data_decoder_.ParseStructuredHeaderItem(
+  data_decoder_.ParseStructuredHeaderList(
       header, base::BindOnce(&AttributionDataHostManagerImpl::OnOsSourceParsed,
                              weak_factory_.GetWeakPtr(), registrations.Id()));
 }
@@ -850,14 +851,15 @@ void AttributionDataHostManagerImpl::OnOsSourceParsed(SourceRegistrationsId id,
   {
     // TODO: Report parsing errors to DevTools.
     if (result.has_value()) {
-      GURL registration_url =
+      std::vector<GURL> registration_urls =
           attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
 
-      attribution_manager_->HandleOsRegistration(
-          OsRegistration(std::move(registration_url),
-                         registrations->source_origin(),
-                         registrations->input_event()),
-          registrations->render_frame_id());
+      for (GURL& url : registration_urls) {
+        attribution_manager_->HandleOsRegistration(
+            OsRegistration(std::move(url), registrations->source_origin(),
+                           registrations->input_event()),
+            registrations->render_frame_id());
+      }
     }
   }
 

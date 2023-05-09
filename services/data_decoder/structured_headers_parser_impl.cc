@@ -22,4 +22,9 @@ void StructuredHeadersParserImpl::ParseItem(const std::string& header,
   std::move(callback).Run(net::structured_headers::ParseItem(header));
 }
 
+void StructuredHeadersParserImpl::ParseList(const std::string& header,
+                                            ParseListCallback callback) {
+  std::move(callback).Run(net::structured_headers::ParseList(header));
+}
+
 }  // namespace data_decoder
