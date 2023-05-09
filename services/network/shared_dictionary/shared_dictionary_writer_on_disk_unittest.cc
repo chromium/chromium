@@ -17,6 +17,7 @@
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/disk_cache/mock/mock_backend_impl.h"
 #include "net/disk_cache/mock/mock_entry_impl.h"
+#include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -788,6 +789,127 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeZero) {
 
   EXPECT_TRUE(entry_doomed);
   EXPECT_TRUE(finish_callback_called);
+}
+
+TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitBeforeOnEntry) {
+  shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
+
+  auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
+      CreateBackendResultType::kAsyncSuccess);
+  disk_cache->Initialize();
+
+  std::unique_ptr<disk_cache::EntryMock> entry =
+      std::make_unique<disk_cache::EntryMock>();
+
+  absl::optional<std::string> cache_key;
+  disk_cache::EntryResultCallback create_entry_callback;
+  EXPECT_CALL(*disk_cache->backend(), CreateEntry)
+      .WillOnce([&](const std::string& key, net::RequestPriority priority,
+                    disk_cache::EntryResultCallback callback) {
+        cache_key = key;
+        create_entry_callback = std::move(callback);
+        return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
+      });
+
+  bool finish_callback_called = false;
+  scoped_refptr<SharedDictionaryWriterOnDisk> writer = base::MakeRefCounted<
+      SharedDictionaryWriterOnDisk>(
+      base::BindLambdaForTesting(
+          [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
+              const net::SHA256HashValue& hash,
+              const base::UnguessableToken& cache_key_token) {
+            EXPECT_EQ(
+                SharedDictionaryWriterOnDisk::Result::kErrorSizeExceedsLimit,
+                result);
+            finish_callback_called = true;
+          }),
+      disk_cache->GetWeakPtr());
+  writer->Initialize();
+  writer->Append(kTestData1.c_str(), kTestData1.size());
+  EXPECT_FALSE(finish_callback_called);
+  writer->Append("x", 1);
+  EXPECT_TRUE(finish_callback_called);
+  writer->Append(kTestData2.c_str(), kTestData2.size());
+  writer->Finish();
+
+  disk_cache->RunCreateCacheBackendCallback();
+  // This will call SharedDictionaryWriterOnDisk::OnEntry().
+  std::move(create_entry_callback)
+      .Run(disk_cache::EntryResult::MakeCreated(entry.release()));
+
+  writer.reset();
+}
+
+TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitAfterOnEntry) {
+  shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
+
+  auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
+      CreateBackendResultType::kAsyncSuccess);
+  disk_cache->Initialize();
+
+  std::unique_ptr<disk_cache::EntryMock> entry =
+      std::make_unique<disk_cache::EntryMock>();
+
+  net::CompletionOnceCallback write_data_callback;
+  EXPECT_CALL(*entry, WriteData)
+      .WillOnce([&](int index, int offset, net::IOBuffer* buf, int buf_len,
+                    net::CompletionOnceCallback callback,
+                    bool truncate) -> int {
+        EXPECT_EQ(1, index);
+        EXPECT_EQ(0, offset);
+        EXPECT_EQ(base::checked_cast<int>(kTestData1.size()), buf_len);
+        EXPECT_EQ(
+            kTestData1,
+            std::string(reinterpret_cast<const char*>(buf->data()), buf_len));
+        write_data_callback = std::move(callback);
+        return net::ERR_IO_PENDING;
+      });
+  bool entry_doom_called = false;
+  EXPECT_CALL(*entry, Doom).WillOnce([&]() { entry_doom_called = true; });
+
+  absl::optional<std::string> cache_key;
+  disk_cache::EntryResultCallback create_entry_callback;
+  EXPECT_CALL(*disk_cache->backend(), CreateEntry)
+      .WillOnce([&](const std::string& key, net::RequestPriority priority,
+                    disk_cache::EntryResultCallback callback) {
+        cache_key = key;
+        create_entry_callback = std::move(callback);
+        return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
+      });
+
+  bool finish_callback_called = false;
+  scoped_refptr<SharedDictionaryWriterOnDisk> writer = base::MakeRefCounted<
+      SharedDictionaryWriterOnDisk>(
+      base::BindLambdaForTesting(
+          [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
+              const net::SHA256HashValue& hash,
+              const base::UnguessableToken& cache_key_token) {
+            EXPECT_EQ(
+                SharedDictionaryWriterOnDisk::Result::kErrorSizeExceedsLimit,
+                result);
+            finish_callback_called = true;
+          }),
+      disk_cache->GetWeakPtr());
+  writer->Initialize();
+
+  disk_cache->RunCreateCacheBackendCallback();
+  std::move(create_entry_callback)
+      .Run(disk_cache::EntryResult::MakeCreated(entry.release()));
+
+  writer->Append(kTestData1.c_str(), kTestData1.size());
+
+  std::move(write_data_callback)
+      .Run(base::checked_cast<int>(kTestData1.size()));
+
+  EXPECT_FALSE(finish_callback_called);
+  EXPECT_FALSE(entry_doom_called);
+  writer->Append("x", 1);
+  EXPECT_TRUE(finish_callback_called);
+  EXPECT_TRUE(entry_doom_called);
+
+  // Test that calling Append() and Finish() doesn't cause unexpected crash.
+  writer->Append(kTestData2.c_str(), kTestData2.size());
+  writer->Finish();
 }
 
 }  // namespace

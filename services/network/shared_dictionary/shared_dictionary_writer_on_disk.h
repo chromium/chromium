@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
     kErrorWriteDataFailed,
     kErrorAborted,
     kErrorSizeZero,
+    kErrorSizeExceedsLimit,
   };
   using FinishCallback =
       base::OnceCallback<void(Result result,

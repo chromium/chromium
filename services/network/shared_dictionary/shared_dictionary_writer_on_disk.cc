@@ -4,7 +4,11 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
 
+#include <limits>
+
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/checked_math.h"
+#include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 
 namespace network {
@@ -39,7 +43,18 @@ void SharedDictionaryWriterOnDisk::Initialize() {
 
 void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
   DCHECK_GT(num_bytes, 0);
-  total_size_ += num_bytes;
+  if (state_ == State::kFailed) {
+    return;
+  }
+  base::CheckedNumeric<size_t> checked_total_size = total_size_;
+  checked_total_size += num_bytes;
+  if (checked_total_size.ValueOrDefault(std::numeric_limits<size_t>::max()) >
+      shared_dictionary::GetDictionarySizeLimit()) {
+    OnFailed(Result::kErrorSizeExceedsLimit);
+    return;
+  }
+
+  total_size_ = checked_total_size.ValueOrDie();
   secure_hash_->Update(buf, num_bytes);
   switch (state_) {
     case State::kBeforeInitialize:
@@ -56,17 +71,25 @@ void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
           std::string(buf, num_bytes)));
     } break;
     case State::kFailed:
+      NOTREACHED();
       break;
   }
 }
 
 void SharedDictionaryWriterOnDisk::Finish() {
+  if (state_ == State::kFailed) {
+    return;
+  }
+
   finish_called_ = true;
   MaybeFinish();
 }
 
 void SharedDictionaryWriterOnDisk::OnEntry(disk_cache::EntryResult result) {
-  DCHECK_EQ(State::kInitializing, state_);
+  if (state_ != State::kInitializing) {
+    DCHECK_EQ(State::kFailed, state_);
+    return;
+  }
   if (result.net_error() != net::OK) {
     OnFailed(Result::kErrorCreateEntryFailed);
     return;
@@ -90,6 +113,7 @@ void SharedDictionaryWriterOnDisk::WriteData(
   DCHECK_NE(State::kBeforeInitialize, state_);
   DCHECK_NE(State::kInitializing, state_);
   if (state_ != State::kInitialized) {
+    DCHECK_EQ(State::kFailed, state_);
     return;
   }
   offset_ += buffer->size();
@@ -98,7 +122,7 @@ void SharedDictionaryWriterOnDisk::WriteData(
   auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &SharedDictionaryWriterOnDisk::OnWrittenData, this, buffer->size()));
   // Stores the dictionary binary in the second stream of disk cache entry
-  // (index = 1) which was deginged to store the HTTP response body of HTTP
+  // (index = 1) which was designed to store the HTTP response body of HTTP
   // Cache.
   int result = entry_->WriteData(
       /*index=*/1, /*offset=*/offset_ - buffer->size(), buffer.get(),
@@ -113,6 +137,7 @@ void SharedDictionaryWriterOnDisk::OnWrittenData(int expected_result,
   DCHECK_NE(State::kBeforeInitialize, state_);
   DCHECK_NE(State::kInitializing, state_);
   if (state_ != State::kInitialized) {
+    DCHECK_EQ(State::kFailed, state_);
     return;
   }
   if (result != expected_result) {

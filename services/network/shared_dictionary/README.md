@@ -36,6 +36,11 @@ When `SharedDictionaryWriter` finishes writing the body,
 memory. `SharedDictionaryStorageOnDisk` will stores the dictionary information
 to the storage database (Note: Not implemented yet).
 
+### Limitations
+
+We currently set a size limit of 100 MiB per dictionary. This is intended to
+protect the network services from out-of-memory denial-of-service attacks.
+
 ## Using dictionaries
 
 TODO(crbug.com/1413922): Update this section when we implement this logic.

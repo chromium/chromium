@@ -16,6 +16,12 @@ namespace network::shared_dictionary {
 // HTTP header.
 constexpr base::TimeDelta kDefaultExpiration = base::Seconds(31536000);
 
+// The size limit of a shared dictionary.
+size_t GetDictionarySizeLimit();
+
+COMPONENT_EXPORT(NETWORK_SERVICE)
+void SetDictionarySizeLimitForTesting(size_t dictionary_size_limit);
+
 // The header name of "use-as-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kUseAsDictionaryHeaderName[];

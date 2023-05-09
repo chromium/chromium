@@ -6,10 +6,26 @@
 
 namespace network::shared_dictionary {
 
+namespace {
+
+// The size limit per shared dictionary,
+constexpr size_t kDictionarySizeLimit = 100 * 1024 * 1024;  // 100 MiB;
+size_t g_dictionary_size_limit = kDictionarySizeLimit;
+
+}  // namespace
+
 const char kUseAsDictionaryHeaderName[] = "use-as-dictionary";
 
 const char kOptionNameMatch[] = "match";
 const char kOptionNameExpires[] = "expires";
 const char kOptionNameAlgorithms[] = "algorithms";
+
+size_t GetDictionarySizeLimit() {
+  return g_dictionary_size_limit;
+}
+
+void SetDictionarySizeLimitForTesting(size_t dictionary_size_limit) {
+  g_dictionary_size_limit = dictionary_size_limit;
+}
 
 }  // namespace network::shared_dictionary
