@@ -1162,7 +1162,7 @@
       name_for_methods: "SizeAdjust",
       converter: "ConvertFontSizeAdjust",
       priority: "High",
-      keywords: ["none"],
+      keywords: ["none", "ex-height", "cap-height", "ch-width", "ic-width"],
       typedom_types: ["Keyword", "Number"],
       valid_for_first_letter: true,
       valid_for_first_line: true,

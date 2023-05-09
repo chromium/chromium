@@ -120,6 +120,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValueList* ValueForFontFamily(const FontFamily&);
   static CSSValueList* ValueForFontFamily(const ComputedStyle&);
   static CSSPrimitiveValue* ValueForFontSize(const ComputedStyle&);
+  static CSSValue* ValueForFontSizeAdjust(const ComputedStyle&);
   static CSSPrimitiveValue* ValueForFontStretch(const ComputedStyle&);
   static CSSValue* ValueForFontStyle(const ComputedStyle&);
   static CSSNumericLiteralValue* ValueForFontWeight(const ComputedStyle&);

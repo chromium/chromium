@@ -7354,5 +7354,26 @@ AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange& prelude,
   return name;
 }
 
+CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
+                                const CSSParserContext& context) {
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+
+  CSSIdentifierValue* font_metric =
+      ConsumeIdent<CSSValueID::kExHeight, CSSValueID::kCapHeight,
+                   CSSValueID::kChWidth, CSSValueID::kIcWidth>(range);
+
+  CSSPrimitiveValue* value = css_parsing_utils::ConsumeNumber(
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+  if (!value || !font_metric ||
+      font_metric->GetValueID() == CSSValueID::kExHeight) {
+    return value;
+  }
+
+  return MakeGarbageCollected<CSSValuePair>(font_metric, value,
+                                            CSSValuePair::kKeepIdenticalValues);
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink

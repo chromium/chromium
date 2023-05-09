@@ -550,6 +550,8 @@ CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenRange&,
 AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange&,
                                               const CSSParserContext&);
 
+CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange&, const CSSParserContext&);
+
 // When parsing a counter style name, it should be ASCII lowercased if it's an
 // ASCII case-insensitive match of any predefined counter style name.
 bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString&,

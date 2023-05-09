@@ -635,6 +635,7 @@ component("platform") {
     "fonts/font_selector.cc",
     "fonts/font_selector.h",
     "fonts/font_selector_client.h",
+    "fonts/font_size_adjust.cc",
     "fonts/font_size_adjust.h",
     "fonts/font_smoothing_mode.cc",
     "fonts/font_smoothing_mode.h",

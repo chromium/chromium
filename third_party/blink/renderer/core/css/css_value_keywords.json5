@@ -154,6 +154,15 @@
     // math
 
     //
+    // font-size-adjust
+    //
+    //none
+    "ex-height",
+    "cap-height",
+    "ch-width",
+    "ic-width",
+
+    //
     // font-family (<generic-family> in CSS 2.1)
     //
     // If you modify this list, please make sure you update css_parsing_utils's

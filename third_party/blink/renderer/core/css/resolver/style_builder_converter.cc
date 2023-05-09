@@ -648,8 +648,7 @@ FontDescription::Size StyleBuilderConverter::ConvertFontSize(
       value, state.FontSizeConversionData(), parent_size, &state.GetDocument());
 }
 
-FontSizeAdjust StyleBuilderConverter::ConvertFontSizeAdjust(
-    StyleResolverState& state,
+FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
@@ -660,9 +659,23 @@ FontSizeAdjust StyleBuilderConverter::ConvertFontSizeAdjust(
     return FontBuilder::InitialSizeAdjust();
   }
 
-  const auto& primitive_value = To<CSSPrimitiveValue>(value);
-  DCHECK(primitive_value.IsNumber());
-  return FontSizeAdjust(primitive_value.GetFloatValue());
+  if (value.IsPrimitiveValue()) {
+    const auto& primitive_value = To<CSSPrimitiveValue>(value);
+    DCHECK(primitive_value.IsNumber());
+    return FontSizeAdjust(primitive_value.GetFloatValue());
+  }
+
+  DCHECK(value.IsValuePair());
+  const auto& pair = To<CSSValuePair>(value);
+  return FontSizeAdjust(
+      To<CSSPrimitiveValue>(pair.Second()).GetFloatValue(),
+      To<CSSIdentifierValue>(pair.First()).ConvertTo<FontSizeAdjust::Metric>());
+}
+
+FontSizeAdjust StyleBuilderConverter::ConvertFontSizeAdjust(
+    StyleResolverState&,
+    const CSSValue& value) {
+  return StyleBuilderConverterBase::ConvertFontSizeAdjust(value);
 }
 
 FontSelectionValue StyleBuilderConverterBase::ConvertFontStretch(

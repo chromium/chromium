@@ -3412,22 +3412,14 @@ const CSSValue* FontSizeAdjust::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   DCHECK(RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled());
-  if (range.Peek().Id() == CSSValueID::kNone) {
-    return css_parsing_utils::ConsumeIdent(range);
-  }
-  return css_parsing_utils::ConsumeNumber(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+  return css_parsing_utils::ConsumeFontSizeAdjust(range, context);
 }
 
 const CSSValue* FontSizeAdjust::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.HasFontSizeAdjust()) {
-    return CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
-                                          CSSPrimitiveValue::UnitType::kNumber);
-  }
-  return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return ComputedStyleUtils::ValueForFontSizeAdjust(style);
 }
 
 const CSSValue* FontSize::ParseSingleValue(CSSParserTokenRange& range,

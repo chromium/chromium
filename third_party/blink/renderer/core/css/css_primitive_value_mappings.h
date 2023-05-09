@@ -731,6 +731,48 @@ inline TextEmphasisMark CSSIdentifierValue::ConvertTo() const {
 
 template <>
 inline CSSIdentifierValue::CSSIdentifierValue(
+    FontSizeAdjust::Metric font_size_adjust_metric)
+    : CSSValue(kIdentifierClass) {
+  switch (font_size_adjust_metric) {
+    case FontSizeAdjust::Metric::kExHeight:
+      value_id_ = CSSValueID::kExHeight;
+      return;
+    case FontSizeAdjust::Metric::kCapHeight:
+      value_id_ = CSSValueID::kCapHeight;
+      return;
+    case FontSizeAdjust::Metric::kChWidth:
+      value_id_ = CSSValueID::kChWidth;
+      return;
+    case FontSizeAdjust::Metric::kIcWidth:
+      value_id_ = CSSValueID::kIcWidth;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kAuto;
+}
+
+template <>
+inline FontSizeAdjust::Metric CSSIdentifierValue::ConvertTo() const {
+  switch (value_id_) {
+    case CSSValueID::kExHeight:
+      return FontSizeAdjust::Metric::kExHeight;
+    case CSSValueID::kCapHeight:
+      return FontSizeAdjust::Metric::kCapHeight;
+    case CSSValueID::kChWidth:
+      return FontSizeAdjust::Metric::kChWidth;
+    case CSSValueID::kIcWidth:
+      return FontSizeAdjust::Metric::kIcWidth;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontSizeAdjust::Metric::kExHeight;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
     FontDescription::FontSynthesisWeight font_synthesis_weight)
     : CSSValue(kIdentifierClass) {
   switch (font_synthesis_weight) {

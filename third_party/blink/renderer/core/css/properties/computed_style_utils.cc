@@ -877,6 +877,27 @@ CSSPrimitiveValue* ComputedStyleUtils::ValueForFontSize(
                                 style);
 }
 
+CSSValue* ComputedStyleUtils::ValueForFontSizeAdjust(
+    const ComputedStyle& style) {
+  if (!style.HasFontSizeAdjust()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+
+  FontSizeAdjust font_size_adjust = style.FontSizeAdjust();
+  if (font_size_adjust.GetMetric() == FontSizeAdjust::Metric::kExHeight) {
+    return CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
+                                          CSSPrimitiveValue::UnitType::kNumber);
+  }
+
+  CSSIdentifierValue* metric =
+      CSSIdentifierValue::Create(font_size_adjust.GetMetric());
+  CSSPrimitiveValue* value = CSSNumericLiteralValue::Create(
+      style.FontSizeAdjust().Value(), CSSPrimitiveValue::UnitType::kNumber);
+
+  return MakeGarbageCollected<CSSValuePair>(metric, value,
+                                            CSSValuePair::kKeepIdenticalValues);
+}
+
 CSSPrimitiveValue* ComputedStyleUtils::ValueForFontStretch(
     const ComputedStyle& style) {
   return CSSNumericLiteralValue::Create(
