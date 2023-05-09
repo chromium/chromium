@@ -613,6 +613,8 @@ source_set("ash") {
     "arc/vmm/arc_vmm_manager.h",
     "arc/vmm/arc_vmm_swap_scheduler.cc",
     "arc/vmm/arc_vmm_swap_scheduler.h",
+    "arc/vmm/arcvm_working_set_trim_executor.cc",
+    "arc/vmm/arcvm_working_set_trim_executor.h",
     "arc/wallpaper/arc_wallpaper_service.cc",
     "arc/wallpaper/arc_wallpaper_service.h",
     "arc/window_predictor/arc_predictor_app_launch_handler.cc",

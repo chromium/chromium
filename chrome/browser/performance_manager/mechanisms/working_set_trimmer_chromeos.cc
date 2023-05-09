@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -76,129 +77,10 @@ void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
     ArcVmReclaimType reclaim_type,
     int page_limit) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(ArcVmReclaimType::kReclaimNone, reclaim_type);
-  const char* error = nullptr;
 
-  // Before trimming, drop ARCVM's page caches.
-  content::BrowserContext* context =
-      context_for_testing_ ? context_for_testing_.get() : GetContext();
-  if (!context)
-    error = "BrowserContext unavailable";
-
-  auto* bridge =
-      context ? arc::ArcMemoryBridge::GetForBrowserContext(context) : nullptr;
-  if (!bridge)
-    error = "ArcMemoryBridge unavailable";
-
-  if (error) {
-    LOG(ERROR) << error;
-    if (reclaim_type == ArcVmReclaimType::kReclaimGuestPageCaches) {
-      // Failed to drop caches. When the type if kReclaimGuestPageCaches, run
-      // the |callback| now with the |error| message. No further action is
-      // necessary.
-      std::move(callback).Run(false, error);
-    } else {
-      // Otherwise, continue without dropping them.
-      OnDropArcVmCaches(std::move(callback), reclaim_type, page_limit,
-                        /*result=*/false);
-    }
-    return;
-  }
-
-  bridge->DropCaches(base::BindOnce(
-      &WorkingSetTrimmerChromeOS::OnDropArcVmCaches, weak_factory_.GetWeakPtr(),
-      std::move(callback), reclaim_type, page_limit));
-}
-
-void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
-    TrimArcVmWorkingSetCallback callback,
-    ArcVmReclaimType reclaim_type,
-    int page_limit,
-    bool result) {
-  constexpr const char kErrorMessage[] =
-      "Failed to drop ARCVM's guest page caches";
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  LOG_IF(WARNING, !result) << kErrorMessage;
-
-  if (reclaim_type == ArcVmReclaimType::kReclaimGuestPageCaches) {
-    // TrimVmMemory() is unnecessary. Just run the |callback| with the
-    // DropCaches() result.
-    std::move(callback).Run(result, result ? "" : kErrorMessage);
-    return;
-  }
-
-  // Do the actual VM trimming regardless of the |result|. When "ArcGuestZram"
-  // feature is enabled, guest memory is locked and should be reclaimed from
-  // guest through ArcMemoryBridge's reclaim API (if "guest_reclaim_enabled"
-  // param is enabled). Otherwise the memory should be reclaimed from host
-  // through ArcSessionManager's TrimVmMemory.
-  if (base::FeatureList::IsEnabled(arc::kGuestZram) &&
-      arc::kGuestReclaimEnabled.Get()) {
-    content::BrowserContext* context =
-        context_for_testing_ ? context_for_testing_.get() : GetContext();
-    if (!context) {
-      LogErrorAndInvokeCallback("BrowserContext unavailable",
-                                std::move(callback));
-      return;
-    }
-
-    auto* bridge =
-        context ? arc::ArcMemoryBridge::GetForBrowserContext(context) : nullptr;
-    if (!bridge) {
-      LogErrorAndInvokeCallback("ArcMemoryBridge unavailable",
-                                std::move(callback));
-      return;
-    }
-
-    auto reclaim_request = arc::mojom::ReclaimRequest::New(
-        arc::kGuestReclaimOnlyAnonymous.Get() ? arc::mojom::ReclaimType::ANON
-                                              : arc::mojom::ReclaimType::ALL);
-    bridge->Reclaim(
-        std::move(reclaim_request),
-        base::BindOnce(&WorkingSetTrimmerChromeOS::OnArcVmMemoryGuestReclaim,
-                       weak_factory_.GetMutableWeakPtr(),
-                       std::make_unique<base::ElapsedTimer>(),
-                       std::move(callback)));
-  } else {
-    arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
-    if (!arc_session_manager) {
-      LogErrorAndInvokeCallback("ArcSessionManager unavailable",
-                                std::move(callback));
-      return;
-    }
-
-    arc_session_manager->TrimVmMemory(std::move(callback), page_limit);
-  }
-}
-
-void WorkingSetTrimmerChromeOS::OnArcVmMemoryGuestReclaim(
-    std::unique_ptr<base::ElapsedTimer> elapsed_timer,
-    TrimArcVmWorkingSetCallback callback,
-    arc::mojom::ReclaimResultPtr result) {
-  VLOG(2) << "Finished trimming memory from guest. " << result->reclaimed
-          << " processes were reclaimed successfully. " << result->unreclaimed
-          << " processes were not reclaimed.";
-  base::UmaHistogramBoolean("Arc.GuestZram.SuccessfulReclaim",
-                            (result->reclaimed > 0));
-  if (result->reclaimed == 0) {
-    std::move(callback).Run(false, "No guest process was reclaimed");
-  } else {
-    base::UmaHistogramCounts1000("Arc.GuestZram.ReclaimedProcess",
-                                 result->reclaimed);
-    base::UmaHistogramCounts1000("Arc.GuestZram.UnreclaimedProcess",
-                                 result->unreclaimed);
-    base::UmaHistogramMediumTimes("Arc.GuestZram.TotalReclaimTime",
-                                  elapsed_timer->Elapsed());
-    std::move(callback).Run(true, "");
-  }
-}
-
-void WorkingSetTrimmerChromeOS::LogErrorAndInvokeCallback(
-    const char* error,
-    TrimArcVmWorkingSetCallback callback) {
-  LOG(ERROR) << error;
-  std::move(callback).Run(false, error);
+  arc::ArcVmWorkingSetTrimExecutor::Trim(
+      context_for_testing_ ? context_for_testing_.get() : GetContext(),
+      std::move(callback), reclaim_type, page_limit);
 }
 
 void WorkingSetTrimmerChromeOS::TrimWorkingSet(
