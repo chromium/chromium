@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -216,6 +217,53 @@ class WrappedSkiaGaneshCompoundImageRepresentation
 
  private:
   std::unique_ptr<SkiaGaneshImageRepresentation> wrapped_;
+};
+
+class WrappedSkiaGraphiteCompoundImageRepresentation
+    : public SkiaGraphiteImageRepresentation {
+ public:
+  WrappedSkiaGraphiteCompoundImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped)
+      : SkiaGraphiteImageRepresentation(manager, backing, tracker),
+        wrapped_(std::move(wrapped)) {
+    CHECK(wrapped_);
+  }
+
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
+  }
+
+  // SkiaGraphiteImageRepresentation implementation.
+  bool SupportsMultipleConcurrentReadAccess() final {
+    return wrapped_->SupportsMultipleConcurrentReadAccess();
+  }
+
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
+      const SkSurfaceProps& surface_props,
+      const gfx::Rect& update_rect) final {
+    compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
+                                          AccessMode::kWrite);
+    return wrapped_->BeginWriteAccess(surface_props, update_rect);
+  }
+  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() final {
+    compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
+                                          AccessMode::kWrite);
+    return wrapped_->BeginWriteAccess();
+  }
+  void EndWriteAccess() final { wrapped_->EndWriteAccess(); }
+
+  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() final {
+    compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
+                                          AccessMode::kRead);
+    return wrapped_->BeginReadAccess();
+  }
+  void EndReadAccess() final { wrapped_->EndReadAccess(); }
+
+ private:
+  std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped_;
 };
 
 class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
@@ -571,6 +619,25 @@ CompoundImageBacking::ProduceSkiaGanesh(
   auto* gr_context = context_state ? context_state->gr_context() : nullptr;
   return std::make_unique<WrappedSkiaGaneshCompoundImageRepresentation>(
       gr_context, manager, this, tracker, std::move(real_rep));
+}
+
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+CompoundImageBacking::ProduceSkiaGraphite(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+  auto* backing = GetBacking(SharedImageAccessStream::kSkia);
+  if (!backing) {
+    return nullptr;
+  }
+
+  auto real_rep = backing->ProduceSkiaGraphite(manager, tracker, context_state);
+  if (!real_rep) {
+    return nullptr;
+  }
+
+  return std::make_unique<WrappedSkiaGraphiteCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
 }
 
 std::unique_ptr<OverlayImageRepresentation>
