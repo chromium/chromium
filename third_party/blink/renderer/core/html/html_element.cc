@@ -1982,11 +1982,8 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
 
   const HTMLElement* topmost_popover_ancestor = nullptr;
   auto check_ancestor = [&topmost_popover_ancestor,
-                         &popover_positions](const Element* candidate) {
-    if (!candidate)
-      return;
-    auto* candidate_ancestor =
-        NearestOpenPopover(candidate, /*inclusive*/ true);
+                         &popover_positions](const Element* to_check) {
+    auto* candidate_ancestor = NearestOpenPopover(to_check, /*inclusive*/ true);
     if (!candidate_ancestor ||
         candidate_ancestor->PopoverType() != PopoverValueType::kAuto) {
       return;
@@ -1999,8 +1996,7 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
   };
   // Add the three types of ancestor relationships to the map:
   // 1. DOM tree ancestor.
-  check_ancestor(NearestOpenPopover(
-      FlatTreeTraversal::ParentElement(new_popover), /*inclusive*/ true));
+  check_ancestor(FlatTreeTraversal::ParentElement(new_popover));
   // 2. Anchor attribute.
   check_ancestor(new_popover.anchorElement());
   // 3. Invoker to popover
