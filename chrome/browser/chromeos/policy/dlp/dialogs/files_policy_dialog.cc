@@ -101,7 +101,9 @@ void FilesPolicyDialog::AddGeneralInformation() {
 }
 
 void FilesPolicyDialog::MaybeAddConfidentialRows() {
-  DCHECK(!files_.empty());
+  if (files_.empty()) {
+    return;
+  }
 
   SetupScrollView();
   for (const DlpConfidentialFile& file : files_) {
@@ -172,10 +174,13 @@ std::u16string FilesPolicyDialog::GetMessage() {
   int message_id;
   switch (action_) {
     case DlpFilesController::FileAction::kDownload:
-      DCHECK(files_.size() == 1);
       destination_str = GetDestinationComponent(destination_);
-      message_id = IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE;
-      break;
+      // Download action is only allowed for one file.
+      return base::ReplaceStringPlaceholders(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
+          destination_str,
+          /*offset=*/nullptr);
     case DlpFilesController::FileAction::kUpload:
       destination_str = GetDestinationURL(destination_);
       message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
