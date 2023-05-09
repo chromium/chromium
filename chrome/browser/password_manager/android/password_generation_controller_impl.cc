@@ -90,7 +90,6 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
   FocusedInputChanged(autofill::mojom::FocusedFieldType::kFillablePasswordField,
                       std::move(target_frame_driver));
 
-  CHECK(!dialog_view_);
   active_frame_driver_->GetPasswordManager()
       ->SetGenerationElementAndTypeForForm(
           active_frame_driver_.get(), ui_data.form_data.unique_renderer_id,
