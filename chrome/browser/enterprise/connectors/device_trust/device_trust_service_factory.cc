@@ -74,7 +74,7 @@ DeviceTrustService* DeviceTrustServiceFactory::GetForProfile(Profile* profile) {
 DeviceTrustServiceFactory::DeviceTrustServiceFactory()
     : ProfileKeyedServiceFactory(
           "DeviceTrustService",
-          ProfileSelections::BuildForRegularAndIncognitoNonExperimental()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
 

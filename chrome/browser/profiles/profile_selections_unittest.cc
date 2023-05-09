@@ -86,7 +86,7 @@ TEST_F(ProfileSelectionsTest, OnlyRegularProfile) {
 
 TEST_F(ProfileSelectionsTest, RegularAndIncognito) {
   ProfileSelections selections =
-      ProfileSelections::BuildForRegularAndIncognitoNonExperimental();
+      ProfileSelections::BuildForRegularAndIncognito();
 
   TestProfileSelection(selections, regular_profile(), regular_profile());
   TestProfileSelection(selections, incognito_profile(), incognito_profile());
@@ -332,46 +332,6 @@ TEST_P(ProfileSelectionsTestWithParams, BuildRedirectedInIncognito) {
                        lockscreenapp_profile());
   TestProfileSelection(selections, lockscreenapp_profile_otr(),
                        lockscreenapp_profile());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-TEST_P(ProfileSelectionsTestWithParams, BuildForRegularAndIncognito) {
-  bool force_guest = std::get<0>(GetParam());
-  bool force_system = std::get<1>(GetParam());
-
-  ProfileSelections selections =
-      ProfileSelections::BuildForRegularAndIncognito(force_guest, force_system);
-
-  TestProfileSelection(selections, regular_profile(), regular_profile());
-  TestProfileSelection(selections, incognito_profile(), incognito_profile());
-
-  TestProfileSelection(selections, guest_profile(),
-                       force_guest ? guest_profile() : nullptr);
-  TestProfileSelection(selections, guest_profile_otr(),
-                       force_guest ? guest_profile_otr() : nullptr);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  bool system_experiment = IsSystemExperimentActive();
-  TestProfileSelection(
-      selections, system_profile(),
-      force_system || !system_experiment ? system_profile() : nullptr);
-  TestProfileSelection(
-      selections, system_profile_otr(),
-      force_system || !system_experiment ? system_profile_otr() : nullptr);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestProfileSelection(selections, signin_profile(), signin_profile());
-  TestProfileSelection(selections, signin_profile_otr(), signin_profile_otr());
-
-  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
-  TestProfileSelection(selections, lockscreen_profile_otr(),
-                       lockscreen_profile_otr());
-
-  TestProfileSelection(selections, lockscreenapp_profile(),
-                       lockscreenapp_profile());
-  TestProfileSelection(selections, lockscreenapp_profile_otr(),
-                       lockscreenapp_profile_otr());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

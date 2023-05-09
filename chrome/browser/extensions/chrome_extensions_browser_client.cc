@@ -248,9 +248,15 @@ ChromeExtensionsBrowserClient::GetContextForRegularAndIncognito(
     content::BrowserContext* context,
     bool force_guest_profile,
     bool force_system_profile) {
-  const ProfileSelections selections =
-      ProfileSelections::BuildForRegularAndIncognito(force_guest_profile,
-                                                     force_system_profile);
+  ProfileSelections::Builder builder;
+  builder.WithRegular(ProfileSelection::kOwnInstance);
+  if (force_guest_profile) {
+    builder.WithGuest(ProfileSelection::kOwnInstance);
+  }
+  if (force_system_profile) {
+    builder.WithSystem(ProfileSelection::kOwnInstance);
+  }
+  const ProfileSelections selections = builder.Build();
   return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 

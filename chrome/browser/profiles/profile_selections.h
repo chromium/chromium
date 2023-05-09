@@ -150,7 +150,7 @@ class ProfileSelections {
   // | System  | no profile | no profile |
   // | Ash Int.| self       | self       |
   // +---------+------------+------------+
-  static ProfileSelections BuildForRegularAndIncognitoNonExperimental();
+  static ProfileSelections BuildForRegularAndIncognito();
 
   // Redirects incognito profiles to their original regular profile. No
   // profiles for Guest and System profiles. "NonExperimental" is added to
@@ -231,33 +231,6 @@ class ProfileSelections {
   // - force_system: true, force System with
   // `ProfileSelecion::kRedirectedToOriginal`.
   static ProfileSelections BuildRedirectedInIncognito(
-      bool force_guest = true,
-      bool force_system = false);
-
-  // Without the experiment:
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | self       |
-  // | Guest   | self       | self       |
-  // | System  | self       | self       |
-  // | Ash Int.| self       | self       |
-  // +---------+------------+------------+
-  //
-  // With the experiment:
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | self       |
-  // | Guest   | no profile | no profile |
-  // | System  | no profile | no profile |
-  // | Ash Int.| self       | self       |
-  // +---------+------------+------------+
-  //
-  // Parameters: (used during the experiment)
-  // - force_guest: true, force Guest with `ProfileSelecion::kOwnInstance`.
-  // - force_system: true, force System with `ProfileSelecion::kOwnInstance`.
-  static ProfileSelections BuildForRegularAndIncognito(
       bool force_guest = true,
       bool force_system = false);
 

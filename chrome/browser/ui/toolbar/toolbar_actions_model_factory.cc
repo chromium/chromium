@@ -30,7 +30,12 @@ ToolbarActionsModelFactory* ToolbarActionsModelFactory::GetInstance() {
 ToolbarActionsModelFactory::ToolbarActionsModelFactory()
     : ProfileKeyedServiceFactory(
           "ToolbarActionsModel",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(extensions::ExtensionActionAPI::GetFactoryInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());

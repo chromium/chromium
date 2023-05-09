@@ -25,7 +25,12 @@ SCTReportingService* SCTReportingServiceFactory::GetForBrowserContext(
 SCTReportingServiceFactory::SCTReportingServiceFactory()
     : ProfileKeyedServiceFactory(
           "sct_reporting::Factory",
-          ProfileSelections::BuildForRegularAndIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {}
 
 SCTReportingServiceFactory::~SCTReportingServiceFactory() = default;
 

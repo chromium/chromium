@@ -37,7 +37,12 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
           "PrivacySandboxService",
           // TODO(crbug.com/1284295): Determine whether this actually needs to
           // be created, or whether all usage in OTR contexts can be removed.
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());

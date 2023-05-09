@@ -55,7 +55,7 @@ bool DeviceTrustConnectorServiceFactory::ServiceIsNULLWhileTesting() const {
 DeviceTrustConnectorServiceFactory::DeviceTrustConnectorServiceFactory()
     : ProfileKeyedServiceFactory(
           "DeviceTrustConnectorService",
-          ProfileSelections::BuildForRegularAndIncognitoNonExperimental()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 DeviceTrustConnectorServiceFactory::~DeviceTrustConnectorServiceFactory() =
     default;

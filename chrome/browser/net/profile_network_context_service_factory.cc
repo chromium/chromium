@@ -31,7 +31,12 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
     : ProfileKeyedServiceFactory(
           "ProfileNetworkContextService",
           // Create separate service for incognito profiles.
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif

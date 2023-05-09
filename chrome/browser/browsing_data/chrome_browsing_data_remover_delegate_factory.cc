@@ -54,7 +54,12 @@ ChromeBrowsingDataRemoverDelegateFactory::
     ChromeBrowsingDataRemoverDelegateFactory()
     : ProfileKeyedServiceFactory(
           "BrowsingDataRemover",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)

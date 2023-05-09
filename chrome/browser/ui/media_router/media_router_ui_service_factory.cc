@@ -30,7 +30,12 @@ MediaRouterUIServiceFactory* MediaRouterUIServiceFactory::GetInstance() {
 MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
     : ProfileKeyedServiceFactory(
           "MediaRouterUIService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(ChromeMediaRouterFactory::GetInstance());
   // MediaRouterUIService owns a MediaRouterActionController that depends on
   // ToolbarActionsModel.

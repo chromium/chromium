@@ -29,7 +29,12 @@ DownloadCoreServiceFactory* DownloadCoreServiceFactory::GetInstance() {
 DownloadCoreServiceFactory::DownloadCoreServiceFactory()
     : ProfileKeyedServiceFactory(
           "DownloadCoreService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(DownloadBubbleUpdateServiceFactory::GetInstance());
 #endif  // !BUILDFLAG(IS_ANDROID)

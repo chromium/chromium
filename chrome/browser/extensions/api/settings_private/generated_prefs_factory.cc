@@ -27,7 +27,12 @@ GeneratedPrefsFactory::GeneratedPrefsFactory()
     : ProfileKeyedServiceFactory(
           "GeneratedPrefs",
           // Use |context| even if it is off-the-record/incognito.
-          ProfileSelections::BuildForRegularAndIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {}
 
 GeneratedPrefsFactory::~GeneratedPrefsFactory() {}
 
