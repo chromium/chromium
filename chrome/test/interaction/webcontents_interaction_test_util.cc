@@ -653,9 +653,23 @@ void WebContentsInteractionTestUtil::LoadPage(const GURL& url) {
     CHECK(web_contents()->GetController().LoadURLWithParams(params));
   } else {
     // Regular web pages can be navigated directly.
-    const bool result =
-        content::BeginNavigateToURLFromRenderer(web_contents(), url);
-    CHECK(result);
+    //
+    // In an ideal world, this should use `BeginNavigateToURLFromRenderer()`,
+    // which verifies that the navigation successfully starts. However,
+    // `BeginNavigateToURLFromRenderer()` itself uses a RunLoop to listen for
+    // the navigation starting.
+    //
+    // For reasons that are not well understood, this is problematic when used
+    // in conjunction with the interaction sequence test utils, which often
+    // run the entire test inside a top-level RunLoop; the now nested RunLoop
+    // inside `BeginNavigateToURLFromRenderer()` never receives the
+    // `DidStartNavigation()` callback, and the test just ends up hanging.
+    //
+    // Use Execute() as a workaround this hang. Note that unlike the
+    // similarly-named `content::ExecJs()`, this helper does not actually
+    // validate or wait for the script to execute; hopefully, errors from
+    // navigation failures will be obvious enough in subsequent steps.
+    ExecuteJsLocal(web_contents(), content::JsReplace("location = $1", url));
   }
 }
 

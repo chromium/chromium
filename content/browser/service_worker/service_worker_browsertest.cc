@@ -4402,7 +4402,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
       shell()->LoadURL(in_scope_url);
       break;
     case SpeculativeStartupNavigationType::kRendererInitiatedNavigation:
-      EXPECT_TRUE(BeginNavigateToURLFromRenderer(shell(), in_scope_url));
+      EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", in_scope_url)));
       break;
   }
   dialog_waiter.Wait();

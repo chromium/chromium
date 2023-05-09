@@ -187,6 +187,24 @@ void NavigateToURLBlockUntilNavigationsComplete(
     int number_of_navigations,
     bool ignore_uncommitted_navigations = true);
 
+// Helpers for performing renderer-initiated navigations. Note these helpers are
+// only suitable when the navigation is expected to at least start successfully,
+// i.e. result in a `DidStartNavigation()` notification.
+//
+// To write a test where the renderer itself blocks or cancels the navigation,
+// use `ExecJs()` or `EvalJs()`, e.g.:
+//
+//   EXPECT_THAT(ExecJs("try { location = ''; } catch (e) { e.message; }")
+//                   .ExtractString(),
+//               HasSubStr("..."));
+//
+// To write a test where the navigation results in a bad message kill, use
+// `ExecuteScriptAsync()` + `RenderProcessHostBadMojoMessageWaiter`, e.g.:
+//
+//   ExecuteScriptAsync(rfh, JsReplace("location = $1", "/title2.html"));
+//   RenderProcessHostBadMojoMessageWaiter kill_waiter(rfh->GetProcess());
+//   EXPECT_THAT(kill_waiter.Wait(), Optional(HasSubstr("...")));
+
 // Perform a renderer-initiated navigation of |window| to |url|, blocking
 // until the navigation finishes.  The navigation is done by assigning
 // location.href in the frame |adapter|. Returns true if the page was loaded
@@ -199,12 +217,13 @@ void NavigateToURLBlockUntilNavigationsComplete(
 [[nodiscard]] bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
                                              const GURL& url,
                                              const GURL& expected_commit_url);
+
+// Similar to the two helpers above, but perform the renderer-initiated
+// navigation without a user gesture.
 [[nodiscard]] bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url);
-// Similar to above but takes in an additional URL, |expected_commit_url|, to
-// which the navigation should eventually commit. (See the browser-initiated
-// counterpart for more details).
+
 [[nodiscard]] bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url,

@@ -90,6 +90,7 @@ namespace content {
 namespace {
 
 using testing::ElementsAre;
+using testing::HasSubstr;
 using testing::IsEmpty;
 using InitialNavigationEntryState =
     NavigationEntryImpl::InitialNavigationEntryState;
@@ -14409,7 +14410,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateToEmptyURL) {
 
   // Trying to navigate to an empty URL through setting the location would fail
   // because it's not a valid URL and it's stopped in the renderer.
-  EXPECT_FALSE(NavigateToURLFromRenderer(shell(), GURL()));
+  //
+  // Note: this is only true for things like about:blank and data URLs.
+  EXPECT_THAT(EvalJs(shell(), "try { location = ''; } catch (e) { e.message; }")
+                  .ExtractString(),
+              HasSubstr("'' is not a valid URL."));
   EXPECT_EQ(entry, controller.GetLastCommittedEntry());
   EXPECT_EQ(2, controller.GetEntryCount());
 
