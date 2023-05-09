@@ -261,6 +261,12 @@ interface SellerWorklet {
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the winning bid.
   //
+  //  `browser_signal_buyer_and_seller_reporting_id`. If the winning ad
+  //  specified buyerAndSellerReportingId, and that ID passed the appropriate
+  //  k-anonymity check, a value to set as
+  //  browserSignals.buyerAndSellerReportingId will be included here; otherwise
+  //  it is nullopt.
+  //
   // `browser_signal_render_url` The render URL provided by the winning bid.
   //
   // `browser_signal_bid` The numeric value of the winning bid.
@@ -319,6 +325,7 @@ interface SellerWorklet {
       url.mojom.Url? direct_from_seller_auction_signals,
       ComponentAuctionOtherSeller? browser_signals_other_seller,
       url.mojom.Origin browser_signal_interest_group_owner,
+      string? browser_signal_buyer_and_seller_reporting_id,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       blink.mojom.AdCurrency? browser_signal_bid_currency,

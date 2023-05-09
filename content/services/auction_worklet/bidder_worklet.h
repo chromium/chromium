@@ -141,7 +141,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           bid_finalizer) override;
   void SendPendingSignalsRequests() override;
   void ReportWin(
-      const std::string& interest_group_name,
+      mojom::ReportingIdField reporting_id_field,
+      const std::string& reporting_id,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -250,7 +251,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     ReportWinTask();
     ~ReportWinTask();
 
-    std::string interest_group_name;
+    mojom::ReportingIdField reporting_id_field;
+    std::string reporting_id;
     absl::optional<std::string> auction_signals_json;
     absl::optional<std::string> per_buyer_signals_json;
     std::string seller_signals_json;
@@ -376,7 +378,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     };
 
     void ReportWin(
-        const std::string& interest_group_name,
+        mojom::ReportingIdField reporting_id_field,
+        const std::string& reporting_id,
         const absl::optional<std::string>& auction_signals_json,
         const absl::optional<std::string>& per_buyer_signals_json,
         DirectFromSellerSignalsRequester::Result

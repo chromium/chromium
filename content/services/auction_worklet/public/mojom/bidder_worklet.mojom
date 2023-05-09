@@ -141,6 +141,13 @@ struct PrioritySignalsDouble {
   double value;
 };
 
+// Which field identifying the ad is passed to reportWin()
+enum ReportingIdField {
+  kInterestGroupName,
+  kBuyerReportingId,
+  kBuyerAndSellerReportingId,
+};
+
 // Represents the time between BidderWorklet::BeginGenerateBid and each of the
 // dependencies to GenerateBid, which can help to identify the slowest
 // dependency, both in absolute terms and relative to other dependencies.
@@ -416,8 +423,12 @@ interface BidderWorklet {
   // be loaded first, if needed.
   //
   // Arguments:
-  // `interest_group_name` Name of the winning interest group that ReportWin()
-  //  is being invoked on behalf of.
+  // `reporting_id_field` Describes which kind of ad campaign identification
+  //  signal has been provided to ReportWin(), corresponding to either the
+  //  interest group name or a field on the registered ad itself.
+  //
+  //  `reporting_id` The string value of the field described by
+  //   `reporting_id_field`.
   //
   // `auction_signals_json` The JSON representation of the auction signals for
   //  the auction, if specified by the publisher page and provided to bidder
@@ -513,7 +524,8 @@ interface BidderWorklet {
   //  provided, and there may be no errors when there's no `report_url`.
   //  Includes errors from failing to load the worklet script.
   ReportWin(
-      string interest_group_name,
+      ReportingIdField reporting_id_field,
+      string reporting_id,
       string? auction_signals_json,
       string? per_buyer_signals_json,
       url.mojom.Url? direct_from_seller_per_buyer_signals,

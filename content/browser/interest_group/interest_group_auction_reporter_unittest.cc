@@ -136,6 +136,7 @@ class InterestGroupAuctionReporterTest
         interest_group,
         /*joining_url=*/kWinningBidderOrigin.GetURL());
 
+    winning_bid_info_.render_url = (*interest_group.ads)[0].render_url;
     winning_bid_info_.ad_metadata = kWinningAdMetadata;
 
     // The actual value doesn't matter for tests, but need to set some value as

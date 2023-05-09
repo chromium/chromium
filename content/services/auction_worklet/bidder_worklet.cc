@@ -321,7 +321,8 @@ void BidderWorklet::SendPendingSignalsRequests() {
 }
 
 void BidderWorklet::ReportWin(
-    const std::string& interest_group_name,
+    mojom::ReportingIdField reporting_id_field,
+    const std::string& reporting_id,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -348,7 +349,8 @@ void BidderWorklet::ReportWin(
 
   report_win_tasks_.emplace_front();
   auto report_win_task = report_win_tasks_.begin();
-  report_win_task->interest_group_name = interest_group_name;
+  report_win_task->reporting_id_field = reporting_id_field,
+  report_win_task->reporting_id = reporting_id;
   report_win_task->auction_signals_json = auction_signals_json;
   report_win_task->per_buyer_signals_json = per_buyer_signals_json;
   report_win_task->seller_signals_json = seller_signals_json;
@@ -525,7 +527,8 @@ BidderWorklet::V8State::SingleGenerateBidResult::operator=(
     SingleGenerateBidResult&&) = default;
 
 void BidderWorklet::V8State::ReportWin(
-    const std::string& interest_group_name,
+    mojom::ReportingIdField reporting_id_field,
+    const std::string& reporting_id,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     DirectFromSellerSignalsRequester::Result
@@ -579,12 +582,26 @@ void BidderWorklet::V8State::ReportWin(
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
+
+  const char* reporting_id_field_name = nullptr;
+  switch (reporting_id_field) {
+    case mojom::ReportingIdField::kInterestGroupName:
+      reporting_id_field_name = "interestGroupName";
+      break;
+    case mojom::ReportingIdField::kBuyerReportingId:
+      reporting_id_field_name = "buyerReportingId";
+      break;
+    case mojom::ReportingIdField::kBuyerAndSellerReportingId:
+      reporting_id_field_name = "buyerAndSellerReportingId";
+      break;
+  }
+
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           url::Origin::Create(script_source_url_).Serialize()) ||
-      !browser_signals_dict.Set("interestGroupName", interest_group_name) ||
+      !browser_signals_dict.Set(reporting_id_field_name, reporting_id) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
@@ -1711,7 +1728,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
       v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BidderWorklet::V8State::ReportWin, base::Unretained(v8_state_.get()),
-          std::move(task->interest_group_name),
+          std::move(task->reporting_id_field), std::move(task->reporting_id),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
           std::move(task->direct_from_seller_result_per_buyer_signals),

@@ -119,6 +119,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const absl::optional<GURL>& direct_from_seller_auction_signals,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,
+      const absl::optional<std::string>&
+          browser_signal_buyer_and_seller_reporting_id,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -210,6 +212,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params;
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller;
     url::Origin browser_signal_interest_group_owner;
+    absl::optional<std::string> browser_signal_buyer_and_seller_reporting_id;
     GURL browser_signal_render_url;
     double browser_signal_bid;
     absl::optional<blink::AdCurrency> browser_signal_bid_currency;
@@ -317,6 +320,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
             direct_from_seller_result_auction_signals,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const url::Origin& browser_signal_interest_group_owner,
+        const absl::optional<std::string>&
+            browser_signal_buyer_and_seller_reporting_id,
         const GURL& browser_signal_render_url,
         double browser_signal_bid,
         const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,

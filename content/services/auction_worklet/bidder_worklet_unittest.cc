@@ -295,6 +295,8 @@ class BidderWorkletTest : public testing::Test {
   // test.
   void SetDefaultParameters() {
     interest_group_name_ = "Fred";
+    reporting_id_field_ = mojom::ReportingIdField::kInterestGroupName;
+    reporting_id_ = interest_group_name_;
     interest_group_enable_bidding_signals_prioritization_ = false;
     interest_group_priority_vector_.reset();
     interest_group_user_bidding_signals_ = absl::nullopt;
@@ -519,8 +521,8 @@ class BidderWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     bidder_worklet->ReportWin(
-        interest_group_name_, auction_signals_, per_buyer_signals_,
-        direct_from_seller_per_buyer_signals_,
+        reporting_id_field_, reporting_id_, auction_signals_,
+        per_buyer_signals_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, seller_signals_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
@@ -873,6 +875,11 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<double> browser_signal_ad_cost_;
   absl::optional<uint16_t> browser_signal_modeling_signals_;
   uint8_t browser_signal_recency_;
+
+  // Used for reportWin();
+  auction_worklet::mojom::ReportingIdField reporting_id_field_ =
+      auction_worklet::mojom::ReportingIdField::kInterestGroupName;
+  std::string reporting_id_;
 
   // Use a single constant start time. Only delta times are provided to scripts,
   // relative to the time of the auction, so no need to vary the auction time.
@@ -3464,8 +3471,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
 
   base::RunLoop run_loop;
   bidder_worklet->ReportWin(
-      interest_group_name_, /*auction_signals_json=*/"0", per_buyer_signals_,
-      direct_from_seller_per_buyer_signals_,
+      reporting_id_field_, reporting_id_, /*auction_signals_json=*/"0",
+      per_buyer_signals_, direct_from_seller_per_buyer_signals_,
       direct_from_seller_auction_signals_, seller_signals_,
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
@@ -4728,7 +4735,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   bidder_worklet->ReportWin(
-      interest_group_name_, auction_signals_, per_buyer_signals_,
+      reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_auction_signals_, seller_signals_,
       browser_signal_render_url_, browser_signal_bid_,
@@ -4775,7 +4782,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
     size_t num_report_win_calls = 0;
     for (size_t i = 0; i < kNumReportWinCalls; ++i) {
       bidder_worklet->ReportWin(
-          interest_group_name_,
+          reporting_id_field_, reporting_id_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           direct_from_seller_per_buyer_signals_,
           direct_from_seller_auction_signals_, seller_signals_,
@@ -4827,7 +4834,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
 
   for (size_t i = 0; i < 10; ++i) {
     bidder_worklet->ReportWin(
-        interest_group_name_,
+        reporting_id_field_, reporting_id_,
         /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, seller_signals_,
@@ -4867,11 +4874,28 @@ TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
       {"https://url.test/:11 Uncaught ReferenceError: Date is not defined."});
 }
 
-TEST_F(BidderWorkletTest, ReportWinInterestGroupName) {
-  interest_group_name_ = "https://interest.group.name.test/";
+TEST_F(BidderWorkletTest, ReportWinReportingId) {
+  const char kScriptBody[] = R"(
+    sendReportTo("https://example.org/?" +
+                 browserSignals.interestGroupName + "/" +
+                 browserSignals.buyerReportingId + "/" +
+                 browserSignals.buyerAndSellerReportingId);
+  )";
+  reporting_id_ = "reporting_id";
+  reporting_id_field_ = mojom::ReportingIdField::kInterestGroupName;
   RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo(browserSignals.interestGroupName)",
-      GURL(interest_group_name_));
+      kScriptBody,
+      GURL("https://example.org/?reporting_id/undefined/undefined"));
+
+  reporting_id_field_ = mojom::ReportingIdField::kBuyerReportingId;
+  RunReportWinWithFunctionBodyExpectingResult(
+      kScriptBody,
+      GURL("https://example.org/?undefined/reporting_id/undefined"));
+
+  reporting_id_field_ = mojom::ReportingIdField::kBuyerAndSellerReportingId;
+  RunReportWinWithFunctionBodyExpectingResult(
+      kScriptBody,
+      GURL("https://example.org/?undefined/undefined/reporting_id"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinDataVersion) {
@@ -5168,8 +5192,8 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
   for (int i = 0; i < 3; ++i) {
     base::RunLoop run_loop;
     bidder_worklet->ReportWin(
-        interest_group_name_, auction_signals_, per_buyer_signals_,
-        direct_from_seller_per_buyer_signals_,
+        reporting_id_field_, reporting_id_, auction_signals_,
+        per_buyer_signals_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, seller_signals_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
@@ -5928,7 +5952,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
 
   GenerateBid(bidder_worklet.get());
   bidder_worklet->ReportWin(
-      interest_group_name_, auction_signals_, per_buyer_signals_,
+      reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_auction_signals_, seller_signals_,
       browser_signal_render_url_, browser_signal_bid_,

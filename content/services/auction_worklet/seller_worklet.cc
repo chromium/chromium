@@ -591,6 +591,8 @@ void SellerWorklet::ReportResult(
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
+    const absl::optional<std::string>&
+        browser_signal_buyer_and_seller_reporting_id,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -622,6 +624,8 @@ void SellerWorklet::ReportResult(
       std::move(browser_signals_other_seller);
   report_result_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
+  report_result_task->browser_signal_buyer_and_seller_reporting_id =
+      browser_signal_buyer_and_seller_reporting_id;
   report_result_task->browser_signal_render_url = browser_signal_render_url;
   report_result_task->browser_signal_bid = browser_signal_bid;
   report_result_task->browser_signal_bid_currency =
@@ -1190,6 +1194,8 @@ void SellerWorklet::V8State::ReportResult(
         direct_from_seller_result_auction_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
+    const absl::optional<std::string>&
+        browser_signal_buyer_and_seller_reporting_id,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -1237,6 +1243,10 @@ void SellerWorklet::V8State::ReportResult(
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
+      (browser_signal_buyer_and_seller_reporting_id.has_value() &&
+       !browser_signals_dict.Set(
+           "buyerAndSellerReportingId",
+           *browser_signal_buyer_and_seller_reporting_id)) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
@@ -1770,6 +1780,7 @@ void SellerWorklet::RunReportResultIfReady(
           std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->browser_signals_other_seller),
           std::move(task->browser_signal_interest_group_owner),
+          std::move(task->browser_signal_buyer_and_seller_reporting_id),
           std::move(task->browser_signal_render_url), task->browser_signal_bid,
           std::move(task->browser_signal_bid_currency),
           task->browser_signal_desirability,

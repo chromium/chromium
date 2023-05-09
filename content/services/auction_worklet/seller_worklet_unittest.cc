@@ -230,6 +230,7 @@ class SellerWorkletTest : public testing::Test {
     component_expect_bid_currency_ = absl::nullopt;
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
+    browser_signal_buyer_and_seller_reporting_id_ = absl::nullopt;
     browser_signal_render_url_ = GURL("https://render.url.test/");
     browser_signal_ad_components_.clear();
     browser_signal_bidding_duration_msecs_ = 0;
@@ -537,8 +538,10 @@ class SellerWorkletTest : public testing::Test {
         auction_ad_config_non_shared_params_,
         direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
         browser_signals_other_seller_.Clone(),
-        browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
-        bid_currency_, browser_signal_desireability_,
+        browser_signal_interest_group_owner_,
+        browser_signal_buyer_and_seller_reporting_id_,
+        browser_signal_render_url_, bid_, bid_currency_,
+        browser_signal_desireability_,
         browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signals_component_auction_report_result_params_.Clone(),
@@ -584,8 +587,10 @@ class SellerWorkletTest : public testing::Test {
         auction_ad_config_non_shared_params_,
         direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
         browser_signals_other_seller_.Clone(),
-        browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
-        bid_currency_, browser_signal_desireability_,
+        browser_signal_interest_group_owner_,
+        browser_signal_buyer_and_seller_reporting_id_,
+        browser_signal_render_url_, bid_, bid_currency_,
+        browser_signal_desireability_,
         browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signals_component_auction_report_result_params_.Clone(),
@@ -714,6 +719,7 @@ class SellerWorkletTest : public testing::Test {
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
   absl::optional<blink::AdCurrency> component_expect_bid_currency_;
   url::Origin browser_signal_interest_group_owner_;
+  absl::optional<std::string> browser_signal_buyer_and_seller_reporting_id_;
   GURL browser_signal_render_url_;
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
@@ -2477,6 +2483,14 @@ TEST_F(SellerWorkletTest, ReportResultInterestGroupOwner) {
       /*expected_report_url=*/absl::nullopt);
 }
 
+TEST_F(SellerWorkletTest, ReportResultBuyerAndSellerReportingId) {
+  browser_signal_buyer_and_seller_reporting_id_ = "campaign";
+  RunReportResultCreatedScriptExpectingResult(
+      R"(browserSignals.buyerAndSellerReportingId === "campaign" ? 2 : 1)",
+      /*extra_code=*/std::string(), "2",
+      /*expected_report_url=*/absl::nullopt);
+}
+
 TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
   browser_signal_render_url_ = GURL("https://foo/");
   RunReportResultCreatedScriptExpectingResult(
@@ -3004,8 +3018,10 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           direct_from_seller_seller_signals_,
           direct_from_seller_auction_signals_,
           browser_signals_other_seller_.Clone(),
-          browser_signal_interest_group_owner_, browser_signal_render_url_,
-          bid_, bid_currency_, browser_signal_desireability_,
+          browser_signal_interest_group_owner_,
+          browser_signal_buyer_and_seller_reporting_id_,
+          browser_signal_render_url_, bid_, bid_currency_,
+          browser_signal_desireability_,
           browser_signal_highest_scoring_other_bid_,
           browser_signal_highest_scoring_other_bid_currency_,
           browser_signals_component_auction_report_result_params_.Clone(),
@@ -3065,8 +3081,9 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       auction_ad_config_non_shared_params_, direct_from_seller_seller_signals_,
       direct_from_seller_auction_signals_,
       browser_signals_other_seller_.Clone(),
-      browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
-      bid_currency_, browser_signal_desireability_,
+      browser_signal_interest_group_owner_,
+      browser_signal_buyer_and_seller_reporting_id_, browser_signal_render_url_,
+      bid_, bid_currency_, browser_signal_desireability_,
       browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signals_component_auction_report_result_params_.Clone(),

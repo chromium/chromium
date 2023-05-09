@@ -66,6 +66,39 @@ bool IsEventLevelReportingUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme);
 }
 
+const blink::InterestGroup::Ad& ChosenAd(
+    const StorageInterestGroup& storage_interest_group,
+    const GURL& winning_ad_url) {
+  auto chosen_ad = base::ranges::find(
+      *storage_interest_group.interest_group.ads, winning_ad_url,
+      [](const blink::InterestGroup::Ad& ad) { return ad.render_url; });
+  CHECK(chosen_ad != storage_interest_group.interest_group.ads->end());
+  return *chosen_ad;
+}
+
+bool IsKAnonForReporting(const StorageInterestGroup& storage_interest_group,
+                         const blink::InterestGroup::Ad& chosen_ad) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeConsiderKAnonymity) ||
+      !base::FeatureList::IsEnabled(
+          blink::features::kFledgeEnforceKAnonymity)) {
+    return true;
+  }
+
+  std::string reporting_key = KAnonKeyForAdNameReporting(
+      storage_interest_group.interest_group, chosen_ad);
+  auto kanon = base::ranges::find(
+      storage_interest_group.reporting_ads_kanon, reporting_key,
+      [](const StorageInterestGroup::KAnonymityData& data) {
+        return data.key;
+      });
+  if (kanon == storage_interest_group.reporting_ads_kanon.end() ||
+      !kanon->is_k_anonymous) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 BASE_FEATURE(kFledgeRounding,
@@ -349,6 +382,18 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
     highest_scoring_other_bid = 0.0;
   }
 
+  // Send in buyer_and_seller_reporting_id if it's configured on the winning
+  // ad and sufficiently k-anonymous.
+  absl::optional<std::string> browser_signal_buyer_and_seller_reporting_id;
+  auto chosen_ad = ChosenAd(*winning_bid_info_.storage_interest_group,
+                            winning_bid_info_.render_url);
+  if (chosen_ad.buyer_and_seller_reporting_id.has_value() &&
+      IsKAnonForReporting(*winning_bid_info_.storage_interest_group,
+                          chosen_ad)) {
+    browser_signal_buyer_and_seller_reporting_id =
+        *chosen_ad.buyer_and_seller_reporting_id;
+  }
+
   seller_worklet_handle_->AuthorizeSubresourceUrls(
       *seller_info->subresource_url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
@@ -359,6 +404,8 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
           seller_info->subresource_url_builder.get()),
       std::move(other_seller),
       winning_bid_info_.storage_interest_group->interest_group.owner,
+      /*browser_signal_buyer_and_seller_reporting_id=*/
+      browser_signal_buyer_and_seller_reporting_id,
       winning_bid_info_.render_url,
       RoundStochasticallyToKBits(bid, kFledgeBidReportingBits.Get()),
       bid_currency,
@@ -527,33 +574,32 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           *auction_config,
           winning_bid_info_.storage_interest_group->interest_group.owner);
 
-  std::string group_name =
+  // Figure out what field to use for reporting id.
+  std::string reporting_id =
       winning_bid_info_.storage_interest_group->interest_group.name;
-  // if k-anonymity enforcement is on we can only reveal the winning interest
-  // group name in reportWin if the winning ad's reporting_ads_kanon entry is
-  // k-anonymous. Otherwise we simply provide the empty string instead of the
-  // group name.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgeConsiderKAnonymity) &&
-      base::FeatureList::IsEnabled(blink::features::kFledgeEnforceKAnonymity)) {
-    auto chosen_ad = base::ranges::find(
-        *winning_bid_info_.storage_interest_group->interest_group.ads,
-        winning_bid_info_.render_url,
-        [](const blink::InterestGroup::Ad& ad) { return ad.render_url; });
-    CHECK(chosen_ad !=
-          winning_bid_info_.storage_interest_group->interest_group.ads->end());
-    std::string reporting_key = KAnonKeyForAdNameReporting(
-        winning_bid_info_.storage_interest_group->interest_group, *chosen_ad);
-    auto kanon = base::ranges::find(
-        winning_bid_info_.storage_interest_group->reporting_ads_kanon,
-        reporting_key, [](const StorageInterestGroup::KAnonymityData& data) {
-          return data.key;
-        });
-    if (kanon == winning_bid_info_.storage_interest_group->reporting_ads_kanon
-                     .end() ||
-        !kanon->is_k_anonymous) {
-      group_name = "";
-    }
+  auction_worklet::mojom::ReportingIdField reporting_id_field =
+      auction_worklet::mojom::ReportingIdField::kInterestGroupName;
+
+  auto chosen_ad = ChosenAd(*winning_bid_info_.storage_interest_group,
+                            winning_bid_info_.render_url);
+  if (chosen_ad.buyer_and_seller_reporting_id.has_value()) {
+    reporting_id_field =
+        auction_worklet::mojom::ReportingIdField::kBuyerAndSellerReportingId;
+    reporting_id = *chosen_ad.buyer_and_seller_reporting_id;
+  } else if (chosen_ad.buyer_reporting_id.has_value()) {
+    reporting_id_field =
+        auction_worklet::mojom::ReportingIdField::kBuyerReportingId;
+    reporting_id = *chosen_ad.buyer_reporting_id;
+  }
+  // if k-anonymity enforcement is on we can only reveal the winning reporting
+  // id in reportWin if the winning ad's reporting_ads_kanon entry is
+  // k-anonymous. Otherwise we simply provide the empty string, as well as hide
+  // the field name.
+  if (!IsKAnonForReporting(*winning_bid_info_.storage_interest_group,
+                           chosen_ad)) {
+    reporting_id = "";
+    reporting_id_field =
+        auction_worklet::mojom::ReportingIdField::kInterestGroupName;
   }
 
   bidder_worklet_handle_->AuthorizeSubresourceUrls(
@@ -592,7 +638,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           : winning_bid_info_.bid;
 
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
-      group_name, auction_config->non_shared_params.auction_signals.value(),
+      reporting_id_field, reporting_id,
+      auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
       InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
           seller_info.subresource_url_builder.get(),
