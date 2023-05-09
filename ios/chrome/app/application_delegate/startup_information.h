@@ -28,9 +28,6 @@ class TimeTicks;
 // Tick of the first scene connection, used for UMA.
 @property(nonatomic, assign) base::TimeTicks firstSceneConnectionTime;
 
-// Only for iOS 12 compat.
-- (NSDictionary*)launchOptions;
-
 // Disables the FirstUserActionRecorder.
 - (void)resetFirstUserActionRecorder;
 

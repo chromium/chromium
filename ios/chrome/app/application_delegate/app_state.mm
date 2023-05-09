@@ -303,17 +303,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Fully initialize the browser objects for the browser UI if it is not
   // already the case. This is especially needed for scene startup.
   if (self.initStage < InitStageBrowserObjectsForUI) {
-    // Start the initialization in the case it wasn't already done before
-    // foregrounding the app. `initStage` will be greater than InitStageStart if
-    // the initialization was already started.
-    if (self.initStage == InitStageStart) {
-      // TODO(crbug.com/1346512): Remove this code path after some time in
-      // canary. This is meant to be easy to revert. Initialization is always
-      // started at application:didFinishLaunchingWithOptions: and transitions
-      // past InitStageStart before returning to the runloop.
-      NOTREACHED();
-      [self queueTransitionToFirstInitStage];
-    }
+    // Invariant: The app has passed InitStageStart.
+    CHECK(self.initStage != InitStageStart);
     // TODO(crbug.com/1197330): This function should only be called once
     // during a specific stage, but this requires non-trivial refactoring, so
     // for now #initializeUIPreSafeMode will just return early if called more
@@ -455,25 +446,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 }
 
-- (BOOL)requiresHandlingAfterLaunchWithOptions:(NSDictionary*)launchOptions
-                               stateBackground:(BOOL)stateBackground {
-  [_browserLauncher setLaunchOptions:launchOptions];
-
-  [self queueTransitionToFirstInitStage];
-
-  // `stateBackground` is wrongly always YES, even in regular foreground
-  // launches. This variable is a legacy before we started supporting
-  // multi-scene.
-  // TODO(crbug.com/1346512): Remove this code path after some time in
-  // canary. This is meant to be easy to revert.
-  DCHECK(stateBackground);
-  if (!stateBackground) {
-    [self initializeUIPreSafeMode];
-  }
-
-  return YES;
-}
-
 - (void)addObserver:(id<AppStateObserver>)observer {
   [self.observers addObserver:observer];
 
@@ -508,29 +480,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self queueTransitionToInitStage:nextInitStage];
 }
 
-- (void)queueTransitionToFirstInitStage {
+- (void)startInitialization {
   [self queueTransitionToInitStage:InitStageStart];
-}
-
-- (void)queueTransitionToInitStage:(InitStage)initStage {
-  if (self.isIncrementingInitStage) {
-    // It is an error to queue more than one transition at once.
-    DCHECK(!self.needsIncrementInitStage);
-
-    // Set a flag to increment after the observers are notified of the current
-    // change.
-    self.needsIncrementInitStage = YES;
-    return;
-  }
-
-  self.isIncrementingInitStage = YES;
-  self.initStage = initStage;
-  self.isIncrementingInitStage = NO;
-
-  if (self.needsIncrementInitStage) {
-    self.needsIncrementInitStage = NO;
-    [self queueTransitionToNextInitStage];
-  }
 }
 
 #pragma mark - Multiwindow-related
@@ -617,6 +568,27 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   // Start recording info about this session.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+}
+
+- (void)queueTransitionToInitStage:(InitStage)initStage {
+  if (self.isIncrementingInitStage) {
+    // It is an error to queue more than one transition at once.
+    DCHECK(!self.needsIncrementInitStage);
+
+    // Set a flag to increment after the observers are notified of the current
+    // change.
+    self.needsIncrementInitStage = YES;
+    return;
+  }
+
+  self.isIncrementingInitStage = YES;
+  self.initStage = initStage;
+  self.isIncrementingInitStage = NO;
+
+  if (self.needsIncrementInitStage) {
+    self.needsIncrementInitStage = NO;
+    [self queueTransitionToNextInitStage];
+  }
 }
 
 #pragma mark - UIBlockerManager

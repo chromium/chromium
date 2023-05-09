@@ -310,9 +310,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // in system Spotlight index.
   SpotlightManager* _spotlightManager;
 
-  // Cached launchOptions from -didFinishLaunchingWithOptions.
-  NSDictionary* _launchOptions;
-
   // Variable backing metricsMediator property.
   __weak MetricsMediator* _metricsMediator;
 
@@ -380,8 +377,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 @implementation MainController
 
 // Defined by public protocols.
-// - BrowserLauncher
-@synthesize launchOptions = _launchOptions;
 // - StartupInformation
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
@@ -585,8 +580,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // "Low priority" tasks
   [_startupTasks registerForApplicationWillResignActiveNotification];
   [self registerForOrientationChangeNotifications];
-
-  _launchOptions = nil;
 
   [self scheduleTasksRequiringBVCWithBrowserState];
 

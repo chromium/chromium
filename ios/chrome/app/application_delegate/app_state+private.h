@@ -7,17 +7,11 @@
 
 #include "ios/chrome/app/application_delegate/app_state.h"
 
-@class SafeModeCoordinator;
-
 // Class extension exposing private methods of AppState for testing.
 @interface AppState () <AppStateObserver>
 
-@property(nonatomic, retain) SafeModeCoordinator* safeModeCoordinator;
-
 // Redefined internally as readwrite.
 @property(nonatomic, assign) InitStage initStage;
-
-- (void)queueTransitionToFirstInitStage;
 
 - (void)completeUIInitialization;
 

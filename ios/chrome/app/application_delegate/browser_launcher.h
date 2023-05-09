@@ -10,9 +10,6 @@
 // This protocol defines the startup method for the application.
 @protocol BrowserLauncher<NSObject>
 
-// Cached launchOptions from AppState's -didFinishLaunchingWithOptions.
-@property(nonatomic, retain) NSDictionary* launchOptions;
-
 // Browser view information created during startup.
 @property(nonatomic, readonly) id<BrowserProviderInterface>
     browserProviderInterface;

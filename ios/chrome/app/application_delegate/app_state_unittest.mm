@@ -154,31 +154,6 @@ typedef void (^HandleStartupParam)(
 // A block ths returns values of AppState connectedScenes.
 typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 
-// Sets init stage expected transition calls from `start` to `end`.
-void SetInitStageTransitionExpectations(id mock,
-                                        AppState* app_state,
-                                        InitStage start,
-                                        InitStage end) {
-  ASSERT_LE(end, InitStageFinal);
-  ASSERT_GE(end, InitStageStart);
-
-  InitStage current_stage = start;
-
-  // Handle the particular case of InitStageStart.
-  if (current_stage == InitStageStart) {
-    [[mock expect] appState:app_state willTransitionToInitStage:InitStageStart];
-    [[mock expect] appState:app_state
-        didTransitionFromInitStage:InitStageStart];
-  }
-
-  while (current_stage != end) {
-    InitStage next_stage = static_cast<InitStage>(current_stage + 1);
-    [[mock expect] appState:app_state willTransitionToInitStage:next_stage];
-    [[mock expect] appState:app_state didTransitionFromInitStage:current_stage];
-    current_stage = next_stage;
-  }
-}
-
 }  // namespace
 
 // An app state observer that will call [AppState
@@ -466,136 +441,6 @@ class AppStateWithThreadTest : public PlatformTest {
 
 #pragma mark - Tests.
 
-// Tests that if the application is in background
-// -requiresHandlingAfterLaunchWithOptions saves the launchOptions and returns
-// YES (to handle the launch options later).
-TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsBackground) {
-  // Setup.
-  NSString* sourceApplication = @"com.apple.mobilesafari";
-  NSDictionary* launchOptions =
-      @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
-
-  AppState* appState = getAppStateWithMock();
-
-  id browserLauncherMock = getBrowserLauncherMock();
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-
-  // Action.
-  BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:YES];
-
-  // Test.
-  EXPECT_TRUE(result);
-  EXPECT_OCMOCK_VERIFY(browserLauncherMock);
-
-  // Verify the launch stage is still at the point of initializing the browser
-  // basics when the app is backgrounded.
-  EXPECT_EQ(InitStageBrowserBasic, appState.initStage);
-}
-
-// Tests that if the application is active and Safe Mode should be activated
-// -requiresHandlingAfterLaunchWithOptions save the launch options and activate
-// the Safe Mode.
-TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
-  // Setup.
-  NSString* sourceApplication = @"com.apple.mobilesafari";
-  NSDictionary* launchOptions =
-      @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
-
-  base::TimeTicks now = base::TimeTicks::Now();
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
-  [[getStartupInformationMock() stub] setIsFirstRun:YES];
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
-  [[[getStartupInformationMock() stub] andDo:^(NSInvocation* invocation) {
-    [invocation setReturnValue:(void*)&now];
-  }] appLaunchTime];
-
-  id windowMock = getWindowMock();
-  [[[windowMock stub] andReturn:nil] rootViewController];
-  [[windowMock expect] setRootViewController:[OCMArg any]];
-  [[windowMock expect] makeKeyAndVisible];
-
-  AppState* appState = getAppStateWithMock();
-  ASSERT_EQ(InitStageStart, appState.initStage);
-
-  id appStateObserverMock = getAppStateObserverMock();
-  SetInitStageTransitionExpectations(appStateObserverMock, appState,
-                                     InitStageStart, InitStageFinal);
-  [appState addObserver:appStateObserverMock];
-  id browserLauncherMock = getBrowserLauncherMock();
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-
-  swizzleSafeModeShouldStart(YES);
-
-  // Action.
-  BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:YES];
-
-  [appState queueTransitionToNextInitStage];
-
-  // Start the safe mode by transitioning the scene to foreground again after
-  // #requiresHandlingAfterLaunchWithOptions which starts the safe mode.
-  SceneState* sceneState = appState.connectedScenes.firstObject;
-  sceneState.activationLevel = SceneActivationLevelForegroundActive;
-
-  EXPECT_TRUE(result);
-  EXPECT_EQ(appState.initStage, InitStageSafeMode);
-
-  // Transition out of safe mode.
-  [appState queueTransitionToNextInitStage];
-
-  // Verify that the dependencies are called properly during the app journey.
-  EXPECT_OCMOCK_VERIFY(windowMock);
-  EXPECT_OCMOCK_VERIFY(browserLauncherMock);
-  EXPECT_OCMOCK_VERIFY(appStateObserverMock);
-
-  EXPECT_EQ(InitStageFinal, appState.initStage);
-}
-
-// Tests that if the application is active
-// -requiresHandlingAfterLaunchWithOptions saves the launchOptions and start the
-// application in foreground.
-TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
-  // Setup.
-  NSString* sourceApplication = @"com.apple.mobilesafari";
-  NSDictionary* launchOptions =
-      @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
-
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
-  [[getStartupInformationMock() stub] setIsFirstRun:YES];
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
-
-  [[[getWindowMock() stub] andReturn:nil] rootViewController];
-
-  AppState* appState = getAppStateWithMock();
-  ASSERT_EQ(appState.initStage, InitStageStart);
-
-  id appStateObserverMock = getAppStateObserverMock();
-  SetInitStageTransitionExpectations(appStateObserverMock, appState,
-                                     InitStageStart, InitStageFinal);
-
-  [appState addObserver:appStateObserverMock];
-
-  id browserLauncherMock = getBrowserLauncherMock();
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-
-  swizzleSafeModeShouldStart(NO);
-
-  // Action.
-  BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:YES];
-
-  [appState queueTransitionToNextInitStage];
-
-  // Test.
-  EXPECT_TRUE(result);
-  EXPECT_EQ(InitStageFinal, appState.initStage);
-
-  // Verify that the dependencies were called properly.
-  EXPECT_OCMOCK_VERIFY(browserLauncherMock);
-  EXPECT_OCMOCK_VERIFY(appStateObserverMock);
-}
-
 using AppStateNoFixtureTest = PlatformTest;
 
 // Test that -willResignActive set cold start to NO and launch record.
@@ -634,7 +479,7 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
   [appState addObserver:observer];
 
   // Start init stages.
-  [appState queueTransitionToFirstInitStage];
+  [appState startInitialization];
   [appState queueTransitionToNextInitStage];
   [appState queueTransitionToNextInitStage];
 
@@ -676,7 +521,7 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   [appState addObserver:observer];
 
   // Start init stages.
-  [appState queueTransitionToFirstInitStage];
+  [appState startInitialization];
   [appState queueTransitionToNextInitStage];
 
   id application = [OCMockObject mockForClass:[UIApplication class]];
@@ -724,7 +569,7 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   [[appStateMock expect] completeUIInitialization];
 
   // Simulate finishing the initialization before going to background.
-  [getAppStateWithMock() queueTransitionToFirstInitStage];
+  [getAppStateWithMock() startInitialization];
   [getAppStateWithMock() queueTransitionToNextInitStage];
 
   // Simulate background before going to foreground.
@@ -767,7 +612,7 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   // Simulate finishing the initialization before going to background.
-  [getAppStateWithMock() queueTransitionToFirstInitStage];
+  [getAppStateWithMock() startInitialization];
   [getAppStateWithMock() queueTransitionToNextInitStage];
 
   // Actions.

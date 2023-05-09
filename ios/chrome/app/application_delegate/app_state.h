@@ -118,14 +118,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // YES if the application is getting terminated.
 @property(nonatomic, readonly) BOOL appIsTerminating;
 
-// Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
-// application is in background, initialize the browser to basic. If not, launch
-// the browser.
-// Returns whether additional delegate handling should be performed (call to
-// -performActionForShortcutItem or -openURL by the system for example)
-- (BOOL)requiresHandlingAfterLaunchWithOptions:(NSDictionary*)launchOptions
-                               stateBackground:(BOOL)stateBackground;
-
 // Logs duration of the session and records that chrome is no longer in cold
 // start.
 - (void)willResignActive;
@@ -186,6 +178,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // finally return to the runloop. It is an error to queue more than one
 // transition at once.
 - (void)queueTransitionToNextInitStage;
+
+// Queue the transition (as defined above) to the very first initialization
+// stage.
+- (void)startInitialization;
 
 @end
 

@@ -53,9 +53,4 @@
   // Stub.
 }
 
-- (NSDictionary*)launchOptions {
-  // Stub.
-  return @{};
-}
-
 @end
