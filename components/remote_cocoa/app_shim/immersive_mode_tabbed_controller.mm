@@ -14,11 +14,8 @@ namespace remote_cocoa {
 ImmersiveModeTabbedController::ImmersiveModeTabbedController(
     NSWindow* browser_window,
     NSWindow* overlay_window,
-    NSWindow* tab_window,
-    base::OnceClosure callback)
-    : ImmersiveModeController(browser_window,
-                              overlay_window,
-                              std::move(callback)),
+    NSWindow* tab_window)
+    : ImmersiveModeController(browser_window, overlay_window),
       tab_window_(tab_window) {
   browser_window.titleVisibility = NSWindowTitleHidden;
 
@@ -90,9 +87,7 @@ void ImmersiveModeTabbedController::Enable() {
       .active = YES;
 
   ObserveChildWindows(tab_window_);
-}
 
-void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
   // Keep the titlebar hidden until the fullscreen transition is complete.
   NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
@@ -108,11 +103,6 @@ void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
 
   // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
   UpdateToolbarVisibility(last_used_style());
-
-  // Call the base implementation after adding the toolbar. Reparenting of child
-  // widgets occurs in base, which may cause a `RevealLock()`. If the toolbar is
-  // not set `RevealLock()` will have no control over revealing the titlebar.
-  ImmersiveModeController::FullscreenTransitionCompleted();
 }
 
 void ImmersiveModeTabbedController::UpdateToolbarVisibility(

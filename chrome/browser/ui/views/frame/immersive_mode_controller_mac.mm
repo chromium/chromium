@@ -79,9 +79,6 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // Immersive fullscreen has started.
-  void FullScreenOverlayViewWillAppear();
-
   // Set the widget id of the tab hosting widget. Set before calling SetEnabled.
   void SetTabNativeWidgetID(uint64_t widget_id);
 
@@ -187,14 +184,15 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // controlled fullscreen NSWindow.
     browser_view_->overlay_widget()->Show();
 
+    // Move top chrome to the overlay view.
+    browser_view_->OnImmersiveRevealStarted();
+    browser_view_->InvalidateLayout();
+
     views::NativeWidgetMacNSWindowHost* overlay_host =
         views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
             browser_view_->overlay_widget()->GetNativeWindow());
     ns_window_mojo_->EnableImmersiveFullscreen(
-        overlay_host->bridged_native_widget_id(), tab_native_widget_id_,
-        base::BindOnce(
-            &ImmersiveModeControllerMac::FullScreenOverlayViewWillAppear,
-            base::Unretained(this)));
+        overlay_host->bridged_native_widget_id(), tab_native_widget_id_);
 
     // If the window is maximized OnViewBoundsChanged will not be called
     // when transitioning to full screen. Call it now.
@@ -254,11 +252,6 @@ bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
 void ImmersiveModeControllerMac::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {}
-
-void ImmersiveModeControllerMac::FullScreenOverlayViewWillAppear() {
-  browser_view_->OnImmersiveRevealStarted();
-  browser_view_->InvalidateLayout();
-}
 
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
                                                    views::View* focused_now) {}

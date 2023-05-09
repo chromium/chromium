@@ -278,10 +278,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       const std::vector<uint8_t>& native_event_data) override;
   void SetLocalEventMonitorEnabled(bool enable) override;
   void SetCursor(const ui::Cursor& cursor) override;
-  void EnableImmersiveFullscreen(
-      uint64_t fullscreen_overlay_widget_id,
-      uint64_t tab_widget_id,
-      EnableImmersiveFullscreenCallback callback) override;
+  void EnableImmersiveFullscreen(uint64_t fullscreen_overlay_widget_id,
+                                 uint64_t tab_widget_id) override;
   void DisableImmersiveFullscreen() override;
   void UpdateToolbarVisibility(
       remote_cocoa::mojom::ToolbarVisibilityStyle style) override;

@@ -7,8 +7,6 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
@@ -33,8 +31,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT bool IsNSToolbarFullScreenWindow(NSWindow* window);
 class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
  public:
   explicit ImmersiveModeController(NSWindow* browser_window,
-                                   NSWindow* overlay_window,
-                                   base::OnceClosure callback);
+                                   NSWindow* overlay_window);
   virtual ~ImmersiveModeController();
 
   virtual void Enable();
