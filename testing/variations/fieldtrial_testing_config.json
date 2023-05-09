@@ -7047,6 +7047,24 @@
             ]
         }
     ],
+    "IOSPinnedTabs": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "overflow_param": "true"
+                    },
+                    "enable_features": [
+                        "EnablePinnedTabs"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [
@@ -10158,24 +10176,6 @@
                     "enable_features": [
                         "PersistentOriginTrials",
                         "WebViewXRequestedWithDeprecation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PinnedTabsIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "overflow_param": "true"
-                    },
-                    "enable_features": [
-                        "EnablePinnedTabs"
                     ]
                 }
             ]
