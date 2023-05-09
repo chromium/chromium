@@ -139,6 +139,12 @@ class SiteInstanceTest : public testing::Test {
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
         &rph_factory_);
     SiteIsolationPolicy::DisableFlagCachingForTesting();
+
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    EXPECT_EQ(0U, policy->GetIsolatedOrigins().size())
+        << "There should be no isolated origins registered on test startup. "
+        << "Some other test probably forgot to clean up the isolated origins "
+        << "it added.";
   }
 
   void TearDown() override {
@@ -147,6 +153,12 @@ class SiteInstanceTest : public testing::Test {
 
     SetBrowserClientForTesting(old_browser_client_);
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
+
+    // Many tests in this file register custom isolated origins.  This is
+    // stored in global state and could affect behavior in subsequent tests, so
+    // ensure that these origins are cleared between test runs.
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    policy->ClearIsolatedOriginsForTesting();
   }
 
   void set_privileged_process_id(int process_id) {
@@ -1341,10 +1353,6 @@ TEST_F(SiteInstanceTest, IsolatedOrigins) {
       DoesURLRequireDedicatedProcess(isolation_context, isolated_blob_foo_url));
   EXPECT_TRUE(DoesURLRequireDedicatedProcess(isolation_context,
                                              isolated_filesystem_foo_url));
-
-  // Cleanup.
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(isolated_foo_url));
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(isolated_bar_url));
 }
 
 TEST_F(SiteInstanceTest, IsolatedOriginsWithPort) {
@@ -1376,11 +1384,6 @@ TEST_F(SiteInstanceTest, IsolatedOriginsWithPort) {
             GetSiteForURL(isolation_context, isolated_foo_url));
   EXPECT_EQ(isolated_foo_url,
             GetSiteForURL(isolation_context, isolated_foo_with_port));
-
-  // Cleanup.
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(isolated_foo_url));
-  policy->RemoveIsolatedOriginForTesting(
-      url::Origin::Create(isolated_foo_with_port));
 }
 
 // Check that only valid isolated origins are allowed to be registered.
@@ -1460,10 +1463,6 @@ TEST_F(SiteInstanceTest, SubdomainOnIsolatedSite) {
                                    IsolatedOriginSource::TEST);
   EXPECT_TRUE(IsIsolatedOrigin(isolated_ip));
   EXPECT_FALSE(IsIsolatedOrigin(GURL("http://42.127.0.0.1")));
-
-  // Cleanup.
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(isolated_url));
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(isolated_ip));
 }
 
 TEST_F(SiteInstanceTest, SubdomainOnIsolatedOrigin) {
@@ -1510,9 +1509,6 @@ TEST_F(SiteInstanceTest, SubdomainOnIsolatedOrigin) {
       IsSameSite(context(), bar_isolated_foo_url, baz_isolated_foo_url));
   EXPECT_TRUE(
       IsSameSite(context(), baz_isolated_foo_url, bar_isolated_foo_url));
-
-  // Cleanup.
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(isolated_foo_url));
 }
 
 TEST_F(SiteInstanceTest, MultipleIsolatedOriginsWithCommonSite) {
@@ -1553,10 +1549,6 @@ TEST_F(SiteInstanceTest, MultipleIsolatedOriginsWithCommonSite) {
   EXPECT_FALSE(IsSameSite(context(), bar_foo_url, qux_baz_bar_foo_url));
 
   EXPECT_TRUE(IsSameSite(context(), baz_bar_foo_url, qux_baz_bar_foo_url));
-
-  // Cleanup.
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(foo_url));
-  policy->RemoveIsolatedOriginForTesting(url::Origin::Create(baz_bar_foo_url));
 }
 
 // Check that new SiteInstances correctly preserve the full URL that was used
