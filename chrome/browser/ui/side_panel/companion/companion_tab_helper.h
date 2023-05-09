@@ -31,10 +31,17 @@ class CompanionTabHelper
    public:
     virtual ~Delegate() = default;
 
+    // Creates the companion SidePanelEntry and registers it to the contextual
+    // registry.
+    virtual void CreateAndRegisterEntry() = 0;
+    // Deregisters the companion SidePanelEntry.
+    virtual void DeregisterEntry() = 0;
     // Shows the companion side panel.
     virtual void ShowCompanionSidePanel() = 0;
-    // Triggers an update of the 'open in new tab' button
-    virtual void UpdateNewTabButtonState() = 0;
+    // Triggers an update of the 'open in new tab' button.
+    virtual void UpdateNewTabButton(GURL url_to_open) = 0;
+    // Retrieves the web contents for testing purposes.
+    virtual content::WebContents* GetCompanionWebContentsForTesting() = 0;
   };
 
   CompanionTabHelper(const CompanionTabHelper&) = delete;
@@ -68,16 +75,22 @@ class CompanionTabHelper
   // handler or an empty pointer if none.
   std::unique_ptr<side_panel::mojom::ImageQuery> GetImageQuery();
 
+  // Triggers the companion side panel entry to be created and registered for
+  // the tab.
+  void CreateAndRegisterEntry();
+  // Triggers the companion side panel entry to be deregistered for the tab.
+  void DeregisterEntry();
+
   // Triggers an update for the 'open in new tab' button in the side panel
   // header to make sure the visibility is correct.
-  void UpdateNewTabButtonState();
-  // Returns the latest set url to be used for the 'open in new tab' button in
-  // the side panel header.
-  GURL GetNewTabButtonUrl();
+  void UpdateNewTabButton(GURL url_to_open);
 
   base::WeakPtr<CompanionPageHandler> GetCompanionPageHandler();
   void SetCompanionPageHandler(
       base::WeakPtr<CompanionPageHandler> companion_page_handler);
+
+  // Returns the companion web contents for testing purposes.
+  content::WebContents* GetCompanionWebContentsForTesting();
 
  private:
   explicit CompanionTabHelper(content::WebContents* web_contents);

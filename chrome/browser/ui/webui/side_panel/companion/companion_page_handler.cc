@@ -135,10 +135,6 @@ void CompanionPageHandler::OnImageQuery(
   page_->OnImageQuery(image_query.Clone());
 }
 
-GURL CompanionPageHandler::GetNewTabButtonUrl() {
-  return open_in_new_tab_url_;
-}
-
 void CompanionPageHandler::OnPromoAction(
     side_panel::mojom::PromoType promo_type,
     side_panel::mojom::PromoAction promo_action) {
@@ -167,8 +163,7 @@ void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(web_contents());
   DCHECK(companion_helper);
-  open_in_new_tab_url_ = url_to_open;
-  companion_helper->UpdateNewTabButtonState();
+  companion_helper->UpdateNewTabButton(url_to_open);
 }
 
 void CompanionPageHandler::RecordUiSurfaceShown(

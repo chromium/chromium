@@ -7,15 +7,21 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace companion {
 
 // Controller for handling views specific logic for the CompanionTabHelper.
-class CompanionSidePanelController : public CompanionTabHelper::Delegate {
+class CompanionSidePanelController : public CompanionTabHelper::Delegate,
+                                     public content::WebContentsObserver {
  public:
   explicit CompanionSidePanelController(content::WebContents* web_contents);
   CompanionSidePanelController(const CompanionSidePanelController&) = delete;
@@ -24,10 +30,27 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate {
   ~CompanionSidePanelController() override;
 
   // CompanionTabHelper::Delegate:
+  void CreateAndRegisterEntry() override;
+  void DeregisterEntry() override;
   void ShowCompanionSidePanel() override;
-  void UpdateNewTabButtonState() override;
+  void UpdateNewTabButton(GURL url_to_open) override;
+  content::WebContents* GetCompanionWebContentsForTesting() override;
 
  private:
+  std::unique_ptr<views::View> CreateCompanionWebView();
+  GURL GetOpenInNewTabUrl();
+
+  // content::WebContentsObserver:
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
+
+  GURL open_in_new_tab_url_;
   const raw_ptr<content::WebContents> web_contents_;
 };
 

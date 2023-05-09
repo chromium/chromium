@@ -62,10 +62,6 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void OnSearchTextQuery(const std::string& text_query);
   void OnImageQuery(side_panel::mojom::ImageQuery image_query);
 
-  // Returns the latest set url to be used for the 'open in new tab' button in
-  // the side panel header.
-  GURL GetNewTabButtonUrl();
-
  private:
   // MsbbDelegate overrides.
   void EnableMsbb(bool enable_msbb) override;
@@ -93,7 +89,6 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   std::unique_ptr<SigninDelegate> signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
   std::unique_ptr<PromoHandler> promo_handler_;
-  GURL open_in_new_tab_url_;
 
   // Logs metrics for companion page. Reset when there is a new navigation.
   std::unique_ptr<CompanionMetricsLogger> metrics_logger_;

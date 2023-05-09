@@ -166,11 +166,9 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetCompanionWebContents(Browser* browser) {
-    auto* search_companion_side_panel_coordinator =
-        SearchCompanionSidePanelCoordinator::FromBrowser(browser);
-    DCHECK(search_companion_side_panel_coordinator);
-    auto* web_contents =
-        search_companion_side_panel_coordinator->web_contents();
+    auto* companion_helper =
+        companion::CompanionTabHelper::FromWebContents(web_contents());
+    auto* web_contents = companion_helper->GetCompanionWebContentsForTesting();
     DCHECK(web_contents);
     return web_contents;
   }

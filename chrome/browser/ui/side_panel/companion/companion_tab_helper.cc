@@ -116,6 +116,10 @@ CompanionTabHelper::GetCompanionPageHandler() {
   return companion_page_handler_;
 }
 
+content::WebContents* CompanionTabHelper::GetCompanionWebContentsForTesting() {
+  return delegate_->GetCompanionWebContentsForTesting();  // IN-TEST
+}
+
 std::unique_ptr<side_panel::mojom::ImageQuery>
 CompanionTabHelper::GetImageQuery() {
   return std::move(image_query_);
@@ -135,13 +139,16 @@ void CompanionTabHelper::SetTextQuery(const std::string& text_query) {
   }
 }
 
-void CompanionTabHelper::UpdateNewTabButtonState() {
-  delegate_->UpdateNewTabButtonState();
+void CompanionTabHelper::CreateAndRegisterEntry() {
+  delegate_->CreateAndRegisterEntry();
 }
 
-GURL CompanionTabHelper::GetNewTabButtonUrl() {
-  return companion_page_handler_ ? companion_page_handler_->GetNewTabButtonUrl()
-                                 : GURL();
+void CompanionTabHelper::DeregisterEntry() {
+  delegate_->DeregisterEntry();
+}
+
+void CompanionTabHelper::UpdateNewTabButton(GURL url_to_open) {
+  delegate_->UpdateNewTabButton(url_to_open);
 }
 
 std::string CompanionTabHelper::GetTextQueryFromSearchUrl(

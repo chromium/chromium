@@ -16,20 +16,14 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class Browser;
 class Profile;
-
-namespace views {
-class View;
-}  // namespace views
 
 // SearchCompanionSidePanelCoordinator handles the creation and registration of
 // the search companion SidePanelEntry.
 class SearchCompanionSidePanelCoordinator
     : public BrowserUserData<SearchCompanionSidePanelCoordinator>,
-      public content::WebContentsObserver,
       public TabStripModelObserver,
       public TemplateURLServiceObserver {
  public:
@@ -61,22 +55,6 @@ class SearchCompanionSidePanelCoordinator
   void CreateAndRegisterEntriesForExistingWebContents(
       TabStripModel* tab_strip_model);
   void DeregisterEntriesForExistingWebContents(TabStripModel* tab_strip_model);
-
-  std::unique_ptr<SidePanelEntry> CreateCompanionEntry();
-
-  std::unique_ptr<views::View> CreateCompanionWebView();
-
-  GURL GetOpenInNewTabUrl();
-
-  // content::WebContentsObserver:
-  void DidOpenRequestedURL(content::WebContents* new_contents,
-                           content::RenderFrameHost* source_render_frame_host,
-                           const GURL& url,
-                           const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
-                           ui::PageTransition transition,
-                           bool started_from_context_menu,
-                           bool renderer_initiated) override;
 
   // TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
