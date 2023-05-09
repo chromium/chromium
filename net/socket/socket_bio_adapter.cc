@@ -297,6 +297,8 @@ void SocketBIOAdapter::HandleSocketWriteResult(int result) {
   }
 
   // Advance the ring buffer.
+  CHECK_LE(result, write_buffer_used_);
+  CHECK_LE(result, write_buffer_->RemainingCapacity());
   write_buffer_->set_offset(write_buffer_->offset() + result);
   write_buffer_used_ -= result;
   if (write_buffer_->RemainingCapacity() == 0)

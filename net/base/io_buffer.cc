@@ -95,8 +95,8 @@ int DrainableIOBuffer::BytesConsumed() const {
 }
 
 void DrainableIOBuffer::SetOffset(int bytes) {
-  DCHECK_GE(bytes, 0);
-  DCHECK_LE(bytes, size_);
+  CHECK_GE(bytes, 0);
+  CHECK_LE(bytes, size_);
   used_ = bytes;
   data_ = base_->data() + used_;
 }
@@ -109,7 +109,7 @@ DrainableIOBuffer::~DrainableIOBuffer() {
 GrowableIOBuffer::GrowableIOBuffer() = default;
 
 void GrowableIOBuffer::SetCapacity(int capacity) {
-  DCHECK_GE(capacity, 0);
+  CHECK_GE(capacity, 0);
   // this will get reset in `set_offset`.
   data_ = nullptr;
   // realloc will crash if it fails.
@@ -123,8 +123,8 @@ void GrowableIOBuffer::SetCapacity(int capacity) {
 }
 
 void GrowableIOBuffer::set_offset(int offset) {
-  DCHECK_GE(offset, 0);
-  DCHECK_LE(offset, capacity_);
+  CHECK_GE(offset, 0);
+  CHECK_LE(offset, capacity_);
   offset_ = offset;
   data_ = real_data_.get() + offset;
 }
