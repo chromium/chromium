@@ -639,11 +639,6 @@ void UpdateLaunchStats(content::WebContents* web_contents,
   // app launch will provide an engagement boost to the origin.
   site_engagement::SiteEngagementService::Get(profile)
       ->SetLastShortcutLaunchTime(web_contents, launch_url);
-
-  // Refresh the app banner added to homescreen event. The user may have
-  // cleared their browsing data since installing the app, which removes the
-  // event and will potentially permit a banner to be shown for the site.
-  RecordAppBanner(web_contents, launch_url);
 }
 
 }  // namespace web_app

@@ -247,13 +247,6 @@ void AppBannerManagerAndroid::OnInstallEvent(
       (a2hs_params.install_source == WebappInstallSource::MENU_BROWSER_TAB ||
        a2hs_params.install_source == WebappInstallSource::MENU_CUSTOM_TAB)) {
     switch (event) {
-      case AddToHomescreenInstaller::Event::INSTALL_STARTED:
-        AppBannerSettingsHelper::RecordBannerEvent(
-            web_contents(), web_contents()->GetVisibleURL(),
-            a2hs_params.shortcut_info->url.spec(),
-            AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-            base::Time::Now());
-        break;
       case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED:
         SendBannerAccepted();
         OnInstall(a2hs_params.shortcut_info->display);

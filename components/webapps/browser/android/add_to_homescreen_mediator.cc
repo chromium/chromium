@@ -234,24 +234,13 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
     return;
   }
 
-  switch (event) {
-    case AddToHomescreenInstaller::Event::INSTALL_STARTED:
-      AppBannerSettingsHelper::RecordBannerEvent(
-          web_contents, web_contents->GetVisibleURL(),
-          a2hs_params.shortcut_info->url.spec(),
-          AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-          base::Time::Now());
-      break;
-    case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED: {
-      AppBannerManager* app_banner_manager =
-          AppBannerManager::FromWebContents(web_contents);
-      // Fire the appinstalled event and do install time logging.
-      if (app_banner_manager)
-        app_banner_manager->OnInstall(a2hs_params.shortcut_info->display);
-      break;
+  if (event == AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED) {
+    AppBannerManager* app_banner_manager =
+        AppBannerManager::FromWebContents(web_contents);
+    // Fire the appinstalled event and do install time logging.
+    if (app_banner_manager) {
+      app_banner_manager->OnInstall(a2hs_params.shortcut_info->display);
     }
-    default:
-      break;
   }
 }
 

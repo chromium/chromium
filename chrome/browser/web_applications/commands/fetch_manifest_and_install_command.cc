@@ -516,8 +516,6 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
           ->GetPrefs(),
       app_id, install_surface_);
 
-  RecordAppBanner(web_contents_.get(), web_app_info_->start_url);
-
   bool error = os_hooks_errors[OsHookType::kShortcuts];
   DCHECK(app_lock_);
   const bool can_reparent_tab =

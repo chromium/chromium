@@ -917,13 +917,6 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
   }
 }
 
-void RecordAppBanner(content::WebContents* contents, const GURL& app_url) {
-  webapps::AppBannerSettingsHelper::RecordBannerEvent(
-      contents, app_url, app_url.spec(),
-      webapps::AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-      base::Time::Now());
-}
-
 void RecordDownloadedIconsResultAndHttpStatusCodes(
     IconsDownloadedResult result,
     const DownloadedIconsHttpResults& icons_http_results) {

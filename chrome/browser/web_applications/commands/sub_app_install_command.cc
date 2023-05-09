@@ -380,7 +380,6 @@ void SubAppInstallCommand::OnInstallFinalized(
 
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     webapps::WebappInstallSource::SUB_APP);
-  RecordAppBanner(&lock_->shared_web_contents(), start_url);
   MaybeFinishInstall(unhashed_app_id,
                      webapps::InstallResultCode::kSuccessNewInstall);
 }

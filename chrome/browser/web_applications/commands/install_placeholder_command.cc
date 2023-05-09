@@ -192,8 +192,6 @@ void InstallPlaceholderCommand::OnInstallFinalized(
       ConvertExternalInstallSourceToInstallSource(
           install_options_.install_source));
 
-  RecordAppBanner(web_contents_.get(), install_options_.install_url);
-
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
 
   DCHECK(lock_);

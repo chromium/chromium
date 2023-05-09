@@ -51,7 +51,6 @@ constexpr const char* kBannerEventKeys[] = {
     "couldShowBannerEvents",
     "didShowBannerEvent",
     "didBlockBannerEvent",
-    "didAddToHomescreenEvent",
     "couldShowAmbientBadgeEvent",
     // clang-format on
 };
@@ -263,12 +262,6 @@ void AppBannerSettingsHelper::RecordBannerInstallEvent(
     content::WebContents* web_contents,
     const std::string& package_name_or_start_url) {
   TrackInstallEvent(INSTALL_EVENT_WEB_APP_INSTALLED);
-
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents, web_contents->GetLastCommittedURL(),
-      package_name_or_start_url,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-      AppBannerManager::GetCurrentTime());
 }
 
 void AppBannerSettingsHelper::RecordBannerDismissEvent(
@@ -306,25 +299,6 @@ void AppBannerSettingsHelper::RecordBannerEvent(
       event_key, base::Value(static_cast<double>(time.ToInternalValue())));
 
   app_prefs.Save();
-
-  // App banner content settings are lossy, meaning they will not cause the
-  // prefs to become dirty. This is fine for most events, as if they are lost it
-  // just means the user will have to engage a little bit more. However the
-  // DID_ADD_TO_HOMESCREEN event should always be recorded to prevent
-  // spamminess.
-  if (event == APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN)
-    app_prefs.settings()->FlushLossyWebsiteSettings();
-}
-
-bool AppBannerSettingsHelper::HasBeenInstalled(
-    content::WebContents* web_contents,
-    const GURL& origin_url,
-    const std::string& package_name_or_start_url) {
-  absl::optional<base::Time> added_time =
-      GetSingleBannerEvent(web_contents, origin_url, package_name_or_start_url,
-                           APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN);
-
-  return added_time && !added_time->is_null();
 }
 
 bool AppBannerSettingsHelper::WasBannerRecentlyBlocked(

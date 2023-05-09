@@ -201,23 +201,6 @@ TEST_F(AppBannerSettingsHelperTest, ReportsWhetherBannerWasRecentlyIgnored) {
       web_contents(), url, kTestPackageName, reference_time));
 }
 
-TEST_F(AppBannerSettingsHelperTest, ReportsWhetherSiteWasEverAdded) {
-  GURL url(kTestURL);
-  base::Time one_year_ago = GetReferenceTime() - base::Days(366);
-
-  EXPECT_FALSE(AppBannerSettingsHelper::HasBeenInstalled(web_contents(), url,
-                                                         kTestPackageName));
-
-  // Add the site a long time ago.
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents(), url, kTestPackageName,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-      one_year_ago);
-
-  EXPECT_TRUE(AppBannerSettingsHelper::HasBeenInstalled(web_contents(), url,
-                                                        kTestPackageName));
-}
-
 TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
   GURL url(kTestURL);
   GURL otherURL(kSameOriginTestURL);
