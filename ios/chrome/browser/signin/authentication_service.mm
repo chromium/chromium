@@ -429,10 +429,6 @@ void AuthenticationService::GrantSyncConsent(
   sync_service_->SetSyncFeatureRequested();
 }
 
-void AuthenticationService::GrantSyncConsent(id<SystemIdentity> identity) {
-  GrantSyncConsent(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-}
-
 void AuthenticationService::SignOut(
     signin_metrics::ProfileSignout signout_source,
     bool force_clear_browsing_data,
