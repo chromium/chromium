@@ -83992,7 +83992,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-1365438226"
       label="clear-site-data: missing in activation request's headers"/>
   <int value="-1365438225" label="clear-site-data: value mismatch"/>
-  <int value="-1349923684" label="unexpected: everything matched"/>
   <int value="-1338249455"
       label="dpr: missing in prerendering request's headers"/>
   <int value="-1338249454"
@@ -84744,6 +84743,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1332319910"
       label="options: missing in activation request's headers"/>
   <int value="1332319911" label="options: value mismatch"/>
+  <int value="1349923684" label="unexpected: everything matched"/>
   <int value="1363817413"
       label="content-disposition: missing in prerendering request's headers"/>
   <int value="1363817414"
