@@ -55,7 +55,6 @@ static const std::unordered_set<policy::DeviceMode>& DeviceModeConsumer() {
 static const std::unordered_set<policy::DeviceMode>& DeviceModeEnterprise() {
   static const std::unordered_set<policy::DeviceMode> kModeEnterprise(
       {policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
-       policy::DeviceMode::DEVICE_MODE_ENTERPRISE_AD,
        policy::DeviceMode::DEVICE_MODE_DEMO});
   return kModeEnterprise;
 }
