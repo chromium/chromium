@@ -47,6 +47,7 @@ class MockTracker : public Tracker {
   MOCK_METHOD1(UnregisterPriorityNotificationHandler,
                void(const base::Feature&));
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
+  MOCK_CONST_METHOD0(GetConfigurationForTesting, const Configuration*());
 };
 
 }  // namespace test

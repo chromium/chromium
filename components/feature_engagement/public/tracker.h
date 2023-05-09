@@ -28,6 +28,8 @@ class ProtoDatabaseProvider;
 
 namespace feature_engagement {
 
+class Configuration;
+
 // A handle for the display lock. While this is unreleased, no in-product help
 // can be displayed.
 class DisplayLockHandle {
@@ -256,6 +258,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // will still be invoked with the result. The callback is guaranteed to be
   // invoked exactly one time.
   virtual void AddOnInitializedCallback(OnInitializedCallback callback) = 0;
+
+  // Returns the configuration associated with the tracker for testing purposes.
+  virtual const Configuration* GetConfigurationForTesting() const = 0;
 
  protected:
   Tracker() = default;

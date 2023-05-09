@@ -41,7 +41,7 @@ class FeaturePromoRegistry {
   void RegisterFeature(FeaturePromoSpecification spec);
 
   const std::map<const base::Feature*, FeaturePromoSpecification>&
-  GetRegisteredFeaturePromoSpecifications() {
+  GetRegisteredFeaturePromoSpecifications() const {
     return feature_promo_data_;
   }
 

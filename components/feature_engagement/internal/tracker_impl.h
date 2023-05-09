@@ -67,6 +67,7 @@ class TrackerImpl : public Tracker {
                                            base::OnceClosure callback) override;
   void UnregisterPriorityNotificationHandler(
       const base::Feature& feature) override;
+  const Configuration* GetConfigurationForTesting() const override;
 
  private:
   friend test::ScopedIphFeatureList;

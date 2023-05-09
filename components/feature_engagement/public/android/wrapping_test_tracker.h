@@ -46,6 +46,7 @@ class WrappingTestTracker : public Tracker {
       const base::Feature& feature) override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
+  const Configuration* GetConfigurationForTesting() const override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tracker_;
