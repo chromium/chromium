@@ -368,9 +368,6 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
       enterprise_info = l10n_util::GetStringFUTF16(
           IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
           base::UTF8ToUTF16(enterprise_domain_manager));
-    } else if (connector->IsActiveDirectoryManaged()) {
-      enterprise_info = l10n_util::GetStringFUTF16(
-          IDS_ASH_ENTERPRISE_DEVICE_MANAGED, ui::GetChromeOSDeviceName());
     } else {
       NOTREACHED() << "Unknown management type";
     }
