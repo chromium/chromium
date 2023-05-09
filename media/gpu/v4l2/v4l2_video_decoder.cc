@@ -306,8 +306,7 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   for (const auto api : {kStateful, kStateless}) {
     const auto fourcc =
         V4L2Device::VideoCodecProfileToV4L2PixFmt(profile_, api);
-    constexpr uint32_t kInvalidV4L2PixFmt = 0;
-    if (fourcc == kInvalidV4L2PixFmt ||
+    if (fourcc == V4L2_PIX_FMT_INVALID ||
         !device_->Open(V4L2Device::Type::kDecoder, fourcc)) {
       continue;
     }
