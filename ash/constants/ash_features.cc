@@ -645,7 +645,7 @@ BASE_FEATURE(kEnableInputInDiagnosticsApp,
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kDiagnosticsAppJelly,
              "kDiagnosticsAppJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables keyboard backlight toggle.
 BASE_FEATURE(kEnableKeyboardBacklightToggle,
