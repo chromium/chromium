@@ -103,7 +103,7 @@ public abstract class PartialCustomTabBaseStrategy
             PartialCustomTabType.SIDE_SHEET, PartialCustomTabType.FULL_SIZE,
             PartialCustomTabType.COUNT})
     @Retention(RetentionPolicy.SOURCE)
-    @interface PartialCustomTabType {
+    public @interface PartialCustomTabType {
         int NONE = 0;
         int BOTTOM_SHEET = 1;
         int SIDE_SHEET = 2;

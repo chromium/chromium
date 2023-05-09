@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -42,6 +46,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -107,9 +112,13 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreUtils.ClientIdentifierType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -120,6 +129,7 @@ import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.TestBrowsingHistoryObserver;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -138,6 +148,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
@@ -1805,7 +1816,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    public void testLaunchPartialCustomTabActivity() throws Exception {
+    public void testLaunchPartialCustomTabActivity_BottomSheet() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
@@ -1818,6 +1829,15 @@ public class CustomTabActivityTest {
         int fullHeight = ViewGroup.LayoutParams.MATCH_PARENT;
         WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
         assertNotEquals("The window should have non-full height", fullHeight, attrs.height);
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assertTrue("Incorrect strategy type",
+                coordinator.getCustomTabSizeStrategyForTesting()
+                                instanceof PartialCustomTabBottomSheetStrategy);
 
         // Verify the hierarchy of the enclosing layouts that PCCT relies on for its operation.
         CallbackHelper eventHelper = new CallbackHelper();
@@ -1834,6 +1854,197 @@ public class CustomTabActivityTest {
             });
         });
         eventHelper.waitForCallback(0);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    testLaunchPartialCustomTabActivity_SideSheet() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 100);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.LANDSCAPE);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.LANDSCAPE));
+        });
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assert (coordinator.getCustomTabSizeStrategyForTesting()
+                        instanceof PartialCustomTabDisplayManager);
+        PartialCustomTabDisplayManager displayManager =
+                (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
+        if (displayManager.getActiveStrategyType()
+                != PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET) {
+            return;
+        }
+
+        onViewWaiting(allOf(withId(R.id.custom_tabs_sidepanel_maximize), isDisplayed()));
+        View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        CustomTabToolbar toolbar = (CustomTabToolbar) toolbarView;
+        ImageButton maximizeButton = toolbar.getMaximizeButtonForTest();
+        Assert.assertNotNull(maximizeButton);
+
+        // A Normal CCT width is set to MATCH_PARENT while Partial CCT has non-zero value.
+        int fullWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+        WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+        assertNotEquals("The window should have non-full width", fullWidth, attrs.width);
+
+        int maxWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) maximizeButton::performClick);
+        assertEquals("The window should be max width", maxWidth, attrs.width);
+
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) maximizeButton::performClick);
+        onViewWaiting(allOf(withId(R.id.custom_tabs_sidepanel_maximize), isDisplayed()));
+
+        assertNotEquals("The window should not be max width", maxWidth, attrs.width);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    testLaunchPartialCustomTabActivity_Transition() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 600);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.PORTRAIT);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.PORTRAIT));
+        });
+
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int devicePortraitWidthDp = (int) (displayMetrics.widthPixels / displayMetrics.density);
+        int deviceLandscapeWidthDp = (int) (displayMetrics.heightPixels / displayMetrics.density);
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assert (coordinator.getCustomTabSizeStrategyForTesting()
+                        instanceof PartialCustomTabDisplayManager);
+        PartialCustomTabDisplayManager displayManager =
+                (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
+        // A Normal CCT width is set to MATCH_PARENT while Partial CCT has non-zero value.
+        int fullHeightWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+        WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+        if (devicePortraitWidthDp >= 600) {
+            assertNotEquals("The window should have non-full width", fullHeightWidth, attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
+                    displayManager.getActiveStrategyType());
+        } else {
+            assertNotEquals(
+                    "The window should have non-full height", fullHeightWidth, attrs.height);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                    displayManager.getActiveStrategyType());
+        }
+
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.LANDSCAPE);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.LANDSCAPE));
+        });
+
+        displayMetrics = getActivity().getResources().getDisplayMetrics();
+        if (deviceLandscapeWidthDp >= 600) {
+            assertNotEquals("The window should have non-max width", displayMetrics.widthPixels,
+                    attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
+                    displayManager.getActiveStrategyType());
+        } else {
+            assertNotEquals("The window should have non-max width", displayMetrics.widthPixels,
+                    attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                    displayManager.getActiveStrategyType());
+        }
+
+        ActivityTestUtils.rotateActivityToOrientation(
+                mCustomTabActivityTestRule.getActivity(), Layout.Orientation.PORTRAIT);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(getActivity().getResources().getConfiguration().orientation,
+                    is(Layout.Orientation.PORTRAIT));
+        });
+
+        displayMetrics = getActivity().getResources().getDisplayMetrics();
+        if (devicePortraitWidthDp >= 600) {
+            assertNotEquals("The window should have non-max width", displayMetrics.widthPixels,
+                    attrs.width);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
+                    displayManager.getActiveStrategyType());
+        } else {
+            assertNotEquals("The window should have non-max height", displayMetrics.heightPixels,
+                    attrs.height);
+            assertEquals("Incorrect strategy type",
+                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                    displayManager.getActiveStrategyType());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+            ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    testLaunchPartialCustomTabActivity_FullSize() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        assert (mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting()
+                        instanceof BaseCustomTabRootUiCoordinator);
+        BaseCustomTabRootUiCoordinator coordinator =
+                (BaseCustomTabRootUiCoordinator) mCustomTabActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        assert (coordinator.getCustomTabSizeStrategyForTesting()
+                        instanceof PartialCustomTabDisplayManager);
+        PartialCustomTabDisplayManager displayManager =
+                (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
+        int fullWidth = ViewGroup.LayoutParams.MATCH_PARENT;
+        int fullHeight = ViewGroup.LayoutParams.MATCH_PARENT;
+        WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+        assertEquals("The window should have full width", fullWidth, attrs.width);
+        assertEquals("The window should have full height", fullHeight, attrs.height);
+        assertEquals("Incorrect strategy type", displayManager.getActiveStrategyType(),
+                PartialCustomTabBaseStrategy.PartialCustomTabType.FULL_SIZE);
     }
 
     private void doOpaqueOriginTest(boolean enabled, boolean prefetch) throws Exception {

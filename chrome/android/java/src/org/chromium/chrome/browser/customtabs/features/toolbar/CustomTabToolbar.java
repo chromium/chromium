@@ -395,6 +395,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return (ImageButton) mCustomActionButtons.getChildAt(index);
     }
 
+    @VisibleForTesting
+    public ImageButton getMaximizeButtonForTest() {
+        return (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+    }
+
     @Override
     protected int getTabStripHeight() {
         return 0;
