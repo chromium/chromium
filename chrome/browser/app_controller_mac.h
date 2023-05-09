@@ -75,7 +75,7 @@ class ColorProvider;
   // pointer to a BookmarkMenuBridge for each profile. |bookmarkMenuBridge_| is
   // a weak pointer that is updated to match the corresponding cache entry
   // during a profile switch.
-  raw_ptr<BookmarkMenuBridge> _bookmarkMenuBridge;
+  raw_ptr<BookmarkMenuBridge, DanglingUntriaged> _bookmarkMenuBridge;
   std::map<base::FilePath, std::unique_ptr<BookmarkMenuBridge>>
       _profileBookmarkMenuBridgeMap;
 

@@ -37,7 +37,7 @@ class BlobDataSourceFactory
       mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
       MediaDataCallback media_data_callback) override;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
   std::string blob_uuid_;
   MediaDataCallback callback_;
 };

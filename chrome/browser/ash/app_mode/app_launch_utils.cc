@@ -118,7 +118,7 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
   }
 
   const KioskAppId kiosk_app_id_;
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   const bool should_start_app_session_ash_;
 
   std::unique_ptr<app_mode::LacrosLauncher> lacros_launcher_;

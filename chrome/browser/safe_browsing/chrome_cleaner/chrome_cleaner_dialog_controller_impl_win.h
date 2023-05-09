@@ -83,7 +83,8 @@ class ChromeCleanerDialogControllerImpl
   bool prompt_pending_ = false;
   raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
   std::unique_ptr<ChromeCleanerPromptDelegate> prompt_delegate_impl_;
-  raw_ptr<ChromeCleanerPromptDelegate> prompt_delegate_ = nullptr;
+  raw_ptr<ChromeCleanerPromptDelegate, DanglingUntriaged> prompt_delegate_ =
+      nullptr;
 };
 
 }  // namespace safe_browsing

@@ -62,7 +62,7 @@ class UDPSocketEventDispatcher : public BrowserContextKeyedAPI {
     ~ReceiveParams();
 
     content::BrowserThread::ID thread_id;
-    raw_ptr<void> browser_context_id;
+    raw_ptr<void, DanglingUntriaged> browser_context_id;
     std::string extension_id;
     scoped_refptr<SocketData> sockets;
     int socket_id;
