@@ -588,7 +588,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowBluetoothDebugLogToggle);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kShowPlayInDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kFeatureManagementFeaturesAwareDeviceDemoMode);
+BASE_DECLARE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShutdownConfirmationBubble);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSideAlignedToasts);
@@ -967,7 +967,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldOnlyShowNewShortcutApp();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSearchInShortcutsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsFeaturesAwareDeviceDemoModeEnabled();
+bool IsFeatureAwareDeviceDemoModeEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV1DeviceSync();

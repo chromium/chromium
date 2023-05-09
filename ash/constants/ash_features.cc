@@ -2031,10 +2031,10 @@ BASE_FEATURE(kShowPlayInDemoMode,
              "ShowPlayInDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables custom Demo Mode behavior on features-aware devices, as controlled by
-// the feature management module
-BASE_FEATURE(kFeatureManagementFeaturesAwareDeviceDemoMode,
-             "FeatureManagementFeaturedDemoMode",
+// Enables custom Demo Mode behavior on feature-aware devices, as controlled by
+// the feature management module.
+BASE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode,
+             "FeatureManagementFeatureAwareDeviceDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the shutdown confirmation bubble from the login shelf view.
@@ -3510,9 +3510,9 @@ bool ShouldShowPlayStoreInDemoMode() {
   return base::FeatureList::IsEnabled(kShowPlayInDemoMode);
 }
 
-bool IsFeaturesAwareDeviceDemoModeEnabled() {
+bool IsFeatureAwareDeviceDemoModeEnabled() {
   return base::FeatureList::IsEnabled(
-      kFeatureManagementFeaturesAwareDeviceDemoMode);
+      kFeatureManagementFeatureAwareDeviceDemoMode);
 }
 
 bool ShouldUseV1DeviceSync() {
