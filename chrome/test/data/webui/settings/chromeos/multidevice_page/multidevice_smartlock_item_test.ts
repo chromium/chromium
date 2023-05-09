@@ -8,7 +8,6 @@ import {SettingsMultideviceSmartlockItemElement} from 'chrome://os-settings/chro
 import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, Router} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -83,16 +82,7 @@ suite('<settings-multidevice-smartlock-item>', () => {
     browserProxy.resetResolver('setFeatureEnabledState');
   }
 
-  /**
-   * @param isSmartLockSignInRemoved Whether to enable or disable the
-   *     isSmartLockSignInRemoved flag.
-   * TODO(b/227674947): When Sign in with Smart Lock is removed, this function
-   * can be replaced with a normal setup() function that will automatically run
-   * before each test and not require a param.
-   */
-  function initializeElement(isSmartLockSignInRemoved: boolean = false) {
-    loadTimeData.overrideValues(
-        {'isSmartLockSignInRemoved': isSmartLockSignInRemoved});
+  setup(() => {
     browserProxy = new TestMultideviceBrowserProxy();
     MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
@@ -107,7 +97,7 @@ suite('<settings-multidevice-smartlock-item>', () => {
     setSmartLockState(MultiDeviceFeatureState.ENABLED_BY_USER);
 
     return browserProxy.whenCalled('getPageContentData');
-  }
+  });
 
   teardown(() => {
     smartLockItem.remove();
@@ -115,7 +105,6 @@ suite('<settings-multidevice-smartlock-item>', () => {
   });
 
   test('settings row visibile only if host is verified', () => {
-    initializeElement();
     for (const mode of Object.values(MultiDeviceSettingsMode)) {
       setHostData(mode as MultiDeviceSettingsMode);
       setBetterTogetherState(MultiDeviceFeatureState.ENABLED_BY_USER);
@@ -131,7 +120,6 @@ suite('<settings-multidevice-smartlock-item>', () => {
   });
 
   test('settings row visibile only if feature is supported', () => {
-    initializeElement();
     let featureItem = smartLockItem.shadowRoot!.querySelector('#smartLockItem');
     assert(featureItem);
 
@@ -147,7 +135,6 @@ suite('<settings-multidevice-smartlock-item>', () => {
   });
 
   test('settings row visibile only if better together suite is enabled', () => {
-    initializeElement();
     let featureItem = smartLockItem.shadowRoot!.querySelector('#smartLockItem');
     assert(featureItem);
     setBetterTogetherState(MultiDeviceFeatureState.DISABLED_BY_USER);
@@ -156,16 +143,8 @@ suite('<settings-multidevice-smartlock-item>', () => {
   });
 
   test('feature toggle click event handled', async () => {
-    initializeElement();
     await simulateFeatureStateChangeRequest(false);
     await simulateFeatureStateChangeRequest(true);
   });
 
-  test('SmartLockSignInRemoved flag removes subpage', async () => {
-    initializeElement(/*isSmartLockSignInRemoved=*/ true);
-    const featureItem = smartLockItem.shadowRoot!.querySelector(
-        'settings-multidevice-feature-item');
-    assert(featureItem);
-    assertEquals(undefined, featureItem.subpageRoute);
-  });
 });
