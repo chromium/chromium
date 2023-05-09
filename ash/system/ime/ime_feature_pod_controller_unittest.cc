@@ -77,6 +77,11 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
     return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
   }
 
+  const std::u16string GetTooltipText() {
+    return IsQsRevampEnabled() ? tile_->GetTooltipText()
+                               : button_->label_button()->GetTooltipText();
+  }
+
   const char* GetToggledOnHistogramName() {
     return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOn"
                                : "Ash.UnifiedSystemView.FeaturePod.ToggledOn";
@@ -245,6 +250,26 @@ TEST_P(IMEFeaturePodControllerTest, LabelUMATracking) {
   histogram_tester->ExpectBucketCount(GetDiveInHistogramName(),
                                       QsFeatureCatalogName::kIME,
                                       /*expected_count=*/1);
+}
+
+// Tests the tooltip changes after the IME refreshes.
+TEST_P(IMEFeaturePodControllerTest, TooltipText) {
+  SetUpButton();
+
+  SetActiveIMECount(2);
+  current_ime_.id = "0";
+  available_imes_[0].name = u"English";
+  available_imes_[1].name = u"French";
+
+  RefreshImeController();
+  std::u16string tooltip = GetTooltipText();
+  EXPECT_EQ(tooltip, u"Show keyboard settings. English is selected.");
+
+  // Switches the current ime to the second one in `available_imes_`.
+  current_ime_.id = "1";
+  RefreshImeController();
+  tooltip = GetTooltipText();
+  EXPECT_EQ(tooltip, u"Show keyboard settings. French is selected.");
 }
 
 }  // namespace ash

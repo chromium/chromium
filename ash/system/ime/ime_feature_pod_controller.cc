@@ -122,8 +122,11 @@ void IMEFeaturePodController::OnIMEMenuActivationChanged(bool is_active) {
 
 void IMEFeaturePodController::Update() {
   bool is_button_visible = IsButtonVisible();
+  const std::u16string tooltip = GetTooltipString();
   if (features::IsQsRevampEnabled()) {
     tile_->SetSubLabel(GetLabelString());
+    tile_->SetTooltipText(tooltip);
+    tile_->SetDrillInButtonTooltipText(tooltip);
     // If the tile's visibility changes from invisible to visible, log its
     // visibility.
     if (!tile_->GetVisible() && is_button_visible) {
@@ -132,6 +135,7 @@ void IMEFeaturePodController::Update() {
     tile_->SetVisible(is_button_visible);
   } else {
     button_->SetSubLabel(GetLabelString());
+    button_->SetLabelTooltip(tooltip);
     // If the button's visibility changes from invisible to visible, log its
     // visibility.
     if (!button_->GetVisible() && is_button_visible) {
