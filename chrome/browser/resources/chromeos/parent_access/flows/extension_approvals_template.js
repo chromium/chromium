@@ -21,8 +21,8 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
 
   static get properties() {
     return {
-      title: {type: String},
-      subtitle: {type: String},
+      screenTitle: {type: String},
+      screenSubtitle: {type: String},
       extensionIconSrc: {type: String},
       extensionName: {type: String},
       extensionPermissions: {type: Array},
