@@ -72,6 +72,10 @@ class BASE_EXPORT CheckError {
       const char* condition,
       const base::Location& location = base::Location::Current());
 
+  static CheckError DumpWillBeCheck(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
+
   static CheckError PCheck(const char* file, int line, const char* condition);
   static CheckError PCheck(const char* file, int line);
 
@@ -198,7 +202,33 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #define DCHECK(condition) EAT_CHECK_STREAM_PARAMS(!(condition))
 #define DPCHECK(condition) EAT_CHECK_STREAM_PARAMS(!(condition))
 
-#endif
+#endif  // DCHECK_IS_ON()
+
+// The DUMP_WILL_BE_CHECK() macro provides a convenient way to non-fatally dump
+// in official builds if a condition is false. This is used to more cautiously
+// roll out a new CHECK() (or upgrade a DCHECK) where the caller isn't entirely
+// sure that something holds true in practice (but asserts that it should). This
+// is especially useful for platforms that have a low pre-stable population and
+// code areas that are rarely exercised.
+//
+// On DCHECK builds this macro matches DCHECK behavior.
+//
+// This macro isn't optimized (preserves filename, line number and log messages
+// in official builds), as they are expected to be in product temporarily. When
+// using this macro, leave a TODO(crbug.com/nnnn) entry referring to a bug
+// related to its rollout. Then put a NextAction on the bug to come back and
+// clean this up (replace with a CHECK). A DUMP_WILL_BE_CHECK() that's been left
+// untouched for a long time without bug updates suggests that issues that
+// would've prevented enabling this CHECK have either not been discovered or
+// have been resolved.
+//
+// Using this macro is preferred over direct base::debug::DumpWithoutCrashing()
+// invocations as it communicates intent to eventually end up as a CHECK. It
+// also preserves the log message so setting crash keys to get additional debug
+// info isn't required as often.
+#define DUMP_WILL_BE_CHECK(condition)                                     \
+  CHECK_FUNCTION_IMPL(::logging::CheckError::DumpWillBeCheck(#condition), \
+                      condition)
 
 // Async signal safe checking mechanism.
 [[noreturn]] BASE_EXPORT void RawCheckFailure(const char* message);

@@ -111,16 +111,27 @@ of `base::ImmediateCrash()` or `CHECK()` etc. as part of normal control flow.
 
 ## Less fatal options
 
-If an unexpected situation is happening, `base::debug::DumpWithoutCrashing()`
-can be used to help debug in production. While this is usually not desirable in
-the long term, it can be necessary for investigations.
-`base::debug::DumpWithoutCrashing()` generates a crash report, but the code
-continues on after, so be sure to handle the situation in a way that doesn't
-leave the process in a bad state.
+If an unexpected situation is happening, `DUMP_WILL_BE_CHECK()` can be used to
+help debug in production. This macro generates a non-fatal crash report if the
+condition passed to it does not hold. This macro preserves log-stream parameters
+(like CHECK() in a local build), so additional information can be streamed to it
+on failure to help debugging. Note that this does not abort on failure so be
+sure to handle the situation in a way that doesn't leave the process in a bad
+state.
 
-`SCOPED_CRASH_KEY_BOOL()`, `SCOPED_CRASH_KEY_NUMBER()`, etc. are macros in
-`base/debug/crash_logging.h` that can be used ahead of
-`base::debug::DumpWithoutCrashing()` to add additional data to the crash report.
+This macro can also be used to more cautiously add a new `CHECK()`. This may be
+used when it's hard to reason about whether a new invariant currently holds
+globally, you suspect that a DCHECK is currently firing or you have a small
+pre-stable population (iOS for instance). Do not be overly cautious about adding
+new CHECKs if you have reasonable pre-stable coverage, or the invariant is
+inside a new feature already guarded by a feature flag.
+
+This macro is only to be used temporarily, so `DUMP_WILL_BE_CHECK()` instances
+should always be tagged with a bug like `// TODO(crbug.com/nnnn)`. Use
+NextAction date to remember to revisit and clean up this macro (replace with a
+`CHECK()`) once sufficiently certain. Instances that are left unattended for too
+long may be upgraded as we presumably are not generating enough
+invariant-failure reports for a `CHECK()` to be a stability concern here.
 
 For failures in tests, GoogleTest macros such as `EXPECT_*`, `ASSERT_*` or
 `ADD_FAILURE()` are more appropriate than `CHECKing`. For production code:

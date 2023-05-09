@@ -52,6 +52,15 @@ void DCheckDumpWithoutCrashing(LogMessage* log_message,
   DumpWithoutCrashing(log_message, location);
 }
 
+void DumpWillBeCheckDumpWithoutCrashing(LogMessage* log_message,
+                                        const base::Location& location) {
+#if !BUILDFLAG(IS_NACL)
+  SCOPED_CRASH_KEY_STRING1024("Logging", "DUMP_WILL_BE_CHECK_MESSAGE",
+                              log_message->BuildCrashString());
+#endif  // !BUILDFLAG(IS_NACL)
+  DumpWithoutCrashing(log_message, location);
+}
+
 class NotReachedLogMessage : public LogMessage {
  public:
   NotReachedLogMessage(const base::Location& location, LogSeverity severity)
@@ -76,6 +85,23 @@ class DCheckLogMessage : public LogMessage {
   ~DCheckLogMessage() override {
     if (severity() != logging::LOGGING_FATAL) {
       DCheckDumpWithoutCrashing(this, location_);
+    }
+  }
+
+ private:
+  const base::Location location_;
+};
+
+class DumpWillBeCheckLogMessage : public LogMessage {
+ public:
+  using LogMessage::LogMessage;
+  DumpWillBeCheckLogMessage(const base::Location& location,
+                            LogSeverity severity)
+      : LogMessage(location.file_name(), location.line_number(), severity),
+        location_(location) {}
+  ~DumpWillBeCheckLogMessage() override {
+    if (severity() != logging::LOGGING_FATAL) {
+      DumpWillBeCheckDumpWithoutCrashing(this, location_);
     }
   }
 
@@ -138,6 +164,14 @@ CheckError CheckError::Check(const char* file,
 CheckError CheckError::DCheck(const char* condition,
                               const base::Location& location) {
   auto* const log_message = new DCheckLogMessage(location, LOGGING_DCHECK);
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
+}
+
+CheckError CheckError::DumpWillBeCheck(const char* condition,
+                                       const base::Location& location) {
+  auto* const log_message = new DumpWillBeCheckLogMessage(
+      location, DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR);
   log_message->stream() << "Check failed: " << condition << ". ";
   return CheckError(log_message);
 }

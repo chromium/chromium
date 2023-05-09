@@ -496,6 +496,21 @@ TEST(CheckDeathTest, NotReached) {
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
 }
 
+TEST(CheckDeathTest, DumpWillBeCheck) {
+  DUMP_WILL_BE_CHECK(true);
+
+  // TODO(pbos): Update this to expect a crash dump outside DCHECK builds.
+  if constexpr (DCHECK_IS_ON()) {
+    EXPECT_DCHECK("Check failed: false. foo", DUMP_WILL_BE_CHECK(false)
+                                                  << "foo");
+  } else {
+    EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                   base::Location::Current().line_number(),
+                                   DUMP_WILL_BE_CHECK(false) << "foo",
+                                   "Check failed: false. foo\n");
+  }
+}
+
 TEST(CheckTest, NotImplemented) {
   static const std::string expected_msg =
       std::string("Not implemented reached in ") + __PRETTY_FUNCTION__;
