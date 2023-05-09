@@ -153,8 +153,21 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
     case AppType::kArc:
       return IntentHandlingMetrics::Platform::ARC;
     case AppType::kWeb:
+    case AppType::kSystemWeb:
       return IntentHandlingMetrics::Platform::PWA;
-    default:
+    case AppType::kUnknown:
+    case AppType::kBuiltIn:
+    case AppType::kCrostini:
+    case AppType::kChromeApp:
+    case AppType::kMacOs:
+    case AppType::kPluginVm:
+    case AppType::kStandaloneBrowser:
+    case AppType::kRemote:
+    case AppType::kBorealis:
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kExtension:
+    case AppType::kStandaloneBrowserExtension:
+    case AppType::kBruschetta:
       NOTREACHED();
       return IntentHandlingMetrics::Platform::ARC;
   }
