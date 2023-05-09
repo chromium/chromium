@@ -23,6 +23,12 @@ class OmniboxActionInSuggest : public OmniboxAction {
   void Execute(ExecutionContext& context) const override;
   OmniboxActionId ActionId() const override;
 
+  omnibox::ActionInfo::ActionType Type() const;
+
+  // Downcasts the given OmniboxAction to an OmniboxActionInSuggest if the
+  // supplied instance represents one, otherwise returns nullptr.
+  static const OmniboxActionInSuggest* FromAction(const OmniboxAction* action);
+
  private:
   ~OmniboxActionInSuggest() override;
 

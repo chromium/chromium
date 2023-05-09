@@ -1563,14 +1563,63 @@ const FeatureEntry::FeatureVariation kRealboxSecondaryZeroSuggestVariations[] =
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestPromoteEntities[] =
-    {
-        {"PromoteEntitySuggestion", "true"},
-};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment1[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, ""}};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment2[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "false"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, ""}};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment3[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, ""}};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment4[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
+     "without-reviews"}};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment5[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
+     "without-calls"}};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment6[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
+     "without-directions"}};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment7[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
+     "without-calls"}};
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment8[] = {
+    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "false"},
+    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
+     "without-calls"}};
 
 constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
-    {"Promote Entities", kOmniboxActionsInSuggestPromoteEntities,
-     std::size(kOmniboxActionsInSuggestPromoteEntities), nullptr},
+    {"T1: Promote, Reviews, Directions, Calls",
+     kOmniboxActionsInSuggestTreatment1,
+     std::size(kOmniboxActionsInSuggestTreatment1), nullptr},
+    {"T2: Reviews, Directions, Calls", kOmniboxActionsInSuggestTreatment2,
+     std::size(kOmniboxActionsInSuggestTreatment2), nullptr},
+    {"T3: Promote, Calls, Directions, Reviews",
+     kOmniboxActionsInSuggestTreatment3,
+     std::size(kOmniboxActionsInSuggestTreatment3), nullptr},
+    {"T4: Promote, Directions, Calls", kOmniboxActionsInSuggestTreatment4,
+     std::size(kOmniboxActionsInSuggestTreatment4), nullptr},
+    {"T5: Promote, Reviews, Directions", kOmniboxActionsInSuggestTreatment5,
+     std::size(kOmniboxActionsInSuggestTreatment5), nullptr},
+    {"T6: Promote, Reviews, Calls", kOmniboxActionsInSuggestTreatment6,
+     std::size(kOmniboxActionsInSuggestTreatment6), nullptr},
+    {"T7: Promote, Directions, Reviews", kOmniboxActionsInSuggestTreatment7,
+     std::size(kOmniboxActionsInSuggestTreatment7), nullptr},
+    {"T8: Directions, Reviews", kOmniboxActionsInSuggestTreatment8,
+     std::size(kOmniboxActionsInSuggestTreatment8), nullptr},
 };
 
 constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Trends[] = {

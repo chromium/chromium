@@ -18,7 +18,9 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 
 namespace base {
 class TimeDelta;
@@ -704,7 +706,33 @@ extern const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries;
 //
 // When set to true, permits Entity suggestion with associated Actions to be
 // promoted over the Escape Hatch.
-extern const base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion;
+constexpr base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
+    &omnibox::kActionsInSuggest,
+    "PromoteEntitySuggestion",
+    false);
+
+// Specifies which actions in suggest will be offered to users.
+constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>::Option
+    kActionsInSuggestRemoveActionTypesVariants[] = {
+        {{}, ""},
+        {omnibox::ActionInfo_ActionType_CALL, "call"},
+        {omnibox::ActionInfo_ActionType_DIRECTIONS, "directions"},
+        {omnibox::ActionInfo_ActionType_REVIEWS, "reviews"},
+};
+constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>
+    kActionsInSuggestRemoveActionTypes(
+        &omnibox::kActionsInSuggest,
+        "RemoveActionTypes",
+        {},
+        &kActionsInSuggestRemoveActionTypesVariants);
+
+// Controls the placement of Reviews and Call actions position.
+// false => Call, Directions, Reviews.
+// true  => Reviews, Directions, Call.
+constexpr base::FeatureParam<bool> kActionsInSuggestPromoteReviewsAction(
+    &omnibox::kActionsInSuggest,
+    "PromoteReviewsAction",
+    false);
 // <- Actions In Suggest
 // ---------------------------------------------------------
 // Android UI Revamp ->

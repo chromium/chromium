@@ -105,3 +105,16 @@ void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
 OmniboxActionId OmniboxActionInSuggest::ActionId() const {
   return OmniboxActionId::ACTION_IN_SUGGEST;
 }
+
+// static
+const OmniboxActionInSuggest* OmniboxActionInSuggest::FromAction(
+    const OmniboxAction* action) {
+  if (action && action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST) {
+    return static_cast<const OmniboxActionInSuggest*>(action);
+  }
+  return nullptr;
+}
+
+omnibox::ActionInfo::ActionType OmniboxActionInSuggest::Type() const {
+  return action_info_.action_type();
+}

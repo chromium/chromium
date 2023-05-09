@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -44,6 +45,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
@@ -3115,8 +3117,15 @@ TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
       AutocompleteMatch match(provider.get(), 1, false,
                               AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
       for (auto& action_id : actions) {
-        match.actions.push_back(
-            base::MakeRefCounted<FakeOmniboxAction>(action_id));
+        if (action_id == OmniboxActionId::ACTION_IN_SUGGEST) {
+          omnibox::ActionInfo info;
+          info.set_action_type(omnibox::ActionInfo_ActionType_DIRECTIONS);
+          match.actions.push_back(
+              base::MakeRefCounted<OmniboxActionInSuggest>(std::move(info)));
+        } else {
+          match.actions.push_back(
+              base::MakeRefCounted<FakeOmniboxAction>(action_id));
+        }
       }
       result.AppendMatches({std::move(match)});
     }

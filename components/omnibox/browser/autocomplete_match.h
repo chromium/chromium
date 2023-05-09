@@ -513,6 +513,12 @@ struct AutocompleteMatch {
   void FilterOmniboxActions(
       const std::vector<OmniboxActionId>& allowed_action_ids);
 
+  // Rearranges and truncates ActionsInSuggest objects to match the desired
+  // order and presence of actions.
+  // Unlike FilterOmniboxActions(), this method specifically targets
+  // ActionsInSuggest.
+  void FilterAndSortActionsInSuggest();
+
   // Returns whether the autocompletion is trivial enough that we consider it
   // an autocompletion for which the omnibox autocompletion code did not add
   // any value.

@@ -113,6 +113,8 @@ static_library("browser") {
     "actions/omnibox_action.cc",
     "actions/omnibox_action.h",
     "actions/omnibox_action_concepts.h",
+    "actions/omnibox_action_in_suggest.cc",
+    "actions/omnibox_action_in_suggest.h",
     "actions/omnibox_pedal.cc",
     "actions/omnibox_pedal.h",
     "actions/omnibox_pedal_concepts.h",
@@ -401,8 +403,6 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
-      "actions/omnibox_action_in_suggest.cc",
-      "actions/omnibox_action_in_suggest.h",
       "actions/omnibox_pedal_jni_wrapper.cc",
       "actions/omnibox_pedal_jni_wrapper.h",
       "autocomplete_match_android.cc",
