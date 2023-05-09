@@ -8,7 +8,7 @@ found in the LICENSE file.
     margin: 0;
   }
 
-  #box {
+  :host-context([theme='legacy']) #box {
     display: flex;
     line-height: 20px;
     margin: 10px 0;
@@ -16,11 +16,22 @@ found in the LICENSE file.
     width: 320px;
   }
 
+  :host-context([theme='refresh23']) #box {
+    box-sizing: border-box;
+    color: var(--cros-sys-on_surface);
+    display: flex;
+    font: var(--cros-body-2-font);
+    margin: 10px 0;
+    min-height: 14px;
+    padding-inline: 32px 16px;
+    width: 320px;
+  }
+
   #box[hidden] {
     display: none;
   }
 
-  #key {
+  :host-context([theme='legacy']) #key {
     color: var(--cros-text-color-primary);
     font-weight: 500;
     margin-inline-end: 16px;
@@ -30,9 +41,22 @@ found in the LICENSE file.
     width: 96px;
   }
 
-  #value {
+  :host-context([theme='refresh23']) #key {
+    margin-inline-end: 24px;
+    overflow-wrap: break-word;
+    vertical-align: bottom;
+    width: 88px;
+  }
+
+  :host-context([theme='legacy']) #value {
     color: var(--cros-text-color-primary);
     opacity: 0.8;
+    overflow-wrap: break-word;
+    vertical-align: bottom;
+    width: 160px;
+  }
+
+  :host-context([theme='refresh23']) #value {
     overflow-wrap: break-word;
     vertical-align: bottom;
     width: 160px;
@@ -61,15 +85,15 @@ found in the LICENSE file.
   }
 
   @media only screen and (max-width: 720px) {
-    #box {
+    :host-context([theme='legacy']) #box {
       width: 240px;
     }
-    #key {
+    :host-context([theme='legacy']) #key {
       margin-inline-end: 8px;
       margin-inline-start: 12px;
       width: 80px;
     }
-    #value {
+    :host-context([theme='legacy']) #value {
       width: 140px;
     }
   }
