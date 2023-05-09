@@ -183,10 +183,6 @@ bool NetworkUiController::IsNetworkReady() const {
   return splash_screen_view_ && splash_screen_view_->IsNetworkReady();
 }
 
-bool NetworkUiController::IsShowingNetworkConfigScreen() const {
-  return network_ui_state_ == NetworkUIState::kShowing;
-}
-
 void NetworkUiController::MaybeShowNetworkConfigureUI() {
   SYSLOG(INFO) << "Network configure UI was requested to be shown.";
   if (!splash_screen_view_) {

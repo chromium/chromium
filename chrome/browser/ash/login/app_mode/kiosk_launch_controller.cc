@@ -509,10 +509,6 @@ void KioskLaunchController::OnAppPrepared() {
     return;
   }
 
-  if (network_ui_controller_->IsShowingNetworkConfigScreen()) {
-    return;
-  }
-
   app_state_ = AppState::kInstallingExtensions;
 
   // Initialize and start Lacros for preparing force-installed extensions.

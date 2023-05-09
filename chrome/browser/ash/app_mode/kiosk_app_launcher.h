@@ -41,9 +41,6 @@ class KioskAppLauncher {
     virtual void InitializeNetwork() = 0;
     // Whether the device is online.
     virtual bool IsNetworkReady() const = 0;
-    // TODO(crbug.com/1015383): Refactor out this method at some moment.
-    // Whether network configure UI is shown.
-    virtual bool IsShowingNetworkConfigScreen() const = 0;
   };
 
   class Observer : public base::CheckedObserver {

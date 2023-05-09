@@ -57,7 +57,6 @@ class FakeController : public KioskAppLauncher::NetworkDelegate,
 
   // KioskAppLauncher::Delegate:
   bool IsNetworkReady() const override { return true; }
-  bool IsShowingNetworkConfigScreen() const override { return false; }
 
   void OnAppWindowCreated(
       const absl::optional<std::string>& app_name) override {

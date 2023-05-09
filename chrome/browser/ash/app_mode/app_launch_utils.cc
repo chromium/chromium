@@ -90,7 +90,6 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
     // See comments above. Network is assumed to be online here.
     return true;
   }
-  bool IsShowingNetworkConfigScreen() const override { return false; }
 
   // KioskAppLauncher::Observer:
   void OnAppInstalling() override {}

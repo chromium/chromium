@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -64,6 +65,10 @@ void PressConfigureNetworkAccelerator() {
 
 void WaitForOobeScreen(OobeScreenId screen) {
   OobeScreenWaiter(screen).Wait();
+}
+
+void WaitForNetworkScreen() {
+  WaitForOobeScreen(ErrorScreenView::kScreenId);
 }
 
 }  // namespace
@@ -239,9 +244,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
 
   PressConfigureNetworkAccelerator();
 
-  // `ErrorScreenView` is the network screen
-  WaitForOobeScreen(ErrorScreenView::kScreenId);
-  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
+  WaitForNetworkScreen();
 
   // Continue button should be visible since we are online.
   EXPECT_TRUE(test::OobeJS().IsVisible(kErrorMessageContinueButton));
@@ -257,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
 
 IN_PROC_BROWSER_TEST_F(
     KioskEnterpriseTest,
-    LaunchingAppThatRequiresNetworkWhilstOnlineShouldShowNetworkScreen) {
+    LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen) {
   ScopedCanConfigureNetwork can_configure_network(true);
 
   // Start app launch with network portal state.
@@ -266,11 +269,8 @@ IN_PROC_BROWSER_TEST_F(
 
   WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
 
-  // Network error should show up automatically since this test does not
-  // require owner auth to configure network.
-  WaitForOobeScreen(ErrorScreenView::kScreenId);
+  WaitForNetworkScreen();
 
-  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
   SimulateNetworkOnline();
   WaitForAppLaunchSuccess();
 }

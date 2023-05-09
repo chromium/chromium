@@ -145,13 +145,6 @@ void StartupAppLauncher::Initialize() {
     return;
   }
 
-  // Wait until user has configured the network. We will come back into this
-  // class through ContinueWithNetworkReady.
-  if (delegate_->IsShowingNetworkConfigScreen()) {
-    state_ = LaunchState::kInitializingNetwork;
-    return;
-  }
-
   // Update the offline enabled crx cache if the network is ready;
   // or just install the app.
   if (delegate_->IsNetworkReady()) {

@@ -349,8 +349,6 @@ void KioskBaseTest::RunAppLaunchNetworkDownTest() {
   error_screen_waiter.Wait();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
-  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
-
   SimulateNetworkOnline();
   WaitForAppLaunchSuccess();
 }

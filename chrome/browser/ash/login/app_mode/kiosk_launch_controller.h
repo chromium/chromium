@@ -124,9 +124,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   bool waiting_for_network() const {
     return app_state_ == AppState::kInitNetwork;
   }
-  bool showing_network_dialog() const {
-    return network_ui_controller_->IsShowingNetworkConfigScreen();
-  }
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
 

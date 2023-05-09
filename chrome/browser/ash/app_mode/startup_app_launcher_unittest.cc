@@ -120,9 +120,6 @@ class TestAppLaunchDelegate : public KioskAppLauncher::NetworkDelegate,
   KioskAppLaunchError::Error launch_error() const { return launch_error_; }
 
   void set_network_ready(bool network_ready) { network_ready_ = network_ready; }
-  void set_showing_network_config_screen(bool showing) {
-    showing_network_config_screen_ = showing;
-  }
 
   void ClearLaunchStateChanges() {
     while (!launch_state_changes_.IsEmpty()) {
@@ -143,9 +140,6 @@ class TestAppLaunchDelegate : public KioskAppLauncher::NetworkDelegate,
     SetLaunchState(LaunchState::kInitializingNetwork);
   }
   bool IsNetworkReady() const override { return network_ready_; }
-  bool IsShowingNetworkConfigScreen() const override {
-    return showing_network_config_screen_;
-  }
 
   // `KioskAppLauncher::Observer`:
   void OnAppInstalling() override {
@@ -168,7 +162,6 @@ class TestAppLaunchDelegate : public KioskAppLauncher::NetworkDelegate,
   KioskAppLaunchError::Error launch_error_ = KioskAppLaunchError::Error::kNone;
 
   bool network_ready_ = false;
-  bool showing_network_config_screen_ = false;
 
   base::test::RepeatingTestFuture<LaunchState> launch_state_changes_;
 };
