@@ -27,7 +27,6 @@
     "extension_types": [
       "chromeos_system_extension"
     ],
-    "feature_flag": "TelemetryExtensionPendingApprovalApi",
     "dependencies": [ "manifest:chromeos_system_extension" ]
   },
   "os.telemetry": {

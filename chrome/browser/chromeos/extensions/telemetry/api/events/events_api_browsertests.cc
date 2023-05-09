@@ -40,14 +40,9 @@ namespace crosapi = ::crosapi::mojom;
 
 }  // namespace
 
-class PendingApprovalTelemetryExtensionEventsApiBrowserTest
+class TelemetryExtensionEventsApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
-  PendingApprovalTelemetryExtensionEventsApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
   void SetUpOnMainThread() override {
     BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -71,42 +66,11 @@ class PendingApprovalTelemetryExtensionEventsApiBrowserTest
   }
 
  protected:
-  std::string GetManifestFile(const std::string& matches_origin) override {
-    return base::StringPrintf(R"(
-      {
-        "key": "%s",
-        "name": "Test Telemetry Extension",
-        "version": "1",
-        "manifest_version": 3,
-        "chromeos_system_extension": {},
-        "background": {
-          "service_worker": "sw.js"
-        },
-        "permissions": [
-          "os.diagnostics",
-          "os.events",
-          "os.telemetry",
-          "os.telemetry.serial_number",
-          "os.telemetry.network_info"
-        ],
-        "externally_connectable": {
-          "matches": [
-            "%s"
-          ]
-        },
-        "options_page": "options.html"
-      }
-    )",
-                              public_key().c_str(), matches_origin.c_str());
-  }
-
   FakeEventsService* GetFakeService() {
     return fake_events_service_impl_.get();
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // SAFETY: This pointer is owned in a unique_ptr by the EventManager. Since
   // the EventManager lives longer than this test, it is always safe to access
@@ -120,7 +84,7 @@ class PendingApprovalTelemetryExtensionEventsApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        IsEventSupported_Error) {
   auto exception = crosapi::TelemetryExtensionException::New();
   exception->reason = crosapi::TelemetryExtensionException::Reason::kUnexpected;
@@ -162,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        IsEventSupported_Success) {
   auto supported = crosapi::TelemetryExtensionSupportStatus::NewSupported(
       crosapi::TelemetryExtensionSupported::New());
@@ -201,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StartListeningToEvents_Success) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
@@ -239,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StartListeningToEvents_ErrorPwaClosed) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -254,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StopListeningToEvents) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
@@ -315,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   EXPECT_EQ(remote_set_size.Get(), 0UL);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        ClosePwaConnection) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
@@ -367,6 +331,73 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
   browser()->tab_strip_model()->CloseSelectedTabs();
 
   EXPECT_EQ(remote_set_size.Get(), 0UL);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckApisWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function sdCardNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onSdCardEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+class PendingApprovalTelemetryExtensionEventsApiBrowserTest
+    : public TelemetryExtensionEventsApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionEventsApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckApisWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto sd_card_info = crosapi::TelemetrySdCardEventInfo::New();
+        sd_card_info->state = crosapi::TelemetrySdCardEventInfo::State::kAdd;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kSdCard,
+            crosapi::TelemetryEventInfo::NewSdCardEventInfo(
+                std::move(sd_card_info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onSdCardEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'connected'
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("sd_card");
+      }
+    ]);
+  )");
 }
 
 }  // namespace chromeos

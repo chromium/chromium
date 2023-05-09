@@ -218,31 +218,7 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryNetworkInformation) {
             active_permissions()[0]);
 }
 
-TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryEvents_ErrorFeatureFlag) {
-  CreateAndInstallExtensionWithPermissions(
-      base::Value::List(), base::Value::List().Append("os.events"));
-
-  EXPECT_EQ(0U, optional_permissions().size());
-  EXPECT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
-
-  EXPECT_EQ(0U, required_permissions().size());
-  EXPECT_EQ(0U, active_permissions().size());
-}
-
-class ChromeOSPermissionMessageUnittestWithPendingApprovalPermission
-    : public ChromeOSPermissionMessageUnittest {
- public:
-  ChromeOSPermissionMessageUnittestWithPendingApprovalPermission() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ChromeOSPermissionMessageUnittestWithPendingApprovalPermission,
-       OsTelemetryEventsMessage) {
+TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryEventsMessage) {
   CreateAndInstallExtensionWithPermissions(
       base::Value::List(), base::Value::List().Append("os.events"));
 
