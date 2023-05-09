@@ -186,10 +186,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
 
 // PrintToPDF command tests -------------------------------------------
 
-class HeadlessModePrintToPdfCommandBrowserTest
+class HeadlessModePrintToPdfCommandBrowserTestBase
     : public HeadlessModeCommandBrowserTestWithTempDir {
  public:
-  HeadlessModePrintToPdfCommandBrowserTest() = default;
+  HeadlessModePrintToPdfCommandBrowserTestBase() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTestWithTempDir::SetUpCommandLine(command_line);
@@ -199,11 +199,23 @@ class HeadlessModePrintToPdfCommandBrowserTest
     command_line->AppendSwitchPath(switches::kPrintToPDF,
                                    print_to_pdf_filename_);
     command_line->AppendSwitch(switches::kNoPDFHeaderFooter);
-    command_line->AppendArg(GetTargetUrl("/centered_blue_box.html").spec());
   }
 
  protected:
   base::FilePath print_to_pdf_filename_;
+};
+
+class HeadlessModePrintToPdfCommandBrowserTest
+    : public HeadlessModePrintToPdfCommandBrowserTestBase {
+ public:
+  HeadlessModePrintToPdfCommandBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModePrintToPdfCommandBrowserTestBase::SetUpCommandLine(
+        command_line);
+
+    command_line->AppendArg(GetTargetUrl("/centered_blue_box.html").spec());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
@@ -220,10 +232,43 @@ IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
       << print_to_pdf_filename_;
 
   PDFPageBitmap page_bitmap;
-  ASSERT_TRUE(page_bitmap.Render(pdf_data, 0));
+  ASSERT_TRUE(page_bitmap.Render(pdf_data, /*page_index=*/0));
 
   // Expect blue rectangle on white background.
   EXPECT_TRUE(page_bitmap.CheckColoredRect(SkColorSetRGB(0x00, 0x00, 0xff),
+                                           SkColorSetRGB(0xff, 0xff, 0xff)));
+}
+
+class HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest
+    : public HeadlessModePrintToPdfCommandBrowserTestBase {
+ public:
+  HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModePrintToPdfCommandBrowserTestBase::SetUpCommandLine(
+        command_line);
+    command_line->AppendArg(GetTargetUrl("/page_with_lazy_image.html").spec());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
+                       HeadlessLazyLoadingPrintToPdf) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  RunLoop();
+
+  ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
+      << print_to_pdf_filename_;
+
+  std::string pdf_data;
+  ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
+      << print_to_pdf_filename_;
+
+  PDFPageBitmap page_bitmap;
+  ASSERT_TRUE(page_bitmap.Render(pdf_data, /*page_index=*/4));
+
+  // Expect green rectangle on white background.
+  EXPECT_TRUE(page_bitmap.CheckColoredRect(SkColorSetRGB(0x00, 0x64, 0x00),
                                            SkColorSetRGB(0xff, 0xff, 0xff)));
 }
 
