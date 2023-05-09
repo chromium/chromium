@@ -373,9 +373,6 @@ void FrameSequenceTracker::ReportFrameEnd(
     DCHECK_GT(impl_throughput().frames_expected,
               impl_throughput().frames_produced)
         << TRACKER_DCHECK_MSG;
-    DCHECK_GE(impl_throughput().frames_produced,
-              impl_throughput().frames_ontime)
-        << TRACKER_DCHECK_MSG;
     --impl_throughput().frames_expected;
     metrics()->NotifyNoUpdateForJankReporter(
         FrameInfo::SmoothEffectDrivingThread::kCompositor,
@@ -443,19 +440,8 @@ void FrameSequenceTracker::ReportFramePresented(
       (feedback.interval.is_zero() ? viz::BeginFrameArgs::DefaultInterval()
                                    : feedback.interval);
   DCHECK(!vsync_interval.is_zero()) << TRACKER_DCHECK_MSG;
-  base::TimeTicks safe_deadline_for_frame =
-      last_frame_presentation_timestamp_ + vsync_interval * 1.5;
-
   const bool was_presented = !feedback.failed();
   if (was_presented && submitted_frame_since_last_presentation) {
-    if (!last_frame_presentation_timestamp_.is_null() &&
-        (safe_deadline_for_frame < feedback.timestamp)) {
-      DCHECK_LE(impl_throughput().frames_ontime,
-                impl_throughput().frames_produced)
-          << TRACKER_DCHECK_MSG;
-      ++impl_throughput().frames_ontime;
-    }
-
     DCHECK_LT(impl_throughput().frames_produced,
               impl_throughput().frames_expected)
         << TRACKER_DCHECK_MSG;
@@ -488,16 +474,6 @@ void FrameSequenceTracker::ReportFramePresented(
       metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kMain,
                              frame_token, feedback.timestamp, vsync_interval);
     }
-    if (main_frames_.size() < size_before_erase) {
-      if (!last_frame_presentation_timestamp_.is_null() &&
-          (safe_deadline_for_frame < feedback.timestamp)) {
-        DCHECK_LE(main_throughput().frames_ontime,
-                  main_throughput().frames_produced)
-            << TRACKER_DCHECK_MSG;
-        ++main_throughput().frames_ontime;
-      }
-    }
-    last_frame_presentation_timestamp_ = feedback.timestamp;
 
     if (checkerboarding_.last_frame_had_checkerboarding) {
       DCHECK(!checkerboarding_.last_frame_timestamp.is_null())
@@ -607,8 +583,6 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
   DCHECK_GT(main_throughput().frames_expected, 0u) << TRACKER_DCHECK_MSG;
   DCHECK_GT(main_throughput().frames_expected,
             main_throughput().frames_produced)
-      << TRACKER_DCHECK_MSG;
-  DCHECK_GE(main_throughput().frames_produced, main_throughput().frames_ontime)
       << TRACKER_DCHECK_MSG;
   last_no_main_damage_sequence_ = args.frame_id.sequence_number;
   --main_throughput().frames_expected;

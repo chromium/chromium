@@ -5496,22 +5496,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Graphics.Smoothness.Jank.Compositor"/>
   <affected-histogram name="Graphics.Smoothness.Jank.Main"/>
   <affected-histogram name="Graphics.Smoothness.MaxStale"/>
-  <affected-histogram
-      name="Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread"/>
-  <affected-histogram
-      name="Graphics.Smoothness.PercentMissedDeadlineFrames.MainThread"/>
-  <affected-histogram
-      name="Graphics.Smoothness.PercentMissedDeadlineFrames.ScrollingThread"/>
   <affected-histogram name="Graphics.Smoothness.Stale"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SmoothnessThreadTypes" separator=".">
-  <suffix name="CompositorThread"
-      label="The throughput of the compositor thread"/>
-  <suffix name="MainThread" label="The throughput of the main thread"/>
-  <suffix name="ScrollingThread"
-      label="The throughput of the thread responsible for handling the thread"/>
-  <affected-histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessThreadTypes_Jank" separator=".">
