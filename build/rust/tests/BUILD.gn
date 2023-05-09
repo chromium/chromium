@@ -77,11 +77,6 @@ group("deps") {
         deps +=
             [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
       }
-      if (current_toolchain == host_toolchain_no_sanitizers) {
-        # Build these proc macro tests only on toolchains where we'd build the
-        # proc macro itself.
-        deps += [ "test_proc_macro_crate:test_proc_macro_crate_v0_2_unittests" ]
-      }
     }
 
     if (is_win) {

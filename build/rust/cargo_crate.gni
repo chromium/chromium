@@ -217,7 +217,12 @@ template("cargo_crate") {
     rustenv = _rustenv
 
     if (!defined(build_native_rust_unit_tests)) {
-      build_native_rust_unit_tests = true
+      build_native_rust_unit_tests = _crate_type != "proc-macro"
+    }
+    if (build_native_rust_unit_tests) {
+      # Unit tests in a proc-macro crate type don't make sense, you can't
+      # compile executables against the `proc_macro` crate.
+      assert(_crate_type != "proc-macro")
     }
 
     # The unit tests for each target, if generated, should be unique as well.
