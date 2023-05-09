@@ -725,6 +725,38 @@ TEST_F(AcceleratorControllerTest, TestRepeatedSnap) {
   EXPECT_EQ(normal_bounds.ToString(), window->bounds().ToString());
 }
 
+// Test that GetEncodedShortcut encodes a shortcut correctly.
+// - The low 16 bits represent the key code.
+// - The high 16 bits represent the modififers.
+//   - The 31 bit: Command key
+//   - The 30 bit: Alt key
+//   - The 29 bit: Control key
+//   - The 28 bit: Shift key
+//   - All other bits are 0
+TEST_F(AcceleratorControllerTest, GetEncodedShortcut) {
+  // Test will verify that ui::EF_FUNCTION_DOWN and ui::EF_ALTGR_DOWN will be
+  // ignored.
+  const int all_modifiers = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                            ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
+                            ui::EF_FUNCTION_DOWN | ui::EF_ALTGR_DOWN;
+  struct {
+    ui::KeyboardCode code;
+    int modifiers;
+    const int expected_int;
+  } keys[] = {
+      {ui::VKEY_A, ui::EF_SHIFT_DOWN, 0x0800'0041},  // A: 0x41
+      {ui::VKEY_A, ui::EF_CONTROL_DOWN, 0x1000'0041},
+      {ui::VKEY_A, ui::EF_ALT_DOWN, 0x2000'0041},
+      {ui::VKEY_A, ui::EF_COMMAND_DOWN, 0x4000'0041},
+      {ui::VKEY_Z, all_modifiers, 0x7800'005A},  // Z: 0x5A
+  };
+
+  for (const auto& key : keys) {
+    EXPECT_EQ(GetEncodedShortcut(ui::Accelerator(key.code, key.modifiers)),
+              key.expected_int);
+  }
+}
+
 class AcceleratorControllerTestWithClamshellSplitView
     : public AcceleratorControllerTest {
  public:
@@ -783,6 +815,9 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
     EXPECT_EQ(
         left_clamshell_no_overview + left_clamshell_overview + left_tablet,
         user_action_tester.GetActionCount("Accel_Window_Snap_Left"));
+    histogram_tester.ExpectTotalCount(
+        "Ash.Accelerators.Actions.WindowCycleSnapLeft",
+        left_clamshell_no_overview + left_clamshell_overview + left_tablet);
     EXPECT_EQ(
         right_clamshell_no_overview + right_clamshell_overview + right_tablet,
         user_action_tester.GetActionCount("Accel_Window_Snap_Right"));

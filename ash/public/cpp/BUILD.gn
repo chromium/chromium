@@ -10,6 +10,7 @@ assert(is_chromeos_ash)
 # C++ headers and sources that can be used outside ash.
 component("cpp") {
   sources = [
+    "accelerator_actions.cc",
     "accelerator_actions.h",
     "accelerator_configuration.cc",
     "accelerator_configuration.h",
