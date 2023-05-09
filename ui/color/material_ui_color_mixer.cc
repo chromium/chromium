@@ -100,7 +100,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorToggleButtonTrackOn] = {kColorSysPrimary};
   mixer[kColorToggleButtonTrackOnDisabled] = {kColorSysStateDisabledContainer};
   mixer[kColorToolbarSearchFieldBackground] = {kColorSysBaseContainerElevated};
-  mixer[kColorToolbarSearchFieldBackgroundHover] = {kColorSysStateHoverCutout};
+  mixer[kColorToolbarSearchFieldBackgroundHover] = {
+      kColorSysStateHoverDimBlendProtection};
   mixer[kColorToolbarSearchFieldBackgroundPressed] = {
       kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorToolbarSearchFieldForeground] = {kColorSysOnSurface};
