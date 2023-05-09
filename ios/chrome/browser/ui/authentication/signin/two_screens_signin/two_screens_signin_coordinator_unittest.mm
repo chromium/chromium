@@ -178,3 +178,31 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
             SigninCompletionActionNone);
 }
+
+// Tests that the user can cancel without signing in.
+TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
+  __block SigninCoordinatorResult signin_result;
+  __block SigninCompletionInfo* signin_completion_info;
+  __block BOOL completion_block_done = NO;
+  coordinator_.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        signin_result = signinResult;
+        signin_completion_info = signinCompletionInfo;
+        completion_block_done = YES;
+      };
+
+  [coordinator_ start];
+  [coordinator_ screenWillFinishPresenting];
+
+  auto completion_condition = ^{
+    return completion_block_done;
+  };
+  base::test::ios::WaitUntilCondition(completion_condition, true,
+                                      base::Seconds(1));
+  EXPECT_EQ(signin_result, SigninCoordinatorResultCanceledByUser);
+  EXPECT_EQ(signin_completion_info.identity, nil);
+  EXPECT_EQ(signin_completion_info.signinCompletionAction,
+            SigninCompletionActionNone);
+  [coordinator_ stop];
+}

@@ -152,9 +152,12 @@
 // SigninCompletionInfo object that includes the given `identity`.
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
-  CHECK(_childCoordinator) << base::SysNSStringToUTF8([self description]);
-  [_childCoordinator stop];
-  _childCoordinator = nil;
+  // When this coordinator is interrupted, `_childCoordinator` needs to be
+  // stopped here.
+  if (_childCoordinator) {
+    [_childCoordinator stop];
+    _childCoordinator = nil;
+  }
   _navigationController = nil;
   _screenProvider = nil;
   SigninCompletionInfo* completionInfo =
