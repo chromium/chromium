@@ -370,11 +370,11 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
     auto popover = popoverTargetElement();
     if (popover.popover) {
       auto& document = GetDocument();
-      DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           document.GetExecutionContext()));
       auto trigger_support = SupportsPopoverTriggering();
-      DCHECK_NE(popover.action, PopoverTriggerAction::kNone);
-      DCHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
+      CHECK_NE(popover.action, PopoverTriggerAction::kNone);
+      CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
       // Note that the order is: `mousedown` which runs popover light dismiss
       // code, then (for clicked elements) focus is set to the clicked
       // element, then |DOMActivate| runs here. Also note that the light
@@ -443,7 +443,7 @@ void HTMLFormControlElement::HandlePopoverInvokerHovered(bool hovered) {
     }
     float hover_delay_seconds = computed_style->PopoverShowDelay();
     // If the value is infinite or NaN, don't queue a task at all.
-    DCHECK_GE(hover_delay_seconds, 0);
+    CHECK_GE(hover_delay_seconds, 0);
     if (!std::isfinite(hover_delay_seconds)) {
       return;
     }
