@@ -562,15 +562,17 @@ testcase.toolbarCloudIconShouldNotShowWhenPrefDisabled = async () => {
   // Mock the free space returned by spaced to be 1 GB.
   await sendTestMessage(
       {name: 'setSpacedFreeSpace', freeSpace: 1024 * 1024 * 1024});
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
 
   // Set the bulk pinning manager to enter offline mode. This will surface a
-  // `PAUSED` state which has a UI representation iff the pref is enabled. This
-  // is done to ensure the bulk pinning doesn't finish before our assertions are
-  // able to run (small amount of test files make this finish super quick).
+  // `PAUSED` state which has a UI representation iff the pref is enabled.
+  // This is done to ensure the bulk pinning doesn't finish before our
+  // assertions are able to run (small amount of test files make this finish
+  // super quick).
   await sendTestMessage({name: 'setBulkPinningOnline', enabled: false});
 
-  // Force the bulk pinning to calculate required space which will kick it into
-  // a `PAUSED` state from a `STOPPED` state.
+  // Force the bulk pinning to calculate required space which will kick it
+  // into a `PAUSED` state from a `STOPPED` state.
   await sendTestMessage({name: 'forceBulkPinningCalculateRequiredSpace'});
 
   // Assert the stage is `PAUSED` and the cloud button is still hidden.

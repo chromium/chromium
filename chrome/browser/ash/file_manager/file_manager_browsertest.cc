@@ -1548,7 +1548,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveEncryptionBadge"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
-        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()
+        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync(),
+        TestCase("driveFolderShouldShowOfflineTickWhenBulkPinningEnabled")
+            .EnableBulkPinning()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable
