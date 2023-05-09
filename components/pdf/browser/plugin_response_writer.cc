@@ -65,7 +65,7 @@ embed {
 </style>
 <div id="sizer"></div>
 <embed type="application/x-google-chrome-pdf" src="$1" original-url="$2"
-    background-color="$4" javascript="$5"$6>
+    background-color="$4" javascript="$5"$6$7>
 <script type="module">
 $3
 </script>
@@ -82,7 +82,8 @@ $3
        stream_info.injected_script ? *stream_info.injected_script : "",
        base::NumberToString(stream_info.background_color),
        stream_info.allow_javascript ? "allow" : "block",
-       stream_info.full_frame ? " full-frame" : ""},
+       stream_info.full_frame ? " full-frame" : "",
+       stream_info.use_skia ? " use-skia" : ""},
       /*offsets=*/nullptr);
 }
 

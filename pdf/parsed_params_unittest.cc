@@ -46,6 +46,7 @@ TEST(ParsedParamsTest, ParseWebPluginParamsMinimal) {
   EXPECT_EQ(SK_ColorTRANSPARENT, result->background_color);
   EXPECT_EQ(PDFiumFormFiller::DefaultScriptOption(), result->script_option);
   EXPECT_FALSE(result->has_edits);
+  EXPECT_FALSE(result->use_skia);
 }
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithoutSourceUrl) {
@@ -179,6 +180,28 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithHasEditsNonEmpty) {
   ASSERT_TRUE(result.has_value());
 
   EXPECT_TRUE(result->has_edits);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkia) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("use-skia"));
+  params.attribute_values.push_back(blink::WebString(""));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_TRUE(result->use_skia);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkiaNonEmpty) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("use-skia"));
+  params.attribute_values.push_back(blink::WebString("false"));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_TRUE(result->use_skia);
 }
 
 }  // namespace chrome_pdf

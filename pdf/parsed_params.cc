@@ -46,6 +46,8 @@ absl::optional<ParsedParams> ParseWebPluginParams(
         result.script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
     } else if (params.attribute_names[i] == "has-edits") {
       result.has_edits = true;
+    } else if (params.attribute_names[i] == "use-skia") {
+      result.use_skia = true;
     }
   }
 

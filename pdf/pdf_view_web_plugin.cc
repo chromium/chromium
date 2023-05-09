@@ -179,7 +179,7 @@ class PerProcessInitializer final {
     return *instance;
   }
 
-  void Acquire() {
+  void Acquire(bool use_skia) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     DCHECK_GE(init_count_, 0);
@@ -187,9 +187,7 @@ class PerProcessInitializer final {
       return;
 
     DCHECK(!IsSDKInitializedViaPlugin());
-    InitializeSDK(/*enable_v8=*/true,
-                  base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer),
-                  FontMappingMode::kBlink);
+    InitializeSDK(/*enable_v8=*/true, use_skia, FontMappingMode::kBlink);
     SetIsSDKInitializedViaPlugin(true);
   }
 
@@ -335,7 +333,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
                                           base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(subresource_url, params->original_url);
 
-  PerProcessInitializer::GetInstance().Acquire();
+  PerProcessInitializer::GetInstance().Acquire(params->use_skia);
   initialized_ = true;
 
   // Check if the PDF is being loaded in the PDF chrome extension. We only allow

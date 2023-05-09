@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -16,6 +17,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
+#include "pdf/pdf_features.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -85,6 +87,12 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
         stream->pdf_plugin_attributes()->background_color);
     info.full_frame = !stream->embedded();
     info.allow_javascript = stream->pdf_plugin_attributes()->allow_javascript;
+
+    // TODO(crbug.com/1440430): Set `info.use_skia` based on both the feature
+    // flag and the enterprise policy once the policy is available for the Skia
+    // finch experiment.
+    info.use_skia =
+        base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUseSkiaRenderer);
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else if (stream_url.GetWithEmptyPath() ==
              chrome::kChromeUIUntrustedPrintURL) {
@@ -94,6 +102,8 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.background_color = gfx::kGoogleGrey300;
     info.full_frame = false;
     info.allow_javascript = false;
+    info.use_skia =
+        base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUseSkiaRenderer);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else {
     return absl::nullopt;

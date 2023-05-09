@@ -24,6 +24,9 @@ class ScopedSdkInitializer {
  public:
   explicit ScopedSdkInitializer(bool enable_v8) {
     if (!IsSDKInitializedViaPlugin()) {
+      // TODO(crbug.com/1440430): Modify ScopedSdkInitializer() so that the
+      // option to use Skia can be based on enterprise policy if such policy is
+      // set.
       InitializeSDK(enable_v8,
                     base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer),
                     FontMappingMode::kNoMapping);

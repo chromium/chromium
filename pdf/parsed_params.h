@@ -46,6 +46,10 @@ struct ParsedParams {
 
   // Whether the PDF was edited previously in annotation mode.
   bool has_edits = false;
+
+  // Whether the PDF viewer uses Skia renderer. When set to false, the PDF
+  // viewer uses AGG renderer.
+  bool use_skia = false;
 };
 
 // Creates an `ParsedParams` by parsing a `blink::WebPluginParams`. If

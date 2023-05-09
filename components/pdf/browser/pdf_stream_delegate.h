@@ -43,6 +43,7 @@ class PdfStreamDelegate {
     SkColor background_color = SK_ColorTRANSPARENT;
     bool full_frame = false;
     bool allow_javascript = false;
+    bool use_skia = false;
   };
 
   PdfStreamDelegate();
