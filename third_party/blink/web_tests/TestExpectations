@@ -2979,7 +2979,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-fromelement/capture.html
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-during-xr-session.https.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Crash ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simplecall.https.html [ Crash ]
@@ -4078,7 +4077,7 @@ crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-scale.html [ 
 crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-scale-transition.html [ Failure ]
 
 # Also crbug.com/1044535
-crbug.com/937416 http/tests/devtools/resource-tree/resource-tree-frame-navigate.js [ Failure Pass Timeout ]
+crbug.com/937416 [ Debug Mac12 ] http/tests/devtools/resource-tree/resource-tree-frame-navigate.js [ Failure Pass Timeout ]
 
 # Sheriff 2019-03-04
 # Also crbug.com/1044418
@@ -4394,11 +4393,11 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/event
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout ]
 
 # fast/scrolling
-crbug.com/1330011 virtual/main-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure Pass ]
+crbug.com/1330011 [ Release Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure Pass ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure ]
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
+crbug.com/1204176 [ Release Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/scroll-animation-on-by-default.html [ Failure ]
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/wheel-scroll-latching-on-scrollbar.html [ Failure Pass ]
+crbug.com/1204176 [ Release Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/wheel-scroll-latching-on-scrollbar.html [ Failure Pass ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
@@ -5136,7 +5135,6 @@ crbug.com/1231596 [ Mac10.15 ] external/wpt/html/semantics/embedded-content/medi
 crbug.com/1231596 [ Mac11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231596 [ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231596 [ Mac12-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
-crbug.com/1231596 [ Mac13-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html [ Failure Pass ]
 
 # Sheriff 2021-07-28
@@ -6029,7 +6027,12 @@ crbug.com/1280883 [ Win ] virtual/compositor-threaded-percent-based-scrolling-ds
 # Temporarily disable tests to investigate test_driver.click issue
 crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio+video.https.sub.html [ Crash Failure Pass Timeout ]
 crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio.https.sub.html [ Crash Failure Pass Timeout ]
-crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Debug Mac13-arm64 ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Mac10.13 Release ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Mac10.14 Release ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Mac10.15 Release ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Mac11 Release ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Mac12 Release ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-10-04
 crbug.com/1145491 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-overlay-menu.html [ Crash Failure Pass Timeout ]
@@ -6716,7 +6719,6 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 [ Debug Mac12 ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure ]
 [ Debug Mac12 ] external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change-on-blur.html [ Failure ]
 [ Debug Mac12 ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Failure ]
-[ Debug Mac12 ] external/wpt/long-animation-frame/tentative/loaf-blocking-duration.html [ Failure ]
 [ Debug Mac12 ] external/wpt/longtask-timing/longtask-attributes.html [ Failure ]
 [ Debug Mac12 ] external/wpt/longtask-timing/longtask-in-childiframe-crossorigin.html [ Failure ]
 [ Debug Mac12 ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure ]
@@ -6745,7 +6747,6 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 [ Debug Mac12 ] media/video-source-error-no-candidate.html [ Failure ]
 [ Debug Mac12 ] media/video-source.html [ Failure ]
 [ Debug Mac12 ] media/video-source-none-supported.html [ Failure ]
-[ Debug Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/event-level-trigger-filter-data.sub.https.html?input=filters_empty_filter_data [ Failure ]
 [ Debug Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/event-level-trigger-filter-data.sub.https.html?input=not_filters_no_matching [ Failure ]
 [ Debug Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Failure ]
 [ Debug Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-all.https.html [ Failure ]
@@ -6781,7 +6782,6 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 [ Debug Mac12 ] virtual/schemeful-same-site/external/wpt/cookies/attributes/domain.sub.html [ Failure ]
 [ Debug Mac12 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Failure ]
 [ Debug Mac12 ] virtual/shared-storage-fenced-frame-mparch/wpt_internal/shared_storage/embedder-context.https.html [ Failure ]
-[ Debug Mac12 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-blocking-duration.html [ Failure ]
 [ Debug Mac12 ] virtual/threaded/external/wpt/requestidlecallback/deadline-max-rAF.html [ Failure ]
 [ Debug Mac12 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Failure ]
 [ Debug Mac12 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/delay-load-event-2.html [ Failure ]
