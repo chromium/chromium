@@ -17,6 +17,7 @@ import androidx.privacysandbox.ads.adservices.measurement.WebSourceRegistrationR
 import androidx.privacysandbox.ads.adservices.measurement.WebTriggerParams;
 import androidx.privacysandbox.ads.adservices.measurement.WebTriggerRegistrationRequest;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -154,6 +155,37 @@ public class AttributionOsLevelManager {
             onDataDeletionCompleted(requestId);
             return;
         }
+
+        // Currently Android and Chromium have different matching behaviors when both
+        // `origins` and `domains` are empty.
+        // Chromium: Delete -> Delete nothing; Preserve -> Delete all.
+        // Android: Delete -> Delete all; Preserve -> Delete nothing.
+        // Android may fix the behavior in the future. As a workaround, Chromium will
+        // not call Android if it's to delete nothing (no-op), and call Android with
+        // both Delete and Preserve modes if it's to delete all. These two modes will
+        // be one no-op and one delete all in Android releases with and without the
+        // fix. See crbug.com/1442967.
+
+        ImmutableList<Integer> matchBehaviors = null;
+
+        if (origins.length == 0 && domains.length == 0) {
+            switch (matchBehavior) {
+                case DeletionRequest.MATCH_BEHAVIOR_DELETE:
+                    onDataDeletionCompleted(requestId);
+                    return;
+                case DeletionRequest.MATCH_BEHAVIOR_PRESERVE:
+                    matchBehaviors = ImmutableList.of(DeletionRequest.MATCH_BEHAVIOR_DELETE,
+                            DeletionRequest.MATCH_BEHAVIOR_PRESERVE);
+                    break;
+                default:
+                    Log.e(TAG, "Received invalid match behavior: ", matchBehavior);
+                    onDataDeletionCompleted(requestId);
+                    return;
+            }
+        } else {
+            matchBehaviors = ImmutableList.of(matchBehavior);
+        }
+
         ArrayList<Uri> originUris = new ArrayList<Uri>(origins.length);
         for (GURL origin : origins) {
             originUris.add(Uri.parse(origin.getSpec()));
@@ -164,21 +196,36 @@ public class AttributionOsLevelManager {
             domainUris.add(Uri.parse(domain));
         }
 
-        ListenableFuture<?> future = mm.deleteRegistrationsAsync(
-                new DeletionRequest(deletionMode, matchBehavior, Instant.ofEpochMilli(startMs),
-                        Instant.ofEpochMilli(endMs), originUris, domainUris));
+        int numCalls = matchBehaviors.size();
 
-        Futures.addCallback(future, new FutureCallback<Object>() {
+        FutureCallback<Object> callback = new FutureCallback<Object>() {
+            private int mNumPendingCalls = numCalls;
+
+            private void onCall() {
+                if (--mNumPendingCalls == 0) {
+                    onDataDeletionCompleted(requestId);
+                }
+            }
+
             @Override
             public void onSuccess(Object result) {
-                onDataDeletionCompleted(requestId);
+                onCall();
             }
             @Override
             public void onFailure(Throwable thrown) {
                 Log.w(TAG, "Failed to delete measurement API data", thrown);
-                onDataDeletionCompleted(requestId);
+                onCall();
             }
-        }, ContextUtils.getApplicationContext().getMainExecutor());
+        };
+
+        for (int currMatchBehavior : matchBehaviors) {
+            ListenableFuture<?> future = mm.deleteRegistrationsAsync(new DeletionRequest(
+                    deletionMode, currMatchBehavior, Instant.ofEpochMilli(startMs),
+                    Instant.ofEpochMilli(endMs), originUris, domainUris));
+
+            Futures.addCallback(
+                    future, callback, ContextUtils.getApplicationContext().getMainExecutor());
+        }
     }
 
     /**
