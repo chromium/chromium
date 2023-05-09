@@ -2783,109 +2783,128 @@ static bool IsDisplayLegacy(CSSValueID id) {
   return id >= CSSValueID::kInlineBlock && id <= CSSValueID::kWebkitInlineFlex;
 }
 
-bool IsDisplayListItem(const CSSIdentifierValue* value) {
-  return RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() && value &&
-         value->GetValueID() == CSSValueID::kListItem;
+bool IsDisplayListItem(CSSValueID id) {
+  return RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
+         id == CSSValueID::kListItem;
+}
+
+struct DisplayValidationResult {
+  STACK_ALLOCATED();
+
+ public:
+  const CSSIdentifierValue* outside;
+  const CSSIdentifierValue* inside;
+  const CSSIdentifierValue* list_item;
+};
+
+// Find <display-outside>, <display-inside>, and `list-item` in the unordered
+// keyword list `values`.  Returns nullopt if `values` contains an invalid
+// combination of keywords.
+absl::optional<DisplayValidationResult> ValidateDisplayKeywords(
+    const CSSValueList& values) {
+  const CSSIdentifierValue* outside = nullptr;
+  const CSSIdentifierValue* inside = nullptr;
+  const CSSIdentifierValue* list_item = nullptr;
+  for (const auto& item : values) {
+    const CSSIdentifierValue* value = To<CSSIdentifierValue>(item.Get());
+    CSSValueID value_id = value->GetValueID();
+    if (!outside && IsDisplayOutside(value_id)) {
+      outside = value;
+    } else if (!inside && IsDisplayInside(value_id)) {
+      inside = value;
+    } else if (!list_item && IsDisplayListItem(value_id)) {
+      list_item = value;
+    } else {
+      return absl::nullopt;
+    }
+  }
+  DisplayValidationResult result{outside, inside, list_item};
+  return result;
+}
+
+void DropDisplayKeywords(DisplayValidationResult& result) {
+  CSSValueID outside =
+      result.outside ? result.outside->GetValueID() : CSSValueID::kInvalid;
+  CSSValueID inside =
+      result.inside ? result.inside->GetValueID() : CSSValueID::kInvalid;
+  switch (inside) {
+    case CSSValueID::kFlow:
+      if (result.outside) {
+        result.inside = nullptr;
+      }
+      break;
+    case CSSValueID::kFlex:
+    case CSSValueID::kFlowRoot:
+    case CSSValueID::kGrid:
+    case CSSValueID::kTable:
+      if (outside == CSSValueID::kBlock) {
+        result.outside = nullptr;
+      }
+      break;
+    case CSSValueID::kMath:
+      if (outside == CSSValueID::kInline) {
+        result.outside = nullptr;
+      }
+      break;
+    default:
+      break;
+  }
+
+  if (result.list_item) {
+    if (outside == CSSValueID::kBlock) {
+      result.outside = nullptr;
+    }
+    if (inside == CSSValueID::kFlow) {
+      result.inside = nullptr;
+    }
+  }
 }
 
 const CSSValue* ParseDisplayMultipleKeywords(
     CSSParserTokenRange& range,
     const CSSIdentifierValue* first_value) {
-  HeapVector<Member<const CSSIdentifierValue>> values;
-  values.push_back(first_value);
-  values.push_back(css_parsing_utils::ConsumeIdent(range));
+  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+  values->Append(*first_value);
+  values->Append(*css_parsing_utils::ConsumeIdent(range));
   if (RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
       !range.AtEnd()) {
     if (range.Peek().Id() == CSSValueID::kInvalid) {
       return nullptr;
     }
-    values.push_back(css_parsing_utils::ConsumeIdent(range));
+    values->Append(*css_parsing_utils::ConsumeIdent(range));
   }
   // `values` has two or three CSSIdentifierValue pointers.
 
-  // Find <display-outside>, <display-inside>, and `list-item` in `values`.
-  const CSSIdentifierValue* display_outside = nullptr;
-  const CSSIdentifierValue* display_inside = nullptr;
-  const CSSIdentifierValue* list_item = nullptr;
-  for (const auto& value : values) {
-    if (!display_outside && IsDisplayOutside(value->GetValueID())) {
-      display_outside = value;
-    } else if (!display_inside && IsDisplayInside(value->GetValueID())) {
-      display_inside = value;
-    } else if (!list_item && IsDisplayListItem(value)) {
-      list_item = value;
-    } else {
+  auto result = ValidateDisplayKeywords(*values);
+  if (!result) {
+    return nullptr;
+  }
+
+  if (result->list_item && result->inside) {
+    CSSValueID inside = result->inside->GetValueID();
+    if (inside != CSSValueID::kFlow && inside != CSSValueID::kFlowRoot) {
       return nullptr;
     }
   }
 
-  if (list_item && display_inside &&
-      display_inside->GetValueID() != CSSValueID::kFlow &&
-      display_inside->GetValueID() != CSSValueID::kFlowRoot) {
-    return nullptr;
-  }
-
   if (!RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
-      (display_inside->GetValueID() != CSSValueID::kMath ||
+      (result->inside->GetValueID() != CSSValueID::kMath ||
        !RuntimeEnabledFeatures::MathMLCoreEnabled())) {
     return nullptr;
   }
 
-  // Simplify keywords for backward compatibility in serialization.
-  if (list_item) {
-    DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
-    if (display_outside &&
-        display_outside->GetValueID() == CSSValueID::kBlock) {
-      display_outside = nullptr;
-    }
-    if (display_inside && display_inside->GetValueID() == CSSValueID::kFlow) {
-      display_inside = nullptr;
-    }
-    if (!display_outside && !display_inside) {
-      return list_item;
-    }
-  } else {
-    DCHECK(display_outside);
-    DCHECK(display_inside);
-    const bool is_block = display_outside->GetValueID() == CSSValueID::kBlock;
-    const CSSValueID inner_type = display_inside->GetValueID();
-    if (inner_type == CSSValueID::kFlow) {
-      return display_outside;
-    }
-    if (inner_type == CSSValueID::kFlowRoot) {
-      return is_block ? display_inside
-                      : MakeGarbageCollected<CSSIdentifierValue>(
-                            CSSValueID::kInlineBlock);
-    }
-    if (inner_type == CSSValueID::kFlex) {
-      return is_block ? display_inside
-                      : MakeGarbageCollected<CSSIdentifierValue>(
-                            CSSValueID::kInlineFlex);
-    }
-    if (inner_type == CSSValueID::kGrid) {
-      return is_block ? display_inside
-                      : MakeGarbageCollected<CSSIdentifierValue>(
-                            CSSValueID::kInlineGrid);
-    }
-    if (inner_type == CSSValueID::kTable) {
-      return is_block ? display_inside
-                      : MakeGarbageCollected<CSSIdentifierValue>(
-                            CSSValueID::kInlineTable);
-    }
+  DropDisplayKeywords(*result);
+  CSSValueList* result_list = CSSValueList::CreateSpaceSeparated();
+  if (result->outside) {
+    result_list->Append(*result->outside);
   }
-
-  DCHECK(list_item || display_inside->GetValueID() == CSSValueID::kMath);
-  CSSValueList* parsed_values = CSSValueList::CreateSpaceSeparated();
-  if (display_outside) {
-    parsed_values->Append(*display_outside);
+  if (result->inside) {
+    result_list->Append(*result->inside);
   }
-  if (display_inside) {
-    parsed_values->Append(*display_inside);
+  if (result->list_item) {
+    result_list->Append(*result->list_item);
   }
-  if (list_item) {
-    parsed_values->Append(*list_item);
-  }
-  return parsed_values;
+  return result_list->length() == 1u ? &result_list->Item(0) : result_list;
 }
 
 }  // namespace
@@ -2908,11 +2927,6 @@ const CSSValue* Display::ParseSingleValue(CSSParserTokenRange& range,
     }
     // The property has only one keyword.
 
-    // Replace `flow` with `block` for backward compatibility in serialization.
-    if (id == CSSValueID::kFlow &&
-        RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled()) {
-      return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kBlock);
-    }
     if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
         IsDisplayInternal(id) || IsDisplayLegacy(id) || IsDisplayInside(id) ||
         IsDisplayOutside(id)) {
@@ -3023,45 +3037,31 @@ void Display::ApplyValue(StyleResolverState& state,
     builder.SetDisplayLayoutCustomName(
         ComputedStyleInitialValues::InitialDisplayLayoutCustomName());
     const CSSValueList& list = To<CSSValueList>(value);
+    DCHECK(list.length() == 2u ||
+           (list.length() == 3u && list.Item(2).IsIdentifierValue()));
+    DCHECK(list.Item(0).IsIdentifierValue());
+    DCHECK(list.Item(1).IsIdentifierValue());
+    auto result = ValidateDisplayKeywords(list);
+    DCHECK(result);
+    CSSValueID outside =
+        result->outside ? result->outside->GetValueID() : CSSValueID::kInvalid;
+    CSSValueID inside =
+        result->inside ? result->inside->GetValueID() : CSSValueID::kInvalid;
+
     if (RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
-        list.length() == 3) {
-      DCHECK_EQ(To<CSSIdentifierValue>(list.Item(2)).GetValueID(),
-                CSSValueID::kListItem);
-      auto outside_id = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
-      DCHECK(IsDisplayOutside(outside_id));
-      const bool is_block = outside_id == CSSValueID::kBlock;
-      auto inside_id = To<CSSIdentifierValue>(list.Item(1)).GetValueID();
-      DCHECK(inside_id == CSSValueID::kFlow ||
-             inside_id == CSSValueID::kFlowRoot);
-      if (inside_id == CSSValueID::kFlow) {
+        result->list_item) {
+      const bool is_block =
+          outside == CSSValueID::kBlock || !IsValidCSSValueID(outside);
+      if (inside != CSSValueID::kFlowRoot) {
         builder.SetDisplay(is_block ? EDisplay::kListItem
                                     : EDisplay::kInlineListItem);
-      } else if (inside_id == CSSValueID::kFlowRoot) {
+      } else {
         builder.SetDisplay(is_block ? EDisplay::kFlowRootListItem
                                     : EDisplay::kInlineFlowRootListItem);
       }
       return;
     }
-    DCHECK_EQ(list.length(), 2u);
-    DCHECK(list.Item(0).IsIdentifierValue());
-    DCHECK(list.Item(1).IsIdentifierValue());
     if (RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled()) {
-      if (To<CSSIdentifierValue>(list.Item(1)).GetValueID() ==
-          CSSValueID::kListItem) {
-        CSSValueID id = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
-        if (id == CSSValueID::kFlow || id == CSSValueID::kBlock) {
-          builder.SetDisplay(EDisplay::kListItem);
-        } else if (id == CSSValueID::kFlowRoot) {
-          builder.SetDisplay(EDisplay::kFlowRootListItem);
-        } else if (id == CSSValueID::kInline) {
-          builder.SetDisplay(EDisplay::kInlineListItem);
-        } else {
-          NOTREACHED();
-        }
-        return;
-      }
-      const auto outside = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
-      const auto inside = To<CSSIdentifierValue>(list.Item(1)).GetValueID();
       DCHECK(IsDisplayOutside(outside));
       DCHECK(IsDisplayInside(inside));
       const bool is_block = outside == CSSValueID::kBlock;
@@ -3082,10 +3082,8 @@ void Display::ApplyValue(StyleResolverState& state,
       }
       return;
     }
-    const auto& outside = To<CSSIdentifierValue>(list.Item(0));
-    const auto& inside = To<CSSIdentifierValue>(list.Item(1));
-    DCHECK(inside.GetValueID() == CSSValueID::kMath);
-    if (outside.GetValueID() == CSSValueID::kBlock) {
+    DCHECK(inside == CSSValueID::kMath);
+    if (outside == CSSValueID::kBlock) {
       builder.SetDisplay(EDisplay::kBlockMath);
     } else {
       builder.SetDisplay(EDisplay::kMath);

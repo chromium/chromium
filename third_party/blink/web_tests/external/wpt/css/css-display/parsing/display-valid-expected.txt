@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 103 tests; 71 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 106 tests; 74 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['display'] = "grid" should set the property value
 PASS e.style['display'] = "inline-grid" should set the property value
 PASS e.style['display'] = "inline" should set the property value
@@ -17,6 +17,9 @@ PASS e.style['display'] = "table-column" should set the property value
 PASS e.style['display'] = "table-cell" should set the property value
 PASS e.style['display'] = "table-caption" should set the property value
 PASS e.style['display'] = "none" should set the property value
+PASS e.style['display'] = "flex" should set the property value
+PASS e.style['display'] = "inline-flex" should set the property value
+PASS e.style['display'] = "contents" should set the property value
 FAIL e.style['display'] = "run-in" should set the property value assert_not_equals: property should be set got disallowed value ""
 PASS e.style['display'] = "flow" should set the property value
 PASS e.style['display'] = "flow-root" should set the property value
