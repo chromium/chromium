@@ -491,6 +491,41 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
       static_cast<int>(companion::OpenTrigger::kContextMenuTextSearch));
 }
 
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       OpenedFromContextMenuImageSearch) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+
+  // Start a image query via context menu. It should open companion side panel.
+  GURL src_url = CreateUrl(kHost, kRelativeUrl2);
+  gfx::Size original_size(8, 8);
+  gfx::Size downscaled_size(8, 8);
+  std::vector<uint8_t> thumbnail_data(64, 0);
+  std::string content_type("image/jpeg");
+
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(web_contents());
+  companion_helper->ShowCompanionSidePanelForImage(
+      src_url,
+      /*is_image_translate=*/false,
+      /*additional_query_params_modified=*/"", thumbnail_data, original_size,
+      downscaled_size,
+      /*image_extension=*/"", content_type);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Close side panel and verify UKM.
+  side_panel_coordinator()->Close();
+  ExpectUkmEntry(
+      &ukm_recorder, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(companion::OpenTrigger::kContextMenuImageSearch));
+}
+
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
