@@ -307,11 +307,15 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
-    // Don't prerender when the trigger is in the background.
-    // TODO(https://crbug.com/1401252): When the sequential prerendering is
-    // enabled, enqueue this prerender request until the initiator page gets
-    // foregrounded.
-    if (initiator_web_contents.GetVisibility() == Visibility::HIDDEN) {
+    // Don't prerender when the initiator is in the background and its type is
+    // `kEmbedder`, as current implementation doesn't use `pending_prerenders_`
+    // when kEmbedder.
+    // If the trigger type is speculation rules, nothing should be done here and
+    // then prerender host will be created and its id will be enqueued to
+    // `pending_prerenders_`. The visibility of the initiator will be considered
+    // when trying to pop from `pending_prerenders_` on `StartPrerendering()`.
+    if (attributes.trigger_type == PrerenderTriggerType::kEmbedder &&
+        initiator_web_contents.GetVisibility() == Visibility::HIDDEN) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(
               PrerenderFinalStatus::kTriggerBackgrounded),
@@ -450,11 +454,15 @@ int PrerenderHostRegistry::CreateAndStartHost(
     case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
       pending_prerenders_.push_back(frame_tree_node_id);
       // Start the initial prerendering navigation of the pending request in
-      // the head of the queue if there's no running prerender.
+      // the head of the queue if there's no running prerender and the initiator
+      // is in the foreground.
       if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
-        // No running prerender means that no other prerender is waiting in
-        // the pending queue, because the prerender sequence only stops when
-        // all the pending prerenders are started.
+        // No running prerender means that either no other prerenders are in the
+        // pending queue or the initiator continues to be in the background.
+        // Skip starting prerendering in the latter case.
+        if (IsBackground(initiator_web_contents.GetVisibility())) {
+          break;
+        }
         CHECK_EQ(pending_prerenders_.size(), 1u);
         int started_frame_tree_node_id =
             StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);

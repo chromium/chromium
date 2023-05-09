@@ -4898,7 +4898,8 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
   int MaxNumOfRunningPrerenders() const { return 4; }
 
  protected:
-  void TestSequentialPrerenderingInBackground(Visibility visibility);
+  void TestSequentialPrerenderingInBackground(Visibility initial_visibility,
+                                              Visibility background_visibility);
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -5811,11 +5812,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
 }
 
-// Test that when the current tab gets hidden then the prerender sequence is
-// terminated, and when the current tab gets visible then we start the next
-// prerender if we have some pending prerender hosts.
+// Test that the prerender request is handled and stored regardless of the
+// initial visibility of the current tab, and when the current tab goes
+// background (whether HIDDEN or OCCLUDED is specified by
+// `background_visibility`) then the prerender sequence is terminated, and when
+// the current tab gets visible then we start the next prerender if we have some
+// pending prerender hosts.
 void PrerenderSequentialPrerenderingBrowserTest::
-    TestSequentialPrerenderingInBackground(Visibility visibility) {
+    TestSequentialPrerenderingInBackground(Visibility initial_visibility,
+                                           Visibility background_visibility) {
   net::test_server::ControllableHttpResponse response1(
       embedded_test_server(), "/empty.html?prerender1");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -5827,6 +5832,19 @@ void PrerenderSequentialPrerenderingBrowserTest::
 
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
+  // Set the initial visibility.
+  switch (initial_visibility) {
+    case Visibility::VISIBLE:
+      web_contents()->WasShown();
+      break;
+    case Visibility::HIDDEN:
+      web_contents()->WasHidden();
+      break;
+    case Visibility::OCCLUDED:
+      web_contents()->WasOccluded();
+      break;
+  }
+
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 2 URLs into the speculation rules at the same time.
@@ -5836,11 +5854,15 @@ void PrerenderSequentialPrerenderingBrowserTest::
   test::PrerenderHostObserver prerender2_observer(*web_contents(),
                                                   GetHostForUrl(kPrerender2));
 
+  // Set the visibility status to VISIBLE, encouraging to start first
+  // prerendering when initial visibility was on the background.
+  web_contents()->WasShown();
+
   // Stop the first prerendering initial navigation.
   response1.WaitForRequest();
 
   // Change the visibility status to HIDDEN/OCCLUDED.
-  switch (visibility) {
+  switch (background_visibility) {
     case Visibility::HIDDEN:
       web_contents()->WasHidden();
       break;
@@ -5881,13 +5903,39 @@ void PrerenderSequentialPrerenderingBrowserTest::
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
-                       SequentialPrerenderingInBackground_Hidden) {
-  TestSequentialPrerenderingInBackground(Visibility::HIDDEN);
+                       PrerenderInBackground_InitialyVisible_Hidden) {
+  TestSequentialPrerenderingInBackground(Visibility::VISIBLE,
+                                         Visibility::HIDDEN);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
-                       SequentialPrerenderingInBackground_Occluded) {
-  TestSequentialPrerenderingInBackground(Visibility::OCCLUDED);
+                       PrerenderInBackground_InitialyVisible_Occluded) {
+  TestSequentialPrerenderingInBackground(Visibility::VISIBLE,
+                                         Visibility::OCCLUDED);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       PrerenderInBackground_InitialyOccluded_Hidden) {
+  TestSequentialPrerenderingInBackground(Visibility::OCCLUDED,
+                                         Visibility::HIDDEN);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       PrerenderInBackground_InitialyOccluded_Occluded) {
+  TestSequentialPrerenderingInBackground(Visibility::OCCLUDED,
+                                         Visibility::OCCLUDED);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       PrerenderInBackground_InitialyHidden_Hidden) {
+  TestSequentialPrerenderingInBackground(Visibility::HIDDEN,
+                                         Visibility::HIDDEN);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       PrerenderInBackground_InitialyHidden_Occluded) {
+  TestSequentialPrerenderingInBackground(Visibility::HIDDEN,
+                                         Visibility::OCCLUDED);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

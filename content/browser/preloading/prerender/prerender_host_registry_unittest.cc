@@ -651,22 +651,29 @@ TEST_F(PrerenderHostRegistryTest,
   EXPECT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
+// Tests that prerendering should be canceled if the trigger is in the
+// background and its type is kEmbedder.
+// For the case where the trigger type is speculation rules,
+// browsertests `TestSequentialPrerenderingInBackground` covers it.
 TEST_F(PrerenderHostRegistryTest,
-       DontStartPrerenderWhenTriggerIsAlreadyHidden) {
-  // The visibility state to be HIDDEN will cause prerendering not started.
+       DontStartPrerenderWhenEmbedderTriggerIsAlreadyHidden) {
+  // The visibility state to be HIDDEN will cause prerendering not started when
+  // trigger type is kEmbedder.
   contents()->WasHidden();
 
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
   RenderFrameHostImpl* initiator_rfh = contents()->GetPrimaryMainFrame();
   const int prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
-          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "DirectURLInput",
           initiator_rfh));
   EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry().FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
-  ExpectUniqueSampleOfFinalStatus(PrerenderFinalStatus::kTriggerBackgrounded);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      PrerenderFinalStatus::kTriggerBackgrounded, 1u);
 }
 
 // -------------------------------------------------
