@@ -740,9 +740,6 @@ void OobeUI::AddScreenHandler(std::unique_ptr<BaseScreenHandler> handler) {
 }
 
 void OobeUI::InitializeHandlers() {
-  ready_ = true;
-  ready_callbacks_.Notify();
-
   for (BaseWebUIHandler* handler : webui_only_handlers_) {
     CHECK(!handler->IsJavascriptAllowed());
     handler->AllowJavascript();
@@ -752,6 +749,10 @@ void OobeUI::InitializeHandlers() {
     CHECK(!handler->IsJavascriptAllowed());
     handler->AllowJavascript();
   }
+
+  // Notify listeners that JS is allowed and ready.
+  ready_ = true;
+  ready_callbacks_.Notify();
 }
 
 void OobeUI::CurrentScreenChanged(OobeScreenId new_screen) {
