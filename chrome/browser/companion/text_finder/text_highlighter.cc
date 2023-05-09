@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -31,6 +32,9 @@ void TextHighlighter::InitializeAndBindToAnnotationAgent(
 }
 
 void TextHighlighter::DidFinishAttachment(const gfx::Rect& rect) {
+  base::UmaHistogramBoolean("Companion.CQ.TextHighlight.Success",
+                            !rect.IsEmpty());
+
   if (rect.IsEmpty()) {
     return;
   }

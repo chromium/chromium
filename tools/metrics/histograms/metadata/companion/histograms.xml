@@ -28,6 +28,16 @@ chromium-metrics-reviews@google.com.
   <variant name="RegionSearch"/>
 </variants>
 
+<histogram name="Companion.CQ.TextHighlight.Success" enum="BooleanSuccess"
+    expires_after="2023-10-20">
+  <owner>junzou@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records whether a text highlight operation was successful on the companion
+    page. Recorded after text highlighting is completed.
+  </summary>
+</histogram>
+
 <histogram name="Companion.PromoEvent" enum="Companion.PromoEvent"
     expires_after="2023-10-20">
   <owner>shaktisahu@chromium.org</owner>

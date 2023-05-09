@@ -43,9 +43,10 @@ using side_panel::mojom::UiSurface;
 
 namespace {
 
-const char kRegularUrl1[] = "foo.com";
-const char kRegularUrl2[] = "bar.com";
-const char kRegularUrl3[] = "baz.com";
+const char kRelativeUrl1[] = "/english_page.html";
+const char kRelativeUrl2[] = "/german_page.html";
+const char kRelativeUrl3[] = "/simple.html";
+const char kHost[] = "foo.com";
 const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 
 }  // namespace
@@ -134,15 +135,17 @@ struct CompanionScriptBuilder {
 class CompanionPageBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUp() override {
-    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    page_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    companion_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
 
     // Register a handler to inspect the URL and examine the proto.
     // Nevertheless, it returns null which causes the default handler to be
     // invoked right away.
-    https_server_.RegisterRequestHandler(base::BindRepeating(
+    companion_server_.RegisterRequestHandler(base::BindRepeating(
         &CompanionPageBrowserTest::InspectRequest, base::Unretained(this)));
 
-    ASSERT_TRUE(https_server_.Start());
+    ASSERT_TRUE(page_url_server_.Start());
+    ASSERT_TRUE(companion_server_.Start());
     SetUpFeatureList();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     InProcessBrowserTest::SetUp();
@@ -152,8 +155,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  GURL CreateUrl(const std::string& host) {
-    return https_server_.GetURL(host, "/");
+  GURL CreateUrl(const std::string& host, const std::string& relative_url) {
+    return page_url_server_.GetURL(host, relative_url);
   }
 
   content::WebContents* web_contents() {
@@ -255,7 +258,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   virtual void SetUpFeatureList() {
     base::FieldTrialParams params;
     params["companion-homepage-url"] =
-        https_server_.GetURL("/companion_iframe.html").spec();
+        companion_server_.GetURL("/companion_iframe.html").spec();
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::kSidePanelCompanion, params);
 
@@ -294,7 +297,9 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer page_url_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer companion_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   absl::optional<companion::proto::CompanionUrlParams>
       last_proto_from_url_load_;
@@ -303,7 +308,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
   // Turn off Msbb. Load a page on the active tab and open companion side panel.
   EnableMsbb(false);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
 
   WaitForCompanionToBeLoaded();
@@ -319,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        SubsequentNavigationWithAndWithoutMsbb) {
   // Load a page on the active tab and open companion side panel
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
 
   WaitForCompanionToBeLoaded();
@@ -328,22 +335,25 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   // Turn off Msbb, and navigate to a URL. Verify that URL isn't sent.
   EnableMsbb(false);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl2)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl2)));
   auto proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_FALSE(proto.has_value());
 
   // Turn on Msbb, and navigate to a URL. Verify that URL is sent.
   EnableMsbb(true);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl3)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl3)));
   proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_TRUE(proto.has_value());
-  EXPECT_EQ(proto->page_url(), CreateUrl(kRegularUrl3));
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl3));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        PostMessageForUiSurfaceMetrics) {
   // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   // Open companion companion via toolbar entry point.
@@ -377,7 +387,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   // Open companion companion via toolbar entry point.
@@ -408,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        PostMessageForCqCandidatesAvailable) {
   // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   // Open companion companion via toolbar entry point.
@@ -432,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        PostMessageForCqJumptagClicked) {
   // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  GURL url = page_url_server_.GetURL(kHost, kRelativeUrl1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   // Open companion companion via toolbar entry point.
@@ -446,16 +459,20 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Click a cq jumptag.
   CompanionScriptBuilder builder(MethodType::kOnCqJumptagClicked);
   builder.ui_surface = UiSurface::kCQ;
-  builder.text_directive = "abc";
+  builder.text_directive = "English";
   EXPECT_TRUE(ExecJs(builder.Build()));
-  // TODO(b/280453152): Verify UKM metrics.
+  WaitForHistogram("Companion.CQ.TextHighlight.Success");
+  // TODO(b/280453152): Fix the metrics expectation.
+  histogram_tester_->ExpectBucketCount("Companion.CQ.TextHighlight.Success",
+                                       /*sample=*/false, /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        OpenedFromContextMenuTextSearch) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
 
   // Start a text query via context menu. It should open companion side panel.
   auto* companion_helper =
@@ -478,7 +495,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   // Open companion from entry point.
@@ -500,7 +518,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                        SubsequentContextMenuTextSearch) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   // Load a page on the active tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   // Open companion from entry point.
