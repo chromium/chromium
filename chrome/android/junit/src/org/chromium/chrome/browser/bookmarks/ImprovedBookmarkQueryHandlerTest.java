@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertEquals;
+
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.DESKTOP_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
@@ -12,7 +14,6 @@ import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_D;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_E;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.List;
 
-/** Unit tests for {@link ImprovedmHandler}. */
+/** Unit tests for {@link ImprovedBookmarkQueryHandler}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -61,12 +62,12 @@ public class ImprovedBookmarkQueryHandlerTest {
     @Test
     public void testBuildBookmarkListForParent_rootFolder() {
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
-        Assert.assertEquals(6, result.size());
-        Assert.assertEquals(DESKTOP_BOOKMARK_ID, result.get(0).getBookmarkItem().getId());
-        Assert.assertEquals(FOLDER_BOOKMARK_ID_A, result.get(1).getBookmarkItem().getId());
-        Assert.assertEquals(READING_LIST_BOOKMARK_ID, result.get(2).getBookmarkItem().getId());
-        Assert.assertEquals(URL_BOOKMARK_ID_A, result.get(3).getBookmarkItem().getId());
-        Assert.assertEquals(URL_BOOKMARK_ID_D, result.get(4).getBookmarkItem().getId());
-        Assert.assertEquals(URL_BOOKMARK_ID_E, result.get(5).getBookmarkItem().getId());
+        assertEquals(6, result.size());
+        assertEquals(DESKTOP_BOOKMARK_ID, result.get(0).getBookmarkItem().getId());
+        assertEquals(FOLDER_BOOKMARK_ID_A, result.get(1).getBookmarkItem().getId());
+        assertEquals(READING_LIST_BOOKMARK_ID, result.get(2).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_A, result.get(3).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_D, result.get(4).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_E, result.get(5).getBookmarkItem().getId());
     }
 }

@@ -47,7 +47,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import java.util.Arrays;
 import java.util.List;
 
-/** Unit tests for {@link LegacymHandler}. */
+/** Unit tests for {@link LegacyBookmarkQueryHandler}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
