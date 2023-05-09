@@ -519,7 +519,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   std::set<BucketId> bucket_exceptions;
   QuotaErrorOr<std::set<BucketLocator>> result =
       db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Insert bucket entries into BucketTable.
@@ -641,7 +641,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   bucket_exceptions.insert(bucket_id1);
   bucket_exceptions.insert(bucket_id2);
   result = db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
 
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
@@ -653,7 +653,7 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
   std::set<BucketId> bucket_exceptions;
   QuotaErrorOr<std::set<BucketLocator>> result =
       db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Insert bucket entries into BucketTable.
@@ -685,13 +685,13 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
       QuotaError::kNone);
 
   result = db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   ASSERT_EQ(1U, result->size());
   EXPECT_EQ(bucket_id1, result->begin()->id);
 
   ASSERT_TRUE(db->UpdateBucketPersistence(bucket_id1, true).has_value());
   result = db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   ASSERT_EQ(1U, result->size());
   EXPECT_EQ(bucket_id2, result->begin()->id);
 }
