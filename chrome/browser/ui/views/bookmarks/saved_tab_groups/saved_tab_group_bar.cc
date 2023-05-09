@@ -248,11 +248,11 @@ void SavedTabGroupBar::UpdateDropIndex() {
   // be dropped at. `vertical` should be true when the buttons in `parent` are
   // laid out vertically, and false if they are horizontally laid out.
   // TODO(tbergquist): Use Rect::ManhattanDistanceToPoint instead of `vertical`.
-  const auto get_drop_index = [](views::View* parent, gfx::Point location,
+  const auto get_drop_index = [](const views::View* parent, gfx::Point location,
                                  bool vertical) {
-    int i = 0;
-    for (views::View* child : parent->children()) {
-      SavedTabGroupButton* button =
+    size_t i = 0;
+    for (const views::View* const child : parent->children()) {
+      const SavedTabGroupButton* const button =
           views::AsViewClass<SavedTabGroupButton>(child);
       // Skip non-button views, or buttons that are not shown.
       if (!button || !button->GetVisible()) {
@@ -271,10 +271,10 @@ void SavedTabGroupBar::UpdateDropIndex() {
     return i;
   };
 
-  const absl::optional<int> current_index =
+  const absl::optional<size_t> current_index =
       saved_tab_group_model_->GetIndexOf(dragged_group_guid);
 
-  absl::optional<int> drop_index = absl::nullopt;
+  absl::optional<size_t> drop_index = absl::nullopt;
   if (overflow_menu_) {
     const gfx::Point overflow_menu_cursor_loc = ConvertPointFromScreen(
         overflow_menu_, ConvertPointToScreen(this, cursor_location));
@@ -297,6 +297,8 @@ void SavedTabGroupBar::UpdateDropIndex() {
     drop_index = drop_index.value() - 1;
   }
 
+  CHECK_LT(drop_index.value(),
+           saved_tab_group_model_->saved_tab_groups().size());
   drag_data_->SetInsertionIndex(drop_index);
   SchedulePaint();
   if (overflow_menu_) {
@@ -304,10 +306,19 @@ void SavedTabGroupBar::UpdateDropIndex() {
   }
 }
 
+absl::optional<size_t> SavedTabGroupBar::GetDropIndex() const {
+  if (!drag_data_ || !drag_data_->insertion_index()) {
+    return absl::nullopt;
+  }
+
+  CHECK_LT(drag_data_->insertion_index().value(),
+           saved_tab_group_model_->saved_tab_groups().size());
+  return drag_data_->insertion_index();
+}
+
 void SavedTabGroupBar::HandleDrop() {
   // TODO(tbergquist): go through the controller/service
-  saved_tab_group_model_->Reorder(drag_data_->guid(),
-                                  drag_data_->insertion_index().value());
+  saved_tab_group_model_->Reorder(drag_data_->guid(), GetDropIndex().value());
   drag_data_.release();
   HideOverflowMenu();
   SchedulePaint();
@@ -345,9 +356,10 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
   UpdateDropIndex();
 
   const bool dragging_over_button =
+      overflow_button_->GetVisible() &&
       event.location().x() >= overflow_button_->bounds().x();
   const bool would_drop_into_overflow =
-      drag_data_->insertion_index() >= static_cast<size_t>(kMaxVisibleButtons);
+      GetDropIndex() >= static_cast<size_t>(kMaxVisibleButtons);
 
   if (dragging_over_button || would_drop_into_overflow) {
     MaybeShowOverflowMenu();
@@ -613,6 +625,11 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
     return;
   }
 
+  // Don't show the menu if it would be empty.
+  if (saved_tab_group_model_->saved_tab_groups().size() <= kMaxVisibleButtons) {
+    return;
+  }
+
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       overflow_button_, views::BubbleBorder::TOP_LEFT);
 
@@ -727,11 +744,11 @@ absl::optional<int> SavedTabGroupBar::CalculateDropIndicatorIndexInBar() const {
 
 absl::optional<int>
 SavedTabGroupBar::CalculateDropIndicatorIndexInCombinedSpace() const {
-  if (!drag_data_ || !drag_data_->insertion_index().has_value()) {
+  if (!drag_data_ || !GetDropIndex().has_value()) {
     return absl::nullopt;
   }
 
-  const int insertion_index = drag_data_->insertion_index().value();
+  const int insertion_index = GetDropIndex().value();
   const int current_index =
       saved_tab_group_model_->GetIndexOf(drag_data_->guid()).value();
 

@@ -140,6 +140,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Updates the drop index in `drag_data_` based on the current drag location.
   void UpdateDropIndex();
 
+  // Returns the drop index for the current drag session, if any.
+  absl::optional<size_t> GetDropIndex() const;
+
   // Reorders the dragged group to its new index.
   void HandleDrop();
 
