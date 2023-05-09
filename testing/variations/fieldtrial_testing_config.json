@@ -10786,7 +10786,7 @@
                     "name": "EnabledExploreAndServerRankingAndRawTrendingSegmentation2",
                     "params": {
                         "base_url": "https://chromeupboarding-pa.googleapis.com",
-                        "behavioural_targeting": "model_comparison",
+                        "behavioural_targeting": "model",
                         "enable_default_model": "true",
                         "experiment_tag": "{maxLevels : 1, rankTiles : true, enableTrending : true, maxTrendingQueries : 8, disableEntityTranslation: true}",
                         "image_prefetch_mode": "top",

@@ -40,8 +40,11 @@ public class QueryTileUtilsTest {
 
     @Before
     public void setUp() {
+        QueryTileUtils.setCountryCodeForTesting("ZZ");
         mActivityTestRule.startMainActivityOnBlankPage();
         QueryTileUtils.setSegmentationResultsForTesting(0 /*UNINITIALIZED*/);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
     }
 
     @Test
@@ -180,6 +183,33 @@ public class QueryTileUtilsTest {
             "force-fieldtrial-params=Study.Group:behavioural_targeting/model"})
     public void
     testShouldUseSegmentationModel() {
+        // Set segmentation model to show query tiles.
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
+        QueryTileUtils.setSegmentationResultsForTesting(2 /*SHOW*/);
+
+        // Verify that query tiles is shown via segmentation model when no previous history.
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+
+        // Verify that query tiles is shown via segmentation model when previous decision time
+        // expired.
+        nextDecisionTimeReached();
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+
+        // Verify that segmentation is not used when previous decision time did not expire.
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
+                System.currentTimeMillis() + QueryTileUtils.MILLISECONDS_PER_DAY);
+        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
+            ChromeFeatureList.QUERY_TILES_SEGMENTATION})
+    public void
+    testShouldUseSegmentationModelInIN() {
+        QueryTileUtils.setCountryCodeForTesting("IN");
         // Set segmentation model to show query tiles.
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);

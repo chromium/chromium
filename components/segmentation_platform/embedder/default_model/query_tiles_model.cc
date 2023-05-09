@@ -49,7 +49,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 2> kQueryTilesUMAFeatures = {
 std::unique_ptr<ModelProvider> GetQueryTilesDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           query_tiles::features::kQueryTilesSegmentation,
-          kDefaultModelEnabledParam, false)) {
+          kDefaultModelEnabledParam, true)) {
     return nullptr;
   }
   return std::make_unique<QueryTilesModel>();

@@ -41,6 +41,7 @@ public class QueryTileUtils {
     private static final long INVALID_DECISION_TIMESTAMP = -1L;
     private static final String QUERY_TILES_SEGMENTATION_PLATFORM_KEY = "query_tiles";
     private static int sSegmentationResultsForTesting = -1;
+    private static String sCountryCode;
 
     @VisibleForTesting
     static final long MILLISECONDS_PER_DAY = TimeUtils.SECONDS_PER_DAY * 1000;
@@ -121,17 +122,28 @@ public class QueryTileUtils {
             return true;
         }
 
-        // Check if segmentation model should be used.
-        // When behavioural targeting key is "model", the segmentation model result will be used.
-        // When behavioural targeting key is "model_comparison", the segmentation model result will
-        // be recorded for comparison in histogram.
-        final String behavioralTarget = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.QUERY_TILES_SEGMENTATION, BEHAVIOURAL_TARGETING_KEY);
+        String countryCode = sCountryCode;
+        if (countryCode == null) {
+            countryCode = QueryTileUtilsJni.get().getCountryCode();
+        }
+        boolean shouldUseModelResult;
+        boolean shouldCompareModelResult;
+        if (countryCode.equalsIgnoreCase("IN") || countryCode.equalsIgnoreCase("NG")) {
+            shouldUseModelResult = true;
+            shouldCompareModelResult = false;
+        } else {
+            // Check if segmentation model should be used.
+            // When behavioural targeting key is "model", the segmentation model result will be
+            // used. When behavioural targeting key is "model_comparison", the segmentation model
+            // result will be recorded for comparison in histogram.
+            final String behavioralTarget = ChromeFeatureList.getFieldTrialParamByFeature(
+                    ChromeFeatureList.QUERY_TILES_SEGMENTATION, BEHAVIOURAL_TARGETING_KEY);
 
-        boolean shouldUseModelResult =
-                !TextUtils.isEmpty(behavioralTarget) && TextUtils.equals(behavioralTarget, "model");
-        boolean shouldCompareModelResult = !TextUtils.isEmpty(behavioralTarget)
-                && TextUtils.equals(behavioralTarget, "model_comparison");
+            shouldUseModelResult = !TextUtils.isEmpty(behavioralTarget)
+                    && TextUtils.equals(behavioralTarget, "model");
+            shouldCompareModelResult = !TextUtils.isEmpty(behavioralTarget)
+                    && TextUtils.equals(behavioralTarget, "model_comparison");
+        }
 
         long nextDecisionTimestamp = SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
@@ -368,8 +380,15 @@ public class QueryTileUtils {
         sSegmentationResultsForTesting = result;
     }
 
+    /** For testing only. */
+    @VisibleForTesting
+    public static void setCountryCodeForTesting(String coutryCode) {
+        sCountryCode = coutryCode;
+    }
+
     @NativeMethods
     interface Natives {
         boolean isQueryTilesEnabled();
+        String getCountryCode();
     }
 }
