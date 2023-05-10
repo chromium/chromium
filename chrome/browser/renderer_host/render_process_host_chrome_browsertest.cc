@@ -746,9 +746,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
   // backgrounded.
   WaitUntilBackgrounded(no_audio_process_, true, audio_process_, false);
   // Pause the audio and immediately switch to the no audio tab.
-  ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_.get(),
-      "document.getElementById('audioPlayer').pause();"));
+  ASSERT_TRUE(
+      content::ExecJs(audio_tab_web_contents_.get(),
+                      "document.getElementById('audioPlayer').pause();"));
   ShowSingletonTab(no_audio_url_);
 
   // Wait until the no audio page is not backgrounded and the audio page is
@@ -767,9 +767,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
   // Wait until the two pages are not backgrounded.
   WaitUntilBackgrounded(audio_process_, false, no_audio_process_, false);
   // Stop the audio.
-  ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_.get(),
-      "document.getElementById('audioPlayer').pause();"));
+  ASSERT_TRUE(
+      content::ExecJs(audio_tab_web_contents_.get(),
+                      "document.getElementById('audioPlayer').pause();"));
 
   // Wait until the no audio page is not backgrounded and the audio page is
   // backgrounded.
@@ -786,16 +786,16 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
     return;
 
   // Stop the audio.
-  ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_.get(),
-      "document.getElementById('audioPlayer').pause();"));
+  ASSERT_TRUE(
+      content::ExecJs(audio_tab_web_contents_.get(),
+                      "document.getElementById('audioPlayer').pause();"));
 
   WaitUntilBackgrounded(no_audio_process_, false, audio_process_, true);
 
   // Start the audio from the backgrounded tab.
   ASSERT_TRUE(
-      content::ExecuteScript(audio_tab_web_contents_.get(),
-                             "document.getElementById('audioPlayer').play();"));
+      content::ExecJs(audio_tab_web_contents_.get(),
+                      "document.getElementById('audioPlayer').play();"));
 
   // Wait until the two pages are not backgrounded.
   WaitUntilBackgrounded(no_audio_process_, false, audio_process_, false);
