@@ -86,6 +86,12 @@ namespace container_internal {
 #define ABSL_BTREE_ENABLE_GENERATIONS
 #endif
 
+#ifdef ABSL_BTREE_ENABLE_GENERATIONS
+constexpr bool BtreeGenerationsEnabled() { return true; }
+#else
+constexpr bool BtreeGenerationsEnabled() { return false; }
+#endif
+
 template <typename Compare, typename T, typename U>
 using compare_result_t = absl::result_of_t<const Compare(const T &, const U &)>;
 
@@ -378,12 +384,6 @@ struct common_params : common_policy_traits<SlotPolicy> {
       std::is_same<key_compare, StringBtreeDefaultGreater>::value;
   static constexpr bool kIsKeyCompareTransparent =
       IsTransparent<original_key_compare>::value || kIsKeyCompareStringAdapted;
-  static constexpr bool kEnableGenerations =
-#ifdef ABSL_BTREE_ENABLE_GENERATIONS
-      true;
-#else
-      false;
-#endif
 
   // A type which indicates if we have a key-compare-to functor or a plain old
   // key-compare functor.
@@ -589,7 +589,7 @@ class btree_node {
   constexpr static size_type SizeWithNSlots(size_type n) {
     return layout_type(
                /*parent*/ 1,
-               /*generation*/ params_type::kEnableGenerations ? 1 : 0,
+               /*generation*/ BtreeGenerationsEnabled() ? 1 : 0,
                /*position, start, finish, max_count*/ 4,
                /*slots*/ n,
                /*children*/ 0)
@@ -629,23 +629,22 @@ class btree_node {
   // has this value.
   constexpr static field_type kInternalNodeMaxCount = 0;
 
+  constexpr static layout_type Layout(const size_type slot_count,
+                                      const size_type child_count) {
+    return layout_type(
+        /*parent*/ 1,
+        /*generation*/ BtreeGenerationsEnabled() ? 1 : 0,
+        /*position, start, finish, max_count*/ 4,
+        /*slots*/ slot_count,
+        /*children*/ child_count);
+  }
   // Leaves can have less than kNodeSlots values.
   constexpr static layout_type LeafLayout(
       const size_type slot_count = kNodeSlots) {
-    return layout_type(
-        /*parent*/ 1,
-        /*generation*/ params_type::kEnableGenerations ? 1 : 0,
-        /*position, start, finish, max_count*/ 4,
-        /*slots*/ slot_count,
-        /*children*/ 0);
+    return Layout(slot_count, 0);
   }
   constexpr static layout_type InternalLayout() {
-    return layout_type(
-        /*parent*/ 1,
-        /*generation*/ params_type::kEnableGenerations ? 1 : 0,
-        /*position, start, finish, max_count*/ 4,
-        /*slots*/ kNodeSlots,
-        /*children*/ kNodeSlots + 1);
+    return Layout(kNodeSlots, kNodeSlots + 1);
   }
   constexpr static size_type LeafSize(const size_type slot_count = kNodeSlots) {
     return LeafLayout(slot_count).AllocSize();
@@ -729,7 +728,7 @@ class btree_node {
 
   // Gets the root node's generation integer, which is the one used by the tree.
   uint32_t *get_root_generation() const {
-    assert(params_type::kEnableGenerations);
+    assert(BtreeGenerationsEnabled());
     const btree_node *curr = this;
     for (; !curr->is_root(); curr = curr->parent()) continue;
     return const_cast<uint32_t *>(&curr->GetField<1>()[0]);
@@ -737,16 +736,16 @@ class btree_node {
 
   // Returns the generation for iterator validation.
   uint32_t generation() const {
-    return params_type::kEnableGenerations ? *get_root_generation() : 0;
+    return BtreeGenerationsEnabled() ? *get_root_generation() : 0;
   }
   // Updates generation. Should only be called on a root node or during node
   // initialization.
   void set_generation(uint32_t generation) {
-    if (params_type::kEnableGenerations) GetField<1>()[0] = generation;
+    if (BtreeGenerationsEnabled()) GetField<1>()[0] = generation;
   }
   // Updates the generation. We do this whenever the node is mutated.
   void next_generation() {
-    if (params_type::kEnableGenerations) ++*get_root_generation();
+    if (BtreeGenerationsEnabled()) ++*get_root_generation();
   }
 
   // Getters for the key/value at position i in the node.
@@ -1543,7 +1542,8 @@ class btree {
 
   // Insert a range of values into the btree.
   template <typename InputIterator>
-  void insert_iterator_multi(InputIterator b, InputIterator e);
+  void insert_iterator_multi(InputIterator b,
+                             InputIterator e);
 
   // Erase the specified iterator from the btree. The iterator must be valid
   // (i.e. not equal to end()).  Return an iterator pointing to the node after

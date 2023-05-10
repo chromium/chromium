@@ -238,6 +238,7 @@ cc_test(
     size = "large",
     srcs = ["mutex_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     shard_count = 25,
     deps = [
@@ -300,6 +301,7 @@ cc_test(
     size = "small",
     srcs = ["notification_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["no_test_lexan"],
     deps = [

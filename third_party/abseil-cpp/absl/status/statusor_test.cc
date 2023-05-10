@@ -1844,4 +1844,37 @@ TEST(StatusOr, AssignmentFromTypeConvertibleToStatus) {
   }
 }
 
+TEST(StatusOr, StatusAssignmentFromStatusError) {
+  absl::StatusOr<absl::Status> statusor;
+  statusor.AssignStatus(absl::CancelledError());
+
+  EXPECT_FALSE(statusor.ok());
+  EXPECT_EQ(statusor.status(), absl::CancelledError());
+}
+
+#if GTEST_HAS_DEATH_TEST
+TEST(StatusOr, StatusAssignmentFromStatusOk) {
+  EXPECT_DEBUG_DEATH(
+      {
+        absl::StatusOr<absl::Status> statusor;
+        // This will DCHECK.
+        statusor.AssignStatus(absl::OkStatus());
+        // In optimized mode, we are actually going to get error::INTERNAL for
+        // status here, rather than crashing, so check that.
+        EXPECT_FALSE(statusor.ok());
+        EXPECT_EQ(statusor.status().code(), absl::StatusCode::kInternal);
+      },
+      "An OK status is not a valid constructor argument to StatusOr<T>");
+}
+#endif
+
+TEST(StatusOr, StatusAssignmentFromTypeConvertibleToStatus) {
+  CustomType<MyType, kConvToStatus> v;
+  absl::StatusOr<MyType> statusor;
+  statusor.AssignStatus(v);
+
+  EXPECT_FALSE(statusor.ok());
+  EXPECT_EQ(statusor.status(), static_cast<absl::Status>(v));
+}
+
 }  // namespace

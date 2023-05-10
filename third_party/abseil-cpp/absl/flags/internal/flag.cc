@@ -238,7 +238,7 @@ void FlagImpl::StoreValue(const void* src) {
   switch (ValueStorageKind()) {
     case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic: {
-      // Load the current value to avoid setting 'init' bit manualy.
+      // Load the current value to avoid setting 'init' bit manually.
       int64_t one_word_val = OneWordValue().load(std::memory_order_acquire);
       std::memcpy(&one_word_val, src, Sizeof(op_));
       OneWordValue().store(one_word_val, std::memory_order_release);

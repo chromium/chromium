@@ -109,7 +109,7 @@ class CrcCordState {
   // Returns true if the chunked CRC32C cached is normalized.
   bool IsNormalized() const { return rep().removed_prefix.length == 0; }
 
-  // Normalizes the chunked CRC32C checksum cache by substracting any removed
+  // Normalizes the chunked CRC32C checksum cache by subtracting any removed
   // prefix from the chunks.
   void Normalize();
 

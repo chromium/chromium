@@ -41,6 +41,7 @@ absl_cc_library(
     absl::debugging_internal
     absl::config
     absl::core_headers
+    absl::dynamic_annotations
     absl::raw_logging_internal
   PUBLIC
 )

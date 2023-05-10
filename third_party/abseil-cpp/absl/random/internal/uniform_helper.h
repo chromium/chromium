@@ -217,7 +217,7 @@ using UniformDistribution =
 // UniformDistributionWrapper is used as the underlying distribution type
 // by the absl::Uniform template function. It selects the proper Abseil
 // uniform distribution and provides constructor overloads that match the
-// expected parameter order as well as adjusting distribtuion bounds based
+// expected parameter order as well as adjusting distribution bounds based
 // on the tag.
 template <typename NumType>
 struct UniformDistributionWrapper : public UniformDistribution<NumType> {

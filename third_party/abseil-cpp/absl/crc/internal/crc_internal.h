@@ -60,7 +60,7 @@ constexpr uint64_t kScrambleHi = (static_cast<uint64_t>(0x4f1bbcdcU) << 32) |
 constexpr uint64_t kScrambleLo = (static_cast<uint64_t>(0xf9ce6030U) << 32) |
                                  static_cast<uint64_t>(0x2e76e41bU);
 
-class CRCImpl : public CRC {  // Implemention of the abstract class CRC
+class CRCImpl : public CRC {  // Implementation of the abstract class CRC
  public:
   using Uint32By256 = uint32_t[256];
 

@@ -273,7 +273,7 @@ class ABSL_LOCKABLE Mutex {
   // Aliases for `Mutex::Lock()`, `Mutex::Unlock()`, and `Mutex::TryLock()`.
   //
   // These methods may be used (along with the complementary `Reader*()`
-  // methods) to distingish simple exclusive `Mutex` usage (`Lock()`,
+  // methods) to distinguish simple exclusive `Mutex` usage (`Lock()`,
   // etc.) from reader/writer lock usage.
   void WriterLock() ABSL_EXCLUSIVE_LOCK_FUNCTION() { this->Lock(); }
 

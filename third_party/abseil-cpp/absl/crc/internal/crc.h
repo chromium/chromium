@@ -68,7 +68,7 @@ class CRC {
   // any reduction of error-detection ability in the outer CRC.
   // Unscramble() performs the inverse transformation.
   // It is strongly recommended that CRCs be scrambled before storage or
-  // transmission, and unscrambled at the other end before futher manipulation.
+  // transmission, and unscrambled at the other end before further manipulation.
   virtual void Scramble(uint32_t* crc) const = 0;
   virtual void Unscramble(uint32_t* crc) const = 0;
 

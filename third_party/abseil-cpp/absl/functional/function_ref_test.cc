@@ -257,7 +257,7 @@ TEST(FunctionRef, PassByValueTypes) {
       "Reference types should be preserved");
 
   // Make sure the address of an object received by reference is the same as the
-  // addess of the object passed by the caller.
+  // address of the object passed by the caller.
   {
     LargeTrivial obj;
     auto test = [&obj](LargeTrivial& input) { ASSERT_EQ(&input, &obj); };

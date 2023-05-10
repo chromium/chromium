@@ -63,7 +63,6 @@ bool FutexWaiter::Wait(KernelTimeout t) {
   // Note that, since the thread ticker is just reset, we don't need to check
   // whether the thread is idle on the very first pass of the loop.
   bool first_pass = true;
-
   while (true) {
     int32_t x = futex_.load(std::memory_order_relaxed);
     while (x != 0) {
