@@ -299,7 +299,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     auto done_listener =
         std::make_unique<ExtensionTestMessageListener>("TEST_PASSED");
     done_listener->set_failure_message("TEST_FAILED");
-    if (!content::ExecuteScript(
+    if (!content::ExecJs(
             *embedder_web_contents,
             base::StringPrintf("runTest('%s')", test_name.c_str()))) {
       LOG(ERROR) << "UNABLE TO START TEST";
@@ -324,7 +324,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   }
 
   void SendMessageToEmbedder(const std::string& message) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetFirstAppWindowWebContents(),
         base::StringPrintf("onAppMessage('%s');", message.c_str())));
   }
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
 
   ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
   next_step_listener.set_failure_message("TEST_STEP_FAILED");
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       embedder_web_contents,
       "window.runCommand('testFocusTracksEmbedderRunNextStep');"));
 
@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
   // Try to focus an iframe in the guest.
   content::MainThreadFrameObserver embedder_observer(embedder_rwh);
   content::MainThreadFrameObserver guest_observer(guest_rwh);
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       guest_rfh,
       "document.body.appendChild(document.createElement('iframe')); "
       "document.querySelector('iframe').focus()"));
@@ -826,8 +826,8 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
   EXPECT_NE(guest_rfh, embedder_web_contents->GetFocusedFrame());
 
   // Try to focus the guest from the embedder.
-  EXPECT_TRUE(content::ExecuteScript(
-      embedder_web_contents, "document.querySelector('webview').focus()"));
+  EXPECT_TRUE(content::ExecJs(embedder_web_contents,
+                              "document.querySelector('webview').focus()"));
   embedder_observer.Wait();
   guest_observer.Wait();
   // Guest should be focused.
@@ -839,13 +839,13 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
       (iframe_inside_guest == embedder_web_contents->GetFocusedFrame()));
 
   // Try to focus an iframe in the embedder.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       embedder_web_contents,
       "document.body.appendChild(document.createElement('iframe'))"));
   content::RenderFrameHost* iframe_rfh = ChildFrameAt(embedder_rfh, 1);
   content::FrameFocusedObserver iframe_focus_observer(iframe_rfh);
-  EXPECT_TRUE(content::ExecuteScript(
-      embedder_web_contents, "document.querySelector('iframe').focus()"));
+  EXPECT_TRUE(content::ExecJs(embedder_web_contents,
+                              "document.querySelector('iframe').focus()"));
   // Embedder is allowed to steal focus from guest.
   iframe_focus_observer.Wait();
   EXPECT_TRUE(content::IsRenderWidgetHostFocused(embedder_rwh));
@@ -969,8 +969,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, Navigation_BackForwardKeys) {
   ExtensionTestMessageListener ready_back_key_listener("ReadyForBackKey");
   ExtensionTestMessageListener ready_forward_key_listener("ReadyForForwardKey");
 
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
-                                     "runTest('testBackForwardKeys')"));
+  EXPECT_TRUE(
+      content::ExecJs(embedder_web_contents, "runTest('testBackForwardKeys')"));
 
   ASSERT_TRUE(ready_back_key_listener.WaitUntilSatisfied());
   SendBackShortcutToPlatformApp();
@@ -1039,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
         embedder_web_contents, 0, blink::WebMouseEvent::Button::kLeft,
         guest_rfh->GetView()->TransformPointToRootCoordSpace(
             gfx::Point(10, 10)));
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         embedder_web_contents,
         "window.runCommand('testFocusRestoredRunNextStep', 1);"));
   }
@@ -1053,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
     content::SimulateMouseClickAt(embedder_web_contents, 0,
                                   blink::WebMouseEvent::Button::kLeft,
                                   gfx::Point(200, 20));
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         embedder_web_contents,
         "window.runCommand('testFocusRestoredRunNextStep', 2);"));
   }
@@ -1069,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
         embedder_web_contents, 0, blink::WebMouseEvent::Button::kLeft,
         guest_rfh->GetView()->TransformPointToRootCoordSpace(
             gfx::Point(10, 10)));
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         embedder_web_contents,
         "window.runCommand('testFocusRestoredRunNextStep', 3)"));
   }
@@ -1121,9 +1121,9 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
     ui::CompositionText composition;
     composition.text = u"InputTest123";
     text_input_client->SetCompositionText(composition);
-    EXPECT_TRUE(content::ExecuteScript(
-        embedder_web_contents,
-        "window.runCommand('testInputMethodRunNextStep', 1);"));
+    EXPECT_TRUE(
+        content::ExecJs(embedder_web_contents,
+                        "window.runCommand('testInputMethodRunNextStep', 1);"));
 
     // Wait for the next step to complete.
     ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
@@ -1137,9 +1137,9 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
     composition.text = u"InputTest456";
     text_input_client->SetCompositionText(composition);
     text_input_client->ConfirmCompositionText(/* keep_selection */ false);
-    EXPECT_TRUE(content::ExecuteScript(
-        embedder_web_contents,
-        "window.runCommand('testInputMethodRunNextStep', 2);"));
+    EXPECT_TRUE(
+        content::ExecJs(embedder_web_contents,
+                        "window.runCommand('testInputMethodRunNextStep', 2);"));
 
     // Wait for the next step to complete.
     ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
@@ -1163,9 +1163,9 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
     // Now we delete 'Test' in 'InputTest456', as the caret is after 'T':
     // delete before 1 character ('T') and after 3 characters ('est').
     text_input_client->ExtendSelectionAndDelete(1, 3);
-    EXPECT_TRUE(content::ExecuteScript(
-        embedder_web_contents,
-        "window.runCommand('testInputMethodRunNextStep', 3);"));
+    EXPECT_TRUE(
+        content::ExecJs(embedder_web_contents,
+                        "window.runCommand('testInputMethodRunNextStep', 3);"));
 
     // Wait for the next step to complete.
     ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
@@ -1381,7 +1381,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusSimple) {
       GetPlatformAppWindow(), ui::VKEY_C, false, false, false, false));
 
   next_step_listener.Reset();
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       embedder_web_contents(),
       "window.runCommand('testKeyboardFocusRunNextStep', 'aBc');"));
 
@@ -1430,9 +1430,9 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
   const extensions::Extension* extension =
       LoadAndLaunchPlatformApp("minimal", "Launched");
   extensions::AppWindow* window = GetFirstAppWindowForApp(extension->id());
-  EXPECT_TRUE(content::ExecuteScript(
-      embedder_web_contents(),
-      "window.runCommand('monitorGuestEvent', 'focus');"));
+  EXPECT_TRUE(
+      content::ExecJs(embedder_web_contents(),
+                      "window.runCommand('monitorGuestEvent', 'focus');"));
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       GetPlatformAppWindow(), ui::VKEY_F, false, false, false, false));
@@ -1445,9 +1445,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
   CloseAppWindow(window);
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
   next_step_listener.Reset();
-  EXPECT_TRUE(
-      content::ExecuteScript(embedder_web_contents(),
-                             "window.runCommand('waitGuestEvent', 'focus');"));
+  EXPECT_TRUE(content::ExecJs(embedder_web_contents(),
+                              "window.runCommand('waitGuestEvent', 'focus');"));
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
@@ -1458,7 +1457,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
       GetPlatformAppWindow(), ui::VKEY_Z, false, false, false, false));
 
   next_step_listener.Reset();
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       embedder_web_contents(),
       "window.runCommand('testKeyboardFocusRunNextStep', 'aBcxYz');"));
 
@@ -1483,7 +1482,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
   // it.  Hence, have the guest request pointer lock and wait for its
   // destruction.
   content::RenderFrameDeletedObserver observer(guest_rfh);
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       guest_rfh, "document.querySelector('div').requestPointerLock()"));
   observer.WaitUntilDeleted();
 
@@ -1657,8 +1656,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
   content::RenderFrameHost* guest_rfh =
       GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
   content::FrameFocusedObserver focus_observer(guest_rfh);
-  EXPECT_TRUE(content::ExecuteScript(
-      embedder_web_contents, "document.querySelector('webview').focus()"));
+  EXPECT_TRUE(content::ExecJs(embedder_web_contents,
+                              "document.querySelector('webview').focus()"));
   focus_observer.Wait();
   ASSERT_TRUE(
       content::IsRenderWidgetHostFocused(guest_rfh->GetRenderWidgetHost()));
@@ -1678,8 +1677,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
   const GURL guest_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
   content::TestFrameNavigationObserver observer(guest_rfh);
-  EXPECT_TRUE(
-      ExecuteScript(guest_rfh, "location.href = '" + guest_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(guest_rfh, "location.href = '" + guest_url.spec() + "';"));
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 

@@ -78,7 +78,7 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
 
     ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
-    if (!content::ExecuteScript(
+    if (!content::ExecJs(
             embedder_web_contents,
             base::StringPrintf("runTest('%s', '%s')", test_name.c_str(),
                                app_to_embed.c_str()))) {
@@ -253,12 +253,12 @@ IN_PROC_BROWSER_TEST_F(AppViewTest,
   const extensions::Extension* bad_app =
       LoadAndLaunchPlatformApp("app_view/bad_app", "AppViewTest.LAUNCHED");
   // The host app attemps to embed the guest
-  EXPECT_TRUE(content::ExecuteScript(
-      extensions::AppWindowRegistry::Get(browser()->profile())
-          ->GetCurrentAppWindowForApp(host_app->id())
-          ->web_contents(),
-      base::StringPrintf("onAppCommand('%s', '%s');", "EMBED",
-                         guest_app->id().c_str())));
+  EXPECT_TRUE(
+      content::ExecJs(extensions::AppWindowRegistry::Get(browser()->profile())
+                          ->GetCurrentAppWindowForApp(host_app->id())
+                          ->web_contents(),
+                      base::StringPrintf("onAppCommand('%s', '%s');", "EMBED",
+                                         guest_app->id().c_str())));
   ExtensionTestMessageListener on_embed_requested_listener(
       "AppViewTest.EmbedRequested");
   EXPECT_TRUE(on_embed_requested_listener.WaitUntilSatisfied());
