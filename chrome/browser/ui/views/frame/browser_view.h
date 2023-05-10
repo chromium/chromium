@@ -192,6 +192,7 @@ class BrowserView : public BrowserWindow,
 
 #if BUILDFLAG(IS_MAC)
   views::Widget* overlay_widget() { return overlay_widget_.get(); }
+  views::View* overlay_view() { return overlay_view_.get(); }
   views::Widget* tab_overlay_widget() { return tab_overlay_widget_.get(); }
   views::View* tab_overlay_view() { return tab_overlay_view_.get(); }
 

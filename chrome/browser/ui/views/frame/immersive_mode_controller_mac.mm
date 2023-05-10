@@ -6,11 +6,14 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
@@ -26,6 +29,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/focus/focus_search.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,7 +45,8 @@ const int kTrafficLightsWidth = 70;
 class ImmersiveModeControllerMac : public ImmersiveModeController,
                                    public views::FocusChangeListener,
                                    public views::ViewObserver,
-                                   public views::WidgetObserver {
+                                   public views::WidgetObserver,
+                                   public views::FocusTraversable {
  public:
   class RevealedLock : public ImmersiveRevealedLock {
    public:
@@ -94,6 +99,11 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // views::WidgetObserver implementation
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // views::Traversable:
+  views::FocusSearch* GetFocusSearch() override;
+  views::FocusTraversable* GetFocusTraversableParent() override;
+  views::View* GetFocusTraversableParentView() override;
+
   BrowserView* browser_view() { return browser_view_; }
 
  private:
@@ -116,6 +126,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_frame_observation_{this};
 
+  std::unique_ptr<views::FocusSearch> focus_search_;
+
   // Used as a convenience to access
   // NativeWidgetMacNSWindowHost::GetNSWindowMojo().
   raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow> ns_window_mojo_ =
@@ -127,6 +139,28 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   uint64_t tab_native_widget_id_ = 0;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
+};
+
+class ImmersiveModeFocusSearchMac : public views::FocusSearch {
+ public:
+  explicit ImmersiveModeFocusSearchMac(BrowserView* browser_view);
+  ImmersiveModeFocusSearchMac(const ImmersiveModeFocusSearchMac&) = delete;
+  ImmersiveModeFocusSearchMac& operator=(const ImmersiveModeFocusSearchMac&) =
+      delete;
+  ~ImmersiveModeFocusSearchMac() override;
+
+  // views::FocusSearch:
+  views::View* FindNextFocusableView(
+      views::View* starting_view,
+      SearchDirection search_direction,
+      TraversalDirection traversal_direction,
+      StartingViewPolicy check_starting_view,
+      AnchoredDialogPolicy can_go_into_anchored_dialog,
+      views::FocusTraversable** focus_traversable,
+      views::View** focus_traversable_view) override;
+
+ private:
+  raw_ptr<BrowserView> browser_view_;
 };
 
 }  // namespace
@@ -152,6 +186,7 @@ void ImmersiveModeControllerMac::Init(BrowserView* browser_view) {
   ns_window_mojo_ = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
                         browser_view_->GetWidget()->GetNativeWindow())
                         ->GetNSWindowMojo();
+  focus_search_ = std::make_unique<ImmersiveModeFocusSearchMac>(browser_view);
 }
 
 void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
@@ -194,6 +229,19 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     ns_window_mojo_->EnableImmersiveFullscreen(
         overlay_host->bridged_native_widget_id(), tab_native_widget_id_);
 
+    // Set up a root FocusTraversable that handles focus cycles between overlay
+    // widgets and the browser widget.
+    browser_view_->GetWidget()->SetFocusTraversableParent(this);
+    browser_view_->GetWidget()->SetFocusTraversableParentView(browser_view_);
+    browser_view_->overlay_widget()->SetFocusTraversableParent(this);
+    browser_view_->overlay_widget()->SetFocusTraversableParentView(
+        browser_view_->overlay_view());
+    if (browser_view_->tab_overlay_widget()) {
+      browser_view_->tab_overlay_widget()->SetFocusTraversableParent(this);
+      browser_view_->tab_overlay_widget()->SetFocusTraversableParentView(
+          browser_view_->tab_overlay_view());
+    }
+
     // If the window is maximized OnViewBoundsChanged will not be called
     // when transitioning to full screen. Call it now.
     OnViewBoundsChanged(browser_view_->top_container());
@@ -216,6 +264,17 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     ns_window_mojo_->DisableImmersiveFullscreen();
     browser_view_->overlay_widget()->SetNativeWindowProperty(
         views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView, nullptr);
+
+    // Remove the root FocusTraversable.
+    browser_view_->GetWidget()->SetFocusTraversableParent(nullptr);
+    browser_view_->GetWidget()->SetFocusTraversableParentView(nullptr);
+    browser_view_->overlay_widget()->SetFocusTraversableParent(nullptr);
+    browser_view_->overlay_widget()->SetFocusTraversableParentView(nullptr);
+    if (browser_view_->tab_overlay_widget()) {
+      browser_view_->tab_overlay_widget()->SetFocusTraversableParent(nullptr);
+      browser_view_->tab_overlay_widget()->SetFocusTraversableParentView(
+          nullptr);
+    }
   }
 }
 
@@ -430,6 +489,79 @@ void ImmersiveModeTabbedControllerMac::OnViewBoundsChanged(
   browser_view->tab_strip_region_view()->SetSize(gfx::Size(
       new_size.width(), browser_view->tab_strip_region_view()->height()));
   ImmersiveModeControllerMac::OnViewBoundsChanged(observed_view);
+}
+
+views::FocusSearch* ImmersiveModeControllerMac::GetFocusSearch() {
+  return focus_search_.get();
+}
+
+views::FocusTraversable*
+ImmersiveModeControllerMac::GetFocusTraversableParent() {
+  return nullptr;
+}
+
+views::View* ImmersiveModeControllerMac::GetFocusTraversableParentView() {
+  return nullptr;
+}
+
+ImmersiveModeFocusSearchMac::ImmersiveModeFocusSearchMac(
+    BrowserView* browser_view)
+    : views::FocusSearch(browser_view, true, true),
+      browser_view_(browser_view) {}
+
+ImmersiveModeFocusSearchMac::~ImmersiveModeFocusSearchMac() = default;
+
+views::View* ImmersiveModeFocusSearchMac::FindNextFocusableView(
+    views::View* starting_view,
+    SearchDirection search_direction,
+    TraversalDirection traversal_direction,
+    StartingViewPolicy check_starting_view,
+    AnchoredDialogPolicy can_go_into_anchored_dialog,
+    views::FocusTraversable** focus_traversable,
+    views::View** focus_traversable_view) {
+  // Search in the `starting_view` traversable tree.
+  views::FocusTraversable* starting_focus_traversable =
+      starting_view->GetFocusTraversable();
+  if (!starting_focus_traversable) {
+    starting_focus_traversable =
+        starting_view->GetWidget()->GetFocusTraversable();
+  }
+
+  views::View* v =
+      starting_focus_traversable->GetFocusSearch()->FindNextFocusableView(
+          starting_view, search_direction, traversal_direction,
+          check_starting_view, can_go_into_anchored_dialog, focus_traversable,
+          focus_traversable_view);
+
+  if (v) {
+    return v;
+  }
+
+  // If no next focusable view in the `starting_view` traversable tree,
+  // jumps to the next widget.
+  views::FocusManager* focus_manager =
+      browser_view_->GetWidget()->GetFocusManager();
+
+  // The focus cycles between overlay widget(s) and the browser widget.
+  std::vector<views::Widget*> traverse_order = {browser_view_->overlay_widget(),
+                                                browser_view_->GetWidget()};
+  if (browser_view_->tab_overlay_widget()) {
+    traverse_order.push_back(browser_view_->tab_overlay_widget());
+  }
+
+  auto current_widget_it = base::ranges::find_if(
+      traverse_order, [starting_view](const views::Widget* widget) {
+        return widget->GetRootView()->Contains(starting_view);
+      });
+  CHECK(current_widget_it != traverse_order.end());
+  int current_widget_ind = current_widget_it - traverse_order.begin();
+
+  bool reverse = search_direction == SearchDirection::kBackwards;
+  int next_widget_ind =
+      (current_widget_ind + (reverse ? -1 : 1) + traverse_order.size()) %
+      traverse_order.size();
+  return focus_manager->GetNextFocusableView(
+      nullptr, traverse_order[next_widget_ind], reverse, true);
 }
 
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac(
