@@ -17,28 +17,43 @@ namespace media {
 
 class Mp4MuxerContext;
 
-#define DECLARE_MP4_WRITER_CLASS_WITH_BOX(CLASS_NAME, BOX_TYPE)      \
-  class MEDIA_EXPORT CLASS_NAME : public Mp4BoxWriter {              \
+#define DECLARE_MP4_BOX_WRITER_CLASS(class_name, box_type)           \
+  class MEDIA_EXPORT class_name : public Mp4BoxWriter {              \
    public:                                                           \
-    CLASS_NAME(const Mp4MuxerContext& context, const BOX_TYPE& box); \
-    ~CLASS_NAME() override;                                          \
-    CLASS_NAME(const CLASS_NAME&) = delete;                          \
-    CLASS_NAME& operator=(const CLASS_NAME&) = delete;               \
+    class_name(const Mp4MuxerContext& context, const box_type& box); \
+    ~class_name() override;                                          \
+    class_name(const class_name&) = delete;                          \
+    class_name& operator=(const class_name&) = delete;               \
     void Write(BoxByteStream& writer) override;                      \
                                                                      \
    private:                                                          \
-    const BOX_TYPE& box_;                                            \
+    const box_type& box_;                                            \
     SEQUENCE_CHECKER(sequence_checker_);                             \
-  };
+  }
 
-DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieBoxWriter, mp4::writable_boxes::Movie)
-DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieHeaderBoxWriter,
-                                  mp4::writable_boxes::MovieHeader)
-DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieExtendsBoxWriter,
-                                  mp4::writable_boxes::MovieExtends)
-DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieTrackExtendsBoxWriter,
-                                  mp4::writable_boxes::TrackExtends)
-
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieBoxWriter, mp4::writable_boxes::Movie);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieHeaderBoxWriter,
+                             mp4::writable_boxes::MovieHeader);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieExtendsBoxWriter,
+                             mp4::writable_boxes::MovieExtends);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieTrackExtendsBoxWriter,
+                             mp4::writable_boxes::TrackExtends);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieTrackBoxWriter,
+                             mp4::writable_boxes::Track);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieTrackHeaderBoxWriter,
+                             mp4::writable_boxes::TrackHeader);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieMediaBoxWriter,
+                             mp4::writable_boxes::Media);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieMediaHeaderBoxWriter,
+                             mp4::writable_boxes::MediaHeader);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieMediaHandlerBoxWriter,
+                             mp4::writable_boxes::MediaHandler);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieMediaInformationBoxWriter,
+                             mp4::writable_boxes::MediaInformation);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieSampleTableBoxWriter,
+                             mp4::writable_boxes::SampleTable);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieSampleDescriptionBoxWriter,
+                             mp4::writable_boxes::SampleDescription);
 }  // namespace media
 
 #endif  // MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_

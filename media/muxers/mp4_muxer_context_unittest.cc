@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "media/formats/mp4/writable_box_definitions.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/output_position_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"

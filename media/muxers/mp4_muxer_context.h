@@ -5,6 +5,7 @@
 #ifndef MEDIA_MUXERS_MP4_MUXER_CONTEXT_H_
 #define MEDIA_MUXERS_MP4_MUXER_CONTEXT_H_
 
+#include <map>
 #include <memory>
 
 #include "base/sequence_checker.h"
@@ -54,6 +55,7 @@ class MEDIA_EXPORT Mp4MuxerContext {
   absl::optional<size_t> mdat_offset_in_fragment_;
 
   std::unique_ptr<OutputPositionTracker> output_position_tracker_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

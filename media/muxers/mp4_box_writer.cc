@@ -42,22 +42,4 @@ void Mp4BoxWriter::AddChildBox(std::unique_ptr<Mp4BoxWriter> box_writer) {
   child_boxes_.push_back(std::move(box_writer));
 }
 
-void Mp4BoxWriter::WriteBox(BoxByteStream& writer, mp4::FourCC fourcc) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  writer.WriteU32(fourcc);
-}
-
-void Mp4BoxWriter::WriteFullBox(BoxByteStream& writer,
-                                mp4::FourCC fourcc,
-                                uint32_t flags,
-                                uint8_t version) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  writer.WriteU32(fourcc);
-
-  writer.WriteU8(version);
-
-  writer.WriteU24(flags);
-}
-
 }  // namespace media

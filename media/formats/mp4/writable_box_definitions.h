@@ -10,24 +10,84 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media::mp4::writable_boxes {
 
-// Box header without version.
-struct Box {
-  uint32_t total_size;
-  FourCC fourcc;
+enum class TrackHeaderFlags : uint16_t {
+  kTrackEnabled = 0x0001,
+  kTrackInMovie = 0x0002,
+  kTrackInPreview = 0x0004,
 };
 
+// Box header without version.
+struct MEDIA_EXPORT Box {};
+
 // Box header with version and flags.
-struct FullBox : Box {
+struct MEDIA_EXPORT FullBox : Box {
   // version 1 is 64 bits where applicable, 0 is 32 bits.
   uint8_t version;
   uint32_t flags : 24;
 };
 
+// Media sample table (`stsd`) box.
+struct MEDIA_EXPORT SampleDescription : FullBox {
+  uint32_t entry_count;
+  // TODO: add optional `avc1` or `mp4a` box.
+};
+
+// Media sample table (`stbl`) box.
+struct MEDIA_EXPORT SampleTable : Box {
+  SampleDescription sample_description;
+  // TODO: add `stsc`, `stts`, `stsz`, `stco` box.
+};
+
+// Media information (`minf`) box.
+struct MEDIA_EXPORT MediaInformation : Box {
+  SampleTable sample_table;
+  // TODO: add `vmhd`, `dinf` box.
+};
+
+// Media Handler (`hdlr`) box.
+struct MEDIA_EXPORT MediaHandler : FullBox {
+  mp4::FourCC handler_type;
+  std::string name;
+};
+
+// Media header (`mdhd`) box.
+struct MEDIA_EXPORT MediaHeader : FullBox {
+  base::Time creation_time;
+  base::Time modification_time;
+  uint32_t timescale;
+  base::TimeDelta duration;
+  std::string language;  // 3 letters code ISO-639-2/T language.
+};
+
+// Media (`mdia`) box.
+struct MEDIA_EXPORT Media : Box {
+  MediaHeader header;
+  MediaHandler handler;
+  MediaInformation information;
+};
+
+// Track header (`tkhd`) box.
+struct MEDIA_EXPORT TrackHeader : FullBox {
+  uint32_t track_id;
+  base::Time creation_time;
+  base::Time modification_time;
+  base::TimeDelta duration;
+  bool is_audio;
+  gfx::Size natural_size;
+};
+
+// Track (`trak`) box.
+struct MEDIA_EXPORT Track : Box {
+  TrackHeader header;
+  Media media;
+};
+
 // Track Extends (`trex`) box.
-struct TrackExtends : FullBox {
+struct MEDIA_EXPORT TrackExtends : FullBox {
   uint32_t track_id;
   uint32_t default_sample_description_index;
   base::TimeDelta default_sample_duration;
@@ -69,8 +129,11 @@ struct MEDIA_EXPORT MovieHeader : FullBox {
 };
 
 // Movie (`moov`) box.
-struct Movie : Box {
+struct MEDIA_EXPORT Movie : Box {
+  Movie();
+  ~Movie();
   MovieHeader header;
+  std::vector<Track> tracks;
   MovieExtends extends;
 };
 

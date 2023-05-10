@@ -25,10 +25,20 @@ BoxByteStream::~BoxByteStream() {
   DCHECK(size_offsets_.empty());
 }
 
-void BoxByteStream::StartBox() {
+void BoxByteStream::StartBox(mp4::FourCC fourcc) {
   CHECK(!buffer_.empty());
   size_offsets_.push_back(position_);
   WriteU32(0);
+
+  WriteU32(fourcc);
+}
+
+void BoxByteStream::StartFullBox(mp4::FourCC fourcc,
+                                 uint32_t flags,
+                                 uint8_t version) {
+  StartBox(fourcc);
+  WriteU8(version);
+  WriteU24(flags);
 }
 
 void BoxByteStream::WriteU8(uint8_t value) {
@@ -70,6 +80,14 @@ void BoxByteStream::WriteU64(uint64_t value) {
     GrowWriter();
   }
   position_ += 8;
+}
+
+void BoxByteStream::WriteBytes(const void* buf, size_t len) {
+  CHECK(!buffer_.empty());
+  while (!writer_->WriteBytes(buf, len)) {
+    GrowWriter();
+  }
+  position_ += len;
 }
 
 std::vector<uint8_t> BoxByteStream::Flush() {

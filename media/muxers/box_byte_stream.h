@@ -9,6 +9,7 @@
 
 #include "base/big_endian.h"
 #include "media/base/media_export.h"
+#include "media/formats/mp4/fourccs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -27,7 +28,12 @@ class MEDIA_EXPORT BoxByteStream {
   // Writes a uint32_t placeholder value that `EndBox()` or `Flush()` will
   // fill in later.
   // Only works if the current position is the start of a new box.
-  void StartBox();
+  void StartBox(mp4::FourCC fourcc);
+  void StartFullBox(mp4::FourCC fourcc,
+                    uint32_t flags = 0,
+                    // Chromium MP4 Muxer supports 64 bits as a default, but the
+                    // individual box can override it as needed.
+                    uint8_t version = 1);
 
   // Writes primitives types in big endian format. If `value` can be larger than
   // the the type being written, methods will `CHECK()` that `value` fits in the
@@ -37,6 +43,7 @@ class MEDIA_EXPORT BoxByteStream {
   void WriteU24(uint32_t value);
   void WriteU32(uint32_t value);
   void WriteU64(uint64_t value);
+  void WriteBytes(const void* buf, size_t len);
 
   // Ends a writing session. All pending placeholder values in `size_offsets_`
   // are filled in based on their distance from `position_`.

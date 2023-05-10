@@ -45,17 +45,6 @@ class MEDIA_EXPORT Mp4BoxWriter {
   // Add child box of the current box.
   void AddChildBox(std::unique_ptr<Mp4BoxWriter> box_writer);
 
-  // Write data of mp4::Box type to the writer.
-  void WriteBox(BoxByteStream& writer, mp4::FourCC fourcc);
-
-  // Write data of mp4::FullBox to the writer.
-  void WriteFullBox(BoxByteStream& writer,
-                    mp4::FourCC fourcc,
-                    uint32_t flags = 0,
-                    // Chromium MP4 Muxer supports 64 bits as a default, but the
-                    // individual box can override it as needed.
-                    uint8_t version = 1);
-
   // Get the Mp4MuxerContext object.
   const Mp4MuxerContext& context() const { return context_; }
 
