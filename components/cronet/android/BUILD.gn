@@ -250,6 +250,7 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/DnsOptions.java",
     "api/src/org/chromium/net/ExperimentalBidirectionalStream.java",
     "api/src/org/chromium/net/ExperimentalCronetEngine.java",
+    "api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java",
     "api/src/org/chromium/net/ExperimentalUrlRequest.java",
     "api/src/org/chromium/net/ICronetEngineBuilder.java",
     "api/src/org/chromium/net/InlineExecutionProhibitedException.java",
