@@ -560,6 +560,12 @@ void SmartCardProviderPrivateAPI::ReportEstablishContextResult(
           this, context_remote.InitWithNewPipeAndPassReceiver(), scard_context);
       context_result =
           SmartCardCreateContextResult::NewContext(std::move(context_remote));
+
+      // It's neither expected nor supported for the provider to recycle a
+      // scard_context value so soon.
+      CHECK(!context_data_map_.contains(scard_context));
+
+      context_data_map_[scard_context] = ContextData();
     } else {
       LOG(ERROR) << "Provider reported an invalid scard_context value: "
                  << scard_context.GetUnsafeValue();
@@ -575,12 +581,6 @@ void SmartCardProviderPrivateAPI::ReportEstablishContextResult(
   CHECK(std::holds_alternative<CreateContextCallback>(pending->callback));
   std::move(std::get<CreateContextCallback>(pending->callback))
       .Run(std::move(context_result));
-
-  // It's neither expected nor supported for the provider to recycle a
-  // scard_context value so soon.
-  CHECK(!context_data_map_.contains(scard_context));
-
-  context_data_map_[scard_context] = ContextData();
 }
 
 void SmartCardProviderPrivateAPI::ReportReleaseContextResult(

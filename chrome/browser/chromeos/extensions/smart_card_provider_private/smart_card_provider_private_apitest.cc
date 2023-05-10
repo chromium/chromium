@@ -264,6 +264,19 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   EXPECT_THAT(CreateContext(), IsError(SmartCardError::kNoService));
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       EstablishContextResponseTimeoutTwice) {
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  LoadFakeProviderExtension(R"(
+      chrome.smartCardProviderPrivate.onEstablishContextRequested.addListener(
+          function(requestId){});
+    )");
+
+  EXPECT_THAT(CreateContext(), IsError(SmartCardError::kNoService));
+  EXPECT_THAT(CreateContext(), IsError(SmartCardError::kNoService));
+}
+
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CreateContext) {
   LoadFakeProviderExtension(kEstablishContextJs);
   auto context_result = CreateContext();
