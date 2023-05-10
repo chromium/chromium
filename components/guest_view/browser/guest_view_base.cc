@@ -528,10 +528,6 @@ void GuestViewBase::DidStopLoading() {
   GuestViewDidStopLoading();
 }
 
-void GuestViewBase::RenderViewReady() {
-  GuestReady();
-}
-
 void GuestViewBase::WebContentsDestroyed() {
   GetGuestViewManager()->RemoveGuest(this,
                                      /*invalidate_id=*/false);

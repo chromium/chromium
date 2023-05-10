@@ -189,7 +189,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool ZoomPropagatesFromEmbedderToGuest() const final;
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
-  void GuestReady() final;
   void GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                      const gfx::Size& new_size) final;
   void GuestViewDidStopLoading() final;
@@ -310,7 +309,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   void ApplyAttributes(const base::Value::Dict& params);
 
-  void SetTransparency();
+  void SetTransparency(content::RenderFrameHost* render_frame_host);
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;

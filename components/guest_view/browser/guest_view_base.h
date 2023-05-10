@@ -292,13 +292,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // completed loading.
   virtual void GuestViewDidStopLoading() {}
 
-  // This method is invoked when the guest RenderView is ready, e.g. because we
-  // recreated it after a crash or after reattachment.
-  //
-  // This gives the derived class an opportunity to perform some initialization
-  // work.
-  virtual void GuestReady() {}
-
   // This method is called when the guest's zoom changes.
   virtual void GuestZoomChanged(double old_zoom_level, double new_zoom_level) {}
 
@@ -377,7 +370,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // WebContentsObserver implementation.
   void DidStopLoading() final;
-  void RenderViewReady() final;
 
   // zoom::ZoomObserver implementation.
   void OnZoomControllerDestroyed(zoom::ZoomController* source) final;
