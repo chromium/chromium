@@ -59,9 +59,12 @@ class SyncService;
 // Disconnects the mediator.
 - (void)disconnect;
 
-// Changes `self.folder` and updates the UI accordingly.
+// Changes `self.folder`, updates the UI accordingly.
 // The change is not committed until the user taps the Save button.
-- (void)changeFolder:(const bookmarks::BookmarkNode*)folder;
+// Save this folder as last used by user in preferences
+// kIosBookmarkLastUsedFolderReceivingBookmarks and
+// kIosBookmarkLastUsedStorageReceivingBookmarks on Save.
+- (void)manuallyChangeFolder:(const bookmarks::BookmarkNode*)folder;
 
 @end
 

@@ -263,7 +263,7 @@
   _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
 
-  [_mediator changeFolder:folder];
+  [_mediator manuallyChangeFolder:folder];
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:

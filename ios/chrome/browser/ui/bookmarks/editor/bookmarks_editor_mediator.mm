@@ -34,6 +34,9 @@
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   SyncSetupService* _syncSetupService;
   ChromeBrowserState* _browserState;
+  // Whether the user manually changed the folder. In which case it must be
+  // saved as last used folder on "save".
+  BOOL _manuallyChangedTheFolder;
 }
 // Flag to ignore bookmark model changes notifications.
 // Property used in BookmarksEditorMutator
@@ -94,6 +97,13 @@
   _browserState = nullptr;
 }
 
+#pragma mark - Public
+
+- (void)manuallyChangeFolder:(const bookmarks::BookmarkNode*)folder {
+  _manuallyChangedTheFolder = YES;
+  [self changeFolder:folder];
+}
+
 #pragma mark - Properties
 
 - (bookmarks::BookmarkModel*)bookmarkModel {
@@ -116,15 +126,13 @@
   NOTREACHED_NORETURN();
 }
 
+#pragma mark - Private
+
+// Change the folder of this editor and update the view.
 - (void)changeFolder:(const bookmarks::BookmarkNode*)folder {
   DCHECK(folder);
   DCHECK(folder->is_folder());
   [self setFolder:folder];
-  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
-      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
-  // TODO:(crbug.com/1411901): Update the last used default folder on save only.
-  SetLastUsedBookmarkFolder(_prefs, folder, type);
-
   [self.consumer updateFolderLabel];
 }
 
@@ -212,6 +220,11 @@
                      bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
                          [self bookmark], name, url, [self folder],
                          [self bookmarkModel], _browserState)];
+  if (_manuallyChangedTheFolder) {
+    bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+        _folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+    SetLastUsedBookmarkFolder(_prefs, _folder, type);
+  }
 }
 
 - (void)deleteBookmark {
