@@ -167,19 +167,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.OnCurrentWorkspaceCached" enum="BooleanCacheHit"
-    expires_after="2023-06-18">
-  <owner>davidbienvenu@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>
-    Indicates if the current workspace state of a window is cached or not. If
-    it's known that the window is on the current workspace or not, then we can
-    avoid the COM method call IsWindowOnCurrentVirtualDesktop. This is recorded
-    in BrowserView::IsOnCurrentWorkspace. In general, the state should almost
-    always be cached.
-  </summary>
-</histogram>
-
 <histogram name="Windows.OOPSelectFileDialog.ProcessError" enum="BooleanError"
     expires_after="M82">
   <owner>pmonette@chromium.org</owner>
