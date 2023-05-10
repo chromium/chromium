@@ -135,6 +135,13 @@ void ImmersiveModeTabbedController::UpdateToolbarVisibility(
       break;
   }
   ImmersiveModeController::UpdateToolbarVisibility(style);
+
+  // macOS 10.15 does not call `OnTitlebarFrameDidChange` as often as newer
+  // versions of macOS. Add a layout call here and in `RevealLock` and
+  // `RevealUnlock` to pickup the slack. There is no harm in extra layout calls
+  // on newer versions of macOS, -setFrameOrigin: is essentially a NOP when the
+  // frame size doesn't change.
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::AddController() {
@@ -164,6 +171,7 @@ void ImmersiveModeTabbedController::RevealLock() {
 
   // Call after TitlebarReveal() for a proper layout.
   ImmersiveModeController::RevealLock();
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::RevealUnlock() {
@@ -176,6 +184,7 @@ void ImmersiveModeTabbedController::RevealUnlock() {
 
   // Call after TitlebarHide() for a proper layout.
   ImmersiveModeController::RevealUnlock();
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::TitlebarReveal() {

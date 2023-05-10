@@ -510,6 +510,20 @@ bool ImmersiveModeController::IsTabbed() {
   return false;
 }
 
+double ImmersiveModeController::GetOffscreenYOrigin() {
+  // Get the height of the screen. Using this as the y origin will move a window
+  // offscreen.
+  double y = browser_window_.screen.frame.size.height;
+
+  // Make sure to make it past the safe area insets, otherwise some portion
+  // of the window may still be displayed.
+  if (@available(macOS 12.0, *)) {
+    y += browser_window_.screen.safeAreaInsets.top;
+  }
+
+  return y;
+}
+
 void ImmersiveModeController::LayoutWindowWithAnchorView(NSWindow* window,
                                                          NSView* anchor_view) {
   // Find the anchor view's point on screen (bottom left).
@@ -528,19 +542,16 @@ void ImmersiveModeController::LayoutWindowWithAnchorView(NSWindow* window,
     // state we don't want the window on screen, otherwise it may mask input to
     // the browser view. In all other cases will not enter this branch and the
     // window will be placed at the same coordinates as the anchor view.
-    // If the toolbar is hidden (mojom::ToolbarVisibilityStyle::kNone) also move
-    // the window offscreen.
-    if (anchor_view.visibleRect.size.height != anchor_view.frame.size.height ||
-        last_used_style_ == mojom::ToolbarVisibilityStyle::kNone) {
-      // Move the window off the top of the screen.
-      point_on_screen.y = browser_window_.screen.frame.size.height;
-
-      // Make sure to make it past the safe area insets, otherwise some portion
-      // of the window may still be displayed.
-      if (@available(macOS 12.0, *)) {
-        point_on_screen.y += browser_window_.screen.safeAreaInsets.top;
-      }
+    if (anchor_view.visibleRect.size.height != anchor_view.frame.size.height) {
+      point_on_screen.y = GetOffscreenYOrigin();
     }
+  }
+
+  // If the toolbar is hidden (mojom::ToolbarVisibilityStyle::kNone) also move
+  // the window offscreen. This applies to all versions of macOS where Chrome
+  // can be run.
+  if (last_used_style_ == mojom::ToolbarVisibilityStyle::kNone) {
+    point_on_screen.y = GetOffscreenYOrigin();
   }
 
   [window setFrameOrigin:point_on_screen];

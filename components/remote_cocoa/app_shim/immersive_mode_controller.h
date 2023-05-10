@@ -102,6 +102,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   void LayoutWindowWithAnchorView(NSWindow* window, NSView* anchor_view);
 
  private:
+  // Get offscreen y origin. Used for moving overlay windows offscreen.
+  double GetOffscreenYOrigin();
+
   bool enabled_ = false;
 
   NSWindow* const browser_window_;
