@@ -23,6 +23,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/layout.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
@@ -99,10 +100,6 @@ content::WebContents*
 ExtensionSidePanelCoordinator::GetHostWebContentsForTesting() const {
   DCHECK(host_);
   return host_->host_contents();
-}
-
-void ExtensionSidePanelCoordinator::LoadExtensionIconForTesting() {
-  LoadExtensionIcon();
 }
 
 SidePanelEntry::Key ExtensionSidePanelCoordinator::GetEntryKey() const {
@@ -229,18 +226,6 @@ void ExtensionSidePanelCoordinator::OnViewDestroying() {
   // could occur as documented in crbug.com/1403168.
   host_.reset();
   scoped_view_observation_.Reset();
-}
-
-void ExtensionSidePanelCoordinator::OnExtensionIconImageChanged(
-    IconImage* updated_icon) {
-  DCHECK_EQ(extension_icon_.get(), updated_icon);
-
-  // If the SidePanelEntry exists for this extension, update its icon.
-  // TODO(crbug.com/1378048): Update the icon for all extension entries in
-  // contextual registries.
-  if (SidePanelEntry* entry = GetEntry()) {
-    entry->ResetIcon(ui::ImageModel::FromImage(updated_icon->image()));
-  }
 }
 
 void ExtensionSidePanelCoordinator::OnTabStripModelChanged(
@@ -375,10 +360,16 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
   extension_icon_ = std::make_unique<IconImage>(
       profile_, extension_, IconsInfo::GetIcons(extension_),
       extension_misc::EXTENSION_ICON_BITTY, placeholder_icon.AsImageSkia(),
-      this);
+      /*observer=*/nullptr);
 
-  // Triggers actual image loading with 1x resources.
-  extension_icon_->image_skia().GetRepresentation(1.0f);
+  // Triggers actual image loading with all supported scale factors.
+  // TODO(crbug.com/1442996): This is a temporary fix since the combobox and its
+  // drop down menu currently do not automatically get an image's representation
+  // when they are shown. Remove this when the aforementioend crbug has been
+  // fixed.
+  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    extension_icon_->image_skia().GetRepresentation(scale_factor);
+  }
 }
 
 }  // namespace extensions
