@@ -320,10 +320,10 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
       // ones.
       UnserializePendingUpdates(tree_id);
     }
-  UnserializeUpdates(std::move(updates), tree_id);
-  ProcessNonGeneratedEvents(events);
+    UnserializeUpdates(std::move(updates), tree_id);
+    ProcessNonGeneratedEvents(events);
   } else {
-  UnserializeUpdates(std::move(updates), tree_id);
+    UnserializeUpdates(std::move(updates), tree_id);
   }
 }
 
