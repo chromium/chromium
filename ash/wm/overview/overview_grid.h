@@ -343,11 +343,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // save desk buttons if we are not exiting overview.
   void HideSavedDeskLibrary(bool exit_overview);
 
-  // True if the saved desk library is shown.
+  // True if the saved desk library is shown, or in the process of animating to
+  // be shown.
   bool IsShowingSavedDeskLibrary() const;
-
-  // True if the saved desk library will be shown shortly.
-  bool WillShowSavedDeskLibrary() const;
 
   // Returns true if any saved desk name is being modified in its item view on
   // this grid.

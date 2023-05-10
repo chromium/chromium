@@ -758,8 +758,9 @@ void OverviewGrid::AddItem(aura::Window* window,
   if (reposition)
     PositionWindows(should_animate, ignored_items);
 
-  if (IsShowingSavedDeskLibrary() || WillShowSavedDeskLibrary())
+  if (IsShowingSavedDeskLibrary()) {
     item->HideForSavedDeskLibrary(/*animate=*/false);
+  }
 }
 
 void OverviewGrid::AppendItem(aura::Window* window,
@@ -1893,12 +1894,9 @@ void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
 }
 
 bool OverviewGrid::IsShowingSavedDeskLibrary() const {
-  return saved_desk_library_widget_ && saved_desk_library_widget_->IsVisible();
-}
-
-bool OverviewGrid::WillShowSavedDeskLibrary() const {
-  return saved_desk_library_widget_ && saved_desk_library_widget_->GetLayer() &&
-         saved_desk_library_widget_->GetLayer()->GetTargetVisibility() != 0.f;
+  return saved_desk_library_widget_ &&
+         saved_desk_library_widget_->IsVisible() &&
+         saved_desk_library_widget_->GetLayer()->GetTargetOpacity() == 1.0f;
 }
 
 bool OverviewGrid::IsSavedDeskNameBeingModified() const {

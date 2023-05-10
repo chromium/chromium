@@ -928,7 +928,7 @@ void DeskBarViewBase::UpdateLibraryButtonVisibilityCrOSNext() {
 
   library_button_->SetVisible(should_show_ui);
   if (should_show_ui) {
-    if (overview_grid_->WillShowSavedDeskLibrary()) {
+    if (overview_grid_->IsShowingSavedDeskLibrary()) {
       library_button_->UpdateState(CrOSNextDeskIconButton::State::kActive);
     } else {
       library_button_->UpdateState(CrOSNextDeskIconButton::State::kExpanded);

@@ -1124,11 +1124,6 @@ bool OverviewSession::IsShowingSavedDeskLibrary() const {
                             : grid_list_.front()->IsShowingSavedDeskLibrary();
 }
 
-bool OverviewSession::WillShowSavedDeskLibrary() const {
-  return grid_list_.empty() ? false
-                            : grid_list_.front()->WillShowSavedDeskLibrary();
-}
-
 bool OverviewSession::ShouldEnterWithoutAnimations() const {
   return enter_exit_overview_type_ == OverviewEnterExitType::kImmediateEnter ||
          enter_exit_overview_type_ ==
@@ -1562,8 +1557,7 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   // `ShowInactive()` instead of `ActivateWindow()` to show the widget.
   // When the saved desk library is on, do not switch focus to avoid unexpected
   // name commit.
-  bool saved_desk_grid_should_keep_focus =
-      IsShowingSavedDeskLibrary() || WillShowSavedDeskLibrary();
+  bool saved_desk_grid_should_keep_focus = IsShowingSavedDeskLibrary();
   if (saved_desk_grid_should_keep_focus)
     overview_focus_widget_->ShowInactive();
   else

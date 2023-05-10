@@ -306,9 +306,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // True if the saved desk library is shown.
   bool IsShowingSavedDeskLibrary() const;
 
-  // True if the saved desk library will be shown shortly.
-  bool WillShowSavedDeskLibrary() const;
-
   // True if we want to enter overview without animations.
   bool ShouldEnterWithoutAnimations() const;
 

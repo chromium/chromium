@@ -557,8 +557,8 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
   const base::Uuid uuid = saved_desk->uuid();
 
   auto* overview_controller = Shell::Get()->overview_controller();
-  if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
-    if (overview_controller->InOverviewSession()) {
+  if (overview_controller->InOverviewSession()) {
+    if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
       auto* overview_session = overview_controller->overview_session();
       OverviewGrid* overview_grid =
           overview_session->GetGridWithRootWindow(root_window);
@@ -570,6 +570,13 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
 
       SavedDeskLibraryView* library = overview_grid->GetSavedDeskLibraryView();
       library->AnimateDeskLaunch(uuid, mini_view);
+    } else if (saved_desk_type == DeskTemplateType::kTemplate) {
+      // For a desk template launch, we will stay in overview mode and hide the
+      // library. The overview grid will show and get populated with launched
+      // apps.
+      for (auto& overview_grid : overview_session_->grid_list()) {
+        overview_grid->HideSavedDeskLibrary(/*exit_overview=*/false);
+      }
     }
   }
 

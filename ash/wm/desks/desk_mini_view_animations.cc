@@ -513,7 +513,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
   auto* library_button = bar_view->library_button();
 
   if (library_button) {
-    if (bar_view->overview_grid()->WillShowSavedDeskLibrary()) {
+    if (bar_view->overview_grid()->IsShowingSavedDeskLibrary()) {
       // For library button, when it's at zero state and clicked, the desks bar
       // will expand, the overview grid will show the saved desk library, the
       // library button should be activated and focused.
