@@ -69,6 +69,10 @@ const char* kDryRun = "dryrun";
 // the framework to save the screenshot png file to this path.
 const char* kPngFilePathDebugging = "skia-gold-local-png-write-directory";
 
+const char* kGoldOutputTriageFormat =
+    "Untriaged or negative image: https://chrome-gold.skia.org";
+const char* kPublicTriageLink = "https://chrome-public-gold.skia.org";
+
 // The separator used in the names of the screenshots taken on Ash platform.
 constexpr char kAshSeparator[] = ".";
 
@@ -188,13 +192,22 @@ std::string SkiaGoldPixelDiff::GetPlatform() {
 }
 
 int SkiaGoldPixelDiff::LaunchProcess(const base::CommandLine& cmdline) const {
-  base::Process sub_process =
-      base::LaunchProcess(cmdline, base::LaunchOptionsForTest());
+  std::string output;
   int exit_code = 0;
-  if (!sub_process.WaitForExit(&exit_code)) {
-    ADD_FAILURE() << "Failed to wait for process.";
-    // Return a non zero code indicating an error.
-    return 1;
+  CHECK(base::GetAppOutputWithExitCode(cmdline, &output, &exit_code));
+  LOG(INFO) << output;
+  // Gold binary only provides internal triage link which doesn't work
+  // for non-Googlers. So we construct another link that works for
+  // non google account committers.
+  size_t triage_location_start = output.find(kGoldOutputTriageFormat);
+  if (triage_location_start != std::string::npos) {
+    size_t triage_location_end = output.find("\n", triage_location_start);
+    LOG(WARNING) << "For committers not using @google.com account, triage "
+                 << "using the following link: " << kPublicTriageLink
+                 << output.substr(
+                        triage_location_start + strlen(kGoldOutputTriageFormat),
+                        triage_location_end - triage_location_start -
+                            strlen(kGoldOutputTriageFormat));
   }
   return exit_code;
 }
