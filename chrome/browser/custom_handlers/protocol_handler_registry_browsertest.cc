@@ -259,9 +259,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
 
   // Attempt to add an entry.
   ProtocolHandlerChangeWaiter waiter(registry);
-  ASSERT_TRUE(content::ExecuteScript(fenced_frame_host,
-                                     "navigator.registerProtocolHandler('web+"
-                                     "search', 'test.html?%s', 'test');"));
+  ASSERT_TRUE(content::ExecJs(fenced_frame_host,
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');"));
   waiter.Wait();
 
   // Ensure the registry is still empty.
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
             browser()->profile());
     ProtocolHandlerChangeWaiter waiter(registry);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(handler_url)));
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         browser()->tab_strip_model()->GetActiveWebContents(),
         "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
     waiter.Wait();
