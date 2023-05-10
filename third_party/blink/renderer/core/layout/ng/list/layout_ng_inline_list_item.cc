@@ -73,6 +73,7 @@ void LayoutNGInlineListItem::StyleDidChange(StyleDifference diff,
         (!old_list_style_type || !new_list_style_type ||
          *old_list_style_type != *new_list_style_type)) {
       list_marker->ListStyleTypeChanged(*marker);
+      SetNeedsCollectInlines();
     }
   }
 }
