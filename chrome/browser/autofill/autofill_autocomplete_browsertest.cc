@@ -131,7 +131,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     const std::string js = base::StringPrintf(
         js_format, kDefaultAutocompleteInputId, value.c_str());
 
-    ASSERT_TRUE(content::ExecuteScript(web_contents(), js));
+    ASSERT_TRUE(content::ExecJs(web_contents(), js));
 
     // Set up observer for Autocomplete form submissions.
     TestAutofillAsyncObserver observer(

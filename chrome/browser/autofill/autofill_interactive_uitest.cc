@@ -1875,15 +1875,15 @@ IN_PROC_BROWSER_TEST_F(
   SetTestUrlResponse(kTestForm);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetWebContents(),
       "document.getElementById('firstname').type = 'password';"));
   // At this point, the IsPasswordFieldForAutofill() function returns true and
   // will continue to return true for the field, even when the type is changed
   // back to 'search'.
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(),
-      "document.getElementById('firstname').type = 'search';"));
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents(),
+                      "document.getElementById('firstname').type = 'search';"));
 
   // Regression test for crbug.com/918351 whether the datalist becomes available
   // again.
@@ -2230,7 +2230,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Dynamically construct the form.
-  ASSERT_TRUE(content::ExecuteScript(GetWebContents(), "BuildForm();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), "BuildForm();"));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
                            {.show_method = ShowMethod::ByChar('M'),
@@ -2578,8 +2578,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FormFillableOnReset) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').reset()"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').reset()"));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
@@ -2678,8 +2678,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   content::LoadStopObserver load_stop_observer(GetWebContents());
 
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').submit();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').submit();"));
   // This will ensure the test didn't hang.
   load_stop_observer.Wait();
 }
@@ -2695,7 +2695,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   // When suggestions are shown, disable autocomplete for the active field.
   auto SetAutocompleteOff = [this]() {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(),
         "document.querySelector('input').autocomplete = 'off';"));
   };
@@ -3090,7 +3090,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
 
   // We need the fencedframe element to have id set to a known value
   if (GetParam() != FrameType::kIFrame) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(),
         "document.getElementsByTagName('fencedframe')[0].id = 'crossFF';"));
   }
@@ -3115,7 +3115,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   std::string script_delete = base::StringPrintf(
       "document.body.removeChild(document.getElementById('%s'))",
       GetParam() == FrameType::kIFrame ? "crossFrame" : "crossFF");
-  ASSERT_TRUE(content::ExecuteScript(GetWebContents(), script_delete));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), script_delete));
 
   // The popup should have disappeared with the iframe.
   EXPECT_FALSE(IsPopupShown());
@@ -3729,8 +3729,8 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   // the browser by a lot.
   AdvanceClock(base::Minutes(10));
   content::LoadStopObserver load_stop_observer(GetWebContents());
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').submit();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').submit();"));
   load_stop_observer.Wait();
 
   // Short hand for ExpectbucketCount:

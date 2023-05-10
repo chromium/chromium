@@ -1284,9 +1284,9 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
   }
 
   // Navigate to the starting URL, wait for the page to complete loading.
-  if (!content::ExecuteScript(GetWebContents(),
-                              base::StringPrintf("window.location.href = '%s';",
-                                                 starting_url->c_str()))) {
+  if (!content::ExecJs(GetWebContents(),
+                       base::StringPrintf("window.location.href = '%s';",
+                                          starting_url->c_str()))) {
     ADD_FAILURE() << "Failed to navigate Chrome to '" << *starting_url << "!";
     return false;
   }
@@ -1508,7 +1508,7 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(base::Value::Dict action) {
 
   // Execute the commands.
   for (const std::string& command : commands) {
-    if (!content::ExecuteScript(frame, command)) {
+    if (!content::ExecJs(frame, command)) {
       ADD_FAILURE() << "Failed to execute JavaScript command `" << command
                     << "`!";
       return false;
@@ -2051,7 +2051,7 @@ bool TestRecipeReplayer::ExecuteJavaScriptOnElementByXpath(
       "  (function(target) { %s })(element);"
       "} catch(ex) {}",
       element_xpath.c_str(), execute_function_body.c_str()));
-  return ExecuteScript(frame, js);
+  return ExecJs(frame, js);
 }
 
 bool TestRecipeReplayer::GetElementProperty(
