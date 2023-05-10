@@ -482,7 +482,7 @@ class WizardControllerTest : public OobeBaseTest {
   }
 
   bool JSExecute(const std::string& script) {
-    return content::ExecuteScript(GetWebContents(), script);
+    return content::ExecJs(GetWebContents(), script);
   }
 
   bool JSExecuteBooleanExpression(const std::string& expression) {
