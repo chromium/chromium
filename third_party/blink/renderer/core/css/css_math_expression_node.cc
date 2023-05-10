@@ -77,13 +77,13 @@ static CalculationCategory UnitCategory(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kViewportHeight:
     case CSSPrimitiveValue::UnitType::kViewportMin:
     case CSSPrimitiveValue::UnitType::kViewportMax:
-      return kCalcLength;
     case CSSPrimitiveValue::UnitType::kRexs:
     case CSSPrimitiveValue::UnitType::kRchs:
     case CSSPrimitiveValue::UnitType::kRics:
     case CSSPrimitiveValue::UnitType::kRlhs:
-      return RuntimeEnabledFeatures::CSSNewRootFontUnitsEnabled() ? kCalcLength
-                                                                  : kCalcOther;
+    case CSSPrimitiveValue::UnitType::kIcs:
+    case CSSPrimitiveValue::UnitType::kLhs:
+      return kCalcLength;
     case CSSPrimitiveValue::UnitType::kViewportInlineSize:
     case CSSPrimitiveValue::UnitType::kViewportBlockSize:
     case CSSPrimitiveValue::UnitType::kSmallViewportWidth:
@@ -113,12 +113,6 @@ static CalculationCategory UnitCategory(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kContainerMin:
     case CSSPrimitiveValue::UnitType::kContainerMax:
       return kCalcLength;
-    case CSSPrimitiveValue::UnitType::kIcs:
-      return RuntimeEnabledFeatures::CSSIcUnitEnabled() ? kCalcLength
-                                                        : kCalcOther;
-    case CSSPrimitiveValue::UnitType::kLhs:
-      return RuntimeEnabledFeatures::CSSLhUnitEnabled() ? kCalcLength
-                                                        : kCalcOther;
     case CSSPrimitiveValue::UnitType::kDegrees:
     case CSSPrimitiveValue::UnitType::kGradians:
     case CSSPrimitiveValue::UnitType::kRadians:

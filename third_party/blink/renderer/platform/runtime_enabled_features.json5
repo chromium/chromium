@@ -880,11 +880,6 @@
       base_feature: "CSSHyphenateLimitChars",
     },
     {
-      name: "CSSIcUnit",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // If enabled,
       // image-set values without the `-webkit-` prefix
       // will be parsed.
@@ -905,10 +900,6 @@
       name: "CSSLayoutAPI",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      name: "CSSLhUnit",
-      status: "stable",
     },
     {
       name: "CSSLinearTimingFunction",
@@ -968,11 +959,6 @@
     {
       // Support nested selectors that start with idents.
       name: "CSSNestingIdent",
-    },
-    {
-      name: "CSSNewRootFontUnits",
-      status: "stable",
-      base_feature: "none",
     },
     {
       name: "CSSObjectViewBox",
