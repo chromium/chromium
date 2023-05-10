@@ -136,13 +136,6 @@ class PortFactory(object):
 def platform_options(use_globs=False):
     return [
         optparse.make_option(
-            '--android',
-            action='store_const',
-            dest='platform',
-            const=('android*' if use_globs else 'android'),
-            help=('Alias for --platform=android*'
-                  if use_globs else 'Alias for --platform=android')),
-        optparse.make_option(
             '--platform',
             action='store',
             help=('Glob-style list of platform/ports to use (e.g., "mac*")'
@@ -187,21 +180,6 @@ def wpt_options():
             default=True,
             help=('Do not update the web-platform-tests '
                   'MANIFEST.json unless it does not exist.')),
-    ]
-
-
-def python_server_options():
-    # TODO(suzukikeita): Remove this once all the servers run on python3 everywhere.
-    return [
-        optparse.make_option(
-            '--python-executable',
-            default=sys.executable,
-            help=('The path to the python executable to run the server in. '
-                  'Use this to run servers on the speicifed python version. '
-                  'For example, use this to run the server on python 3 while '
-                  'other components (such as python scripts) run on python 2. '
-                  'Currently, only pywebsocket supports this option. '
-                  'Default is set to sys.executable')),
     ]
 
 

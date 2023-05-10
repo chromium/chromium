@@ -1787,10 +1787,7 @@ class Port(object):
         """
         assert not self._websocket_server, 'Already running a websocket server.'
         output_dir = output_dir or self.artifacts_directory()
-        server = pywebsocket.PyWebSocket(
-            self,
-            output_dir,
-            python_executable=self._options.python_executable)
+        server = pywebsocket.PyWebSocket(self, output_dir)
         server.start()
         self._websocket_server = server
 
