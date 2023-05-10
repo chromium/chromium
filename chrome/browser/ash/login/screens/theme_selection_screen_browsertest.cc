@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
@@ -61,7 +62,7 @@ constexpr char kSelectedThemeHistogram[] =
 
 class ThemeSelectionScreenTest
     : public OobeBaseTest,
-      public ::testing::WithParamInterface<test::UIPath> {
+      public ::testing::WithParamInterface<std::tuple<test::UIPath, bool>> {
  public:
   void SetUpOnMainThread() override {
     ThemeSelectionScreen* theme_selection_screen =
@@ -113,9 +114,31 @@ class ThemeSelectionScreenTest
   base::OnceClosure quit_closure_;
 };
 
-IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ProceedWithDefaultTheme) {
+IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
+                       ProceedWithDefaultThemeBrandedBuild) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   ShowThemeSelectionScreen();
   test::OobeJS().ClickOnPath(kNextButtonPath);
+
+  WaitForScreenExit();
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kStepShownStatusHistogram),
+      ElementsAre(base::Bucket(
+          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
+  histogram_tester_.ExpectTotalCount(kStepCompletionTimeHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kProceedExitReasonHistogram, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
+                       ProceedWithDefaultThemeNotBrandedBuild) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+      false;
+  ShowThemeSelectionScreen();
+
+  // for not branded build marketingOptIn screen is skipped causing
+  // login host controller and oobe UI to be detoryed
+  ash::test::TapOnPathAndWaitForOobeToBeDestroyed(kNextButtonPath);
   WaitForScreenExit();
 
   EXPECT_THAT(
@@ -127,16 +150,23 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ProceedWithDefaultTheme) {
 }
 
 IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
+  auto selected_option_path = std::get<0>(GetParam());
+  bool branded_build = std::get<1>(GetParam());
+
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+      branded_build;
+
   ShowThemeSelectionScreen();
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   // Expect the default dark mode schedule type to be sunset-to-sunrise.
   EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 1);
 
-  test::OobeJS().ExpectVisiblePath(GetParam());
-  test::OobeJS().ClickOnPath(GetParam());
+  test::OobeJS().ExpectVisiblePath(selected_option_path);
+  test::OobeJS().ClickOnPath(selected_option_path);
 
-  auto selectedOption = GetParam().begin()[GetParam().size() - 1];
+  auto selectedOption =
+      selected_option_path.begin()[selected_option_path.size() - 1];
   ThemeSelectionScreen::SelectedTheme theme =
       ThemeSelectionScreen::SelectedTheme::kDark;
   if (selectedOption == kDarkThemeButton) {
@@ -153,7 +183,14 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
     theme = ThemeSelectionScreen::SelectedTheme::kAuto;
   }
 
-  test::OobeJS().ClickOnPath(kNextButtonPath);
+  // for not branded build marketingOptIn screen is skipped causing
+  // login host controller and oobe UI to be detoryed
+  if (branded_build) {
+    test::OobeJS().ClickOnPath(kNextButtonPath);
+  } else {
+    ash::test::TapOnPathAndWaitForOobeToBeDestroyed(kNextButtonPath);
+  }
+
   EXPECT_THAT(histogram_tester_.GetAllSamples(kSelectedThemeHistogram),
               ElementsAre(base::Bucket(static_cast<int>(theme), 1)));
   WaitForScreenExit();
@@ -173,11 +210,13 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ToggleTabletMode) {
   test::OobeJS().ExpectVisiblePath(kScreenSubtitleClamshellPath);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ThemeSelectionScreenTest,
-                         ::testing::Values(kDarkThemeButtonPath,
-                                           kLightThemeButtonPath,
-                                           kAutoThemeButtonPath));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ThemeSelectionScreenTest,
+    testing::Combine(testing::ValuesIn({kDarkThemeButtonPath,
+                                        kLightThemeButtonPath,
+                                        kAutoThemeButtonPath}),
+                     testing::Bool()));
 
 class ThemeSelectionScreenResumeTest
     : public OobeBaseTest,
