@@ -50,8 +50,6 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
   [[nodiscard]] JobId RemoveLogin(const password_manager::PasswordForm& form,
                                   Account account) override;
 
-  void ShowErrorNotification() override;
-
  private:
   JobId GetNextJobId();
 

@@ -239,10 +239,6 @@ BASE_FEATURE(kPasswordGenerationBottomSheet,
              "PasswordGenerationBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kShowUPMErrorNotification,
-             "ShowUpmErrorNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the intent fetching for the credential manager in Google Mobile
 // Services. It does not enable launching the credential manager.
 BASE_FEATURE(kUnifiedCredentialManagerDryRun,

@@ -174,14 +174,4 @@ JobId PasswordStoreAndroidBackendBridgeHelperImpl::GetNextJobId() {
   return last_job_id_;
 }
 
-void PasswordStoreAndroidBackendBridgeHelperImpl::ShowErrorNotification() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  DCHECK(dispatcher_bridge_);
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &PasswordStoreAndroidBackendDispatcherBridge::ShowErrorNotification,
-          base::Unretained(dispatcher_bridge_.get())));
-}
-
 }  // namespace password_manager

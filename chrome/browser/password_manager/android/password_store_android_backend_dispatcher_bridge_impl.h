@@ -55,8 +55,6 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl
                    const password_manager::PasswordForm& form,
                    Account account) override;
 
-  void ShowErrorNotification() override;
-
   // This member stores the unique ID last used for an API request.
   JobId last_job_id_{0};
 

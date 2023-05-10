@@ -139,10 +139,4 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
       GetJavaStringFromAccount(std::move(account)));
 }
 
-void PasswordStoreAndroidBackendDispatcherBridgeImpl::ShowErrorNotification() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_showErrorUi(
-      base::android::AttachCurrentThread(), java_object_);
-}
-
 }  // namespace password_manager

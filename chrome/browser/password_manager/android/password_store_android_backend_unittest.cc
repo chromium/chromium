@@ -179,7 +179,6 @@ class MockPasswordStoreAndroidBackendBridgeHelper
   MOCK_METHOD(JobId, AddLogin, (const PasswordForm&, Account), (override));
   MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&, Account), (override));
   MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&, Account), (override));
-  MOCK_METHOD(void, ShowErrorNotification, (), (override));
 };
 
 }  // namespace
@@ -1158,61 +1157,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
       static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
   error.api_error_code = absl::optional<int>(kInternalErrorCode);
   consumer().OnError(kJobId, std::move(error));
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidBackendTest,
-       OnUnrecoverablApiErrorShowsUIFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kShowUPMErrorNotification};
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
-  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
-  // Simulate receiving INTERNAL_ERROR code.
-  int kInternalErrorCode =
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
-  error.api_error_code = absl::optional<int>(kInternalErrorCode);
-
-  EXPECT_CALL(*bridge_helper(), ShowErrorNotification);
-  consumer().OnError(kJobId, std::move(error));
-
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidBackendTest,
-       OnUnrecoverablApiErrorNoUIFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kShowUPMErrorNotification);
-  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
-                        base::RepeatingClosure(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
-  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
-  // Simulate receiving INTERNAL_ERROR code.
-  int kInternalErrorCode =
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
-  error.api_error_code = absl::optional<int>(kInternalErrorCode);
-
-  EXPECT_CALL(*bridge_helper(), ShowErrorNotification).Times(0);
-  consumer().OnError(kJobId, std::move(error));
-
   RunUntilIdle();
 }
 

@@ -1032,10 +1032,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     if (password_manager::IsUnrecoverableBackendError(api_error_code, operation,
                                                       prefs_)) {
       if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
-        if (base::FeatureList::IsEnabled(
-                password_manager::features::kShowUPMErrorNotification)) {
-          bridge_helper_->ShowErrorNotification();
-        }
         password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
       }
     } else if (IsAuthenticationError(api_error_code)) {

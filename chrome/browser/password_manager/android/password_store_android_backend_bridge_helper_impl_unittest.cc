@@ -98,7 +98,6 @@ class MockPasswordStoreAndroidBackendDispatcherBridge
               RemoveLogin,
               (JobId, const PasswordForm&, Account),
               (override));
-  MOCK_METHOD(void, ShowErrorNotification, (), (override));
 };
 
 }  // namespace

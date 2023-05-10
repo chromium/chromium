@@ -729,12 +729,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_SETTINGS_EXPORT_ERROR_DETAILS" desc="A short prefix to introduce a technical error message passed to the user from Android after exporting passwords through a temporary file fails. Both the prefix and the error message are shown in the body of an alert dialog.">
         Details: <ph name="ERROR_DESCRIPTION">%1$s<ex>IOException: No space left on device</ex></ph>
       </message>
-      <message name="IDS_UPM_ERROR_NOTIFICATION_TITLE" translateable="false" desc="The title of the UI surface telling the user that the new password manager backend has encountered an error.">
-        Unified password manager error
-      </message>
-      <message name="IDS_UPM_ERROR_NOTIFICATION_CONTENTS" translateable="false" desc="The contents of the UI surface shown when the new password manager backend encounters an error, prompting the user to file a bug.">
-        The unified password manager was automatically disabled. Please submit an issue via the bug app!
-      </message>
       <message name="IDS_PASSWORDS_NOT_SECURE_FILLING" desc="The title of the dialog which is shown when the user attempts to enter obfuscated text to a regular text field.">
         Not secure
       </message>

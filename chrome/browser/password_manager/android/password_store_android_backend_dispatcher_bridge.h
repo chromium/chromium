@@ -90,14 +90,6 @@ class PasswordStoreAndroidBackendDispatcherBridge {
                            const PasswordForm& form,
                            Account account) = 0;
 
-  // Displays a notification when a store backend request finishes with an
-  // unrecoverable error. TODO(crbug.com/1344576) Remove when not required
-  // anymore.
-  // This method interacts with the UI but should also be called on the
-  // background thread as native bridge does not have JNIEnv for the UI thread.
-  // Operation will be actually be executed on the UI thread by the Java bridge.
-  virtual void ShowErrorNotification() = 0;
-
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
   // Ensure `CanCreateBackend` returns true before calling this method.

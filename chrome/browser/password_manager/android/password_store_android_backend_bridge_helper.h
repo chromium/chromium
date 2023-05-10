@@ -55,8 +55,6 @@ class PasswordStoreAndroidBackendBridgeHelper {
   [[nodiscard]] virtual JobId RemoveLogin(
       const password_manager::PasswordForm& form,
       Account account) = 0;
-
-  virtual void ShowErrorNotification() = 0;
 };
 
 }  // namespace password_manager
