@@ -822,8 +822,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
                         bool expect_same_process,
                         bool expect_app_process) {
     content::WebContentsAddedObserver tab_added_observer;
-    ASSERT_TRUE(
-        content::ExecuteScript(rfh, "window.open('" + url.spec() + "');"));
+    ASSERT_TRUE(content::ExecJs(rfh, "window.open('" + url.spec() + "');"));
     content::WebContents* new_tab = tab_added_observer.GetWebContents();
     ASSERT_TRUE(new_tab);
     EXPECT_TRUE(WaitForLoadStop(new_tab));
@@ -842,7 +841,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
         << " for " << url << " from " << rfh->GetLastCommittedURL();
 
     content::WebContentsDestroyedWatcher watcher(new_tab);
-    ASSERT_TRUE(content::ExecuteScript(new_rfh, "window.close();"));
+    ASSERT_TRUE(content::ExecJs(new_rfh, "window.close();"));
     watcher.Wait();
   }
 
@@ -869,7 +868,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
       script += "f.id = '" + element_id + "';";
     script += "f.src = '" + url.spec() + "';";
     script += "document.body.appendChild(f);";
-    EXPECT_TRUE(ExecuteScript(parent_rfh, script));
+    EXPECT_TRUE(ExecJs(parent_rfh, script));
     nav_observer.Wait();
 
     RenderFrameHost* subframe = content::FrameMatchingPredicate(
@@ -1860,7 +1859,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
       foo_process->GetID(), url::Origin::Create(bar_app_url)));
 
   // Ensure the current process is allowed to access cookies.
-  EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
+  EXPECT_TRUE(ExecJs(web_contents, "document.cookie = 'foo=bar';"));
   EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie"));
 
   // Now navigate to a bar.com app URL in the same BrowsingInstance.  Ensure
@@ -1868,7 +1867,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   {
     content::TestNavigationObserver observer(web_contents);
     EXPECT_TRUE(
-        ExecuteScript(web_contents, "location = '" + bar_app_url.spec() + "'"));
+        ExecJs(web_contents, "location = '" + bar_app_url.spec() + "'"));
     observer.Wait();
   }
   EXPECT_EQ(bar_app_url, web_contents->GetLastCommittedURL());
@@ -1886,7 +1885,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
       bar_process->GetID(), url::Origin::Create(foo_app_url)));
 
   // Ensure the current process is allowed to access cookies.
-  EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
+  EXPECT_TRUE(ExecJs(web_contents, "document.cookie = 'foo=bar';"));
   EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie"));
 
   // Now navigate from a foo.com app URL to a foo.com non-app URL.  Ensure that
@@ -1901,8 +1900,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
       embedded_test_server()->GetURL("foo.com", "/title1.html"));
   {
     content::TestNavigationObserver observer(web_contents);
-    EXPECT_TRUE(ExecuteScript(web_contents,
-                              "location = '" + foo_nonapp_url.spec() + "'"));
+    EXPECT_TRUE(
+        ExecJs(web_contents, "location = '" + foo_nonapp_url.spec() + "'"));
     observer.Wait();
   }
   EXPECT_EQ(foo_nonapp_url, web_contents->GetLastCommittedURL());
@@ -1916,7 +1915,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   // data.
   EXPECT_TRUE(policy->CanAccessDataForOrigin(
       foo_nonapp_process->GetID(), url::Origin::Create(foo_nonapp_url)));
-  EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
+  EXPECT_TRUE(ExecJs(web_contents, "document.cookie = 'foo=bar';"));
   EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie"));
 }
 
@@ -1997,7 +1996,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   {
     content::TestNavigationObserver background_page_observer(nullptr);
     background_page_observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         foo_contents,
         "window.bg = window.open('/empty.html', 'bg', 'background');"));
     background_page_observer.Wait();
@@ -2010,8 +2009,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
   // Script the background page from the first foo.com window and set a dummy
   // value.
-  EXPECT_TRUE(content::ExecuteScript(foo_contents,
-                                     "bg.document.body.innerText = 'foo'"));
+  EXPECT_TRUE(
+      content::ExecJs(foo_contents, "bg.document.body.innerText = 'foo'"));
 
   // Ensure that the second foo.com page can script the same background page
   // and retrieve the value.
@@ -2048,15 +2047,15 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   {
     content::TestNavigationObserver background_page_observer(nullptr);
     background_page_observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         bar_contents,
         "window.bg = window.open('/empty.html', 'bg2', 'background');"));
     background_page_observer.Wait();
     EXPECT_EQ(embedded_test_server()->GetURL("bar.com", "/empty.html"),
               background_page_observer.last_navigation_url());
   }
-  EXPECT_TRUE(content::ExecuteScript(bar_contents,
-                                     "bg.document.body.innerText = 'bar'"));
+  EXPECT_TRUE(
+      content::ExecJs(bar_contents, "bg.document.body.innerText = 'bar'"));
   EXPECT_EQ("bar",
             content::EvalJs(bar_contents2,
                             "window.open('', 'bg2').document.body.innerText"));
