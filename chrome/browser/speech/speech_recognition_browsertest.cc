@@ -117,8 +117,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   {
     content::TitleWatcher title_watcher(web_contents, success_title);
     title_watcher.AlsoWaitForTitle(failure_title);
-    EXPECT_TRUE(
-        content::ExecuteScript(web_contents, "testSpeechRecognition()"));
+    EXPECT_TRUE(content::ExecJs(web_contents, "testSpeechRecognition()"));
     EXPECT_EQ(success_title, title_watcher.WaitAndGetTitle());
 
     EXPECT_EQ(kExpectedTranscript,
@@ -134,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   {
     content::TitleWatcher title_watcher(web_contents, success_title);
     title_watcher.AlsoWaitForTitle(failure_title);
-    EXPECT_TRUE(
-        content::ExecuteScript(web_contents, "testSpeechRecognition()"));
+    EXPECT_TRUE(content::ExecJs(web_contents, "testSpeechRecognition()"));
     EXPECT_EQ(success_title, title_watcher.WaitAndGetTitle());
 
     EXPECT_EQ(kExpectedTranscript,
