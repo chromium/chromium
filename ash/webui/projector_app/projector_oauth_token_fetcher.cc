@@ -44,12 +44,14 @@ ProjectorOAuthTokenFetcher::ProjectorOAuthTokenFetcher() = default;
 
 ProjectorOAuthTokenFetcher::~ProjectorOAuthTokenFetcher() = default;
 
-std::vector<AccountInfo> ProjectorOAuthTokenFetcher::GetAccounts() const {
+// static
+std::vector<AccountInfo> ProjectorOAuthTokenFetcher::GetAccounts() {
   return GetIdentityManager()
       ->GetExtendedAccountInfoForAccountsWithRefreshToken();
 }
 
-CoreAccountInfo ProjectorOAuthTokenFetcher::GetPrimaryAccountInfo() const {
+// static
+CoreAccountInfo ProjectorOAuthTokenFetcher::GetPrimaryAccountInfo() {
   return GetIdentityManager()->GetPrimaryAccountInfo(
       signin::ConsentLevel::kSignin);
 }

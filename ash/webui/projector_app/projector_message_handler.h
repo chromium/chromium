@@ -46,11 +46,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
-  // Requested by the Projector SWA to list the available accounts (primary and
-  // secondary accounts) in the current session. The list of accounts will be
-  // used in the account picker in the SWA.
-  void GetAccounts(const base::Value::List& args);
-
   // Requested by the Projector SWA to get access to the OAuth token for the
   // account email provided in the `args`.
   void GetOAuthTokenForAccount(const base::Value::List& args);

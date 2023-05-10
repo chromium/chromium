@@ -70,6 +70,7 @@ class UntrustedProjectorPageHandlerImpl
       const absl::optional<base::flat_map<std::string, std::string>>& headers,
       const absl::optional<std::string>& account_email,
       SendXhrCallback callback) override;
+  void GetAccounts(GetAccountsCallback callback) override;
 
  protected:
   base::WeakPtr<UntrustedProjectorPageHandlerImpl> GetWeakPtr();

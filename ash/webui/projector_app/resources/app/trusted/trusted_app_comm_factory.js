@@ -45,9 +45,6 @@ export class TrustedAppRequestHandler extends RequestHandler {
     super(iframeElement, TARGET_URL, TARGET_URL);
     this.browserProxy_ = browserProxy;
 
-    this.registerMethod('getAccounts', (args) => {
-      return this.browserProxy_.getAccounts();
-    });
     this.registerMethod('getOAuthTokenForAccount', (args) => {
       if (!args || args.length != 1) {
         return Promise.reject('Incorrect args for getOAuthTokenForAccount');

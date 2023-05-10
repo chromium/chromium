@@ -12,13 +12,6 @@ import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
  */
 export class ProjectorBrowserProxy {
   /**
-   * Gets the list of primary and secondary accounts currently available on the
-   * device.
-   * @return {Promise<Array<!projectorApp.Account>>}
-   */
-  getAccounts() {}
-
-  /**
    * Gets the oauth token with the required scopes for the specified account.
    * @param {string} email, user's email.
    * @return {!Promise<!projectorApp.OAuthToken>}
@@ -59,11 +52,6 @@ export class ProjectorBrowserProxyImpl {
       browserProxy = new ProjectorBrowserProxyImpl();
     }
     return browserProxy;
-  }
-
-  /** @override */
-  getAccounts() {
-    return sendWithPromise('getAccounts');
   }
 
   /** @override */

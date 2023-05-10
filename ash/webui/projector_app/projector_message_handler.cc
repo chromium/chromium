@@ -25,10 +25,7 @@ namespace ash {
 namespace {
 
 // Response keys.
-constexpr char kUserName[] = "name";
 constexpr char kUserEmail[] = "email";
-constexpr char kUserPictureURL[] = "pictureURL";
-constexpr char kIsPrimaryUser[] = "isPrimaryUser";
 constexpr char kToken[] = "token";
 constexpr char kExpirationTime[] = "expirationTime";
 constexpr char kError[] = "error";
@@ -74,10 +71,6 @@ base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
 
 void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getAccounts", base::BindRepeating(&ProjectorMessageHandler::GetAccounts,
-                                         base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       "getOAuthTokenForAccount",
       base::BindRepeating(&ProjectorMessageHandler::GetOAuthTokenForAccount,
                           base::Unretained(this)));
@@ -89,30 +82,6 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getVideo", base::BindRepeating(&ProjectorMessageHandler::GetVideo,
                                       base::Unretained(this)));
-}
-
-void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
-  AllowJavascript();
-
-  // Check that there is only one argument which is the callback id.
-  DCHECK_EQ(args.size(), 1u);
-
-  const std::vector<AccountInfo> accounts = oauth_token_fetcher_.GetAccounts();
-  const CoreAccountInfo primary_account =
-      oauth_token_fetcher_.GetPrimaryAccountInfo();
-
-  base::Value::List response;
-  response.reserve(accounts.size());
-  for (const auto& info : accounts) {
-    base::Value::Dict account_info;
-    account_info.Set(kUserName, info.full_name);
-    account_info.Set(kUserEmail, info.email);
-    account_info.Set(kUserPictureURL, info.picture_url);
-    account_info.Set(kIsPrimaryUser, info.gaia == primary_account.gaia);
-    response.Append(std::move(account_info));
-  }
-
-  ResolveJavascriptCallback(args[0], response);
 }
 
 void ProjectorMessageHandler::GetOAuthTokenForAccount(

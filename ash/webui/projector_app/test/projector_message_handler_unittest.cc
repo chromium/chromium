@@ -28,7 +28,6 @@ const char kVideoFileId[] = "video_file_id";
 const char kResourceKey[] = "resource_key";
 
 const char kWebUIResponse[] = "cr.webUIResponse";
-const char kGetAccountsCallback[] = "getAccountsCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kGetVideoCallback[] = "getVideoCallback";
 
@@ -71,35 +70,6 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
   MockAppClient mock_app_client_;
   content::TestWebUI web_ui_;
 };
-
-TEST_F(ProjectorMessageHandlerUnitTest, GetAccounts) {
-  base::Value::List list_args;
-  list_args.Append(kGetAccountsCallback);
-
-  web_ui().HandleReceivedMessage("getAccounts", list_args);
-
-  // We expect that there was only one callback to the WebUI.
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kGetAccountsCallback);
-
-  // Whether the callback was rejected or not.
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-  ASSERT_TRUE(call_data.arg3()->is_list());
-
-  const base::Value::List& list = call_data.arg3()->GetList();
-  // There is only one account in the identity manager.
-  EXPECT_EQ(list.size(), 1u);
-
-  // Ensure that the entry is an account with a the valid email.
-  const auto& account = list[0].GetDict();
-  const std::string* email = account.FindString("email");
-  ASSERT_NE(email, nullptr);
-  EXPECT_EQ(*email, kTestUserEmail);
-}
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetOAuthTokenForAccount) {
   mock_app_client().SetAutomaticIssueOfAccessTokens(false);

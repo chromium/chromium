@@ -187,6 +187,11 @@ export class UntrustedProjectorBrowserProxyImpl {
       error: errorCodeMap.get(response.responseCode),
     };
   }
+
+  async getAccounts() {
+    const {accounts} = await this.pageHandlerRemote.getAccounts();
+    return accounts;
+  }
 }
 
 /**

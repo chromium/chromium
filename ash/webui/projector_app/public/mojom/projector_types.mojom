@@ -86,3 +86,13 @@ enum RequestType {
     kGet = 1,
     kPatch = 2,
 };
+
+// Sent from the browser to the JS WebUI to provide information
+// about the account.
+struct Account {
+    // The associated email address.
+    string email;
+
+    // Whether the account is the primary user account.
+    bool is_primary_user;
+};

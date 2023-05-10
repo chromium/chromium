@@ -64,8 +64,7 @@ const CLIENT_DELEGATE = {
    * @return {Promise<Array<!projectorApp.Account>>}
    */
   getAccounts() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getAccounts', []);
+    return browserProxy.getAccounts();
   },
 
   /**

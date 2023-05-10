@@ -423,4 +423,13 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SendXhrWithUnSupportedUrl) {
   EXPECT_DEATH_IF_SUPPORTED(crashing_lambda_test(), "");
 }
 
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetAccounts) {
+  base::test::TestFuture<std::vector<projector::mojom::AccountPtr>>
+      get_accounts_future;
+  page().page_handler()->GetAccounts(get_accounts_future.GetCallback());
+  const auto& accounts = get_accounts_future.Get();
+  EXPECT_EQ(accounts.size(), 1u);
+  EXPECT_EQ(accounts[0]->email, kTestUserEmail);
+}
+
 }  // namespace ash
