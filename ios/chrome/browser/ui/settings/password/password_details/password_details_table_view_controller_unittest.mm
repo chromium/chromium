@@ -798,7 +798,9 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestCompromisedPasswordDelete) {
           controller());
   [password_details editButtonPressed];
   [password_details tableView:password_details.tableView
-      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:5 inSection:0]];
+      didSelectRowAtIndexPath:[NSIndexPath
+                                  indexPathForRow:NumberOfItemsInSection(0) - 1
+                                        inSection:0]];
   EXPECT_TRUE(handler().deletionCalled);
   EXPECT_TRUE(handler().deletionCalledOnCompromisedPassword);
 }
