@@ -5,10 +5,8 @@
 #ifndef BASE_STRINGS_STRING_NUMBER_CONVERSIONS_INTERNAL_H_
 #define BASE_STRINGS_STRING_NUMBER_CONVERSIONS_INTERNAL_H_
 
-#include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
-#include <wctype.h>
 
 #include <limits>
 
@@ -70,32 +68,6 @@ absl::optional<uint8_t> CharToDigit(CHAR c) {
     return static_cast<uint8_t>(c - 'A' + 10);
 
   return absl::nullopt;
-}
-
-// There is an IsUnicodeWhitespace for wchars defined in string_util.h, but it
-// is locale independent, whereas the functions we are replacing were
-// locale-dependent. TBD what is desired, but for the moment let's not
-// introduce a change in behaviour.
-template <typename CHAR>
-class WhitespaceHelper {};
-
-template <>
-class WhitespaceHelper<char> {
- public:
-  static bool Invoke(char c) {
-    return 0 != isspace(static_cast<unsigned char>(c));
-  }
-};
-
-template <>
-class WhitespaceHelper<char16_t> {
- public:
-  static bool Invoke(char16_t c) { return 0 != iswspace(c); }
-};
-
-template <typename CHAR>
-bool LocalIsWhitespace(CHAR c) {
-  return WhitespaceHelper<CHAR>::Invoke(c);
 }
 
 template <typename Number, int kBase>
@@ -188,7 +160,7 @@ auto StringToNumber(BasicStringPiece<CharT> input) {
   auto begin = input.begin();
   auto end = input.end();
 
-  while (begin != end && LocalIsWhitespace(*begin)) {
+  while (begin != end && IsAsciiWhitespace(*begin)) {
     has_leading_whitespace = true;
     ++begin;
   }
@@ -272,7 +244,11 @@ bool StringToDoubleImpl(STRING input, const CHAR* data, double& output) {
   //  - If the entire string was not processed, there are either characters
   //    remaining in the string after a parsed number, or the string does not
   //    begin with a parseable number.
-  //  - If the first character is a space, there was leading whitespace
+  //  - If the first character is a space, there was leading whitespace. Note
+  //    that this checks using IsWhitespace(), which behaves differently for
+  //    wide and narrow characters -- that is intentional and matches the
+  //    behavior of the double_conversion library's whitespace-skipping
+  //    algorithm.
   return !input.empty() && output != HUGE_VAL && output != -HUGE_VAL &&
          static_cast<size_t>(processed_characters_count) == input.size() &&
          !IsWhitespace(input[0]);

@@ -39,16 +39,6 @@ std::wstring NumberToWString(double value) {
   return internal::DoubleToStringT<std::wstring>(value);
 }
 
-namespace internal {
-
-template <>
-class WhitespaceHelper<wchar_t> {
- public:
-  static bool Invoke(wchar_t c) { return 0 != iswspace(c); }
-};
-
-}  // namespace internal
-
 bool StringToInt(WStringPiece input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }
