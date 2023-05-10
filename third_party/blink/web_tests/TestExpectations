@@ -2155,7 +2155,6 @@ crbug.com/528062 [ Win ] http/tests/security/XFrameOptions/x-frame-options-cache
 # By about a quarter or less of a pixel.
 crbug.com/997202 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
 
-crbug.com/574283 [ Debug Mac12 ] fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Crash Failure Pass Timeout ]
 crbug.com/574283 [ Mac11 Release ] fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Crash Failure Pass Timeout ]
 
 crbug.com/599670 [ Win ] http/tests/devtools/resource-parameters-ipv6.js [ Crash Failure Pass ]
@@ -2929,23 +2928,9 @@ crbug.com/626703 external/wpt/css/css-images/image-set/image-set-negative-resolu
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-negative-resolution-rendering.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-nesting/conditional-rules.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/popovers/popover-hide-crash.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
-crbug.com/626703 [ Mac13-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-color/color-mix-currentcolor-003.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators-2.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-cascade/import-conditional-002.html [ Failure ]
@@ -4624,7 +4609,7 @@ crbug.com/1117613 media/video-error-networkState.html [ Failure Timeout ]
 
 # Sheriff 2020-0-21
 
-crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-navigate.https.html [ Failure Pass ]
+crbug.com/1122582 [ Debug Mac12 ] external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-navigate.https.html [ Failure Pass ]
 
 
 # Sheriff 2020-09-22
@@ -4912,7 +4897,6 @@ crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac10.14 Release ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
-crbug.com/1208173 [ Mac11-arm64 Release ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 
 # Fix to unblock wpt-importer
 
@@ -5288,7 +5272,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-comp
 
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-018.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/security/cross-origin-shared-worker-allowed.html [ Crash Pass ]
 
 # Sheriff 2021-09-16
@@ -5597,7 +5580,10 @@ crbug.com/1309483 [ Win ] virtual/gpu-rasterization/images/directly-composited-i
 crbug.com/1309633 [ Mac ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
 
 # Sheriff 2022-03-24
-crbug.com/1309756 http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
+crbug.com/1309756 [ Debug Mac ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
+crbug.com/1309756 [ Mac11-arm64 Release ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
+crbug.com/1309756 [ Mac12-arm64 Release ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
+crbug.com/1309756 [ Release Win ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
 crbug.com/1309756 [ Mac11-arm64 ] http/tests/images/force-reload-image-document.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-03-25
@@ -6666,7 +6652,7 @@ crbug.com/1384162 [ Mac10.14 ] external/wpt/css/css-fonts/matching/style-ranges-
 crbug.com/1428795 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Failure Pass ]
 
 # Sheriff 2023-04-05
-crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Failure Pass ]
+crbug.com/1430215 [ Release Win11 ] external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Failure Pass ]
 crbug.com/1430986 http/tests/inspector-protocol/tracing/page-load-metrics.js [ Failure Pass Timeout ]
 
 # Sheriff 2023-04-06
