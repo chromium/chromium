@@ -415,9 +415,17 @@
       return;
     }
   }
-
   // No active NTPs were found.
   [self stop];
+}
+
+- (BOOL)isNTPActiveForCurrentWebState {
+  if (!self.webState) {
+    return NO;
+  }
+  NewTabPageTabHelper* NTPHelper =
+      NewTabPageTabHelper::FromWebState(self.webState);
+  return NTPHelper && NTPHelper->IsActive();
 }
 
 - (void)stopScrolling {

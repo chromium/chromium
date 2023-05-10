@@ -2553,7 +2553,7 @@ enum class ToolbarKind {
     willUpdateSnapshotForWebState:(web::WebState*)webState {
   DCHECK(webState);
 
-  if (self.isNTPActiveForCurrentWebState) {
+  if ([self isNTPActiveForCurrentWebState]) {
     [_NTPCoordinator willUpdateSnapshot];
   }
   OverscrollActionsTabHelper::FromWebState(webState)->Clear();
@@ -2624,14 +2624,7 @@ enum class ToolbarKind {
 #pragma mark - WebNavigationNTPDelegate
 
 - (BOOL)isNTPActiveForCurrentWebState {
-  web::WebState* currentWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (currentWebState) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(currentWebState);
-    return NTPHelper && NTPHelper->IsActive();
-  }
-  return NO;
+  return [_NTPCoordinator isNTPActiveForCurrentWebState];
 }
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
