@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">‏לא ניתן ליצור רזולוציית DNS</translation>
 <translation id="1018656279737460067">בוטל</translation>
 <translation id="1022433422498218992">אמצעי בקרה כלליים</translation>
+<translation id="1022628058306505708">זרימה בכדור הארץ</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
 <translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">פעולות נוספות</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
+<translation id="2981143481017883351">‏נוספו נכסים בלעדיים ל-Chromebook</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="3017079585324758401">רקע</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">חלונות</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
+<translation id="3386675685417744672">‏בלעדי ל-Chromebook</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">אזהרה</translation>
 <translation id="4054683689023980771">התמונה בתהליך הורדה</translation>
 <translation id="4060260348856573701">‏APN חדש</translation>
+<translation id="4079743696465895866">‏בחירת יצירות אומנות בלעדיות ב-Chromebook</translation>
 <translation id="4093865285251893588">תמונת הפרופיל</translation>
 <translation id="409427325554347132">שמירה של פרטי הבדיקה</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">קיבולת הסוללה יורדת ככל שמשתמשים בה</translation>
 <translation id="6191293864534840972">שרתי שמות שגויים</translation>
+<translation id="6205145102504628069">זרימה בענן</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">יציאה ממסך מלא</translation>
 <translation id="6223752125779001553">אין סורקים זמינים</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">התאמה אישית</translation>
 <translation id="6500818810472529210">‏לתוצאות בחיפוש Google</translation>
 <translation id="650266656685499220">‏כדי ליצור אלבומים, יש לעבור ל-Google Photos</translation>
+<translation id="6505750420152840539">מעלות השחר עד לרדת החושך</translation>
 <translation id="6516990319416533844">כדי לבדוק את מהירות הטעינה של הסוללה, יש להמתין זמן מה שתתרוקן</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6526200165918397681">התאמת הטפט</translation>

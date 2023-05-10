@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS:ää ei voi selvittää</translation>
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1022433422498218992">Yleiset asetukset</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uusi ominaisuus saatavilla, tutki sitä painamalla ylänuolta.</translation>
 <translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Lisää toimintoja</translation>
 <translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
 <translation id="2940811910881150316">Laitetta ei voi testata. Avaa kansi uudelleen testaamista varten.</translation>
+<translation id="2981143481017883351">Eksklusiivista Chromebook-sisältöä nyt saatavilla</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3017079585324758401">Tausta</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
+<translation id="3386675685417744672">Vain Chromebook</translation>
 <translation id="3404249063913988450">Ota näytönsäästäjä käyttöön</translation>
 <translation id="3413935475507503304">Jatka päivitystä valitsemalla Seuraava</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">Varoitus</translation>
 <translation id="4054683689023980771">Ladataan kuvaa</translation>
 <translation id="4060260348856573701">Uusi APN</translation>
+<translation id="4079743696465895866">Valitse vain Chromebookin kuvamateriaali</translation>
 <translation id="4093865285251893588">Profiilikuva</translation>
 <translation id="409427325554347132">Tallenna testin tulokset</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Akun kapasiteetti pienenee käytössä</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
+<translation id="6205145102504628069">Pilvityönkulku</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Poistu koko näytön tilasta</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Personointi</translation>
 <translation id="6500818810472529210">Katso tulos Google Haussa</translation>
 <translation id="650266656685499220">Voit luoda albumeita avaamalla Google Kuvat</translation>
+<translation id="6505750420152840539">Aamusta iltaan</translation>
 <translation id="6516990319416533844">Anna akun tyhjentyä hetken aikaa, jotta voit testata sen latautumisnopeutta</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">Valitse taustakuvaa vastaava</translation>

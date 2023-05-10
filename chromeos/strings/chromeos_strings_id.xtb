@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Tidak dapat me-resolve DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1022433422498218992">Kontrol Umum</translation>
+<translation id="1022628058306505708">Aliran Bumi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Fitur baru tersedia, gunakan tombol Panah atas untuk mempelajari lebih lanjut.</translation>
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
 <translation id="2940811910881150316">Tidak dapat menguji perangkat. Buka kembali penutup untuk menguji.</translation>
+<translation id="2981143481017883351">Aset eksklusif untuk Chromebook kini tersedia</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
+<translation id="3386675685417744672">Eksklusif untuk Chromebook</translation>
 <translation id="3404249063913988450">Aktifkan screen saver</translation>
 <translation id="3413935475507503304">Untuk melanjutkan update, klik Berikutnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">PERINGATAN</translation>
 <translation id="4054683689023980771">Mendownload gambar</translation>
 <translation id="4060260348856573701">APN baru</translation>
+<translation id="4079743696465895866">Pilih karya seni eksklusif untuk Chromebook</translation>
 <translation id="4093865285251893588">Gambar profil</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapasitas baterai menurun seiring penggunaan</translation>
 <translation id="6191293864534840972">Format server nama salah</translation>
+<translation id="6205145102504628069">Aliran Awan</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Keluar dari layar penuh</translation>
 <translation id="6223752125779001553">Tidak ada pemindai yang tersedia</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Penyesuaian</translation>
 <translation id="6500818810472529210">Lihat hasil di Google Penelusuran</translation>
 <translation id="650266656685499220">Untuk membuat album, buka Google Foto</translation>
+<translation id="6505750420152840539">Fajar ke petang</translation>
 <translation id="6516990319416533844">Untuk menguji kecepatan pengisian daya baterai, biarkan daya baterai terkuras dalam waktu singkat</translation>
 <translation id="6517239166834772319">Jelajahi</translation>
 <translation id="6526200165918397681">Cocokkan wallpaper</translation>

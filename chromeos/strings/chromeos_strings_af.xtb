@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Kan nie DNS oplos nie</translation>
 <translation id="1018656279737460067">Gekanselleer</translation>
 <translation id="1022433422498218992">Algemene kontroles</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> drade, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nuwe kenmerk is beskikbaar. Gebruik oppylsleutel om meer te wete te kom.</translation>
 <translation id="1059913517121127803">Kon nie skandering begin nie</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Nog handelinge</translation>
 <translation id="2926057806159140518">Voer jou gebruikernaam en wagwoord in of skandeer jou QR-kode</translation>
 <translation id="2940811910881150316">Kan nie toestel toets nie. Maak die deksel weer oop om te toets.</translation>
+<translation id="2981143481017883351">Eksklusiewe Chromebook-komponente is nou beskikbaar</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3017079585324758401">Agtergrond</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
+<translation id="3386675685417744672">Eksklusief op Chromebook</translation>
 <translation id="3404249063913988450">Aktiveer sluimerskerm</translation>
 <translation id="3413935475507503304">Klik Volgende om met die opdatering voort te gaan.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">WAARSKUWING</translation>
 <translation id="4054683689023980771">Laai tans prent af</translation>
 <translation id="4060260348856573701">Nuwe APN</translation>
+<translation id="4079743696465895866">Kies kunswerk wat eksklusief op Chromebook is</translation>
 <translation id="4093865285251893588">Profielprent</translation>
 <translation id="409427325554347132">Stoor toetsbesonderhede</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterykapasiteit neem af met gebruik</translation>
 <translation id="6191293864534840972">Misvormige naambedieners</translation>
+<translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Verlaat volskerm</translation>
 <translation id="6223752125779001553">Geen skandeerders beskikbaar nie</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Pasmaking</translation>
 <translation id="6500818810472529210">Sien resultate in Google Search</translation>
 <translation id="650266656685499220">Gaan na Google Foto's om albums te skep</translation>
+<translation id="6505750420152840539">Dagbreek tot donker</translation>
 <translation id="6516990319416533844">Laat jou battery 'n rukkie afloop om die batterylaaikoers te toets</translation>
 <translation id="6517239166834772319">Verken</translation>
 <translation id="6526200165918397681">Pas muurpapier</translation>

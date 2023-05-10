@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">ডিএনএস (DNS) সংক্রান্ত সমস্যার সমাধান করা যায়নি</translation>
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
 <translation id="1022433422498218992">সাধারণ নিয়ন্ত্রণ</translation>
+<translation id="1022628058306505708">আর্থ ফ্লো</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1059913517121127803">স্ক্যান শুরু করা যায়নি</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">আরও অ্যাকশন</translation>
 <translation id="2926057806159140518">আপনার ব্যবহারকারীর নাম এবং পাসওয়ার্ড লিখুন বা আপনার QR কোড স্ক্যান করুন</translation>
 <translation id="2940811910881150316">ডিভাইসটি পরীক্ষা করা সম্ভব হচ্ছে না। পরীক্ষার জন্য ডিভাইসের লিডটি আবার খুলুন।</translation>
+<translation id="2981143481017883351">এক্সক্লুসিভ Chromebook অ্যাসেট এখন উপলভ্য আছে</translation>
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
 <translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
 <translation id="3017079585324758401">ব্যাকগ্রাউন্ড</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">{0}Windows{/0}</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
+<translation id="3386675685417744672">Chromebook-এর এক্সক্লুসিভ</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="3413935475507503304">আপডেটগুলি ব্যবহার করে চালিয়ে যাওয়ার জন্য, 'পরবর্তী' বিকল্পে ক্লিক করুন।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">সতর্কতা</translation>
 <translation id="4054683689023980771">ছবি ডাউনলোড করা হচ্ছে</translation>
 <translation id="4060260348856573701">নতুন APN</translation>
+<translation id="4079743696465895866">Chromebook-এর এক্সক্লুসিভ আর্টওয়ার্ক বেছে নিন</translation>
 <translation id="4093865285251893588">প্রোফাইল ছবি</translation>
 <translation id="409427325554347132">ডায়গনোসিস করে পাওয়া টেস্টের বিবরণ সেভ করুন</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ব্যবহার করতে করতে ব্যাটারির ক্ষমতা কমে আসতে থাকে</translation>
 <translation id="6191293864534840972">ডোমেন নেম সার্ভারের ফর্ম্যাট ঠিক নেই</translation>
+<translation id="6205145102504628069">ক্লাউড ফ্লো</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">ফুল স্ক্রিন স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="6223752125779001553">কোনও স্ক্যানার উপলভ্য নেই</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">কাস্টোমাইজ করা</translation>
 <translation id="6500818810472529210">Google Search-এ ফলাফল দেখুন</translation>
 <translation id="650266656685499220">অ্যালবাম তৈরি করতে, Google Photos-এ যান</translation>
+<translation id="6505750420152840539">সূর্যোদয় থেকে সূর্যাস্ত পর্যন্ত</translation>
 <translation id="6516990319416533844">ব্যাটারি চার্জিং রেট পরীক্ষা করার জন্য, কিছুক্ষণের জন্য আপনার ডিভাইসের ব্যাটারি সম্পূর্ণ শেষ হতে দিন</translation>
 <translation id="6517239166834772319">ঘুরে দেখুন</translation>
 <translation id="6526200165918397681">ওয়ালপেপারের সাথে মেলান</translation>

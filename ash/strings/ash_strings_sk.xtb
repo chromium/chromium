@@ -76,7 +76,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1285992161347843613">Lokalizácia telefónu</translation>
 <translation id="1287002645302686982">Uložená plocha s názvom <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="1289185460362160437">Vráťte sa o <ph name="COME_BACK_TIME" /> v tento deň: <ph name="COME_BACK_DAY_OF_WEEK" /></translation>
-<translation id="1290331692326790741">Slabý signál</translation>
+<translation id="1290331692326790741">slabý signál</translation>
 <translation id="1290982764014248209">Presuňte <ph name="DRAGGED_APP" /> do priečinka <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Zariadenie USB-C (port vľavo)</translation>
 <translation id="1293556467332435079">Súbory</translation>
@@ -662,7 +662,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp. pre apl.}few{Vyp. pre # apl.}many{Off for # apps}other{Vyp. pre # apl.}}</translation>
 <translation id="4066027111132117168">Zapnuté, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Otvorenie stránky Stiahnuté</translation>
-<translation id="4072264167173457037">Stredne silný signál</translation>
+<translation id="4072264167173457037">priemerný signál</translation>
 <translation id="4086921558679520050">Zapnite fyzický vypínač mikrofónu na zariadení</translation>
 <translation id="4101772068965291327">Otvoriť domovskú stránku</translation>
 <translation id="4112140312785995938">Pretočiť dozadu</translation>
@@ -1463,7 +1463,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7798302898096527229">Ak to chcete zrušiť, stlačte kláves Hľadať alebo Shift.</translation>
 <translation id="7807067443225230855">Vyhľadávanie a Asistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
-<translation id="7829386189513694949">Silný signál</translation>
+<translation id="7829386189513694949">silný signál</translation>
 <translation id="7837740436429729974">Čas vypršal</translation>
 <translation id="7842569679327885685">Upozornenie: Experimentálna funkcia</translation>
 <translation id="7846634333498149051">Klávesnica</translation>
@@ -1538,7 +1538,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8130528849632411619">Prechod na začiatok dokumentu</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8131994907636310308">Zavrieť oznam k zoradeniu</translation>
-<translation id="8132793192354020517">Pripojené k stránke <ph name="NAME" /></translation>
+<translation id="8132793192354020517">Pripojené k sieti <ph name="NAME" /></translation>
 <translation id="8138705869659070104">Aktivovať po nastavení zar.</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8142441511840089262">Dvojité kliknutie</translation>

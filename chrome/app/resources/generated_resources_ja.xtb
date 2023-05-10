@@ -3724,7 +3724,7 @@
 <translation id="4193575319002689239">カードを表示</translation>
 <translation id="4193836101014293726">このプロファイルを削除できません</translation>
 <translation id="419427585139779713">音節単位で入力</translation>
-<translation id="4194570336751258953">タップによるクリックを有効にする</translation>
+<translation id="4194570336751258953">タップしてクリックを有効にする</translation>
 <translation id="4195378859392041564">カスタマイズするには、マウスで任意のキーをクリックしてから、キーボードのキーを押してください</translation>
 <translation id="4195421689821407315">安全でないダウンロード</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
@@ -6649,7 +6649,7 @@
 <translation id="6818802132960437751">組み込みのウィルス対策</translation>
 <translation id="6818920801736417483">パスワードを保存しますか？</translation>
 <translation id="6820079682647046800">Kerberos 認証に失敗しました</translation>
-<translation id="6823174134746916417">タッチパッドのタップによるクリック</translation>
+<translation id="6823174134746916417">タッチパッドのタップしてクリック</translation>
 <translation id="6824564591481349393">メール アドレスをコピー(&amp;E)</translation>
 <translation id="6824584962142919697">要素の検証(&amp;I)</translation>
 <translation id="6824725898506587159">言語を管理</translation>

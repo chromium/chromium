@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">無法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022433422498218992">一般控制項</translation>
+<translation id="1022628058306505708">地球動態</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">已推出新功能，請使用向上鍵瞭解詳情。</translation>
 <translation id="1059913517121127803">無法開始掃描</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">更多動作</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋即進行測試。</translation>
+<translation id="2981143481017883351">現已推出 Chromebook 專屬素材資源</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">視窗</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
+<translation id="3386675685417744672">Chromebook 專屬</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續執行更新作業，請按「下一步」</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">正在下載圖片</translation>
 <translation id="4060260348856573701">新增 APN</translation>
+<translation id="4079743696465895866">選取 Chromebook 專屬藝術圖片</translation>
 <translation id="4093865285251893588">個人資料圖片</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="4095829376260267438">WPA2 和 WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">電池電量會隨使用時間而減少</translation>
 <translation id="6191293864534840972">名稱伺服器格式錯誤</translation>
+<translation id="6205145102504628069">雲朵動態</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">結束全螢幕模式</translation>
 <translation id="6223752125779001553">沒有可用的掃描器</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">自訂</translation>
 <translation id="6500818810472529210">查看 Google 搜尋結果</translation>
 <translation id="650266656685499220">如要建立相簿，請前往 Google 相簿</translation>
+<translation id="6505750420152840539">黎明到黑夜</translation>
 <translation id="6516990319416533844">如要測試充電速率，請讓電池耗電一小段時間</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6526200165918397681">相符的桌布</translation>

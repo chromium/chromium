@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">نمی‌توان ساناد را حل‌وفصل کرد</translation>
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1022433422498218992">کنترل‌های عمومی</translation>
+<translation id="1022628058306505708">جریان خاک</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته، <ph name="CPU_MAX_CLOCK_SPEED" /> گیگاهرتز)</translation>
 <translation id="1047773237499189053">ویژگی جدید دردسترس است، برای اطلاعات بیشتر از کلید «پیکان روبه بالا» استفاده کنید.</translation>
 <translation id="1059913517121127803">اسکن شروع نشد</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">کنش‌های بیشتر</translation>
 <translation id="2926057806159140518">نام کاربری و گذرواژه‌تان را وارد کنید یا رمزینه پاسخ‌سریع را اسکن کنید</translation>
 <translation id="2940811910881150316">نمی‌توان دستگاه را آزمایش کرد. برای آزمایش کردن، در دستگاه را دوباره باز کنید.</translation>
+<translation id="2981143481017883351">‏اکنون دارایی‌های انحصاری Chromebook دردسترس است</translation>
 <translation id="3008341117444806826">بازآوری</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3017079585324758401">پس‌زمینه</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
+<translation id="3386675685417744672">‏انحصاری برای Chromebook</translation>
 <translation id="3404249063913988450">فعال کردن محافظ صفحه</translation>
 <translation id="3413935475507503304">برای به‌روزرسانی، روی «بعدی» کلیک کنید.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">اخطار</translation>
 <translation id="4054683689023980771">درحال بارگیری تصویر</translation>
 <translation id="4060260348856573701">‏APN جدید</translation>
+<translation id="4079743696465895866">‏انتخاب کارهای هنری انحصاری برای Chromebook</translation>
 <translation id="4093865285251893588">تصویر نمایه</translation>
 <translation id="409427325554347132">ذخیره کردن جزئیات آزمایش</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ظرفیت باتری با استفاده کاهش می‌یابد</translation>
 <translation id="6191293864534840972">سرورهای نام دامنه ناقص است</translation>
+<translation id="6205145102504628069">جریان ابر</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">خروج از حالت تمام‌صفحه</translation>
 <translation id="6223752125779001553">اسکنری دردسترس نیست</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">سفارشی کردن</translation>
 <translation id="6500818810472529210">‏دیدن نتیجه در «جستجوی Google»</translation>
 <translation id="650266656685499220">‏برای ایجاد کردن آلبوم به Google Photos بروید</translation>
+<translation id="6505750420152840539">از بامداد تا شامگاه</translation>
 <translation id="6516990319416533844">برای آزمایش کردن نرخ شارژ شدن باتری، اجازه دهید شارژ باتری برای مدت کوتاهی تخلیه شود</translation>
 <translation id="6517239166834772319">کاوش</translation>
 <translation id="6526200165918397681">مطابقت کاغذدیواری</translation>

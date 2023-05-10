@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Δεν είναι δυνατή η επίλυση του DNS.</translation>
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
 <translation id="1022433422498218992">Γενικοί έλεγχοι</translation>
+<translation id="1022628058306505708">Κίνηση της Γης</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Νέα διαθέσιμη λειτουργία. Χρησιμοποιήστε το πάνω βέλος για να μάθετε περισσότερα.</translation>
 <translation id="1059913517121127803">Δεν ήταν δυνατή η έναρξη της σάρωσης</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Περισσότερες ενέργειες</translation>
 <translation id="2926057806159140518">Εισαγάγετε το όνομα χρήστη και τον κωδικό πρόσβασής σας ή σαρώστε τον κωδικό QR σας</translation>
 <translation id="2940811910881150316">Δεν είναι δυνατή η δοκιμή της συσκευής. Ανοίξτε ξανά το καπάκι για δοκιμή.</translation>
+<translation id="2981143481017883351">Τα αποκλειστικά στοιχεία Chromebook είναι πλέον διαθέσιμα</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3017079585324758401">Φόντο</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
+<translation id="3386675685417744672">Αποκλειστικά για Chromebook</translation>
 <translation id="3404249063913988450">Ενεργοποίηση προφύλαξης οθόνης.</translation>
 <translation id="3413935475507503304">Για να συνεχίσετε με την ενημέρωση, κάντε κλικ στο Επόμενο.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">ΠΡΟΕΙΔΟΠΟΙΗΣΗ</translation>
 <translation id="4054683689023980771">Λήψη εικόνας</translation>
 <translation id="4060260348856573701">Νέο APN</translation>
+<translation id="4079743696465895866">Επιλέξτε έργα τέχνης που είναι αποκλειστικά για Chromebook</translation>
 <translation id="4093865285251893588">Εικόνα προφίλ</translation>
 <translation id="409427325554347132">Αποθήκευση λεπτομερειών δοκιμής</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Η χωρητικότητα της μπαταρίας μειώνεται με τη χρήση</translation>
 <translation id="6191293864534840972">Τα ονόματα διακομιστών έχουν λανθασμένη μορφή.</translation>
+<translation id="6205145102504628069">Κίνηση των σύννεφων</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Πλήρης έξοδος</translation>
 <translation id="6223752125779001553">Δεν υπάρχουν διαθέσιμοι σαρωτές</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Προσαρμογή</translation>
 <translation id="6500818810472529210">Εμφάνιση αποτελέσματος στην Αναζήτηση Google</translation>
 <translation id="650266656685499220">Για τη δημιουργία λευκωμάτων, μεταβείτε στις Φωτογραφίες Google.</translation>
+<translation id="6505750420152840539">Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="6516990319416533844">Για να δοκιμάσετε τον ρυθμό φόρτισης της μπαταρίας, αφήστε την μπαταρία να εξαντληθεί για σύντομο χρονικό διάστημα</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>
 <translation id="6526200165918397681">Αντιστοίχιση ταπετσαρίας</translation>

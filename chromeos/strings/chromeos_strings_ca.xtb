@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">No es pot resoldre el DNS</translation>
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
 <translation id="1022433422498218992">Controls generals</translation>
+<translation id="1022628058306505708">Moviment de la Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
 <translation id="1059913517121127803">No s'ha pogut iniciar l'escaneig</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Més accions</translation>
 <translation id="2926057806159140518">Introdueix el nom d'usuari i la contrasenya o bé escaneja el codi QR</translation>
 <translation id="2940811910881150316">No es pot provar el dispositiu. Torna a obrir la tapa per fer la prova.</translation>
+<translation id="2981143481017883351">Recursos exclusius de Chromebook disponibles</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3017079585324758401">Fons</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Finestres</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
+<translation id="3386675685417744672">Exclusius de Chromebook</translation>
 <translation id="3404249063913988450">Activa l'estalvi de pantalla</translation>
 <translation id="3413935475507503304">Per continuar amb l'actualització, fes clic a Següent.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">ADVERTIMENT</translation>
 <translation id="4054683689023980771">S'està baixant la imatge</translation>
 <translation id="4060260348856573701">APN nou</translation>
+<translation id="4079743696465895866">Selecciona obres d'art exclusives de Chromebook</translation>
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacitat de la bateria es redueix amb l'ús</translation>
 <translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
+<translation id="6205145102504628069">Moviment de núvols</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Surt del mode complet</translation>
 <translation id="6223752125779001553">No hi ha cap escàner disponible</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Personalització</translation>
 <translation id="6500818810472529210">Consulta el resultat a la Cerca de Google</translation>
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
+<translation id="6505750420152840539">De l'alba a la foscor</translation>
 <translation id="6516990319416533844">Per provar la velocitat de càrrega de la bateria, deixa que s'exhaureixi una estona</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6526200165918397681">Fes coincidir el fons de pantalla</translation>

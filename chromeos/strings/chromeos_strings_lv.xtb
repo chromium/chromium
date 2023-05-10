@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Nevar atrast DNS.</translation>
 <translation id="1018656279737460067">Atcelts</translation>
 <translation id="1022433422498218992">Vispārīgas vadīklas</translation>
+<translation id="1022628058306505708">Zemes plūsma</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pieejama jauna funkcija. Lai uzzinātu vairāk, nospiediet augšupvērsto bulttaustiņu.</translation>
 <translation id="1059913517121127803">Nevarēja sākt skenēšanu.</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Citas darbības</translation>
 <translation id="2926057806159140518">Ievadiet savu lietotājvārdu un paroli vai skenējiet kvadrātkodu</translation>
 <translation id="2940811910881150316">Nevar pārbaudīt ierīci. Lai pārbaudītu, atkal atveriet vāku.</translation>
+<translation id="2981143481017883351">Tagad ir pieejami ekskluzīvi līdzekļi Chromebook datoriem</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="3017079585324758401">Fons</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Logi</translation>
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3369013195428705271">Vai tiešām vēlaties notīrīt visu drukāšanas vēsturi? Netiks notīrīti drukas uzdevumi, kas tiek izpildīti.</translation>
+<translation id="3386675685417744672">Tikai Chromebook datoriem</translation>
 <translation id="3404249063913988450">Iespējot ekrānsaudzētāju</translation>
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">BRĪDINĀJUMS</translation>
 <translation id="4054683689023980771">Notiek attēla lejupielāde…</translation>
 <translation id="4060260348856573701">Jauns APN</translation>
+<translation id="4079743696465895866">Atlasīt tikai Chromebook datoriem paredzētus mākslas darbus</translation>
 <translation id="4093865285251893588">Profila attēls</translation>
 <translation id="409427325554347132">Saglabāt testa informāciju</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Lietošanas gaitā akumulatora kapacitāte samazinās</translation>
 <translation id="6191293864534840972">Nepareizi nosaukumu serveri</translation>
+<translation id="6205145102504628069">Mākoņu plūsma</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Iziet no pilnekrāna režīma</translation>
 <translation id="6223752125779001553">Nav pieejams neviens skeneris</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Pielāgošana</translation>
 <translation id="6500818810472529210">Skatiet rezultātu Google meklēšanā</translation>
 <translation id="650266656685499220">Lai izveidotu albumus, pārejiet uz pakalpojumu Google fotoattēli.</translation>
+<translation id="6505750420152840539">No ausmas līdz tumsai</translation>
 <translation id="6516990319416533844">Lai pārbaudītu akumulatora uzlādes ātrumu, uz neilgu laiku palieliniet akumulatora enerģijas patēriņu, sasniedzot zemu uzlādes līmeni.</translation>
 <translation id="6517239166834772319">Izpēte</translation>
 <translation id="6526200165918397681">Saskaņot fona tapeti</translation>

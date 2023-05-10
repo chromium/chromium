@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS-oversættelse kan ikke udføres</translation>
 <translation id="1018656279737460067">Annulleret</translation>
 <translation id="1022433422498218992">Generelle styringsfunktioner</translation>
+<translation id="1022628058306505708">Flow med Jorden</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråde, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nye funktioner er tilgængelige. Tryk på pil op for at få flere oplysninger.</translation>
 <translation id="1059913517121127803">Kunne ikke begynde at scanne</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2926057806159140518">Angiv dit brugernavn og din adgangskode, eller scan din QR-kode</translation>
 <translation id="2940811910881150316">Enheden kan ikke testes. Åbn skærmen igen for at teste den.</translation>
+<translation id="2981143481017883351">Eksklusive Chromebook-aktiver er nu tilgængelige</translation>
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3017079585324758401">Baggrund</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
 <translation id="3369013195428705271">Er du sikker på, at du vil rydde hele udskriftshistorikken? Dine igangværende udskriftsjobs ryddes ikke.</translation>
+<translation id="3386675685417744672">Kun på Chromebook</translation>
 <translation id="3404249063913988450">Aktivér Pauseskærm</translation>
 <translation id="3413935475507503304">Klik på Næste for at fortsætte med opdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="4054683689023980771">Downloader billedet</translation>
 <translation id="4060260348856573701">Nyt adgangspunkt</translation>
+<translation id="4079743696465895866">Vælg kunst, der kun er tilgængeligt på Chromebooks</translation>
 <translation id="4093865285251893588">Profilbillede</translation>
 <translation id="409427325554347132">Gem testoplysninger</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterikapaciteten falder løbende, når enheden er i brug</translation>
 <translation id="6191293864534840972">Ugyldige navneservere</translation>
+<translation id="6205145102504628069">Flow med skyer</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Afslut fuld skærm</translation>
 <translation id="6223752125779001553">Der er ingen tilgængelige scannere</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Tilpasning</translation>
 <translation id="6500818810472529210">Se resultatet i Google Søgning</translation>
 <translation id="650266656685499220">Gå til Google Fotos for at oprette album</translation>
+<translation id="6505750420152840539">Daggry til mørkets frembrud</translation>
 <translation id="6516990319416533844">Du kan teste, hvor hurtigt batteriet oplades, ved at aflade det i en kortere periode</translation>
 <translation id="6517239166834772319">Udforsk</translation>
 <translation id="6526200165918397681">Match baggrund</translation>

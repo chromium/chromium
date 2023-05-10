@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Hindi ma-resolve ang DNS</translation>
 <translation id="1018656279737460067">Nakansela</translation>
 <translation id="1022433422498218992">Mga Pangkalahatang Kontrol</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1059913517121127803">Hindi masimulan ang pag-scan</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Higit pang pagkilos</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
 <translation id="2940811910881150316">Hindi masuri ang device. Buksang ulit ang takip para suriin.</translation>
+<translation id="2981143481017883351">Available na ngayon ang mga eksklusibong asset sa Chromebook</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Mga Window</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
+<translation id="3386675685417744672">Eksklusibo sa Chromebook</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">BABALA</translation>
 <translation id="4054683689023980771">Dina-download ang larawan</translation>
 <translation id="4060260348856573701">Bagong APN</translation>
+<translation id="4079743696465895866">Pumili ng artwork na eksklusibo sa Chromebook</translation>
 <translation id="4093865285251893588">Larawan sa profile</translation>
 <translation id="409427325554347132">I-save ang mga detalye ng pagsubok</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
+<translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Lumabas sa full</translation>
 <translation id="6223752125779001553">Walang available na scanner</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Pag-customize</translation>
 <translation id="6500818810472529210">Tingnan ang resulta sa Google Search</translation>
 <translation id="650266656685499220">Para gumawa ng mga album, pumunta sa Google Photos</translation>
+<translation id="6505750420152840539">Madaling araw hanggang gabi</translation>
 <translation id="6516990319416533844">Para masubukan ang rate ng pag-charge ng baterya, gumamit ng malaking porsyento ng baterya sa maikling panahon</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">Itugma sa wallpaper</translation>

@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS を解決できません</translation>
 <translation id="1018656279737460067">キャンセルされました</translation>
 <translation id="1022433422498218992">一般設定</translation>
+<translation id="1022628058306505708">地球の動き</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
 <translation id="1047773237499189053">新しい機能があります。上矢印キーで詳細を確認できます。</translation>
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">その他の操作</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
 <translation id="2940811910881150316">デバイスをテストできません。テストするにはディスプレイをもう一度開きます。</translation>
+<translation id="2981143481017883351">Chromebook 限定のアセットが利用可能に</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
+<translation id="3386675685417744672">Chromebook 限定</translation>
 <translation id="3404249063913988450">スクリーン セーバーを有効にする</translation>
 <translation id="3413935475507503304">更新を進めるには、[次へ] をクリックしてください。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">画像のダウンロード中</translation>
 <translation id="4060260348856573701">新しい APN</translation>
+<translation id="4079743696465895866">Chromebook 限定のアートワークを選択する</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="409427325554347132">テストの詳細を保存</translation>
 <translation id="4095829376260267438">WPA2 / WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">バッテリー容量は使用に伴って減少します</translation>
 <translation id="6191293864534840972">ネームサーバーの形式が正しくありません</translation>
+<translation id="6205145102504628069">雲の流れ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">全画面表示を終了</translation>
 <translation id="6223752125779001553">利用可能なスキャナがありません</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">カスタマイズ</translation>
 <translation id="6500818810472529210">Google 検索で結果を見る</translation>
 <translation id="650266656685499220">アルバムを作成するには、Google フォトにアクセスします</translation>
+<translation id="6505750420152840539">夜明けから夜更けまで</translation>
 <translation id="6516990319416533844">バッテリーの充電速度をテストするには、短時間で電池を消耗してください</translation>
 <translation id="6517239166834772319">使い方・ヒント</translation>
 <translation id="6526200165918397681">壁紙に合わせる</translation>

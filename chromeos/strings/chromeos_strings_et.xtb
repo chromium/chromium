@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Ei saa DNS-i lahendada</translation>
 <translation id="1018656279737460067">Tühistatud</translation>
 <translation id="1022433422498218992">Üldised juhtelemendid</translation>
+<translation id="1022628058306505708">Maa vool</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> haru, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uued funktsioonid on saadaval. Lisateabe saamiseks kasutage ülesnoolt.</translation>
 <translation id="1059913517121127803">Skannimist ei saanud alustada</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Veel toiminguid</translation>
 <translation id="2926057806159140518">Sisestage kasutajanimi ja parool või skannige QR-kood</translation>
 <translation id="2940811910881150316">Seadet ei saa testida. Testimiseks avage uuesti kaas.</translation>
+<translation id="2981143481017883351">Eksklusiivsed Chromebooki varad on nüüd saadaval</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
 <translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="3017079585324758401">Taust</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
+<translation id="3386675685417744672">Eksklusiivne Chromebook</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
 <translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">HOIATUS</translation>
 <translation id="4054683689023980771">Pildi allalaadimine</translation>
 <translation id="4060260348856573701">Uus APN</translation>
+<translation id="4079743696465895866">Valige Chromebooki eksklusiivne kunstiteos</translation>
 <translation id="4093865285251893588">Profiilipilt</translation>
 <translation id="409427325554347132">Salvesta testi üksikasjad</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Aku maht väheneb kasutuse käigus</translation>
 <translation id="6191293864534840972">Vigased nimeserverid</translation>
+<translation id="6205145102504628069">Pilvevool</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Välju täisekraanilt</translation>
 <translation id="6223752125779001553">Ühtegi skannerit pole saadaval</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Kohandamine</translation>
 <translation id="6500818810472529210">Kuva Google'i otsingu tulemused</translation>
 <translation id="650266656685499220">Albumite loomiseks minge teenusesse Google Photos</translation>
+<translation id="6505750420152840539">Päikesetõusust päikeseloojanguni</translation>
 <translation id="6516990319416533844">Aku laadimiskiiruse testimiseks laske akul lühikese perioodi jooksul tühjeneda</translation>
 <translation id="6517239166834772319">Avastamine</translation>
 <translation id="6526200165918397681">Ühita taustapildiga</translation>

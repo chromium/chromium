@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1022433422498218992">সাধাৰণ নিয়ন্ত্ৰণ</translation>
+<translation id="1022628058306505708">পৃথিৱী প্ৰবাহ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
 <translation id="1047773237499189053">নতুন সুবিধা উপলব্ধ, অধিক জানিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="1059913517121127803">স্কেনিং আৰম্ভ কৰিব পৰা নগ’ল</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">অধিক কাৰ্য</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
 <translation id="2940811910881150316">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক।</translation>
+<translation id="2981143481017883351">বিশেষ Chromebook সম্পদ এতিয়া উপলব্ধ</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3017079585324758401">নেপথ্য</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">ৱিণ্ড’</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369013195428705271">আপুনি সকলো প্ৰিণ্টৰ ইতিহাস নিশ্চিতভাৱে মচিব বিচাৰেনে? আপোনাৰ চলি থকা প্ৰিণ্টৰ কামসমূহ মচা নহয়।</translation>
+<translation id="3386675685417744672">Chromebookৰ বিশেষ</translation>
 <translation id="3404249063913988450">স্ক্ৰীন ছেভাৰ সক্ষম কৰক</translation>
 <translation id="3413935475507503304">আপডে’টটো কাৰ্যকৰী কৰিবলৈ, পৰৱৰ্তীত টিপক।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">সকীয়নি</translation>
 <translation id="4054683689023980771">প্ৰতিচ্ছবি ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="4060260348856573701">নতুন এপিএন</translation>
+<translation id="4079743696465895866">Chromebookৰ বিশেষ শিল্পকৰ্ম বাছনি কৰক</translation>
 <translation id="4093865285251893588">প্ৰ’ফাইলৰ প্রতিচ্ছবি</translation>
 <translation id="409427325554347132">পৰীক্ষাৰ সবিশেষ ছেভ কৰক</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ব্যৱহাৰৰ লগে লগে বেটাৰীৰ ক্ষমতা কমি আহে</translation>
 <translation id="6191293864534840972">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ বিকৃত</translation>
+<translation id="6205145102504628069">ডাৱৰৰ প্ৰবাহ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক</translation>
 <translation id="6223752125779001553">কোনো স্কেনাৰ নাই</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">কাষ্টমাইজেশ্বন</translation>
 <translation id="6500818810472529210">Google Searchত ফলাফল চাওক</translation>
 <translation id="650266656685499220">এলবাম সৃষ্টি কৰিবলৈ Google Photosলৈ যাওক</translation>
+<translation id="6505750420152840539">কাহিলি পুৱাৰ পৰা আন্ধাৰ হোৱালৈকে</translation>
 <translation id="6516990319416533844">বেটাৰীৰ চাৰ্জিঙৰ হাৰ পৰীক্ষা কৰিবলৈ আপোনাৰ বেটাৰীটো এক চুটি সময়ৰ বাবে খৰচ হ’বলৈ দিয়ক</translation>
 <translation id="6517239166834772319">অন্বেষণ</translation>
 <translation id="6526200165918397681">ৱালপেপাৰ মিলাওক</translation>

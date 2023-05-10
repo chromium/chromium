@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS-ის დარეგულირება ვერ ხერხდება</translation>
 <translation id="1018656279737460067">გაუქმდა</translation>
 <translation id="1022433422498218992">მართვის ზოგადი საშუალებები</translation>
+<translation id="1022628058306505708">ხმელეთის ნაკადი</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ნაკადი, <ph name="CPU_MAX_CLOCK_SPEED" /> გჰც)</translation>
 <translation id="1047773237499189053">ხელმისაწვდომია ახალი ფუნქცია, დამატებითი ინფორმაციისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
 <translation id="1059913517121127803">სკანირების დაწყება ვერ მოხერხდა</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">სხვა ქმედებები</translation>
 <translation id="2926057806159140518">შეიყვანეთ თქვენი მომხმარებლის სახელი და პაროლი ან დაასკანირეთ თქვენი QR კოდი</translation>
 <translation id="2940811910881150316">მოწყობილობის შემოწმება ვერ ხერხდება. შესამოწმებლად ხელახლა გახსენით თავსახური.</translation>
+<translation id="2981143481017883351">თქვენთვის ამიერიდან ხელმისაწვდომია Chromebook-ისთვის ექსკლუზიური რესურსები</translation>
 <translation id="3008341117444806826">განახლება</translation>
 <translation id="3009958530611748826">აირჩიეთ საქაღალდე, რომელშიც უნდა შეინახოს</translation>
 <translation id="3017079585324758401">ფონი</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">ფანჯრები</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
+<translation id="3386675685417744672">ექსკლუზიურად Chromebook-ზე</translation>
 <translation id="3404249063913988450">ეკრანმზოგის ჩართვა</translation>
 <translation id="3413935475507503304">განახლების გასაგრძელებლად დაწკაპუნებით აირჩიეთ „შემდეგი“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">გაფრთხილება</translation>
 <translation id="4054683689023980771">მიმდინარეობს სურათის ჩამოტვირთვა</translation>
 <translation id="4060260348856573701">ახალი APN</translation>
+<translation id="4079743696465895866">აირჩიეთ ექსკლუზიურად Chromebook-ზე ხელმისაწვდომი ნამუშევრები</translation>
 <translation id="4093865285251893588">პროფილის სურათი</translation>
 <translation id="409427325554347132">შემოწმების დეტალების შენახვა</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ბატარეის მოცულობა იკლებს მისი გამოყენების შესაბამისად</translation>
 <translation id="6191293864534840972">სახელების სერვერი არასწორად არის ფორმირებული</translation>
+<translation id="6205145102504628069">ღრუბლების ნაკადი</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">სრულეკრანიანი რეჟიმიდან გასვლა</translation>
 <translation id="6223752125779001553">სკანერები მიუწვდომელია</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">მორგება</translation>
 <translation id="6500818810472529210">იხილეთ შედეგები Google Search-ში</translation>
 <translation id="650266656685499220">ალბომების შესაქმნელად გადადით Google Photos-ზე</translation>
+<translation id="6505750420152840539">მზის ამოსვლიდან მზის ჩასვლამდე</translation>
 <translation id="6516990319416533844">ბატარეის დატენის სიჩქარის შესამოწმებლად ჯერ დაცალეთ ბატარეა გარკვეული დროის განმავლობაში</translation>
 <translation id="6517239166834772319">გაცნობა</translation>
 <translation id="6526200165918397681">ფონის დამთხვევა</translation>

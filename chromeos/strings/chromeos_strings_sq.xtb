@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS-ja nuk mund të zgjidhet</translation>
 <translation id="1018656279737460067">Anuluar</translation>
 <translation id="1022433422498218992">Kontrollet e përgjithshme</translation>
+<translation id="1022628058306505708">Rrjedha e tokës</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> nënprocese, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Ka veçori të re, përdor tastin "Shigjeta lart" për të mësuar më shumë.</translation>
 <translation id="1059913517121127803">Skanimi nuk mund të nisej</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2926057806159140518">Fut emrin e përdoruesit dhe fjalëkalimin ose skano kodin tënd QR</translation>
 <translation id="2940811910881150316">Pajisja nuk mund të testohet. Rihap kapakun për ta provuar.</translation>
+<translation id="2981143481017883351">Tani ofrohen elemente ekskluzive për Chromebook</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3017079585324758401">Sfondi</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Dritaret</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
+<translation id="3386675685417744672">Ekskluzive për Chromebook</translation>
 <translation id="3404249063913988450">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="3413935475507503304">Kliko "Para" për të vazhduar me përditësimin.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">PARALAJMËRIM</translation>
 <translation id="4054683689023980771">Imazhi po shkarkohet</translation>
 <translation id="4060260348856573701">APN e re</translation>
+<translation id="4079743696465895866">Zgjidh ilustrimin ekskluziv të Chromebook</translation>
 <translation id="4093865285251893588">Imazhi i profilit</translation>
 <translation id="409427325554347132">Ruaj detajet e testit</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="6191293864534840972">Serverë DNS të keqformuar</translation>
+<translation id="6205145102504628069">Rrjedha e reve</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Dil nga ekrani i plotë</translation>
 <translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Personalizimi</translation>
 <translation id="6500818810472529210">Shikoje rezultatin te "Kërko në Google"</translation>
 <translation id="650266656685499220">Për të krijuar albume, shko te "Fotografitë e Google"</translation>
+<translation id="6505750420152840539">Nga agimi në muzg</translation>
 <translation id="6516990319416533844">Për të testuar shpejtësinë e karikimit të baterisë, lëre baterinë të shkarkohet për një periudhë të shkurtër</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6526200165918397681">Përputh me imazhin e sfondit</translation>
