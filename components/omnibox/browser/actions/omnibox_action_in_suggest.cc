@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
-#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -33,64 +32,40 @@ enum class ActionInSuggestUmaType {
   kCall,
   kDirections,
   kWebsite,
-  kReviews,
 
   // Sentinel value. Must be set to the last valid ActionInSuggestUmaType.
-  kMaxValue = kReviews
+  kMaxValue = kWebsite
 };
 
 // Get the UMA action type from ActionInfo::ActionType.
 constexpr ActionInSuggestUmaType ToUmaActionType(
-    omnibox::ActionInfo::ActionType action_type) {
+    omnibox::ActionInfo_ActionType action_type) {
   switch (action_type) {
     case omnibox::ActionInfo_ActionType_CALL:
       return ActionInSuggestUmaType::kCall;
+
     case omnibox::ActionInfo_ActionType_DIRECTIONS:
       return ActionInSuggestUmaType::kDirections;
+
     case omnibox::ActionInfo_ActionType_WEBSITE:
       return ActionInSuggestUmaType::kWebsite;
-    case omnibox::ActionInfo_ActionType_REVIEWS:
-      return ActionInSuggestUmaType::kReviews;
+
+    default:
+      return ActionInSuggestUmaType::kUnknown;
   }
-  NOTREACHED() << "Unrecognized action type: " << action_type;
 }
 
-constexpr int ToActionHint(omnibox::ActionInfo::ActionType action_type) {
-  switch (action_type) {
-    case omnibox::ActionInfo_ActionType_CALL:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT;
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT;
-    case omnibox::ActionInfo_ActionType_REVIEWS:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT;
-  }
-  NOTREACHED() << "Unrecognized action type: " << action_type;
-}
-
-constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
-  switch (action_type) {
-    case omnibox::ActionInfo_ActionType_CALL:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS;
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS;
-    case omnibox::ActionInfo_ActionType_REVIEWS:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_CONTENTS;
-  }
-  NOTREACHED() << "Unrecognized action type: " << action_type;
-}
 }  // namespace
 
 OmniboxActionInSuggest::OmniboxActionInSuggest(omnibox::ActionInfo action_info)
-    : OmniboxAction(OmniboxAction::LabelStrings(
-                        ToActionHint(action_info.action_type()),
-                        ToActionContents(action_info.action_type()),
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST),
-                    {}),
+    : OmniboxAction(
+          OmniboxAction::LabelStrings(
+              base::UTF8ToUTF16(action_info.displayed_text()),
+              base::UTF8ToUTF16(action_info.displayed_text()),
+              l10n_util::GetStringUTF16(
+                  IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX),
+              l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST)),
+          {}),
       action_info_{std::move(action_info)} {}
 
 OmniboxActionInSuggest::~OmniboxActionInSuggest() = default;

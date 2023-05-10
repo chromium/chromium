@@ -30,8 +30,6 @@ class OmniboxActionInSuggest : public OmniboxAction {
   static const OmniboxActionInSuggest* FromAction(const OmniboxAction* action);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(OmniboxActionInSuggestTest,
-                           ReportMetricsForUnknownType);
   ~OmniboxActionInSuggest() override;
 
   omnibox::ActionInfo action_info_{};

@@ -1378,7 +1378,6 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Directions"/>
   <int value="3" label="Call"/>
   <int value="6" label="Website"/>
-  <int value="20" label="Reviews"/>
 </enum>
 
 <enum name="ActionUponResourceRequest">
