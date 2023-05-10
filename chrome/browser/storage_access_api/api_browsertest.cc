@@ -306,7 +306,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver load_observer(web_contents);
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         GetFrame(),
         base::StringPrintf("document.body.querySelector('iframe').src = '%s';",
                            url.spec().c_str())));
@@ -814,9 +814,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, OpaqueOriginRejects) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  ASSERT_TRUE(ExecuteScript(
-      GetPrimaryMainFrame(),
-      "document.querySelector('iframe').sandbox='allow-scripts';"));
+  ASSERT_TRUE(
+      ExecJs(GetPrimaryMainFrame(),
+             "document.querySelector('iframe').sandbox='allow-scripts';"));
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
@@ -833,9 +833,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  ASSERT_TRUE(ExecuteScript(GetPrimaryMainFrame(),
-                            "document.querySelector('iframe').sandbox='allow-"
-                            "scripts allow-same-origin';"));
+  ASSERT_TRUE(ExecJs(GetPrimaryMainFrame(),
+                     "document.querySelector('iframe').sandbox='allow-"
+                     "scripts allow-same-origin';"));
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
@@ -851,10 +851,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, SandboxTokenResolves) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  ASSERT_TRUE(ExecuteScript(
-      GetPrimaryMainFrame(),
-      "document.querySelector('iframe').sandbox='allow-scripts "
-      "allow-same-origin allow-storage-access-by-user-activation';"));
+  ASSERT_TRUE(
+      ExecJs(GetPrimaryMainFrame(),
+             "document.querySelector('iframe').sandbox='allow-scripts "
+             "allow-same-origin allow-storage-access-by-user-activation';"));
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
