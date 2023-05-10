@@ -220,15 +220,9 @@ const std::u16string& GetFieldValue(const FormFieldData& field) {
 // the construction of a PasswordForm.
 struct SignificantFields {
   raw_ptr<const FormFieldData> username = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const FormFieldData* password = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const FormFieldData* new_password = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const FormFieldData* confirmation_password = nullptr;
+  raw_ptr<const FormFieldData> password = nullptr;
+  raw_ptr<const FormFieldData> new_password = nullptr;
+  raw_ptr<const FormFieldData> confirmation_password = nullptr;
   // True if the information about fields could only be derived after relaxing
   // some constraints. The resulting PasswordForm should only be used for
   // fallback UI.
@@ -263,6 +257,70 @@ struct SignificantFields {
     password = nullptr;
     new_password = nullptr;
     confirmation_password = nullptr;
+  }
+
+  // Detects different password fields from |passwords| and sets |password|,
+  // |new_password|, |confirmation_password| if found.
+  void LocateSpecificPasswords(
+      const std::vector<const FormFieldData*>& passwords) {
+    DCHECK(!password);
+    DCHECK(!new_password);
+    DCHECK(!confirmation_password);
+
+    switch (passwords.size()) {
+      case 1:
+        password = passwords[0];
+        break;
+      case 2:
+        if (!passwords[0]->value.empty() &&
+            passwords[0]->value == passwords[1]->value) {
+          // Two identical non-empty passwords: assume we are seeing a new
+          // password with a confirmation. This can be either a sign-up form or
+          // a password change form that does not ask for the old password.
+          new_password = passwords[0];
+          confirmation_password = passwords[1];
+        } else {
+          // Assume first is old password, second is new (no choice but to
+          // guess). If the passwords are both empty, it is impossible to tell
+          // if they are the old and the new one, or the new one and its
+          // confirmation. In that case Chrome errs on the side of filling and
+          // classifies them as old & new to allow filling of change password
+          // forms.
+          password = passwords[0];
+          new_password = passwords[1];
+        }
+        break;
+      default:
+        // If there are more than 3 passwords it is not very clear what this
+        // form it is. Consider only the first 3 passwords in such case as a
+        // best-effort solution.
+        if (!passwords[0]->value.empty() &&
+            passwords[0]->value == passwords[1]->value &&
+            passwords[0]->value == passwords[2]->value) {
+          // All passwords are the same. Assume that the first field is the
+          // current password.
+          password = passwords[0];
+        } else if (passwords[1]->value == passwords[2]->value) {
+          // New password is the duplicated one, and comes second; or empty form
+          // with at least 3 password fields.
+          password = passwords[0];
+          new_password = passwords[1];
+          confirmation_password = passwords[2];
+        } else if (passwords[0]->value == passwords[1]->value) {
+          // It is strange that the new password comes first, but trust more
+          // which fields are duplicated than the ordering of fields. Assume
+          // that any password fields after the new password contain sensitive
+          // information that isn't actually a password (security hint, SSN,
+          // etc.)
+          new_password = passwords[0];
+          confirmation_password = passwords[1];
+        } else {
+          // Three different passwords, or first and last match with middle
+          // different. No idea which is which. Let's save the first password.
+          // Password selection in a prompt will allow to correct the choice.
+          password = passwords[0];
+        }
+    }
   }
 };
 
@@ -691,72 +749,6 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   return result;
 }
 
-// Detects different password fields from |passwords|.
-void LocateSpecificPasswords(const std::vector<const FormFieldData*>& passwords,
-                             const FormFieldData** current_password,
-                             const FormFieldData** new_password,
-                             const FormFieldData** confirmation_password) {
-  DCHECK(current_password);
-  DCHECK(!*current_password);
-  DCHECK(new_password);
-  DCHECK(!*new_password);
-  DCHECK(confirmation_password);
-  DCHECK(!*confirmation_password);
-
-  switch (passwords.size()) {
-    case 1:
-      *current_password = passwords[0];
-      break;
-    case 2:
-      if (!passwords[0]->value.empty() &&
-          passwords[0]->value == passwords[1]->value) {
-        // Two identical non-empty passwords: assume we are seeing a new
-        // password with a confirmation. This can be either a sign-up form or a
-        // password change form that does not ask for the old password.
-        *new_password = passwords[0];
-        *confirmation_password = passwords[1];
-      } else {
-        // Assume first is old password, second is new (no choice but to guess).
-        // If the passwords are both empty, it is impossible to tell if they
-        // are the old and the new one, or the new one and its confirmation. In
-        // that case Chrome errs on the side of filling and classifies them as
-        // old & new to allow filling of change password forms.
-        *current_password = passwords[0];
-        *new_password = passwords[1];
-      }
-      break;
-    default:
-      // If there are more than 3 passwords it is not very clear what this form
-      // it is. Consider only the first 3 passwords in such case as a
-      // best-effort solution.
-      if (!passwords[0]->value.empty() &&
-          passwords[0]->value == passwords[1]->value &&
-          passwords[0]->value == passwords[2]->value) {
-        // All passwords are the same. Assume that the first field is the
-        // current password.
-        *current_password = passwords[0];
-      } else if (passwords[1]->value == passwords[2]->value) {
-        // New password is the duplicated one, and comes second; or empty form
-        // with at least 3 password fields.
-        *current_password = passwords[0];
-        *new_password = passwords[1];
-        *confirmation_password = passwords[2];
-      } else if (passwords[0]->value == passwords[1]->value) {
-        // It is strange that the new password comes first, but trust more which
-        // fields are duplicated than the ordering of fields. Assume that
-        // any password fields after the new password contain sensitive
-        // information that isn't actually a password (security hint, SSN, etc.)
-        *new_password = passwords[0];
-        *confirmation_password = passwords[1];
-      } else {
-        // Three different passwords, or first and last match with middle
-        // different. No idea which is which. Let's save the first password.
-        // Password selection in a prompt will allow to correct the choice.
-        *current_password = passwords[0];
-      }
-  }
-}
-
 // Tries to find username field among text fields from |processed_fields|
 // occurring before |first_relevant_password|. Returns nullptr if the username
 // is not found. If |mode| is SAVING, ignores all fields with empty values.
@@ -858,9 +850,7 @@ void ParseUsingBaseHeuristics(
         &found_fields->is_fallback, found_fields->username);
     if (passwords.empty())
       return;
-    LocateSpecificPasswords(passwords, &found_fields->password,
-                            &found_fields->new_password,
-                            &found_fields->confirmation_password);
+    found_fields->LocateSpecificPasswords(passwords);
     if (!found_fields->HasPasswords())
       return;
     for (auto it = processed_fields.begin(); it != processed_fields.end();
