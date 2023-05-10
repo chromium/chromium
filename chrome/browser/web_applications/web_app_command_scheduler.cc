@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/commands/install_placeholder_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
+#include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
@@ -310,6 +311,29 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
           url, web_contents, std::make_unique<web_app::WebAppUrlLoader>(),
           std::make_unique<web_app::WebAppDataRetriever>(),
           std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
+    const GURL& install_url,
+    const GURL& origin,
+    bool is_renderer_initiated,
+    NavigateAndTriggerInstallDialogCommandCallback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       NavigateAndTriggerInstallDialogCommandResult::kFailure));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<NavigateAndTriggerInstallDialogCommand>(
+          install_url, origin, is_renderer_initiated, std::move(callback),
+          provider_->ui_manager().GetWeakPtr(),
+          std::make_unique<WebAppUrlLoader>(),
+          std::make_unique<WebAppDataRetriever>(), &*profile_),
       location);
 }
 

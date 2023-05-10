@@ -84,7 +84,8 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
         {features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels,
          features::kHelpAppLauncherSearch},
-        {});
+        // TODO(b/279856318): Test auto trigger install dialog functionality.
+        {features::kHelpAppAutoTriggerInstallDialog});
 
     https_server()->ServeFilesFromSourceDirectory(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));

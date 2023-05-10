@@ -61,17 +61,14 @@ class LoaderTask : public content::WebContentsObserver {
   LoaderTask& operator=(LoaderTask&&) = delete;
   ~LoaderTask() override = default;
 
-  void LoadUrl(const GURL& url,
+  void LoadUrl(const content::NavigationController::LoadURLParams& load_params,
                content::WebContents* web_contents,
                UrlComparison url_comparison,
                WebAppUrlLoader::ResultCallback callback) {
-    url_ = url;
+    url_ = load_params.url;
     url_comparison_ = url_comparison;
     callback_ = std::move(callback);
     Observe(web_contents);
-
-    content::NavigationController::LoadURLParams load_params(url);
-    load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
 
     web_contents->GetController().LoadURLWithParams(load_params);
 
@@ -182,14 +179,15 @@ WebAppUrlLoader::WebAppUrlLoader() = default;
 
 WebAppUrlLoader::~WebAppUrlLoader() = default;
 
-void WebAppUrlLoader::LoadUrl(const GURL& url,
-                              content::WebContents* web_contents,
-                              UrlComparison url_comparison,
-                              ResultCallback callback) {
+void WebAppUrlLoader::LoadUrl(
+    const content::NavigationController::LoadURLParams& load_url_params,
+    content::WebContents* web_contents,
+    UrlComparison url_comparison,
+    ResultCallback callback) {
   auto loader_task = std::make_unique<LoaderTask>();
   auto* loader_task_ptr = loader_task.get();
   loader_task_ptr->LoadUrl(
-      url, web_contents, url_comparison,
+      load_url_params, web_contents, url_comparison,
       base::BindOnce(
           [](ResultCallback callback, std::unique_ptr<LoaderTask> task,
              Result result) {
@@ -197,6 +195,15 @@ void WebAppUrlLoader::LoadUrl(const GURL& url,
             task.reset();
           },
           std::move(callback), std::move(loader_task)));
+}
+
+void WebAppUrlLoader::LoadUrl(const GURL& url,
+                              content::WebContents* web_contents,
+                              UrlComparison url_comparison,
+                              ResultCallback callback) {
+  content::NavigationController::LoadURLParams load_params(url);
+  load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
+  LoadUrl(load_params, web_contents, url_comparison, std::move(callback));
 }
 
 void WebAppUrlLoader::PrepareForLoad(content::WebContents* web_contents,

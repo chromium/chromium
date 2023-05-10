@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
@@ -160,6 +161,15 @@ class WebAppUiManager {
   // another app.
   virtual void MaybeTransferAppAttributes(const AppId& from_extension_or_app,
                                           const AppId& to_app) = 0;
+
+  // Creates a new Browser tab on the "about:blank" URL. Creates a new browser
+  // if there isn't one that is already open.
+  virtual content::WebContents* CreateNewTab() = 0;
+
+  // Triggers the web app install dialog on the specified |web_contents| if
+  // there is an installable web app. This will show the dialog even if the app
+  // is already installed.
+  virtual void TriggerInstallDialog(content::WebContents* web_contents) = 0;
 
  private:
   base::ObserverList<WebAppUiManagerObserver> observers_;

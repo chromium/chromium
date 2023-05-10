@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
+#include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -158,6 +159,13 @@ class WebAppCommandScheduler {
       const GURL& url,
       base::WeakPtr<content::WebContents> web_contents,
       FetchInstallabilityForChromeManagementCallback callback,
+      const base::Location& location = FROM_HERE);
+
+  void ScheduleNavigateAndTriggerInstallDialog(
+      const GURL& install_url,
+      const GURL& origin_url,
+      bool is_renderer_initiated,
+      NavigateAndTriggerInstallDialogCommandCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that installs the Isolated Web App described by the
