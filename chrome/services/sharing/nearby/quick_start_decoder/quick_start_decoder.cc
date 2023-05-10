@@ -45,7 +45,7 @@ constexpr char kWifiNetworkInformationKey[] = "wifi_network";
 constexpr char kWifiNetworkSsidKey[] = "wifi_ssid";
 
 // Key in wifi_network dictionary containing the password of the wifi network.
-constexpr char kWifiNetworkPasswordKey[] = "pre_shared_key";
+constexpr char kWifiNetworkPasswordKey[] = "wifi_pre_shared_key";
 
 // Key in wifi_network dictionary containing the security type of the wifi
 // network.
