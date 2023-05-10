@@ -198,7 +198,7 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver load_observer(web_contents);
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         GetFrame(),
         base::StringPrintf("document.body.querySelector('iframe').src = '%s';",
                            url.spec().c_str())));
