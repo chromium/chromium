@@ -39,6 +39,8 @@ export async function createPaymentsSection(
 /**
  * Returns the default expectations from TestPaymentsManager. Adjust the
  * values as needed.
+ * `requestedCreditCards`, `listeningCreditCards` and `requestedIbans` are
+ * defaulted to 1 as they are always called during page initialization.
  */
 export function getDefaultExpectations(): PaymentsManagerExpectations {
   const expected = new PaymentsManagerExpectations();
@@ -50,6 +52,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.requestedIbans = 1;
   expected.removedIbans = 0;
   expected.isValidIban = 0;
+  expected.authenticateUserAndFlipMandatoryAuthToggle = 0;
   return expected;
 }
 

@@ -620,6 +620,18 @@ export class SettingsPaymentsSectionElement extends
       focusWithoutInk(element);
     }
   }
+
+  /**
+   * Checks for user auth before flipping the mandatory auth toggle.
+   */
+  private onMandatoryAuthToggleChange_(e: Event) {
+    const mandatoryAuthToggle = e.target as SettingsToggleButtonElement;
+    assert(mandatoryAuthToggle);
+    // The toggle is reset to the value when it was clicked.
+    // It will be flipped afterwards if the user auth is successful.
+    mandatoryAuthToggle.checked = !mandatoryAuthToggle.checked;
+    this.paymentsManager_.authenticateUserAndFlipMandatoryAuthToggle();
+  }
 }
 
 declare global {
