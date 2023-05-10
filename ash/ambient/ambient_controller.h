@@ -127,9 +127,7 @@ class ASH_EXPORT AmbientController
   void OnInteractionStateChanged(InteractionState interaction_state) override;
 
   // Invoked by the `LockScreen` to notify ambient mode that either the login or
-  // lock screen has been created. Note: This should only be used for reacting
-  // to login screen creation. For LockScreen lock/unlock we should keep relying
-  // on `OnLockStateChanged` method.
+  // lock screen has been created.
   void OnLoginOrLockScreenCreated();
 
   // Set the ui state to begin showing ambient mode. After calling this
@@ -199,6 +197,10 @@ class ASH_EXPORT AmbientController
   }
 
  private:
+  // Enum to indicate which state the lock screen is in. This is used
+  // by `OnLoginLockScreenStateChanged` method as a parameter to pass
+  // the correct information to the method.
+  enum LockScreenState { kLogin, kLocked, kUnlocked };
   friend class AmbientAshTestBase;
   friend class AmbientControllerTest;
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest,
@@ -252,9 +254,9 @@ class ASH_EXPORT AmbientController
   // Removes any and all ambient mode ui model related settings pref observers
   void RemoveAmbientModeSettingsPrefObservers();
 
-  // Adds/Removes managed pref observers
+  // Adds/Removes pref observers
   void AddManagedScreensaverPolicyPrefObservers();
-  void AddAmbientModeUserSettingsPolicyPrefObservers();
+  void AddConsumerPrefObservers();
 
   // Invoked when the Ambient mode prefs state changes.
   void OnEnabledPrefChanged();
@@ -268,7 +270,6 @@ class ASH_EXPORT AmbientController
   void ResetAmbientControllerResources();
 
   // Invoked when preferences change via policy updates.
-  void OnManagedScreensaverEnabledPrefChanged();
   void OnManagedScreensaverLockScreenIdleTimeoutPrefChanged();
   void OnManagedScreensaverPhotoRefreshIntervalPrefChanged();
 
@@ -276,6 +277,10 @@ class ASH_EXPORT AmbientController
   void DestroyUiLauncher();
   bool IsUiLauncherActive() const;
   void OnUiLauncherInitialized(bool success);
+
+  void OnLoginLockStateChanged(LockScreenState state);
+
+  LockScreenState GetLockScreenState();
 
   // Returns the active pref change registrar. Note: The registar for user
   // profile `pref_change_registrar_` will always be the active pref change
@@ -359,7 +364,7 @@ class ASH_EXPORT AmbientController
   // TODO(safarli): Remove this workaround when b/266234711 is fixed.
   bool last_mouse_event_was_move_ = false;
 
-  // Flag used to prevent multiple calls to OnEnabledPrefChanged initializing
+  // Flag used to handle calls to OnEnabledPrefChanged initializing
   // the controller.
   bool is_initialized_ = false;
 
