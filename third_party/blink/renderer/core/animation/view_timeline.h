@@ -75,9 +75,9 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   void Trace(Visitor*) const override;
 
  protected:
-  absl::optional<ScrollOffsets> CalculateOffsets(
-      PaintLayerScrollableArea* scrollable_area,
-      ScrollOrientation physical_orientation) const override;
+  void CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
+                        ScrollOrientation physical_orientation,
+                        TimelineState* state) const override;
 
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;
@@ -87,8 +87,6 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   absl::optional<LayoutSize> SubjectSize() const;
   absl::optional<gfx::PointF> SubjectPosition() const;
-
-  void FlushStyleUpdate() override;
 
  private:
   // Cache values to make timeline phase conversions more efficient.

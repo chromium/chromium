@@ -147,11 +147,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
-  // Called when forcing a style update in response to a web-animations API call
-  // that require a fresh style (e.g. getKeyframes) Resolves scroll offsets and
-  // the resolved source so that timeline offsets can be properly computed.
-  virtual void FlushStyleUpdate();
-
   TimelineAttachment GetTimelineAttachment() const { return attachment_type_; }
 
   ScrollTimelineAttachment* CurrentAttachment() {
@@ -172,11 +167,34 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   void UpdateResolvedSource();
 
+  struct TimelineState {
+    // TODO(crbug.com/1338167): Remove phase as it can be inferred from
+    // current_time.
+    TimelinePhase phase = TimelinePhase::kInactive;
+    absl::optional<base::TimeDelta> current_time;
+    absl::optional<ScrollOffsets> scroll_offsets;
+    // The view offsets will be null unless using a view timeline.
+    absl::optional<ScrollOffsets> view_offsets;
+    // Zoom factor applied to the scroll offsets.
+    float zoom = 1.0f;
+
+    bool HasConsistentLayout(const TimelineState& other) const {
+      return scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
+             view_offsets == other.view_offsets;
+    }
+
+    bool operator==(const TimelineState& other) const {
+      return phase == other.phase && current_time == other.current_time &&
+             scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
+             view_offsets == other.view_offsets;
+    }
+  };
+
   // Scroll offsets corresponding to 0% and 100% progress. By default, these
   // correspond to the scroll range of the container.
-  virtual absl::optional<ScrollOffsets> CalculateOffsets(
-      PaintLayerScrollableArea* scrollable_area,
-      ScrollOrientation physical_orientation) const;
+  virtual void CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
+                                ScrollOrientation physical_orientation,
+                                TimelineState* state) const;
 
   // ScrollSnapshotClient:
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
@@ -194,21 +212,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
-
-  struct TimelineState {
-    // TODO(crbug.com/1338167): Remove phase as it can be inferred from
-    // current_time.
-    TimelinePhase phase = TimelinePhase::kInactive;
-    absl::optional<base::TimeDelta> current_time;
-    absl::optional<ScrollOffsets> scroll_offsets;
-    // Zoom factor applied to the scroll offsets.
-    float zoom = 1.0f;
-
-    bool operator==(const TimelineState& other) const {
-      return phase == other.phase && current_time == other.current_time &&
-             scroll_offsets == other.scroll_offsets && zoom == other.zoom;
-    }
-  };
 
   TimelineState ComputeTimelineState();
 

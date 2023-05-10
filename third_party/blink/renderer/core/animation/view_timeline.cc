@@ -281,9 +281,9 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
   return AnimationTimeDelta();
 }
 
-absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
-    PaintLayerScrollableArea* scrollable_area,
-    ScrollOrientation physical_orientation) const {
+void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
+                                    ScrollOrientation physical_orientation,
+                                    TimelineState* state) const {
   // Do not call this method with an unresolved timeline.
   // Called from ScrollTimeline::ComputeTimelineState, which has safeguard.
   // Any new call sites will require a similar safeguard.
@@ -340,7 +340,10 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   double start_offset = target_offset_ - viewport_size_ + end_side_inset_;
   double end_offset = target_offset_ + target_size_ - start_side_inset_;
 
-  return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
+  state->scroll_offsets =
+      absl::make_optional<ScrollOffsets>(start_offset, end_offset);
+  state->view_offsets = absl::make_optional<ScrollOffsets>(
+      target_offset_, target_offset_ + target_size_);
 }
 
 absl::optional<LayoutSize> ViewTimeline::SubjectSize() const {
@@ -633,11 +636,6 @@ Animation* ViewTimeline::Play(AnimationEffect* effect,
     keyframe_effect->Model()->SetViewTimelineIfRequired(this);
   }
   return AnimationTimeline::Play(effect, exception_state);
-}
-
-void ViewTimeline::FlushStyleUpdate() {
-  ScrollTimeline::FlushStyleUpdate();
-  ResolveTimelineOffsets();
 }
 
 void ViewTimeline::Trace(Visitor* visitor) const {
