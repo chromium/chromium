@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveUnauthorizedResource) {
 
   // Refer to the test file from the test page.
   GURL file_url = net::FilePathToFileURL(file_path);
-  ASSERT_TRUE(ExecuteScript(
+  ASSERT_TRUE(ExecJs(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       base::StringPrintf("document.getElementById('resource1').src = '%s';",
                          file_url.spec().data())));

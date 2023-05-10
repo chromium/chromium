@@ -224,8 +224,8 @@ class DownloadFramePolicyBrowserTest
             browser()->tab_strip_model(), &web_feature_waiter_);
     content::TestNavigationObserver popup_observer(main_url);
     popup_observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(ExecuteScript(GetSubframeRfh(),
-                              "window.open(\"" + main_url.spec() + "\");"));
+    EXPECT_TRUE(
+        ExecJs(GetSubframeRfh(), "window.open(\"" + main_url.spec() + "\");"));
     popup_observer.Wait();
     ASSERT_EQ(2, browser()->tab_strip_model()->count());
     ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
