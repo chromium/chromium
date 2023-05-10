@@ -298,7 +298,10 @@ class WebTransport::Stream final {
         }
       }
       if (read_result.fin) {
-        transport_->client_->OnIncomingStreamClosed(id_, /*fin_received=*/true);
+        if (transport_->client_) {
+          transport_->client_->OnIncomingStreamClosed(id_,
+                                                      /*fin_received=*/true);
+        }
         writable_watcher_.Cancel();
         writable_.reset();
         incoming_ = nullptr;
