@@ -50,7 +50,10 @@ jobs:
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
       - name: Install Chromium
-        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
+        shell: bash # force -eo pipefail
+        run: |
+          chromium_binary="$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')"
+          echo "chromium_binary=$chromium_binary" >> $GITHUB_ENV
       - name: Run WPT tests (mapper, headful)
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' && matrix.kind == 'mapper' }}
         timeout-minutes: 60
