@@ -293,12 +293,6 @@ public class SaveUpdateAddressProfilePromptTest {
         View dialog = mPrompt.getDialogViewForTesting();
         ImageButton editButton = dialog.findViewById(R.id.edit_button);
         editButton.performClick();
-        verify(mAddressEditor).edit(any(), mCallbackCaptor.capture(), any());
-
-        AutofillAddress autofillAddress = new AutofillAddress(mActivity, new AutofillProfile());
-        mCallbackCaptor.getValue().onResult(autofillAddress);
-        Assert.assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), any());
+        verify(mAddressEditor).edit(any());
     }
 }

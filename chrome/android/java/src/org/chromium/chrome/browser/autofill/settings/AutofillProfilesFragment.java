@@ -224,28 +224,31 @@ public class AutofillProfilesFragment
     }
 
     private void editAddress(EditorDialog dialog, AutofillAddress autofillAddress) {
-        AddressEditor addressEditor = new AddressEditor(dialog,
+        AddressEditor.Delegate delegate = new AddressEditor.Delegate() {
+            // User has either created a new address, or edited an existing address.
+            // We should save changes in any case.
+            @Override
+            public void onDone(AutofillAddress address) {
+                PersonalDataManager.getInstance().setProfile(address.getProfile());
+                SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressUpdated(address);
+                if (sObserverForTest != null) {
+                    sObserverForTest.onEditorReadyToEdit();
+                }
+            }
+
+            // User canceled edited meaning that |autofillAddress| has stayed intact.
+            @Override
+            public void onCancel() {
+                if (sObserverForTest != null) {
+                    sObserverForTest.onEditorReadyToEdit();
+                }
+            }
+        };
+        AddressEditor addressEditor = new AddressEditor(dialog, delegate,
                 /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
                 /*isMigrationToAccount=*/false);
 
-        /*
-         * There are four cases for |address| here.
-         * (1) |address| is null: the user canceled address creation
-         * (2) |address| is non-null: the user canceled editing an existing address
-         * (3) |address| is non-null: the user edited an existing address.
-         * (4) |address| is non-null: the user created a new address.
-         * We should save the changes (set the profile) for cases 3 and 4,
-         * and it's OK to set the profile for 2.
-         */
-        addressEditor.edit(autofillAddress, address -> {
-            if (address != null) {
-                PersonalDataManager.getInstance().setProfile(address.getProfile());
-                SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressUpdated(address);
-            }
-            if (sObserverForTest != null) {
-                sObserverForTest.onEditorReadyToEdit();
-            }
-        });
+        addressEditor.edit(autofillAddress);
     }
 
     private boolean isAddressSyncEnabled() {

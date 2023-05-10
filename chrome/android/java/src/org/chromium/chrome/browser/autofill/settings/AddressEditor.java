@@ -50,6 +50,7 @@ public class AddressEditor {
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
     private final EditorDialog mEditorDialog;
+    private final Delegate mDelegate;
     private final Context mContext;
     private final boolean mSaveToDisk;
     private final boolean mIsUpdate;
@@ -75,6 +76,17 @@ public class AddressEditor {
     private EditorModel mEditor;
     private AutofillProfile mProfile;
     private boolean mIsProfileNew;
+
+    /**
+     * Delegate used to subscribe to AddressEditor user interactions.
+     */
+    public static interface Delegate {
+        // The user has tapped "Done" button.
+        default void onDone(AutofillAddress autofillAddress) {}
+
+        // The user has canceled editing the address.
+        default void onCancel() {}
+    }
 
     /**
      * The list of possible address fields for editing is determined statically.
@@ -127,15 +139,18 @@ public class AddressEditor {
     /**
      * Builds an address editor.
      *
+     * @param editorDialog Editor's view displayed to the user.
+     * @param delegate Delegate to react to users interactions with the editor.
      * @param saveToDisk Whether to save changes to disk after editing.
      * @param isUpdate Whether an existing address profile is being edited.
      * @param isMigrationToAccount Whether this editor is shown during address profile migration to
      *         Google account.
      */
-    public AddressEditor(EditorDialog editorDialog, boolean saveToDisk, boolean isUpdate,
-            boolean isMigrationToAccount) {
+    public AddressEditor(EditorDialog editorDialog, Delegate delegate, boolean saveToDisk,
+            boolean isUpdate, boolean isMigrationToAccount) {
         Objects.requireNonNull(editorDialog, "editor dialog can't be null");
         mEditorDialog = editorDialog;
+        mDelegate = delegate;
         mContext = editorDialog.getContext();
         mSaveToDisk = saveToDisk;
         mIsUpdate = isUpdate;
@@ -171,15 +186,6 @@ public class AddressEditor {
     }
 
     /**
-     * Allows calling |edit| with a single callback used for both 'done' and 'cancel'.
-     * @see #edit(AutofillAddress, Callback, Callback)
-     */
-    public void edit(
-            @Nullable final AutofillAddress toEdit, final Callback<AutofillAddress> callback) {
-        edit(toEdit, callback, callback);
-    }
-
-    /**
      * Builds and shows an editor model with the following fields.
      *
      * [ country dropdown    ] <----- country dropdown is always present.
@@ -195,9 +201,7 @@ public class AddressEditor {
      *
      * TODO(crbug.com/1421056): Split this method for better code readability.
      */
-    public void edit(@Nullable final AutofillAddress toEdit,
-            final Callback<AutofillAddress> doneCallback,
-            final Callback<AutofillAddress> cancelCallback) {
+    public void edit(@Nullable final AutofillAddress toEdit) {
         if (mAutofillProfileBridge == null) mAutofillProfileBridge = new AutofillProfileBridge();
 
         mIsProfileNew = toEdit == null;
@@ -311,7 +315,7 @@ public class AddressEditor {
 
         // If the user clicks [Cancel], send |toEdit| address back to the caller, which was the
         // original state (could be null, a complete address, a partial address).
-        mEditor.setCancelCallback(() -> cancelCallback.onResult(toEdit));
+        mEditor.setCancelCallback(mDelegate::onCancel);
 
         // If the user clicks [Done], save changes on disk, mark the address "complete" if possible,
         // and send it back to the caller.
@@ -322,7 +326,7 @@ public class AddressEditor {
             // for all required fields.
             address.updateAddress(mProfile);
 
-            doneCallback.onResult(address);
+            mDelegate.onDone(address);
         });
 
         // This should be called when all required fields are put in mAddressField.

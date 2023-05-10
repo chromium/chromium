@@ -82,12 +82,17 @@ public class SaveUpdateAddressProfilePrompt {
         mEditorDialog = new EditorDialog(
                 activity, /*deleteRunnable=*/null, browserProfile, /*requiredIndicator=*/false);
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
+        AddressEditor.Delegate delegate = new AddressEditor.Delegate() {
+            @Override
+            public void onDone(AutofillAddress autofillAddress) {
+                onEdited(autofillAddress);
+            }
+        };
         mAddressEditor = new AddressEditor(
-                mEditorDialog, /*saveToDisk=*/false, isUpdate, isMigrationToAccount);
+                mEditorDialog, delegate, /*saveToDisk=*/false, isUpdate, isMigrationToAccount);
         AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
-            mAddressEditor.edit(autofillAddress, /*doneCallback=*/this::onEdited,
-                    /*cancelCallback=*/unused -> {});
+            mAddressEditor.edit(autofillAddress);
         });
     }
 
