@@ -57,6 +57,7 @@ SocketWatcher::SocketWatcher(
       updated_rtt_observation_callback_(updated_rtt_observation_callback),
       should_notify_rtt_callback_(should_notify_rtt_callback),
       rtt_notifications_minimum_interval_(min_notification_interval),
+      allow_rtt_private_address_(allow_rtt_private_address),
       run_rtt_callback_(allow_rtt_private_address ||
                         address.IsPubliclyRoutable()),
       tick_clock_(tick_clock),
@@ -97,8 +98,11 @@ void SocketWatcher::OnUpdatedRTTAvailable(const base::TimeDelta& rtt) {
   // tcp_socket_posix may sometimes report RTT as 1 microsecond when the RTT was
   // actually invalid. See:
   // https://cs.chromium.org/chromium/src/net/socket/tcp_socket_posix.cc?rcl=7ad660e34f2a996e381a85b2a515263003b0c171&l=106.
-  if (rtt <= base::Microseconds(1))
+  // Connections to private address eg localhost because they typically have
+  // small rtt.
+  if (!allow_rtt_private_address_ && rtt <= base::Microseconds(1)) {
     return;
+  }
 
   if (!first_quic_rtt_notification_received_ &&
       protocol_ == SocketPerformanceWatcherFactory::PROTOCOL_QUIC) {
