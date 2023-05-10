@@ -52,19 +52,37 @@ def build_preload_images_js(outdir):
         in_app_images = ast.literal_eval(
             re.search(r'in_app_images\s*=\s*(\[.*?\])', f.read(),
                       re.DOTALL).group(1))
+
+    preload_images_js_path = os.path.join(outdir, 'preload_images.js')
+    if os.path.exists(preload_images_js_path):
+        with open(preload_images_js_path) as f:
+            preload_images_js = f.read()
+    else:
+        preload_images_js = None
+
     with tempfile.NamedTemporaryFile('w') as f:
         f.writelines(
             os.path.abspath(f'images/{asset}') + '\n'
             for asset in in_app_images)
         f.flush()
-        cmd = [
-            'utils/gen_preload_images_js.py',
-            '--images_list_file',
-            f.name,
-            '--output_file',
-            os.path.join(outdir, 'preload_images.js'),
-        ]
-        subprocess.check_call(cmd)
+        with tempfile.NamedTemporaryFile('r') as temp_file:
+            cmd = [
+                'utils/gen_preload_images_js.py',
+                '--images_list_file',
+                f.name,
+                '--output_file',
+                temp_file.name,
+            ]
+            run(cmd)
+
+            new_preload_images_js = temp_file.read()
+            # Only write when the generated preload_images.js changes, to avoid
+            # changing mtime of the preload_images.js file when the images are
+            # not changed, so rsync won't copy the file again on deploy.
+            if new_preload_images_js == preload_images_js:
+                return
+            with open(preload_images_js_path, 'w') as output_file:
+                output_file.write(new_preload_images_js)
 
 
 CCA_OVERRIDE_PATH = '/etc/camera/cca'
@@ -188,8 +206,41 @@ def generate_tsconfig(board):
         json.dump(tsconfig, f)
 
 
-def reload_cca(device):
+# Script to reload all CSS on the page by appending a different search
+# parameter to the URL each time this is run. Note that Date.now() has
+# milliseconds accuracy, so in practice multiple run of the cca.py deploy
+# script will have different search parameter.
+CSS_RELOAD_SCRIPT = """
+for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+    const url = new URL(link.href);
+    url.searchParams.set('cca-deploy-refresh', Date.now().toString());
+    link.href = url.toString();
+}
+console.log('All CSS reloaded');
+"""
+
+
+def can_only_reload_css(changed_files):
+    for file in changed_files:
+        # Ignore deployed_version.js since this always change every deploy, and
+        # doesn't affect anything other than the startup console log and toast.
+        if file.endswith('/deployed_version.js'):
+            continue
+        # Ignore folders.
+        if file.endswith('/'):
+            continue
+        # .css change is okay.
+        if file.endswith('.css'):
+            continue
+        return False
+    return True
+
+
+def reload_cca(device, changed_files):
     try:
+        reload_script = "document.location.reload()"
+        if can_only_reload_css(changed_files):
+            reload_script = CSS_RELOAD_SCRIPT
         run([
             'ssh',
             device,
@@ -199,7 +250,7 @@ def reload_cca(device):
             '&&',
             'cca',
             'eval',
-            shlex.quote("document.location.reload()"),
+            shlex.quote(reload_script),
             ">",
             "/dev/null",
         ])
@@ -215,6 +266,7 @@ DEPLOY_OUTPUT_TEMP_DIR = '/tmp/cca-deploy-out'
 
 
 def rsync_to_device(device, src, target, *, extra_arguments=[]):
+    """Returns list of files that are changed."""
     cmd = [
         'rsync',
         '--recursive',
@@ -232,11 +284,16 @@ def rsync_to_device(device, src, target, *, extra_arguments=[]):
         # will have their permission fixed.
         '--perms',
         '--chmod=a+rX',
+        # Sets rsync output format to %n which prints file path that are
+        # changed. (By default rsync only copies file that have different size
+        # or modified time.)
+        '--out-format=%n',
         *extra_arguments,
         src,
         f'{device}:{target}',
     ]
-    run(cmd)
+    output = check_output(cmd)
+    return [os.path.join(target, file) for file in output.splitlines()]
 
 
 def deploy(args):
@@ -271,14 +328,19 @@ def deploy(args):
 
     build_preload_images_js(js_out_dir)
 
-    rsync_to_device(args.device,
-                    f'{js_out_dir}/',
-                    f'{CCA_OVERRIDE_PATH}/js/',
-                    extra_arguments=['--exclude=tsconfig.tsbuildinfo'])
+    # Note that although we always rerun tsc, when the JS inputs are not
+    # changed, tsc also doesn't change the output file's mtime, so rsync will
+    # correctly skip those unchanged files.
+    changed_files = rsync_to_device(
+        args.device,
+        f'{js_out_dir}/',
+        f'{CCA_OVERRIDE_PATH}/js/',
+        extra_arguments=['--exclude=tsconfig.tsbuildinfo'])
 
     for dir in ['css', 'images', 'views', 'sounds']:
-        rsync_to_device(args.device, f'{os.path.join(cca_root, dir)}/',
-                        f'{CCA_OVERRIDE_PATH}/{dir}/')
+        changed_files += rsync_to_device(args.device,
+                                         f'{os.path.join(cca_root, dir)}/',
+                                         f'{CCA_OVERRIDE_PATH}/{dir}/')
 
     current_time = time.strftime('%F %T%z')
     run([
@@ -297,7 +359,7 @@ def deploy(args):
     ensure_local_override_enabled(args.device, args.force)
 
     if args.reload:
-        reload_cca(args.device)
+        reload_cca(args.device, changed_files)
 
 
 def test(args):
