@@ -6827,6 +6827,7 @@ test("unit_tests") {
       "//chrome/browser/share",
       "//chrome/browser/thumbnail:unit_tests",
       "//chrome/browser/thumbnail/cc:features",
+      "//chrome/browser/touch_to_fill/password_generation/android:unit_tests",
       "//chrome/browser/touch_to_fill/payments/android:public",
       "//chrome/services/media_gallery_util:unit_tests",
       "//components/back_forward_cache",

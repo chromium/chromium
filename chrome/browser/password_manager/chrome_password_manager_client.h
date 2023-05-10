@@ -320,6 +320,7 @@ class ChromePasswordManagerClient
 
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
   // Given |bounds| in the renderers coordinate system, return the same bounds

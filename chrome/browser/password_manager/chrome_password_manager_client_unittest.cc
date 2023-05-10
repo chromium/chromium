@@ -1073,7 +1073,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   PasswordGenerationController* pwd_generation_controller =
       PasswordGenerationController::GetOrCreate(web_contents());
   pwd_generation_controller->FocusedInputChanged(
-      FocusedFieldType::kFillablePasswordField, driver.get()->AsWeakPtr());
+      FocusedFieldType::kFillablePasswordField, base::AsWeakPtr(driver.get()));
 
   ChromePasswordManagerClient* client = GetClient();
 

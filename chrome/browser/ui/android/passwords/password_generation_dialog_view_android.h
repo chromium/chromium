@@ -35,7 +35,7 @@ class PasswordGenerationDialogViewAndroid
   // Called to show the dialog. |password| is the generated password.
   void Show(
       std::u16string& password,
-      base::WeakPtr<password_manager::PasswordManagerDriver>
+      base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           target_frame_driver,
       autofill::password_generation::PasswordGenerationType type) override;
 
@@ -58,7 +58,8 @@ class PasswordGenerationDialogViewAndroid
   // The driver corresponding to the frame for which the generation request was
   // made. Used to ensure that the accepted password message is sent back to the
   // same frame.
-  base::WeakPtr<password_manager::PasswordManagerDriver> target_frame_driver_;
+  base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+      target_frame_driver_;
 
   // Whether the dialog was shown for manual generation or not. Used for
   // metrics.
