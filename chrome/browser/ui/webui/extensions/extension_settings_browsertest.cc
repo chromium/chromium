@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
 
   // Attempt to add an event listener for the
   // activityLogPrivate.onExtensionActivity event.
-  ASSERT_TRUE(content::ExecuteScript(page_contents, R"(
+  ASSERT_TRUE(content::ExecJs(page_contents, R"(
       let activityLogListener = () => {};
       chrome.activityLogPrivate.onExtensionActivity.addListener(
           activityLogListener);
