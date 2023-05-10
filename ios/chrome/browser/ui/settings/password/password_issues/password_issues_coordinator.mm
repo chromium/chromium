@@ -66,6 +66,18 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // Coordinator for password issues displaying dismissed compromised
   // credentials.
   PasswordIssuesCoordinator* _dismissedPasswordIssuesCoordinator;
+
+  // Flag indicating if the coordinator should dismiss its view controller
+  // because the last password issue was resolved by a password deletion.
+  BOOL _shouldDismissOnAllIssuesGone;
+
+  // Flag indicating if the coordinator should dismiss its view controller after
+  // the view controller of a child coordinator is removed from the stack. When
+  // the issues and dismissed warnings are removed by the user, the coordinator
+  // should dismiss its view controller and go back to the previous screen. If
+  // there are child coordinators, this flag is used to dismiss the view
+  // controller after the children are dismissed.
+  BOOL _shouldDismissAfterChildCoordinatorRemoved;
 }
 
 // Main view controller for this coordinator.
@@ -183,6 +195,72 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)dismissAfterAllIssuesGone {
+  // Early return if the last issue was not resolved by a password deletion, but
+  // by a password change. When the last issue is resolved by a password change,
+  // the details page has to be dismissed manually by the user.
+  if (_shouldDismissOnAllIssuesGone) {
+    [self navigateToPreviousViewController];
+  } else {
+    _shouldDismissAfterChildCoordinatorRemoved = YES;
+  }
+}
+
+#pragma mark - PasswordDetailsCoordinatorDelegate
+
+- (void)passwordDetailsCoordinatorDidRemove:
+    (PasswordDetailsCoordinator*)coordinator {
+  DCHECK_EQ(self.passwordDetails, coordinator);
+  [self.passwordDetails stop];
+  self.passwordDetails.delegate = nil;
+  self.passwordDetails = nil;
+
+  [self onChildCoordinatorDidRemove];
+}
+
+- (void)passwordDetailsWillDeletePassword {
+  _shouldDismissOnAllIssuesGone = self.mediator.hasOneIssueLeft;
+  [self.delegate setShouldDismissOnAllIssuesGone];
+}
+
+#pragma mark - PasswordIssuesCoordinatorDelegate
+
+- (void)passwordIssuesCoordinatorDidRemove:
+    (PasswordIssuesCoordinator*)coordinator {
+  CHECK_EQ(_dismissedPasswordIssuesCoordinator, coordinator);
+  [self stopDismissedPasswordIssuesCoordinator];
+
+  [self onChildCoordinatorDidRemove];
+}
+
+- (void)setShouldDismissOnAllIssuesGone {
+  _shouldDismissOnAllIssuesGone = self.mediator.hasOneIssueLeft;
+}
+
+#pragma mark - Private
+
+- (void)stopDismissedPasswordIssuesCoordinator {
+  [_dismissedPasswordIssuesCoordinator stop];
+  _dismissedPasswordIssuesCoordinator.reauthModule = nil;
+  _dismissedPasswordIssuesCoordinator.delegate = nil;
+  _dismissedPasswordIssuesCoordinator = nil;
+}
+
+// Called after the view controller of a child coordinator of `self` was removed
+// from the navigation stack.
+- (void)onChildCoordinatorDidRemove {
+  // If the content of the view controller was gone while a child coordinator
+  // was presenting content, dismiss the view controller now that the child
+  // coordinator's vc was removed.
+  if (_shouldDismissAfterChildCoordinatorRemoved) {
+    CHECK_EQ(self.baseNavigationController.topViewController,
+             self.viewController);
+    _shouldDismissAfterChildCoordinatorRemoved = NO;
+    [self.baseNavigationController popViewControllerAnimated:NO];
+  }
+}
+
+// Navigates to the previous view controller in the navigation stack.
+- (void)navigateToPreviousViewController {
   UINavigationController* baseNavigationController =
       self.baseNavigationController;
   NSInteger indexInNavigationController =
@@ -202,33 +280,6 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
       popToViewController:baseNavigationController
                               .viewControllers[indexInNavigationController - 1]
                  animated:YES];
-}
-
-#pragma mark - PasswordDetailsCoordinatorDelegate
-
-- (void)passwordDetailsCoordinatorDidRemove:
-    (PasswordDetailsCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordDetails, coordinator);
-  [self.passwordDetails stop];
-  self.passwordDetails.delegate = nil;
-  self.passwordDetails = nil;
-}
-
-#pragma mark - PasswordIssuesCoordinatorDelegate
-
-- (void)passwordIssuesCoordinatorDidRemove:
-    (PasswordIssuesCoordinator*)coordinator {
-  CHECK_EQ(_dismissedPasswordIssuesCoordinator, coordinator);
-  [self stopDismissedPasswordIssuesCoordinator];
-}
-
-#pragma mark - Private
-
-- (void)stopDismissedPasswordIssuesCoordinator {
-  [_dismissedPasswordIssuesCoordinator stop];
-  _dismissedPasswordIssuesCoordinator.reauthModule = nil;
-  _dismissedPasswordIssuesCoordinator.delegate = nil;
-  _dismissedPasswordIssuesCoordinator = nil;
 }
 
 @end

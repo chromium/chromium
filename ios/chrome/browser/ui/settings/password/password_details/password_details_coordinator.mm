@@ -283,10 +283,13 @@
                                      title:title
                                    message:message
                              barButtonItem:self.viewController.deleteButton];
+
+  __weak __typeof(self.delegate) weakDelegate = self.delegate;
   __weak __typeof(self.mediator) weakMediator = self.mediator;
   [self.actionSheetCoordinator
       addItemWithTitle:buttonText
                 action:^{
+                  [weakDelegate passwordDetailsWillDeletePassword];
                   [weakMediator removeCredential:password];
                 }
                  style:UIAlertActionStyleDestructive];

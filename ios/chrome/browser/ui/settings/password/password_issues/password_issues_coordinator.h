@@ -23,6 +23,17 @@ enum class WarningType;
 - (void)passwordIssuesCoordinatorDidRemove:
     (PasswordIssuesCoordinator*)coordinator;
 
+// Called by a PasswordIssuesCoordinator child to tell its
+// PasswordIssuesCoordinator parent to dismiss its own
+// PasswordIssuesTableViewController when all password issues are gone. This
+// happens when the PasswordIssuesCoordinator child gets notified by its
+// PasswordDetailsCoordinator that a password will be deleted from the password
+// details page. A PasswordIssuesCoordinator should dismiss its
+// PasswordIssuesTableViewController immediately after being notified that all
+// issues are gone only when its last issue was resolved from a password
+// deletion from the details page.
+- (void)setShouldDismissOnAllIssuesGone;
+
 @end
 
 // This coordinator presents a list of compromised credentials for the user.

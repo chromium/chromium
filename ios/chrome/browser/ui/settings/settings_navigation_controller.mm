@@ -769,6 +769,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.passwordDetailsCoordinator = nil;
 }
 
+- (void)passwordDetailsWillDeletePassword {
+  // No-op: This method is only used when the Password Details page is presented
+  // from a PasswordIssuesCoordinator.
+}
+
 #pragma mark - ClearBrowsingDataCoordinatorDelegate
 
 - (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:

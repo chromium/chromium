@@ -351,6 +351,11 @@ using password_manager::WarningType;
   self.passwordIssuesCoordinator = nil;
 }
 
+- (void)setShouldDismissOnAllIssuesGone {
+  // No-op: This method is only used in the context of a
+  // PasswordIssuesCoordinator.
+}
+
 #pragma mark - PasswordCheckupCoordinatorDelegate
 
 - (void)passwordCheckupCoordinatorDidRemove:
@@ -369,6 +374,11 @@ using password_manager::WarningType;
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
+}
+
+- (void)passwordDetailsWillDeletePassword {
+  // No-op: This method is only used when the Password Details page is presented
+  // from a PasswordIssuesCoordinator.
 }
 
 #pragma mark AddPasswordDetailsCoordinatorDelegate
