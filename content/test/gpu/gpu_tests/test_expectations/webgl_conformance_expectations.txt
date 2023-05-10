@@ -464,7 +464,6 @@ crbug.com/1442626 [ mac amd-0x67ef angle-metal ] conformance/canvas/draw-webgl-t
 
 ## Mac Intel ##
 
-crbug.com/1440905 [ mac intel ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
 
 ## Mac Retina NVidia failures / flakes ##
 
