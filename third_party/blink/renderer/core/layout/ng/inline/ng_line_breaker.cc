@@ -547,15 +547,14 @@ LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
   DCHECK_LT(index, item_results->size());
   hyphen_index_ = index;
 
-  if (!item_result->hyphen_string) {
+  if (!item_result->hyphen) {
     item_result->ShapeHyphen();
     has_any_hyphens_ = true;
   }
-  DCHECK(item_result->hyphen_string);
-  DCHECK(item_result->hyphen_shape_result);
+  DCHECK(item_result->hyphen);
   DCHECK(has_any_hyphens_);
 
-  const LayoutUnit hyphen_inline_size = item_result->HyphenInlineSize();
+  const LayoutUnit hyphen_inline_size = item_result->hyphen.InlineSize();
   item_result->inline_size += hyphen_inline_size;
   return hyphen_inline_size;
 }
@@ -582,9 +581,8 @@ LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
 LayoutUnit NGLineBreaker::RemoveHyphen(NGInlineItemResults* item_results) {
   DCHECK(HasHyphen());
   NGInlineItemResult* item_result = &(*item_results)[*hyphen_index_];
-  DCHECK(item_result->hyphen_string);
-  DCHECK(item_result->hyphen_shape_result);
-  const LayoutUnit hyphen_inline_size = item_result->HyphenInlineSize();
+  DCHECK(item_result->hyphen);
+  const LayoutUnit hyphen_inline_size = item_result->hyphen.InlineSize();
   item_result->inline_size -= hyphen_inline_size;
   // |hyphen_string| and |hyphen_shape_result| may be reused when rewinded.
   hyphen_index_.reset();
@@ -598,7 +596,7 @@ void NGLineBreaker::RestoreLastHyphen(NGInlineItemResults* item_results) {
   DCHECK(has_any_hyphens_);
   for (NGInlineItemResult& item_result : base::Reversed(*item_results)) {
     DCHECK(item_result.item);
-    if (item_result.hyphen_string) {
+    if (item_result.hyphen) {
       AddHyphen(item_results, &item_result);
       return;
     }
@@ -613,8 +611,7 @@ void NGLineBreaker::RestoreLastHyphen(NGInlineItemResults* item_results) {
 void NGLineBreaker::FinalizeHyphen(NGInlineItemResults* item_results) {
   DCHECK(HasHyphen());
   NGInlineItemResult* item_result = &(*item_results)[*hyphen_index_];
-  DCHECK(item_result->hyphen_string);
-  DCHECK(item_result->hyphen_shape_result);
+  DCHECK(item_result->hyphen);
   item_result->is_hyphenated = true;
 }
 
@@ -1493,9 +1490,10 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
       if (UNLIKELY(hyphenation_)) {
         // When 'hyphens: auto', compute all hyphenation opportunities.
         if (!hyphen_inline_size) {
-          if (!item_result->hyphen_shape_result)
+          if (!item_result->hyphen) {
             item_result->ShapeHyphen();
-          hyphen_inline_size = item_result->HyphenInlineSize();
+          }
+          hyphen_inline_size = item_result->hyphen.InlineSize();
         }
         const StringView word(text, start_offset, word_len);
         Vector<wtf_size_t, 8> locations = hyphenation_->HyphenLocations(word);
@@ -1523,9 +1521,10 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
         // Append hyphen-width to `word_width` if the word is hyphenated.
         if (has_hyphen) {
           if (!hyphen_inline_size) {
-            if (!item_result->hyphen_shape_result)
+            if (!item_result->hyphen) {
               item_result->ShapeHyphen();
-            hyphen_inline_size = item_result->HyphenInlineSize();
+            }
+            hyphen_inline_size = item_result->hyphen.InlineSize();
           }
           word_width =
               (LayoutUnit::FromFloatCeil(word_width) + *hyphen_inline_size)

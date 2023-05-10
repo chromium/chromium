@@ -303,9 +303,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
       DCHECK(item.TextType() == NGTextType::kNormal ||
              item.TextType() == NGTextType::kSymbolMarker);
       if (UNLIKELY(item_result.is_hyphenated)) {
-        DCHECK(item_result.hyphen_string);
-        DCHECK(item_result.hyphen_shape_result);
-        LayoutUnit hyphen_inline_size = item_result.HyphenInlineSize();
+        DCHECK(item_result.hyphen);
+        LayoutUnit hyphen_inline_size = item_result.hyphen.InlineSize();
         line_box->AddChild(item, item_result, item_result.TextOffset(),
                            box->text_top,
                            item_result.inline_size - hyphen_inline_size,
@@ -618,13 +617,12 @@ void NGInlineLayoutAlgorithm::PlaceHyphen(const NGInlineItemResult& item_result,
                                           NGInlineBoxState* box) {
   DCHECK(item_result.item);
   DCHECK(item_result.is_hyphenated);
-  DCHECK(item_result.hyphen_string);
-  DCHECK(item_result.hyphen_shape_result);
-  DCHECK_EQ(hyphen_inline_size, item_result.HyphenInlineSize());
+  DCHECK(item_result.hyphen);
+  DCHECK_EQ(hyphen_inline_size, item_result.hyphen.InlineSize());
   const NGInlineItem& item = *item_result.item;
   line_box->AddChild(
-      item, ShapeResultView::Create(item_result.hyphen_shape_result.get()),
-      item_result.hyphen_string, box->text_top, hyphen_inline_size,
+      item, ShapeResultView::Create(&item_result.hyphen.GetShapeResult()),
+      item_result.hyphen.Text(), box->text_top, hyphen_inline_size,
       box->text_height, item.BidiLevel());
 }
 
@@ -1007,8 +1005,9 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   // matches to the |ShapeResult|.
   DCHECK(!line_info->Results().empty());
   const NGInlineItemResult& last_item_result = line_info->Results().back();
-  if (last_item_result.hyphen_string)
-    line_text_builder.Append(last_item_result.hyphen_string);
+  if (last_item_result.hyphen) {
+    line_text_builder.Append(last_item_result.hyphen.Text());
+  }
 
   // Compute the spacing to justify.
   // Releasing string, StringBuilder reset.
@@ -1056,7 +1055,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
                                               shape_result->StartIndex());
       item_result.inline_size = shape_result->SnappedWidth();
       if (UNLIKELY(item_result.is_hyphenated))
-        item_result.inline_size += item_result.HyphenInlineSize();
+        item_result.inline_size += item_result.hyphen.InlineSize();
       item_result.shape_result = ShapeResultView::Create(shape_result.get());
     } else if (item_result.item->Type() == NGInlineItem::kAtomicInline) {
       float spacing_before = 0.0f;

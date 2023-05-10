@@ -25,14 +25,10 @@ NGInlineItemResult::NGInlineItemResult(const NGInlineItem* item,
       has_unpositioned_floats(has_unpositioned_floats) {}
 
 void NGInlineItemResult::ShapeHyphen() {
-  DCHECK(!hyphen_string);
-  DCHECK(!hyphen_shape_result);
+  DCHECK(!hyphen);
   DCHECK(item);
   DCHECK(item->Style());
-  const ComputedStyle& style = *item->Style();
-  hyphen_string = style.HyphenString();
-  HarfBuzzShaper shaper(hyphen_string);
-  hyphen_shape_result = shaper.Shape(&style.GetFont(), style.Direction());
+  hyphen.Shape(*item->Style());
 }
 
 #if DCHECK_IS_ON()

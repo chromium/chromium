@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/hyphen_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
@@ -52,16 +53,8 @@ struct CORE_EXPORT NGInlineItemResult {
   NGInlineItemTextIndex Start() const { return {item_index, StartOffset()}; }
   NGInlineItemTextIndex End() const { return {item_index, EndOffset()}; }
 
-  LayoutUnit HyphenInlineSize() const {
-    return hyphen_shape_result->SnappedWidth().ClampNegativeToZero();
-  }
-
   // Compute/clear |hyphen_string| and |hyphen_shape_result|.
   void ShapeHyphen();
-  void ClearHyphen() {
-    hyphen_string = String();
-    hyphen_shape_result = nullptr;
-  }
 
   void Trace(Visitor* visitor) const;
 #if DCHECK_IS_ON()
@@ -92,9 +85,8 @@ struct CORE_EXPORT NGInlineItemResult {
 
   // Hyphen character and its |ShapeResult|.
   // Use |is_hyphenated| to determine whether this item is hyphenated or not.
-  // These fields may be set even when this item is not hyphenated.
-  String hyphen_string;
-  scoped_refptr<const ShapeResult> hyphen_shape_result;
+  // This field may be set even when this item is not hyphenated.
+  HyphenResult hyphen;
 
   // NGLayoutResult for atomic inline items.
   Member<const NGLayoutResult> layout_result;
