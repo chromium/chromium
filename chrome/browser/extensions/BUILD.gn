@@ -129,8 +129,6 @@ static_library("extensions") {
     "api/desktop_capture/desktop_capture_base.h",
     "api/developer_private/developer_private_api.cc",
     "api/developer_private/developer_private_api.h",
-    "api/developer_private/developer_private_mangle.cc",
-    "api/developer_private/developer_private_mangle.h",
     "api/developer_private/entry_picker.cc",
     "api/developer_private/entry_picker.h",
     "api/developer_private/extension_info_generator.cc",

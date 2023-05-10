@@ -28,7 +28,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/developer_private/developer_private_mangle.h"
 #include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/api/developer_private/show_permissions_dialog_helper.h"
@@ -462,7 +461,6 @@ void RevokePermissionsForSite(content::BrowserContext* context,
 }  // namespace
 
 namespace ChoosePath = api::developer_private::ChoosePath;
-namespace GetItemsInfo = api::developer_private::GetItemsInfo;
 namespace PackDirectory = api::developer_private::PackDirectory;
 namespace Reload = api::developer_private::Reload;
 
@@ -1038,32 +1036,6 @@ DeveloperPrivateGetExtensionSizeFunction::Run() {
 void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
     const std::u16string& size) {
   Respond(WithArguments(size));
-}
-
-DeveloperPrivateGetItemsInfoFunction::DeveloperPrivateGetItemsInfoFunction() {}
-DeveloperPrivateGetItemsInfoFunction::~DeveloperPrivateGetItemsInfoFunction() {}
-
-ExtensionFunction::ResponseAction DeveloperPrivateGetItemsInfoFunction::Run() {
-  absl::optional<developer::GetItemsInfo::Params> params =
-      developer::GetItemsInfo::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
-  info_generator_->CreateExtensionsInfo(
-      params->include_disabled, params->include_terminated,
-      base::BindOnce(&DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated,
-                     this));
-
-  return RespondLater();
-}
-
-void DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated(
-    ExtensionInfoGenerator::ExtensionInfoList list) {
-  std::vector<developer::ItemInfo> item_list;
-  for (const developer::ExtensionInfo& info : list)
-    item_list.push_back(developer_private_mangle::MangleExtensionInfo(info));
-
-  Respond(ArgumentList(developer::GetItemsInfo::Results::Create(item_list)));
 }
 
 DeveloperPrivateGetProfileConfigurationFunction::

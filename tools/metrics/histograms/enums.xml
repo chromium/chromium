@@ -34514,7 +34514,7 @@ Called by update_extension_histograms.py.-->
   <int value="261" label="RUNTIME_REQUESTUPDATECHECK"/>
   <int value="262" label="PAGEACTION_SETICON"/>
   <int value="263" label="BROWSERACTION_SETBADGEBACKGROUNDCOLOR"/>
-  <int value="264" label="DEVELOPERPRIVATE_GETITEMSINFO"/>
+  <int value="264" label="DELETED_DEVELOPERPRIVATE_GETITEMSINFO"/>
   <int value="265" label="BLUETOOTH_STOPDISCOVERY"/>
   <int value="266" label="COOKIES_REMOVE"/>
   <int value="267" label="DELETED_EXPERIMENTAL_RLZ_SENDFINANCIALPING"/>
