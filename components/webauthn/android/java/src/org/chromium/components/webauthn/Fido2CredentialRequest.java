@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.Parcel;
-import android.util.Base64;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -733,9 +732,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         requestBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
                 CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_CREATE_PUBLIC_KEY_CREDENTIAL_REQUEST");
         requestBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
-        requestBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH",
-                Base64.encodeToString(
-                        clientDataHash, Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE));
+        requestBundle.putByteArray(CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
         requestBundle.putBoolean(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
 
@@ -1071,9 +1068,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return null;
         }
 
-        Bundle publicKeyCredentialOptionBundle = buildPublicKeyCredentialOptionBundle(requestAsJson,
-                Base64.encodeToString(
-                        clientDataHash, Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE));
+        Bundle publicKeyCredentialOptionBundle =
+                buildPublicKeyCredentialOptionBundle(requestAsJson, clientDataHash);
 
         // Build the CredentialOption:
         Object credentialOption;
@@ -1115,14 +1111,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     }
 
     private Bundle buildPublicKeyCredentialOptionBundle(
-            String requestAsJson, String encodedClientDataHash) {
+            String requestAsJson, byte[] clientDataHash) {
         final Bundle publicKeyCredentialOptionBundle = new Bundle();
         publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
                 CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
         publicKeyCredentialOptionBundle.putString(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
-        publicKeyCredentialOptionBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", encodedClientDataHash);
+        publicKeyCredentialOptionBundle.putByteArray(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
         publicKeyCredentialOptionBundle.putBoolean(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
         return publicKeyCredentialOptionBundle;
