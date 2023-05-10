@@ -40,7 +40,6 @@ namespace blink {
 
 class DOMWindow;
 class ExceptionState;
-class Frame;
 class LocalDOMWindow;
 class Location;
 class Node;
@@ -88,16 +87,6 @@ class CORE_EXPORT BindingSecurity {
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
                                   const Node* target,
                                   ErrorReportOption);
-
-  // These overloads should be used only when checking a general access from
-  // one context to another context.  For access to a receiver object or
-  // returned object, you should use the above overloads.
-  static bool ShouldAllowAccessToFrame(const LocalDOMWindow* accessing_window,
-                                       const Frame* target,
-                                       ExceptionState&);
-  static bool ShouldAllowAccessToFrame(const LocalDOMWindow* accessing_window,
-                                       const Frame* target,
-                                       ErrorReportOption);
 
   // These overloads should be used only when checking a general access from
   // one context to another context.  For access to a receiver object or

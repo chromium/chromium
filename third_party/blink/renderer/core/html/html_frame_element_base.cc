@@ -63,7 +63,7 @@ bool HTMLFrameElementBase::IsURLAllowed() const {
 
   const KURL& complete_url = GetDocument().CompleteURL(url_);
 
-  if (ContentFrame() && complete_url.ProtocolIsJavaScript()) {
+  if (contentWindow() && complete_url.ProtocolIsJavaScript()) {
     // Check if the caller can execute script in the context of the content
     // frame. NB: This check can be invoked without any JS on the stack for some
     // parser operations. In such case, we use the origin of the frame element's
@@ -72,10 +72,11 @@ bool HTMLFrameElementBase::IsURLAllowed() const {
     LocalDOMWindow* accessing_window = isolate->InContext()
                                            ? CurrentDOMWindow(isolate)
                                            : GetDocument().domWindow();
-    if (!BindingSecurity::ShouldAllowAccessToFrame(
-            accessing_window, ContentFrame(),
-            BindingSecurity::ErrorReportOption::kReport))
+    if (!BindingSecurity::ShouldAllowAccessTo(
+            accessing_window, contentWindow(),
+            BindingSecurity::ErrorReportOption::kReport)) {
       return false;
+    }
   }
   return true;
 }

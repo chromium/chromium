@@ -1194,9 +1194,10 @@ v8::Local<v8::Object> WebLocalFrameImpl::GlobalProxy() const {
 }
 
 bool WebFrame::ScriptCanAccess(WebFrame* target) {
-  return BindingSecurity::ShouldAllowAccessToFrame(
+  return BindingSecurity::ShouldAllowAccessTo(
       CurrentDOMWindow(V8PerIsolateData::MainThreadIsolate()),
-      ToCoreFrame(*target), BindingSecurity::ErrorReportOption::kDoNotReport);
+      ToCoreFrame(*target)->DomWindow(),
+      BindingSecurity::ErrorReportOption::kDoNotReport);
 }
 
 void WebLocalFrameImpl::StartReload(WebFrameLoadType frame_load_type) {

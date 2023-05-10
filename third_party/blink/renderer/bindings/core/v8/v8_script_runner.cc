@@ -707,7 +707,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     v8::Local<v8::Value> argv[],
     v8::Isolate* isolate) {
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
-  LocalFrame* frame = window ? window->GetFrame() : nullptr;
   TRACE_EVENT0("v8", "v8.callFunction");
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
@@ -729,10 +728,10 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
   }
 
-  DCHECK(!frame ||
-         BindingSecurity::ShouldAllowAccessToFrame(
-             ToLocalDOMWindow(function->GetCreationContextChecked()), frame,
-             BindingSecurity::ErrorReportOption::kDoNotReport));
+  CHECK(!window || !window->GetFrame() ||
+        BindingSecurity::ShouldAllowAccessTo(
+            ToLocalDOMWindow(function->GetCreationContextChecked()), window,
+            BindingSecurity::ErrorReportOption::kDoNotReport));
   v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
   v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                        v8::MicrotasksScope::kRunMicrotasks);

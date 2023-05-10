@@ -301,26 +301,6 @@ bool BindingSecurity::ShouldAllowAccessTo(
                          reporting_option);
 }
 
-bool BindingSecurity::ShouldAllowAccessToFrame(
-    const LocalDOMWindow* accessing_window,
-    const Frame* target,
-    ExceptionState& exception_state) {
-  if (!target || !target->GetSecurityContext())
-    return false;
-  return CanAccessWindow(accessing_window, target->DomWindow(),
-                         exception_state);
-}
-
-bool BindingSecurity::ShouldAllowAccessToFrame(
-    const LocalDOMWindow* accessing_window,
-    const Frame* target,
-    ErrorReportOption reporting_option) {
-  if (!target || !target->GetSecurityContext())
-    return false;
-  return CanAccessWindow(accessing_window, target->DomWindow(),
-                         reporting_option);
-}
-
 namespace {
 
 template <typename ExceptionStateOrErrorReportOption>
@@ -344,30 +324,13 @@ bool ShouldAllowAccessToV8ContextInternal(
   if (accessing_context == target_context)
     return true;
 
-  LocalFrame* target_frame = ToLocalFrameIfNotDetached(target_context);
-  // TODO(dcheng): Why doesn't this code just use DOMWindows throughout? Can't
-  // we just always use ToLocalDOMWindow(context)?
-  if (!target_frame) {
-    // Sandbox detached frames - they can't create cross origin objects.
-    LocalDOMWindow* accessing_window = ToLocalDOMWindow(accessing_context);
-    LocalDOMWindow* target_window = ToLocalDOMWindow(target_context);
-
-    // TODO(https://crbug.com/723057): This is tricky: this intentionally uses
-    // the internal CanAccessWindow() helper rather than ShouldAllowAccessTo().
-    // ShouldAllowAccessTo() unconditionally denies access if the DOMWindow is
-    // not attached to a Frame, but this code is intended for handling the
-    // detached DOMWindow case.
-    return CanAccessWindow(accessing_window, target_window, error_report);
-  }
-
   const DOMWrapperWorld& accessing_world =
       DOMWrapperWorld::World(accessing_context);
   const DOMWrapperWorld& target_world = DOMWrapperWorld::World(target_context);
   CHECK_EQ(accessing_world.GetWorldId(), target_world.GetWorldId());
-
   return !accessing_world.IsMainWorld() ||
-         BindingSecurity::ShouldAllowAccessToFrame(
-             ToLocalDOMWindow(accessing_context), target_frame, error_report);
+         CanAccessWindow(ToLocalDOMWindow(accessing_context),
+                         ToLocalDOMWindow(target_context), error_report);
 }
 
 }  // namespace
