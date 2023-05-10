@@ -88,14 +88,12 @@ void ProjectorMessageHandler::GetOAuthTokenForAccount(
     const base::Value::List& args) {
   // Two arguments. The first is callback id, and the second is the list
   // containing the account for which to fetch the oauth token.
-  DCHECK_EQ(args.size(), 2u);
+  CHECK_EQ(args.size(), 2u);
+  const auto& oauth_token_fetch_callback = args[0].GetString();
+  const auto& requested_account = args[1].GetList();
 
-  const auto& requested_account = args[1];
-  DCHECK(requested_account.is_list());
-  DCHECK_EQ(requested_account.GetList().size(), 1u);
-
-  auto& oauth_token_fetch_callback = args[0].GetString();
-  const std::string& email = requested_account.GetList()[0].GetString();
+  CHECK_EQ(requested_account.size(), 1u);
+  const std::string& email = requested_account[0].GetString();
 
   oauth_token_fetcher_.GetAccessTokenFor(
       email,
@@ -133,11 +131,12 @@ void ProjectorMessageHandler::OnAccessTokenRequestCompleted(
 void ProjectorMessageHandler::GetVideo(const base::Value::List& args) {
   // Two arguments. The first is callback id, and the second is the list
   // containing the item id and resource key.
-  DCHECK_EQ(args.size(), 2u);
-  const auto& func_args = args[1].GetList();
-  DCHECK_EQ(func_args.size(), 2u);
-
+  CHECK_EQ(args.size(), 2u);
   const std::string& js_callback_id = args[0].GetString();
+  const auto& func_args = args[1].GetList();
+
+  CHECK_EQ(func_args.size(), 2u);
+
   const std::string& video_file_id = func_args[0].GetString();
   std::string resource_key;
   if (func_args[1].is_string())

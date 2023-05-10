@@ -136,7 +136,6 @@ void ScanningHandler::HandleOpenFilesInMediaApp(const base::Value::List& args) {
     return;
 
   CHECK_EQ(1U, args.size());
-  DCHECK(args[0].is_list());
   const base::Value::List& value_list = args[0].GetList();
   DCHECK(!value_list.empty());
 
