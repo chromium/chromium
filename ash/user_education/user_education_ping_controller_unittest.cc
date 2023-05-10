@@ -8,12 +8,15 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/user_education/user_education_ash_test_base.h"
+#include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_types.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -22,12 +25,25 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::testing::AllOf;
 using ::testing::Conditional;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::Property;
+
+// Helpers ---------------------------------------------------------------------
+
+gfx::Rect Inset(const gfx::Rect& rect, const gfx::Insets& insets) {
+  gfx::Rect inset_rect(rect);
+  inset_rect.Inset(insets);
+  return inset_rect;
+}
+
+gfx::Rect Inset(const gfx::Rect& rect, const gfx::Insets* insets) {
+  return insets ? Inset(rect, *insets) : rect;
+}
 
 }  // namespace
 
@@ -72,19 +88,52 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
 
   // Asserts that a ping exists for the specified view. A ping exists for a view
   // if the view has ping layers configured with expected properties.
-  void AssertPing(const absl::optional<views::View*>& v = absl::nullopt) {
+  void AssertPingProperties(
+      const absl::optional<views::View*>& v = absl::nullopt) {
     views::View* const view = v.value_or(this->view());
     ASSERT_THAT(
         view->GetLayersInOrder(),
-        ElementsAre(Property(&ui::Layer::name,
-                             Eq(UserEducationPingController::kPingLayerName)),
-                    Eq(view->layer())));
+        ElementsAre(
+            AllOf(
+                Property(&ui::Layer::name,
+                         Eq(UserEducationPingController::kPingParentLayerName)),
+                Property(&ui::Layer::bounds, Eq(view->layer()->bounds())),
+                Property(&ui::Layer::type, Eq(ui::LAYER_NOT_DRAWN)),
+                Property(
+                    &ui::Layer::children,
+                    ElementsAre(AllOf(
+                        Property(&ui::Layer::name,
+                                 Eq(UserEducationPingController::
+                                        kPingChildLayerName)),
+                        Property(&ui::Layer::background_color,
+                                 Eq(DarkLightModeController::Get()
+                                            ->IsDarkModeEnabled()
+                                        ? SK_ColorWHITE
+                                        : SK_ColorBLACK)),
+                        Property(
+                            &ui::Layer::bounds,
+                            Eq(Inset(gfx::Rect(view->layer()->bounds().size()),
+                                     view->GetProperty(kPingInsetsKey)))),
+                        Property(
+                            &ui::Layer::rounded_corner_radii,
+                            Eq(gfx::RoundedCornersF(
+                                Inset(gfx::Rect(view->layer()->bounds().size()),
+                                      view->GetProperty(kPingInsetsKey))
+                                    .width() /
+                                2.f))),
+                        Property(&ui::Layer::type,
+                                 Eq(ui::LAYER_SOLID_COLOR)))))),
+            Eq(view->layer())));
   }
 
  private:
   // UserEducationPingControllerTest:
   void SetUp() override {
     UserEducationAshTestBase::SetUp();
+
+    // Simulate user login so that a pref service is activated as is needed by
+    // the dark/light mode controller.
+    SimulateUserLogin("user@test");
 
     // Create a `widget_` whose contents `view()` will be pinged.
     widget_ = CreateFramelessTestWidget();
@@ -110,14 +159,14 @@ TEST_F(UserEducationPingControllerTest, MultipleConcurrent) {
 
   // Ping `view()`.
   EXPECT_TRUE(CreatePing(PingId::kTest1));
-  ASSERT_NO_FATAL_FAILURE(AssertPing());
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
 
   // Attempts to ping `view()` multiple times concurrently should fail, even if
   // no ping yet exists for the specified ping ID.
   EXPECT_FALSE(CreatePing(PingId::kTest1));
-  ASSERT_NO_FATAL_FAILURE(AssertPing());
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
   EXPECT_FALSE(CreatePing(PingId::kTest2));
-  ASSERT_NO_FATAL_FAILURE(AssertPing());
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
 
   // Add `another_view` to the view hierarchy.
   views::View* another_view = nullptr;
@@ -131,7 +180,7 @@ TEST_F(UserEducationPingControllerTest, MultipleConcurrent) {
   EXPECT_FALSE(CreatePing(PingId::kTest1, another_view));
   ExpectNoPing(another_view);
   EXPECT_TRUE(CreatePing(PingId::kTest2, another_view));
-  ASSERT_NO_FATAL_FAILURE(AssertPing(another_view));
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties(another_view));
 }
 
 // Verifies that a `view()` cannot be pinged if not drawn.
@@ -141,6 +190,43 @@ TEST_F(UserEducationPingControllerTest, NotIsDrawn) {
 
   EXPECT_FALSE(CreatePing());
   ExpectNoPing();
+}
+
+// Verifies that pings will update bounds when bounds are updated for the
+// associated `view()`.
+TEST_F(UserEducationPingControllerTest, OnViewBoundsChanged) {
+  ExpectNoPing();
+
+  EXPECT_TRUE(CreatePing());
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
+
+  view()->SetBoundsRect(Inset(view()->bounds(), gfx::Insets(10)));
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
+}
+
+// Verifies that pings will update bounds when ping insets are updated for the
+// associated `view()`.
+TEST_F(UserEducationPingControllerTest, OnViewPropertyChanged) {
+  ExpectNoPing();
+
+  EXPECT_TRUE(CreatePing());
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
+
+  view()->SetProperty(kPingInsetsKey, gfx::Insets(10));
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
+}
+
+// Verifies that pings will update colors when theme is updated for the
+// associated `view()`.
+TEST_F(UserEducationPingControllerTest, OnViewThemeChanged) {
+  ExpectNoPing();
+
+  EXPECT_TRUE(CreatePing());
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
+
+  auto* const controller = DarkLightModeController::Get();
+  controller->SetDarkModeEnabledForTest(!controller->IsDarkModeEnabled());
+  ASSERT_NO_FATAL_FAILURE(AssertPingProperties());
 }
 
 }  // namespace ash

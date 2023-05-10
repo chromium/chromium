@@ -23,7 +23,8 @@ enum class PingId;
 class ASH_EXPORT UserEducationPingController {
  public:
   // Names for ping layers so they are easy to distinguish in debugging/testing.
-  static constexpr char kPingLayerName[] = "Ping";
+  static constexpr char kPingParentLayerName[] = "Ping::Parent";
+  static constexpr char kPingChildLayerName[] = "Ping::Child";
 
   UserEducationPingController();
   UserEducationPingController(const UserEducationPingController&) = delete;
