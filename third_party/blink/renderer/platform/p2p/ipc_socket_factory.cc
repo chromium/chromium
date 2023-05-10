@@ -110,7 +110,9 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   typedef std::list<InFlightPacketRecord> InFlightPacketList;
 
   // Always takes ownership of client even if initialization fails.
-  bool Init(network::P2PSocketType type,
+  bool Init(P2PSocketDispatcher* dispatcher,
+            const net::NetworkTrafficAnnotationTag& traffic_annotation,
+            network::P2PSocketType type,
             std::unique_ptr<P2PSocketClientImpl> client,
             const rtc::SocketAddress& local_address,
             uint16_t min_port,
@@ -282,12 +284,15 @@ void IpcPacketSocket::IncrementDiscardCounters(size_t bytes_discarded) {
   }
 }
 
-bool IpcPacketSocket::Init(network::P2PSocketType type,
-                           std::unique_ptr<P2PSocketClientImpl> client,
-                           const rtc::SocketAddress& local_address,
-                           uint16_t min_port,
-                           uint16_t max_port,
-                           const rtc::SocketAddress& remote_address) {
+bool IpcPacketSocket::Init(
+    P2PSocketDispatcher* dispatcher,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    network::P2PSocketType type,
+    std::unique_ptr<P2PSocketClientImpl> client,
+    const rtc::SocketAddress& local_address,
+    uint16_t min_port,
+    uint16_t max_port,
+    const rtc::SocketAddress& remote_address) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(state_, kIsUninitialized);
 
@@ -323,8 +328,12 @@ bool IpcPacketSocket::Init(network::P2PSocketType type,
   // Certificate will be tied to domain name not to IP address.
   network::P2PHostAndIPEndPoint remote_info(remote_address.hostname(),
                                             remote_endpoint);
+  dispatcher->GetP2PSocketManager()->CreateSocket(
+      type, local_endpoint, network::P2PPortRange(min_port, max_port),
+      remote_info, net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
+      client_ptr->CreatePendingRemote(), client_ptr->CreatePendingReceiver());
 
-  client_ptr->Init(type, local_endpoint, min_port, max_port, remote_info, this);
+  client_ptr->Init(this);
 
   return true;
 }
@@ -746,10 +755,10 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
     uint16_t max_port) {
   auto socket_dispatcher = socket_dispatcher_.Lock();
   DCHECK(socket_dispatcher);
-  auto socket_client = std::make_unique<P2PSocketClientImpl>(
-      socket_dispatcher, traffic_annotation_);
+  auto socket_client = std::make_unique<P2PSocketClientImpl>();
   std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
-  if (!socket->Init(network::P2P_SOCKET_UDP, std::move(socket_client),
+  if (!socket->Init(socket_dispatcher, traffic_annotation_,
+                    network::P2P_SOCKET_UDP, std::move(socket_client),
                     local_address, min_port, max_port, rtc::SocketAddress())) {
     return nullptr;
   }
@@ -791,12 +800,13 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
   }
   auto socket_dispatcher = socket_dispatcher_.Lock();
   DCHECK(socket_dispatcher);
-  auto socket_client = std::make_unique<P2PSocketClientImpl>(
-      socket_dispatcher, traffic_annotation_);
+  auto socket_client = std::make_unique<P2PSocketClientImpl>();
   std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
-  if (!socket->Init(type, std::move(socket_client), local_address, 0, 0,
-                    remote_address))
+  if (!socket->Init(socket_dispatcher, traffic_annotation_, type,
+                    std::move(socket_client), local_address, 0, 0,
+                    remote_address)) {
     return nullptr;
+  }
   return socket.release();
 }
 

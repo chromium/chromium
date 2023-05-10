@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_SOCKET_CLIENT_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_SOCKET_CLIENT_DELEGATE_H_
 
+#include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
 
