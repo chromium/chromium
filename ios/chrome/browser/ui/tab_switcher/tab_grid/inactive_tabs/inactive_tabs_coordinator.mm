@@ -160,7 +160,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
                        browser:(Browser*)browser
                       delegate:(id<InactiveTabsCoordinatorDelegate>)delegate
                   menuProvider:(id<TabContextMenuProvider>)menuProvider {
-  CHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsAvailable());
   CHECK(menuProvider);
   CHECK(delegate);
   self = [super initWithBaseViewController:viewController browser:browser];

@@ -32,7 +32,7 @@
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil {
-  DCHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsAvailable());
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _gridViewController = [[GridViewController alloc] init];

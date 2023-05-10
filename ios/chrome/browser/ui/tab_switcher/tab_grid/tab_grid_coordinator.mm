@@ -1136,7 +1136,7 @@
 }
 
 - (void)showInactiveTabs {
-  DCHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsEnabled());
   [self.inactiveTabsCoordinator show];
 }
 
