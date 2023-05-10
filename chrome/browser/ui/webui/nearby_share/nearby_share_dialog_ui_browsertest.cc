@@ -96,19 +96,19 @@ IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest,
   // Calling 'close' before a Sharesheet controller is registered via
   // |SetSharesheetController| does not result in a crash.
   std::string script = BuildCloseScript(CloseReason::kCancelled);
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
   EXPECT_FALSE(sharesheet_controller_.last_result);
 
   // The Sharesheet controller gets called on 'close' if it's been registered.
   nearby_ui->SetSharesheetController(&sharesheet_controller_);
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
   EXPECT_EQ(::sharesheet::SharesheetResult::kCancel,
             sharesheet_controller_.last_result);
 
   // Any subsequent calls to 'close' do not call the Sharesheet controller,
   // since that would result in a crash.
   sharesheet_controller_.last_result.reset();
-  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
   EXPECT_FALSE(sharesheet_controller_.last_result);
 }
 
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest, CloseBubbleResults) {
 
     sharesheet_controller_.last_result.reset();
     nearby_ui->SetSharesheetController(&sharesheet_controller_);
-    EXPECT_TRUE(content::ExecuteScript(web_contents, BuildCloseScript(reason)));
+    EXPECT_TRUE(content::ExecJs(web_contents, BuildCloseScript(reason)));
 
     // Verify that the page-closed reason is translated into the correct
     // SharesheetResult and passed into CloseBubble().
