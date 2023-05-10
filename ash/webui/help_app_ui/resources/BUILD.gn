@@ -67,12 +67,13 @@ optimize_webui("browser_proxy_rollup") {
 
 # Generate a bundle of all the JS needed for chrome-untrusted://help-app.
 optimize_webui("receiver_rollup") {
-  host = "help-app"
+  host = "chrome-untrusted://help-app"
   js_module_in_files = [ "receiver.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
     ":stage_generated",
     ":stage_static",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
 }
 
