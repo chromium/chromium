@@ -173,64 +173,6 @@ TEST_F(ProfileSelectionsTest, RedirectedInIncognito) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-TEST_F(ProfileSelectionsTest, RedirectedToOriginal) {
-  ProfileSelections selections = ProfileSelections::BuildRedirectedToOriginal();
-
-  TestProfileSelection(selections, regular_profile(), regular_profile());
-  TestProfileSelection(selections, incognito_profile(), regular_profile());
-
-  TestProfileSelection(selections, guest_profile(), guest_profile());
-  TestProfileSelection(selections, guest_profile_otr(), guest_profile());
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  TestProfileSelection(selections, system_profile(), system_profile());
-  TestProfileSelection(selections, system_profile_otr(), system_profile());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestProfileSelection(selections, signin_profile(), signin_profile());
-  TestProfileSelection(selections, signin_profile_otr(), signin_profile());
-
-  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
-  TestProfileSelection(selections, lockscreen_profile_otr(),
-                       lockscreen_profile());
-
-  TestProfileSelection(selections, lockscreenapp_profile(),
-                       lockscreenapp_profile());
-  TestProfileSelection(selections, lockscreenapp_profile_otr(),
-                       lockscreenapp_profile());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-TEST_F(ProfileSelectionsTest, ForAllProfiles) {
-  ProfileSelections selections = ProfileSelections::BuildForAllProfiles();
-
-  TestProfileSelection(selections, regular_profile(), regular_profile());
-  TestProfileSelection(selections, incognito_profile(), incognito_profile());
-
-  TestProfileSelection(selections, guest_profile(), guest_profile());
-  TestProfileSelection(selections, guest_profile_otr(), guest_profile_otr());
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  TestProfileSelection(selections, system_profile(), system_profile());
-  TestProfileSelection(selections, system_profile_otr(), system_profile_otr());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestProfileSelection(selections, signin_profile(), signin_profile());
-  TestProfileSelection(selections, signin_profile_otr(), signin_profile_otr());
-
-  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
-  TestProfileSelection(selections, lockscreen_profile_otr(),
-                       lockscreen_profile_otr());
-
-  TestProfileSelection(selections, lockscreenapp_profile(),
-                       lockscreenapp_profile());
-  TestProfileSelection(selections, lockscreenapp_profile_otr(),
-                       lockscreenapp_profile_otr());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 TEST_F(ProfileSelectionsTest, NoProfiles) {
   ProfileSelections selections = ProfileSelections::BuildNoProfilesSelected();
 

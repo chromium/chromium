@@ -38,6 +38,10 @@ enum class ProfileSelection {
 // Regular profile, the Guest user-visible profile is off-the-record, the
 // Profile Picker uses the off-the-record System Profile.
 // Maps Profile types to `ProfileSelection`.
+//
+// You can use predefined builders listed below for easier usages.
+// If you need non trivial behavior (for Guest or System profiles for example),
+// you should write your own expanded version of the builder.
 class ProfileSelections {
  public:
   ProfileSelections(const ProfileSelections& other);
@@ -93,17 +97,6 @@ class ProfileSelections {
   // +---------+------------+------------+
   static ProfileSelections BuildForRegularProfile();
 
-  // All Profiles are selected.
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | self       |
-  // | Guest   | self       | self       |
-  // | System  | self       | self       |
-  // | Ash Int.| self       | self       |
-  // +---------+------------+------------+
-  static ProfileSelections BuildForAllProfiles();
-
   // No Profiles are selected.
   // +---------+------------+------------+
   // |         |  Original  |    OTR     |
@@ -146,18 +139,6 @@ class ProfileSelections {
   // | Ash Int.| self       | original   |
   // +---------+------------+------------+
   static ProfileSelections BuildRedirectedInIncognito();
-
-  // Redirects all OTR profiles to their original profiles.
-  // Includes all profile types (Regular, Guest and System).
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | original   |
-  // | Guest   | self       | original   |
-  // | System  | self       | original   |
-  // | Ash Int.| self       | original   |
-  // +---------+------------+------------+
-  static ProfileSelections BuildRedirectedToOriginal();
 
   // Given a Profile and a ProfileSelection enum, returns the right profile
   // (can potentially return nullptr).

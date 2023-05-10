@@ -69,15 +69,6 @@ ProfileSelections::ProfileSelections() = default;
 ProfileSelections::~ProfileSelections() = default;
 ProfileSelections::ProfileSelections(const ProfileSelections& other) = default;
 
-ProfileSelections ProfileSelections::BuildForAllProfiles() {
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kOwnInstance)
-      .WithGuest(ProfileSelection::kOwnInstance)
-      .WithSystem(ProfileSelection::kOwnInstance)
-      .WithAshInternals(ProfileSelection::kOwnInstance)
-      .Build();
-}
-
 ProfileSelections ProfileSelections::BuildNoProfilesSelected() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kNone)
@@ -107,14 +98,6 @@ ProfileSelections ProfileSelections::BuildRedirectedInIncognito() {
       .WithRegular(ProfileSelection::kRedirectedToOriginal)
       .WithGuest(ProfileSelection::kNone)
       .WithSystem(ProfileSelection::kNone)
-      .Build();
-}
-
-ProfileSelections ProfileSelections::BuildRedirectedToOriginal() {
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kRedirectedToOriginal)
-      .WithGuest(ProfileSelection::kRedirectedToOriginal)
-      .WithSystem(ProfileSelection::kRedirectedToOriginal)
       .Build();
 }
 

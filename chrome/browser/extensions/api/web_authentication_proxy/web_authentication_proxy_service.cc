@@ -226,7 +226,12 @@ WebAuthenticationProxyRegistrarFactory::WebAuthenticationProxyRegistrarFactory()
           // as Guest. So while we do return a `WebAuthenticationProxyRegistrar`
           // for those profile types `IsActive()` will always return false
           // there.
-          ProfileSelections::BuildRedirectedToOriginal()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 
