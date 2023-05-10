@@ -173,21 +173,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kHeuristicMemorySaver)) {
-    graph->PassToGraph(std::make_unique<performance_manager::policies::
-                                            HeuristicMemorySaverPolicy>(
-        performance_manager::features::
-            kHeuristicMemorySaverAvailableMemoryThresholdPercent.Get(),
-        performance_manager::features::
-            kHeuristicMemorySaverAvailableMemoryThresholdMb.Get(),
-        base::Seconds(
-            performance_manager::features::
-                kHeuristicMemorySaverThresholdReachedHeartbeatSeconds.Get()),
-        base::Seconds(
-            performance_manager::features::
-                kHeuristicMemorySaverThresholdNotReachedHeartbeatSeconds.Get()),
-        base::Minutes(
-            performance_manager::features::
-                kHeuristicMemorySaverMinimumMinutesInBackground.Get())));
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::HeuristicMemorySaverPolicy>());
   } else {
     graph->PassToGraph(
         std::make_unique<

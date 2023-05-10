@@ -3272,13 +3272,13 @@ const FeatureEntry::FeatureVariation
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kHeuristicMemorySaverAggressive[] = {
     {"threshold_percent", "30"},
-    {"minimum_minutes_in_background", "30"}};
+    {"minimum_time_in_background", "30m"}};
 const FeatureEntry::FeatureParam kHeuristicMemorySaverBalanced[] = {
     {"threshold_percent", "15"},
-    {"minimum_minutes_in_background", "60"}};
+    {"minimum_time_in_background", "60m"}};
 const FeatureEntry::FeatureParam kHeuristicMemorySaverConservative[] = {
     {"threshold_percent", "5"},
-    {"minimum_minutes_in_background", "120"}};
+    {"minimum_time_in_background", "120m"}};
 const FeatureEntry::FeatureVariation kHeuristicMemorySaverVariations[] = {
     {"Aggressive", kHeuristicMemorySaverAggressive,
      std::size(kHeuristicMemorySaverAggressive), nullptr},

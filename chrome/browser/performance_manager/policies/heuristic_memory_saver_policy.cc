@@ -4,13 +4,23 @@
 
 #include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/process_metrics.h"
+#include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/public/features.h"
 
 namespace performance_manager::policies {
 
 namespace {
+
 HeuristicMemorySaverPolicy* g_heuristic_memory_saver_policy = nullptr;
 
 const uint64_t kBytesPerMb = 1024 * 1024;
@@ -18,24 +28,11 @@ const uint64_t kBytesPerMb = 1024 * 1024;
 }  // namespace
 
 HeuristicMemorySaverPolicy::HeuristicMemorySaverPolicy(
-    uint64_t pmf_threshold_percent,
-    uint64_t pmf_threshold_mb,
-    base::TimeDelta threshold_reached_heartbeat_interval,
-    base::TimeDelta threshold_not_reached_heartbeat_interval,
-    base::TimeDelta minimum_time_in_background,
     AvailableMemoryCallback available_memory_cb,
     TotalMemoryCallback total_memory_cb)
-    : pmf_threshold_percent_(pmf_threshold_percent),
-      pmf_threshold_bytes_(pmf_threshold_mb * kBytesPerMb),
-      threshold_reached_heartbeat_interval_(
-          threshold_reached_heartbeat_interval),
-      threshold_not_reached_heartbeat_interval_(
-          threshold_not_reached_heartbeat_interval),
-      minimum_time_in_background_(minimum_time_in_background),
-      available_memory_cb_(available_memory_cb),
-      total_memory_cb_(total_memory_cb) {
+    : available_memory_cb_(std::move(available_memory_cb)),
+      total_memory_cb_(std::move(total_memory_cb)) {
   CHECK(!g_heuristic_memory_saver_policy);
-  CHECK_LE(pmf_threshold_percent_, 100UL);
   g_heuristic_memory_saver_policy = this;
 }
 
@@ -66,7 +63,8 @@ void HeuristicMemorySaverPolicy::SetActive(bool active) {
     // Start the first timer as if the threshold was reached, memory will be
     // sampled in the callback and the next timer will be scheduled with the
     // appropriate interval.
-    ScheduleNextHeartbeat(threshold_reached_heartbeat_interval_);
+    ScheduleNextHeartbeat(
+        features::kHeuristicMemorySaverThresholdReachedHeartbeatInterval.Get());
   } else {
     heartbeat_timer_.Stop();
   }
@@ -77,20 +75,29 @@ bool HeuristicMemorySaverPolicy::IsActive() const {
 }
 
 void HeuristicMemorySaverPolicy::OnHeartbeatCallback() {
-  uint64_t available_memory = available_memory_cb_.Run();
-  uint64_t total_physical_memory = total_memory_cb_.Run();
+  const uint64_t available_memory = available_memory_cb_.Run();
+  const uint64_t total_physical_memory = total_memory_cb_.Run();
 
-  base::TimeDelta next_interval = threshold_not_reached_heartbeat_interval_;
+  base::TimeDelta next_interval =
+      features::kHeuristicMemorySaverThresholdNotReachedHeartbeatInterval.Get();
 
-  if (available_memory < pmf_threshold_bytes_ &&
+  const int pmf_threshold_percent =
+      features::kHeuristicMemorySaverAvailableMemoryThresholdPercent.Get();
+  CHECK_LE(0, pmf_threshold_percent);
+  CHECK_LE(pmf_threshold_percent, 100);
+  const uint64_t pmf_threshold_bytes =
+      features::kHeuristicMemorySaverAvailableMemoryThresholdMb.Get() *
+      kBytesPerMb;
+  if (available_memory < pmf_threshold_bytes &&
       static_cast<float>(available_memory) /
               static_cast<float>(total_physical_memory) * 100.f <
-          static_cast<float>(pmf_threshold_percent_)) {
+          static_cast<float>(pmf_threshold_percent)) {
     PageDiscardingHelper::GetFromGraph(graph_)->DiscardAPage(
         /*post_discard_cb=*/base::DoNothing(),
         PageDiscardingHelper::DiscardReason::PROACTIVE,
-        /*minimum_time_in_background=*/minimum_time_in_background_);
-    next_interval = threshold_reached_heartbeat_interval_;
+        features::kHeuristicMemorySaverMinimumTimeInBackground.Get());
+    next_interval =
+        features::kHeuristicMemorySaverThresholdReachedHeartbeatInterval.Get();
   }
 
   ScheduleNextHeartbeat(next_interval);
@@ -135,7 +142,7 @@ HeuristicMemorySaverPolicy::DefaultGetAmountOfAvailablePhysicalMemory() {
   constexpr uint64_t kBytesPerKb = 1024;
   base::SystemMemoryInfoKB info;
   if (base::GetSystemMemoryInfo(&info)) {
-    int available_page_cache_percent =
+    const int available_page_cache_percent =
         features::kHeuristicMemorySaverPageCacheDiscountMac.Get();
     CHECK_GE(available_page_cache_percent, 0);
     CHECK_LE(available_page_cache_percent, 100);

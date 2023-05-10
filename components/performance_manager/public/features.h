@@ -62,10 +62,10 @@ BASE_DECLARE_FEATURE(kHeuristicMemorySaver);
 // "ThresholdReached" version is used when the device is past the threshold
 // specified by `kHeuristicMemorySaverAvailableMemoryThresholdPercent` and the
 // "ThresholdNotReached" version is used otherwise.
-extern const base::FeatureParam<int>
-    kHeuristicMemorySaverThresholdReachedHeartbeatSeconds;
-extern const base::FeatureParam<int>
-    kHeuristicMemorySaverThresholdNotReachedHeartbeatSeconds;
+extern const base::FeatureParam<base::TimeDelta>
+    kHeuristicMemorySaverThresholdReachedHeartbeatInterval;
+extern const base::FeatureParam<base::TimeDelta>
+    kHeuristicMemorySaverThresholdNotReachedHeartbeatInterval;
 
 // The amount of available physical memory at which
 // HeuristicMemorySaverPolicy will start discarding tabs. The amount of
@@ -96,10 +96,10 @@ extern const base::FeatureParam<int>
 // more information.
 extern const base::FeatureParam<int> kHeuristicMemorySaverPageCacheDiscountMac;
 
-// The minimum amount of minutes a tab has to spend in the background before
+// The minimum amount of time a tab has to spend in the background before
 // HeuristicMemorySaverPolicy will consider it eligible for discarding.
-extern const base::FeatureParam<int>
-    kHeuristicMemorySaverMinimumMinutesInBackground;
+extern const base::FeatureParam<base::TimeDelta>
+    kHeuristicMemorySaverMinimumTimeInBackground;
 
 // Round 2 Performance Controls features
 
