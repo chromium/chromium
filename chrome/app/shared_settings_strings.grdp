@@ -310,7 +310,7 @@
   <message name="IDS_SETTINGS_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing apps between multiple browser instances.">
     Apps
   </message>
-  <message name="IDS_SETTINGS_APPS_CHECKBOX_SUBLABEL" translateable="false" desc="Sublabel for the checkbox which enables or disables syncing apps between multiple browser instances.">
+  <message name="IDS_SETTINGS_APPS_CHECKBOX_SUBLABEL" desc="Sublabel for the checkbox which enables or disables syncing apps between multiple browser instances.">
     Apps sync is set in system Settings
   </message>
   <message name="IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL" desc="Title for a section that shows options for various Google services">
@@ -360,20 +360,16 @@
   <message name="IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT" desc="Title for the link to manage Chrome Sync data via Google Dashboard when unified consent is enabled.">
     Review your synced data
   </message>
-  <message name="IDS_SETTINGS_NEW_SYNC_ADVANCED_DEVICE_PAGE_TITLE" translateable="false" desc="Name of the settings page which manages device data used by sync when lacros is enabled." >
-   <!-- TODO(crbug.com/1330894): Remove "translateable=false" once definitive string is available. -->
+  <message name="IDS_SETTINGS_NEW_SYNC_ADVANCED_DEVICE_PAGE_TITLE" desc="Name of the settings page which manages device data used by sync when lacros is enabled." >
     Manage device sync
   </message>
-  <message name="IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE" translateable="false" desc="Name of the settings page which manages browser data used by sync when lacros is enabled." >
-   <!-- TODO(crbug.com/1330894): Remove "translateable=false" once definitive string is available. -->
+  <message name="IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE" desc="Name of the settings page which manages browser data used by sync when lacros is enabled." >
     Manage browser sync
   </message>
-  <message name="IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT" translateable="false" desc="Subtitle for the link to manage Chrome Sync data via Google Dashboard when unified consent is enabled.">
-    <!-- TODO(crbug.com/1330894): Remove "translateable=false" once definitive string is available. -->
+  <message name="IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT" desc="Subtitle for the link to manage Chrome Sync data via Google Dashboard when unified consent is enabled.">
     Across your apps and Chrome browser
   </message>
-  <message name="IDS_SETTINGS_NEW_MANAGE_BROWSER_SYNCED_DATA_TITLE" translateable="false" desc="Title for the link to manage Chrome Browser Sync data via browser settings.">
-    <!-- TODO(crbug.com/1330894): Remove "translateable=false" once definitive string is available. -->
+  <message name="IDS_SETTINGS_NEW_MANAGE_BROWSER_SYNCED_DATA_TITLE" desc="Title for the link to manage Chrome Browser Sync data via browser settings.">
     Manage Chrome browser sync
   </message>
   <message name="IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES" desc="The name of the settings page and the label of the button that takes the user to manage their sync and non-personalized services settings.">
