@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -43,6 +44,7 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {/*enabled_features=*/features::kAppPreloadService},
         /*disabled_features=*/{});
+    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
   }
 
   void SetUpOnMainThread() override {
@@ -62,6 +64,10 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
 
     // Icon URLs should remap to the test server.
     host_resolver()->AddRule("meltingpot.googleusercontent.com", "127.0.0.1");
+  }
+
+  void TearDown() override {
+    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(false);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
