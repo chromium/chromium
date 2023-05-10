@@ -67,9 +67,6 @@ class CORE_EXPORT BindingSecurity {
   // DOMWindow
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
                                   const DOMWindow* target,
-                                  ExceptionState&);
-  static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const DOMWindow* target,
                                   ErrorReportOption);
 
   // Location

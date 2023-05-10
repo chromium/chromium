@@ -239,33 +239,6 @@ DOMWindow* FindWindow(v8::Isolate* isolate,
 bool BindingSecurity::ShouldAllowAccessTo(
     const LocalDOMWindow* accessing_window,
     const DOMWindow* target,
-    ExceptionState& exception_state) {
-  DCHECK(target);
-
-  // TODO(https://crbug.com/723057): This is intended to match the legacy
-  // behavior of when access checks revolved around Frame pointers rather than
-  // DOMWindow pointers. This prevents web-visible behavior changes, since the
-  // previous implementation had to follow the back pointer to the Frame, and
-  // would have to early return when it was null.
-  if (!target->GetFrame())
-    return false;
-  bool can_access = CanAccessWindow(accessing_window, target, exception_state);
-
-  if (!can_access && accessing_window) {
-    UseCounter::Count(accessing_window->document(),
-                      WebFeature::kCrossOriginPropertyAccess);
-    if (target->opener() == accessing_window) {
-      UseCounter::Count(accessing_window->document(),
-                        WebFeature::kCrossOriginPropertyAccessFromOpener);
-    }
-  }
-
-  return can_access;
-}
-
-bool BindingSecurity::ShouldAllowAccessTo(
-    const LocalDOMWindow* accessing_window,
-    const DOMWindow* target,
     ErrorReportOption reporting_option) {
   DCHECK(target);
 

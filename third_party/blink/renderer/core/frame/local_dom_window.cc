@@ -2163,24 +2163,23 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // This is usually, but not necessarily the same as 'this'.
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
 
-  if (!IsCurrentlyDisplayedInFrame())
+  if (!IsCurrentlyDisplayedInFrame() || !entered_window->GetFrame()) {
     return nullptr;
+  }
 
   // If the bindings implementation is 100% correct, the current realm and the
   // entered realm should be same origin-domain. However, to be on the safe
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
-  if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this,
-                                            exception_state)) {
+  if (!BindingSecurity::ShouldAllowAccessTo(
+          entered_window, this,
+          BindingSecurity::ErrorReportOption::kDoNotReport)) {
     // Trigger DCHECK() failure, while gracefully failing on release builds.
     NOTREACHED();
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kWindowOpenRealmMismatch);
     return nullptr;
   }
-
-  if (!entered_window->GetFrame())
-    return nullptr;
 
   UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpen);
   entered_window->CountUseOnlyInCrossOriginIframe(
@@ -2310,24 +2309,23 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
   DCHECK(isSecureContext());
 
-  if (!IsCurrentlyDisplayedInFrame())
+  if (!IsCurrentlyDisplayedInFrame() || !entered_window->GetFrame()) {
     return nullptr;
+  }
 
   // If the bindings implementation is 100% correct, the current realm and the
   // entered realm should be same origin-domain. However, to be on the safe
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
-  if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this,
-                                            exception_state)) {
+  if (!BindingSecurity::ShouldAllowAccessTo(
+          entered_window, this,
+          BindingSecurity::ErrorReportOption::kDoNotReport)) {
     // Trigger DCHECK() failure, while gracefully failing on release builds.
     NOTREACHED();
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kWindowOpenRealmMismatch);
     return nullptr;
   }
-
-  if (!entered_window->GetFrame())
-    return nullptr;
 
   FrameLoadRequest frame_request(entered_window,
                                  ResourceRequest(KURL(g_empty_string)));
