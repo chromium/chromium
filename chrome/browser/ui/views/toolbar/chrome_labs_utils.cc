@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
+
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
@@ -14,6 +16,11 @@
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 bool IsFeatureSupportedOnChannel(const LabInfo& lab) {
   return chrome::GetChannel() <= lab.allowed_channel;
@@ -85,4 +92,19 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
 
   for (const std::string& key : entries_to_remove)
     new_badge_prefs.Remove(key);
+}
+
+bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kSafeMode) ||
+      !ash::ProfileHelper::IsPrimaryProfile(profile)) {
+    return false;
+  }
+#endif
+
+  return base::ranges::any_of(model->GetLabInfo(),
+                              [&profile](const LabInfo& lab) {
+                                return IsChromeLabsFeatureValid(lab, profile);
+                              });
 }

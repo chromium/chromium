@@ -345,8 +345,7 @@ void ToolbarView::Init() {
     chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),
                                   chrome_labs_model_.get());
-    if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get(),
-                                           browser_->profile())) {
+    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile())) {
       chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>(
           browser_view_, chrome_labs_model_.get()));
 

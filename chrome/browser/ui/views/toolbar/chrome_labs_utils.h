@@ -17,4 +17,8 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile);
 void UpdateChromeLabsNewBadgePrefs(Profile* profile,
                                    const ChromeLabsModel* model);
 
+// This will indicate whether any Chrome Labs UI element (toolbar button,
+// menu item, etc..) be shown.
+bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile);
+
 #endif  //  CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_UTILS_H_
