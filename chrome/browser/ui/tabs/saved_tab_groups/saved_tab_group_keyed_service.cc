@@ -391,6 +391,12 @@ void SavedTabGroupKeyedService::RecordSavedTabGroupMetrics() {
   for (const SavedTabGroup& group : model()->saved_tab_groups()) {
     base::UmaHistogramCounts10000("TabGroups.SavedTabGroupTabCount",
                                   group.saved_tabs().size());
+
+    const base::TimeDelta duration_saved =
+        base::Time::Now() - group.creation_time_windows_epoch_micros();
+
+    base::UmaHistogramCounts1M("TabGroups.SavedTabGroupAge",
+                               duration_saved.InMinutes());
   }
 }
 

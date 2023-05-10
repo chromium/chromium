@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -86,6 +87,8 @@ void SavedTabGroupModel::Remove(const tab_groups::TabGroupId tab_group_id) {
   for (auto& observer : observers_) {
     observer.SavedTabGroupRemovedLocally(removed_group.get());
   }
+
+  RecordGroupDeletedMetric(removed_group.get());
 }
 
 void SavedTabGroupModel::Remove(const base::Uuid& id) {
@@ -99,6 +102,8 @@ void SavedTabGroupModel::Remove(const base::Uuid& id) {
   for (auto& observer : observers_) {
     observer.SavedTabGroupRemovedLocally(removed_group.get());
   }
+
+  RecordGroupDeletedMetric(removed_group.get());
 }
 
 void SavedTabGroupModel::UpdateVisualData(
@@ -362,6 +367,15 @@ void SavedTabGroupModel::Reorder(const base::Uuid& id, int new_index) {
   for (auto& observer : observers_) {
     observer.SavedTabGroupReorderedLocally();
   }
+}
+
+void SavedTabGroupModel::RecordGroupDeletedMetric(
+    const SavedTabGroup* removed_group) {
+  const base::TimeDelta duration_saved =
+      base::Time::Now() - removed_group->creation_time_windows_epoch_micros();
+
+  base::UmaHistogramCounts1M("TabGroups.SavedTabGroupLifespan",
+                             duration_saved.InMinutes());
 }
 
 void SavedTabGroupModel::UpdateGroupPositionsImpl() {
