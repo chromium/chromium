@@ -1233,9 +1233,8 @@ IN_PROC_BROWSER_TEST_F(
   // away later.
   content::TestNavigationObserver popup_observer(main_frame_url);
   popup_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(
-      ExecuteScript(web_contents()->GetPrimaryMainFrame(),
-                    content::JsReplace("window.open($1)", main_frame_url)));
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("window.open($1)", main_frame_url)));
   popup_observer.Wait();
 
   GURL new_url =
