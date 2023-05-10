@@ -1,8 +1,8 @@
 Name: Swift toolchain
 Short Name: swift-toolchain
 URL: https://www.swift.org/download/
-Version: 5.7
-Date: 2022 September 12
+Version: 5.8
+Date: 2023 March 30
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
