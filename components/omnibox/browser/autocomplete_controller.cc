@@ -1006,7 +1006,8 @@ void AutocompleteController::UpdateResult(
     // If not all providers are done, merge the old and new matches before
     // sorting.
     result_.TransferOldMatches(input_, &old_matches_to_reuse);
-  } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
+  } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled() &&
+             provider_client_->GetAutocompleteScoringModelService()) {
     // The async scoring model is only run once all the providers are done. Use
     // a WeakPtr since the model is not owned and `this` may no longer be alive.
     // `SortCullAndAnnotateResult()` is called when the model is done.
