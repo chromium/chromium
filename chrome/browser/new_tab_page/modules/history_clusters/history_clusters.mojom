@@ -20,8 +20,9 @@ interface PageHandler {
   // Open or make visible the Journeys UI on the Side Panel.
   ShowJourneysSidePanel(string query);
 
-  // Open the URLs as a new tab group and clobber the existing NTP.
-  OpenUrlsInTabGroup(array<url.mojom.Url> urls);
+  // Open the URLs as a new tab group and clobber the existing NTP. The new tab
+  // group has an optional name `tab_group_name`.
+  OpenUrlsInTabGroup(array<url.mojom.Url> urls, string? tab_group_name);
 
   // Dismisses a cluster by marking its associated visits as not relevant.
   DismissCluster(array<history_clusters.mojom.URLVisit> visits);

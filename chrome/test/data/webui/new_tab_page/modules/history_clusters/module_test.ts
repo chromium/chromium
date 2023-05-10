@@ -55,6 +55,7 @@ function createSampleCluster(
         id: BigInt(111),
         visits: createLayoutSuitableSampleVisits(layout),
         label: '',
+        tabGroupName: 'My Tab Group Name',
         labelMatchPositions: [],
         relatedSearches: createRelatedSearches(numRelatedSearches),
         imageUrl: undefined,
@@ -206,11 +207,13 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
               openAllButton.innerText.trim());
           openAllButton.click();
 
-          const urls = await handler.whenCalled('openUrlsInTabGroup');
+          const [urls, tabGroupName] =
+              await handler.whenCalled('openUrlsInTabGroup');
           assertEquals(3, urls.length);
           assertEquals(`${GOOGLE_SEARCH_BASE_URL}?q=foo`, urls[0].url);
           assertEquals('https://www.foo.com/1', urls[1].url);
           assertEquals('https://www.foo.com/2', urls[2].url);
+          assertEquals('My Tab Group Name', tabGroupName);
         });
 
     test('Backend is notified when module is dismissed', async () => {

@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -217,7 +219,12 @@ void HistoryClustersPageHandler::ShowJourneysSidePanel(
 }
 
 void HistoryClustersPageHandler::OpenUrlsInTabGroup(
-    const std::vector<GURL>& urls) {
+    const std::vector<GURL>& urls,
+    const absl::optional<std::string>& tab_group_name) {
+  // This method is different from HistoryClustersHandler::OpenUrlsInTabGroup:
+  //  - It takes over the current tab instead of opening new background tabs.
+  //  - It inserts the new tabs into the location of the current tab.
+
   if (urls.empty()) {
     return;
   }
@@ -250,7 +257,17 @@ void HistoryClustersPageHandler::OpenUrlsInTabGroup(
 
   tab_indices.insert(tab_indices.begin(), model->GetIndexOfWebContents(
                                               model->GetActiveWebContents()));
-  model->AddToNewGroup(tab_indices);
+
+  auto new_group_id = model->AddToNewGroup(tab_indices);
+  if (!new_group_id.is_empty() && tab_group_name) {
+    if (auto* group_model = model->group_model()) {
+      auto* tab_group = group_model->GetTabGroup(new_group_id);
+      // Copy and modify the existing visual data with a new title.
+      tab_groups::TabGroupVisualData visual_data = *tab_group->visual_data();
+      visual_data.SetTitle(base::UTF8ToUTF16(*tab_group_name));
+      tab_group->SetVisualData(visual_data);
+    }
+  }
 
   if (tab_indices.size() > 1) {
     model->ActivateTabAt(tab_indices.at(1));

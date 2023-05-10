@@ -44,7 +44,9 @@ class HistoryClustersPageHandler
   void GetCartForCluster(history_clusters::mojom::ClusterPtr cluster,
                          GetCartForClusterCallback callback) override;
   void ShowJourneysSidePanel(const std::string& query) override;
-  void OpenUrlsInTabGroup(const std::vector<GURL>&) override;
+  void OpenUrlsInTabGroup(const std::vector<GURL>& urls,
+                          const absl::optional<std::string>& tab_group_name =
+                              absl::nullopt) override;
   void DismissCluster(
       const std::vector<history_clusters::mojom::URLVisitPtr> visits) override;
 

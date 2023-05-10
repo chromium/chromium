@@ -227,7 +227,8 @@ export class HistoryClustersModuleElement extends I18nMixin
   private onOpenAllInTabGroupClick_() {
     const urls = [this.searchResultPage, ...this.cluster.visits].map(
         visit => visit.normalizedUrl);
-    HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(urls);
+    HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(
+        urls, this.cluster.tabGroupName ?? null);
   }
 
   private shouldShowCartTile_(cart: Object): boolean {
