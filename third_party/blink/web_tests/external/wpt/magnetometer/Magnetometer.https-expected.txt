@@ -20,7 +20,6 @@ PASS Magnetometer: frequency hint works.
 PASS Magnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors.
 PASS Magnetometer: throw 'TypeError' if frequency is invalid.
 PASS Magnetometer: sensor reading is correct when options.referenceFrame is 'screen'.
-PASS Magnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values.
 FAIL UncalibratedMagnetometer: Test that onerror is sent when sensor is not supported. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: Test that onerror is sent when permissions are not granted. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: Test that onerror is send when start() call has failed. assert_implements: UncalibratedMagnetometer is not supported. undefined
@@ -42,6 +41,5 @@ FAIL UncalibratedMagnetometer: frequency hint works. assert_implements: Uncalibr
 FAIL UncalibratedMagnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: throw 'TypeError' if frequency is invalid. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: sensor reading is correct when options.referenceFrame is 'screen'. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values. assert_implements: UncalibratedMagnetometer is not supported. undefined
 Harness: the test ran to completion.
 
