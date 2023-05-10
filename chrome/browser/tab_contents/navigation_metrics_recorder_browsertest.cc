@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
   base::HistogramTester histograms;
   content::TestNavigationObserver observer(web_contents);
   const char* const kScript = "document.getElementById('form').submit()";
-  EXPECT_TRUE(content::ExecuteScript(web_contents, kScript));
+  EXPECT_TRUE(content::ExecJs(web_contents, kScript));
   observer.WaitForNavigationFinished();
 
   histograms.ExpectTotalCount(
