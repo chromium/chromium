@@ -53,7 +53,7 @@
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
       self.defaultSearchEngineIsGoogle) {
-    return GetBrandedGoogleIcon();
+    return GetBrandedGoogleIconForOmnibox();
   }
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   return GetOmniboxSuggestionIcon(self.suggestionIconType);
