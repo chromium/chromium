@@ -1782,6 +1782,9 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   menu_model_.AddItem(GetSearchForImageIdc(), menu_string);
+  if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
+    menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+  }
 
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
       base::FeatureList::IsEnabled(lens::features::kEnableImageTranslate) &&
@@ -2064,6 +2067,9 @@ void RenderViewContextMenu::AppendSearchProvider() {
           l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
                                      default_provider->short_name(),
                                      printable_selection_text));
+      if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
+        menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+      }
     }
   } else {
     if ((selection_navigation_url_ != params_.link_url) &&
@@ -2316,6 +2322,9 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     menu_model_.AddItem(GetRegionSearchIdc(),
                         l10n_util::GetStringFUTF16(
                             resource_id, GetImageSearchProviderName(provider)));
+    if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
+      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+    }
   }
 }
 
