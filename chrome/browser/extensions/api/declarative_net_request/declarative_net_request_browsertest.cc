@@ -544,7 +544,7 @@ class DeclarativeNetRequestBrowserTest
 
     const char* referrer_policy = use_frame_referrer ? "origin" : "no-referrer";
 
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetPrimaryMainFrame(),
         base::StringPrintf(R"(
           document.getElementsByName('%s')[0].referrerPolicy = '%s';
