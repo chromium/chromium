@@ -370,6 +370,7 @@ static constexpr const char* const kChromeUrls[] = {
     // ArcGraphicsTracingHandler::ArcGraphicsTracingHandler.
     // "chrome://arc-graphics-tracing",
     "chrome://app-disabled",
+    "chrome://certificate-manager/",
     "chrome://cryptohome",
     "chrome://drive-internals",
     "chrome://emoji-picker",
