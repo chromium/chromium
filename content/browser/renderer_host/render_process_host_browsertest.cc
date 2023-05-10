@@ -1839,7 +1839,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     std::string reload_script(
         "var f = document.getElementById('child-0');"
         "f.src = f.src;");
-    EXPECT_TRUE(ExecuteScript(root, reload_script));
+    EXPECT_TRUE(ExecJs(root, reload_script));
     reload_observer.Wait();
   }
   RenderFrameHostImpl* new_child_rfh0 = root->child_at(0)->current_frame_host();
@@ -1887,7 +1887,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     std::string reload_script(
         "var f = document.getElementById('child-1');"
         "f.src = f.src;");
-    EXPECT_TRUE(ExecuteScript(root, reload_script));
+    EXPECT_TRUE(ExecJs(root, reload_script));
     reload_observer.Wait();
   }
   RenderFrameHostImpl* new_child_rfh1 = root->child_at(1)->current_frame_host();

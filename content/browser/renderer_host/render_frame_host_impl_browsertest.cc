@@ -1259,7 +1259,7 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
     std::string message;
     while (msg_queue->PopMessage(&message)) {
       base::TrimString(message, "\"", &message);
-      // Only count messages from beforeunload.  For example, an ExecuteScript
+      // Only count messages from beforeunload.  For example, an ExecJs
       // sends its own message to DOMMessageQueue, which we need to ignore.
       if (message == "ping")
         ++num_pings;

@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(
   }
   {
     TestNavigationObserver reload_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
+    EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
     EXPECT_EQ(2, nav_controller.GetEntryCount());
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(
   url_interceptor.reset();
   {
     TestNavigationObserver reload_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
+    EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
     EXPECT_EQ(2, nav_controller.GetEntryCount());
@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   // 4) Trigger reload using location.reload().
   {
     TestNavigationObserver reload_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
+    EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
   }
@@ -1915,7 +1915,7 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to a.com/title1.html.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
   // Set window.name.
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "window.name='foo'"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "window.name='foo'"));
   auto* frame_a1 = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ("foo", frame_a1->GetFrameName());
 

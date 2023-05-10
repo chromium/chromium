@@ -15937,8 +15937,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   WebContentsAddedObserver web_contents_added_observer;
   TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
-  ASSERT_TRUE(ExecuteScript(contents(),
-                            R"(let form = document.createElement('form');
+  ASSERT_TRUE(ExecJs(contents(),
+                     R"(let form = document.createElement('form');
                                  form.method = 'POST';
                                  form.target = '_blank';
                                  form.action = 'about:blank';

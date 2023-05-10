@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
 
-  // Simulate a user gesture. ExecuteScript internally also sends a user
+  // Simulate a user gesture. ExecJs internally also sends a user
   // gesture.
   script = "a=5";
   EXPECT_TRUE(content::ExecJs(shell()->web_contents(), script));
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(redirected_url, controller.GetEntryAtIndex(1)->GetURL());
   EXPECT_EQ(push_state_url1, controller.GetEntryAtIndex(2)->GetURL());
 
-  // Simulate a user gesture. ExecuteScript internally also sends a user
+  // Simulate a user gesture. ExecJs internally also sends a user
   // gesture. The skippable bit for [1] should not have changed because of the
   // DebugHistoryInterventionNoUserActivation flag.
   script = "a=5";
@@ -1308,7 +1308,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
-  // Add the 2 pushstate entries. Note that ExecuteScript also sends a user
+  // Add the 2 pushstate entries. Note that ExecJs also sends a user
   // gesture.
   GURL a1_url(embedded_test_server()->GetURL("/title2.html"));
   GURL a2_url(embedded_test_server()->GetURL("/title3.html"));

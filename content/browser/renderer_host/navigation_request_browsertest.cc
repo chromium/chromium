@@ -3907,7 +3907,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   GURL about_blank(url::kAboutBlankURL);
   {
     TestNavigationObserver observer(web_contents);
-    EXPECT_TRUE(ExecuteScript(web_contents, "location = 'about:blank';"));
+    EXPECT_TRUE(ExecJs(web_contents, "location = 'about:blank';"));
     observer.Wait();
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(about_blank, observer.last_navigation_url());
