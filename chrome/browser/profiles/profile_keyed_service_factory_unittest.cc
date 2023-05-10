@@ -154,12 +154,10 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultFactoryTest) {
 class PredefinedProfileSelectionsFactoryTest
     : public ProfileKeyedServiceFactoryTest {
  public:
-  // Simulates the normal default value for Guest Profile. Guest Profile will
-  // then follow the behavior of the Regular Profile.
-  explicit PredefinedProfileSelectionsFactoryTest(bool force_guest = true)
+  PredefinedProfileSelectionsFactoryTest()
       : ProfileKeyedServiceFactoryTest(
             "PredefinedProfileSelectionsFactoryTest",
-            ProfileSelections::BuildRedirectedInIncognito(force_guest)) {}
+            ProfileSelections::BuildRedirectedInIncognito()) {}
 };
 
 TEST_P(ProfileKeyedServiceFactoryUnittest,
@@ -168,33 +166,12 @@ TEST_P(ProfileKeyedServiceFactoryUnittest,
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), regular_profile());
 
-  TestProfileToUse(factory, guest_profile(), guest_profile());
-  TestProfileToUse(factory, guest_profile_otr(), guest_profile());
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  bool system_experiment = IsSystemExperimentActive();
-  TestProfileToUse(factory, system_profile(),
-                   system_experiment ? nullptr : system_profile());
-  TestProfileToUse(factory, system_profile_otr(),
-                   system_experiment ? nullptr : system_profile());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-}
-
-TEST_P(ProfileKeyedServiceFactoryUnittest,
-       PredefinedProfileSelectionsFactoryTest_WithForceGuestFalse) {
-  PredefinedProfileSelectionsFactoryTest factory(/*force_guest=*/false);
-  TestProfileToUse(factory, regular_profile(), regular_profile());
-  TestProfileToUse(factory, incognito_profile(), regular_profile());
-
   TestProfileToUse(factory, guest_profile(), nullptr);
   TestProfileToUse(factory, guest_profile_otr(), nullptr);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  bool system_experiment = IsSystemExperimentActive();
-  TestProfileToUse(factory, system_profile(),
-                   system_experiment ? nullptr : system_profile());
-  TestProfileToUse(factory, system_profile_otr(),
-                   system_experiment ? nullptr : system_profile());
+  TestProfileToUse(factory, system_profile(), nullptr);
+  TestProfileToUse(factory, system_profile_otr(), nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 }
 

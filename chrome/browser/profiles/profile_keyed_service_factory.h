@@ -36,7 +36,7 @@ class ScopedProfileSelectionsForFactoryTesting;
 //   MyRedirectingKeyedServiceFactory()
 //       : ProfileKeyedServiceFactory(
 //             "MyRedirectingKeyedService",
-//             ProfileSelections::BuildRedirectedInIncognitoNonExperimental())
+//             ProfileSelections::BuildRedirectedInIncognito())
 //             {}
 //   }
 // };

@@ -93,9 +93,7 @@ class ProfileSelections {
     std::unique_ptr<ProfileSelections> selections_;
   };
 
-  // - Predefined `ProfileSelections`
-
-  // Regular builders (independent of the experiments):
+  // - Predefined `ProfileSelections` builders:
 
   // Only select the regular profile.
   // Note: Ash internal profiles are of type Regular. In order to have a
@@ -135,9 +133,7 @@ class ProfileSelections {
   static ProfileSelections BuildNoProfilesSelected();
 
   // Only select the regular profile and incognito for regular profiles. No
-  // profiles for Guest and System profiles. "NonExperimental" is added to
-  // differentiate with the experimental behavior during the experiment, once
-  // done it will be the equivalent builder.
+  // profiles for Guest and System profiles.
   // Note: Ash internal profiles are of type Regular. In order to have a
   // different filter for those profiles, a specific builder should be
   // constructed with a value for
@@ -153,9 +149,7 @@ class ProfileSelections {
   static ProfileSelections BuildForRegularAndIncognito();
 
   // Redirects incognito profiles to their original regular profile. No
-  // profiles for Guest and System profiles. "NonExperimental" is added to
-  // differentiate with the experimental behavior during the experiment, once
-  // done it will be the equivalent builder.
+  // profiles for Guest and System profiles.
   // Note: Ash internal profiles are of type Regular. In order to have a
   // different filter for those profiles, a specific builder should be
   // constructed with a value for
@@ -168,7 +162,7 @@ class ProfileSelections {
   // | System  | no profile | no profile |
   // | Ash Int.| self       | original   |
   // +---------+------------+------------+
-  static ProfileSelections BuildRedirectedInIncognitoNonExperimental();
+  static ProfileSelections BuildRedirectedInIncognito();
 
   // Redirects all OTR profiles to their original profiles.
   // Includes all profile types (Regular, Guest and System).
@@ -181,58 +175,6 @@ class ProfileSelections {
   // | Ash Int.| self       | original   |
   // +---------+------------+------------+
   static ProfileSelections BuildRedirectedToOriginal();
-
-  // Experimental builders:
-  //
-  // Experimental builders (should only be used for the transition from
-  // `BrowserContextKeyedServiceFactory` to `ProfileKeyedServiceFactory`):
-  // The following builder will contain experimental code indirectly, by not
-  // giving a value to Guest and System Profile (unless forced by parameters).
-  // The experiment is targeted to affect usages on
-  // `ProfileKeyedServiceFactory`. During the experiment phase, these builders
-  // will not have very accurate function names, the name is based on the end
-  // result behavior the experiment enforced behavior. With/Without experiment
-  // behavior is described per experimental builder. The parameters force_* will
-  // allow to have an easier transition when adapting to the experiment.
-
-  // Without the experiment:
-  // - Returns Regular for Regular, incognito and other regular OTR profiles.
-  // - Returns Guest Original for GuestOriginal  and GuestOTR (same as Regular).
-  // - Returns System Original for SystemOriginal  and SystemOTR (same as
-  // Regular).
-  //
-  // With the experiment:
-  // - Returns Regular for Regular, incognito and other regular OTR profiles.
-  // - Return nullptr for all Guest and System profiles.
-  //
-  // Without the experiment:
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | original   |
-  // | Guest   | self       | original   |
-  // | System  | self       | original   |
-  // | Ash Int.| self       | original   |
-  // +---------+------------+------------+
-  //
-  // With the experiment:
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | original   |
-  // | Guest   | no profile | no profile |
-  // | System  | no profile | no profile |
-  // | Ash Int.| self       | original   |
-  // +---------+------------+------------+
-  //
-  // Parameters: (used during the experiment)
-  // - force_guest: true, force Guest with
-  // `ProfileSelecion::kRedirectedToOriginal`.
-  // - force_system: true, force System with
-  // `ProfileSelecion::kRedirectedToOriginal`.
-  static ProfileSelections BuildRedirectedInIncognito(
-      bool force_guest = true,
-      bool force_system = false);
 
   // Given a Profile and a ProfileSelection enum, returns the right profile
   // (can potentially return nullptr).

@@ -1772,7 +1772,12 @@ DriveIntegrationServiceFactory* DriveIntegrationServiceFactory::GetInstance() {
 DriveIntegrationServiceFactory::DriveIntegrationServiceFactory()
     : ProfileKeyedServiceFactory(
           "DriveIntegrationService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(DriveNotificationManagerFactory::GetInstance());
   DependsOn(DownloadCoreServiceFactory::GetInstance());

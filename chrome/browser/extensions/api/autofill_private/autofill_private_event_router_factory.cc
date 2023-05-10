@@ -29,7 +29,12 @@ AutofillPrivateEventRouterFactory::GetInstance() {
 AutofillPrivateEventRouterFactory::AutofillPrivateEventRouterFactory()
     : ProfileKeyedServiceFactory(
           "AutofillPrivateEventRouter",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
 }
