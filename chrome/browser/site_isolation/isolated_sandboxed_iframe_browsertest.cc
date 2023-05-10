@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest, IsolatedSandbox) {
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(frame_host, js_str));
+    EXPECT_TRUE(ExecJs(frame_host, js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame2.src = '%s'; "
         "document.body.appendChild(frame2);",
         child_url.spec().c_str(), child_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(frame_host, js_str));
+    EXPECT_TRUE(ExecJs(frame_host, js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "document.body.appendChild(frame3);",
         child_url_a.spec().c_str(), child_url_b.spec().c_str(),
         child_url_b.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(frame_host, js_str));
+    EXPECT_TRUE(ExecJs(frame_host, js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url_a.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(frame_host, js_str));
+    EXPECT_TRUE(ExecJs(frame_host, js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url_b.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents_b->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents_b->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents_b));
   }
 
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.srcdoc = '%s'; "
         "document.body.appendChild(frame);",
         child_inner_text.c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.sandbox = ''; "
         "frame.src = 'about:blank'; "
         "document.body.appendChild(frame);");
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         empty_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         js_url_str.c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(NotIsolatedSandboxedIframeBrowserTest, IsolatedSandbox) {
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
 
     content::TestNavigationObserver popup_observer(nullptr);
     popup_observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(ExecuteScript(child_rfh, js_str));
+    EXPECT_TRUE(ExecJs(child_rfh, js_str));
     popup_observer.Wait();
   }
 
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
 
     content::TestNavigationObserver popup_observer(nullptr);
     popup_observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     popup_observer.Wait();
   }
 
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         data_url_str.c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
+    EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 

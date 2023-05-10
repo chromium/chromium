@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest, DocumentHasFocus) {
   EXPECT_FALSE(document_has_focus(grandchild));
   EXPECT_FALSE(document_has_focus(child2));
 
-  EXPECT_TRUE(ExecuteScript(child1, "window.focus();"));
+  EXPECT_TRUE(ExecJs(child1, "window.focus();"));
   EXPECT_EQ(child1, web_contents->GetFocusedFrame());
 
   EXPECT_TRUE(document_has_focus(main_frame));
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest, DocumentHasFocus) {
   EXPECT_FALSE(document_has_focus(grandchild));
   EXPECT_FALSE(document_has_focus(child2));
 
-  EXPECT_TRUE(ExecuteScript(grandchild, "window.focus();"));
+  EXPECT_TRUE(ExecJs(grandchild, "window.focus();"));
   EXPECT_EQ(grandchild, web_contents->GetFocusedFrame());
 
   EXPECT_TRUE(document_has_focus(main_frame));
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest, DocumentHasFocus) {
   EXPECT_TRUE(document_has_focus(grandchild));
   EXPECT_FALSE(document_has_focus(child2));
 
-  EXPECT_TRUE(ExecuteScript(child2, "window.focus();"));
+  EXPECT_TRUE(ExecJs(child2, "window.focus();"));
   EXPECT_EQ(child2, web_contents->GetFocusedFrame());
 
   EXPECT_TRUE(document_has_focus(main_frame));
@@ -271,9 +271,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Assign a name to each frame.  This will be sent along in test messages
   // from focus events.
-  EXPECT_TRUE(ExecuteScript(main_frame, "window.name = 'root';"));
-  EXPECT_TRUE(ExecuteScript(child1, "window.name = 'child1';"));
-  EXPECT_TRUE(ExecuteScript(child2, "window.name = 'child2';"));
+  EXPECT_TRUE(ExecJs(main_frame, "window.name = 'root';"));
+  EXPECT_TRUE(ExecJs(child1, "window.name = 'child1';"));
+  EXPECT_TRUE(ExecJs(child2, "window.name = 'child2';"));
 
   // This script will insert two <input> fields in the document, one at the
   // beginning and one at the end.  For root frame, this means that we will
@@ -292,9 +292,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       "input2.addEventListener('focus', onFocus, false);";
 
   // Add two input fields to each of the three frames.
-  EXPECT_TRUE(ExecuteScript(main_frame, script));
-  EXPECT_TRUE(ExecuteScript(child1, script));
-  EXPECT_TRUE(ExecuteScript(child2, script));
+  EXPECT_TRUE(ExecJs(main_frame, script));
+  EXPECT_TRUE(ExecJs(child1, script));
+  EXPECT_TRUE(ExecJs(child2, script));
 
   // Helper to simulate a tab press and wait for a focus message.
   auto press_tab_and_wait_for_message = [web_contents](bool reverse) {
@@ -367,8 +367,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Assign a name to each frame.  This will be sent along in test messages
   // from focus events.
-  EXPECT_TRUE(ExecuteScript(main_frame, "window.name = 'root';"));
-  EXPECT_TRUE(ExecuteScript(object, "window.name = 'object';"));
+  EXPECT_TRUE(ExecJs(main_frame, "window.name = 'root';"));
+  EXPECT_TRUE(ExecJs(object, "window.name = 'object';"));
 
   // This script will insert two <input> fields in the document, one at the
   // beginning and one at the end.  For root frame, this means that we will
@@ -387,8 +387,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       "input2.addEventListener('focus', onFocus, false);";
 
   // Add two input fields to each of the two frames.
-  EXPECT_TRUE(ExecuteScript(main_frame, script));
-  EXPECT_TRUE(ExecuteScript(object, script));
+  EXPECT_TRUE(ExecJs(main_frame, script));
+  EXPECT_TRUE(ExecJs(object, script));
 
   // Helper to simulate a tab press and wait for a focus message.
   auto press_tab_and_wait_for_message = [web_contents](bool reverse) {
@@ -444,9 +444,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Assign a name to each frame.  This will be sent along in test messages
   // from focus events.
-  EXPECT_TRUE(ExecuteScript(main_frame, "window.name = 'root';"));
-  EXPECT_TRUE(ExecuteScript(child1, "window.name = 'child1';"));
-  EXPECT_TRUE(ExecuteScript(child2, "window.name = 'child2';"));
+  EXPECT_TRUE(ExecJs(main_frame, "window.name = 'root';"));
+  EXPECT_TRUE(ExecJs(child1, "window.name = 'child1';"));
+  EXPECT_TRUE(ExecJs(child2, "window.name = 'child2';"));
 
   // This script will insert two <input> fields in the document, one at the
   // beginning and one at the end.  For root frame, this means that we will
@@ -686,7 +686,7 @@ void AddFullscreenChangeListener(content::RenderFrameHost* frame,
       "document.addEventListener('webkitfullscreenchange', function() {"
       "    domAutomationController.send('fullscreenchange %s');});",
       id.c_str());
-  EXPECT_TRUE(ExecuteScript(frame, script));
+  EXPECT_TRUE(ExecJs(frame, script));
 }
 
 // Helper to add a listener that will send back a "resize" message when the
@@ -696,7 +696,7 @@ void AddResizeListener(content::RenderFrameHost* frame,
   std::string script =
       base::StringPrintf("addResizeListener(%d, %d);", expected_size.width(),
                          expected_size.height());
-  EXPECT_TRUE(ExecuteScript(frame, script));
+  EXPECT_TRUE(ExecJs(frame, script));
 }
 
 // Helper to wait for a toggle fullscreen operation to complete in all affected
@@ -775,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   {
     content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver observer(browser());
-    EXPECT_TRUE(ExecuteScript(child, "activateFullscreen()"));
+    EXPECT_TRUE(ExecJs(child, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
     observer.Wait();
   }
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   {
     content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver observer(browser());
-    EXPECT_TRUE(ExecuteScript(child, "exitFullscreen()"));
+    EXPECT_TRUE(ExecJs(child, "exitFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
     observer.Wait();
   }
@@ -846,8 +846,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
 
   // Navigate the bottom frame to a page that has a fullscreenable <div>.
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(
-      ExecuteScript(grandchild, "location.href = '/fullscreen_frame.html'"));
+  EXPECT_TRUE(ExecJs(grandchild, "location.href = '/fullscreen_frame.html'"));
   observer.Wait();
   grandchild = ChildFrameAt(child, 0);
   EXPECT_EQ(embedded_test_server()->GetURL("a.com", "/fullscreen_frame.html"),
@@ -871,7 +870,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
   {
     content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver fullscreen_observer(browser());
-    EXPECT_TRUE(ExecuteScript(grandchild, "activateFullscreen()"));
+    EXPECT_TRUE(ExecJs(grandchild, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
     fullscreen_observer.Wait();
   }
@@ -900,7 +899,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
     FullscreenNotificationObserver fullscreen_observer(browser());
     switch (exit_method) {
       case FullscreenExitMethod::JS_CALL:
-        EXPECT_TRUE(ExecuteScript(grandchild, "exitFullscreen()"));
+        EXPECT_TRUE(ExecJs(grandchild, "exitFullscreen()"));
         break;
       case FullscreenExitMethod::ESC_PRESS:
         ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -994,8 +993,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // Navigate |c_middle| to a page that has a fullscreenable <div> and another
   // frame.
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(
-      ExecuteScript(c_middle, "location.href = '/fullscreen_frame.html'"));
+  EXPECT_TRUE(ExecJs(c_middle, "location.href = '/fullscreen_frame.html'"));
   observer.Wait();
   c_middle = ChildFrameAt(c_top, 0);
   EXPECT_EQ(embedded_test_server()->GetURL("c.com", "/fullscreen_frame.html"),
@@ -1029,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   {
     content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver fullscreen_observer(browser());
-    EXPECT_TRUE(ExecuteScript(c_middle, "activateFullscreen()"));
+    EXPECT_TRUE(ExecJs(c_middle, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
     fullscreen_observer.Wait();
   }
@@ -1110,14 +1108,15 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
 
-  EXPECT_TRUE(ExecuteScript(child, "document.body.requestPointerLock()"));
+  EXPECT_TRUE(ExecJs(child, "document.body.requestPointerLock()",
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   EXPECT_EQ(true,
             EvalJs(child, "document.body == document.pointerLockElement"));
   EXPECT_TRUE(main_frame->GetView()->IsMouseLocked());
 
-  EXPECT_TRUE(ExecuteScript(main_frame,
-                            "document.querySelector('iframe').parentNode."
-                            "removeChild(document.querySelector('iframe'))"));
+  EXPECT_TRUE(ExecJs(main_frame,
+                     "document.querySelector('iframe').parentNode."
+                     "removeChild(document.querySelector('iframe'))"));
   EXPECT_FALSE(main_frame->GetView()->IsMouseLocked());
 }
 
@@ -1179,9 +1178,9 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Change the position of the <iframe> inside the page.
-  EXPECT_TRUE(ExecuteScript(active_web_contents,
-                            "document.querySelector('iframe').style ="
-                            " 'margin-left: 100px; margin-top: 100px;';"));
+  EXPECT_TRUE(ExecJs(active_web_contents,
+                     "document.querySelector('iframe').style ="
+                     " 'margin-left: 100px; margin-top: 100px;';"));
 
   // Navigate subframe to a cross-site page with an embedded PDF.
   GURL frame_url =
@@ -1428,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Add <input type='date'> to the child frame. Adjust the positions that we
   // know where to click to dismiss the popup.
-  ASSERT_TRUE(ExecuteScript(
+  ASSERT_TRUE(ExecJs(
       child_frame,
       "var input = document.createElement('input');"
       "input.type = 'date';"
@@ -1451,7 +1450,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   for (size_t tries = 0; tries < 3U; tries++) {
     // Focus the <input>.
     ASSERT_TRUE(
-        ExecuteScript(child_frame, "document.querySelector('input').focus();"));
+        ExecJs(child_frame, "document.querySelector('input').focus();"));
 
     // Alt + Down seems to be working fine on all platforms.
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
@@ -1525,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   EXPECT_EQ(subframe_url, subframe->GetLastCommittedURL());
 
   // Simulate the ctrl-return to open the anchor's link in a new background tab.
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       subframe, "document.getElementById('test-anchor-no-target').focus();"));
   content::WebContents* new_contents = nullptr;
   {
@@ -1585,8 +1584,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       embedded_test_server()->GetURL("foo.com", "/page_with_focus_events.html");
   content::TestNavigationObserver popup_observer(nullptr);
   popup_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(ExecuteScript(web_contents,
-                            "openPopup('" + popup_url.spec() + "','popup')"));
+  EXPECT_TRUE(
+      ExecJs(web_contents, "openPopup('" + popup_url.spec() + "','popup')"));
   popup_observer.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   content::WebContents* popup =

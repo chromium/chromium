@@ -412,9 +412,9 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
   ui_test_utils::UrlLoadObserver load_complete(
       dcbae_url, content::NotificationService::AllSources());
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.open('" + dcbae_url.spec() + "');"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.open('" + dcbae_url.spec() + "');"));
   ASSERT_EQ(4, browser()->tab_strip_model()->count());
   load_complete.Wait();
 
@@ -710,9 +710,9 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
   ui_test_utils::UrlLoadObserver load_complete(
       dcbae_url, content::NotificationService::AllSources());
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.open('" + dcbae_url.spec() + "');"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.open('" + dcbae_url.spec() + "');"));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   load_complete.Wait();
 
