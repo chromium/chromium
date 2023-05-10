@@ -23,6 +23,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/common/switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -36,14 +37,6 @@ namespace {
 // site may show a banner for.
 const size_t kMaxAppsPerSite = 3;
 
-// Default number of days that dismissing or ignoring the banner will prevent it
-// being seen again for.
-const unsigned int kMinimumBannerBlockedToBannerShown = 90;
-const unsigned int kMinimumDaysBetweenBannerShows = 14;
-
-// Default site engagement required to trigger the banner.
-const unsigned int kDefaultTotalEngagementToTrigger = 2;
-
 // Dictionary keys to use for the events. Must be kept in sync with
 // AppBannerEvent.
 constexpr const char* kBannerEventKeys[] = {
@@ -55,17 +48,12 @@ constexpr const char* kBannerEventKeys[] = {
     // clang-format on
 };
 
-// Keys to use when querying the variations params.
-const char kBannerParamsKey[] = "AppBannerTriggering";
-const char kBannerParamsEngagementTotalKey[] = "site_engagement_total";
-const char kBannerParamsDaysAfterBannerDismissedKey[] = "days_after_dismiss";
-const char kBannerParamsDaysAfterBannerIgnoredKey[] = "days_after_ignore";
-
 // Total engagement score required before a banner will actually be triggered.
-double gTotalEngagementToTrigger = kDefaultTotalEngagementToTrigger;
+double gTotalEngagementToTrigger = features::kDefaultTotalEngagementToTrigger;
 
-unsigned int gDaysAfterDismissedToShow = kMinimumBannerBlockedToBannerShown;
-unsigned int gDaysAfterIgnoredToShow = kMinimumDaysBetweenBannerShows;
+unsigned int gDaysAfterDismissedToShow =
+    features::kMinimumBannerBlockedToBannerShown;
+unsigned int gDaysAfterIgnoredToShow = features::kMinimumDaysBetweenBannerShows;
 
 base::Value::Dict GetOriginAppBannerData(HostContentSettingsMap* settings,
                                          const GURL& origin_url) {
@@ -127,36 +115,18 @@ class AppPrefs {
 // Queries variations for the number of days which dismissing and ignoring the
 // banner should prevent a banner from showing.
 void UpdateDaysBetweenShowing() {
-  std::string dismiss_param = base::GetFieldTrialParamValue(
-      kBannerParamsKey, kBannerParamsDaysAfterBannerDismissedKey);
-  std::string ignore_param = base::GetFieldTrialParamValue(
-      kBannerParamsKey, kBannerParamsDaysAfterBannerIgnoredKey);
-
-  if (!dismiss_param.empty() && !ignore_param.empty()) {
-    unsigned int dismiss_days = 0;
-    unsigned int ignore_days = 0;
-
-    if (base::StringToUint(dismiss_param, &dismiss_days) &&
-        base::StringToUint(ignore_param, &ignore_days)) {
-      AppBannerSettingsHelper::SetDaysAfterDismissAndIgnoreToTrigger(
-          dismiss_days, ignore_days);
-    }
-  }
+  AppBannerSettingsHelper::SetDaysAfterDismissAndIgnoreToTrigger(
+      features::kBannerParamsDaysAfterBannerDismissedKey.Get(),
+      features::kBannerParamsDaysAfterBannerIgnoredKey.Get());
 }
 
 // Queries variations for the maximum site engagement score required to trigger
 // the banner showing.
 void UpdateSiteEngagementToTrigger() {
-  std::string total_param = base::GetFieldTrialParamValue(
-      kBannerParamsKey, kBannerParamsEngagementTotalKey);
+  double total_engagement = features::kBannerParamsEngagementTotalKey.Get();
 
-  if (!total_param.empty()) {
-    double total_engagement = -1;
-
-    if (base::StringToDouble(total_param, &total_engagement) &&
-        total_engagement >= 0) {
-      AppBannerSettingsHelper::SetTotalEngagementToTrigger(total_engagement);
-    }
+  if (total_engagement >= 0) {
+    AppBannerSettingsHelper::SetTotalEngagementToTrigger(total_engagement);
   }
 }
 

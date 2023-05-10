@@ -582,10 +582,10 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                        WebAppBannerNeedsEngagement) {
-  base::AutoReset<double> scoped_engagement =
-      AppBannerSettingsHelper::ScopeTotalEngagementForTesting(1);
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
+  base::AutoReset<double> scoped_engagement =
+      AppBannerSettingsHelper::ScopeTotalEngagementForTesting(1);
   base::HistogramTester histograms;
 
   site_engagement::SiteEngagementService* service =

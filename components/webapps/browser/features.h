@@ -13,6 +13,14 @@
 namespace webapps {
 namespace features {
 
+// Default number of days that dismissing or ignoring the banner will prevent it
+// being seen again for.
+constexpr unsigned int kMinimumBannerBlockedToBannerShown = 90;
+constexpr unsigned int kMinimumDaysBetweenBannerShows = 14;
+
+// Default site engagement required to trigger the banner.
+constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
 BASE_DECLARE_FEATURE(kAmbientBadgeSuppressFirstVisit);
@@ -43,6 +51,11 @@ BASE_DECLARE_FEATURE(kInstallPromptSegmentation);
 
 bool SkipInstallServiceWorkerCheck();
 bool SkipServiceWorkerForInstallPromotion();
+
+BASE_DECLARE_FEATURE(kAppBannerTriggering);
+extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey;
+extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey;
+extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey;
 
 }  // namespace features
 }  // namespace webapps
