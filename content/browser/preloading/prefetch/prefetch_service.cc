@@ -25,6 +25,8 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_accept_header.h"
@@ -245,7 +247,6 @@ void RecordRedirectNetworkContextTransition(
   UMA_HISTOGRAM_ENUMERATION(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", transition);
 }
-
 }  // namespace
 
 // static
@@ -1343,25 +1344,55 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 #endif  // DCHECK_IS_ON()
 }
 
+PrefetchContainer* PrefetchService::FindPrefetchContainerToServe(
+    const PrefetchContainer::Key& key) {
+  // Search for an exact match first. If one is found and not deleted, produce
+  // it.
+  auto it = prefetches_ready_to_serve_.find(key);
+  if (it != prefetches_ready_to_serve_.end()) {
+    PrefetchContainer* prefetch = it->second.get();
+    prefetches_ready_to_serve_.erase(it);
+    if (prefetch) {
+      return prefetch;
+    }
+  }
+
+  // Search for an inexact match using the No-Vary-Search hint.
+  // It must either be servable now or potentially servable soon.
+  const auto frame_host_id = key.first;
+  const GURL& nav_url = key.second;
+  for (const auto& active_prefetch : active_prefetches_) {
+    if (active_prefetch.first != frame_host_id) {
+      continue;
+    }
+    PrefetchContainer* prefetch = all_prefetches_[active_prefetch].get();
+    if (!prefetch || prefetch->HasPrefetchBeenConsideredToServe()) {
+      continue;
+    }
+    const auto& nvs_expected = prefetch->GetNoVarySearchHint();
+    if (!nvs_expected ||
+        !nvs_expected->AreEquivalent(nav_url, prefetch->GetURL())) {
+      continue;
+    }
+    if (prefetch->IsPrefetchServable(PrefetchCacheableDuration()) ||
+        prefetch->ShouldBlockUntilHeadReceived()) {
+      return prefetch;
+    }
+  }
+  return nullptr;
+}
+
 void PrefetchService::GetPrefetchToServe(
     const PrefetchContainer::Key& key,
     OnPrefetchToServeReady on_prefetch_to_serve_ready) {
   DumpPrefetchesForDebug();
   const GURL& url = key.second;
 
-  auto prefetch_iter = prefetches_ready_to_serve_.find(key);
-  if (prefetch_iter == prefetches_ready_to_serve_.end()) {
-    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
-             << "): URL not found";
-    std::move(on_prefetch_to_serve_ready).Run(nullptr);
-    return;
-  }
-
-  base::WeakPtr<PrefetchContainer> prefetch_container = prefetch_iter->second;
-  prefetches_ready_to_serve_.erase(prefetch_iter);
+  PrefetchContainer* prefetch_container = FindPrefetchContainerToServe(key);
   if (!prefetch_container) {
-    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
-             << "): PrefetchContainer is null";
+    DVLOG(1)
+        << "PrefetchService::GetPrefetchToServe(" << url
+        << "): PrefetchContainer is null or no matching prefetch was found";
     std::move(on_prefetch_to_serve_ready).Run(nullptr);
     return;
   }
@@ -1376,18 +1407,19 @@ void PrefetchService::GetPrefetchToServe(
     DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
              << "): PrefetchContainer is servable";
     prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
-    ReturnPrefetchToServe(prefetch_container,
-                          std::move(on_prefetch_to_serve_ready));
+    ReturnPrefetchToServe(prefetch_container->GetWeakPtr(),
+                          std::move(on_prefetch_to_serve_ready), url);
     return;
   }
 
   if (prefetch_container->ShouldBlockUntilHeadReceived()) {
     DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
              << "): PrefetchContainer is blocked until head";
-    prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
+    prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/true);
     prefetch_container->GetStreamingLoader()->SetOnReceivedHeadCallback(
-        base::BindOnce(&PrefetchService::ReturnPrefetchToServe,
-                       weak_method_factory_.GetWeakPtr(), prefetch_container,
+        base::BindOnce(&PrefetchService::WaitOnPrefetchToServeHead,
+                       weak_method_factory_.GetWeakPtr(), key,
+                       prefetch_container->GetWeakPtr(),
                        std::move(on_prefetch_to_serve_ready)));
     return;
   }
@@ -1397,9 +1429,73 @@ void PrefetchService::GetPrefetchToServe(
   std::move(on_prefetch_to_serve_ready).Run(nullptr);
 }
 
-void PrefetchService::ReturnPrefetchToServe(
+void PrefetchService::WaitOnPrefetchToServeHead(
+    const PrefetchContainer::Key& key,
     base::WeakPtr<PrefetchContainer> prefetch_container,
     OnPrefetchToServeReady on_prefetch_to_serve_ready) {
+  const GURL& nav_url = key.second;
+  if (!prefetch_container) {
+    ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready),
+                          nav_url);
+    return;
+  }
+  if (nav_url == prefetch_container->GetURL()) {
+    PrepareToServe(nav_url, prefetch_container);
+    GetPrefetchToServe(key, std::move(on_prefetch_to_serve_ready));
+    return;
+  }
+
+  if (const auto* head = prefetch_container->GetHead()) {
+    if (!head->parsed_headers ||
+        !head->parsed_headers->no_vary_search_with_parse_error ||
+        head->parsed_headers->no_vary_search_with_parse_error
+            ->is_parse_error()) {
+      // is_parse_error() == true includes the case where the header is
+      // not there (kOk) and the case where the header is equivalent
+      // to default behavior (exactly match URL - kDefaultValue)
+      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+      prefetch_container->UpdateServingPageMetrics();
+      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready),
+                            nav_url);
+      return;
+    }
+    auto no_vary_search_data =
+        NoVarySearchHelper::ParseHttpNoVarySearchDataFromMojom(
+            head->parsed_headers->no_vary_search_with_parse_error
+                ->get_no_vary_search());
+    if (!no_vary_search_data.AreEquivalent(nav_url,
+                                           prefetch_container->GetURL())) {
+      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+      prefetch_container->UpdateServingPageMetrics();
+      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready),
+                            nav_url);
+      return;
+    }
+    DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::"
+             << "url = " << nav_url << "::"
+             << "matches by NVS header the prefetch "
+             << prefetch_container->GetURL();
+    if (auto attempt = prefetch_container->preloading_attempt()) {
+      // Before No-Vary-Search hint, the decision to use a prefetched response
+      // was made in `DidStartNavigation`. `SetIsAccurateTriggering` is called
+      // by `PreloadingDataImpl::DidStartNavigation`. With No-Vary-Search
+      // hint the decision to use an in-flight prefetched response is
+      // delayed until the headers are received from the server. This
+      // happens after `DidStartNavigation`. At this point in the code we
+      // have already decided we are going to use the prefetch, so we can
+      // safely call `SetIsAccurateTriggering`.
+      static_cast<PreloadingAttemptImpl*>(attempt.get())
+          ->SetIsAccurateTriggering(nav_url);
+    }
+    PrepareToServe(nav_url, prefetch_container);
+    GetPrefetchToServe(key, std::move(on_prefetch_to_serve_ready));
+  }
+}
+
+void PrefetchService::ReturnPrefetchToServe(
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    OnPrefetchToServeReady on_prefetch_to_serve_ready,
+    const GURL& nav_url) {
   if (prefetch_container) {
     prefetch_container->UpdateServingPageMetrics();
   }
@@ -1408,7 +1504,9 @@ void PrefetchService::ReturnPrefetchToServe(
       !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration()) ||
       prefetch_container->HaveDefaultContextCookiesChanged(
           prefetch_container->GetURL())) {
-    prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+    if (prefetch_container) {
+      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+    }
     std::move(on_prefetch_to_serve_ready).Run(nullptr);
     return;
   }

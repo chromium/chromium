@@ -31,6 +31,29 @@ namespace content {
 
 namespace {
 static PrefetchService* g_prefetch_service_for_testing = nullptr;
+
+// Sets ServingPageMetrics for all prefetches that might match under
+// No-Vary-Search hint.
+void SetMetricsForPossibleNoVarySearchHintMatches(
+    const std::map<GURL, base::WeakPtr<PrefetchContainer>>& all_prefetches,
+    const GURL& nav_url,
+    PrefetchServingPageMetricsContainer& serving_page_metrics_container) {
+  for (const auto& itr : all_prefetches) {
+    if (!itr.second) {
+      continue;
+    }
+    if (!itr.second->HasPrefetchBeenConsideredToServe() &&
+        itr.second->GetNoVarySearchHint() &&
+        itr.second->GetNoVarySearchHint()->AreEquivalent(
+            nav_url, itr.second->GetURL())) {
+      // In this case we need to set serving page metrics in case we end up
+      // using the prefetch after No-Vary-Search header is received.
+      itr.second->SetServingPageMetrics(
+          serving_page_metrics_container.GetWeakPtr());
+      itr.second->UpdateServingPageMetrics();
+    }
+  }
+}
 }  // namespace
 
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
@@ -105,6 +128,9 @@ void PrefetchDocumentManager::DidStartNavigation(
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
              << navigation_handle->GetURL()
              << ": skipped (PrefetchContainer not found)";
+    SetMetricsForPossibleNoVarySearchHintMatches(
+        all_prefetches_, navigation_handle->GetURL(),
+        *serving_page_metrics_container);
     return;
   }
 
@@ -113,6 +139,9 @@ void PrefetchDocumentManager::DidStartNavigation(
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
              << *prefetch_iter->second
              << ": skipped (already used for another navigation)";
+    SetMetricsForPossibleNoVarySearchHintMatches(
+        all_prefetches_, navigation_handle->GetURL(),
+        *serving_page_metrics_container);
     return;
   }
 

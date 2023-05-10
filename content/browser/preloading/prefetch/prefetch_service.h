@@ -260,7 +260,24 @@ class CONTENT_EXPORT PrefetchService {
   // prefetch if needed, and updates its state.
   void ReturnPrefetchToServe(
       base::WeakPtr<PrefetchContainer> prefetch_container,
+      OnPrefetchToServeReady on_prefetch_to_serve_ready,
+      const GURL& nav_url);
+
+  // Helper function for |GetPrefetchToServe| to wait for head of a
+  // potentially matching CL in order to decide if we can use it or not for
+  // the current navigation.
+  // Once we make the decision to use a prefetch, call |PrepareToServe| and
+  // |GetPrefetchToServe| again in order to enforce that prefetches that are
+  // served are served from |prefetches_ready_to_serve_|.
+  void WaitOnPrefetchToServeHead(
+      const PrefetchContainer::Key& key,
+      base::WeakPtr<PrefetchContainer> prefetch_container,
       OnPrefetchToServeReady on_prefetch_to_serve_ready);
+
+  // Helper function for |GetPrefetchToServe| which identifies the
+  // |prefetch_container| that could potentially be served.
+  PrefetchContainer* FindPrefetchContainerToServe(
+      const PrefetchContainer::Key& key);
 
   // Checks if there is a prefetch in |all_prefetches_| with the same URL as
   // |prefetch_container| but from a different referring RenderFrameHost.

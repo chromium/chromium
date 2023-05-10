@@ -733,12 +733,18 @@ bool PrefetchContainer::IsMatchingNoVarySearchUrl(
 }
 
 void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
+  // OnGetPrefetchToServe is called before we start waiting for head, and
+  // when the prefetch is used from `prefetches_ready_to_serve_`.
+  // If the prefetch had to wait for head, `blocked_until_head_start_time_`
+  // will already be set. Only record in the histogram when the
+  // `blocked_until_head_start_time_` is not set yet.
+  if (!blocked_until_head_start_time_) {
+    RecordWasBlockedUntilHeadWhenServingHistogram(prefetch_type_.GetEagerness(),
+                                                  blocked_until_head);
+  }
   if (blocked_until_head) {
     blocked_until_head_start_time_ = base::TimeTicks::Now();
   }
-
-  RecordWasBlockedUntilHeadWhenServingHistogram(prefetch_type_.GetEagerness(),
-                                                blocked_until_head);
 }
 
 void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
