@@ -103,7 +103,7 @@ struct DeterminationContext {
 
   // State key retrieved from session_manager. Used for state retrieval
   // request. Computed by StateKeys step.
-  std::string state_key;
+  absl::optional<std::string> state_key;
 
   // Maintains the required data and methods to communicate with the PSM
   // server. In particular, it holds the plaintext id we are want to check
@@ -503,7 +503,9 @@ class EnrollmentState {
                        std::move(completion_callback), base::TimeTicks::Now()));
 
     auto* request = config->request()->mutable_device_state_retrieval_request();
-    request->set_server_backed_state_key(context.state_key);
+    if (context.state_key.has_value()) {
+      request->set_server_backed_state_key(context.state_key.value());
+    }
     request->set_brand_code(std::string(context.rlz_brand_code));
     request->set_serial_number(std::string(context.serial_number));
 
@@ -849,11 +851,8 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnStateKeysRetrieved(absl::optional<std::string> state_key) {
-    if (!state_key) {
-      LOG(ERROR) << "Failed to obtain state keys";
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
-    }
-    context_.state_key = *state_key;
+    LOG_IF(WARNING, !state_key) << "Failed to obtain state keys";
+    context_.state_key = state_key;
     context_.psm_rlwe_client = context_.rlwe_client_factory.Run(
         ConstructPlainttextId(context_.rlz_brand_code, context_.serial_number));
     oprf_.Request(context_, base::BindOnce(&Sequence::OnOprfRequestDone,

@@ -314,15 +314,20 @@ TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {
   EXPECT_EQ(state, AutoEnrollmentState::kNoEnrollment);
 }
 
-TEST_F(EnrollmentStateFetcherTest, StateKeysMissing) {
+TEST_F(EnrollmentStateFetcherTest, ProceedWithMissingStateKeys) {
   ExpectOwnershipCheck();
   EXPECT_CALL(state_key_broker_, RequestStateKeys)
       .WillRepeatedly(
           base::test::RunOnceCallback<0>(std::vector<std::string>{}));
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithStateRequest(
+                                         /*state_key=*/std::string(),
+                                         kTestSerialNumber, kTestBrandCode)))
+      .WillOnce(
+          fake_dm_service_->SendJobOKAsync(em::DeviceManagementResponse()));
 
-  AutoEnrollmentState state = FetchEnrollmentState();
-
-  EXPECT_EQ(state, AutoEnrollmentState::kNoEnrollment);
+  FetchEnrollmentState();
 }
 
 TEST_F(EnrollmentStateFetcherTest, EmptyOprfResponse) {
@@ -498,6 +503,38 @@ TEST_F(EnrollmentStateFetcherTest, NoEnrollment) {
   const base::Value::Dict& device_state =
       local_state_.GetDict(prefs::kServerBackedDeviceState);
   EXPECT_TRUE(device_state.empty());
+}
+
+TEST_F(EnrollmentStateFetcherTest, PackagedLicenseWithoutEnrollment) {
+  ExpectOwnershipCheck();
+  ExpectStateKeysRequest();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  em::DeviceManagementResponse response;
+  auto* state_response = response.mutable_device_state_retrieval_response()
+                             ->mutable_initial_state_response();
+  state_response->set_initial_enrollment_mode(
+      em::DeviceInitialEnrollmentStateResponse::INITIAL_ENROLLMENT_MODE_NONE);
+  state_response->set_license_packaging_sku(
+      enterprise_management::DeviceInitialEnrollmentStateResponse::
+          CHROME_TERMINAL);
+  state_response->set_is_license_packaged_with_device(true);
+  EXPECT_CALL(job_creation_handler_,
+              OnJobCreation(JobWithStateRequest(
+                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+      .WillOnce(fake_dm_service_->SendJobOKAsync(response));
+
+  AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentState::kNoEnrollment);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  EXPECT_FALSE(device_state.FindString(kDeviceStateMode));
+  ASSERT_TRUE(device_state.FindBool(kDeviceStatePackagedLicense));
+  EXPECT_EQ(*device_state.FindBool(kDeviceStatePackagedLicense), true);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateLicenseType));
+  EXPECT_EQ(*device_state.FindString(kDeviceStateLicenseType),
+            kDeviceStateLicenseTypeTerminal);
 }
 
 TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentEnforced) {
