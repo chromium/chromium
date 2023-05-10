@@ -429,7 +429,7 @@ void SigninInNewGaiaFlow(content::WebContents* web_contents,
   WaitUntilAnyElementExistsInSigninFrame(web_contents, {"identifierId"});
   std::string js = "document.getElementById('identifierId').value = '" + email +
                    "'; document.getElementById('identifierNext').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 
   // Fill the password input field.
   std::string password_script = kGetPasswordFieldFromDiceSigninPage;
@@ -442,7 +442,7 @@ void SigninInNewGaiaFlow(content::WebContents* web_contents,
       "Could not find Dice password field");
   js = password_script + ".value = '" + password + "';";
   js += "document.getElementById('passwordNext').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 }
 
 void SigninInOldGaiaFlow(content::WebContents* web_contents,
@@ -451,12 +451,12 @@ void SigninInOldGaiaFlow(content::WebContents* web_contents,
   WaitUntilAnyElementExistsInSigninFrame(web_contents, {"Email"});
   std::string js = "document.getElementById('Email').value = '" + email + ";" +
                    "document.getElementById('next').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 
   WaitUntilAnyElementExistsInSigninFrame(web_contents, {"Passwd"});
   js = "document.getElementById('Passwd').value = '" + password + "';" +
        "document.getElementById('signIn').click();";
-  ASSERT_TRUE(content::ExecuteScript(GetSigninFrame(web_contents), js));
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 }
 
 void ExecuteJsToSigninInSigninFrame(content::WebContents* web_contents,
