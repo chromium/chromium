@@ -1742,14 +1742,10 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
     bool notify_download,
     bool force_update) {
-  DCHECK(!notify_download || exclusive_access_bubble_);
   // Trusted pinned mode does not allow to escape. So do not show the bubble.
   bool is_trusted_pinned =
       platform_util::IsBrowserLockedFullscreen(browser_.get());
 
-  // Immersive mode has no exit bubble because it has a visible strip at the
-  // top that gives the user a hover target. In a public session we show the
-  // bubble.
   // TODO(jamescook): Figure out what to do with mouse-lock.
   if (is_trusted_pinned ||
       (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
@@ -1786,8 +1782,6 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
     return;
   }
 
-  // Notification about download should only be considered for a bubble that
-  // exists already.
   exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
       this, url, bubble_type, std::move(bubble_first_hide_callback));
 }

@@ -363,7 +363,6 @@ void ChromeNativeAppWindowViewsAuraAsh::UpdateExclusiveAccessExitBubbleContent(
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
     bool notify_download,
     bool force_update) {
-  DCHECK(!notify_download || exclusive_access_bubble_);
   if (bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE && !notify_download) {
     exclusive_access_bubble_.reset();
     if (bubble_first_hide_callback) {
