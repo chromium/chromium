@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/chromium_strings.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -345,6 +347,17 @@ absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   api_account.is_eligible_for_address_account_storage =
       personal_data.IsEligibleForAddressAccountStorage();
   return std::move(api_account);
+}
+
+void AuthenticateUserOnMandatoryReauthToggled(
+    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator,
+    CallbackAfterSuccessfulUserAuth callback) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  CHECK(device_authenticator);
+  const std::u16string& message =
+      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
+  device_authenticator->AuthenticateWithMessage(message, std::move(callback));
+#endif
 }
 
 }  // namespace extensions::autofill_util

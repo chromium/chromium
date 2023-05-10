@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -30,6 +32,8 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
@@ -47,6 +51,7 @@ namespace {
 
 static const char kSettingsOrigin[] = "Chrome settings";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
+static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
 
 // Constant to assign a user-verified verification status to the autofill
 // profile.
@@ -836,6 +841,58 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
       card->instrument_id(),
       /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
   return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // If `client` is not available, then don't do anything.
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDeviceAuthUnavailable));
+  }
+
+  // If `device_authenticator` is not available, then don't do anything.
+  auto device_authenticator = client->GetDeviceAuthenticator();
+  if (!device_authenticator) {
+    return RespondNow(Error(kErrorDeviceAuthUnavailable));
+  }
+
+  // We will be modifying the pref `kAutofillPaymentMethodsMandatoryReauth`
+  // asynchronously. The pref value directly correlates to the mandatory auth
+  // toggle.
+  autofill_util::AuthenticateUserOnMandatoryReauthToggled(
+      device_authenticator,
+      base::BindOnce(
+          &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+              UpdateMandatoryAuthTogglePref,
+          this));
+  base::RecordAction(base::UserMetricsAction(
+      "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
+  return RespondNow(NoArguments());
+#else
+  return RespondNow(Error(kErrorDeviceAuthUnavailable));
+#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
+}
+
+// Update the Mandatory auth toggle pref after a successful user auth.
+void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+    UpdateMandatoryAuthTogglePref(bool reauth_succeeded) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (reauth_succeeded && browser_context()) {
+    PrefService* prefs =
+        Profile::FromBrowserContext(browser_context())->GetPrefs();
+    autofill::prefs::SetAutofillPaymentMethodsMandatoryReauth(
+        prefs, !prefs->GetBoolean(
+                   autofill::prefs::kAutofillPaymentMethodsMandatoryReauth));
+    base::RecordAction(base::UserMetricsAction(
+        "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
+  }
+#endif
 }
 
 }  // namespace extensions

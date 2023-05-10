@@ -3040,6 +3040,7 @@ if (!is_android) {
         "../browser/extensions/api/activity_log_private/activity_log_private_apitest.cc",
         "../browser/extensions/api/alarms/alarms_apitest.cc",
         "../browser/extensions/api/autofill_private/autofill_private_apitest.cc",
+        "../browser/extensions/api/autofill_private/autofill_util_unittest.cc",
         "../browser/extensions/api/automation/automation_apitest.cc",
         "../browser/extensions/api/bookmarks/bookmark_apitest.cc",
         "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc",

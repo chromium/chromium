@@ -26851,6 +26851,26 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PaymentsUserAuthSuccessfulForMandatoryAuthToggle">
+  <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>sujiezhu@google.com</owner>
+  <description>
+    Recorded when user completes a successful auth after trying to change the
+    mandatory auth toggle in the chrome://settings/payments page.
+  </description>
+</action>
+
+<action name="PaymentsUserAuthTriggeredForMandatoryAuthToggle">
+  <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>sujiezhu@google.com</owner>
+  <description>
+    Recorded when user is asked for an auth after trying to change the mandatory
+    auth toggle in the chrome://settings/payments page.
+  </description>
+</action>
+
 <action name="PDF.FitToHeightButton">
   <obsolete>Removed with Out of Process PDF (issue 303491)</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

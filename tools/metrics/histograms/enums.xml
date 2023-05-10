@@ -36101,6 +36101,8 @@ Called by update_extension_histograms.py.-->
   <int value="1784" label="ENTERPRISE_REMOTEAPPS_SETPINNEDAPPS"/>
   <int value="1785" label="SMARTCARDPROVIDERPRIVATE_REPORTDATARESULT"/>
   <int value="1786" label="FILEMANAGERPRIVATE_CALCULATEBULKPINREQUIREDSPACE"/>
+  <int value="1787"
+      label="AUTOFILLPRIVATE_AUTHENTICATEUSERANDFLIPMANDATORYAUTHTOGGLE"/>
 </enum>
 
 <enum name="ExtensionIconState">
