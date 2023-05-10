@@ -20,10 +20,9 @@ declare_args() {
   # TODO(crbug.com/1386212): Mac
   # TODO(crbug.com/1271215): Windows
   # TODO(crbug.com/1442491): Fuchsia
-  # TODO(crbug.com/1426472): use_clang_coverage
   # TODO(crbug.com/1229419): is_official_build
   enable_rust = !is_mac && !is_ios && !is_win && !is_fuchsia &&
-                !is_official_build && !use_clang_coverage && build_with_chromium
+                !is_official_build && build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling

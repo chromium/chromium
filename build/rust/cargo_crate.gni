@@ -375,7 +375,21 @@ template("cargo_crate") {
                                  "edition",
                                  "rustflags",
                                ])
-        configs -= [ "//build/config/compiler:chromium_code" ]
+        configs -= [
+          "//build/config/compiler:chromium_code",
+
+          # Avoid generating profiling data for build scripts.
+          #
+          # TODO(crbug.com/1426472): determine for sure whether to remove this
+          # config. I'm not sure of the overlap between PGO instrumentation and
+          # code coverage instrumentation, but we definitely don't want build
+          # script coverage for PGO, while we might for test coverage metrics.
+          #
+          # If we do include build script output in test metrics, it could be
+          # misleading: exercising some code from a build script doesn't give us
+          # the same signal as an actual test.
+          "//build/config/coverage:default_coverage",
+        ]
         configs += [ "//build/config/compiler:no_chromium_code" ]
       }
     } else {
