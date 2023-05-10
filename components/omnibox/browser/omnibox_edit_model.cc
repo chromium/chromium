@@ -966,7 +966,27 @@ bool OmniboxEditModel::AcceptKeyword(
   // here, may have generated a new match, which the user won't actually see and
   // which we don't want to switch back to when exiting keyword mode; see
   // comments in ClearKeyword().
-  const AutocompleteMatch& match = CurrentMatch(nullptr);
+
+  // TODO(manukh): Remove this comment and `match` if no bugs arise. It's wrong
+  //   to try to use `CurrentMatch()`, as entering keyword mode shouldn't change
+  //   the omnibox text (other than stripping the keyword). E.g.:
+  //   1) User has keyword 'g' for searching 'google.com'.
+  //   2) User types 'g'.
+  //   3) There's a suggestion for 'github.com is awesome' with a keyword hint
+  //      for 'google.com'.
+  //   4) User activates the keyword hint (via tab, space, or chip click).
+  //   -  Using `CurrentMatch()`, the omnibox ends up with 'Search google | is
+  //      awesome', a corruption of 'github.com is awesome', and 'google.com'.
+  //   -  Using an empty match, the omnibox ends up with 'Search google |' ,
+  //      which seems more correct.
+  //   Even when the keyword hint is consistent with the suggestion text,
+  //   inserting 'Search google | is awesome' when the user simply typed
+  //   'g<tab>' doesn't seem right and probably breaks muscle memory.
+  const AutocompleteMatch& match =
+      base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch)
+          ? AutocompleteMatch{}
+          : CurrentMatch(nullptr);
+
   if (view_) {
     if (user_text_.empty()) {
       // Ensure the current selection is saved before showing keyword mode
