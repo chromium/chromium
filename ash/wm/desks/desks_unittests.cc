@@ -8610,9 +8610,6 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
 
   // Enter overview and close the desk.
   EnterOverview();
-  // Wait for shelf animation, i.e. the desk button disappears and the
-  // scrollable shelf view expands to take more space.
-  WaitForShelfAnimation();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   ClickOnCloseAllButtonForDesk(0);
 
