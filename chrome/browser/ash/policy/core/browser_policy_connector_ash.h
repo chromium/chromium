@@ -147,17 +147,20 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Delegates to `ash::InstallAttributes::Get()`.
   ash::InstallAttributes* GetInstallAttributes() const;
 
-  // May be nullptr, e.g. for devices managed by Active Directory.
+  // May be nullptr.
+  // TODO(b/281771191) Document when this can return nullptr.
   DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() const {
     return device_cloud_policy_manager_;
   }
 
-  // May be nullptr, e.g. for devices managed by Active Directory.
+  // May be nullptr.
+  // TODO(b/281771191) Document when this can return nullptr.
   DeviceLocalAccountPolicyService* GetDeviceLocalAccountPolicyService() const {
     return device_local_account_policy_service_.get();
   }
 
-  // May be nullptr, e.g. for devices managed by Active Directory.
+  // May be nullptr.
+  // TODO(b/281771191) Document when this can return nullptr.
   ServerBackedStateKeysBroker* GetStateKeysBroker() const {
     return state_keys_broker_.get();
   }
