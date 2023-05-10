@@ -10,4 +10,54 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="vertical"/>
+    android:orientation="vertical"
+    android:id="@+id/pwd_migration_warning_sheet">
+
+  <ImageView
+      android:id="@+id/drag_handlebar"
+      android:layout_alignParentTop="true"
+      android:layout_centerHorizontal="true"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginEnd="16dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="6dp"
+      android:layout_marginBottom="6dp"
+      android:importantForAccessibility="no"
+      app:srcCompat="@drawable/drag_handlebar" />
+
+  <LinearLayout
+      android:id="@+id/sheet_item_list"
+      android:layout_below="@id/drag_handlebar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="16dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginBottom="15dp"
+      android:clipToPadding="false"
+      android:divider="@null"
+      tools:listitem="@layout/touch_to_fill_credential_item_modern"
+      android:orientation="vertical">
+
+      <ImageView
+          android:id="@+id/touch_to_fill_sheet_header_image"
+          android:layout_width="32dp"
+          android:layout_height="32dp"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginBottom="8dp"
+          android:importantForAccessibility="no"/>
+
+      <androidx.appcompat.widget.DialogTitle
+          android:id="@+id/touch_to_fill_sheet_title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:paddingTop="10dp"
+          android:paddingBottom="10dp"
+          android:textAlignment="center"
+          android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
+          android:text="@string/password_migration_warning_title"/>
+  </LinearLayout>
+</RelativeLayout>

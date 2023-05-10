@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.pwd_migration;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -49,6 +52,10 @@ class PasswordMigrationWarningView implements BottomSheetContent {
         mBottomSheetController = bottomSheetController;
         mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
                 R.layout.pwd_migration_warning, null);
+        ImageView sheetHeaderImage =
+                mContentView.findViewById(R.id.touch_to_fill_sheet_header_image);
+        sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
+                context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
     }
 
     void setDismissHandler(Callback<Integer> dismissHandler) {
