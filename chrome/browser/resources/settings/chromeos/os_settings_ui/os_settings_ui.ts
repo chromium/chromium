@@ -154,8 +154,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
       showReset_: Boolean,
 
-      showStartup_: Boolean,
-
       showKerberosSection_: Boolean,
 
       /**
@@ -183,7 +181,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private showNavMenu_: boolean;
   private showPluginVm_: boolean;
   private showReset_: boolean;
-  private showStartup_: boolean;
   private showKerberosSection_: boolean;
   private narrowThreshold_: number;
   private activeRoute_: Route|null;
@@ -244,7 +241,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showReset_ = loadTimeData.getBoolean('allowPowerwash');
-    this.showStartup_ = loadTimeData.getBoolean('showStartup');
 
     this.showKerberosSection_ = loadTimeData.valueExists('isKerberosEnabled') &&
         loadTimeData.getBoolean('isKerberosEnabled');

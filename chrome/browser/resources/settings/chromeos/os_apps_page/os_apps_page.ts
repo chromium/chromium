@@ -118,7 +118,13 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
       /**
        * Show On startup settings and sub-page.
        */
-      showStartup: Boolean,
+      showStartup_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('showStartup');
+        },
+        readOnly: true,
+      },
 
       focusConfig_: {
         type: Object,
@@ -183,7 +189,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   showAndroidApps: boolean;
   showArcvmManageUsb: boolean;
   showPluginVm: boolean;
-  showStartup: boolean;
   private app_: App;
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
   private appsWithNotifications_: AppWithNotifications[];
@@ -192,6 +197,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
   private showAppNotificationsRow_: boolean;
+  private showStartup_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

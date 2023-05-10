@@ -81,8 +81,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       showReset: Boolean,
 
-      showStartup: Boolean,
-
       showKerberosSection: Boolean,
 
       allowCrostini_: Boolean,
@@ -106,9 +104,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
        */
       pageAvailability: {
         type: Object,
-        value() {
-          return {};
-        },
       },
 
       advancedToggleExpanded: {

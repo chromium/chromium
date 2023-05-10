@@ -61,6 +61,22 @@ function setPrefs(restoreOption) {
   };
 }
 
+/**
+ * @param {string} id
+ * @param {string} title
+ * @param {!Permission} permission
+ * @param {?Readiness} readiness
+ * @return {!App}
+ */
+function createApp(id, title, permission, readiness = Readiness.kReady) {
+  return {
+    id: id,
+    title: title,
+    notificationPermission: permission,
+    readiness: readiness,
+  };
+}
+
 class FakeAppNotificationHandler {
   constructor() {
     /** @private {!Map<string, !PromiseResolver>} */
@@ -183,6 +199,72 @@ class FakeAppNotificationHandler {
   }
 }
 
+suite('<os-apps-page> available settings rows', () => {
+  /** @type {OsSettingsAppsPageElement} */
+  let appsPage;
+
+  function initPage() {
+    appsPage = document.createElement('os-settings-apps-page');
+    appsPage.havePlayStoreApp = true;
+    appsPage.prefs = getFakePrefs();
+    document.body.appendChild(appsPage);
+  }
+
+  setup(async () => {
+    loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
+    androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
+    AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
+    PolymerTest.clearBody();
+  });
+
+  teardown(() => {
+    appsPage.remove();
+    appsPage = null;
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  const queryAndroidAppsRow = () =>
+      appsPage.shadowRoot.querySelector('#android-apps');
+  const queryAppManagementRow = () =>
+      appsPage.shadowRoot.querySelector('#appManagement');
+  const queryAppsOnStartupRow = () =>
+      appsPage.shadowRoot.querySelector('#onStartupDropdown');
+
+  test('Only App Management is shown', () => {
+    loadTimeData.overrideValues({showStartup: false});
+    initPage();
+    appsPage.showAndroidApps = false;
+    flush();
+
+    assertTrue(!!queryAppManagementRow());
+    assertEquals(null, queryAndroidAppsRow());
+    assertEquals(null, queryAppsOnStartupRow());
+  });
+
+  test('Android Apps and App Management are shown', () => {
+    loadTimeData.overrideValues({showStartup: false});
+    initPage();
+    appsPage.showAndroidApps = true;
+    flush();
+
+    assertTrue(!!queryAppManagementRow());
+    assertTrue(!!queryAndroidAppsRow());
+    assertEquals(null, queryAppsOnStartupRow());
+  });
+
+  test('Android Apps, On Startup, and App Management are shown', () => {
+    loadTimeData.overrideValues({showStartup: true});
+    initPage();
+    appsPage.showAndroidApps = true;
+    flush();
+
+    assertTrue(!!queryAppManagementRow());
+    assertTrue(!!queryAndroidAppsRow());
+    assertTrue(!!queryAppsOnStartupRow());
+    assertEquals(3, appsPage.onStartupOptions_.length);
+  });
+});
+
 suite('AppsPageTests', function() {
   /**
    * @type {
@@ -190,22 +272,6 @@ suite('AppsPageTests', function() {
    *  }
    */
   let mojoApi_;
-
-  /**
-   * @param {string} id
-   * @param {string} title
-   * @param {!Permission} permission
-   * @param {?Readiness} readiness
-   * @return {!App}
-   */
-  function createApp(id, title, permission, readiness = Readiness.kReady) {
-    return {
-      id: id,
-      title: title,
-      notificationPermission: permission,
-      readiness: readiness,
-    };
-  }
 
   /**
    * @return {!Promise}
@@ -239,55 +305,19 @@ suite('AppsPageTests', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  suite('Page Combinations', function() {
+  suite('Main Page', function() {
     setup(function() {
+      appsPage.showAndroidApps = true;
       appsPage.havePlayStoreApp = true;
       appsPage.prefs = getFakePrefs();
-    });
-
-    const AndroidAppsShown = () =>
-        !!appsPage.shadowRoot.querySelector('#android-apps');
-    const AppManagementShown = () =>
-        !!appsPage.shadowRoot.querySelector('#appManagement');
-    const RestoreAppsOnStartupShown = () =>
-        !!appsPage.shadowRoot.querySelector('#onStartupDropdown');
-
-    test('Only App Management Shown', function() {
-      appsPage.showAndroidApps = false;
-      appsPage.showStartup = false;
+      appsPage.androidAppsInfo = {
+        playStoreEnabled: false,
+        settingsAppAvailable: false,
+      };
       flush();
-
-      assertTrue(AppManagementShown());
-      assertFalse(AndroidAppsShown());
-      assertFalse(RestoreAppsOnStartupShown());
-    });
-
-    test('Android Apps and App Management Shown', function() {
-      appsPage.showAndroidApps = true;
-      appsPage.showStartup = false;
-      flush();
-
-      assertTrue(AppManagementShown());
-      assertTrue(AndroidAppsShown());
-      assertFalse(RestoreAppsOnStartupShown());
-    });
-
-    test('Android Apps, On Startup and App Management Shown', function() {
-      appsPage.showAndroidApps = true;
-      appsPage.showStartup = true;
-      flush();
-
-      assertTrue(AppManagementShown());
-      assertTrue(AndroidAppsShown());
-      assertTrue(RestoreAppsOnStartupShown());
-      assertEquals(3, appsPage.onStartupOptions_.length);
     });
 
     test('App notification row', async () => {
-      appsPage.showAndroidApps = true;
-      appsPage.showStartup = true;
-      flush();
-
       const rowLink = appsPage.shadowRoot.querySelector('#appNotifications');
       assertTrue(!!rowLink);
       // Test default is to have 0 apps.
@@ -314,20 +344,6 @@ suite('AppsPageTests', function() {
       simulateNotificationAppChanged(app3);
       await flushTasks();
       assertEquals('1 apps', rowLink.subLabel);
-    });
-  });
-
-  suite('Main Page', function() {
-    setup(function() {
-      appsPage.showAndroidApps = true;
-      appsPage.havePlayStoreApp = true;
-      appsPage.showStartup = true;
-      appsPage.prefs = getFakePrefs();
-      appsPage.androidAppsInfo = {
-        playStoreEnabled: false,
-        settingsAppAvailable: false,
-      };
-      flush();
     });
 
     test('Clicking enable button enables ARC', function() {
