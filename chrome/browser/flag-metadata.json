@@ -1405,6 +1405,12 @@
     "expiry_milestone": 120
   },
   {
+    "name": "deprecate-old-keyboard-shortcuts-accelerator",
+    "owners": [ "zentaro", "jimmyxgong", "cambickel",
+                "cros-peripherals@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "desktop-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 115

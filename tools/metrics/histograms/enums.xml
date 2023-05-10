@@ -60963,6 +60963,8 @@ from previous Chrome versions.
   <int value="-832561975" label="enable-picture-in-picture"/>
   <int value="-832154680"
       label="AutofillEnforceDelaysInStrikeDatabase:enabled"/>
+  <int value="-831855839"
+      label="DeprecateOldKeyboardShortcutsAccelerator:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-829665817" label="AltClickAndSixPackCustomization:enabled"/>
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
@@ -65787,6 +65789,8 @@ from previous Chrome versions.
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
   <int value="1785274337"
       label="AutofillEnableOfferNotificationCrossTabTracking:disabled"/>
+  <int value="1785914867"
+      label="DeprecateOldKeyboardShortcutsAccelerator:disabled"/>
   <int value="1786182939" label="ExoPointerLock:enabled"/>
   <int value="1786229999" label="disable-md-downloads"/>
   <int value="1786386775" label="TranslateCompactUI:disabled"/>

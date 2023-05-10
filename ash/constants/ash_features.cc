@@ -479,6 +479,13 @@ BASE_FEATURE(kCryptohomeRecovery,
              "CryptohomeRecovery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Deprecates Ctrl+Alt+/ as shortcut to open Keyboard shortcuts app, shows
+// a notification if that shortcut is pressed, and replaces that shortcut with
+// Ctrl+Search+S to open the app.
+BASE_FEATURE(kDeprecateOldKeyboardShortcutsAccelerator,
+             "DeprecateOldKeyboardShortcutsAccelerator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Adds a desk button to the shelf that the user can use to navigate between
 // desks.
 BASE_FEATURE(kDeskButton, "DeskButton", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2581,6 +2588,11 @@ bool IsClipboardHistoryReorderEnabled() {
 
 bool IsCryptauthAttestationSyncingEnabled() {
   return base::FeatureList::IsEnabled(kCryptauthAttestationSyncing);
+}
+
+bool IsDeprecateOldKeyboardShortcutsAcceleratorEnabled() {
+  return base::FeatureList::IsEnabled(
+      kDeprecateOldKeyboardShortcutsAccelerator);
 }
 
 bool IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled() {

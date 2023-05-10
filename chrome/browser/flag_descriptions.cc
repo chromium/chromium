@@ -1275,6 +1275,14 @@ const char kDeprecateAltBasedSixPackDescription[] =
     "Show deprecation notifications and disable functionality for Alt based "
     "six pack deprecations. The Search based versions continue to work.";
 
+const char kDeprecateOldKeyboardShortcutsAcceleratorName[] =
+    "Enable deprecation notifications for Ctrl+Alt+/ to open Keyboard "
+    "shortcuts app";
+const char kDeprecateOldKeyboardShortcutsAcceleratorDescription[] =
+    "Show deprecation notifications and disable functionality for Ctrl+Alt+/ "
+    "as the shortcut to open the Keyboard shortcuts app. The new shortcut is "
+    "Ctrl+Search+S.";
+
 const char kExperimentalAccessibilityLanguageDetectionName[] =
     "Experimental accessibility language detection";
 const char kExperimentalAccessibilityLanguageDetectionDescription[] =

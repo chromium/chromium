@@ -4109,6 +4109,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeprecateAltBasedSixPackName,
      flag_descriptions::kDeprecateAltBasedSixPackDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kDeprecateAltBasedSixPack)},
+    {"deprecate-old-keyboard-shortcuts-accelerator",
+     flag_descriptions::kDeprecateOldKeyboardShortcutsAcceleratorName,
+     flag_descriptions::kDeprecateOldKeyboardShortcutsAcceleratorDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kDeprecateOldKeyboardShortcutsAccelerator)},
     {"hidden-network-migration", flag_descriptions::kHiddenNetworkMigrationName,
      flag_descriptions::kHiddenNetworkMigrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHiddenNetworkMigration)},
