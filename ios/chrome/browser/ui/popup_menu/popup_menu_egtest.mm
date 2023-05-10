@@ -207,6 +207,11 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 
 // Open tools menu and verify elements are accessible.
 - (void)testAccessibilityOnToolsMenu {
+  if (@available(iOS 16.3, *)) {
+    // TODO(crbug.com/1443713): Re-enable when fixed on iOS16.3+.
+    EARL_GREY_TEST_SKIPPED(@"Test broken on iOS 16.3+");
+  }
+
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   // Close Tools menu.
