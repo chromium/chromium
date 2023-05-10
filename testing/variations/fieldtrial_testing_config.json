@@ -1,20 +1,4 @@
 {
-    "AboveNormalCompositingBrowserWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AboveNormalCompositingBrowserWin",
-                        "MainThreadCompositingPriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoom": [
         {
             "platforms": [
@@ -8069,7 +8053,8 @@
                 "fuchsia",
                 "ios",
                 "linux",
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
