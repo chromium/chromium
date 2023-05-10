@@ -150,9 +150,8 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
       AppInventoryManager::Get()->GetGemServiceUploadAppInventoryUrl();
   ASSERT_TRUE(app_inventory_url.is_valid());
 
-  base::Value expected_response_value(base::Value::Type::DICT);
-  expected_response_value.SetStringKey("deviceResourceId",
-                                       base::WideToUTF8(device_resource_id));
+  auto expected_response_value = base::Value::Dict().Set(
+      "deviceResourceId", base::WideToUTF8(device_resource_id));
   std::string expected_response;
   base::JSONWriter::Write(expected_response_value, &expected_response);
 

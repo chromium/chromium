@@ -1190,20 +1190,20 @@ void GetOsVersion(std::string* version) {
 
 HRESULT GenerateDeviceId(std::string* device_id) {
   // Build the json data encapsulating different device ids.
-  base::Value device_ids_dict(base::Value::Type::DICT);
+  base::Value::Dict device_ids_dict;
 
   // Add the serial number to the dictionary.
   std::wstring serial_number = GetSerialNumber();
-  if (!serial_number.empty())
-    device_ids_dict.SetStringKey("serial_number",
-                                 base::WideToUTF8(serial_number));
+  if (!serial_number.empty()) {
+    device_ids_dict.Set("serial_number", base::WideToUTF8(serial_number));
+  }
 
   // Add machine_guid to the dictionary.
   std::wstring machine_guid;
   HRESULT hr = GetMachineGuid(&machine_guid);
-  if (SUCCEEDED(hr) && !machine_guid.empty())
-    device_ids_dict.SetStringKey("machine_guid",
-                                 base::WideToUTF8(machine_guid));
+  if (SUCCEEDED(hr) && !machine_guid.empty()) {
+    device_ids_dict.Set("machine_guid", base::WideToUTF8(machine_guid));
+  }
 
   std::string device_id_str;
   bool json_write_result =

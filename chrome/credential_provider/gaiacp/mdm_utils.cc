@@ -258,31 +258,27 @@ HRESULT RegisterWithGoogleDeviceManagement(
   }
 
   // Build the json data needed by the server.
-  base::Value registration_data(base::Value::Type::DICT);
-  registration_data.SetStringKey("id_token", base::WideToUTF8(id_token));
-  registration_data.SetStringKey("access_token",
-                                 base::WideToUTF8(access_token));
-  registration_data.SetStringKey("sid", base::WideToUTF8(sid));
-  registration_data.SetStringKey("username", base::WideToUTF8(username));
-  registration_data.SetStringKey("domain", base::WideToUTF8(domain));
-  registration_data.SetStringKey("serial_number",
-                                 base::WideToUTF8(serial_number));
-  registration_data.SetStringKey("machine_guid",
-                                 base::WideToUTF8(machine_guid));
-  registration_data.SetStringKey(
-      "admin_local_user_group_name",
-      base::WideToUTF8(local_administrators_group_name));
-  registration_data.SetStringKey("builtin_administrator_name",
-                                 base::WideToUTF8(builtin_administrator_name));
-  registration_data.SetStringKey(kKeyIsAdJoinedUser,
-                                 base::WideToUTF8(is_ad_joined_user));
+  auto registration_data =
+      base::Value::Dict()
+          .Set("id_token", base::WideToUTF8(id_token))
+          .Set("access_token", base::WideToUTF8(access_token))
+          .Set("sid", base::WideToUTF8(sid))
+          .Set("username", base::WideToUTF8(username))
+          .Set("domain", base::WideToUTF8(domain))
+          .Set("serial_number", base::WideToUTF8(serial_number))
+          .Set("machine_guid", base::WideToUTF8(machine_guid))
+          .Set("admin_local_user_group_name",
+               base::WideToUTF8(local_administrators_group_name))
+          .Set("builtin_administrator_name",
+               base::WideToUTF8(builtin_administrator_name))
+          .Set(kKeyIsAdJoinedUser, base::WideToUTF8(is_ad_joined_user));
 
   // Send device resource ID if available as part of the enrollment payload.
   // Enrollment backend should not assume that this will always be available.
   std::wstring user_device_resource_id = GetUserDeviceResourceId(sid);
   if (!user_device_resource_id.empty()) {
-    registration_data.SetStringKey("resource_id",
-                                   base::WideToUTF8(user_device_resource_id));
+    registration_data.Set("resource_id",
+                          base::WideToUTF8(user_device_resource_id));
   }
 
   std::string registration_data_str;
