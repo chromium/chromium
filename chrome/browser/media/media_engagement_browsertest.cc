@@ -232,7 +232,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   }
 
   void ExecuteScript(const std::string& script) {
-    EXPECT_TRUE(content::ExecuteScript(GetWebContents(), script));
+    EXPECT_TRUE(content::ExecJs(GetWebContents(), script));
   }
 
   void OpenTabAsLink() {

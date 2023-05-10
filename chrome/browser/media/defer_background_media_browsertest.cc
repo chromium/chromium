@@ -36,14 +36,14 @@ IN_PROC_BROWSER_TEST_F(DeferredMediaBrowserTest, BackgroundMediaIsDeferred) {
   // be attached too late to catch the event, and subsequently the test will hit
   // the ended event before the play event.
   EXPECT_TRUE(
-      content::ExecuteScript(background_contents,
-                             "var video = document.querySelector('video');"
-                             "video.addEventListener('ended', function(event) {"
-                             "  document.title = 'ended';"
-                             "}, false);"
-                             "video.addEventListener('play', function(event) {"
-                             "  document.title = 'playing';"
-                             "}, false);"));
+      content::ExecJs(background_contents,
+                      "var video = document.querySelector('video');"
+                      "video.addEventListener('ended', function(event) {"
+                      "  document.title = 'ended';"
+                      "}, false);"
+                      "video.addEventListener('play', function(event) {"
+                      "  document.title = 'playing';"
+                      "}, false);"));
 
   // Make the background tab w/ our video the active tab.
   browser()->tab_strip_model()->SelectNextTab();
