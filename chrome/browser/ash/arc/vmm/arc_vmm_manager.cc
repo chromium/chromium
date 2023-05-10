@@ -93,14 +93,8 @@ void ArcVmmManager::SetSwapState(SwapState state) {
                       base::DoNothing());
       break;
     case SwapState::ENABLE_WITH_SWAPOUT:
-      SendSwapRequest(
-          vm_tools::concierge::SwapOperation::ENABLE,
-          base::BindOnce(
-              &ArcVmmManager::PostWithSwapDelay, weak_ptr_factory_.GetWeakPtr(),
-              base::BindOnce(&ArcVmmManager::SendSwapRequest,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             vm_tools::concierge::SwapOperation::SWAPOUT,
-                             base::DoNothing())));
+      SendSwapRequest(vm_tools::concierge::SwapOperation::FORCE_ENABLE,
+                      base::DoNothing());
       break;
     case SwapState::DISABLE:
       SendSwapRequest(vm_tools::concierge::SwapOperation::DISABLE,

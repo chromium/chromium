@@ -22,10 +22,6 @@ namespace arc {
 namespace {
 using SwapOperation = vm_tools::concierge::SwapOperation;
 
-// The time gap between "enable" and "swapout" operation. It's depends on the
-// time set in ArcVmmManager.
-constexpr auto kSwapoutGap = base::Seconds(5);
-
 // Customized FakeConciergeClient to add more complex logic on SwapVm function.
 class TestConciergeClient : public ash::FakeConciergeClient {
  public:
@@ -49,6 +45,10 @@ class TestConciergeClient : public ash::FakeConciergeClient {
         disable_count_++;
         response.set_success(true);
         break;
+      case SwapOperation::FORCE_ENABLE:
+        force_enable_count_++;
+        response.set_success(true);
+        break;
       default:
         response.set_success(false);
         response.set_failure_reason("Unknown operation");
@@ -61,11 +61,13 @@ class TestConciergeClient : public ash::FakeConciergeClient {
   int enable_count() { return enable_count_; }
   int swap_out_count() { return swap_out_count_; }
   int disable_count() { return disable_count_; }
+  int force_enable_count() { return force_enable_count_; }
 
  private:
   int enable_count_ = 0;
   int swap_out_count_ = 0;
   int disable_count_ = 0;
+  int force_enable_count_ = 0;
 };
 }  // namespace
 
@@ -114,19 +116,14 @@ class ArcVmmManagerTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
 };
 
-TEST_F(ArcVmmManagerTest, SwapSuccess) {
+TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
   InitVmmManager();
   manager()->SetSwapState(SwapState::ENABLE_WITH_SWAPOUT);
   base::RunLoop().RunUntilIdle();
-  // Send "ENABLE" first.
-  EXPECT_EQ(1, client()->enable_count());
+  // Send "FORCE_ENABLE".
+  EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
-  EXPECT_EQ(0, client()->disable_count());
-
-  // After seconds, send "SWAPOUT".
-  task_environment_.FastForwardBy(kSwapoutGap);
-  EXPECT_EQ(1, client()->enable_count());
-  EXPECT_EQ(1, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 }
 
