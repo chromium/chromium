@@ -73,11 +73,10 @@ class IntentPickerBrowserTest
 
   // Inserts an iframe in the main frame of |web_contents|.
   bool InsertIFrame(content::WebContents* web_contents) {
-    return content::ExecuteScript(
-        web_contents,
-        "let iframe = document.createElement('iframe');"
-        "iframe.id = 'iframe';"
-        "document.body.appendChild(iframe);");
+    return content::ExecJs(web_contents,
+                           "let iframe = document.createElement('iframe');"
+                           "iframe.id = 'iframe';"
+                           "document.body.appendChild(iframe);");
   }
 
   views::Button* GetIntentPickerIcon() {

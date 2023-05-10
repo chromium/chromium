@@ -1640,9 +1640,9 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2(
     DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState* state) {
   // Delete the left frame in an attempt to repro https://crbug.com/670123.
   content::RenderFrameDeletedObserver frame_deleted_observer(GetLeftFrame());
-  ASSERT_TRUE(ExecuteScript(web_contents()->GetPrimaryMainFrame(),
-                            "frame = document.getElementById('left');\n"
-                            "frame.parentNode.removeChild(frame);\n"));
+  ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     "frame = document.getElementById('left');\n"
+                     "frame.parentNode.removeChild(frame);\n"));
   frame_deleted_observer.WaitUntilDeleted();
 
   // While dragging, move mouse from the left into the right frame.
@@ -2154,12 +2154,12 @@ IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam, CloseTabDuringDrag) {
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 
   // Create a new tab that closes itself on dragover event.
-  ASSERT_TRUE(ExecuteScript(browser()
-                                ->tab_strip_model()
-                                ->GetActiveWebContents()
-                                ->GetPrimaryMainFrame(),
-                            "window.open('javascript:document.addEventListener("
-                            "\"dragover\", () => {window.close(); })');"));
+  ASSERT_TRUE(ExecJs(browser()
+                         ->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetPrimaryMainFrame(),
+                     "window.open('javascript:document.addEventListener("
+                     "\"dragover\", () => {window.close(); })');"));
 
   wait_for_new_tab.Wait();
 
