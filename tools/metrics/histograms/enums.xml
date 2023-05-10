@@ -54699,6 +54699,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="15" label="Post launch update ignored"/>
 </enum>
 
+<enum name="ItemSuggestRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="JSON parse error"/>
+  <int value="3" label="Content error"/>
+</enum>
+
 <enum name="JankyBoolean">
   <int value="0" label="Non Janky"/>
   <int value="1" label="Janky"/>

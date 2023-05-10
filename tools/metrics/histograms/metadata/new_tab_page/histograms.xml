@@ -639,6 +639,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Drive.ItemSuggestRequestResult"
+    enum="ItemSuggestRequestResult" expires_after="never">
+<!-- expires-never: Used for Chirp monitoring. -->
+
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the result of a request to the ItemSuggest API. Logged every time the
+    Drive module makes an ItemSuggest request.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.FeedPositionSegmentationResult"
     enum="FeedPositionSegmentationResult" expires_after="2023-09-10">
   <owner>hanxi@chromium.org</owner>
