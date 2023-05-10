@@ -755,8 +755,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
-  if (base::FeatureList::IsEnabled(features::kEnablePrintContentAnalysis) &&
-      enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+  if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
           web_contents()->GetOutermostWebContents()->GetLastCommittedURL(),
           &scanning_data, enterprise_connectors::AnalysisConnector::PRINT)) {

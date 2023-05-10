@@ -2114,11 +2114,8 @@ class ContentAnalysisPrintBrowserTest
           {
               {features::kEnableOopPrintDrivers,
                {{features::kEnableOopPrintDriversJobPrint.name, "true"}}},
-              {features::kEnablePrintContentAnalysis, {}},
           },
           {});
-    } else {
-      feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);
     }
 
     test_printing_context_factory()->SetPrinterNameForSubsequentContexts(

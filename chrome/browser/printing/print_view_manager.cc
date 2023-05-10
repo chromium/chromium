@@ -279,7 +279,6 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
   enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (rfh &&
-      base::FeatureList::IsEnabled(features::kEnablePrintContentAnalysis) &&
       enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
           web_contents()->GetOutermostWebContents()->GetLastCommittedURL(),
