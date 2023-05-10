@@ -124,6 +124,10 @@ const char kIosBookmarkSigninPromoDisplayedCount[] =
 const char kIosBringAndroidTabsPromptDisplayed[] =
     "ios.bring_android_tabs.prompt_displayed";
 
+// Integer to record the last action that a user has taken on the CPE promo.
+const char kIosCredentialProviderPromoLastActionTaken[] =
+    "ios.credential_provider_promo_last_action_taken";
+
 // Boolean that is true when the CredentialProviderPromoEnabled policy is
 // enabled.
 const char kIosCredentialProviderPromoPolicyEnabled[] =

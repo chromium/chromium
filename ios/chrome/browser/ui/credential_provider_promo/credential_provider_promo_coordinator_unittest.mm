@@ -24,6 +24,8 @@
 #error "This file requires ARC support."
 #endif
 
+using credential_provider_promo::IOSCredentialProviderPromoAction;
+
 // Test fixture for testing the CredentialProviderPromoCoordinator class.
 class CredentialProviderPromoCoordinatorTest : public PlatformTest {
  public:
@@ -44,6 +46,13 @@ class CredentialProviderPromoCoordinatorTest : public PlatformTest {
         browser_->GetCommandDispatcher(), CredentialProviderPromoCommands);
   }
   ~CredentialProviderPromoCoordinatorTest() override { [coordinator_ stop]; }
+
+  // Returns the last action taken by the user on the promo that is stored in
+  // local state.
+  int LastActionTaken() {
+    return local_state_.Get()->GetInteger(
+        prefs::kIosCredentialProviderPromoLastActionTaken);
+  }
 
  protected:
   web::WebTaskEnvironment task_environment_;
@@ -224,4 +233,22 @@ TEST_F(CredentialProviderPromoCoordinatorTest, SetUpListTrigger) {
       credential_provider_promo::IOSCredentialProviderPromoAction::
           kGoToSettings,
       1);
+}
+
+// Tests that the last action taken is recorded in local state.
+TEST_F(CredentialProviderPromoCoordinatorTest, LastActionTaken) {
+  // Trigger the promo with SetUpList. The primary CTA of the promo, when
+  // triggered from SetUpList, is 'go to settings'.
+  [credential_provider_promo_command_handler_
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 SetUpList];
+  EXPECT_EQ(LastActionTaken(), -1);
+
+  // Perform the action. Coordinator will record the action 'go to settings'.
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
+  [(id<ConfirmationAlertActionHandler>)
+          coordinator_ confirmationAlertPrimaryAction];
+  EXPECT_EQ(LastActionTaken(),
+            static_cast<int>(IOSCredentialProviderPromoAction::kGoToSettings));
 }

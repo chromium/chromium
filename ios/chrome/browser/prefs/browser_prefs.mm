@@ -225,6 +225,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName,
                                 -1);
 
+  registry->RegisterIntegerPref(
+      prefs::kIosCredentialProviderPromoLastActionTaken, -1);
+
   registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoStopPromo,
                                 false);
 

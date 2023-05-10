@@ -26,6 +26,7 @@ extern const char kFirstFollowUIShownCount[];
 extern const char kHttpServerProperties[];
 extern const char kInactiveTabsTimeThreshold[];
 extern const char kIncognitoInterstitialEnabled[];
+extern const char kIosCredentialProviderPromoLastActionTaken[];
 extern const char kIosCredentialProviderPromoPolicyEnabled[];
 extern const char kIosCredentialProviderPromoStopPromo[];
 extern const char kIosCredentialProviderPromoSource[];

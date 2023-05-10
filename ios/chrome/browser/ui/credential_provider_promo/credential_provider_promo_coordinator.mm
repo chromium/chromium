@@ -196,6 +196,9 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   credential_provider_promo::RecordAction(
       [self.mediator promoOriginalSource],
       self.trigger == CredentialProviderPromoTrigger::RemindMeLater, action);
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kIosCredentialProviderPromoLastActionTaken,
+      static_cast<int>(action));
 }
 
 @end
