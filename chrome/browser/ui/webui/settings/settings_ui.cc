@@ -500,6 +500,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
+  html_source->AddBoolean(
+      "isHighEfficiencyMultistateModeEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyMultistateMode));
 
   TryShowHatsSurveyWithTimeout();
 }

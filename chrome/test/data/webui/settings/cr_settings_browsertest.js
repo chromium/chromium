@@ -523,8 +523,37 @@ var CrSettingsPerformancePageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsPerformancePageTest', 'All', function() {
-  mocha.run();
+TEST_F('CrSettingsPerformancePageTest', 'Controls', function() {
+  runMochaSuite('PerformancePage');
+});
+
+TEST_F('CrSettingsPerformancePageTest', 'ExceptionList', function() {
+  runMochaSuite('TabDiscardExceptionList');
+});
+
+var CrSettingsPerformancePageMultistateTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/performance_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'performance_manager::features::kHighEfficiencyMultistateMode',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsPerformancePageMultistateTest', 'Controls', function() {
+  runMochaSuite('PerformancePageMultistate');
+});
+
+TEST_F('CrSettingsPerformancePageMultistateTest', 'ExceptionList', function() {
+  runMochaSuite('TabDiscardExceptionList');
 });
 
 var CrSettingsBatteryPageTest = class extends CrSettingsBrowserTest {

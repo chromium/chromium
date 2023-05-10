@@ -1531,6 +1531,12 @@
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
     Memory Saver
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_ON_TIMER_LABEL" desc="Label for the memory saver mode to discard tabs on a timer" translateable="false">
+    Select when your tabs become inactive
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the memory saver mode radio group. When memory saver mode is enabled, this radio group will be expanded and allow the user to choose between different tab discarding policies." translateable="false">
+    Memory saver options
+  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_BUTTON_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focusing the tab discarding exceptions list add button. Sites added to the list will not be discarded by memory saver.">
     Add to the "always keep these sites active" list
   </message>

@@ -274,6 +274,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION" desc="Description for the memory saver mode setting">
     When on, Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them.
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_HEURISTICS_LABEL" desc="Label for the memory saver mode to discard tabs based on a set of heuristics" translateable="false">
+    Chromium decides when a tab becomes inactive
+  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the energy saver mode setting">
     When on, Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.
   </message>

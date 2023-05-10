@@ -103,6 +103,7 @@
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -645,6 +646,12 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING},
       {"highEfficiencyModeDescription",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION},
+      {"highEfficiencyModeHeuristicsLabel",
+       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_HEURISTICS_LABEL},
+      {"highEfficiencyModeOnTimerLabel",
+       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_ON_TIMER_LABEL},
+      {"highEfficiencyModeRadioGroupAriaLabel",
+       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RADIO_GROUP_ARIA_LABEL},
       {"batteryPageTitle", IDS_SETTINGS_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
@@ -664,6 +671,43 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADDITIONAL_SITES},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString(
+      "tabDiscardTimerFiveMinutes",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Minutes(5)));
+  html_source->AddString(
+      "tabDiscardTimerFifteenMinutes",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Minutes(15)));
+  html_source->AddString(
+      "tabDiscardTimerThirtyMinutes",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Minutes(30)));
+  html_source->AddString(
+      "tabDiscardTimerOneHour",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(1)));
+  html_source->AddString(
+      "tabDiscardTimerTwoHours",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(2)));
+  html_source->AddString(
+      "tabDiscardTimerFourHours",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(4)));
+  html_source->AddString(
+      "tabDiscardTimerEightHours",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(8)));
+  html_source->AddString(
+      "tabDiscardTimerSixteenHours",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(16)));
+  html_source->AddString(
+      "tabDiscardTimerTwentyFourHours",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(24)));
 
   html_source->AddString(
       "batterySaverModeEnabledBelowThresholdLabel",
