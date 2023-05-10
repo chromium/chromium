@@ -333,13 +333,17 @@ void GrammarManager::AcceptSuggestion() {
     // GetSurroundingTextInfo().
     const SurroundingTextInfo surrounding_text =
         input_context->GetSurroundingTextInfo();
+    // Convert selection_range from surrounding_text relative to absolute.
+    const gfx::Range selection_range(
+        surrounding_text.selection_range.start() + surrounding_text.offset,
+        surrounding_text.selection_range.end() + surrounding_text.offset);
 
     // Delete the incorrect grammar fragment.
-    DCHECK(current_fragment_.range.Contains(surrounding_text.selection_range));
-    const uint32_t before = surrounding_text.selection_range.start() -
-                            current_fragment_.range.start();
+    DCHECK(current_fragment_.range.Contains(selection_range));
+    const uint32_t before =
+        selection_range.start() - current_fragment_.range.start();
     const uint32_t after =
-        current_fragment_.range.end() - surrounding_text.selection_range.end();
+        current_fragment_.range.end() - selection_range.end();
     input_context->DeleteSurroundingText(before, after);
     // Insert the suggestion and put cursor after it.
     input_context->CommitText(

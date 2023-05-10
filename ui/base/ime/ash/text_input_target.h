@@ -20,7 +20,12 @@ namespace ash {
 
 struct SurroundingTextInfo {
   std::u16string surrounding_text;
+
+  // This is relative to the beginning of |surrounding_text|.
   gfx::Range selection_range;
+
+  // Offset of the surrounding_text in the field in UTF-16.
+  size_t offset;
 };
 
 // An interface representing an input target that supports text editing via a
