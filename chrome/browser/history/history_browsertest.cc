@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, Subframe) {
   // history.
   std::string script = "location.replace('form.html')";
   content::TestFrameNavigationObserver observer(frame);
-  EXPECT_TRUE(ExecuteScript(frame, script));
+  EXPECT_TRUE(ExecJs(frame, script));
   observer.Wait();
   GURL auto_subframe =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("History"),
@@ -696,8 +696,8 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, PushStateSetsTitle) {
   std::u16string title = web_contents->GetTitle();
 
   // Do a pushState to create a new navigation entry and a new history entry.
-  ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                     "history.pushState({},'','test.html')"));
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "history.pushState({},'','test.html')"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // This should result in two history entries.
@@ -726,10 +726,10 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BeforeUnloadCommitDuringPending) {
 
   // Create a beforeunload handler that does a replaceState during navigation,
   // unrelated to the destination URL (similar to Twitter).
-  ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                     "window.onbeforeunload = function() {"
-                                     "history.replaceState({},'','test.html');"
-                                     "};"));
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "window.onbeforeunload = function() {"
+                              "history.replaceState({},'','test.html');"
+                              "};"));
   GURL url2(embedded_test_server()->GetURL("foo.com", "/test.html"));
 
   // Start a cross-site navigation to trigger the beforeunload, but don't let
@@ -788,8 +788,8 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SubmitFormAddsTargetPage) {
   std::u16string expected_title(u"Target Page");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ASSERT_TRUE(content::ExecuteScript(
-      web_contents, "document.getElementById('form').submit()"));
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "document.getElementById('form').submit()"));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   std::vector<GURL> urls(GetHistoryContents());
@@ -842,8 +842,8 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Do a replaceState() to create a new navigation entry.
-  ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                     "history.replaceState({foo: 'bar'},'')"));
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "history.replaceState({foo: 'bar'},'')"));
   content::WaitForLoadStop(web_contents);
 
   // Because there was no user gesture and the url did not change, there should
