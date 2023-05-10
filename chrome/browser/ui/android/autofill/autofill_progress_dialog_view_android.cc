@@ -65,6 +65,10 @@ void AutofillProgressDialogViewAndroid::Dismiss(
   }
 }
 
+void AutofillProgressDialogViewAndroid::InvalidateControllerForCallbacks() {
+  controller_ = nullptr;
+}
+
 void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
   if (controller_) {
     controller_->OnDismissed(/*is_canceled_by_user=*/true);

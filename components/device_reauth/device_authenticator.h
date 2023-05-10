@@ -61,7 +61,11 @@ enum class DeviceAuthRequester {
   // Settings page on Android.
   kPaymentMethodsReauthInSettings = 10,
 
-  kMaxValue = kPaymentMethodsReauthInSettings,
+  // The prompt displayed when the user is trying to autofill a virtual card,
+  // and re-auth is triggered.
+  kVirtualCardAutofill = 11,
+
+  kMaxValue = kVirtualCardAutofill,
 };
 
 // This interface encapsulates operations related to biometric authentication.

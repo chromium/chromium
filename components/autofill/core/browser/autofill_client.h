@@ -734,7 +734,9 @@ class AutofillClient : public RiskDataLoader {
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback);
   virtual void CloseAutofillProgressDialog(
-      bool show_confirmation_before_closing);
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_interactive_authentication_callback =
+          base::OnceClosure());
 
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;

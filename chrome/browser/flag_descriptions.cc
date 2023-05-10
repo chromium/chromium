@@ -430,7 +430,7 @@ const char kAutofillEnablePaymentsMandatoryReauthName[] =
     "Enable mandatory re-auth for payments autofill";
 const char kAutofillEnablePaymentsMandatoryReauthDescription[] =
     "When enabled, in use-cases where we would not have triggered any "
-    "user-visible authentication to autofill payment methods, we will trigger "
+    "interactive authentication to autofill payment methods, we will trigger "
     "a device authentication.";
 
 const char kAutofillEnableRankingFormulaAddressProfilesName[] =

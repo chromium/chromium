@@ -234,7 +234,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
-      bool show_confirmation_before_closing) override;
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_interactive_authentication_callback) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(

@@ -182,7 +182,8 @@ void AutofillClient::ShowAutofillProgressDialog(
 }
 
 void AutofillClient::CloseAutofillProgressDialog(
-    bool show_confirmation_before_closing) {
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_interactive_authentication_callback) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }

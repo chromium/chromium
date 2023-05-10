@@ -180,6 +180,12 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
     return ShouldOfferFidoOptInDialog(response);
   }
 
+  void OnVirtualCardUnmaskResponseReceivedForTesting(
+      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+    OnVirtualCardUnmaskResponseReceived(result, response_details);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuthForTesting() { return ShouldOfferFidoAuth(); }
 #endif
@@ -193,11 +199,6 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
                            PreflightCallRateLimited);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            UnmaskAuthFlowEvent_AlsoLogsVirtualCardSubhistogram);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
-                           RiskBasedVirtualCardUnmasking_Success);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_AuthenticationRequired_OtpOnly);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
       RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_PrefersFido);
@@ -216,9 +217,6 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
       RiskBasedVirtualCardUnmasking_CreditCardAccessManagerReset_TriggersOtpAuthenticatorResetOnFlowCancelled);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_Failure_MerchantOptedOut);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
       RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned);

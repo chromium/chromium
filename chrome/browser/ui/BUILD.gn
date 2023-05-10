@@ -58,6 +58,7 @@ static_library("ui") {
     "autofill/payments/autofill_progress_dialog_controller.h",
     "autofill/payments/autofill_progress_dialog_controller_impl.cc",
     "autofill/payments/autofill_progress_dialog_controller_impl.h",
+    "autofill/payments/autofill_progress_dialog_view.cc",
     "autofill/payments/autofill_progress_dialog_view.h",
     "autofill/payments/card_unmask_authentication_selection_dialog.h",
     "autofill/payments/card_unmask_authentication_selection_dialog_controller.h",

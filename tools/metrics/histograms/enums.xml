@@ -26108,6 +26108,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="8" label="Local card autofill reauthentication flow"/>
   <int value="9" label="Device Lock page"/>
   <int value="10" label="Payment methods mandatory reauth in settings"/>
+  <int value="11" label="Virtual card autofill reauthentication flow"/>
 </enum>
 
 <enum name="DeviceEnumerationResult">

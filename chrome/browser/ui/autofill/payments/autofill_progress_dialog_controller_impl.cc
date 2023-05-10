@@ -16,10 +16,13 @@ AutofillProgressDialogControllerImpl::AutofillProgressDialogControllerImpl(
     : web_contents_(web_contents) {}
 
 AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
+  // This if-statement is entered in the case where the tab is closed. When the
+  // tab is closed, the controller is destroyed before the view is destroyed, so
+  // we need to invalidate the pointer to `this` in
+  // `autofill_progress_dialog_view_` and trigger `OnDismissed()` manually.
   if (autofill_progress_dialog_view_) {
-    autofill_progress_dialog_view_->Dismiss(
-        /*show_confirmation_before_closing=*/false,
-        /*is_canceled_by_user=*/true);
+    autofill_progress_dialog_view_->InvalidateControllerForCallbacks();
+    OnDismissed(/*is_canceled_by_user=*/true);
     autofill_progress_dialog_view_ = nullptr;
   }
 }
@@ -39,9 +42,13 @@ void AutofillProgressDialogControllerImpl::ShowDialog(
 }
 
 void AutofillProgressDialogControllerImpl::DismissDialog(
-    bool show_confirmation_before_closing) {
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_interactive_authentication_callback) {
   if (!autofill_progress_dialog_view_)
     return;
+
+  no_interactive_authentication_callback_ =
+      std::move(no_interactive_authentication_callback);
 
   autofill_progress_dialog_view_->Dismiss(show_confirmation_before_closing,
                                           /*is_canceled_by_user=*/false);
@@ -52,8 +59,14 @@ void AutofillProgressDialogControllerImpl::OnDismissed(
     bool is_canceled_by_user) {
   // Dialog is being dismissed so set the pointer to nullptr.
   autofill_progress_dialog_view_ = nullptr;
-  if (is_canceled_by_user)
+  if (is_canceled_by_user) {
     std::move(cancel_callback_).Run();
+  } else {
+    if (no_interactive_authentication_callback_) {
+      std::move(no_interactive_authentication_callback_).Run();
+    }
+  }
+
   AutofillMetrics::LogProgressDialogResultMetric(
       is_canceled_by_user, autofill_progress_dialog_type_);
   autofill_progress_dialog_type_ = AutofillProgressDialogType::kUnspecified;

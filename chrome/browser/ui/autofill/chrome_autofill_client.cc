@@ -992,10 +992,12 @@ void ChromeAutofillClient::ShowAutofillProgressDialog(
 }
 
 void ChromeAutofillClient::CloseAutofillProgressDialog(
-    bool show_confirmation_before_closing) {
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_interactive_authentication_callback) {
   DCHECK(autofill_progress_dialog_controller_);
   autofill_progress_dialog_controller_->DismissDialog(
-      show_confirmation_before_closing);
+      show_confirmation_before_closing,
+      std::move(no_interactive_authentication_callback));
 }
 
 bool ChromeAutofillClient::IsAutocompleteEnabled() const {

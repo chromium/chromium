@@ -411,6 +411,14 @@ class TestAutofillClientTemplate : public T {
     autofill_error_dialog_context_ = context;
   }
 
+  void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_user_perceived_authentication_callback) override {
+    if (no_user_perceived_authentication_callback) {
+      std::move(no_user_perceived_authentication_callback).Run();
+    }
+  }
+
   bool IsAutocompleteEnabled() const override { return true; }
 
   bool IsPasswordManagerEnabled() override { return true; }
