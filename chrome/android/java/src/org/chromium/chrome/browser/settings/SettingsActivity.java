@@ -571,9 +571,4 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         return divider;
     }
-
-    @Override
-    protected boolean shouldUseActionBarForAutomotiveToolbar() {
-        return false;
-    }
 }

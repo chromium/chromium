@@ -14,8 +14,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -43,20 +47,50 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashSet;
 
 /**
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
  * activities in {@link ChromeApplication} (e.g. night mode).
- *
- * This class also adds a persistent back button toolbar for automotive by applying a ThemeOverlay.
- * Activities that already use their own ActionBar must override
- * {@link #shouldUseActionBarForAutomotiveToolbar} to false and add
- * <include layout="@layout/automotive_back_button_toolbar"/>
- * in their xml layout. See SettingsActivity and settings_activity.xml for an example.
  */
 public class ChromeBaseAppCompatActivity extends AppCompatActivity
         implements NightModeStateProvider.Observer, ModalDialogManagerHolder {
+    /**
+     * Chrome in automotive needs a persistent back button toolbar above all activities because
+     * AAOS/cars do not have a built in back button. This is implemented differently in each
+     * activity.
+     *
+     * Activities that use the <merge> tag or delay layout inflation cannot use WITH_TOOLBAR_VIEW.
+     * Activities that use their own action bar cannot use WITH_ACTION_BAR.
+     * Activities that appear as Dialogs using themes do not have an automotive toolbar yet (NONE).
+     */
+    @IntDef({
+            AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW,
+            AutomotiveToolbarImplementation.WITH_ACTION_BAR,
+            AutomotiveToolbarImplementation.NONE,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    protected @interface AutomotiveToolbarImplementation {
+        /**
+         * Automotive toolbar is added by including the original layout into a bigger LinearLayout
+         * that has a Toolbar View, see R.layout.automotive_layout_with_back_button_toolbar.
+         */
+        int WITH_TOOLBAR_VIEW = 0;
+
+        /**
+         * Automotive toolbar is added using AppCompatActivity's ActionBar, provided with a
+         * ThemeOverlay, see R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar.
+         */
+        int WITH_ACTION_BAR = 1;
+
+        /**
+         * Automotive toolbar is not added.
+         */
+        int NONE = -1;
+    }
+
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
     private NightModeStateProvider mNightModeStateProvider;
@@ -262,7 +296,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     "IsDynamicColorAvailable", isDynamicColorAvailable ? "Enabled" : "Disabled");
         });
 
-        if (BuildInfo.getInstance().isAutomotive && shouldUseActionBarForAutomotiveToolbar()) {
+        if (BuildInfo.getInstance().isAutomotive
+                && getAutomotiveToolbarImplementation()
+                        == AutomotiveToolbarImplementation.WITH_ACTION_BAR) {
             setTheme(R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar);
         }
     }
@@ -319,35 +355,79 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
-        super.setContentView(layoutResID);
+        if (BuildInfo.getInstance().isAutomotive
+                && getAutomotiveToolbarImplementation()
+                        == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
+            super.setContentView(R.layout.automotive_layout_with_back_button_toolbar);
+            setAutomotiveToolbarBackButtonAction();
+            ViewStub stub = findViewById(R.id.original_layout);
+            stub.setLayoutResource(layoutResID);
+            stub.inflate();
+        } else {
+            super.setContentView(layoutResID);
+        }
+    }
 
-        // Activities that use their own ActionBar can add the persistent back button toolbar for
-        // automotive using a Toolbar View.
-        if (BuildInfo.getInstance().isAutomotive && !shouldUseActionBarForAutomotiveToolbar()) {
-            Toolbar backButtonToolbarForAutomotive =
-                    findViewById(R.id.automotive_back_button_toolbar);
-            if (backButtonToolbarForAutomotive != null) {
-                backButtonToolbarForAutomotive.setVisibility(View.VISIBLE);
-                backButtonToolbarForAutomotive.setNavigationOnClickListener(
-                        view -> { getOnBackPressedDispatcher().onBackPressed(); });
-            }
+    @Override
+    public void setContentView(View view) {
+        if (BuildInfo.getInstance().isAutomotive
+                && getAutomotiveToolbarImplementation()
+                        == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
+            super.setContentView(R.layout.automotive_layout_with_back_button_toolbar);
+            setAutomotiveToolbarBackButtonAction();
+            LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
+            linearLayout.addView(view);
+        } else {
+            super.setContentView(view);
+        }
+    }
+
+    @Override
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
+        if (BuildInfo.getInstance().isAutomotive
+                && getAutomotiveToolbarImplementation()
+                        == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
+            super.setContentView(R.layout.automotive_layout_with_back_button_toolbar);
+            setAutomotiveToolbarBackButtonAction();
+            LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
+            linearLayout.setLayoutParams(params);
+            linearLayout.addView(view);
+        } else {
+            super.setContentView(view, params);
         }
     }
 
     @Override
     protected void onResume() {
-        if (BuildInfo.getInstance().isAutomotive && shouldUseActionBarForAutomotiveToolbar()
+        if (BuildInfo.getInstance().isAutomotive
+                && getAutomotiveToolbarImplementation()
+                        == AutomotiveToolbarImplementation.WITH_ACTION_BAR
                 && getSupportActionBar() != null) {
             getSupportActionBar().setHomeActionContentDescription(R.string.back);
         }
         super.onResume();
     }
 
-    /**
-     * @return true if the persistent back button toolbar for automotive will be added by default
-     * using AppCompatActivity's ActionBar, provided by a ThemeOverlay.
-     */
-    protected boolean shouldUseActionBarForAutomotiveToolbar() {
-        return true;
+    protected int getAutomotiveToolbarImplementation() {
+        int activityStyle = -1;
+        try {
+            activityStyle =
+                    getPackageManager().getActivityInfo(getComponentName(), 0).getThemeResource();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (activityStyle == R.style.Theme_Chromium_DialogWhenLarge) {
+            return AutomotiveToolbarImplementation.NONE;
+        } else {
+            return AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW;
+        }
+    }
+
+    private void setAutomotiveToolbarBackButtonAction() {
+        Toolbar backButtonToolbarForAutomotive = findViewById(R.id.back_button_toolbar);
+        if (backButtonToolbarForAutomotive != null) {
+            backButtonToolbarForAutomotive.setNavigationOnClickListener(
+                    backButtonClick -> { getOnBackPressedDispatcher().onBackPressed(); });
+        }
     }
 }

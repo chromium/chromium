@@ -107,7 +107,7 @@ public class BackButtonToolbarTest {
         SettingsActivity settingsActivity = mSettingsActivityTestRule.getActivity();
 
         // Check that the automotive toolbar is present with only a back button.
-        Toolbar toolbar = settingsActivity.findViewById(R.id.automotive_back_button_toolbar);
+        Toolbar toolbar = settingsActivity.findViewById(R.id.back_button_toolbar);
         assertNotNull(toolbar);
         assertEquals("Toolbar not visible", toolbar.getVisibility(), View.VISIBLE);
         assertEquals("Toolbar should only contain a back button", toolbar.getChildCount(), 1);

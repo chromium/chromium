@@ -262,11 +262,6 @@ public class BookmarkAddEditFolderActivity
         mModel.removeObserver(mBookmarkModelObserver);
     }
 
-    @Override
-    protected boolean shouldUseActionBarForAutomotiveToolbar() {
-        return false;
-    }
-
     private void updateParent(BookmarkId newParent) {
         mParentId = newParent;
         mParentTextView.setText(mModel.getBookmarkTitle(mParentId));

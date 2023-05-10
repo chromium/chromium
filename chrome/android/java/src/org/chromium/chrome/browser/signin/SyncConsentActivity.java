@@ -95,9 +95,4 @@ public class SyncConsentActivity
         }
         return mWindowAndroid;
     }
-
-    @Override
-    protected boolean shouldUseActionBarForAutomotiveToolbar() {
-        return false;
-    }
 }

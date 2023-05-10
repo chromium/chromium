@@ -53,17 +53,19 @@ found in the LICENSE file.
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">false</item>
         <item name="actionBarStyle">@style/ActionBarWithBackButton</item>
-        <item name="actionBarTheme">@style/DarkModeRippleColor</item>
+        <item name="actionBarTheme">@style/DarkModeActionBarTheme</item>
     </style>
 
-    <!-- Black action bar with white back button -->
+    <!-- Black action bar with back button -->
     <style name="ActionBarWithBackButton">
         <item name="displayOptions">homeAsUp</item>
-        <item name="background">@android:color/black</item>
-        <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
+        <item name="homeAsUpIndicator">@drawable/ic_arrow_back_24dp</item>
     </style>
 
-    <style name="DarkModeRippleColor">
+    <style name="DarkModeActionBarTheme">
+        <item name="background">@android:color/black</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <!-- Click event uses dark mode colors -->
         <item name="colorControlHighlight">@color/ripple_material_dark</item>
     </style>
 </resources>

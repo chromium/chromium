@@ -287,11 +287,6 @@ public class BookmarkFolderSelectActivity
         }
     }
 
-    @Override
-    protected boolean shouldUseActionBarForAutomotiveToolbar() {
-        return false;
-    }
-
     private void moveBookmarksAndFinish(List<BookmarkId> bookmarks, BookmarkId parent) {
         List<BookmarkId> movedBookmarks = new ArrayList<>();
         ReadingListUtils.typeSwapBookmarksIfNecessary(
