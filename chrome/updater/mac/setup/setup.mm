@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -43,6 +42,10 @@
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace updater {
 namespace {
@@ -96,12 +99,11 @@ bool CopyBundle(UpdaterScope scope) {
 bool CreateWakeLaunchdJobPlist(UpdaterScope scope) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  absl::optional<base::ScopedCFTypeRef<CFDictionaryRef>> plist =
-      CreateWakeLaunchdPlist(scope);
+  NSDictionary* plist = CreateWakeLaunchdPlist(scope);
   if (!plist) {
     return false;
   }
-  return EnsureWakeLaunchItemPresence(scope, *plist);
+  return EnsureWakeLaunchItemPresence(scope, plist);
 }
 
 void CleanAfterInstallFailure(UpdaterScope scope) {

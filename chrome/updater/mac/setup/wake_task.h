@@ -5,16 +5,16 @@
 #ifndef CHROME_UPDATER_MAC_SETUP_WAKE_TASK_H_
 #define CHROME_UPDATER_MAC_SETUP_WAKE_TASK_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#include <Foundation/Foundation.h>
 
-#include "base/mac/scoped_cftyperef.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
-absl::optional<base::ScopedCFTypeRef<CFDictionaryRef>> CreateWakeLaunchdPlist(
-    UpdaterScope scope);
+// Returns the dictionary to use for the wake launchd plist. Can return nil on
+// error (e.g. if the target cannot be found).
+NSDictionary* CreateWakeLaunchdPlist(UpdaterScope scope);
 
 }  // namespace updater
 

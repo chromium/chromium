@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,6 +28,10 @@
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace updater {
 namespace {
@@ -282,9 +285,7 @@ absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
   }
 }
 
-bool EnsureWakeLaunchItemPresence(
-    UpdaterScope scope,
-    base::ScopedCFTypeRef<CFDictionaryRef> contents) {
+bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
   const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
   if (!path) {
     VLOG(1) << "Failed to find wake plist path.";
@@ -300,9 +301,8 @@ bool EnsureWakeLaunchItemPresence(
 
     // If the file is unchanged, avoid a spammy notification by not touching it.
     if (previousPlistExists &&
-        [base::mac::CFToNSCast(contents)
-            isEqualToDictionary:[NSDictionary
-                                    dictionaryWithContentsOfURL:url]]) {
+        [contents isEqualToDictionary:[NSDictionary
+                                          dictionaryWithContentsOfURL:url]]) {
       VLOG(2) << "Skipping unnecessary update to " << path;
       return true;
     }
@@ -336,7 +336,7 @@ bool EnsureWakeLaunchItemPresence(
     }
 
     // Overwrite the plist.
-    if (![base::mac::CFToNSCast(contents) writeToURL:url atomically:YES]) {
+    if (![contents writeToURL:url atomically:YES]) {
       VLOG(1) << "Failed to write " << url;
       return false;
     }

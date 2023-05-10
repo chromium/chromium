@@ -207,6 +207,8 @@ if (is_win || is_mac || is_linux) {
         "//net",
       ]
 
+      configs += [ "//build/config/compiler:enable_arc" ]
+
       frameworks = [
         "AppKit.framework",
         "CoreServices.framework",
@@ -369,6 +371,8 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/ks_tickets.h",
         "mac/setup/ks_tickets.mm",
       ]
+
+      configs += [ "//build/config/compiler:enable_arc" ]
 
       deps = [ "//base" ]
     }
@@ -599,6 +603,8 @@ if (is_win || is_mac || is_linux) {
         "util/mac_util.h",
         "util/mac_util.mm",
       ]
+
+      configs += [ "//build/config/compiler:enable_arc" ]
 
       frameworks = [ "Foundation.framework" ]
     }
@@ -872,6 +878,8 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/mac:privileged_helper_sources",
         "//third_party/ocmock",
       ]
+
+      configs += [ "//build/config/compiler:enable_arc" ]
 
       data += [
         "//chrome/test/data/updater/CountingMetrics.plist",

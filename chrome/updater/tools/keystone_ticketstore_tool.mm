@@ -12,6 +12,10 @@
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/updater/mac/setup/ks_tickets.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface KSTicket (TestingTool)
 @end
 
@@ -32,35 +36,35 @@
                    cohortName:(NSString*)cohortName
                  creationDate:(NSDate*)creationData {
   if ((self = [super init])) {
-    productID_ = [appId retain];
-    version_ = [version retain];
+    productID_ = appId;
+    version_ = version;
     if (ecp.length) {
       existenceChecker_ = [[KSPathExistenceChecker alloc]
           initWithFilePath:base::mac::NSStringToFilePath(ecp)];
     }
-    tag_ = [tag retain];
+    tag_ = tag;
     if (tagPath.length) {
-      tagPath_ = [tagPath retain];
+      tagPath_ = tagPath;
     }
     if (tagKey.length) {
-      tagKey_ = [tagKey retain];
+      tagKey_ = tagKey;
     }
-    brandCode_ = [brandCode retain];
+    brandCode_ = brandCode;
     if (brandPath.length) {
-      brandPath_ = [brandPath retain];
+      brandPath_ = brandPath;
     }
     if (brandKey.length) {
-      brandKey_ = [brandKey retain];
+      brandKey_ = brandKey;
     }
-    serverURL_ = [[NSURL
-        URLWithString:@"https://tools.google.com/service/update2"] retain];
-    serverType_ = [@"Omaha" retain];
-    versionPath_ = [versionPath retain];
-    versionKey_ = [versionKey retain];
-    cohort_ = [cohort retain];
-    cohortHint_ = [cohortHint retain];
-    cohortName_ = [cohortName retain];
-    creationDate_ = [creationData retain];
+    serverURL_ =
+        [NSURL URLWithString:@"https://tools.google.com/service/update"];
+    serverType_ = @"Omaha";
+    versionPath_ = versionPath;
+    versionKey_ = versionKey;
+    cohort_ = cohort;
+    cohortHint_ = cohortHint;
+    cohortName_ = cohortName;
+    creationDate_ = creationData;
     ticketVersion_ = 1;
   }
   return self;

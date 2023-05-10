@@ -53,6 +53,7 @@ if (is_mac) {
       "//chrome/updater:ks_ticket",
     ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
 }

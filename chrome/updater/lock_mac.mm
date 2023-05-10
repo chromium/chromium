@@ -20,6 +20,10 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Mach service name prefix/suffix for the global  lock.
@@ -86,7 +90,7 @@ class ScopedLockImpl {
 
  private:
   // The Mach port representing the held lock itself. We only care about
-  // service ownership; no messages are transfered with this port.
+  // service ownership; no messages are transferred with this port.
   base::mac::ScopedMachReceiveRight receive_right_;
 };
 

@@ -4,11 +4,10 @@
 
 #include "chrome/updater/mac/setup/wake_task.h"
 
-#include <CoreFoundation/CoreFoundation.h>
+#include <Foundation/Foundation.h>
 
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/constants.h"
@@ -17,6 +16,10 @@
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace updater {
 
@@ -50,11 +53,10 @@ absl::optional<base::FilePath> GetWakeTaskTarget(UpdaterScope scope) {
 
 }  // namespace
 
-absl::optional<base::ScopedCFTypeRef<CFDictionaryRef>> CreateWakeLaunchdPlist(
-    UpdaterScope scope) {
+NSDictionary* CreateWakeLaunchdPlist(UpdaterScope scope) {
   absl::optional<base::FilePath> target = GetWakeTaskTarget(scope);
   if (!target) {
-    return absl::nullopt;
+    return nil;
   }
 
   // See the man page for launchd.plist.
@@ -80,9 +82,7 @@ absl::optional<base::ScopedCFTypeRef<CFDictionaryRef>> CreateWakeLaunchdPlist(
     @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
   };
 
-  return base::ScopedCFTypeRef<CFDictionaryRef>(
-      base::mac::CFCast<CFDictionaryRef>(launchd_plist),
-      base::scoped_policy::RETAIN);
+  return launchd_plist;
 }
 
 }  // namespace updater

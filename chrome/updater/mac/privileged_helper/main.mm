@@ -9,6 +9,10 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/updater/mac/privileged_helper/server.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 int main(int argc, const char* argv[]) {
   base::PlatformThread::SetName("UpdaterHelperMain");
   base::CommandLine::Init(argc, argv);

@@ -19,6 +19,10 @@
 #include "chrome/updater/mac/privileged_helper/helper_branding.h"
 #include "chrome/updater/updater_branding.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace updater {
 
 namespace {
@@ -32,12 +36,12 @@ PrivilegedHelperServer::~PrivilegedHelperServer() = default;
 
 void PrivilegedHelperServer::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  service_delegate_.reset([[PrivilegedHelperServiceXPCDelegate alloc]
+  service_delegate_ = [[PrivilegedHelperServiceXPCDelegate alloc]
       initWithService:service_
-               server:scoped_refptr<PrivilegedHelperServer>(this)]);
-  service_listener_.reset([[NSXPCListener alloc]
-      initWithMachServiceName:base::SysUTF8ToNSString(PRIVILEGED_HELPER_NAME)]);
-  service_listener_.get().delegate = service_delegate_.get();
+               server:scoped_refptr<PrivilegedHelperServer>(this)];
+  service_listener_ = [[NSXPCListener alloc]
+      initWithMachServiceName:base::SysUTF8ToNSString(PRIVILEGED_HELPER_NAME)];
+  service_listener_.delegate = service_delegate_;
 
   [service_listener_ resume];
 }
@@ -48,8 +52,8 @@ void PrivilegedHelperServer::FirstTaskRun() {
 
 void PrivilegedHelperServer::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  service_delegate_.reset();
-  service_listener_.reset();
+  service_delegate_ = nil;
+  service_listener_ = nil;
   Uninstall();
 }
 

@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
@@ -32,10 +31,13 @@
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Class to read the Keystone apps' client-regulated-counting data.
 @interface CountingMetricsStore : NSObject {
-  base::scoped_nsobject<NSDictionary<NSString*, NSDictionary<NSString*, id>*>>
-      _metrics;
+  NSDictionary<NSString*, NSDictionary<NSString*, id>*>* __strong _metrics;
 }
 
 + (instancetype)storeAtPath:(const base::FilePath&)path;
@@ -48,22 +50,19 @@
 @implementation CountingMetricsStore
 
 + (instancetype)storeAtPath:(const base::FilePath&)path {
-  return [[[CountingMetricsStore alloc]
+  return [[CountingMetricsStore alloc]
       initWithURL:[base::mac::FilePathToNSURL(path)
-                      URLByAppendingPathComponent:@"CountingMetrics.plist"]]
-      autorelease];
+                      URLByAppendingPathComponent:@"CountingMetrics.plist"]];
 }
 
 - (instancetype)initWithURL:(NSURL*)url {
   if ((self = [super init])) {
     NSError* error = nil;
-    _metrics.reset([[NSDictionary alloc] initWithContentsOfURL:url
-                                                         error:&error]);
+    _metrics = [[NSDictionary alloc] initWithContentsOfURL:url error:&error];
 
     if (error) {
       LOG(WARNING) << "Failed to read client-regulated-counting data.";
-      [self release];
-      return nil;
+      self = nil;
     }
   }
   return self;
@@ -135,7 +134,7 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
   // CopyDir() does not remove files in destination.
   // Uninstalls the existing Keystone bundle to avoid possible left-over
   // files that breaks bundle signature. A manual delete follows
-  // in case uninstall is unsucessful.
+  // in case uninstall is unsuccessful.
   UninstallKeystone(scope);
   const base::FilePath dest_keystone_bundle_path =
       dest_path.Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"));
