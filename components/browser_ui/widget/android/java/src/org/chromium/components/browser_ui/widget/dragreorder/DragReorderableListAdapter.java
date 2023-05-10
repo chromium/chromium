@@ -159,12 +159,12 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
     public DragReorderableListAdapter(Context context) {
         mContext = context;
 
-        Resources resource = context.getResources();
+        Resources resources = context.getResources();
         // Set the alpha to 90% when dragging which is 230/255
         mDraggedBackgroundColor = ColorUtils.setAlphaComponent(
                 ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1),
-                resource.getInteger(R.integer.list_item_dragged_alpha));
-        mDraggedElevation = resource.getDimension(R.dimen.list_item_dragged_elevation);
+                resources.getInteger(R.integer.list_item_dragged_alpha));
+        mDraggedElevation = resources.getDimension(R.dimen.list_item_dragged_elevation);
     }
 
     @Override

@@ -79,7 +79,7 @@ public class StaticLayoutUnitTest {
     @Mock
     private Context mContext;
     @Mock
-    private Resources mResource;
+    private Resources mResources;
     @Mock
     private DisplayMetrics mDisplayMetrics;
     @Mock
@@ -135,8 +135,8 @@ public class StaticLayoutUnitTest {
         mTab1 = prepareTab(TAB1_ID, JUnitTestGURLs.getGURL(TAB1_URL));
         mTab2 = prepareTab(TAB2_ID, JUnitTestGURLs.getGURL(TAB2_URL));
 
-        doReturn(mResource).when(mContext).getResources();
-        doReturn(mDisplayMetrics).when(mResource).getDisplayMetrics();
+        doReturn(mResources).when(mContext).getResources();
+        doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
         mDisplayMetrics.density = 1;
 
         doReturn(mTabModel).when(mTabModel).getComprehensiveModel();

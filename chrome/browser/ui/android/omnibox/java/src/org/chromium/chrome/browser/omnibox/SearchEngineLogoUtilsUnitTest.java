@@ -82,7 +82,7 @@ public class SearchEngineLogoUtilsUnitTest {
     @Mock
     LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock
-    Resources mResource;
+    Resources mResources;
 
     SearchEngineLogoUtils mSearchEngineLogoUtils;
     Bitmap mBitmap;
@@ -102,7 +102,7 @@ public class SearchEngineLogoUtilsUnitTest {
         LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
 
         // Used when creating bitmaps, needs to be greater than 0.
-        doReturn(1).when(mResource).getDimensionPixelSize(anyInt());
+        doReturn(1).when(mResources).getDimensionPixelSize(anyInt());
 
         mSearchEngineLogoUtils = new SearchEngineLogoUtils();
         mSearchEngineLogoUtils.setFaviconHelperForTesting(mFaviconHelper);
@@ -135,7 +135,7 @@ public class SearchEngineLogoUtilsUnitTest {
     public void getSearchEngineLogo() {
         StatusIconResource expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
 
-        Promise<StatusIconResource> promise = mSearchEngineLogoUtils.getSearchEngineLogo(mResource,
+        Promise<StatusIconResource> promise = mSearchEngineLogoUtils.getSearchEngineLogo(mResources,
                 BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
@@ -183,7 +183,7 @@ public class SearchEngineLogoUtilsUnitTest {
     public void getSearchEngineLogo_faviconCached() {
         StatusIconResource expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
 
-        Promise<StatusIconResource> promise = mSearchEngineLogoUtils.getSearchEngineLogo(mResource,
+        Promise<StatusIconResource> promise = mSearchEngineLogoUtils.getSearchEngineLogo(mResources,
                 BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
