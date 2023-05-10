@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "submit_form()"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "submit_form()"));
   observer.Wait();
 
   all_urls = template_urls->GetTemplateURLs();
