@@ -1577,8 +1577,7 @@ WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
         adapters.push_back(adapter);
       }
     } else if (adapterProperties.backendType != WGPUBackendType_Null &&
-               adapterProperties.backendType != WGPUBackendType_OpenGL &&
-               adapterProperties.backendType != WGPUBackendType_D3D11) {
+               adapterProperties.backendType != WGPUBackendType_OpenGL) {
       adapters.push_back(adapter);
     }
   }
