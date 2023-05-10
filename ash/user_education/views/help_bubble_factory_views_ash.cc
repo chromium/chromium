@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -222,14 +223,21 @@ HelpBubbleFactoryViewsAsh::CreateBubbleImpl(
     const internal::HelpBubbleAnchorParams& anchor,
     user_education::HelpBubbleParams params) {
   anchor.view->SetProperty(user_education::kHasInProductHelpPromoKey, true);
+
+  // NOTE: `HelpBubbleViewAsh` instances are owned by their widgets.
+  const HelpBubbleId help_bubble_id =
+      user_education_util::GetHelpBubbleId(params.extended_properties);
   auto result = base::WrapUnique(new HelpBubbleViewsAsh(
-      new HelpBubbleViewAsh(anchor, std::move(params)), element));
+      new HelpBubbleViewAsh(help_bubble_id, anchor, std::move(params)),
+      element));
+
   for (const auto& accelerator :
        delegate_->GetPaneNavigationAccelerators(element)) {
     result->bubble_view()->GetFocusManager()->RegisterAccelerator(
         accelerator, ui::AcceleratorManager::HandlerPriority::kNormalPriority,
         result.get());
   }
+
   return result;
 }
 

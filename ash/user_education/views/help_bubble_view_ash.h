@@ -34,6 +34,8 @@ class MdTextButton;
 
 namespace ash {
 
+enum class HelpBubbleId;
+
 namespace internal {
 
 // Describes how a help bubble should be anchored to a Views element, beyond
@@ -64,7 +66,8 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstNonDefaultButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBodyTextIdForTesting);
 
-  HelpBubbleViewAsh(const internal::HelpBubbleAnchorParams& anchor,
+  HelpBubbleViewAsh(HelpBubbleId id,
+                    const internal::HelpBubbleAnchorParams& anchor,
                     user_education::HelpBubbleParams params);
   HelpBubbleViewAsh(const HelpBubbleViewAsh&) = delete;
   HelpBubbleViewAsh& operator=(const HelpBubbleViewAsh&) = delete;

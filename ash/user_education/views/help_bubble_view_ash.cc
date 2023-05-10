@@ -276,6 +276,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh, kBodyTextIdForTesting);
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
 // the same for all other platforms.
 HelpBubbleViewAsh::HelpBubbleViewAsh(
+    HelpBubbleId id,
     const internal::HelpBubbleAnchorParams& anchor,
     user_education::HelpBubbleParams params)
     : BubbleDialogDelegateView(anchor.view,

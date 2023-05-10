@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "ash/user_education/user_education_types.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -108,7 +109,8 @@ class HelpBubbleViewAshPixelTestBase : public AshTestBase {
     anchor_params.show_arrow = false;
 
     // NOTE: The returned help bubble view is owned by its widget.
-    return new HelpBubbleViewAsh(anchor_params, std::move(params));
+    return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
+                                 std::move(params));
   }
 
  private:

@@ -113,6 +113,8 @@ WelcomeTourController::GetTutorialDescriptions() {
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kShelfViewElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourShelf))
           .AddDefaultNextButton());
 
   // Wait for "Next" button click before proceeding to the next bubble step.
@@ -130,6 +132,8 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(
           kUnifiedSystemTrayElementName)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourStatusArea))
           .AddDefaultNextButton());
 
   // Wait for "Next" button click before proceeding to the next bubble step.
@@ -146,12 +150,16 @@ WelcomeTourController::GetTutorialDescriptions() {
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kHomeButtonElementName)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourHomeButton))
           .AddDefaultNextButton());
 
   // Step 4: Search box.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSearchBoxViewElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourSearchBox))
           .AddDefaultNextButton());
 
   // Step 5: Settings app.
@@ -159,14 +167,17 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(
           kSettingsAppListItemViewElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourSettingsApp))
           .AddDefaultNextButton());
 
   // Step 6: Explore app.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(
           kExploreAppListItemViewElementId)
-          .SetBubbleBodyText(
-              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT));
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT)
+          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+              HelpBubbleId::kWelcomeTourExploreApp)));
 
   return tutorial_descriptions_by_id;
 }
