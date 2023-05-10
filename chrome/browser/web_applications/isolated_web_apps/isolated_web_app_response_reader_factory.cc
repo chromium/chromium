@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
@@ -145,8 +146,7 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
         read_integrity_block_and_metadata_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  absl::optional<std::pair<Error, ReadIntegrityBlockAndMetadataStatus>>
-      error_and_status;
+  absl::optional<std::pair<Error, UnusableSwbnFileError>> two_errors;
   if (read_integrity_block_and_metadata_error.has_value()) {
     Error error = absl::visit(
         base::Overloaded{
@@ -161,38 +161,38 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
                 -> Error { return error->Clone(); },
         },
         *read_integrity_block_and_metadata_error);
-    error_and_status = std::make_pair(
+    two_errors = std::make_pair(
         std::move(error),
-        GetStatusFromError(*read_integrity_block_and_metadata_error));
+        ToUnusableSwbnFileError(*read_integrity_block_and_metadata_error));
   }
 
-  if (!error_and_status.has_value()) {
+  if (!two_errors.has_value()) {
     if (auto error_message = validator_->ValidateMetadata(
             web_bundle_id, reader->GetPrimaryURL(), reader->GetEntries());
         !error_message.has_value()) {
-      error_and_status = std::make_pair(
-          MetadataError(error_message.error()),
-          ReadIntegrityBlockAndMetadataStatus::kMetadataValidationError);
+      two_errors =
+          std::make_pair(MetadataError(error_message.error()),
+                         UnusableSwbnFileError::kMetadataValidationError);
     }
   }
 
-  base::UmaHistogramEnumeration(
-      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      error_and_status.has_value()
-          ? error_and_status->second
-          : ReadIntegrityBlockAndMetadataStatus::kSuccess);
+  const base::expected<void, UnusableSwbnFileError> usability_status =
+      two_errors.has_value()
+          ? base::expected<void, UnusableSwbnFileError>(
+                base::unexpected(two_errors->second))
+          : base::expected<void, UnusableSwbnFileError>(base::ok());
+  UmaLogExpectedStatus("WebApp.Isolated.SwbnFileUsability", usability_status);
 
-  if (error_and_status.has_value()) {
-    std::move(callback).Run(
-        base::unexpected(std::move(error_and_status->first)));
+  if (two_errors.has_value()) {
+    std::move(callback).Run(base::unexpected(std::move(two_errors->first)));
     return;
   }
   std::move(callback).Run(
       std::make_unique<IsolatedWebAppResponseReader>(std::move(reader)));
 }
 
-IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus
-IsolatedWebAppResponseReaderFactory::GetStatusFromError(
+IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError
+IsolatedWebAppResponseReaderFactory::ToUnusableSwbnFileError(
     const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error) {
   return absl::visit(
       base::Overloaded{
@@ -201,37 +201,30 @@ IsolatedWebAppResponseReaderFactory::GetStatusFromError(
             switch (error->type) {
               case web_package::mojom::BundleParseErrorType::
                   kParserInternalError:
-                return ReadIntegrityBlockAndMetadataStatus::
+                return UnusableSwbnFileError::
                     kIntegrityBlockParserInternalError;
               case web_package::mojom::BundleParseErrorType::kFormatError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kIntegrityBlockParserFormatError;
+                return UnusableSwbnFileError::kIntegrityBlockParserFormatError;
               case web_package::mojom::BundleParseErrorType::kVersionError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kIntegrityBlockParserVersionError;
+                return UnusableSwbnFileError::kIntegrityBlockParserVersionError;
             }
           },
           [](const SignedWebBundleReader::AbortedByCaller& error) {
-            return ReadIntegrityBlockAndMetadataStatus::
-                kIntegrityBlockValidationError;
+            return UnusableSwbnFileError::kIntegrityBlockValidationError;
           },
           [](const web_package::SignedWebBundleSignatureVerifier::Error&
                  error) {
-            return ReadIntegrityBlockAndMetadataStatus::
-                kSignatureVerificationError;
+            return UnusableSwbnFileError::kSignatureVerificationError;
           },
           [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
             switch (error->type) {
               case web_package::mojom::BundleParseErrorType::
                   kParserInternalError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kMetadataParserInternalError;
+                return UnusableSwbnFileError::kMetadataParserInternalError;
               case web_package::mojom::BundleParseErrorType::kFormatError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kMetadataParserFormatError;
+                return UnusableSwbnFileError::kMetadataParserFormatError;
               case web_package::mojom::BundleParseErrorType::kVersionError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kMetadataParserVersionError;
+                return UnusableSwbnFileError::kMetadataParserVersionError;
             }
           }},
       error);

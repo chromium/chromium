@@ -95,11 +95,11 @@ class IsolatedWebAppResponseReaderFactory {
 
   // This enum represents every error type that can occur during integrity block
   // and metadata parsing, before responses are read from Signed Web Bundles.
+  // Any of these errors means that the .swbn file is unusable.
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class ReadIntegrityBlockAndMetadataStatus {
-    kSuccess = 0,
+  enum class UnusableSwbnFileError {
     // Integrity Block-related errors
     kIntegrityBlockParserInternalError = 1,
     kIntegrityBlockParserFormatError = 2,
@@ -141,7 +141,7 @@ class IsolatedWebAppResponseReaderFactory {
       absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
           read_integrity_block_and_metadata_error);
 
-  ReadIntegrityBlockAndMetadataStatus GetStatusFromError(
+  UnusableSwbnFileError ToUnusableSwbnFileError(
       const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
 
   std::unique_ptr<IsolatedWebAppValidator> validator_;

@@ -881,25 +881,20 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
-<histogram name="WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus"
-    enum="IsolatedWebAppReadIntegrityBlockAndMetadataStatus"
-    expires_after="2023-11-08">
+<histogram name="WebApp.Isolated.ReadResponseHeadError"
+    enum="IsolatedWebAppReadResponseHeadError" expires_after="2024-05-08">
   <owner>cmfcmf@chromium.org</owner>
   <owner>peletskyi@chromium.org</owner>
   <summary>
-    Records whether reading integrity block and metadata from a Signed Web
-    Bundle via the isolated-app: scheme was successful or resulted in an error.
-    This is logged every time the integrity block and metadata of an Isolated
-    Web App are parsed, which happens whenever the reader for an Isolated Web
-    App is not yet cached. Readers are evicted from the cache after
-    approximately 10 minutes of not reading any responses from their
-    corresponding Signed Web Bundle. Isolated Web Apps are parsed for any
-    resources loading for the web app, so any usage could trigger this UMA.
+    Records the exact error that occured during reading of a response head for a
+    request to an Isolated Web App via the isolated-app: scheme. The error is
+    logged together with WebApp.Isolated.ReadResponseHeadSuccess in case when an
+    error occurs.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Isolated.ReadResponseHeadStatus"
-    enum="IsolatedWebAppReadResponseHeadStatus" expires_after="2023-11-08">
+<histogram name="WebApp.Isolated.ReadResponseHeadSuccess" enum="BooleanSuccess"
+    expires_after="2024-05-08">
   <owner>cmfcmf@chromium.org</owner>
   <owner>peletskyi@chromium.org</owner>
   <summary>
@@ -951,6 +946,34 @@ chromium-metrics-reviews@google.com.
     every time their signatures are verified. Signatures are verified during
     installation (all platforms) and when an Isolated Web App is first accessed
     during a Chrome session (non-ChromeOS platforms only).
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.SwbnFileUsabilityError"
+    enum="IsolatedWebAppSwbnFileUsabilityError" expires_after="2024-05-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    Records the exact error why a Signed Web Bundle is unusable. In particular
+    integrity block or metadata parsing errors are recorded here. The error is
+    logged together with WebApp.Isolated.SwbnFileUsabilitySuccess when an error
+    occurs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.SwbnFileUsabilitySuccess" enum="BooleanValid"
+    expires_after="2024-05-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    Records whether a Signed Web Bundle file is usable. To be usable the file's
+    integrity block and metadata should be read, parsed and validated
+    successfully. This is logged every time the integrity block and metadata of
+    an Isolated Web App are parsed, which happens whenever the reader for an
+    Isolated Web App is not yet cached. Readers are evicted from the cache after
+    approximately 10 minutes of not reading any responses from their
+    corresponding Signed Web Bundle. Isolated Web Apps are parsed for any
+    resources loading for the web app, so any usage could trigger this UMA.
   </summary>
 </histogram>
 

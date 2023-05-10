@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
@@ -206,10 +207,9 @@ using ReaderResult =
 
 class IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest
     : public IsolatedWebAppResponseReaderFactoryTest,
-      public ::testing::WithParamInterface<
-          std::pair<web_package::mojom::BundleParseErrorType,
-                    IsolatedWebAppResponseReaderFactory::
-                        ReadIntegrityBlockAndMetadataStatus>> {};
+      public ::testing::WithParamInterface<std::pair<
+          web_package::mojom::BundleParseErrorType,
+          IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError>> {};
 
 TEST_P(IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest,
        TestIntegrityBlockParserError) {
@@ -235,8 +235,8 @@ TEST_P(IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest,
   EXPECT_THAT((*actual_error)->message, Eq(error->message));
 
   histogram_tester.ExpectBucketCount(
-      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus", GetParam().second,
-      1);
+      ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
+      GetParam().second, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -245,17 +245,16 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kParserInternalError,
-            IsolatedWebAppResponseReaderFactory::
-                ReadIntegrityBlockAndMetadataStatus::
-                    kIntegrityBlockParserInternalError),
-        std::make_pair(web_package::mojom::BundleParseErrorType::kVersionError,
-                       IsolatedWebAppResponseReaderFactory::
-                           ReadIntegrityBlockAndMetadataStatus::
-                               kIntegrityBlockParserVersionError),
-        std::make_pair(web_package::mojom::BundleParseErrorType::kFormatError,
-                       IsolatedWebAppResponseReaderFactory::
-                           ReadIntegrityBlockAndMetadataStatus::
-                               kIntegrityBlockParserFormatError)));
+            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
+                kIntegrityBlockParserInternalError),
+        std::make_pair(
+            web_package::mojom::BundleParseErrorType::kVersionError,
+            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
+                kIntegrityBlockParserVersionError),
+        std::make_pair(
+            web_package::mojom::BundleParseErrorType::kFormatError,
+            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
+                kIntegrityBlockParserFormatError)));
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest,
        TestInvalidIntegrityBlockContents) {
@@ -283,8 +282,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   EXPECT_THAT(actual_error->message, Eq("test error"));
 
   histogram_tester.ExpectBucketCount(
-      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
+      ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
+      IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
           kIntegrityBlockValidationError,
       1);
 }
@@ -332,9 +331,9 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
     EXPECT_TRUE(reader_future.Take().has_value());
 
     histogram_tester.ExpectBucketCount(
-        "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-        IsolatedWebAppResponseReaderFactory::
-            ReadIntegrityBlockAndMetadataStatus::kSignatureVerificationError,
+        ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
+        IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
+            kSignatureVerificationError,
         0);
   } else {
     ReaderResult result = reader_future.Take();
@@ -346,9 +345,9 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
     EXPECT_THAT(actual_error->message, Eq(error_.message));
 
     histogram_tester.ExpectBucketCount(
-        "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-        IsolatedWebAppResponseReaderFactory::
-            ReadIntegrityBlockAndMetadataStatus::kSignatureVerificationError,
+        ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
+        IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
+            kSignatureVerificationError,
         1);
   }
 }
@@ -365,10 +364,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest
     : public IsolatedWebAppResponseReaderFactoryTest,
-      public ::testing::WithParamInterface<
-          std::pair<web_package::mojom::BundleParseErrorType,
-                    IsolatedWebAppResponseReaderFactory::
-                        ReadIntegrityBlockAndMetadataStatus>> {};
+      public ::testing::WithParamInterface<std::pair<
+          web_package::mojom::BundleParseErrorType,
+          IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError>> {};
 
 TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
        TestMetadataParserError) {
@@ -396,8 +394,8 @@ TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
   EXPECT_THAT((*actual_error)->message, Eq(error->message));
 
   histogram_tester.ExpectBucketCount(
-      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus", GetParam().second,
-      1);
+      ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
+      GetParam().second, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -406,17 +404,14 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kParserInternalError,
-            IsolatedWebAppResponseReaderFactory::
-                ReadIntegrityBlockAndMetadataStatus::
-                    kMetadataParserInternalError),
+            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
+                kMetadataParserInternalError),
         std::make_pair(web_package::mojom::BundleParseErrorType::kVersionError,
                        IsolatedWebAppResponseReaderFactory::
-                           ReadIntegrityBlockAndMetadataStatus::
-                               kMetadataParserVersionError),
+                           UnusableSwbnFileError::kMetadataParserVersionError),
         std::make_pair(web_package::mojom::BundleParseErrorType::kFormatError,
                        IsolatedWebAppResponseReaderFactory::
-                           ReadIntegrityBlockAndMetadataStatus::
-                               kMetadataParserFormatError)));
+                           UnusableSwbnFileError::kMetadataParserFormatError)));
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
   base::HistogramTester histogram_tester;
@@ -440,8 +435,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
               StartsWith("Primary URL must not be present"));
 
   histogram_tester.ExpectBucketCount(
-      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
+      ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
+      IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
           kMetadataValidationError,
       1);
 }

@@ -95,8 +95,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class ReadResponseHeadStatus {
-    kSuccess = 0,
+  enum class ReadResponseHeadError {
     kResponseHeadParserInternalError = 1,
     kResponseHeadParserFormatError = 2,
     kResponseNotFoundError = 3,
@@ -121,9 +120,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       ReadResponseCallback callback,
       base::expected<IsolatedWebAppResponseReader::Response,
                      IsolatedWebAppResponseReader::Error> response);
-
-  ReadResponseHeadStatus GetStatusFromError(
-      const IsolatedWebAppResponseReader::Error& error);
 
   enum class ReaderCacheState;
 

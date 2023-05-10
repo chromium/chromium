@@ -15,6 +15,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
@@ -43,6 +45,29 @@ namespace {
 // We could run a separate timer per `SignedWebBundleReader` to more accurately
 // respect `kCleanupInterval`, but this feels like unnecessary overhead.
 base::TimeDelta kCleanupInterval = base::Minutes(10);
+
+base::expected<void, IsolatedWebAppReaderRegistry::ReadResponseHeadError>
+ToReadResponseHeadError(
+    const base::expected<IsolatedWebAppResponseReader::Response,
+                         IsolatedWebAppResponseReader::Error>& response) {
+  if (response.has_value()) {
+    return base::ok();
+  }
+  switch (response.error().type) {
+    case IsolatedWebAppResponseReader::Error::Type::kParserInternalError:
+      return base::unexpected(
+          IsolatedWebAppReaderRegistry::ReadResponseHeadError::
+              kResponseHeadParserInternalError);
+    case IsolatedWebAppResponseReader::Error::Type::kFormatError:
+      return base::unexpected(
+          IsolatedWebAppReaderRegistry::ReadResponseHeadError::
+              kResponseHeadParserFormatError);
+    case IsolatedWebAppResponseReader::Error::Type::kResponseNotFound:
+      return base::unexpected(
+          IsolatedWebAppReaderRegistry::ReadResponseHeadError::
+              kResponseNotFoundError);
+  }
+}
 
 }  // namespace
 
@@ -197,28 +222,14 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
     ReadResponseCallback callback,
     base::expected<IsolatedWebAppResponseReader::Response,
                    IsolatedWebAppResponseReader::Error> response) {
-  base::UmaHistogramEnumeration("WebApp.Isolated.ReadResponseHeadStatus",
-                                response.has_value()
-                                    ? ReadResponseHeadStatus::kSuccess
-                                    : GetStatusFromError(response.error()));
+  base::expected<void, IsolatedWebAppReaderRegistry::ReadResponseHeadError>
+      response_status = ToReadResponseHeadError(response);
+  UmaLogExpectedStatus("WebApp.Isolated.ReadResponseHead", response_status);
 
   std::move(callback).Run(std::move(response).transform_error(
       static_cast<ReadResponseError (*)(
           const IsolatedWebAppResponseReader::Error&)>(
           &ReadResponseError::ForError)));
-}
-
-IsolatedWebAppReaderRegistry::ReadResponseHeadStatus
-IsolatedWebAppReaderRegistry::GetStatusFromError(
-    const IsolatedWebAppResponseReader::Error& error) {
-  switch (error.type) {
-    case IsolatedWebAppResponseReader::Error::Type::kParserInternalError:
-      return ReadResponseHeadStatus::kResponseHeadParserInternalError;
-    case IsolatedWebAppResponseReader::Error::Type::kFormatError:
-      return ReadResponseHeadStatus::kResponseHeadParserFormatError;
-    case IsolatedWebAppResponseReader::Error::Type::kResponseNotFound:
-      return ReadResponseHeadStatus::kResponseNotFoundError;
-  }
 }
 
 // static

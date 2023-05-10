@@ -54638,24 +54638,10 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Subresource"/>
 </enum>
 
-<enum name="IsolatedWebAppReadIntegrityBlockAndMetadataStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Error: Integrity Block parsing: Internal error"/>
-  <int value="2" label="Error: Integrity Block parsing: Format error"/>
-  <int value="3" label="Error: Integrity Block parsing: Version error"/>
-  <int value="4" label="Error: Integrity Block validation error"/>
-  <int value="5" label="Error: Signature verification error"/>
-  <int value="6" label="Error: Metadata parsing: Internal error"/>
-  <int value="7" label="Error: Metadata parsing: Format error"/>
-  <int value="8" label="Error: Metadata parsing: Version error"/>
-  <int value="9" label="Error: Metadata validation error"/>
-</enum>
-
-<enum name="IsolatedWebAppReadResponseHeadStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Error: Response head parsing: Internal error"/>
-  <int value="2" label="Error: Response head parsing: Format error"/>
-  <int value="3" label="Error: Response not found"/>
+<enum name="IsolatedWebAppReadResponseHeadError">
+  <int value="1" label="Response head parsing: Internal error"/>
+  <int value="2" label="Response head parsing: Format error"/>
+  <int value="3" label="Response not found"/>
 </enum>
 
 <enum name="IsolatedWebAppResponseReaderCacheState">
@@ -54664,6 +54650,18 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2"
       label="Cached but still processing integrity block, signatures, or
              metadata"/>
+</enum>
+
+<enum name="IsolatedWebAppSwbnFileUsabilityError">
+  <int value="1" label="Integrity Block parsing: Internal error"/>
+  <int value="2" label="Integrity Block parsing: Format error"/>
+  <int value="3" label="Integrity Block parsing: Version error"/>
+  <int value="4" label="Integrity Block validation error"/>
+  <int value="5" label="Signature verification error"/>
+  <int value="6" label="Metadata parsing: Internal error"/>
+  <int value="7" label="Metadata parsing: Format error"/>
+  <int value="8" label="Metadata parsing: Version error"/>
+  <int value="9" label="Metadata validation error"/>
 </enum>
 
 <enum name="IsPinnedToTaskbarResult">
