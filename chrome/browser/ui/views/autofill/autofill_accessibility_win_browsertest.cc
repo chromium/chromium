@@ -96,7 +96,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   // Show drop down based on the element id.
   void ShowDropdown(const std::string& field_id) {
     std::string js("document.getElementById('" + field_id + "').focus();");
-    ASSERT_TRUE(ExecuteScript(GetWebContents(), js));
+    ASSERT_TRUE(ExecJs(GetWebContents(), js));
     SendKeyToPage(GetWebContents(), ui::DomKey::ARROW_DOWN);
   }
 

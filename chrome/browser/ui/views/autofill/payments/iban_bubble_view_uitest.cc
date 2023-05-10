@@ -188,7 +188,7 @@ class IbanBubbleViewFullFormBrowserTest
     const std::string click_submit_button_js =
         "(function() { document.getElementById('submit').click(); })();";
     content::TestNavigationObserver nav_observer(web_contents);
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_submit_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_submit_button_js));
     nav_observer.Wait();
   }
 
@@ -198,13 +198,13 @@ class IbanBubbleViewFullFormBrowserTest
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, click_fill_button_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, click_fill_button_js));
 
     if (iban_value.has_value()) {
       std::string set_value_js =
           "(function() { document.getElementById('iban').value ='" +
           iban_value.value() + "';})();";
-      ASSERT_TRUE(content::ExecuteScript(web_contents, set_value_js));
+      ASSERT_TRUE(content::ExecJs(web_contents, set_value_js));
     }
   }
 
