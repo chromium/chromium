@@ -330,9 +330,9 @@ class CookieSettingsTest
 
   // Set a cookie with JavaScript.
   void JSWriteCookie(Browser* browser) {
-    bool rv = content::ExecuteScript(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        "document.cookie = 'name=Good;Max-Age=3600'");
+    bool rv =
+        content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                        "document.cookie = 'name=Good;Max-Age=3600'");
     CHECK(rv);
   }
 
