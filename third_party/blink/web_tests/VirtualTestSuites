@@ -250,6 +250,8 @@
              "--force-raster-color-profile=color-spin-gamma24"],
     "expires": "Jul 1, 2023"
   },
+  "The stable suite tests for conformance to HTML/web specifications, and",
+  "detects unintentional changes to web exposed surface, so should not expire.",
   {
     "prefix": "stable",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
@@ -269,7 +271,7 @@
     "args": ["--stable-release-mode",
              "--disable-auto-wpt-origin-isolation",
              "--disable-field-trial-config"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "feature-policy-permissions",
@@ -280,13 +282,15 @@
              "--use-fake-ui-for-media-stream"],
     "expires": "Jul 1, 2023"
   },
+  "The origin trials suite tests that OT-controlled features are exposed to",
+  "the web as expected, so should not expire.",
   {
     "prefix": "origin-trials-runtimeflags-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/origin_trials/webexposed"],
     "args": ["--disable-origin-trial-controlled-blink-features",
              "--stable-release-mode"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "android",
