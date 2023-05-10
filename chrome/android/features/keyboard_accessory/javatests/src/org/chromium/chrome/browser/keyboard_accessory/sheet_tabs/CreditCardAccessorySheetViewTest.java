@@ -164,7 +164,11 @@ public class CreditCardAccessorySheetViewTest {
         assertThat(getChipText(R.id.cardholder), is("Kirby Puckett"));
         // Verify that the icon is correctly set.
         ImageView iconImageView = (ImageView) mView.get().getChildAt(0).findViewById(R.id.icon);
-        Drawable expectedIcon = mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
+        Drawable expectedIcon =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
+                ? mActivityTestRule.getActivity().getDrawable(R.drawable.visa_metadata_card)
+                : mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
         // Chips are clickable:
         TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.cc_number)::performClick);
@@ -244,7 +248,11 @@ public class CreditCardAccessorySheetViewTest {
         assertThat(getChipText(R.id.cardholder), is("Kirby Puckett"));
         // Verify that the icon is set to the drawable corresponding to `visaCC`.
         ImageView iconImageView = (ImageView) mView.get().getChildAt(0).findViewById(R.id.icon);
-        Drawable expectedIcon = mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
+        Drawable expectedIcon =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
+                ? mActivityTestRule.getActivity().getDrawable(R.drawable.visa_metadata_card)
+                : mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
     }
 

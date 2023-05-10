@@ -1002,6 +1002,7 @@
                     "enable_features": [
                         "AutofillEnableCardArtImage",
                         "AutofillEnableCardProductName",
+                        "AutofillEnableNewCardArtAndNetworkImages",
                         "AutofillEnableVirtualCardMetadata"
                     ]
                 }

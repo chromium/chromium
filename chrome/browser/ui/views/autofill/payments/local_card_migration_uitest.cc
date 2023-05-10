@@ -187,7 +187,10 @@ class LocalCardMigrationBrowserTest
     RECEIVED_MIGRATE_CARDS_RESPONSE
   };
 
-  LocalCardMigrationBrowserTest() : SyncTest(SINGLE_CLIENT) {}
+  LocalCardMigrationBrowserTest() : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitAndDisableFeature(
+        features::kAutofillEnableNewCardArtAndNetworkImages);
+  }
 
   ~LocalCardMigrationBrowserTest() override {}
 
@@ -535,6 +538,7 @@ class LocalCardMigrationBrowserTest
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class LocalCardMigrationBrowserUiTest
