@@ -7,12 +7,18 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/test_permissions_client.h"
+#include "components/permissions/unused_site_permissions_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -422,6 +428,72 @@ TEST_F(PermissionUmaUtilTest, PageInfoPermissionReallowedTest) {
           kInfobarNotShownNoPageReloadPermissionNotUsed,
       1);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PermissionUmaUtilTest, RecordPermissionRegrantForUnusedSites) {
+  const GURL origin = GURL("https://example1.com:443");
+  content::TestBrowserContext browser_context;
+  base::HistogramTester histograms;
+  ContentSettingsType content_type = ContentSettingsType::GEOLOCATION;
+  std::string permission_string =
+      PermissionUtil::GetPermissionString(content_type);
+  base::SimpleTestClock clock;
+  base::Time now(base::Time::Now());
+  clock.SetNow(now);
+  HostContentSettingsMap* hcsm =
+      PermissionsClient::Get()->GetSettingsMap(&browser_context);
+  hcsm->SetClockForTesting(&clock);
+
+  std::string prefix = "Settings.SafetyCheck.UnusedSitePermissionsRegrantDays";
+
+  // Record regrant before permission has been revoked.
+  PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
+      origin, content_type, PermissionSourceUI::PROMPT, &browser_context, now);
+  histograms.ExpectTotalCount(prefix + "Prompt." + permission_string, 0);
+  histograms.ExpectTotalCount(prefix + "Prompt.All", 0);
+
+  // Create a revoked permission.
+  base::Value::Dict dict = base::Value::Dict();
+  base::Value::List permission_type_list = base::Value::List();
+  permission_type_list.Append(static_cast<int32_t>(content_type));
+  dict.Set(permissions::kRevokedKey,
+           base::Value::List(std::move(permission_type_list)));
+  // Set expiration to five days before the clean-up threshold to mimic that the
+  // permission was revoked five days ago.
+  base::Time past(now - base::Days(5));
+  const content_settings::ContentSettingConstraints constraint{
+      .expiration =
+          past + content_settings::features::
+                     kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
+                         .Get()};
+  hcsm->SetWebsiteSettingDefaultScope(
+      origin, origin, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()), constraint);
+
+  // Regrant another permission through the prompt.
+  PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
+      origin, ContentSettingsType::NOTIFICATIONS, PermissionSourceUI::PROMPT,
+      &browser_context, now);
+  histograms.ExpectTotalCount(prefix + "Prompt." +
+                                  PermissionUtil::GetPermissionString(
+                                      ContentSettingsType::NOTIFICATIONS),
+                              0);
+  histograms.ExpectTotalCount(prefix + "Prompt.All", 0);
+
+  // Regrant the geolocation permission through the prompt.
+  PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
+      origin, content_type, PermissionSourceUI::PROMPT, &browser_context, now);
+  histograms.ExpectBucketCount(prefix + "Prompt." + permission_string, 5, 1);
+  histograms.ExpectBucketCount(prefix + "Prompt.All", 5, 1);
+
+  // Regrant the geolocation permission through site settings.
+  PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
+      origin, content_type, PermissionSourceUI::SITE_SETTINGS, &browser_context,
+      now);
+  histograms.ExpectBucketCount(prefix + "Settings." + permission_string, 5, 1);
+  histograms.ExpectBucketCount(prefix + "Settings.All", 5, 1);
+}
+#endif
 
 TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
   base::HistogramTester histograms;

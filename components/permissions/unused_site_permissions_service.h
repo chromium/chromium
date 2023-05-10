@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -105,6 +106,12 @@ class UnusedSitePermissionsService
       const absl::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
+
+  static absl::optional<uint32_t> GetDaysSinceRevocation(
+      const GURL& origin,
+      ContentSettingsType content_settings_type,
+      base::Time current_time,
+      HostContentSettingsMap* hcsm);
 
   // Test support:
   void SetClockForTesting(base::Clock* clock);

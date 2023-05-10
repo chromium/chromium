@@ -608,6 +608,15 @@ class PermissionUmaUtil {
   static void RecordTopLevelPermissionsHeaderPolicyOnNavigation(
       content::RenderFrameHost* render_frame_host);
 
+  // Logs a metric that captures how long since revocation, due to a site being
+  // considered unused, the user regrants a revoked permission.
+  static void RecordPermissionRegrantForUnusedSites(
+      const GURL& origin,
+      ContentSettingsType request_type,
+      PermissionSourceUI source_ui,
+      content::BrowserContext* browser_context,
+      base::Time current_time);
+
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation
   // condition is met (from ALLOW to something else).

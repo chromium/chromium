@@ -1764,6 +1764,10 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
             "SoundContentSetting.UnmuteBy.SiteSettings"));
       }
     }
+
+    permissions::PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
+        origin, content_type, permissions::PermissionSourceUI::SITE_SETTINGS,
+        profile_, base::Time::Now());
   }
 
   // Show an infobar reminding the user to reload tabs where their site

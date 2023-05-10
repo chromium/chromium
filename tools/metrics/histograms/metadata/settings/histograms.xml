@@ -632,6 +632,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.All"
+    units="days" expires_after="2023-12-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the number of days since the permission was revoked for any
+    permission type, up until the cleanup threshold for revoked permissions has
+    been reached. The metric is recorded when the user regrants a permission
+    that was previously revoked by the unused site permission module of
+    SafetyCheck.
+  </summary>
+  <token key="SourceUI">
+    <variant name="Prompt"/>
+    <variant name="Settings"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.{PermissionType}"
+    units="days" expires_after="2023-12-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the number of days since the permission was revoked for the
+    {PermissionType} permission type, up until the cleanup threshold for revoked
+    permissions has been reached. The metric is recorded when the user regrants
+    a permission that was previously revoked by the unused site permission
+    module of SafetyCheck.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="SourceUI">
+    <variant name="Prompt"/>
+    <variant name="Settings"/>
+  </token>
+</histogram>
+
 <histogram name="Settings.SafetyCheck.UpdatesResult"
     enum="SafetyCheckUpdateStatus" expires_after="2023-04-23">
   <owner>andzaytsev@google.com</owner>

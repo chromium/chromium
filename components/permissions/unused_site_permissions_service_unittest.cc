@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -533,6 +534,54 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       &revoked_permissions_list);
   EXPECT_EQ(revoked_permissions_list.size(), 0U);
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, GetDaysSinceRevocation) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const GURL url = GURL("https://example1.com:443");
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+  const content_settings::ContentSettingConstraints constraint{
+      .track_last_visit_for_autoexpiration = true};
+
+  absl::optional<uint32_t> days_since_revocation;
+
+  // Permission has not yet been revoked, so shouldn't return a number of days
+  // since revocation.
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_FALSE(days_since_revocation.has_value());
+
+  hcsm()->SetContentSettingDefaultScope(
+      url, url, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Travel 70 days through time so that the granted permission is revoked.
+  clock()->Advance(base::Days(70));
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_TRUE(days_since_revocation.has_value());
+  EXPECT_EQ(days_since_revocation.value(), 0u);
+
+  // Forward the clock for five days, which would be the number of days since
+  // revocation.
+  clock()->Advance(base::Days(5));
+
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_TRUE(days_since_revocation.has_value());
+  EXPECT_EQ(days_since_revocation.value(), 5u);
+
+  // Revoked permission is cleaned up after >30 days.
+  clock()->Advance(base::Days(40));
+  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
+      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
+  ASSERT_FALSE(days_since_revocation.has_value());
 }
 
 }  // namespace permissions
