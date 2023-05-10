@@ -519,6 +519,7 @@ ios_builder(
 ios_builder(
     name = "ios15-beta-simulator",
     mirrors = ["ci/ios15-beta-simulator"],
+    os = os.MAC_13,
 )
 
 ios_builder(
