@@ -35353,6 +35353,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_Closed">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User right-clicked the tab group header on a SavedTabGroup, and pressed the
+    close group button.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_Deleted">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User performed an action that would delete a SavedTabGroup (Ex: Right-click
+    a button in the bookmarks bar and press delete group, close the last tab in
+    a group, unsave a group). This user action is not emitted when a change
+    originated from the sync service that would cause a group to be deleted.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_Focused">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User attempted to open a SavedTabGroup that was already open by clicking a
+    SavedTabGroup button in the bookmarks bar, but focused the group instead.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_Opened">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking a SavedTabGroup button in the
+    bookmarks bar.
+  </description>
+</action>
+
 <action name="TabGroups_SwitchGroupedTab">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

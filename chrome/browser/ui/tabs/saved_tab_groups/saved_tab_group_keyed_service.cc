@@ -6,7 +6,11 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -124,6 +128,9 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
       browser_for_activation->ActivateContents(
           browser_for_activation->tab_strip_model()->GetWebContentsAt(
               first_tab.value()));
+
+      base::RecordAction(
+          base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));
       return;
     }
   }
@@ -192,6 +199,9 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   listener_.ConnectToLocalTabGroup(*model_.Get(saved_group_guid),
                                    local_and_saved_tab_mapping);
+
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
 }
 
 void SavedTabGroupKeyedService::SaveGroup(

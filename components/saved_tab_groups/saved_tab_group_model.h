@@ -143,8 +143,6 @@ class SavedTabGroupModel {
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 
  private:
-  void RecordGroupDeletedMetric(const SavedTabGroup* removed_group);
-
   // Updates all group positions to match the index they are currently stored
   // at.
   void UpdateGroupPositionsImpl();
