@@ -21,8 +21,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/thread_isolation/alignment.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 // The feature is not applicable to 32-bit address space.
@@ -66,10 +67,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
       PA_DCHECK(IsConfigurablePoolInitialized());
       pool = kConfigurablePoolHandle;
       base = setup_.configurable_pool_base_address_;
-#if BUILDFLAG(ENABLE_PKEYS)
-    } else if (IsInPkeyPool(address)) {
-      pool = kPkeyPoolHandle;
-      base = setup_.pkey_pool_base_address_;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    } else if (IsInThreadIsolatedPool(address)) {
+      pool = kThreadIsolatedPoolHandle;
+      base = setup_.thread_isolated_pool_base_address_;
 #endif
     } else {
       PA_NOTREACHED();
@@ -93,16 +94,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   //
   // This function must only be called from the main thread.
   static void InitConfigurablePool(uintptr_t pool_base, size_t size);
-#if BUILDFLAG(ENABLE_PKEYS)
-  static void InitPkeyPool(int pkey);
-  static void UninitPkeyPoolForTesting();
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  static void InitThreadIsolatedPool(ThreadIsolationOption thread_isolation);
+  static void UninitThreadIsolatedPoolForTesting();
 #endif
   static void UninitForTesting();
   static void UninitConfigurablePoolForTesting();
 
   PA_ALWAYS_INLINE static bool IsInitialized() {
     // Either neither or both regular and BRP pool are initialized. The
-    // configurable and pkey pool are initialized separately.
+    // configurable and thread isolated pool are initialized separately.
     if (setup_.regular_pool_base_address_ != kUninitializedPoolBaseAddress) {
       PA_DCHECK(setup_.brp_pool_base_address_ != kUninitializedPoolBaseAddress);
       return true;
@@ -117,9 +118,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
            kUninitializedPoolBaseAddress;
   }
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  PA_ALWAYS_INLINE static bool IsPkeyPoolInitialized() {
-    return setup_.pkey_pool_base_address_ != kUninitializedPoolBaseAddress;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  PA_ALWAYS_INLINE static bool IsThreadIsolatedPoolInitialized() {
+    return setup_.thread_isolated_pool_base_address_ !=
+           kUninitializedPoolBaseAddress;
   }
 #endif
 
@@ -191,10 +193,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return setup_.configurable_pool_base_address_;
   }
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // Returns false for nullptr.
-  PA_ALWAYS_INLINE static bool IsInPkeyPool(uintptr_t address) {
-    return (address & kPkeyPoolBaseMask) == setup_.pkey_pool_base_address_;
+  PA_ALWAYS_INLINE static bool IsInThreadIsolatedPool(uintptr_t address) {
+    return (address & kThreadIsolatedPoolBaseMask) ==
+           setup_.thread_isolated_pool_base_address_;
   }
 #endif
 
@@ -233,9 +236,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  PA_ALWAYS_INLINE static constexpr size_t PkeyPoolSize() {
-    return kPkeyPoolSize;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  PA_ALWAYS_INLINE static constexpr size_t ThreadIsolatedPoolSize() {
+    return kThreadIsolatedPoolSize;
   }
 #endif
 
@@ -262,9 +265,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize));
   static_assert(base::bits::IsPowerOfTwo(kBRPPoolSize));
-#if BUILDFLAG(ENABLE_PKEYS)
-  static constexpr size_t kPkeyPoolSize = kGiB / 4;
-  static_assert(base::bits::IsPowerOfTwo(kPkeyPoolSize));
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  static constexpr size_t kThreadIsolatedPoolSize = kGiB / 4;
+  static_assert(base::bits::IsPowerOfTwo(kThreadIsolatedPoolSize));
 #endif
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
@@ -299,10 +302,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
 #endif  // !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  static constexpr uintptr_t kPkeyPoolOffsetMask =
-      static_cast<uintptr_t>(kPkeyPoolSize) - 1;
-  static constexpr uintptr_t kPkeyPoolBaseMask = ~kPkeyPoolOffsetMask;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  static constexpr uintptr_t kThreadIsolatedPoolOffsetMask =
+      static_cast<uintptr_t>(kThreadIsolatedPoolSize) - 1;
+  static constexpr uintptr_t kThreadIsolatedPoolBaseMask =
+      ~kThreadIsolatedPoolOffsetMask;
 #endif
 
   // This must be set to such a value that IsIn*Pool() always returns false when
@@ -318,8 +322,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         : regular_pool_base_address_(kUninitializedPoolBaseAddress),
           brp_pool_base_address_(kUninitializedPoolBaseAddress),
           configurable_pool_base_address_(kUninitializedPoolBaseAddress),
-#if BUILDFLAG(ENABLE_PKEYS)
-          pkey_pool_base_address_(kUninitializedPoolBaseAddress),
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+          thread_isolated_pool_base_address_(kUninitializedPoolBaseAddress),
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
           regular_pool_base_mask_(0),
@@ -328,12 +332,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
           core_pools_base_mask_(0),
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-          configurable_pool_base_mask_(0)
-#if BUILDFLAG(ENABLE_PKEYS)
-          ,
-          pkey_(kInvalidPkey)
-#endif
-    {
+          configurable_pool_base_mask_(0) {
     }
 
     // Using a union to enforce padding.
@@ -342,8 +341,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         uintptr_t regular_pool_base_address_;
         uintptr_t brp_pool_base_address_;
         uintptr_t configurable_pool_base_address_;
-#if BUILDFLAG(ENABLE_PKEYS)
-        uintptr_t pkey_pool_base_address_;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+        uintptr_t thread_isolated_pool_base_address_;
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t regular_pool_base_mask_;
@@ -353,21 +352,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t configurable_pool_base_mask_;
-#if BUILDFLAG(ENABLE_PKEYS)
-        int pkey_;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+        ThreadIsolationOption thread_isolation_;
 #endif
       };
 
-#if BUILDFLAG(ENABLE_PKEYS)
-      // With pkey support, we want to be able to pkey-tag all global metadata
-      // which requires page granularity.
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+      // With thread isolation support, we want to be able to write-protect all
+      // global metadata which requires page granularity.
       char one_page_[SystemPageSize()];
 #else
       char one_cacheline_[kPartitionCachelineSize];
 #endif
     };
   };
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static_assert(sizeof(PoolSetup) % SystemPageSize() == 0,
                 "PoolSetup has to fill a page(s)");
 #else
@@ -380,9 +379,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // These are write-once fields, frequently accessed thereafter. Make sure they
   // don't share a cacheline with other, potentially writeable data, through
   // alignment and padding.
-#if BUILDFLAG(ENABLE_PKEYS)
-  static_assert(PA_PKEY_ALIGN_SZ >= kPartitionCachelineSize);
-  alignas(PA_PKEY_ALIGN_SZ)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  static_assert(PA_THREAD_ISOLATED_ALIGN_SZ >= kPartitionCachelineSize);
+  alignas(PA_THREAD_ISOLATED_ALIGN_SZ)
 #else
   alignas(kPartitionCachelineSize)
 #endif
@@ -393,10 +392,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static std::ptrdiff_t brp_pool_shadow_offset_;
 #endif
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  // If we use a pkey pool, we need to tag its metadata with the pkey. Allow the
-  // function to get access to the PoolSetup.
-  friend void TagGlobalsWithPkey(int pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // If we use thread isolation, we need to write-protect its metadata.
+  // Allow the function to get access to the PoolSetup.
+  friend void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption);
 #endif
 };
 
@@ -431,8 +430,8 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
          || internal::PartitionAddressSpace::IsInBRPPool(address)
 #endif
-#if BUILDFLAG(ENABLE_PKEYS)
-         || internal::PartitionAddressSpace::IsInPkeyPool(address)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+         || internal::PartitionAddressSpace::IsInThreadIsolatedPool(address)
 #endif
          || internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
@@ -461,10 +460,11 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
   return internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
 // Returns false for nullptr.
-PA_ALWAYS_INLINE bool IsManagedByPartitionAllocPkeyPool(uintptr_t address) {
-  return internal::PartitionAddressSpace::IsInPkeyPool(address);
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocThreadIsolatedPool(
+    uintptr_t address) {
+  return internal::PartitionAddressSpace::IsInThreadIsolatedPool(address);
 }
 #endif
 

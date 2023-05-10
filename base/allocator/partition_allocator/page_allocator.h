@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -33,21 +34,23 @@ struct PageAccessibilityConfiguration {
     kReadWriteExecute,
   };
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
-      : permissions(permissions), pkey(0) {}
-  constexpr PageAccessibilityConfiguration(Permissions permissions, int pkey)
-      : permissions(permissions), pkey(pkey) {}
+      : permissions(permissions) {}
+  constexpr PageAccessibilityConfiguration(
+      Permissions permissions,
+      ThreadIsolationOption thread_isolation)
+      : permissions(permissions), thread_isolation(thread_isolation) {}
 #else
   constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
       : permissions(permissions) {}
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
   Permissions permissions;
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // Tag the page with a Memory Protection Key. Use 0 for none.
-  int pkey;
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+  ThreadIsolationOption thread_isolation;
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 };
 
 // Use for De/RecommitSystemPages API.

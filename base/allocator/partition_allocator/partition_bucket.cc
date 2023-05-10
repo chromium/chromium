@@ -303,10 +303,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       RecommitSystemPages(reservation_start + SystemPageSize(),
                           SystemPageSize(),
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-                          root->PageAccessibilityWithPkeyIfEnabled(
+                          root->PageAccessibilityWithThreadIsolationIfEnabled(
                               PageAccessibilityConfiguration::kRead),
 #else
-                          root->PageAccessibilityWithPkeyIfEnabled(
+                          root->PageAccessibilityWithThreadIsolationIfEnabled(
                               PageAccessibilityConfiguration::kReadWrite),
 #endif
                           PageAccessibilityDisposition::kRequireUpdate);
@@ -320,7 +320,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(reservation_start + SystemPageSize() * 2,
                           SystemPageSize(),
-                          root->PageAccessibilityWithPkeyIfEnabled(
+                          root->PageAccessibilityWithThreadIsolationIfEnabled(
                               PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
     }
@@ -331,7 +331,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(ShadowMetadataStart(reservation_start, pool),
                           SystemPageSize(),
-                          root->PageAccessibilityWithPkeyIfEnabled(
+                          root->PageAccessibilityWithThreadIsolationIfEnabled(
                               PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
     }
@@ -785,10 +785,10 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(super_page + SystemPageSize(), SystemPageSize(),
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-                        root->PageAccessibilityWithPkeyIfEnabled(
+                        root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kRead),
 #else
-                        root->PageAccessibilityWithPkeyIfEnabled(
+                        root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kReadWrite),
 #endif
                         PageAccessibilityDisposition::kRequireUpdate);
@@ -800,7 +800,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
   if (root->ChoosePool() == kBRPPoolHandle) {
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(super_page + SystemPageSize() * 2, SystemPageSize(),
-                        root->PageAccessibilityWithPkeyIfEnabled(
+                        root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
@@ -811,7 +811,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(ShadowMetadataStart(super_page, root->ChoosePool()),
                         SystemPageSize(),
-                        root->PageAccessibilityWithPkeyIfEnabled(
+                        root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
@@ -872,7 +872,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
     {
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
-                          root->PageAccessibilityWithPkeyIfEnabled(
+                          root->PageAccessibilityWithThreadIsolationIfEnabled(
                               PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
     }
@@ -887,7 +887,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
     PA_DCHECK(SuperPageFreeSlotBitmapAddr(super_page) == freeslot_bitmap_addr);
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(freeslot_bitmap_addr, CommittedFreeSlotBitmapSize(),
-                        root->PageAccessibilityWithPkeyIfEnabled(
+                        root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 
 #if BUILDFLAG(ENABLE_PKEYS)
 
@@ -15,7 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/pkey.h"
+#include "base/allocator/partition_allocator/thread_isolation/pkey.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #define ISOLATED_FUNCTION extern "C" __attribute__((used))
@@ -32,7 +33,7 @@ struct IsolatedGlobals {
       partition_alloc::PartitionAllocator>
       allocator{};
   partition_alloc::ThreadSafePartitionRoot* allocatorRoot;
-} isolatedGlobals PA_PKEY_ALIGN;
+} isolatedGlobals PA_THREAD_ISOLATED_ALIGN;
 
 int ProtFromSegmentFlags(ElfW(Word) flags) {
   int prot = 0;
@@ -110,7 +111,7 @@ class PkeyTest : public testing::Test {
         partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
         partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
         partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
-        isolatedGlobals.pkey,
+        partition_alloc::ThreadIsolationOption(isolatedGlobals.pkey),
     });
     isolatedGlobals.allocatorRoot = isolatedGlobals.allocator->root();
 
@@ -250,4 +251,4 @@ TEST_F(PkeyTest, AllocWithoutDefaultPkey) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)

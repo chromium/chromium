@@ -101,8 +101,8 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
-#if BUILDFLAG(ENABLE_PKEYS)
-  internal::PartitionAddressSpace::UninitPkeyPoolForTesting();
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  internal::PartitionAddressSpace::UninitThreadIsolatedPoolForTesting();
 #endif
   internal::g_oom_handling_function = nullptr;
 }

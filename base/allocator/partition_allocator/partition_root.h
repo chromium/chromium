@@ -63,10 +63,10 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_STARSCAN)
@@ -200,11 +200,11 @@ struct PartitionOptions {
       BackupRefPtrZapping backup_ref_ptr_zapping,
       UseConfigurablePool use_configurable_pool,
       AddDummyRefCount add_dummy_ref_count = AddDummyRefCount::kDisabled
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
       ,
-      int pkey = internal::kDefaultPkey
+      ThreadIsolationOption thread_isolation = ThreadIsolationOption()
 #endif
-      )
+          )
       : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
@@ -212,9 +212,9 @@ struct PartitionOptions {
         backup_ref_ptr(backup_ref_ptr),
         backup_ref_ptr_zapping(backup_ref_ptr_zapping),
         use_configurable_pool(use_configurable_pool)
-#if BUILDFLAG(ENABLE_PKEYS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
         ,
-        pkey(pkey)
+        thread_isolation(thread_isolation)
 #endif
   {
   }
@@ -227,8 +227,8 @@ struct PartitionOptions {
   BackupRefPtrZapping backup_ref_ptr_zapping;
   UseConfigurablePool use_configurable_pool;
   AddDummyRefCount add_dummy_ref_count = AddDummyRefCount::kDisabled;
-#if BUILDFLAG(ENABLE_PKEYS)
-  int pkey;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  ThreadIsolationOption thread_isolation;
 #endif
 };
 
@@ -294,8 +294,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool memory_tagging_enabled_;
 #endif
 
-#if BUILDFLAG(ENABLE_PKEYS)
-    int pkey;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    ThreadIsolationOption thread_isolation;
 #endif
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
@@ -544,7 +544,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
   PA_ALWAYS_INLINE PageAccessibilityConfiguration
-      PageAccessibilityWithPkeyIfEnabled(
+      PageAccessibilityWithThreadIsolationIfEnabled(
           PageAccessibilityConfiguration::Permissions) const;
 
   PA_ALWAYS_INLINE size_t
@@ -645,9 +645,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       return internal::kConfigurablePoolHandle;
     }
 #endif
-#if BUILDFLAG(ENABLE_PKEYS)
-    if (flags.pkey != internal::kDefaultPkey) {
-      return internal::kPkeyPoolHandle;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    if (flags.thread_isolation.enabled) {
+      return internal::kThreadIsolatedPoolHandle;
     }
 #endif
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1763,8 +1763,8 @@ PartitionRoot<thread_safe>::GetPageAccessibility() const {
     permissions = PageAccessibilityConfiguration::kReadWriteTagged;
   }
 #endif
-#if BUILDFLAG(ENABLE_PKEYS)
-  return PageAccessibilityConfiguration(permissions, flags.pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  return PageAccessibilityConfiguration(permissions, flags.thread_isolation);
 #else
   return PageAccessibilityConfiguration(permissions);
 #endif
@@ -1772,10 +1772,10 @@ PartitionRoot<thread_safe>::GetPageAccessibility() const {
 
 template <bool thread_safe>
 PA_ALWAYS_INLINE PageAccessibilityConfiguration
-PartitionRoot<thread_safe>::PageAccessibilityWithPkeyIfEnabled(
+PartitionRoot<thread_safe>::PageAccessibilityWithThreadIsolationIfEnabled(
     PageAccessibilityConfiguration::Permissions permissions) const {
-#if BUILDFLAG(ENABLE_PKEYS)
-  return PageAccessibilityConfiguration(permissions, flags.pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  return PageAccessibilityConfiguration(permissions, flags.thread_isolation);
 #endif
   return PageAccessibilityConfiguration(permissions);
 }

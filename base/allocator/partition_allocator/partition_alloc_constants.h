@@ -270,10 +270,10 @@ enum pool_handle : unsigned {
 
 // New pool_handles will be added here.
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  // The pkey pool must come last since we pkey_mprotect its entry in the
-  // metadata tables, e.g. AddressPoolManager::aligned_pools_
-  kPkeyPoolHandle,
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // The thread isolated pool must come last since we write-protect its entry in
+  // the metadata tables, e.g. AddressPoolManager::aligned_pools_
+  kThreadIsolatedPoolHandle,
 #endif
   kMaxPoolHandle
 };
@@ -303,10 +303,10 @@ constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
 constexpr size_t kMaxSuperPagesInPool = kPoolMaxSize / kSuperPageSize;
 
-#if BUILDFLAG(ENABLE_PKEYS)
-static_assert(
-    kPkeyPoolHandle == kNumPools,
-    "The pkey pool must come last since we pkey_mprotect its metadata.");
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+static_assert(kThreadIsolatedPoolHandle == kNumPools,
+              "The thread isolated pool must come last since we write-protect "
+              "its metadata.");
 #endif
 
 // Slots larger than this size will not receive MTE protection. Pages intended

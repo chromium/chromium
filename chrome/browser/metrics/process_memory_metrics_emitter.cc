@@ -619,14 +619,14 @@ const Metric kPartitionAllocAddressSpaceMetrics[] = {
     },
     Metric{
         .uma_name = "PartitionAlloc.AddressSpace."
-                    "PkeyPoolLargestAvailableReservation",
+                    "ThreadIsolatedPoolLargestAvailableReservation",
         .metric_size = MetricSize::kLarge,
-        .metric = "pkey_pool_largest_reservation",
+        .metric = "thread_isolated_pool_largest_reservation",
     },
     Metric{
-        .uma_name = "PartitionAlloc.AddressSpace.PkeyPoolUsage",
+        .uma_name = "PartitionAlloc.AddressSpace.ThreadIsolatedPoolUsage",
         .metric_size = MetricSize::kLarge,
-        .metric = "pkey_pool_usage",
+        .metric = "thread_isolated_pool_usage",
     },
 };
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

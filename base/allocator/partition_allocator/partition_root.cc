@@ -24,9 +24,9 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
@@ -688,15 +688,17 @@ void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address) {
 }
 #endif
 
-#if BUILDFLAG(ENABLE_PKEYS)
-void PartitionAllocPkeyInit(int pkey) {
-  PkeySettings::settings.enabled = true;
-  PartitionAddressSpace::InitPkeyPool(pkey);
-  // Call TagGlobalsWithPkey last since we might not have write permissions to
-  // to memory tagged with `pkey` at this point.
-  TagGlobalsWithPkey(pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+void PartitionAllocThreadIsolationInit(ThreadIsolationOption thread_isolation) {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+  ThreadIsolationSettings::settings.enabled = true;
+#endif
+  PartitionAddressSpace::InitThreadIsolatedPool(thread_isolation);
+  // Call WriteProtectThreadIsolatedGlobals last since we might not have write
+  // permissions to to globals afterwards.
+  WriteProtectThreadIsolatedGlobals(thread_isolation);
 }
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 }  // namespace internal
 
@@ -773,10 +775,10 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
   // this function on PartitionRoots without a thread cache.
   PA_CHECK(!flags.with_thread_cache);
   auto pool_handle = ChoosePool();
-#if BUILDFLAG(ENABLE_PKEYS)
-  // The pages managed by pkey will be free-ed at UninitPKeyForTesting().
-  // Don't invoke FreePages() for the pages.
-  if (pool_handle == internal::kPkeyPoolHandle) {
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // The pages managed by thread isolated pool will be free-ed at
+  // UninitThreadIsolatedForTesting(). Don't invoke FreePages() for the pages.
+  if (pool_handle == internal::kThreadIsolatedPoolHandle) {
     return;
   }
   PA_DCHECK(pool_handle < internal::kNumPools);
@@ -920,12 +922,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     // BRP requires objects to be in a different Pool.
     PA_CHECK(!(flags.use_configurable_pool && brp_enabled()));
 
-#if BUILDFLAG(ENABLE_PKEYS)
-    // BRP and pkey mode use different pools, so they can't be enabled at the
-    // same time.
-    PA_CHECK(opts.pkey == internal::kDefaultPkey ||
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    // BRP and thread isolated mode use different pools, so they can't be
+    // enabled at the same time.
+    PA_CHECK(!opts.thread_isolation.enabled ||
              opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
-    flags.pkey = opts.pkey;
+    flags.thread_isolation = opts.thread_isolation;
 #endif
 
     // Ref-count messes up alignment needed for AlignedAlloc, making this
@@ -1027,9 +1029,9 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   PartitionAllocMallocInitOnce();
 #endif
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  if (flags.pkey != internal::kDefaultPkey) {
-    internal::PartitionAllocPkeyInit(flags.pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  if (flags.thread_isolation.enabled) {
+    internal::PartitionAllocThreadIsolationInit(flags.thread_isolation);
   }
 #endif
 }

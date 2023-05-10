@@ -20,7 +20,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/pkey.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -31,7 +31,7 @@
 #include <windows.h>
 #endif  // BUILDFLAG(IS_WIN)
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA) || BUILDFLAG(ENABLE_PKEYS)
+#if PA_CONFIG(ENABLE_SHADOW_METADATA) || BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include <sys/mman.h>
 #endif
 
@@ -79,8 +79,8 @@ PA_NOINLINE void HandlePoolAllocFailure() {
 
 }  // namespace
 
-#if BUILDFLAG(ENABLE_PKEYS)
-alignas(PA_PKEY_ALIGN_SZ)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+alignas(PA_THREAD_ISOLATED_ALIGN_SZ)
 #else
 alignas(kPartitionCachelineSize)
 #endif
@@ -294,12 +294,12 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   // The ConfigurablePool must only be initialized once.
   PA_CHECK(!IsConfigurablePoolInitialized());
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  // It's possible that the pkey pool has been initialized first, in which case
-  // the setup_ memory has been made read-only. Remove the protection
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // It's possible that the thread isolated pool has been initialized first, in
+  // which case the setup_ memory has been made read-only. Remove the protection
   // temporarily.
-  if (IsPkeyPoolInitialized()) {
-    TagGlobalsWithPkey(kDefaultPkey);
+  if (IsThreadIsolatedPoolInitialized()) {
+    UnprotectThreadIsolatedGlobals();
   }
 #endif
 
@@ -315,49 +315,54 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   AddressPoolManager::GetInstance().Add(
       kConfigurablePoolHandle, setup_.configurable_pool_base_address_, size);
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  // Put the pkey protection back in place.
-  if (IsPkeyPoolInitialized()) {
-    TagGlobalsWithPkey(setup_.pkey_);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // Put the metadata protection back in place.
+  if (IsThreadIsolatedPoolInitialized()) {
+    WriteProtectThreadIsolatedGlobals(setup_.thread_isolation_);
   }
 #endif
 }
 
-#if BUILDFLAG(ENABLE_PKEYS)
-void PartitionAddressSpace::InitPkeyPool(int pkey) {
-  // The PkeyPool can't be initialized with conflicting pkeys.
-  if (IsPkeyPoolInitialized()) {
-    PA_CHECK(setup_.pkey_ == pkey);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+void PartitionAddressSpace::InitThreadIsolatedPool(
+    ThreadIsolationOption thread_isolation) {
+  // The ThreadIsolated pool can't be initialized with conflicting settings.
+  if (IsThreadIsolatedPoolInitialized()) {
+    PA_CHECK(setup_.thread_isolation_ == thread_isolation);
     return;
   }
 
-  size_t pool_size = PkeyPoolSize();
-  setup_.pkey_pool_base_address_ =
+  size_t pool_size = ThreadIsolatedPoolSize();
+  setup_.thread_isolated_pool_base_address_ =
       AllocPages(pool_size, pool_size,
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc);
-  if (!setup_.pkey_pool_base_address_) {
+  if (!setup_.thread_isolated_pool_base_address_) {
     HandlePoolAllocFailure();
   }
 
-  PA_DCHECK(!(setup_.pkey_pool_base_address_ & (pool_size - 1)));
-  setup_.pkey_ = pkey;
+  PA_DCHECK(!(setup_.thread_isolated_pool_base_address_ & (pool_size - 1)));
+  setup_.thread_isolation_ = thread_isolation;
   AddressPoolManager::GetInstance().Add(
-      kPkeyPoolHandle, setup_.pkey_pool_base_address_, pool_size);
+      kThreadIsolatedPoolHandle, setup_.thread_isolated_pool_base_address_,
+      pool_size);
 
-  PA_DCHECK(!IsInPkeyPool(setup_.pkey_pool_base_address_ - 1));
-  PA_DCHECK(IsInPkeyPool(setup_.pkey_pool_base_address_));
-  PA_DCHECK(IsInPkeyPool(setup_.pkey_pool_base_address_ + pool_size - 1));
-  PA_DCHECK(!IsInPkeyPool(setup_.pkey_pool_base_address_ + pool_size));
+  PA_DCHECK(
+      !IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ - 1));
+  PA_DCHECK(IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_));
+  PA_DCHECK(IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ +
+                                   pool_size - 1));
+  PA_DCHECK(!IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ +
+                                    pool_size));
 
   // TODO(1362969): support PA_ENABLE_SHADOW_METADATA
 }
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 void PartitionAddressSpace::UninitForTesting() {
-#if BUILDFLAG(ENABLE_PKEYS)
-  UninitPkeyPoolForTesting();  // IN-TEST
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  UninitThreadIsolatedPoolForTesting();  // IN-TEST
 #endif
 #if PA_CONFIG(GLUE_CORE_POOLS)
   // The core pools (regular & BRP) were allocated using a single allocation of
@@ -384,35 +389,38 @@ void PartitionAddressSpace::UninitForTesting() {
 }
 
 void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
-#if BUILDFLAG(ENABLE_PKEYS)
-  // It's possible that the pkey pool has been initialized first, in which case
-  // the setup_ memory has been made read-only. Remove the protection
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // It's possible that the thread isolated pool has been initialized first, in
+  // which case the setup_ memory has been made read-only. Remove the protection
   // temporarily.
-  if (IsPkeyPoolInitialized()) {
-    TagGlobalsWithPkey(kDefaultPkey);
+  if (IsThreadIsolatedPoolInitialized()) {
+    UnprotectThreadIsolatedGlobals();
   }
 #endif
   AddressPoolManager::GetInstance().Remove(kConfigurablePoolHandle);
   setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
-#if BUILDFLAG(ENABLE_PKEYS)
-  // Put the pkey protection back in place.
-  if (IsPkeyPoolInitialized()) {
-    TagGlobalsWithPkey(setup_.pkey_);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // Put the metadata protection back in place.
+  if (IsThreadIsolatedPoolInitialized()) {
+    WriteProtectThreadIsolatedGlobals(setup_.thread_isolation_);
   }
 #endif
 }
 
-#if BUILDFLAG(ENABLE_PKEYS)
-void PartitionAddressSpace::UninitPkeyPoolForTesting() {
-  if (IsPkeyPoolInitialized()) {
-    TagGlobalsWithPkey(kDefaultPkey);
-    PkeySettings::settings.enabled = false;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+void PartitionAddressSpace::UninitThreadIsolatedPoolForTesting() {
+  if (IsThreadIsolatedPoolInitialized()) {
+    UnprotectThreadIsolatedGlobals();
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+    ThreadIsolationSettings::settings.enabled = false;
+#endif
 
-    FreePages(setup_.pkey_pool_base_address_, PkeyPoolSize());
-    AddressPoolManager::GetInstance().Remove(kPkeyPoolHandle);
-    setup_.pkey_pool_base_address_ = kUninitializedPoolBaseAddress;
-    setup_.pkey_ = kInvalidPkey;
+    FreePages(setup_.thread_isolated_pool_base_address_,
+              ThreadIsolatedPoolSize());
+    AddressPoolManager::GetInstance().Remove(kThreadIsolatedPoolHandle);
+    setup_.thread_isolated_pool_base_address_ = kUninitializedPoolBaseAddress;
+    setup_.thread_isolation_.enabled = false;
   }
 }
 #endif

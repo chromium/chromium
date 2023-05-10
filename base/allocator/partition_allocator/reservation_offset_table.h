@@ -18,8 +18,8 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/thread_isolation/alignment.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
@@ -96,16 +96,18 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
     }
   };
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-  // If pkey support is enabled, we need to pkey-tag the tables of the pkey
-  // pool. For this, we need to pad the tables so that the pkey ones start on a
-  // page boundary.
+  // If thread isolation support is enabled, we need to write-protect the tables
+  // of the thread isolated pool. For this, we need to pad the tables so that
+  // the thread isolated ones start on a page boundary.
   struct _PaddedReservationOffsetTables {
-    char pad_[PA_PKEY_ARRAY_PAD_SZ(_ReservationOffsetTable, kNumPools)] = {};
+    char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ(_ReservationOffsetTable,
+                                              kNumPools)] = {};
     struct _ReservationOffsetTable tables[kNumPools];
-    char pad_after_[PA_PKEY_FILL_PAGE_SZ(sizeof(_ReservationOffsetTable))] = {};
+    char pad_after_[PA_THREAD_ISOLATED_FILL_PAGE_SZ(
+        sizeof(_ReservationOffsetTable))] = {};
   };
   static PA_CONSTINIT _PaddedReservationOffsetTables
-      padded_reservation_offset_tables_ PA_PKEY_ALIGN;
+      padded_reservation_offset_tables_ PA_THREAD_ISOLATED_ALIGN;
 #else
   // A single table for the entire 32-bit address space.
   static PA_CONSTINIT struct _ReservationOffsetTable reservation_offset_table_;
@@ -183,8 +185,9 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
   bool is_in_regular_pool = IsManagedByPartitionAllocRegularPool(address);
   bool is_in_configurable_pool =
       IsManagedByPartitionAllocConfigurablePool(address);
-#if BUILDFLAG(ENABLE_PKEYS)
-  bool is_in_pkey_pool = IsManagedByPartitionAllocPkeyPool(address);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  bool is_in_thread_isolated_pool =
+      IsManagedByPartitionAllocThreadIsolatedPool(address);
 #endif
 
   // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
@@ -218,9 +221,9 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
             IsManagedByPartitionAllocRegularPool(reservation_start));
   PA_DCHECK(is_in_configurable_pool ==
             IsManagedByPartitionAllocConfigurablePool(reservation_start));
-#if BUILDFLAG(ENABLE_PKEYS)
-  PA_DCHECK(is_in_pkey_pool ==
-            IsManagedByPartitionAllocPkeyPool(reservation_start));
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  PA_DCHECK(is_in_thread_isolated_pool ==
+            IsManagedByPartitionAllocThreadIsolatedPool(reservation_start));
 #endif
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)

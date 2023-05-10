@@ -161,8 +161,6 @@ component("partition_alloc") {
     "partition_stats.cc",
     "partition_stats.h",
     "partition_tls.h",
-    "pkey.cc",
-    "pkey.h",
     "random.cc",
     "random.h",
     "reservation_offset_table.cc",
@@ -174,6 +172,11 @@ component("partition_alloc") {
     "tagging.h",
     "thread_cache.cc",
     "thread_cache.h",
+    "thread_isolation/alignment.h",
+    "thread_isolation/pkey.cc",
+    "thread_isolation/pkey.h",
+    "thread_isolation/thread_isolation.cc",
+    "thread_isolation/thread_isolation.h",
     "yield_processor.h",
   ]
 
@@ -450,6 +453,7 @@ buildflag_header("partition_alloc_buildflags") {
     "PCSCAN_STACK_SUPPORTED=$pcscan_stack_supported",
 
     "ENABLE_PKEYS=$enable_pkeys",
+    "ENABLE_THREAD_ISOLATION=$enable_pkeys",
   ]
 
   if (is_apple) {

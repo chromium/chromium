@@ -3812,7 +3812,8 @@ test("base_unittests") {
       # This test requires RELRO, which is not enabled in component builds.
       # Also, require a debug build, since we only disable stack protectors in
       # debug builds in partition alloc (see below why it's needed).
-      sources += [ "allocator/partition_allocator/pkey_unittest.cc" ]
+      sources +=
+          [ "allocator/partition_allocator/thread_isolation/pkey_unittest.cc" ]
 
       # We want to test the pkey code without access to memory that is not
       # pkey-tagged. This will allow us to catch unintended memory accesses

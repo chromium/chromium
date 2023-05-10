@@ -41,9 +41,9 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "base/system/sys_info.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
@@ -314,7 +314,7 @@ class PartitionAllocTest
 
   void InitializeAllocator() {
 #if BUILDFLAG(ENABLE_PKEYS)
-    int pkey = PkeyAlloc(UsePkeyPool() ? 0 : PKEY_DISABLE_WRITE);
+    int pkey = PkeyAlloc(UseThreadIsolatedPool() ? 0 : PKEY_DISABLE_WRITE);
     if (pkey != -1) {
       pkey_ = pkey;
     }
@@ -331,9 +331,9 @@ class PartitionAllocTest
         partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
         partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
         partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
-        pkey_ != kInvalidPkey ? pkey_ : kDefaultPkey,
+        partition_alloc::ThreadIsolationOption(pkey_),
     });
-    if (UsePkeyPool() && pkey_ != kInvalidPkey) {
+    if (UseThreadIsolatedPool() && pkey_ != kInvalidPkey) {
       allocator.init({
           partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
           partition_alloc::PartitionOptions::ThreadCache::kDisabled,
@@ -343,11 +343,11 @@ class PartitionAllocTest
           partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
           partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
           partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
-          pkey_,
+          partition_alloc::ThreadIsolationOption(pkey_),
       });
       return;
     }
-#endif
+#endif  // BUILDFLAG(ENABLE_PKEYS)
     allocator.init({
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -575,7 +575,7 @@ class PartitionAllocTest
     return GetParam().bucket_distribution;
   }
 
-  bool UsePkeyPool() const { return GetParam().use_pkey_pool; }
+  bool UseThreadIsolatedPool() const { return GetParam().use_pkey_pool; }
   bool UseBRPPool() const { return allocator.root()->brp_enabled(); }
 
   partition_alloc::PartitionAllocatorForTesting allocator;

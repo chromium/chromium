@@ -12,9 +12,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 // Prefetch *x into memory.
@@ -59,8 +59,8 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   // faster. Note that for direct-mapped allocations, memory is decomitted at
   // free() time, so freed memory usage cannot happen.
 
-#if BUILDFLAG(ENABLE_PKEYS)
-  LiftPkeyRestrictionsScope lift_pkey_restrictions;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
   size_t size_to_memset = std::min(size, size_t{1} << 19);
   memset(ptr, value, size_to_memset);

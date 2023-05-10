@@ -4195,27 +4195,6 @@ chromium-metrics-reviews@google.com.
       label="Used super pages in the configurable pool. Only recorded for
              64-bit with process uptime 24H+."/>
   <suffix
-      name="PartitionAlloc.AddressSpace.PkeyPoolLargestAvailableReservation"
-      label="Longest free chunk in the pkey pool. Only recorded on
-             pkey-supported platforms."/>
-  <suffix
-      name="PartitionAlloc.AddressSpace.PkeyPoolLargestAvailableReservation.After1H"
-      label="Longest free chunk in the pkey pool. Only recorded on
-             pkey-supported platforms with process uptime [1,24)H."/>
-  <suffix
-      name="PartitionAlloc.AddressSpace.PkeyPoolLargestAvailableReservation.After24H"
-      label="Longest free chunk in the pkey pool. Only recorded on
-             pkey-supported platforms with process uptime 24H+."/>
-  <suffix name="PartitionAlloc.AddressSpace.PkeyPoolUsage"
-      label="Used super pages in the pkey pool. Only recorded on
-             pkey-supported platforms."/>
-  <suffix name="PartitionAlloc.AddressSpace.PkeyPoolUsage.After1H"
-      label="Used super pages in the pkey pool. Only recorded on
-             pkey-supported platforms with process uptime [1,24)H."/>
-  <suffix name="PartitionAlloc.AddressSpace.PkeyPoolUsage.After24H"
-      label="Used super pages in the pkey pool. Only recorded on
-             pkey-supported platforms with process uptime 24H+."/>
-  <suffix
       name="PartitionAlloc.AddressSpace.RegularPoolLargestAvailableReservation"
       label="Longest free chunk in the regular pool. Only recorded for
              64-bit."/>
@@ -4235,6 +4214,27 @@ chromium-metrics-reviews@google.com.
   <suffix name="PartitionAlloc.AddressSpace.RegularPoolUsage.After24H"
       label="Used super pages in the regular pool. Only recorded when process
              uptime is 24H+."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.ThreadIsolatedPoolLargestAvailableReservation"
+      label="Longest free chunk in the thread isolated pool. Only recorded on
+             supported platforms."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.ThreadIsolatedPoolLargestAvailableReservation.After1H"
+      label="Longest free chunk in the thread isolated pool. Only recorded on
+             supported platforms with process uptime [1,24)H."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.ThreadIsolatedPoolLargestAvailableReservation.After24H"
+      label="Longest free chunk in the thread isolated pool. Only recorded on
+             supported platforms with process uptime 24H+."/>
+  <suffix name="PartitionAlloc.AddressSpace.ThreadIsolatedPoolUsage"
+      label="Used super pages in the thread isolated pool. Only recorded on
+             supported platforms."/>
+  <suffix name="PartitionAlloc.AddressSpace.ThreadIsolatedPoolUsage.After1H"
+      label="Used super pages in the thread isolated pool. Only recorded on
+             supported platforms with process uptime [1,24)H."/>
+  <suffix name="PartitionAlloc.AddressSpace.ThreadIsolatedPoolUsage.After24H"
+      label="Used super pages in the thread isolated pool. Only recorded on
+             supported platforms with process uptime 24H+."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
       label="Only counting objects allocated using Partition allocator."/>
   <suffix name="PartitionAlloc.CommittedSize.ArrayBuffer"
