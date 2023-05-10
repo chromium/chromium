@@ -38,9 +38,13 @@ void FinalizeNewProfileSetup(Profile* profile,
   CHECK(entry);
   CHECK(!profile_name.empty());
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // We don't expect this to be run for profiles where the user already had a
-  // chance to set a custom profile name.
+  // chance to set a custom profile name. One exception might be post-migration
+  // Lacros silent first run, see crbug.com/1443026.
   DCHECK(entry->IsUsingDefaultName());
+#endif
+
   entry->SetLocalProfileName(profile_name, is_default_name);
 
   if (!entry->IsOmitted()) {
