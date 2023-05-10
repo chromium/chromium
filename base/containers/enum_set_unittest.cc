@@ -447,6 +447,19 @@ TEST_F(EnumSetTest, FromEnumBitmaskIgnoresExtraBits) {
   }
 }
 
+TEST_F(EnumSetTest, OneEnumValue) {
+  enum class TestEnumOne {
+    kTest1 = 1,
+    kTestMin = kTest1,
+    kTestMax = kTest1,
+  };
+  using TestEnumOneSet =
+      EnumSet<TestEnumOne, TestEnumOne::kTestMin, TestEnumOne::kTestMax>;
+  EXPECT_EQ(TestEnumOne::kTestMin, TestEnumOneSet::kMinValue);
+  EXPECT_EQ(TestEnumOne::kTestMax, TestEnumOneSet::kMaxValue);
+  EXPECT_EQ(1u, TestEnumOneSet::kValueCount);
+}
+
 TEST_F(EnumSetDeathTest, SingleValBitstringCrashesOnOutOfRange) {
   EXPECT_CHECK_DEATH(
       TestEnumSet::single_val_bitstring(TestEnum::TEST_BELOW_MIN));
