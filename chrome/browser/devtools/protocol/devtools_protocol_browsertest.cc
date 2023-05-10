@@ -384,6 +384,63 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
   EXPECT_THAT(deleted_sites, testing::ElementsAre("example.test"));
 }
 
+class DIPSStatusDevToolsProtocolTest
+    : public DevToolsProtocolTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
+  // The fields of `GetParam()` indicate/control the following:
+  //   `std::get<0>(GetParam())` => `dips::kFeature`
+  //   `std::get<1>(GetParam())` => `dips::kDeletionEnabled`
+  //   `std::get<2>(GetParam())` => `dips::kTriggeringAction`
+  //
+  // In order for Bounce Tracking Mitigations to take effect, `kFeature` must
+  // be true/enabled, `kDeletionEnabled` must be true, and `kTriggeringAction`
+  // must NOT be `none`.
+  //
+  // Note: Bounce Tracking Mitigations issues only report sites that would
+  // be affected when `kTriggeringAction` is set to 'stateful_bounce'.
+
+ protected:
+  void SetUp() override {
+    if (std::get<0>(GetParam())) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          dips::kFeature,
+          {{"delete", (std::get<1>(GetParam()) ? "true" : "false")},
+           {"triggering_action", std::get<2>(GetParam())}});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(dips::kFeature);
+    }
+
+    DevToolsProtocolTest::SetUp();
+  }
+
+  bool ShouldBeEnabled() {
+    return (std::get<0>(GetParam()) && std::get<1>(GetParam()) &&
+            (std::get<2>(GetParam()) != "none"));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DIPSStatusDevToolsProtocolTest,
+                       TrueWhenEnabledAndDeleting) {
+  AttachToBrowserTarget();
+
+  base::Value::Dict paramsDIPS;
+  paramsDIPS.Set("featureState", "DIPS");
+
+  SendCommand("SystemInfo.getFeatureState", std::move(paramsDIPS));
+  EXPECT_EQ(result()->FindBool("featureEnabled"), ShouldBeEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DIPSStatusDevToolsProtocolTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Bool(),
+        ::testing::Values("none", "storage", "bounce", "stateful_bounce")));
+
 using DevToolsProtocolTest_AppId = DevToolsProtocolTest;
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsManifestAppId) {

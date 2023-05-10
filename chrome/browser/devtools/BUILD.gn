@@ -32,6 +32,8 @@ if (!is_android) {
     "protocol/security.h",
     "protocol/storage.cc",
     "protocol/storage.h",
+    "protocol/system_info.cc",
+    "protocol/system_info.h",
     "protocol/target.cc",
     "protocol/target.h",
   ]
@@ -269,6 +271,8 @@ static_library("devtools") {
       "protocol/security_handler.h",
       "protocol/storage_handler.cc",
       "protocol/storage_handler.h",
+      "protocol/system_info_handler.cc",
+      "protocol/system_info_handler.h",
       "protocol/target_handler.cc",
       "protocol/target_handler.h",
     ]

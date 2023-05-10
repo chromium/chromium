@@ -42,7 +42,12 @@
                 "domain": "Storage",
                 "include": ["runBounceTrackingMitigations"],
                 "async": ["runBounceTrackingMitigations"]
-            }, {
+            },
+            {
+                "domain": "SystemInfo",
+                "include": ["getFeatureState"]
+            },
+            {
                 "domain": "Autofill",
                 "async": [ "trigger" ]
             }

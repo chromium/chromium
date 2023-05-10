@@ -17,6 +17,7 @@
 #include "chrome/browser/devtools/protocol/page_handler.h"
 #include "chrome/browser/devtools/protocol/security_handler.h"
 #include "chrome/browser/devtools/protocol/storage_handler.h"
+#include "chrome/browser/devtools/protocol/system_info_handler.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
@@ -85,6 +86,10 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       channel->GetClient()->IsTrusted()) {
     browser_handler_ =
         std::make_unique<BrowserHandler>(&dispatcher_, agent_host->GetId());
+  }
+  if (IsDomainAvailableToUntrustedClient<SystemInfoHandler>() ||
+      channel->GetClient()->IsTrusted()) {
+    system_info_handler_ = std::make_unique<SystemInfoHandler>(&dispatcher_);
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   window_manager_handler_ =
