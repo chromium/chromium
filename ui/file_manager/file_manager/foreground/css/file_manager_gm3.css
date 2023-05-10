@@ -1125,8 +1125,9 @@ body.files-ng grid .grid-title {
   box-sizing: border-box;
   color: var(--cros-sys-on_surface);
   font: var(--cros-button-2-font);
+  padding-bottom: 6px;
   padding-inline-start: 16px;
-  padding-top: 20px;
+  padding-top: 14px;
   /* Make sure clicking this area can unselect file grids. */
   pointer-events: none;
   width: 100%;
