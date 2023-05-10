@@ -1657,7 +1657,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedAuthCancelledObserver auth_cancelled_waiter(controller);
   {
     WindowedLoadStopObserver load_stop_observer(controller, 1);
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         contents, std::string("document.location='") + page2.spec() + "';"));
     auth_cancelled_waiter.Wait();
     // Wait for the auth dialog and the interstitial for www.b.com.
@@ -1796,7 +1796,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // Redirect to a broken SSL page. This redirect should not accidentally
   // proceed through the SSL interstitial.
   content::TestNavigationObserver ssl_observer(contents);
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       std::string("window.location = '") + broken_ssl_page.spec() + "'"));
   ssl_observer.Wait();
