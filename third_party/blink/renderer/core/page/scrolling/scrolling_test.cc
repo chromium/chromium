@@ -25,6 +25,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "cc/animation/animation_host.h"
+#include "cc/animation/keyframe_effect.h"
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/scrollbar_layer_base.h"
@@ -57,6 +59,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
@@ -2720,6 +2723,95 @@ TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
   Compositor().BeginFrame();
   EXPECT_EQ(100, GetActiveScrollOffset(box->GetScrollableArea()).y());
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
+}
+
+TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
+  String kUrl = "https://example.com/test.html";
+  SimRequest request(kUrl, "text/html");
+  LoadURL(kUrl);
+
+  request.Complete(R"HTML(
+    <style>
+      #s { overflow-y: scroll; width: 300px; height: 200px;
+           position: relative; background: white; }
+      #sp { width: 100px; height: 1000px; }
+      #align { width: 100%; height: 20px; position: absolute; background: blue;
+               will-change: transform; animation: a linear 10s;
+               animation-timeline: scroll(); }
+      @keyframes a {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(800px); }
+      }
+    </style>
+    <div id=s><div id=sp><div id=align></div>hello</div></div>
+  )HTML");
+
+  cc::AnimationHost* impl_host =
+      static_cast<cc::AnimationHost*>(GetLayerTreeHostImpl()->mutator_host());
+
+  // First frame: Initial commit creates the cc::Animation etc.
+  Compositor().BeginFrame();
+
+  blink::Animation* animation =
+      GetDocument().getElementById("align")->getAnimations()[0];
+  cc::Animation* cc_animation =
+      animation->GetCompositorAnimation()->CcAnimation();
+  cc::ElementId element_id = cc_animation->element_id();
+
+  gfx::KeyframeModel* keyframe_model_main =
+      cc_animation->GetKeyframeModel(cc::TargetProperty::TRANSFORM);
+  cc::KeyframeEffect* keyframe_effect =
+      impl_host->GetElementAnimationsForElementIdForTesting(element_id)
+          ->FirstKeyframeEffectForTesting();
+  gfx::KeyframeModel* keyframe_model_impl =
+      keyframe_effect->keyframe_models()[0].get();
+
+  EXPECT_EQ(gfx::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
+            keyframe_model_impl->run_state());
+
+  // Activate the timeline (see ScrollTimeline::IsActive), so that it will be
+  // ticked during the next LTHI::Animate.
+  impl_host->PromoteScrollTimelinesPendingToActive();
+
+  // Second frame: LTHI::Animate transitions to RunState::STARTING. Pass
+  // raster=true to also reach LTHI::UpdateAnimationState, which transitions
+  // STARTING -> RUNNING.
+  Compositor().BeginFrame(0.016, /* raster */ true);
+  EXPECT_EQ(gfx::KeyframeModel::RUNNING, keyframe_model_impl->run_state());
+
+  // Scroll to the end.
+  GetDocument().getElementById("s")->setScrollTop(800);
+
+  // Third frame: LTHI::Animate transitions RUNNING -> PAUSED. Then main frame
+  // LayerTreeHost::ApplyMutatorEvents dispatches AnimationEvent::STARTED and
+  // resets KeyframeModel::needs_synchronized_start_time_.
+  Compositor().BeginFrame();
+  EXPECT_EQ(gfx::KeyframeModel::PAUSED, keyframe_model_impl->run_state());
+
+  // Verify that KeyframeModel::CalculatePhase returns ACTIVE for the case of
+  // local_time == active_after_boundary_time.
+  base::TimeTicks max = base::TimeTicks() + base::Seconds(100);
+  EXPECT_TRUE(keyframe_model_main->HasActiveTime(max));
+  EXPECT_TRUE(keyframe_model_impl->HasActiveTime(max));
+
+  // Try reversed playbackRate, and verify that we are also ACTIVE in the case
+  // local_time == before_active_boundary_time.
+  animation->setPlaybackRate(-1);
+  GetDocument().getElementById("s")->setScrollTop(0);
+  Compositor().BeginFrame(0.016, /* raster */ true);
+  Compositor().BeginFrame();
+
+  cc_animation = animation->GetCompositorAnimation()->CcAnimation();
+  keyframe_model_main =
+      cc_animation->GetKeyframeModel(cc::TargetProperty::TRANSFORM);
+  keyframe_effect =
+      impl_host->GetElementAnimationsForElementIdForTesting(element_id)
+          ->FirstKeyframeEffectForTesting();
+  keyframe_model_impl = keyframe_effect->keyframe_models()[0].get();
+
+  EXPECT_EQ(gfx::KeyframeModel::PAUSED, keyframe_model_impl->run_state());
+  EXPECT_TRUE(keyframe_model_main->HasActiveTime(base::TimeTicks()));
+  EXPECT_TRUE(keyframe_model_impl->HasActiveTime(base::TimeTicks()));
 }
 
 // Pre-scroll-unification, ensures that ScrollBegin and ScrollUpdate cause

@@ -126,8 +126,12 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
       end_offset == start_offset
           ? 1
           : (current_offset - start_offset) / (end_offset - start_offset);
-  return base::TimeTicks() +
-         base::Milliseconds(progress * kScrollTimelineDurationMs);
+
+  // Round to nearest microsecond for integer-backed TimeTicks
+  // (compare blink::TimeTolerance).
+  int64_t progress_us =
+      base::ClampRound(progress * kScrollTimelineDurationMs * 1000);
+  return base::TimeTicks() + base::Microseconds(progress_us);
 }
 
 void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {
