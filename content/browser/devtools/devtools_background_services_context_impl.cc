@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_deref.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -56,13 +57,13 @@ constexpr devtools::proto::BackgroundService ServiceToProtoEnum(
 DevToolsBackgroundServicesContextImpl::DevToolsBackgroundServicesContextImpl(
     BrowserContext* browser_context,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
-    : browser_context_(browser_context),
+    : browser_context_(CHECK_DEREF(browser_context)),
       service_worker_context_(std::move(service_worker_context)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto expiration_times =
       GetContentClient()->browser()->GetDevToolsBackgroundServiceExpirations(
-          browser_context_);
+          &*browser_context_);
 
   for (const auto& expiration_time : expiration_times) {
     DCHECK(devtools::proto::BackgroundService_IsValid(expiration_time.first));
@@ -98,7 +99,7 @@ void DevToolsBackgroundServicesContextImpl::StartRecording(
   expiration_times_[service] = expiration_time;
 
   GetContentClient()->browser()->UpdateDevToolsBackgroundServiceExpiration(
-      browser_context_, service, expiration_time);
+      &*browser_context_, service, expiration_time);
 
   for (EventObserver& observer : observers_)
     observer.OnRecordingStateChanged(/* should_record= */ true, service);
@@ -110,7 +111,7 @@ void DevToolsBackgroundServicesContextImpl::StopRecording(
 
   expiration_times_[service] = base::Time();
   GetContentClient()->browser()->UpdateDevToolsBackgroundServiceExpiration(
-      browser_context_, service, base::Time());
+      &*browser_context_, service, base::Time());
 
   for (EventObserver& observer : observers_)
     observer.OnRecordingStateChanged(/* should_record= */ false, service);
