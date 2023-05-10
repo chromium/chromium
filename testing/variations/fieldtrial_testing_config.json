@@ -13634,6 +13634,21 @@
             ]
         }
     ],
+    "UserInteractiveCompositingMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UserInteractiveCompositingMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserLevelMemoryPressureSignalOn4GbDevices": [
         {
             "platforms": [
