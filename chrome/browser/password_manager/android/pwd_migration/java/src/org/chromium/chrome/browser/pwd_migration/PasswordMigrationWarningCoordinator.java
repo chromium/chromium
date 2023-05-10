@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator of the password migration warning. */
 public class PasswordMigrationWarningCoordinator {
@@ -21,6 +22,8 @@ public class PasswordMigrationWarningCoordinator {
             @Nullable Context context, BottomSheetController sheetController) {
         mMediator.initialize(
                 PasswordMigrationWarningProperties.createDefaultModel(mMediator::onDismissed));
+        setUpModelChangeProcessors(
+                mMediator.getModel(), new PasswordMigrationWarningView(context, sheetController));
     }
 
     public void showWarning() {
@@ -30,5 +33,10 @@ public class PasswordMigrationWarningCoordinator {
     @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mMediator.getModel();
+    }
+
+    static void setUpModelChangeProcessors(PropertyModel model, PasswordMigrationWarningView view) {
+        PropertyModelChangeProcessor.create(
+                model, view, PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
     }
 }

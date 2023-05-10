@@ -2690,6 +2690,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/engagement/android:javatests",
       "//chrome/browser/flags:javatests",
       "//chrome/browser/password_check/android:test_java",
+      "//chrome/browser/password_manager/android/pwd_migration:javatests",
       "//chrome/browser/subresource_filter:subresource_filter_javatests",
       "//chrome/browser/touch_to_fill/android:test_java",
       "//chrome/browser/touch_to_fill/payments/android/internal:javatests",

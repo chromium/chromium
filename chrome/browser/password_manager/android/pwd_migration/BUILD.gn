@@ -29,6 +29,7 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -41,23 +42,64 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningProperties.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningView.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewBinder.java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.pwd_migration"
 }
 
 robolectric_library("junit") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningControllerRobolectricTest.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningControllerTest.java" ]
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//third_party/espresso:espresso_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
   ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.pwd_migration"
+
+  # Consult izuzic@ before adding more tests to this target.
+  # This target will exist only temporary.
+  sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_resources("java_resources") {
+  deps = [ "//ui/android:ui_java_resources" ]
+  sources = [ "java/res/layout/pwd_migration_warning.xml" ]
 }

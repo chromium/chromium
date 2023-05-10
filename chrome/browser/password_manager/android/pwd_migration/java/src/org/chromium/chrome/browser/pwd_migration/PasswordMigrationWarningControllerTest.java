@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
@@ -38,7 +37,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
-public class PasswordMigrationWarningControllerRobolectricTest {
+public class PasswordMigrationWarningControllerTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -51,7 +50,7 @@ public class PasswordMigrationWarningControllerRobolectricTest {
     @Mock
     private BottomSheetController mBottomSheetController;
 
-    public PasswordMigrationWarningControllerRobolectricTest() {}
+    public PasswordMigrationWarningControllerTest() {}
 
     @Before
     public void setUp() {
@@ -60,13 +59,9 @@ public class PasswordMigrationWarningControllerRobolectricTest {
     }
 
     @Test
-    public void testShowWarningUpdatesModel() {
+    public void testCreatesValidDefaultModel() {
         PropertyModel model = mCoordinator.getModelForTesting();
         assertNotNull(model.get(DISMISS_HANDLER));
-        assertThat(model.get(VISIBLE), is(false));
-
-        mCoordinator.showWarning();
-
-        assertThat(model.get(VISIBLE), is(true));
+        assertFalse(model.get(VISIBLE));
     }
 }
