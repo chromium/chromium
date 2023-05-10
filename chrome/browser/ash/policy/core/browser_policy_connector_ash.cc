@@ -357,6 +357,10 @@ bool BrowserPolicyConnectorAsh::IsCloudManaged() const {
   return ash::InstallAttributes::Get()->IsCloudManaged();
 }
 
+bool BrowserPolicyConnectorAsh::IsActiveDirectoryManaged() const {
+  return ash::InstallAttributes::Get()->IsActiveDirectoryManaged();
+}
+
 std::string BrowserPolicyConnectorAsh::GetEnterpriseEnrollmentDomain() const {
   return ash::InstallAttributes::Get()->GetDomain();
 }
@@ -375,6 +379,10 @@ std::string BrowserPolicyConnectorAsh::GetSSOProfile() const {
   if (policy && policy->has_sso_profile())
     return policy->sso_profile();
   return std::string();
+}
+
+std::string BrowserPolicyConnectorAsh::GetRealm() const {
+  return ash::InstallAttributes::Get()->GetRealm();
 }
 
 std::string BrowserPolicyConnectorAsh::GetDeviceAssetID() const {

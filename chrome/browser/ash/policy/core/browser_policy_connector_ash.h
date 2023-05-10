@@ -94,6 +94,13 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Checks whether this is a cloud (DM server) managed enterprise device.
   bool IsCloudManaged() const;
 
+  // Checks whether this is an Active Directory managed enterprise device.
+  // In theory, this can still yield true for a few left-over AD devices.
+  // However, starting in M114, it is considered safe to assume that this
+  // function always returns false.
+  // TODO(b/279364186) Remove.
+  bool IsActiveDirectoryManaged() const;
+
   // Returns the enterprise enrollment domain if device is managed.
   std::string GetEnterpriseEnrollmentDomain() const;
 
@@ -105,6 +112,10 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Returns the SSO profile id for the managing OU of this device. Currently
   // identifies the SAML settings for the device.
   std::string GetSSOProfile() const;
+
+  // Returns the Kerberos realm (aka Windows Domain) if the device is managed by
+  // Active Directory.
+  std::string GetRealm() const;
 
   // Returns the device asset ID if it is set.
   std::string GetDeviceAssetID() const;
