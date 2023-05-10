@@ -49,7 +49,7 @@ source_set("jni_sample_native_side") {
 }
 
 generate_jni_registration("jni_registration") {
-  java_targets = [ ":jni_sample_java" ]
+  targets = [ ":jni_sample_java" ]
   manual_jni_registration = true
 }
 
