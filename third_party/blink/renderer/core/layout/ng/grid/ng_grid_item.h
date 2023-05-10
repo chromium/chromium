@@ -154,13 +154,16 @@ struct CORE_EXPORT GridItemData {
     return has_subgridded_columns || has_subgridded_rows;
   }
 
-  bool HasStandaloneAndSubgriddedAxis() const {
-    return has_subgridded_columns != has_subgridded_rows;
-  }
-
   bool IsConsideredForSizing(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? is_considered_for_column_sizing
                                             : is_considered_for_row_sizing;
+  }
+
+  bool MustConsiderGridItemsForSizing(
+      GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns)
+               ? must_consider_grid_items_for_column_sizing
+               : must_consider_grid_items_for_row_sizing;
   }
 
   bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }

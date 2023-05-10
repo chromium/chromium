@@ -1025,12 +1025,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     SizingConstraint sizing_constraint,
     GridItemData* grid_item) const {
   DCHECK(grid_item);
-
-  // From https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution:
-  //   The subgrid itself [...] acts as if it was completely empty for track
-  //   sizing purposes in the subgridded dimension.
-  if (!grid_item->IsConsideredForSizing(track_direction))
-    return LayoutUnit();
+  DCHECK(grid_item->IsConsideredForSizing(track_direction));
 
   const auto& node = grid_item->node;
   const auto& item_style = node.Style();
@@ -2011,10 +2006,12 @@ LayoutUnit AffectedSizeForContribution(
 }
 
 void GrowAffectedSizeByPlannedIncrease(
-    NGGridSet& set,
-    GridItemContributionType contribution_type) {
-  LayoutUnit planned_increase = set.planned_increase;
-  set.is_infinitely_growable = false;
+    GridItemContributionType contribution_type,
+    NGGridSet* set) {
+  DCHECK(set);
+
+  set->is_infinitely_growable = false;
+  const LayoutUnit planned_increase = set->planned_increase;
 
   // Only grow sets that accommodated a grid item.
   if (planned_increase == kIndefiniteSize)
@@ -2024,20 +2021,44 @@ void GrowAffectedSizeByPlannedIncrease(
     case GridItemContributionType::kForIntrinsicMinimums:
     case GridItemContributionType::kForContentBasedMinimums:
     case GridItemContributionType::kForMaxContentMinimums:
-      set.IncreaseBaseSize(set.BaseSize() + planned_increase);
+      set->IncreaseBaseSize(set->BaseSize() + planned_increase);
       return;
     case GridItemContributionType::kForIntrinsicMaximums:
       // Mark any tracks whose growth limit changed from infinite to finite in
       // this step as infinitely growable for the next step.
-      set.is_infinitely_growable = set.GrowthLimit() == kIndefiniteSize;
-      set.IncreaseGrowthLimit(DefiniteGrowthLimit(set) + planned_increase);
+      set->is_infinitely_growable = set->GrowthLimit() == kIndefiniteSize;
+      set->IncreaseGrowthLimit(DefiniteGrowthLimit(*set) + planned_increase);
       return;
     case GridItemContributionType::kForMaxContentMaximums:
-      set.IncreaseGrowthLimit(DefiniteGrowthLimit(set) + planned_increase);
+      set->IncreaseGrowthLimit(DefiniteGrowthLimit(*set) + planned_increase);
       return;
     case GridItemContributionType::kForFreeSpace:
       NOTREACHED();
       return;
+  }
+}
+
+void AccomodateSubgridExtraMargins(
+    LayoutUnit start_extra_margin,
+    LayoutUnit end_extra_margin,
+    GridItemIndices set_indices,
+    NGGridSizingTrackCollection* track_collection) {
+  auto AccomodateExtraMargin = [track_collection](LayoutUnit extra_margin,
+                                                  wtf_size_t set_index) {
+    auto& set = track_collection->GetSetAt(set_index);
+
+    if (set.track_size.HasIntrinsicMinTrackBreadth() &&
+        set.BaseSize() < extra_margin) {
+      set.IncreaseBaseSize(extra_margin);
+    }
+  };
+
+  if (set_indices.begin == set_indices.end - 1) {
+    AccomodateExtraMargin(start_extra_margin + end_extra_margin,
+                          set_indices.begin);
+  } else {
+    AccomodateExtraMargin(start_extra_margin, set_indices.begin);
+    AccomodateExtraMargin(end_extra_margin, set_indices.end - 1);
   }
 }
 
@@ -2411,7 +2432,7 @@ void DistributeExtraSpaceToSetsEqually(
 
 void DistributeExtraSpaceToWeightedSets(
     LayoutUnit extra_space,
-    const double flex_factor_sum,
+    double flex_factor_sum,
     GridItemContributionType contribution_type,
     GridSetPtrVector* sets_to_grow) {
   DistributeExtraSpaceToSets</* is_equal_distribution */ false>(
@@ -2525,8 +2546,8 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
 
   for (auto set_iterator = track_collection->GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
-    GrowAffectedSizeByPlannedIncrease(set_iterator.CurrentSet(),
-                                      contribution_type);
+    GrowAffectedSizeByPlannedIncrease(contribution_type,
+                                      &set_iterator.CurrentSet());
   }
 }
 
@@ -2536,13 +2557,39 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
   auto& sizing_data = sizing_subtree.SubtreeRootData();
+  auto& track_collection =
+      sizing_data.layout_data.SizingCollection(track_direction);
 
   GridItemDataPtrVector reordered_grid_items;
   reordered_grid_items.ReserveInitialCapacity(sizing_data.grid_items.Size());
 
   for (auto& grid_item : sizing_data.grid_items) {
-    if (grid_item.IsSpanningIntrinsicTrack(track_direction))
+    if (!grid_item.IsSpanningIntrinsicTrack(track_direction)) {
+      continue;
+    }
+
+    if (grid_item.MustConsiderGridItemsForSizing(track_direction)) {
+      // A subgrid should accommodate its extra margins in the subgridded axis
+      // since it might not have children on its edges to account for them.
+      DCHECK(grid_item.IsSubgrid());
+
+      const bool is_for_columns_in_subgrid =
+          RelativeDirectionInSubgrid(track_direction, grid_item) == kForColumns;
+
+      const auto& subgrid_layout_data =
+          sizing_subtree.SubgridSizingSubtree(grid_item).LayoutData();
+      const auto& subgrid_track_collection = is_for_columns_in_subgrid
+                                                 ? subgrid_layout_data.Columns()
+                                                 : subgrid_layout_data.Rows();
+
+      AccomodateSubgridExtraMargins(subgrid_track_collection.StartExtraMargin(),
+                                    subgrid_track_collection.EndExtraMargin(),
+                                    grid_item.SetIndices(track_direction),
+                                    &track_collection);
+
+    } else if (grid_item.IsConsideredForSizing(track_direction)) {
       reordered_grid_items.emplace_back(&grid_item);
+    }
   }
 
   // Reorder grid items to process them as follows:
@@ -2565,8 +2612,6 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
             CompareGridItemsForIntrinsicTrackResolution);
 
   auto** current_group_begin = reordered_grid_items.begin();
-  auto& track_collection =
-      sizing_data.layout_data.SizingCollection(track_direction);
 
   // First, process the items that don't span a flexible track.
   while (current_group_begin != reordered_grid_items.end() &&

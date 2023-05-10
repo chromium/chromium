@@ -182,9 +182,10 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   LayoutUnit GetSetOffset(wtf_size_t set_index) const;
   wtf_size_t GetSetTrackCount(wtf_size_t set_index) const;
 
-  // Returns the accumulated extra margin at the start/end of the specified set.
-  LayoutUnit StartExtraMargin(wtf_size_t set_index) const;
-  LayoutUnit EndExtraMargin(wtf_size_t set_index) const;
+  // Returns the accumulated extra margin at the start/end of the specified set;
+  // if no index is specified, returns the extra margin of the grid container.
+  LayoutUnit StartExtraMargin(wtf_size_t set_index = 0) const;
+  LayoutUnit EndExtraMargin(wtf_size_t set_index = kNotFound) const;
 
   bool HasBaselines() const { return baselines_.has_value(); }
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;

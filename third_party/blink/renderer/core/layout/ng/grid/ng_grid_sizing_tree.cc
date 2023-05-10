@@ -17,9 +17,7 @@ scoped_refptr<const NGGridLayoutTree> NGGridSizingTree::FinalizeTree() const {
 
 NGGridSizingTree::GridTreeNode& NGGridSizingTree::CreateSizingData(
     const NGSubgriddedItemData& subgrid_data) {
-  // Don't add this subgrid's index to the lookup map if it doesn't have a
-  // standalone axis, as we are not going to compute its contribution size.
-  if (subgrid_data && subgrid_data->HasStandaloneAndSubgriddedAxis()) {
+  if (subgrid_data) {
     const auto* subgrid_layout_box = subgrid_data->node.GetLayoutBox();
 
     if (!subgrid_index_lookup_map_) {

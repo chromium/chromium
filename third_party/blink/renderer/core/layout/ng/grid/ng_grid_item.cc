@@ -194,6 +194,12 @@ GridItemData::GridItemData(
                               : style.GridTemplateColumns().IsSubgriddedAxis();
   }
 
+  // From https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution:
+  //   The subgrid itself [...] acts as if it was completely empty for track
+  //   sizing purposes in the subgridded dimension.
+  //
+  // Mark any subgridded axis as not considered for sizing, effectively ignoring
+  // its contribution in `NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes`.
   if (parent_must_consider_grid_items_for_column_sizing) {
     must_consider_grid_items_for_column_sizing = has_subgridded_columns;
     is_considered_for_column_sizing = !has_subgridded_columns;

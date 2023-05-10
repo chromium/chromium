@@ -3581,11 +3581,8 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 
 # [css-subgrid]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/baseline-001.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-002.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-003.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-007.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-008.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/item-percentage-height-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-007.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-012.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-001.html [ Failure ]
