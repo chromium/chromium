@@ -2647,34 +2647,20 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // SiteInstanceRelation::RELATED_IN_COOP_GROUP relations to `current_instance`
   // iff `browsing_context_group_swap.ShouldSwap()` is true.
 
-  // If this is an error page that must reuse the current process, ensure that
-  // `current_instance` is used. Note that this must be the first check to
-  // avoid picking the destination instance or other instances, to preserve the
-  //  previous behavior where we didn't call this function (or even
-  // `GetFrameHostForNavigation()`) at all and immediately picked the current
-  // SiteInstance (through picking the current RenderFrameHost directly) in
-  // `NavigationRequest::OnRequestFailedInternal()`.
+  // === Error page handling ===
+  // Note that these must be the first checks to avoid picking the destination
+  // instance or other instances.
   if (error_page_process ==
       NavigationRequest::ErrorPageProcess::kCurrentProcess) {
+    // If this is an error page that must reuse the current process, ensure that
+    // `current_instance` is used.
     AppendReason(reason,
                  "DetermineSiteInstanceForURL => error-current-instance");
     return SiteInstanceDescriptor(current_instance);
-  }
-
-  // If the entry has an instance already we should usually use it, unless it is
-  // no longer suitable.
-
-  if (dest_instance && CanUseDestinationInstance(
-                           dest_url_info, current_instance, dest_instance,
-                           error_page_process, browsing_context_group_swap)) {
-    AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
-    return SiteInstanceDescriptor(dest_instance);
-  }
-
-  // If error page navigations should be isolated, ensure a dedicated
-  // SiteInstance is used for them.
-  if (error_page_process ==
-      NavigationRequest::ErrorPageProcess::kIsolatedProcess) {
+  } else if (error_page_process ==
+             NavigationRequest::ErrorPageProcess::kIsolatedProcess) {
+    // If error page navigations should be isolated, ensure a dedicated
+    // SiteInstance is used for them.
     CHECK(frame_tree_node_->IsErrorPageIsolationEnabled());
     // If the target URL requires a BrowsingInstance swap, put the error page
     // in a new BrowsingInstance, since the scripting relationships would
@@ -2715,6 +2701,15 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
     return SiteInstanceDescriptor(computed_url_info,
                                   SiteInstanceRelation::UNRELATED);
+  }
+
+  // If the entry has an instance already we should usually use it, unless it is
+  // no longer suitable.
+  if (dest_instance && CanUseDestinationInstance(
+                           dest_url_info, current_instance, dest_instance,
+                           error_page_process, browsing_context_group_swap)) {
+    AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
+    return SiteInstanceDescriptor(dest_instance);
   }
 
   // COOP: restrict-properties requires that we swap BrowsingInstance, but
