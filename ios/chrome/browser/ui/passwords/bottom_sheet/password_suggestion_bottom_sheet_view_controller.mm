@@ -84,6 +84,10 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
   NSArray<FormSuggestion*>* _suggestions;
 
+  // The current's page domain. This is used for the password bottom sheet
+  // description label.
+  NSString* _domain;
+
   // The password controller handler used to open the password manager.
   id<PasswordSuggestionBottomSheetHandler> _handler;
 }
@@ -159,8 +163,10 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 
 #pragma mark - PasswordSuggestionBottomSheetConsumer
 
-- (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions {
+- (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions
+             andDomain:(NSString*)domain {
   _suggestions = suggestions;
+  _domain = domain;
 }
 
 - (void)dismiss {
@@ -239,7 +245,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   // and URL.
   cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.URLLabel.text = [self descriptionAtRow:indexPath.row];
+  cell.URLLabel.text = _domain;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
 
@@ -347,17 +353,6 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
                                   withString:@""];
   }
   return username;
-}
-
-// Returns the display description at a given row in the table view.
-- (NSString*)descriptionAtRow:(NSInteger)row {
-  FormSuggestion* formSuggestion = [_suggestions objectAtIndex:row];
-  GURL URL(base::SysNSStringToUTF8(formSuggestion.displayDescription));
-  if (!URL.is_empty()) {
-    return base::SysUTF8ToNSString(
-        password_manager::GetShownOrigin(url::Origin::Create(URL)));
-  }
-  return formSuggestion.displayDescription;
 }
 
 // Creates the password bottom sheet's table view, initially at minimized

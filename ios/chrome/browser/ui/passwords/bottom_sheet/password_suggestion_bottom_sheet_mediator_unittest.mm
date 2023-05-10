@@ -266,7 +266,8 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, WithSuggestions) {
   CreateMediatorWithSuggestions();
   EXPECT_TRUE(mediator_);
 
-  OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]]);
+  OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]
+                            andDomain:[OCMArg isNotNil]]);
   [mediator_ setConsumer:consumer_];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

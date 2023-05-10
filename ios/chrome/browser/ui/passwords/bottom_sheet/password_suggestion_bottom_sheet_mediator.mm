@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -209,7 +210,13 @@ using ReauthenticationEvent::kSuccess;
 - (void)setConsumer:(id<PasswordSuggestionBottomSheetConsumer>)consumer {
   _consumer = consumer;
   if ([self hasSuggestions]) {
-    [consumer setSuggestions:self.suggestions];
+    NSString* domain = @"";
+    if (!_URL.is_empty()) {
+      url::Origin origin = url::Origin::Create(_URL);
+      domain =
+          base::SysUTF8ToNSString(password_manager::GetShownOrigin(origin));
+    }
+    [consumer setSuggestions:self.suggestions andDomain:domain];
   } else {
     [consumer dismiss];
   }
