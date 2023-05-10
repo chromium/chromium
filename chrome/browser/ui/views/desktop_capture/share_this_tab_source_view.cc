@@ -6,18 +6,43 @@
 
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace {
 
-constexpr gfx::Size kPreviewSize(320, 240);
+// Base UI measurements
+constexpr int kPreviewWidth = 320;
+constexpr int kPreviewHeight = 240;
 constexpr int kPadding = 8;
+constexpr int kFaviconWidth = 16;
+constexpr int kFaviconHeight = kFaviconWidth;
+constexpr int kFaviconTabTitleRowHeight = 20;
+
+// Derived UI measurements
+constexpr int kFaviconExtraPadding =
+    (kFaviconTabTitleRowHeight - kFaviconHeight) / 2;
+constexpr gfx::Rect kPreviewRect(kPadding,
+                                 kPadding,
+                                 kPreviewWidth,
+                                 kPreviewHeight);
+constexpr gfx::Rect kFaviconRect(kPadding,
+                                 kPreviewRect.bottom() + kPadding +
+                                     kFaviconExtraPadding,
+                                 kFaviconWidth,
+                                 kFaviconTabTitleRowHeight);
+constexpr gfx::Rect kTabTitleMaxRect(kFaviconRect.right() + kPadding,
+                                     kPreviewRect.bottom() + kPadding,
+                                     kPreviewWidth - kFaviconWidth - kPadding,
+                                     kFaviconTabTitleRowHeight);
+
 constexpr base::TimeDelta kUpdatePeriodMs = base::Milliseconds(250);
 
 void HandleCapturedBitmap(
@@ -48,6 +73,8 @@ ShareThisTabSourceView::ShareThisTabSourceView(
     : web_contents_(web_contents),
       thumbnail_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(web_contents_);
   View* throbber_container = AddChildView(std::make_unique<views::View>());
   views::BoxLayout* throbber_layout =
       throbber_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -57,8 +84,7 @@ ShareThisTabSourceView::ShareThisTabSourceView(
   throbber_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   // TODO(crbug.com/1428878): Use distances from LayoutProvider
-  throbber_container->SetBoundsRect(
-      gfx::Rect(gfx::Point(kPadding, kPadding), kPreviewSize));
+  throbber_container->SetBoundsRect(kPreviewRect);
   throbber_container->SetCanProcessEventsWithinSubtree(false);
   throbber_ =
       throbber_container->AddChildView(std::make_unique<views::Throbber>());
@@ -66,12 +92,25 @@ ShareThisTabSourceView::ShareThisTabSourceView(
 
   image_view_ = AddChildView(std::make_unique<views::ImageView>());
   image_view_->SetVisible(false);
-  image_view_->SetBoundsRect(gfx::Rect(8, 8, 320, 240));
+  image_view_->SetBoundsRect(kPreviewRect);
+
+  favicon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  favicon_view_->SetBoundsRect(kFaviconRect);
+
+  tab_title_label_ = AddChildView(std::make_unique<views::Label>());
+  tab_title_label_->SetBoundsRect(kTabTitleMaxRect);
+  tab_title_label_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  tab_title_label_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
+  tab_title_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
+
+  UpdateFaviconAndTabTitle();
 }
 
 ShareThisTabSourceView::~ShareThisTabSourceView() = default;
 
 void ShareThisTabSourceView::Activate() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   throbber_->Stop();
   throbber_->SetVisible(false);
   image_view_->SetVisible(true);
@@ -80,12 +119,29 @@ void ShareThisTabSourceView::Activate() {
 }
 
 void ShareThisTabSourceView::StopRefreshing() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   refreshing_ = false;
 }
 
 gfx::Size ShareThisTabSourceView::CalculatePreferredSize() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(crbug.com/1428878): Use distances from LayoutProvider
-  return kPreviewSize + gfx::Size(2 * kPadding, 2 * kPadding);
+  return gfx::Size(kPreviewWidth + 2 * kPadding,
+                   kTabTitleMaxRect.bottom() + kPadding);
+}
+
+void ShareThisTabSourceView::UpdateFaviconAndTabTitle() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!web_contents_) {
+    return;
+  }
+
+  const gfx::Image favicon =
+      favicon::TabFaviconFromWebContents(web_contents_.get());
+  favicon_view_->SetImage(ui::ImageModel::FromImage(
+      favicon.IsEmpty() ? favicon::GetDefaultFavicon() : favicon));
+
+  tab_title_label_->SetText(web_contents_->GetTitle());
 }
 
 void ShareThisTabSourceView::Refresh() {
@@ -112,7 +168,7 @@ void ShareThisTabSourceView::Refresh() {
       gfx::Rect(), gfx::Size(),
       base::BindPostTask(thumbnail_task_runner_,
                          base::BindOnce(&HandleCapturedBitmap, std::move(reply),
-                                        last_hash_, gfx::Size(320, 240))));
+                                        last_hash_, kPreviewRect.size())));
 }
 
 void ShareThisTabSourceView::OnCaptureHandled(
@@ -120,6 +176,8 @@ void ShareThisTabSourceView::OnCaptureHandled(
     const absl::optional<gfx::ImageSkia>& image) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK((hash != last_hash_) == image.has_value());  // Only new frames passed.
+
+  UpdateFaviconAndTabTitle();
 
   if (hash != last_hash_) {
     last_hash_ = hash;

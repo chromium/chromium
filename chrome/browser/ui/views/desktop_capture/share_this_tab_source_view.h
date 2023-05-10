@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/view.h"
 
@@ -29,6 +30,8 @@ class ShareThisTabSourceView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
+  void UpdateFaviconAndTabTitle();
+
   void Refresh();
 
   // Called on the UI thread after the captured image is handled. If the
@@ -40,6 +43,8 @@ class ShareThisTabSourceView : public views::View {
 
   raw_ptr<views::Throbber> throbber_ = nullptr;
   raw_ptr<views::ImageView> image_view_ = nullptr;
+  raw_ptr<views::ImageView> favicon_view_ = nullptr;
+  raw_ptr<views::Label> tab_title_label_ = nullptr;
 
   // The capturing tab's WebContent
   const base::WeakPtr<content::WebContents> web_contents_;
