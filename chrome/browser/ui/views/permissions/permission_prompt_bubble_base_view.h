@@ -69,6 +69,11 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
   std::u16string GetAccessibleWindowTitle() const override;
   std::u16string GetWindowTitle() const override;
 
+  // views::DialogDelegate:
+  bool ShouldIgnoreButtonPressedEventHandling(
+      View* button,
+      const ui::Event& event) const override;
+
   void AcceptPermission();
   void AcceptPermissionThisTime();
   void DenyPermission();

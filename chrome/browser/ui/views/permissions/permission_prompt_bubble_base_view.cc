@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,12 +34,14 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -259,6 +262,23 @@ std::u16string PermissionPromptBubbleBaseView::GetWindowTitle() const {
 std::u16string PermissionPromptBubbleBaseView::GetAccessibleWindowTitle()
     const {
   return accessible_window_title_;
+}
+
+bool PermissionPromptBubbleBaseView::ShouldIgnoreButtonPressedEventHandling(
+    View* button,
+    const ui::Event& event) const {
+  // Ignore the key pressed event if the button row bounds intersect with PiP
+  // windows bounds.
+  if (!event.IsKeyEvent()) {
+    return false;
+  }
+
+  absl::optional<gfx::Rect> pip_window_bounds =
+      PictureInPictureWindowManager::GetInstance()
+          ->GetPictureInPictureWindowBounds();
+
+  return pip_window_bounds &&
+         pip_window_bounds->Intersects(button->GetBoundsInScreen());
 }
 
 void PermissionPromptBubbleBaseView::AcceptPermission() {

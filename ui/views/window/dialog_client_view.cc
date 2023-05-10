@@ -304,15 +304,27 @@ void DialogClientView::UpdateDialogButton(MdTextButton** member,
 void DialogClientView::ButtonPressed(ui::DialogButton type,
                                      const ui::Event& event) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (delegate && !input_protector_->IsPossiblyUnintendedInteraction(event)) {
-    (type == ui::DIALOG_BUTTON_OK) ? delegate->AcceptDialog()
-                                   : delegate->CancelDialog();
+  if (!delegate || input_protector_->IsPossiblyUnintendedInteraction(event)) {
+    return;
+  }
+
+  DCHECK(type == ui::DIALOG_BUTTON_OK || type == ui::DIALOG_BUTTON_CANCEL);
+  if (type == ui::DIALOG_BUTTON_OK &&
+      !delegate->ShouldIgnoreButtonPressedEventHandling(ok_button_, event)) {
+    delegate->AcceptDialog();
+  }
+
+  if (type == ui::DIALOG_BUTTON_CANCEL &&
+      !delegate->ShouldIgnoreButtonPressedEventHandling(cancel_button_,
+                                                        event)) {
+    delegate->CancelDialog();
   }
 }
 
 int DialogClientView::GetExtraViewSpacing() const {
-  if (!ShouldShow(extra_view_) || !(ok_button_ || cancel_button_))
+  if (!ShouldShow(extra_view_) || !(ok_button_ || cancel_button_)) {
     return 0;
+  }
 
   return LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);

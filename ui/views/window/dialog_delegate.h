@@ -139,6 +139,11 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // Returns whether the specified dialog button is enabled.
   virtual bool IsDialogButtonEnabled(ui::DialogButton button) const;
 
+  // Returns true if we should ignore key pressed event handling of `button`.
+  virtual bool ShouldIgnoreButtonPressedEventHandling(
+      View* button,
+      const ui::Event& event) const;
+
   // For Dialog boxes, if there is a "Cancel" button or no dialog button at all,
   // this is called when the user presses the "Cancel" button.  This function
   // should return true if the window can be closed after it returns, or false

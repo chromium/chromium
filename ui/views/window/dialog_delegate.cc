@@ -161,6 +161,12 @@ bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
   return params_.enabled_buttons & button;
 }
 
+bool DialogDelegate::ShouldIgnoreButtonPressedEventHandling(
+    View* button,
+    const ui::Event& event) const {
+  return false;
+}
+
 bool DialogDelegate::Cancel() {
   DCHECK(!already_started_close_);
   if (cancel_callback_)
