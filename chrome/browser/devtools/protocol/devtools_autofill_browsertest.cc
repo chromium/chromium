@@ -151,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
   EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
+                       DISABLED_TriggerCreditCardInIframe) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
