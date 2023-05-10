@@ -43,6 +43,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
+#include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -146,6 +147,10 @@ void MetricReportingManager::OnLogin(Profile* profile) {
       delegate_->CreateMetricReportQueue(
           EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY);
 
+  DCHECK(profile);
+  user_reporting_settings_ =
+      std::make_unique<UserReportingSettings>(profile->GetWeakPtr());
+
   InitOnAffiliatedLogin(profile);
   DelayedInitOnAffiliatedLogin(profile);
 }
@@ -218,6 +223,7 @@ void MetricReportingManager::Shutdown() {
   event_report_queue_.reset();
   user_event_report_queue_.reset();
   user_peripheral_events_and_telemetry_report_queue_.reset();
+  user_reporting_settings_.reset();
 }
 
 void MetricReportingManager::DelayedInit() {
@@ -287,12 +293,14 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
 
   InitEventObserverManager(
       std::make_unique<AudioEventsObserver>(), user_event_report_queue_.get(),
+      &reporting_settings_,
       /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
       metrics::kReportDeviceAudioStatusDefaultValue,
       /*init_delay=*/base::TimeDelta());
   // Network health events observer.
   InitEventObserverManager(
       std::make_unique<NetworkEventsObserver>(), event_report_queue_.get(),
+      &reporting_settings_,
       /*enable_setting_path=*/::ash::kDeviceReportNetworkEvents,
       metrics::kDeviceReportNetworkEventsDefaultValue,
       /*init_delay=*/base::TimeDelta());
@@ -309,6 +317,7 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
     auto app_events_observer = AppEventsObserver::CreateForProfile(profile);
     InitEventObserverManager(
         std::move(app_events_observer), user_event_report_queue_.get(),
+        &reporting_settings_,
         /*enable_setting_path=*/::ash::kReportDeviceAppInfo,
         metrics::kReportDeviceAppInfoDefaultValue,
         /*init_delay=*/base::TimeDelta());
@@ -429,13 +438,15 @@ void MetricReportingManager::InitPeriodicEventCollector(
       sampler, std::move(event_detector), &reporting_settings_,
       rate_setting_path, default_rate, rate_unit_to_ms);
   InitEventObserverManager(std::move(periodic_event_collector),
-                           metric_report_queue, enable_setting_path,
-                           enable_default_value, init_delay);
+                           metric_report_queue, &reporting_settings_,
+                           enable_setting_path, enable_default_value,
+                           init_delay);
 }
 
 void MetricReportingManager::InitEventObserverManager(
     std::unique_ptr<MetricEventObserver> event_observer,
     MetricReportQueue* metric_report_queue,
+    ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
     bool setting_enabled_default_value,
     base::TimeDelta init_delay) {
@@ -444,7 +455,7 @@ void MetricReportingManager::InitEventObserverManager(
     return;
   }
   event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-      std::move(event_observer), metric_report_queue, &reporting_settings_,
+      std::move(event_observer), metric_report_queue, reporting_settings,
       enable_setting_path, setting_enabled_default_value,
       /*collector_pool=*/this, init_delay));
 }

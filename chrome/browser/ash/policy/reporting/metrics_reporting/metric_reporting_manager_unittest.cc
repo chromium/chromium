@@ -349,7 +349,7 @@ TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   EXPECT_EQ(periodic_event_collector_count, 0);
   EXPECT_EQ(observer_manager_count, 0);
 
-  metric_reporting_manager->OnLogin(nullptr);
+  metric_reporting_manager->OnLogin(profile());
 
   EXPECT_EQ(one_shot_collector_count, 0);
   EXPECT_EQ(periodic_collector_count, 0);

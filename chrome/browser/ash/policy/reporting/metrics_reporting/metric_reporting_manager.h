@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
+#include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
@@ -154,6 +155,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void InitEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
       MetricReportQueue* report_queue,
+      ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
       base::TimeDelta init_delay);
@@ -192,6 +194,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       base::StringPiece setting_name);
 
   CrosReportingSettings reporting_settings_;
+  std::unique_ptr<UserReportingSettings> user_reporting_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
