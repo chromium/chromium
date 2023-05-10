@@ -55,6 +55,11 @@ class ChainedBackNavigationTracker
   FRIEND_TEST_ALL_PREFIXES(
       ChainedBackNavigationTrackerTest,
       ChainedBackNavigationStatus_ResetCountIfNonBackForwardNavigationHappens);
+  FRIEND_TEST_ALL_PREFIXES(ChainedBackNavigationTrackerBrowserTest,
+                           SubframeBackNavigationIsCountedAsChained);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChainedBackNavigationTrackerBrowserTest,
+      RendererInitiatedBackNavigationIsNotCountedAsChained);
 
   explicit ChainedBackNavigationTracker(content::WebContents* contents);
 
