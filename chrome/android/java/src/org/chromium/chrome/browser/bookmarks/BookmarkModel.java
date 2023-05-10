@@ -14,7 +14,9 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A class that encapsulates {@link BookmarkBridge} and provides extra features such as undo, large
@@ -115,9 +117,12 @@ public class BookmarkModel extends BookmarkBridge {
      * bookmark list. The bookmarks are appended at the end.
      */
     public void moveBookmarks(List<BookmarkId> bookmarkIds, BookmarkId newParentId) {
+        Set<BookmarkId> existingChildren = new HashSet<>(getChildIds(newParentId));
         int appendIndex = getChildCount(newParentId);
-        for (int i = 0; i < bookmarkIds.size(); ++i) {
-            moveBookmark(bookmarkIds.get(i), newParentId, appendIndex + i);
+        for (BookmarkId child : bookmarkIds) {
+            if (!existingChildren.contains(child)) {
+                moveBookmark(child, newParentId, appendIndex++);
+            }
         }
     }
 

@@ -26,6 +26,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -154,12 +156,36 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
+    public void testMoveBookmarksMixed() {
+        // Inspired by https://crbug.com/1441847 where a move during a search would have bookmarks
+        // from a mixed set of parent folders. Need to be able to handle interleaving url bookmarks
+        // where only some of which are in the same destination folder.
+        BookmarkId folderA = mBookmarkModel.addFolder(mMobileNode, 0, "fa");
+        BookmarkId folderC = mBookmarkModel.addFolder(mMobileNode, 0, "fc");
+        BookmarkId bookmarkA = addBookmark(folderA, 0, "a", A_COM);
+        BookmarkId bookmarkB = addBookmark(folderA, 1, "b", B_COM);
+        BookmarkId bookmarkC = addBookmark(folderC, 0, "c", C_COM);
+
+        List<BookmarkId> movedBookmarks = new ArrayList<>();
+        movedBookmarks.add(bookmarkA);
+        movedBookmarks.add(bookmarkC);
+        movedBookmarks.add(bookmarkB);
+        mBookmarkModel.moveBookmarks(movedBookmarks, folderC);
+
+        verifyBookmarkListNoOrder(mBookmarkModel.getChildIds(folderA), Collections.emptyList());
+        verifyBookmarkListNoOrder(mBookmarkModel.getChildIds(folderC), movedBookmarks);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Bookmark"})
     public void testDeleteBookmarks() {
         BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
         BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", B_COM);
         BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", C_COM);
 
-        // Dete a single bookmark
+        // Delete a single bookmark.
         mBookmarkModel.deleteBookmarks(bookmarkA);
         Assert.assertNull(mBookmarkModel.getBookmarkById(bookmarkA));
         Assert.assertNotNull(mBookmarkModel.getBookmarkById(bookmarkB));
@@ -294,8 +320,8 @@ public class BookmarkModelTest {
      * Before using this helper method, always make sure @param listToVerify does not contain
      * duplicates.
      */
-    private void verifyBookmarkListNoOrder(List<BookmarkId> listToVerify,
-            HashSet<BookmarkId> expectedIds) {
+    private void verifyBookmarkListNoOrder(
+            List<BookmarkId> listToVerify, Collection<BookmarkId> expectedIds) {
         HashSet<BookmarkId> expectedIdsCopy = new HashSet<>(expectedIds);
         Assert.assertEquals(expectedIdsCopy.size(), listToVerify.size());
         for (BookmarkId id : listToVerify) {
