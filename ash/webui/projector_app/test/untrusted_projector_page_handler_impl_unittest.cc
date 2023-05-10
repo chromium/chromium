@@ -10,6 +10,7 @@
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
+#include "base/files/safe_base_name.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -245,6 +246,62 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OpenFeedbackDialog) {
   base::test::TestFuture<void> open_feedback_future;
   page().page_handler()->OpenFeedbackDialog(open_feedback_future.GetCallback());
   EXPECT_TRUE(open_feedback_future.Wait());
+}
+
+class ProjectorSessionStartUnitTest
+    : public ::testing::WithParamInterface<NewScreencastPrecondition>,
+      public UntrustedProjectorPageHandlerImplUnitTest {
+ public:
+  ProjectorSessionStartUnitTest() = default;
+  ProjectorSessionStartUnitTest(const ProjectorSessionStartUnitTest&) = delete;
+  ProjectorSessionStartUnitTest& operator=(
+      const ProjectorSessionStartUnitTest&) = delete;
+  ~ProjectorSessionStartUnitTest() override = default;
+};
+
+TEST_P(ProjectorSessionStartUnitTest, ProjectorSessionTest) {
+  const auto& precondition = GetParam();
+  EXPECT_CALL(controller(), GetNewScreencastPrecondition());
+  ON_CALL(controller(), GetNewScreencastPrecondition)
+      .WillByDefault(testing::Return(precondition));
+
+  bool expected_success =
+      precondition.state == NewScreencastPreconditionState::kEnabled;
+
+  const auto kFolderId = base::SafeBaseName::Create("folderId").value();
+
+  EXPECT_CALL(controller(), StartProjectorSession(kFolderId))
+      .Times(expected_success ? 1 : 0);
+
+  base::test::TestFuture<bool> start_projector_session_future;
+  page().page_handler()->StartProjectorSession(
+      kFolderId, start_projector_session_future.GetCallback());
+  EXPECT_EQ(start_projector_session_future.Get(), expected_success);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SessionStartSuccessFailTest,
+    ProjectorSessionStartUnitTest,
+    ::testing::Values(
+        NewScreencastPrecondition(NewScreencastPreconditionState::kEnabled, {}),
+        NewScreencastPrecondition(
+            NewScreencastPreconditionState::kDisabled,
+            {NewScreencastPreconditionReason::kInProjectorSession})));
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SafeBaseNameTest) {
+  const auto valid_path = base::FilePath("folderName");
+  const auto failing_path_1 = base::FilePath("parent1/folderName");
+  const auto failing_path_2 = base::FilePath("../folderId");
+  const auto failing_path_3 = base::FilePath("../");
+  const auto failing_path_4 = base::FilePath("parent1/../../folderName");
+
+  EXPECT_EQ(base::SafeBaseName::Create(valid_path)->path(), valid_path);
+  EXPECT_NE(base::SafeBaseName::Create(failing_path_1)->path(), failing_path_1);
+  EXPECT_NE(base::SafeBaseName::Create(failing_path_2)->path(), failing_path_2);
+  EXPECT_NE(base::SafeBaseName::Create(failing_path_4)->path(), failing_path_4);
+
+  // The safe base name would not even be created in this instance.
+  EXPECT_FALSE(base::SafeBaseName::Create(failing_path_3));
 }
 
 }  // namespace ash

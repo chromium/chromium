@@ -48,12 +48,6 @@ export class TrustedAppRequestHandler extends RequestHandler {
     this.registerMethod('getAccounts', (args) => {
       return this.browserProxy_.getAccounts();
     });
-    this.registerMethod('startProjectorSession', (storageDir) => {
-      if (!storageDir || storageDir.length != 1) {
-        return false;
-      }
-      return this.browserProxy_.startProjectorSession(storageDir[0]);
-    });
     this.registerMethod('getOAuthTokenForAccount', (args) => {
       if (!args || args.length != 1) {
         return Promise.reject('Incorrect args for getOAuthTokenForAccount');

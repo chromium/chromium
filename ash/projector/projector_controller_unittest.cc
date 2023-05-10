@@ -25,6 +25,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -311,7 +312,8 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
 
   auto* root = Shell::GetPrimaryRootWindow();
   EXPECT_CALL(*mock_ui_controller_, ShowAnnotationTray(root)).Times(1);
-  controller_->projector_session()->Start("projector_data");
+  controller_->projector_session()->Start(
+      base::SafeBaseName::Create("projector_data").value());
   histogram_tester_.ExpectUniqueSample(
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kSessionStarted,
@@ -338,7 +340,8 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
                   NewScreencastPreconditionState::kDisabled,
                   {NewScreencastPreconditionReason::kInProjectorSession})));
 
-  controller_->projector_session()->Start("projector_data");
+  controller_->projector_session()->Start(
+      base::SafeBaseName::Create("projector_data").value());
   histogram_tester_.ExpectUniqueSample(
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kSessionStarted,
@@ -441,7 +444,8 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
   base::TimeDelta forward_by = start_time - base::Time::Now();
   task_environment()->AdvanceClock(forward_by);
 
-  controller_->projector_session()->Start("projector_data");
+  controller_->projector_session()->Start(
+      base::SafeBaseName::Create("projector_data").value());
   histogram_tester_.ExpectUniqueSample(
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kSessionStarted,
@@ -625,7 +629,8 @@ TEST_F(ProjectorControllerTest, SuppressDriveNotification) {
   // The screencast name, which is used to form the screencast folder/files
   // paths, is generated on projector session starts
   auto* projector_session = controller_->projector_session();
-  projector_session->Start("projector_data");
+  projector_session->Start(
+      base::SafeBaseName::Create("projector_data").value());
   const base::FilePath expect_container_path =
       mounted_path.Append("root")
           .Append(projector_session->storage_dir())
@@ -689,7 +694,8 @@ TEST_P(ProjectorSpeechRecognitionEndTest, SpeechRecognitionEndMetric) {
       availability.use_on_device ? kSpeechRecognitionEndStateOnDevice
                                  : kSpeechRecognitionEndStateServerBased;
   auto* projector_session = controller_->projector_session();
-  projector_session->Start("projector_data");
+  projector_session->Start(
+      base::SafeBaseName::Create("projector_data").value());
 
   auto* root = Shell::GetPrimaryRootWindow();
 

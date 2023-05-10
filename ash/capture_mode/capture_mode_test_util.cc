@@ -23,6 +23,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
@@ -329,7 +330,8 @@ void ProjectorCaptureModeIntegrationHelper::StartProjectorModeSession() {
   EXPECT_FALSE(projector_session->is_active());
   auto* projector_controller = ProjectorController::Get();
   EXPECT_CALL(projector_client_, MinimizeProjectorApp());
-  projector_controller->StartProjectorSession("projector_data");
+  projector_controller->StartProjectorSession(
+      base::SafeBaseName::Create("projector_data").value());
   EXPECT_TRUE(projector_session->is_active());
   auto* controller = CaptureModeController::Get();
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);

@@ -53,7 +53,6 @@ static_library("projector_app") {
     "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
-    "//third_party/re2:re2",
     "//ui/resources",
     "//ui/webui",
   ]

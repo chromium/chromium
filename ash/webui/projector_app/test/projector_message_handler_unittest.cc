@@ -40,7 +40,6 @@ const char kXhrResponseStringPath[] = "response";
 
 const char kWebUIResponse[] = "cr.webUIResponse";
 const char kGetAccountsCallback[] = "getAccountsCallback";
-const char kStartProjectorSessionCallback[] = "startProjectorSessionCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
 const char kGetVideoCallback[] = "getVideoCallback";
@@ -433,103 +432,5 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetVideoFail) {
   EXPECT_FALSE(call_data.arg2()->GetBool());
   EXPECT_EQ(call_data.arg3()->GetString(), "error1");
 }
-
-class ProjectorStorageDirNameValidationTest
-    : public ::testing::WithParamInterface<
-          ::testing::tuple<::std::string, bool>>,
-      public ProjectorMessageHandlerUnitTest {
- public:
-  ProjectorStorageDirNameValidationTest() = default;
-  ProjectorStorageDirNameValidationTest(
-      const ProjectorStorageDirNameValidationTest&) = delete;
-  ProjectorStorageDirNameValidationTest& operator=(
-      const ProjectorStorageDirNameValidationTest&) = delete;
-  ~ProjectorStorageDirNameValidationTest() override = default;
-};
-
-TEST_P(ProjectorStorageDirNameValidationTest, StorageDirNameBackSlash) {
-  bool success = std::get<1>(GetParam());
-  if (success) {
-    EXPECT_CALL(controller(), GetNewScreencastPrecondition());
-    ON_CALL(controller(), GetNewScreencastPrecondition)
-        .WillByDefault(testing::Return(NewScreencastPrecondition(
-            NewScreencastPreconditionState::kEnabled, {})));
-  }
-
-  base::Value::List list_args;
-  list_args.Append(kStartProjectorSessionCallback);
-  base::Value::List args;
-  args.Append(std::get<0>(GetParam()));
-  list_args.Append(std::move(args));
-
-  web_ui().HandleReceivedMessage("startProjectorSession", list_args);
-
-  // We expect that there was only one callback to the WebUI.
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kStartProjectorSessionCallback);
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-
-  EXPECT_EQ(success, call_data.arg3()->GetBool());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    StorageDirNameBackSlash,
-    ProjectorStorageDirNameValidationTest,
-    ::testing::Values(std::make_tuple("Projector recordings", true),
-                      std::make_tuple("..\folderId", false),
-                      std::make_tuple("../folderId", false)));
-
-class ProjectorSessionStartUnitTest
-    : public ::testing::WithParamInterface<NewScreencastPrecondition>,
-      public ProjectorMessageHandlerUnitTest {
- public:
-  ProjectorSessionStartUnitTest() = default;
-  ProjectorSessionStartUnitTest(const ProjectorSessionStartUnitTest&) = delete;
-  ProjectorSessionStartUnitTest& operator=(
-      const ProjectorSessionStartUnitTest&) = delete;
-  ~ProjectorSessionStartUnitTest() override = default;
-};
-
-TEST_P(ProjectorSessionStartUnitTest, ProjectorSessionTest) {
-  const auto& precondition = GetParam();
-  EXPECT_CALL(controller(), GetNewScreencastPrecondition());
-  ON_CALL(controller(), GetNewScreencastPrecondition)
-      .WillByDefault(testing::Return(precondition));
-
-  bool success = precondition.state == NewScreencastPreconditionState::kEnabled;
-
-  EXPECT_CALL(controller(), StartProjectorSession("folderId"))
-      .Times(success ? 1 : 0);
-
-  base::Value::List list_args;
-  list_args.Append(kStartProjectorSessionCallback);
-  base::Value::List args;
-  args.Append("folderId");
-  list_args.Append(std::move(args));
-
-  web_ui().HandleReceivedMessage("startProjectorSession", list_args);
-
-  // We expect that there was only one callback to the WebUI.
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kStartProjectorSessionCallback);
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-
-  EXPECT_EQ(call_data.arg3()->GetBool(), success);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    SessionStartSuccessFailTest,
-    ProjectorSessionStartUnitTest,
-    ::testing::Values(
-        NewScreencastPrecondition(NewScreencastPreconditionState::kEnabled, {}),
-        NewScreencastPrecondition(
-            NewScreencastPreconditionState::kDisabled,
-            {NewScreencastPreconditionReason::kInProjectorSession})));
 
 }  // namespace ash

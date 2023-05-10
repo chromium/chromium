@@ -9,6 +9,7 @@
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/files/safe_base_name.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
@@ -75,7 +76,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
   base::OnceClosure callback = run_loop.QuitClosure();
   controller->set_canvas_initialized_callback_for_test(std::move(callback));
 
-  controller->StartProjectorSession("projector_data");
+  controller->StartProjectorSession(
+      base::SafeBaseName::Create("projector_data").value());
   capture_mode_controller->PerformCapture();
   run_loop.Run();
 

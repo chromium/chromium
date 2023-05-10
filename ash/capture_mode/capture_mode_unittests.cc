@@ -64,6 +64,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -5465,7 +5466,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   test_delegate->set_is_allowed_by_policy(false);
-  ProjectorController::Get()->StartProjectorSession("projector_data");
+  ProjectorController::Get()->StartProjectorSession(
+      base::SafeBaseName::Create("projector_data").value());
 
   // Both sessions will never start.
   EXPECT_FALSE(controller->IsActive());

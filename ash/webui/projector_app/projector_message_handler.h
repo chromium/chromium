@@ -60,10 +60,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   // used in the account picker in the SWA.
   void GetAccounts(const base::Value::List& args);
 
-  // Requested by the Projector SWA to start a new Projector session if it is
-  // possible.
-  void StartProjectorSession(const base::Value::List& args);
-
   // Requested by the Projector SWA to get access to the OAuth token for the
   // account email provided in the `args`.
   void GetOAuthTokenForAccount(const base::Value::List& args);

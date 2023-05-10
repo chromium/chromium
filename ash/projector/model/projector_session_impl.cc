@@ -5,6 +5,7 @@
 #include "ash/projector/model/projector_session_impl.h"
 
 #include "ash/projector/projector_metrics.h"
+#include "base/files/safe_base_name.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
@@ -32,7 +33,7 @@ ProjectorSessionImpl::ProjectorSessionImpl() = default;
 
 ProjectorSessionImpl::~ProjectorSessionImpl() = default;
 
-void ProjectorSessionImpl::Start(const std::string& storage_dir) {
+void ProjectorSessionImpl::Start(const base::SafeBaseName& storage_dir) {
   DCHECK(!active_);
 
   active_ = true;

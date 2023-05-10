@@ -5,6 +5,7 @@ module ash.projector.mojom;
 
 import "ash/webui/projector_app/public/mojom/projector_types.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/safe_base_name.mojom";
 
 // UntrustedProjectorPageHandler handles requests that come from the
 // javascript to the browser process.
@@ -37,6 +38,11 @@ interface UntrustedProjectorPageHandler {
 
   // Requested by the Projector SWA to open the Chrome feedback dialog.
   OpenFeedbackDialog() => ();
+
+  // Requests the handler to start a new projector session. The request will
+  // fail if the new screencast preconditions are not met.
+  StartProjectorSession(
+    mojo_base.mojom.SafeBaseName storage_dir_name) => (bool success);
 };
 
 // Implemented in Javascript to handle requests from the browser process.

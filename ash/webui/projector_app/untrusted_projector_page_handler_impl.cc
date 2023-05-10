@@ -11,6 +11,7 @@
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
+#include "base/files/safe_base_name.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -169,6 +170,22 @@ void UntrustedProjectorPageHandlerImpl::OpenFeedbackDialog(
         callback) {
   ProjectorAppClient::Get()->OpenFeedbackDialog();
   std::move(callback).Run();
+}
+
+void UntrustedProjectorPageHandlerImpl::StartProjectorSession(
+    const base::SafeBaseName& storage_dir_name,
+    projector::mojom::UntrustedProjectorPageHandler::
+        StartProjectorSessionCallback callback) {
+  auto* controller = ProjectorController::Get();
+
+  if (controller->GetNewScreencastPrecondition().state !=
+      NewScreencastPreconditionState::kEnabled) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  controller->StartProjectorSession(storage_dir_name);
+  std::move(callback).Run(/*success=*/true);
 }
 
 }  // namespace ash

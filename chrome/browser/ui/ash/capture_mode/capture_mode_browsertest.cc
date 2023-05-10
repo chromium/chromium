@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -884,7 +885,8 @@ class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
   void StartProjectorModeSession() {
     auto* projector_session = ash::ProjectorSession::Get();
     EXPECT_FALSE(projector_session->is_active());
-    ash::ProjectorController::Get()->StartProjectorSession("projector_data");
+    ash::ProjectorController::Get()->StartProjectorSession(
+        base::SafeBaseName::Create("projector_data").value());
     EXPECT_TRUE(projector_session->is_active());
     EXPECT_TRUE(ash::CaptureModeTestApi().IsSessionActive());
   }

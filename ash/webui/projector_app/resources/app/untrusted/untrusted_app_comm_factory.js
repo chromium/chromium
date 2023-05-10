@@ -83,8 +83,7 @@ const CLIENT_DELEGATE = {
    * @return {Promise<boolean>}
    */
   startProjectorSession(storageDir) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'startProjectorSession', [storageDir]);
+    return browserProxy.startProjectorSession(storageDir);
   },
 
   /**

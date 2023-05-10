@@ -23,6 +23,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/scoped_multi_source_observation.h"
@@ -180,7 +181,7 @@ void ProjectorControllerImpl::RegisterProfilePrefs(
 }
 
 void ProjectorControllerImpl::StartProjectorSession(
-    const std::string& storage_dir) {
+    const base::SafeBaseName& storage_dir) {
   DCHECK_EQ(GetNewScreencastPrecondition().state,
             NewScreencastPreconditionState::kEnabled);
 

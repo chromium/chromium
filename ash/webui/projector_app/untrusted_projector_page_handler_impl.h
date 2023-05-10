@@ -7,6 +7,7 @@
 
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "base/files/safe_base_name.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -55,6 +56,8 @@ class UntrustedProjectorPageHandlerImpl
                    base::Value value,
                    SetUserPrefCallback callback) override;
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
+  void StartProjectorSession(const base::SafeBaseName& storage_dir_name,
+                             StartProjectorSessionCallback callback) override;
 
  private:
   mojo::Receiver<projector::mojom::UntrustedProjectorPageHandler> receiver_;

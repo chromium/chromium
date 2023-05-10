@@ -24,6 +24,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/command_line.h"
+#include "base/files/safe_base_name.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -795,7 +796,8 @@ TEST_F(PaletteTrayTestWithProjector,
 
   // Verify palette tray is hidden and the active tool is deactivated during
   // Projector session.
-  projector_session_->Start("projector_data");
+  projector_session_->Start(
+      base::SafeBaseName::Create("projector_data").value());
   EXPECT_FALSE(palette_tray_->GetVisible());
   EXPECT_EQ(
       test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),

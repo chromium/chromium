@@ -1,7 +1,6 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 import {UntrustedProjectorPageCallbackRouter, UntrustedProjectorPageHandlerFactory, UntrustedProjectorPageHandlerRemote, UntrustedProjectorPageRemote} from './ash/webui/projector_app/mojom/untrusted_projector.mojom-webui.js';
 import {PrefsThatProjectorCanAskFor} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
@@ -119,6 +118,15 @@ export class UntrustedProjectorBrowserProxyImpl {
   async openFeedbackDialog() {
     await this.pageHandlerRemote.openFeedbackDialog();
     return;
+  }
+
+  async startProjectorSession(storageDir) {
+    const {success} = await this.pageHandlerRemote.startProjectorSession({
+      path: {
+        path: storageDir,
+      },
+    });
+    return success;
   }
 }
 

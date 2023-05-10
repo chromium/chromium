@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/web_ui.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -43,9 +42,6 @@ constexpr char kXhrError[] = "error";
 constexpr char kNoneStr[] = "NONE";
 constexpr char kOtherStr[] = "OTHER";
 constexpr char kTokenFetchFailureStr[] = "TOKEN_FETCH_FAILURE";
-// Disallow special chars that potentially allow redirecting writes to
-// arbitrary file system locations.
-constexpr char kInvalidStorageDirNameRegex[] = "\\.\\.|/|\\\\";
 
 // Struct used to describe args to set user's preference.
 struct SetUserPrefArgs {
@@ -89,11 +85,6 @@ void ProjectorMessageHandler::RegisterMessages() {
                                          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      "startProjectorSession",
-      base::BindRepeating(&ProjectorMessageHandler::StartProjectorSession,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       "getOAuthTokenForAccount",
       base::BindRepeating(&ProjectorMessageHandler::GetOAuthTokenForAccount,
                           base::Unretained(this)));
@@ -133,37 +124,6 @@ void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
   }
 
   ResolveJavascriptCallback(args[0], response);
-}
-
-void ProjectorMessageHandler::StartProjectorSession(
-    const base::Value::List& args) {
-  AllowJavascript();
-
-  // There are two arguments. The first is the callback and the second is a list
-  // containing the account which we need to start the recording with.
-  DCHECK_EQ(args.size(), 2u);
-
-  const auto& func_args = args[1];
-  DCHECK(func_args.is_list());
-
-  // The first entry is the drive directory to save the screen cast to.
-  DCHECK_EQ(func_args.GetList().size(), 1u);
-  auto storage_dir_name = func_args.GetList()[0].GetString();
-  if (RE2::PartialMatch(storage_dir_name, kInvalidStorageDirNameRegex)) {
-    ResolveJavascriptCallback(args[0], base::Value(false));
-    return;
-  }
-
-  auto* controller = ProjectorController::Get();
-
-  if (controller->GetNewScreencastPrecondition().state !=
-      NewScreencastPreconditionState::kEnabled) {
-    ResolveJavascriptCallback(args[0], base::Value(false));
-    return;
-  }
-
-  controller->StartProjectorSession(storage_dir_name);
-  ResolveJavascriptCallback(args[0], base::Value(true));
 }
 
 void ProjectorMessageHandler::GetOAuthTokenForAccount(

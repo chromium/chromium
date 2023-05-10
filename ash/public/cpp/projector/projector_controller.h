@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/files/safe_base_name.h"
 #include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
@@ -32,7 +33,7 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // Starts a capture mode session for the projector workflow if no video
   // recording is currently in progress. `storage_dir` is the container
   // directory name for screencasts and will be used to create the storage path.
-  virtual void StartProjectorSession(const std::string& storage_dir) = 0;
+  virtual void StartProjectorSession(const base::SafeBaseName& storage_dir) = 0;
 
   // Make sure the client is set before attempting to use to the
   // ProjectorController.
