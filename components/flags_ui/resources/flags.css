@@ -117,6 +117,15 @@ button {
   outline: none;
 }
 
+@media (forced-colors: active) {
+  :focus-visible {
+    /* Outline is needed for Windows HCM. Color of outline does not matter; it
+     * is overridden by the OS. */
+    box-shadow: none;
+    outline: 2px solid transparent;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   #flagsTemplate {
     background: rgba(255, 255, 255, .04);
