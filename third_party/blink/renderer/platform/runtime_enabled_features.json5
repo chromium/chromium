@@ -653,13 +653,11 @@
       copied_from_base_feature_if: "overridden",
       origin_trial_feature_name: "CompressionDictionaryTransport",
       public: true,
-      status: "experimental",
     },
     {
       name: "CompressionDictionaryTransportBackend",
       base_feature_status: "disabled",
       public: true,
-      status: "experimental",
     },
     {
       name: "ComputedAccessibilityInfo",
