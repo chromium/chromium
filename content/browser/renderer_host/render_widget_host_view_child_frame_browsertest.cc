@@ -184,18 +184,8 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // resizes the top level widget.
 // d) When auto-resize is enabled for the nested main frame and the renderer
 // resizes the nested widget.
-// See https://crbug.com/726743 and https://crbug.com/1050635.
-// TODO(crbug.com/1315346): Flaky on Android and Linux.
-// TODO(crbug.com/1341838): Flaky on Mac (Sheriff 2022-07-04)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
-  DISABLED_VisualPropertiesPropagation_VisibleViewportSize
-#else
-#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
-  VisualPropertiesPropagation_VisibleViewportSize
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       MAYBE_VisualPropertiesPropagation_VisibleViewportSize) {
+                       VisualPropertiesPropagation_VisibleViewportSize) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -228,8 +218,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   ASSERT_NE(nested_root_rwh->GetProcess(), nested_child_rwh->GetProcess());
 
   const gfx::Size initial_size = root_view->GetVisibleViewportSize();
-  const gfx::Size nested_initial_size =
-      nested_root_view->GetVisibleViewportSize();
+  ASSERT_FALSE(initial_size.IsEmpty());
+
+  gfx::Size nested_initial_size = nested_root_view->GetVisibleViewportSize();
+  while (nested_initial_size.IsEmpty()) {
+    // CrossProcessFrameConnector for `nested_child_rwh` must receive a
+    // SetRectInParentView() IPC before it has a viewport size. Run tasks until
+    // that IPC arrives.
+    base::RunLoop().RunUntilIdle();
+    nested_initial_size = nested_root_view->GetVisibleViewportSize();
+  }
   ASSERT_NE(initial_size, nested_initial_size);
 
   // We should see the top level widget's size in the visible_viewport_size
