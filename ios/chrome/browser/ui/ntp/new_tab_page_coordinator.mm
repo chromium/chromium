@@ -459,7 +459,6 @@
   [self.NTPViewController resetStateUponReload];
   self.discoverFeedService->RefreshFeed(
       FeedRefreshTrigger::kForegroundUserTriggered);
-  [self reloadContentSuggestions];
 }
 
 - (void)locationBarDidBecomeFirstResponder {
@@ -1117,13 +1116,6 @@
 }
 
 #pragma mark - NewTabPageContentDelegate
-
-- (void)reloadContentSuggestions {
-  // No need to reload ContentSuggestions since the mediator receives all
-  // model state changes and immediately updates the consumer with the new
-  // state.
-  return;
-}
 
 - (BOOL)isContentHeaderSticky {
   return [self isFollowingFeedAvailable] && [self isFeedHeaderVisible] &&

@@ -386,7 +386,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
         -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
     [self.contentSuggestionsViewController.view setNeedsLayout];
     [self.contentSuggestionsViewController.view layoutIfNeeded];
-    [self.ntpContentDelegate reloadContentSuggestions];
   }
 
   if (previousTraitCollection.preferredContentSizeCategory !=
