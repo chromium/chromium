@@ -17,6 +17,7 @@ extern const base::FeatureParam<std::string> kHomepageURLForCompanion;
 extern const base::FeatureParam<std::string> kImageUploadURLForCompanion;
 extern const base::FeatureParam<bool> kEnableOpenCompanionForImageSearch;
 extern const base::FeatureParam<bool> kEnableOpenCompanionForWebSearch;
+extern const base::FeatureParam<bool> kOpenLinksInCurrentTab;
 
 }  // namespace features
 

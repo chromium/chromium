@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/search_companion/companion_side_panel_controller.h"
 
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -125,19 +126,21 @@ void CompanionSidePanelController::DidOpenRequestedURL(
     params.initiator_origin = url::Origin::Create(url);
   }
 
-  // Open the new tab in the foreground.
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  bool open_in_current_tab = companion::features::kOpenLinksInCurrentTab.Get();
+  params.disposition = open_in_current_tab
+                           ? WindowOpenDisposition::CURRENT_TAB
+                           : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   if (!browser) {
     return;
   }
 
-  // Open the url in a new tab.
+  // Open the url in the desired tab.
   content::WebContents* new_tab_web_contents = browser->OpenURL(params);
 
-  // Open companion side panel for the new tab.
-  if (new_tab_web_contents) {
+  // If a new tab was opened, open companion side panel in it.
+  if (new_tab_web_contents && !open_in_current_tab) {
     BrowserView::GetBrowserViewForBrowser(browser)
         ->side_panel_coordinator()
         ->Show(SidePanelEntry::Id::kSearchCompanion);

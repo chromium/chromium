@@ -29,6 +29,9 @@ constexpr base::FeatureParam<bool> kEnableOpenCompanionForImageSearch{
 constexpr base::FeatureParam<bool> kEnableOpenCompanionForWebSearch{
     &kSidePanelCompanion, "open-companion-for-web-search", true};
 
+constexpr base::FeatureParam<bool> kOpenLinksInCurrentTab{
+    &kSidePanelCompanion, "open-links-in-current-tab", true};
+
 }  // namespace features
 
 namespace switches {
