@@ -74,13 +74,13 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
   // Then copy the selected part to clipboard.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::BoundingBoxUpdateWaiter select_part_one(web_contents);
-  ASSERT_TRUE(ExecuteScript(web_contents, "selectPart1();"));
+  ASSERT_TRUE(ExecJs(web_contents, "selectPart1();"));
   select_part_one.Wait();
 
   const auto& item_lists = GetClipboardItems();
   {
     clipboard_history::ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
+    ASSERT_TRUE(ExecJs(web_contents, "copyToClipboard();"));
   }
   ASSERT_EQ(1u, item_lists.size());
 
@@ -118,12 +118,12 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
   // Select another part. Wait until the selection region updates. Then copy
   // the selected HTML code to clipboard.
   content::BoundingBoxUpdateWaiter select_part_two(web_contents);
-  ASSERT_TRUE(ExecuteScript(web_contents, "selectPart2();"));
+  ASSERT_TRUE(ExecJs(web_contents, "selectPart2();"));
   select_part_two.Wait();
 
   {
     clipboard_history::ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
+    ASSERT_TRUE(ExecJs(web_contents, "copyToClipboard();"));
   }
   ASSERT_EQ(2u, item_lists.size());
 
@@ -164,13 +164,13 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
   // Then copy the selected part to clipboard.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::BoundingBoxUpdateWaiter select_part_one(web_contents);
-  ASSERT_TRUE(ExecuteScript(web_contents, "selectPart1();"));
+  ASSERT_TRUE(ExecJs(web_contents, "selectPart1();"));
   select_part_one.Wait();
 
   const auto& item_lists = GetClipboardItems();
   {
     clipboard_history::ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
+    ASSERT_TRUE(ExecJs(web_contents, "copyToClipboard();"));
   }
   ASSERT_EQ(1u, item_lists.size());
 
