@@ -96,12 +96,12 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_cross_app_web_ot.html")));
 
-  ASSERT_TRUE(ExecJs(
-      shell()->web_contents(),
-      content::JsReplace(
-          R"(const img = document.createElement('img');
-             img.attributionSrc = $1;)",
-          GURL("https://example.test/page_without_cross_app_web_ot.html"))));
+  ASSERT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace(
+                 R"(const img = document.createElement('img');
+                    img.attributionSrc = $1;)",
+                 GURL("https://example.test/register_source_headers.html"))));
 
   EXPECT_EQ(
       last_request_attribution_reporting_eligibility_,
@@ -115,16 +115,37 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
       shell(),
       GURL("https://example.test/page_without_cross_app_web_ot.html")));
 
-  ASSERT_TRUE(ExecJs(
-      shell()->web_contents(),
-      content::JsReplace(
-          R"(const img = document.createElement('img');
-             img.src = $1;
-             img.attributionSrc = '';)",
-          GURL("https://example.test/page_without_cross_app_web_ot.html"))));
+  ASSERT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace(
+                 R"(const img = document.createElement('img');
+                    img.src = $1;
+                    img.attributionSrc = '';)",
+                 GURL("https://example.test/register_source_headers.html"))));
 
   EXPECT_EQ(last_request_attribution_reporting_eligibility_,
             network::mojom::AttributionReportingEligibility::kUnset);
+}
+
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+                       OriginTrialEnabledByThirdPartyToken_EligibilitySet) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      GURL("https://a.test/page_with_cross_app_web_third_party_ot.html")));
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "document.featurePolicy.features().includes('"
+                         "attribution-reporting')"));
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents(),
+                     content::JsReplace(
+                         R"(const img = document.createElement('img');
+                            img.attributionSrc = $1;)",
+                         GURL("https://a.test/register_source_headers.html"))));
+
+  EXPECT_EQ(
+      last_request_attribution_reporting_eligibility_,
+      network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
 }
 
 class CrossAppWebAttributionDisabledBrowserTest

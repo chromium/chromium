@@ -5101,6 +5101,7 @@ data/attribution_reporting/aggregatable_report_goldens/version_/report_6.json
 data/attribution_reporting/aggregatable_report_goldens/version_/report_6_cleartext_payloads.json
 data/attribution_reporting/databases/version_51.sql
 data/attribution_reporting/databases/version_52.sql
+data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
 data/attribution_reporting/interop/aggregatable_dedup_key.json
@@ -5138,6 +5139,7 @@ data/attribution_reporting/page_with_conversion_measurement_disabled.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html.mock-http-headers
 data/attribution_reporting/page_with_conversion_redirect.html
 data/attribution_reporting/page_with_cross_app_web_ot.html
+data/attribution_reporting/page_with_cross_app_web_third_party_ot.html
 data/attribution_reporting/page_with_disallowed_iframe.html
 data/attribution_reporting/page_with_impression_creator.html
 data/attribution_reporting/page_with_impression_creator.html.mock-http-headers
