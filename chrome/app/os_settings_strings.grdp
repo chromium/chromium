@@ -3804,6 +3804,36 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_PROVIDER_LABEL" desc="Label of the link to the Passpoint provider details page.">
     Passpoint provider
   </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_SUBSCRIPTION" desc="Label of the button used to remove a subscription from the Passpoint detail page.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_HEADLINE" desc="Headline text describing how Passpoint subscription is synced with the user account.">
+    Subscription is installed on this device only and not synced with other devices under your account. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SUBSCRIPTION_EXPIRATION" desc="Label of the subscription expiration date.">
+    Expiry date
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SOURCE" desc="Label of the source that installed the Passpoint subscription.">
+    Passpoint provider
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_TRUSTED_CA" desc="Label of the subscription trusted certificate authority used to authenticate the server.">
+    Trusted CA
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SYSTEM_CA" desc="Text displayed when the subscription relies on system CA certificates for server authentication.">
+    System CAs
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS" desc="Label for the list of domains included in the Passpoint subscription.">
+    Domains
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS_A11Y_LABEL" desc="Label for the button that toggles showing the Passpoint domains. Only visible by screen reader software.">
+    Show domains
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_TITLE" desc="Title of the dialog displayed when the remove button is clicked on Passpoint details page.">
+    Remove subscription from device
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_DESCRIPTION" desc="Text of the dialog displayed when the remove button is clicked on Passpoint details page.">
+    <ph name="SUBSCRIPTION_NAME">$1<ex>My Passpoint Provider</ex></ph> will be removed from this device only. To make changes to your subscription, contact the subscription provider. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
 
   <!-- Users Page (OS Settings) -->
   <message name="IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL" desc="Label saying settings may only be modified by the device owner.">

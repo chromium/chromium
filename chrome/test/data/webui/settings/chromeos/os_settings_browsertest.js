@@ -373,6 +373,14 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'internet_page/network_summary_item_test.js'
  ],
  [
+   'InternetPagePasspointSubpage', 'internet_page/passpoint_subpage_test.js', {
+     enabled: [
+       'ash::features::kPasspointARCSupport',
+       'ash::features::kPasspointSettings',
+     ]
+   }
+ ],
+ [
    'InternetPageTetherConnectionDialog',
    'internet_page/tether_connection_dialog_test.js'
  ],

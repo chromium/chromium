@@ -997,7 +997,21 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NOT_LOGIN_ERROR_MESSAGE},
       {"passpointProviderLabel",
        IDS_SETTINGS_INTERNET_PASSPOINT_PROVIDER_LABEL},
+      {"passpointRemoveButton",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_SUBSCRIPTION},
       {"passpointSectionLabel", IDS_SETTINGS_INTERNET_PASSPOINT_SECTION_LABEL},
+      {"passpointHeadlineText", IDS_SETTINGS_INTERNET_PASSPOINT_HEADLINE},
+      {"passpointSubscriptionExpirationLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_SUBSCRIPTION_EXPIRATION},
+      {"passpointSourceLabel", IDS_SETTINGS_INTERNET_PASSPOINT_SOURCE},
+      {"passpointTrustedCALabel", IDS_SETTINGS_INTERNET_PASSPOINT_TRUSTED_CA},
+      {"passpointSystemCALabel", IDS_SETTINGS_INTERNET_PASSPOINT_SYSTEM_CA},
+      {"passpointDomainsLabel", IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS},
+      {"passpointDomainsA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS_A11Y_LABEL},
+      {"passpointRemovalTitle", IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_TITLE},
+      {"passpointRemovalDescription",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
