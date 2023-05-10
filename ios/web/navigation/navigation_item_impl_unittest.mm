@@ -6,8 +6,11 @@
 
 #import <memory>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -214,6 +217,94 @@ TEST_F(NavigationItemTest, RestoreState) {
   item_->RestoreStateFromItem(&other_item2);
   EXPECT_EQ(other_item2.GetUserAgentType(), item_->GetUserAgentType());
   EXPECT_EQ(other_item2.GetVirtualURL(), item_->GetVirtualURL());
+}
+
+// Tests that NavigationItemImpl round trip correctly when serialized to proto.
+TEST_F(NavigationItemTest, NavigationItemImplRoundTrip) {
+  NavigationItemImpl original;
+  original.SetURL(GURL("http://url.test"));
+  original.SetVirtualURL(GURL("http://virtual.test"));
+  original.SetReferrer(
+      Referrer(GURL("http://referrer.url"), ReferrerPolicyDefault));
+  original.SetTimestamp(base::Time::Now());
+  original.SetTitle(u"Title");
+  original.SetUserAgentType(UserAgentType::DESKTOP);
+  original.AddHttpRequestHeaders(@{@"HeaderKey" : @"HeaderValue"});
+  original.SetTransitionType(ui::PAGE_TRANSITION_TYPED);
+
+  proto::NavigationItemStorage storage;
+  original.SerializeToProto(storage);
+
+  NavigationItemImpl decoded(storage);
+
+  EXPECT_EQ(original.GetURL(), decoded.GetURL());
+  EXPECT_EQ(original.GetVirtualURL(), decoded.GetVirtualURL());
+  EXPECT_EQ(original.GetReferrer(), decoded.GetReferrer());
+  EXPECT_EQ(original.GetTimestamp(), decoded.GetTimestamp());
+  EXPECT_EQ(original.GetUserAgentType(), decoded.GetUserAgentType());
+  EXPECT_NSEQ(original.GetHttpRequestHeaders(),
+              decoded.GetHttpRequestHeaders());
+
+  // The page transition type should be ui::PAGE_TRANSITION_RELOAD.
+  EXPECT_FALSE(ui::PageTransitionCoreTypeIs(original.GetTransitionType(),
+                                            decoded.GetTransitionType()));
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_RELOAD,
+                                           decoded.GetTransitionType()));
+}
+
+// Tests that NavigationItemImpl round trip correctly when serialized to proto
+// even when the URL is not an HTTP/HTTPS url.
+TEST_F(NavigationItemTest, NavigationItemImplRoundTripNonHTTPURL) {
+  NavigationItemImpl original;
+  original.SetURL(GURL("file:///path/to/file.pdf"));
+  original.SetVirtualURL(GURL("http://virtual.test"));
+
+  proto::NavigationItemStorage storage;
+  original.SerializeToProto(storage);
+
+  NavigationItemImpl decoded(storage);
+
+  EXPECT_NE(original.GetURL(), decoded.GetURL());
+  EXPECT_EQ(original.GetVirtualURL(), decoded.GetURL());
+  EXPECT_EQ(original.GetVirtualURL(), decoded.GetVirtualURL());
+}
+
+// Tests that NavigationItemImpl serialization skips invalid referrer.
+TEST_F(NavigationItemTest, SerializationSkipsInvalidReferrer) {
+  NavigationItemImpl original;
+  original.SetReferrer(Referrer(GURL("invalid"), ReferrerPolicyDefault));
+
+  proto::NavigationItemStorage storage;
+  original.SerializeToProto(storage);
+
+  EXPECT_FALSE(storage.has_referrer());
+}
+
+// Tests that NavigationItemImpl serialization skips HTTP headers if empty.
+TEST_F(NavigationItemTest, SerializationSkipsEmptyHTTPHeaders) {
+  NavigationItemImpl original;
+
+  proto::NavigationItemStorage storage;
+  original.SerializeToProto(storage);
+
+  EXPECT_FALSE(storage.has_http_request_headers());
+}
+
+// Tests that NavigationItemImpl serialization optimizes the serialization
+// of URL and virtual URL when both are equals.
+TEST_F(NavigationItemTest, SerializationOptimizesURLStorage) {
+  NavigationItemImpl original;
+  // Set virtual URL before URL because SetVirtualURL() also optimize the
+  // storage of the URLs in NavigationItemImpl by clearing virtual_url_
+  // if the value set is equal to url_.
+  original.SetVirtualURL(GURL("http://url.test"));
+  original.SetURL(GURL("http://url.test"));
+
+  proto::NavigationItemStorage storage;
+  original.SerializeToProto(storage);
+
+  EXPECT_FALSE(storage.url().empty());
+  EXPECT_TRUE(storage.virtual_url().empty());
 }
 
 }  // namespace

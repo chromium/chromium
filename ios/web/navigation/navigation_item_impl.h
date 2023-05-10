@@ -19,6 +19,9 @@
 #include "url/gurl.h"
 
 namespace web {
+namespace proto {
+class NavigationItemStorage;
+}  // namespace proto
 
 class NavigationItemStorageBuilder;
 enum class NavigationInitiationType;
@@ -29,6 +32,12 @@ class NavigationItemImpl : public web::NavigationItem {
   // Creates a default NavigationItemImpl.
   NavigationItemImpl();
   ~NavigationItemImpl() override;
+
+  // Creates a NavigationItemImpl from serialized representation.
+  explicit NavigationItemImpl(const proto::NavigationItemStorage& storage);
+
+  // Serializes the NavigationItemImpl into `storage`.
+  void SerializeToProto(proto::NavigationItemStorage& storage) const;
 
   // Clones the current object.
   std::unique_ptr<NavigationItemImpl> Clone();

@@ -14,7 +14,10 @@
 #import "components/url_formatter/url_formatter.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
+#import "ios/web/navigation/proto_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/web_client.h"
 #import "ui/base/page_transition_types.h"
 #import "ui/gfx/text_elider.h"
@@ -23,6 +26,7 @@
 #error "This file requires ARC support."
 #endif
 
+namespace web {
 namespace {
 
 // Returns a new unique ID for use in NavigationItem during construction.  The
@@ -32,9 +36,13 @@ static int GetUniqueIDInConstructor() {
   return ++unique_id_counter;
 }
 
-}  // namespace
+// Returns whether `referrer` needs to be serialized.
+bool ShouldSerializeReferrer(const Referrer& referrer) {
+  return referrer.url.is_valid() &&
+         referrer.url.spec().size() < url::kMaxURLChars;
+}
 
-namespace web {
+}  // namespace
 
 using HttpRequestHeaders = NavigationItem::HttpRequestHeaders;
 
@@ -53,6 +61,54 @@ NavigationItemImpl::NavigationItemImpl()
     : unique_id_(GetUniqueIDInConstructor()) {}
 
 NavigationItemImpl::~NavigationItemImpl() {
+}
+
+NavigationItemImpl::NavigationItemImpl(
+    const proto::NavigationItemStorage& storage)
+    : unique_id_(GetUniqueIDInConstructor()),
+      original_request_url_(storage.url()),
+      referrer_(ReferrerFromProto(storage.referrer())),
+      title_(base::UTF8ToUTF16(storage.title())),
+      // Use reload transition type to avoid incorrect increase for other
+      // transition types (such as typed).
+      transition_type_(ui::PAGE_TRANSITION_RELOAD),
+      timestamp_(TimeFromProto(storage.timestamp())),
+      user_agent_type_(UserAgentTypeFromProto(storage.user_agent())),
+      http_request_headers_(
+          HttpRequestHeadersFromProto(storage.http_request_headers())) {
+  // In the cases where the URL to be restored is not an HTTP URL, it is
+  // very likely that we can't restore the page (e.g. for files, it could
+  // be an external PDF that has been deleted), don't restore it to avoid
+  // issues.
+  const GURL virtual_url(storage.virtual_url());
+  if (original_request_url_.SchemeIsHTTPOrHTTPS()) {
+    url_ = original_request_url_;
+    virtual_url_ = virtual_url;
+  } else {
+    url_ = virtual_url;
+  }
+}
+
+void NavigationItemImpl::SerializeToProto(
+    proto::NavigationItemStorage& storage) const {
+  if (url_.is_valid()) {
+    storage.set_url(url_.spec());
+  }
+  if (url_ != virtual_url_ && virtual_url_.is_valid()) {
+    storage.set_virtual_url(virtual_url_.spec());
+  }
+  if (!title_.empty()) {
+    storage.set_title(base::UTF16ToUTF8(title_));
+  }
+  SerializeTimeToProto(timestamp_, *storage.mutable_timestamp());
+  storage.set_user_agent(UserAgentTypeToProto(user_agent_type_));
+  if (ShouldSerializeReferrer(referrer_)) {
+    SerializeReferrerToProto(referrer_, *storage.mutable_referrer());
+  }
+  if (http_request_headers_.count) {
+    SerializeHttpRequestHeadersToProto(http_request_headers_,
+                                       *storage.mutable_http_request_headers());
+  }
 }
 
 std::unique_ptr<NavigationItemImpl> NavigationItemImpl::Clone() {

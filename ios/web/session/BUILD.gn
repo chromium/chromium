@@ -11,6 +11,7 @@ source_set("session") {
     "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/session",
+    "//ios/web/public/session/proto:proto_util",
     "//net",
   ]
   sources = [
