@@ -9598,6 +9598,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHighEfficiencyModeTimeBeforeDiscardDescription,
      kOsDesktop, MULTI_VALUE_TYPE(kHighEfficiencyModeTimeBeforeDiscardChoices)},
 
+    {"memory-saver-multi-state-mode",
+     flag_descriptions::kHighEfficiencyMultistateModeAvailableName,
+     flag_descriptions::kHighEfficiencyMultistateModeAvailableDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kHighEfficiencyMultistateMode)},
+
     {"memory-saver-discarded-tab-treatment",
      flag_descriptions::kHighEfficiencyDiscardedTabTreatmentName,
      flag_descriptions::kHighEfficiencyDiscardedTabTreatmentDescription,

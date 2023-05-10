@@ -4467,6 +4467,13 @@ extern const char kHighEfficiencyModeTimeBeforeDiscardName[] =
 extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[] =
     "When set, this controls the time before memory saver discards a tab.";
 
+extern const char kHighEfficiencyMultistateModeAvailableName[] =
+    "Enable the multi-state option for Memory Saver Mode.";
+extern const char kHighEfficiencyMultistateModeAvailableDescription[] =
+    "When enabled, Memory Saver can take one of three options: enabled with a "
+    "hueristic mode, enabled with a fixed timer, and discabled. Configure this "
+    "through the settings page.";
+
 extern const char kHighEfficiencyDiscardedTabTreatmentName[] =
     "Enable discarded tab treatment for Memory Saver Mode.";
 extern const char kHighEfficiencyDiscardedTabTreatmentDescription[] =

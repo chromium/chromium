@@ -64303,6 +64303,7 @@ from previous Chrome versions.
   <int value="986796748" label="AccountConsistency:enabled"/>
   <int value="987690332" label="NearbySharingBackgroundScanning:disabled"/>
   <int value="987843084" label="TerminalSystemApp:enabled"/>
+  <int value="988761165" label="HighEfficiencyMultistateMode:disabled"/>
   <int value="988781221" label="SyncSetupFriendlySettings:disabled"/>
   <int value="988981463" label="ImageCaptureAPI:enabled"/>
   <int value="989062160" label="ModuleScriptsImportMetaUrl:enabled"/>
@@ -64697,6 +64698,7 @@ from previous Chrome versions.
   <int value="1196834473" label="disable-smart-virtual-keyboard"/>
   <int value="1197336536" label="printing-ppd-channel"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
+  <int value="1199276782" label="HighEfficiencyMultistateMode:enabled"/>
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>
   <int value="1200946197" label="ConfirmationChip:disabled"/>
   <int value="1201008500"
