@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {AxeCoreTestRunner} from 'axe_core_test_runner';
+
 (async function() {
   TestRunner.addResult('Test accessibility in Quick Open dialog\n');
   await TestRunner.loadLegacyModule('quick_open');
-  await TestRunner.loadTestModule('axe_core_test_runner');
 
   QuickOpen.QuickOpen.show('');
 

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SecurityTestRunner} from 'security_test_runner';
+import {AxeCoreTestRunner} from 'axe_core_test_runner';
+
 (async function() {
-  await TestRunner.loadTestModule('security_test_runner');
-  await TestRunner.loadTestModule('axe_core_test_runner');
   await TestRunner.showPanel('security');
 
   const request1 = new SDK.NetworkRequest(0, 'https://foo.test/', 'https://foo.test', 0, 0, null);

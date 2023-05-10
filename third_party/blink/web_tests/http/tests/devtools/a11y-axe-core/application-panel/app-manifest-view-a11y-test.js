@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {AxeCoreTestRunner} from 'axe_core_test_runner';
+
 (async function() {
-  await TestRunner.loadTestModule('axe_core_test_runner');
 
   TestRunner.addResult('Tests accessibility of AppManifestView on application panel.');
   const manifest = `{

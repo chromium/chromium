@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+
 (async function() {
   TestRunner.addResult('Tests accessibility of ServiceWorkersView on application panel.');
-  await TestRunner.loadTestModule('axe_core_test_runner');
-  await TestRunner.loadTestModule('application_test_runner');
   await ApplicationTestRunner.resetState();
 
   await TestRunner.showPanel('resources');

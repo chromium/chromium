@@ -3,7 +3,7 @@ Dumping event listeners view:
 
 ======== touchstart ========
 == Raw
-[expanded] WindowRemoveToggle Passiveglobal-listeners-sidebar-a11y-test.js:13
+[expanded] WindowRemoveToggle Passiveglobal-listeners-sidebar-a11y-test.js:15
     useCapture: false
     passive: true
     once: false
