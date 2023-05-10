@@ -3862,19 +3862,19 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator" translateable="false">
           Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut or press the same one again to use it for this action instead.
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_CLEAR_QUERY_LABEL" desc="The label for the button that clears search input, displayed when the user hovers over the button or when a screen reader describes that button." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_CLEAR_QUERY_LABEL" desc="The label for the button that clears search input, displayed when the user hovers over the button or when a screen reader describes that button.">
           Clear search
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_PLACEHOLDER_LABEL" desc="Placeholder text shown in search input field before user has typed anything." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_PLACEHOLDER_LABEL" desc="Placeholder text shown in search input field before user has typed anything.">
           Search shortcuts
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys in search results." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys in search results.">
           or
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result.">
           Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Open new tab, ctrl T</ex></ph>. Press Enter to navigate to shortcut.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">
