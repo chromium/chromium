@@ -376,9 +376,9 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
   // handle the "beforeunload" dialog.
   content::PrepContentsForBeforeUnloadTest(
       browser()->tab_strip_model()->GetWebContentsAt(0));
-  ASSERT_TRUE(content::ExecuteScript(main_frame,
-                                     "object.data = './testEmbedded.csv';"
-                                     "object.type = 'text/csv';"));
+  ASSERT_TRUE(content::ExecJs(main_frame,
+                              "object.data = './testEmbedded.csv';"
+                              "object.type = 'text/csv';"));
   javascript_dialogs::AppModalDialogController* alert =
       ui_test_utils::WaitForAppModalDialog();
   ASSERT_TRUE(alert->is_before_unload_dialog());
@@ -705,10 +705,10 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbeddedThenPrint) {
   // Verify that print dialog comes up.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* main_frame = web_contents->GetPrimaryMainFrame();
-  // Use setTimeout() to prevent ExecuteScript() from blocking on the print
+  // Use setTimeout() to prevent ExecJs() from blocking on the print
   // dialog.
-  ASSERT_TRUE(content::ExecuteScript(
-      main_frame, "setTimeout(function() { window.print(); }, 0)"));
+  ASSERT_TRUE(content::ExecJs(main_frame,
+                              "setTimeout(function() { window.print(); }, 0)"));
   print_preview_delegate.WaitUntilPreviewIsReady();
 }
 #endif
