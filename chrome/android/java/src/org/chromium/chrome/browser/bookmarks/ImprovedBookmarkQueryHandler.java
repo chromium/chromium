@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -11,6 +12,7 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /** New implementation of {@link BookmarkQueryHandler} that expands the root. */
 public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
@@ -49,17 +51,27 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     @Override
     public List<BookmarkListEntry> buildBookmarkListForParent(BookmarkId parentId) {
-        if (parentId.equals(mBookmarkModel.getRootFolderId())) {
-            return buildBookmarkListForRootView();
+        final List<BookmarkListEntry> bookmarkListEntries;
+        if (Objects.equals(parentId, mBookmarkModel.getRootFolderId())) {
+            bookmarkListEntries = buildBookmarkListForRootView();
         } else {
-            return mBasicBookmarkQueryHandler.buildBookmarkListForParent(parentId);
+            bookmarkListEntries = mBasicBookmarkQueryHandler.buildBookmarkListForParent(parentId);
         }
+
+        // Don't do anything for ReadingList, they're already sorted with a different mechanism.
+        if (!Objects.equals(parentId, mBookmarkModel.getReadingListFolder())) {
+            sortByStoredPref(bookmarkListEntries);
+        }
+
+        return bookmarkListEntries;
     }
 
     @Override
     public List<BookmarkListEntry> buildBookmarkListForSearch(String query) {
-        // TODO(https://crbug.com/1439584): Sort based on selection in toolbar.
-        return mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query);
+        List<BookmarkListEntry> bookmarkListEntries =
+                mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query);
+        sortByStoredPref(bookmarkListEntries);
+        return bookmarkListEntries;
     }
 
     private List<BookmarkListEntry> buildBookmarkListForRootView() {
@@ -71,7 +83,6 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         }
         bookmarkListEntries.add(listEntryFromIdForRootView(mBookmarkModel.getReadingListFolder()));
         bookmarkListEntries.add(listEntryFromIdForRootView(mBookmarkModel.getDesktopFolderId()));
-        Collections.sort(bookmarkListEntries, this::compareBookmarkListEntry);
         return bookmarkListEntries;
     }
 
@@ -84,23 +95,42 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                 bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
-    private int compareBookmarkListEntry(BookmarkListEntry entry1, BookmarkListEntry entry2) {
-        BookmarkItem item1 = entry1.getBookmarkItem();
-        BookmarkItem item2 = entry2.getBookmarkItem();
+    private void sortByStoredPref(List<BookmarkListEntry> bookmarkListEntries) {
+        final @BookmarkRowSortOrder int sortOrder = mBookmarkUiPrefs.getBookmarkRowSortOrder();
+        Collections.sort(
+                bookmarkListEntries, (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
+                    BookmarkItem item1 = entry1.getBookmarkItem();
+                    BookmarkItem item2 = entry2.getBookmarkItem();
 
-        // Sort folders before urls.
-        int folderComparison = Boolean.compare(item2.isFolder(), item1.isFolder());
-        if (folderComparison != 0) {
-            return folderComparison;
+                    // Sort folders before urls.
+                    int folderComparison = Boolean.compare(item2.isFolder(), item1.isFolder());
+                    if (folderComparison != 0) {
+                        return folderComparison;
+                    }
+
+                    int titleComparison = sortCompare(item1, item2, sortOrder);
+                    if (titleComparison != 0) {
+                        return titleComparison;
+                    }
+
+                    // Fall back to id in case other fields tie. Order will be arbitrary but
+                    // consistent.
+                    return Long.compare(item1.getId().getId(), item2.getId().getId());
+                });
+    }
+
+    private int sortCompare(
+            BookmarkItem item1, BookmarkItem item2, @BookmarkRowSortOrder int sortOrder) {
+        switch (sortOrder) {
+            case BookmarkRowSortOrder.CHRONOLOGICAL:
+                return Long.compare(item1.getDateAdded(), item2.getDateAdded());
+            case BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL:
+                return Long.compare(item2.getDateAdded(), item1.getDateAdded());
+            case BookmarkRowSortOrder.ALPHABETICAL:
+                return item1.getTitle().compareToIgnoreCase(item2.getTitle());
+            case BookmarkRowSortOrder.REVERSE_ALPHABETICAL:
+                return item2.getTitle().compareToIgnoreCase(item1.getTitle());
         }
-
-        // TODO(https://crbug.com/1439584): Sort based on selection in toolbar.
-        int titleComparison = item1.getTitle().compareToIgnoreCase(item2.getTitle());
-        if (titleComparison != 0) {
-            return titleComparison;
-        }
-
-        // Fall back to id in case other fields tie. Order will be arbitrary but consistent.
-        return Long.compare(item1.getId().getId(), item2.getId().getId());
+        return 0;
     }
 }

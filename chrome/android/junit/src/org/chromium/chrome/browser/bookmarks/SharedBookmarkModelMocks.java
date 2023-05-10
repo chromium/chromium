@@ -41,26 +41,26 @@ public class SharedBookmarkModelMocks {
     static final GURL URL_D = new GURL("https://www.d.com/");
     static final GURL URL_E = new GURL("https://www.e.com/");
 
-    static final BookmarkItem DESKTOP_BOOKMARK_ITEM = new BookmarkItem(DESKTOP_BOOKMARK_ID,
-            "Bookmarks bar", null, true, ROOT_BOOKMARK_ID, false, false, 0, false);
-    static final BookmarkItem OTHER_BOOKMARK_ITEM = new BookmarkItem(OTHER_BOOKMARK_ID,
-            "Other bookmarks", null, true, ROOT_BOOKMARK_ID, false, false, 0, false);
-    static final BookmarkItem MOBILE_BOOKMARK_ITEM = new BookmarkItem(MOBILE_BOOKMARK_ID,
-            "Mobile bookmarks", null, true, ROOT_BOOKMARK_ID, false, false, 0, false);
-    static final BookmarkItem READING_LIST_ITEM = new BookmarkItem(READING_LIST_BOOKMARK_ID,
-            "Reading list", null, true, ROOT_BOOKMARK_ID, false, false, 0, false);
-    static final BookmarkItem FOLDER_ITEM_A = new BookmarkItem(FOLDER_BOOKMARK_ID_A, "Folder A",
-            null, true, MOBILE_BOOKMARK_ID, true, false, 0, false);
-    static final BookmarkItem URL_ITEM_A = new BookmarkItem(
-            URL_BOOKMARK_ID_A, "Url A", URL_A, false, MOBILE_BOOKMARK_ID, true, false, 0, false);
-    static final BookmarkItem URL_ITEM_B = new BookmarkItem(
-            URL_BOOKMARK_ID_B, "Url B", URL_B, false, FOLDER_BOOKMARK_ID_A, true, false, 0, false);
-    static final BookmarkItem URL_ITEM_C = new BookmarkItem(
-            URL_BOOKMARK_ID_C, "Url C", URL_C, false, FOLDER_BOOKMARK_ID_A, true, false, 0, false);
-    static final BookmarkItem URL_ITEM_D = new BookmarkItem(URL_BOOKMARK_ID_D, "Url D", URL_D,
-            false, READING_LIST_BOOKMARK_ID, true, false, 0, true);
-    static final BookmarkItem URL_ITEM_E = new BookmarkItem(URL_BOOKMARK_ID_E, "Url E", URL_E,
-            false, READING_LIST_BOOKMARK_ID, true, false, 0, false);
+    static final BookmarkItem DESKTOP_BOOKMARK_ITEM =
+            makeFolderItem(DESKTOP_BOOKMARK_ID, "Bookmarks bar", ROOT_BOOKMARK_ID);
+    static final BookmarkItem OTHER_BOOKMARK_ITEM =
+            makeFolderItem(OTHER_BOOKMARK_ID, "Other bookmarks", ROOT_BOOKMARK_ID);
+    static final BookmarkItem MOBILE_BOOKMARK_ITEM =
+            makeFolderItem(MOBILE_BOOKMARK_ID, "Mobile bookmarks", ROOT_BOOKMARK_ID);
+    static final BookmarkItem READING_LIST_ITEM =
+            makeFolderItem(READING_LIST_BOOKMARK_ID, "Reading list", ROOT_BOOKMARK_ID);
+    static final BookmarkItem FOLDER_ITEM_A =
+            makeFolderItem(FOLDER_BOOKMARK_ID_A, "Folder A", MOBILE_BOOKMARK_ID);
+    static final BookmarkItem URL_ITEM_A =
+            makeUrlItem(URL_BOOKMARK_ID_A, "Url A", URL_A, MOBILE_BOOKMARK_ID);
+    static final BookmarkItem URL_ITEM_B =
+            makeUrlItem(URL_BOOKMARK_ID_B, "Url B", URL_B, FOLDER_BOOKMARK_ID_A);
+    static final BookmarkItem URL_ITEM_C =
+            makeUrlItem(URL_BOOKMARK_ID_C, "Url C", URL_C, FOLDER_BOOKMARK_ID_A);
+    static final BookmarkItem URL_ITEM_D =
+            makeUrlItemWithRead(URL_BOOKMARK_ID_D, "Url D", URL_D, READING_LIST_BOOKMARK_ID, true);
+    static final BookmarkItem URL_ITEM_E =
+            makeUrlItem(URL_BOOKMARK_ID_E, "Url E", URL_E, READING_LIST_BOOKMARK_ID);
 
     public static void initMocks(BookmarkModel bookmarkModel) {
         doReturn(ROOT_BOOKMARK_ID).when(bookmarkModel).getRootFolderId();
@@ -100,5 +100,23 @@ public class SharedBookmarkModelMocks {
         doReturn(Arrays.asList(URL_BOOKMARK_ID_D, URL_BOOKMARK_ID_E))
                 .when(bookmarkModel)
                 .getChildIds(READING_LIST_BOOKMARK_ID);
+    }
+
+    private static BookmarkItem makeUrlItem(
+            BookmarkId id, String title, GURL url, BookmarkId parentId) {
+        return makeUrlItemWithRead(id, title, url, parentId, false);
+    }
+
+    private static BookmarkItem makeUrlItemWithRead(
+            BookmarkId id, String title, GURL url, BookmarkId parentId, boolean read) {
+        long dateAdded = id.getId();
+        return new BookmarkItem(id, title, url, false, parentId, false, false, dateAdded, read);
+    }
+
+    private static BookmarkItem makeFolderItem(BookmarkId id, String title, BookmarkId parentId) {
+        boolean isEditable = ROOT_BOOKMARK_ID.equals(parentId);
+        long dateAdded = id.getId();
+        return new BookmarkItem(
+                id, title, null, true, parentId, isEditable, false, dateAdded, false);
     }
 }

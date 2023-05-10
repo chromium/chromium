@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -291,6 +292,11 @@ class BookmarkManagerMediator
                 setBookmarks(
                         mBookmarkQueryHandler.buildBookmarkListForParent(getCurrentFolderId()));
             }
+        }
+
+        @Override
+        public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
+            refresh();
         }
     };
 

@@ -214,6 +214,7 @@ public class BookmarkManagerMediatorTest {
 
             // Setup BookmarkModel.
             doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
+            doReturn(mReadingListFolderId).when(mBookmarkModel).getReadingListFolder();
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
             doReturn(Arrays.asList(mFolderId2, mFolderId3))
                     .when(mBookmarkModel)
