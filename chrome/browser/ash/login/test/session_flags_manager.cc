@@ -122,7 +122,6 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
   if (error_code != JSONFileValueDeserializer::JSON_NO_ERROR)
     return;
 
-  DCHECK(value->is_dict());
   base::Value::Dict& value_dict = value->GetDict();
   const std::string* user_id = value_dict.FindString(kUserIdKey);
   if (user_id && !user_id->empty()) {
@@ -138,10 +137,10 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
   if (user_flags) {
     user_flags_ = std::vector<Switch>();
     for (const base::Value& flag : *user_flags) {
-      DCHECK(flag.is_dict());
+      const auto& flag_dict = flag.GetDict();
       user_flags_->emplace_back(
-          std::make_pair(*flag.GetDict().FindString(kFlagNameKey),
-                         *flag.GetDict().FindString(kFlagValueKey)));
+          std::make_pair(*flag_dict.FindString(kFlagNameKey),
+                         *flag_dict.FindString(kFlagValueKey)));
     }
   }
 
@@ -149,10 +148,10 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
   if (restart_job) {
     restart_job_ = std::vector<Switch>();
     for (const base::Value& job_switch : *restart_job) {
-      DCHECK(job_switch.is_dict());
+      const auto& job_switch_dict = job_switch.GetDict();
       restart_job_->emplace_back(
-          std::make_pair(*job_switch.GetDict().FindString(kFlagNameKey),
-                         *job_switch.GetDict().FindString(kFlagValueKey)));
+          std::make_pair(*job_switch_dict.FindString(kFlagNameKey),
+                         *job_switch_dict.FindString(kFlagValueKey)));
     }
   }
 }
