@@ -19,6 +19,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #endif
 
 namespace extensions {
@@ -40,6 +46,29 @@ void ExternalComponentLoader::StartLoading() {
     if (profile_->GetProfilePolicyConnector()->IsManaged()) {
       AddExternalExtension(extension_misc::kAssessmentAssistantExtensionId,
                            prefs);
+    }
+
+    if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
+      // Only load ODFS if the current session is NOT managed.
+      // TODO(b/279126844): merge with
+      // `ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()`.
+      bool eligible = !profile_->GetProfilePolicyConnector()->IsManaged();
+
+      // Do not load in Ash if Lacros is enabled, otherwise all messages will be
+      // routed to the extension in Ash.
+      bool should_load = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // In Ash, suppress loading if Lacros is enabled, as the extension is
+      // expected to be loaded in Lacros.
+      should_load = !crosapi::browser_util::IsLacrosEnabled();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      // In Lacros, only load in the primary profile (fileSystemProvider
+      // extensions in other profiles won't work).
+      should_load = profile_ == ProfileManager::GetPrimaryUserProfile();
+#endif
+      if (eligible && should_load) {
+        AddExternalExtension(extension_misc::kODFSExtensionId, prefs);
+      }
     }
   }
 #endif
