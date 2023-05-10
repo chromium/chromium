@@ -76,7 +76,7 @@ class TestTouchSelectionMagnifierRunner
 
  private:
   void ShowMagnifier(aura::Window* context,
-                     const gfx::PointF& position) override {
+                     const gfx::SelectionBound& focus_bound) override {
     magnifier_running_ = true;
   }
 
@@ -1049,7 +1049,8 @@ class TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest
   }
 };
 
-// Tests that selection handles are properly positioned at 2x DSF.
+// Tests that selection handles are properly positioned at 2x DSF and that the
+// quick menu and magnifier are updated with the selection handles.
 IN_PROC_BROWSER_TEST_P(
     TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
     SelectionHandleCoordinates) {
@@ -1116,9 +1117,11 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_down);
   selection_controller_client()->Wait();
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
-  // Move it.
+  // The magnifier should be shown when selection handle dragging starts.
+  EXPECT_TRUE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+
+  // Move the selection handle.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_MOVED);
   handle_point.Offset(10, 0);
@@ -1127,6 +1130,8 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_move);
   selection_controller_client()->Wait();
+
+  // The magnifier should still be shown after the selection handle moves.
   EXPECT_TRUE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // Then release.
@@ -1137,11 +1142,12 @@ IN_PROC_BROWSER_TEST_P(
                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_up);
   selection_controller_client()->Wait();
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
-  // The handle should have moved to right.
+  // The handle should have moved to the right and the magnifier should no
+  // longer be shown.
   EXPECT_EQ(start_top.y(), controller->start().edge_start().y());
   EXPECT_LT(start_top.x(), controller->start().edge_start().x());
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
             rwhva->selection_controller()->active_status());
@@ -1154,7 +1160,8 @@ INSTANTIATE_TEST_SUITE_P(
     TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
     testing::Bool());
 
-// Tests that insertion handles are properly positioned at 2x DSF.
+// Tests that insertion handles are properly positioned at 2x DSF and that the
+// magnifier is updated with the insertion handle.
 IN_PROC_BROWSER_TEST_P(
     TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
     InsertionHandleCoordinates) {
@@ -1202,7 +1209,9 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_down);
   selection_controller_client()->Wait();
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+
+  // The magnifier should be shown when insertion handle dragging starts.
+  EXPECT_TRUE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // Move it.
   selection_controller_client()->InitWaitForSelectionEvent(
@@ -1213,6 +1222,8 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_move);
   selection_controller_client()->Wait();
+
+  // The magnifier should still be shown after the insertion handle moves.
   EXPECT_TRUE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // Then release.
@@ -1228,9 +1239,11 @@ IN_PROC_BROWSER_TEST_P(
   gfx::RectF moved_handle_rect =
       rwhva->selection_controller()->GetStartHandleRect();
 
-  // The handle should have moved to right.
+  // The handle should have moved to the right and the magnifier should no
+  // longer be shown.
   EXPECT_EQ(initial_handle_rect.y(), moved_handle_rect.y());
   EXPECT_LT(initial_handle_rect.x(), moved_handle_rect.x());
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
             rwhva->selection_controller()->active_status());

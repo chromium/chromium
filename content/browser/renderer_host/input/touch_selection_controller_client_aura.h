@@ -82,9 +82,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   bool IsQuickMenuAvailable() const;
   void ShowQuickMenu();
   void UpdateQuickMenu();
-
-  void ShowMagnifier(const gfx::PointF& position);
-  void CloseMagnifier();
+  void UpdateMagnifier();
 
   // ui::TouchSelectionControllerClient:
   bool SupportsAnimation() const override;

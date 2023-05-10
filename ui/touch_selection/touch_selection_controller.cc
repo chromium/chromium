@@ -249,6 +249,11 @@ bool TouchSelectionController::Animate(base::TimeTicks frame_time) {
   return false;
 }
 
+const gfx::SelectionBound& TouchSelectionController::GetFocusBound() const {
+  DCHECK_NE(active_status_, INACTIVE);
+  return anchor_drag_to_selection_start_ ? start_ : end_;
+}
+
 gfx::RectF TouchSelectionController::GetRectBetweenBounds() const {
   // Short-circuit for efficiency.
   if (active_status_ == INACTIVE)
