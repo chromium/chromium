@@ -290,6 +290,7 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
   base::Value::Dict expected_onc_1 =
       chromeos::network_config::CustomApnListToOnc(kTestCellularGuid1,
                                                    &empty_apn_list);
+  base::OnceClosure onc_success_cb_1;
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_1,
@@ -297,10 +298,16 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
                       return expected_onc_1 == value;
                     }),
                     _, _))
-      .Times(1);
+      .Times(1)
+      .WillOnce(
+          WithArg<2>(Invoke([&onc_success_cb_1](base::OnceClosure callback) {
+            onc_success_cb_1 = std::move(callback);
+          })));
+
   base::Value::Dict expected_onc_2 =
       chromeos::network_config::CustomApnListToOnc(kTestCellularGuid2,
                                                    &empty_apn_list);
+  base::OnceClosure onc_success_cb_2;
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_2,
@@ -308,12 +315,17 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
                       return expected_onc_2 == value;
                     }),
                     _, _))
-      .Times(1);
+      .Times(1)
+      .WillOnce(
+          WithArg<2>(Invoke([&onc_success_cb_2](base::OnceClosure callback) {
+            onc_success_cb_2 = std::move(callback);
+          })));
 
   // Verify that Shill receives the custom APNs for the third list.
   base::Value::Dict expected_onc_3 =
       chromeos::network_config::CustomApnListToOnc(kTestCellularGuid3,
                                                    &populated_apn_list);
+  base::OnceClosure onc_success_cb_3;
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_3,
@@ -321,9 +333,100 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
                       return expected_onc_3 == value;
                     }),
                     _, _))
-      .Times(1);
+      .Times(1)
+      .WillOnce(
+          WithArg<2>(Invoke([&onc_success_cb_3](base::OnceClosure callback) {
+            onc_success_cb_3 = std::move(callback);
+          })));
 
   // Function under test.
+  TriggerNetworkListChanged();
+
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
+      .Times(0);
+
+  // Run successfully sent to shill callbacks for first and second network.
+  std::move(onc_success_cb_1).Run();
+  std::move(onc_success_cb_2).Run();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
+      .Times(2)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_1, _, _, _))
+      .Times(0);
+
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_2, _, _, _))
+      .Times(0);
+
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_3, _, _, _))
+      .Times(1);
+
+  // The revamp APN lists will not be sent to shill for first and second network
+  // as they have already successfully been done so. It will still be sent to
+  // the third network as the list was not sent.
+  TriggerNetworkListChanged();
+
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
+      .Times(1);
+
+  // Run successfully sent to shill callbacks for third network.
+  std::move(onc_success_cb_3).Run();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_1, _, _, _))
+      .Times(0);
+
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_2, _, _, _))
+      .Times(0);
+
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_3, _, _, _))
+      .Times(0);
+
+  // The revamp APN lists will not be sent to any of the networks in shill as
+  // they have all been successfully sent now.
   TriggerNetworkListChanged();
 }
 
@@ -368,7 +471,10 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
                       return expected_onc_1 == value;
                     }),
                     _, _))
-      .Times(1);
+      .Times(1)
+      .WillOnce(WithArg<2>(Invoke(
+          [&](base::OnceClosure callback) { std::move(callback).Run(); })));
+
   base::Value::Dict expected_onc_2 =
       chromeos::network_config::CustomApnListToOnc(kTestCellularGuid2,
                                                    &empty_apn_list);
@@ -379,7 +485,9 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
                       return expected_onc_2 == value;
                     }),
                     _, _))
-      .Times(1);
+      .Times(1)
+      .WillOnce(WithArg<2>(Invoke(
+          [&](base::OnceClosure callback) { std::move(callback).Run(); })));
 
   // All network should be marked as migrated
   EXPECT_CALL(*managed_cellular_pref_handler(),
@@ -601,7 +709,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
             get_managed_properties_callback = std::move(callback);
             ASSERT_FALSE(get_managed_properties_callback.is_null());
           })));
-  // Function under test.
+  // Function under test with failure to send APN list to shill.
   TriggerNetworkListChanged();
 
   // During the GetManagedProperties call, set the custom APN list to be empty.
@@ -611,8 +719,9 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
       .Times(1)
       .WillOnce(Return(&empty_apn_list));
 
-  // Execute the GetManagedProperties callback, Shill should be updated with an
-  // empty APN list. The network should be marked as migrated.
+  // Execute the GetManagedProperties callback, and an attempt to update shill
+  // with an empty APN list should be made. Intentionally fail the update to
+  // shill.
   base::Value::Dict expected_onc_1 =
       chromeos::network_config::CustomApnListToOnc(kTestCellularGuid1,
                                                    &empty_apn_list);
@@ -623,7 +732,57 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
                       return expected_onc_1 == value;
                     }),
                     _, _))
-      .Times(1);
+      .Times(1)
+      .WillOnce(WithArg<3>(Invoke([&](network_handler::ErrorCallback callback) {
+        std::move(callback).Run("error");
+      })));
+
+  // ICCID should not have been migrated.
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              AddApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(0);
+  std::move(get_managed_properties_callback)
+      .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
+           /*error=*/absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid1))
+      .Times(1)
+      .WillOnce(Return(&populated_apn_list));
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              GetManagedProperties(LoginState::Get()->primary_user_hash(),
+                                   cellular_service_path_1, _))
+      .Times(1)
+      .WillOnce(
+          WithArg<2>(Invoke([&get_managed_properties_callback](
+                                network_handler::PropertiesCallback callback) {
+            ASSERT_TRUE(get_managed_properties_callback.is_null());
+            get_managed_properties_callback = std::move(callback);
+            ASSERT_FALSE(get_managed_properties_callback.is_null());
+          })));
+
+  // Function under test with successful APN list to shill.
+  TriggerNetworkListChanged();
+
+  // During the GetManagedProperties call, set the custom APN list to be empty.
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid1))
+      .Times(1)
+      .WillOnce(Return(&empty_apn_list));
+
+  // Execute the GetManagedProperties callback, Shill should be updated with an
+  // empty APN list. The network should be marked as migrated.
+  EXPECT_CALL(
+      *managed_network_configuration_handler(),
+      SetProperties(cellular_service_path_1,
+                    Truly([&expected_onc_1](const base::Value::Dict& value) {
+                      return expected_onc_1 == value;
+                    }),
+                    _, _))
+      .Times(1)
+      .WillOnce(WithArg<2>(Invoke(
+          [&](base::OnceClosure callback) { std::move(callback).Run(); })));
   EXPECT_CALL(*managed_cellular_pref_handler(),
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(1);
