@@ -872,9 +872,23 @@ testcase.hideSearchInTrash = async () => {
       appId, ['#search-button'], ['display']);
   chrome.test.assertTrue(searchButton.styles['display'] === 'none');
 
+  // Try to use keyboard shortcuts Ctrl+F to launch search anyway.
+  const ctrlF = ['#file-list', 'f', true, false, false];
+  await remoteCall.fakeKeyDown(appId, ...ctrlF);
+
+  const searchWrapper =
+      await remoteCall.waitForElement(appId, ['#search-wrapper']);
+  // Confirm that search wrapper is still in collapsed state.
+  chrome.test.assertEq(searchWrapper.attributes.collapsed, '');
+
   // Go back to Downloads and confirm that the search button is visible again.
   await navigateWithDirectoryTree(appId, '/My files/Downloads');
   searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['display']);
   chrome.test.assertTrue(searchButton.styles['display'] !== 'none');
+
+  // Make sure that search still works.
+  await remoteCall.typeSearchText(appId, 'hello');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
 };

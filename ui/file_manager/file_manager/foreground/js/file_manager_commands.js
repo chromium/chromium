@@ -2240,10 +2240,17 @@ CommandHandler.COMMANDS_['dlp-restriction-details'] =
  */
 CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {
   execute(event, fileManager) {
-    // Cancel item selection.
-    fileManager.directoryModel.clearSelection();
-    // Open the query input via the search container.
-    fileManager.ui.searchContainer.openSearch();
+    // If the current root is Trash we do nothing on search command. Preventing
+    // it from execution (in canExecute) does not work correctly, as then chrome
+    // start native search for an app window. Thus we always allow it and do
+    // nothing in trash.
+    const currentRootType = fileManager.directoryModel.getCurrentRootType();
+    if (currentRootType !== VolumeManagerCommon.RootType.TRASH) {
+      // Cancel item selection.
+      fileManager.directoryModel.clearSelection();
+      // Open the query input via the search container.
+      fileManager.ui.searchContainer.openSearch();
+    }
   }
 
   /** @override */
