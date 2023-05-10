@@ -62,11 +62,12 @@ class CONTENT_EXPORT BrowsingTopicsURLLoaderService final
       const BrowsingTopicsURLLoaderService&) = delete;
 
   // Binds `receiver`. Creates a `BindContext` to contain a factory constructed
-  // with `pending_factory`, and associates it to `receiver`. Returns the
-  // associated `BindContext`.
+  // with `subresource_proxying_factory_bundle`, and associates it to
+  // `receiver`. Returns the associated `BindContext`.
   base::WeakPtr<BindContext> GetFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory);
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle);
 
  private:
   // network::mojom::URLLoaderFactory:

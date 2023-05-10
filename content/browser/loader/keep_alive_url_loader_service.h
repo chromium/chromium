@@ -61,7 +61,8 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // use the remote of `receiver` to load requests. It must not be null.
   void BindFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle,
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
   // For testing only:

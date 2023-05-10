@@ -94,11 +94,12 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
 
   // Creates a `FactoryContext` to hold a refptr to
   // `network::SharedURLLoaderFactory`, which is constructed with
-  // `pending_factory`, and then bound with `receiver`.
+  // `subresource_proxying_factory_bundle`, and then bound with `receiver`.
   // `policy_container_host` must not be null.
   void BindFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle,
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
   // `network::mojom::URLLoaderFactory` overrides:
@@ -133,20 +134,18 @@ KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::current_context() const {
 
 void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::BindFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+    scoped_refptr<network::SharedURLLoaderFactory>
+        subresource_proxying_factory_bundle,
     scoped_refptr<PolicyContainerHost> policy_container_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(policy_container_host);
   TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::BindFactory");
 
-  auto factory_bundle =
-      network::SharedURLLoaderFactory::Create(std::move(pending_factory));
-
   // Adds a new factory receiver to the set, binding the pending `receiver` from
   // to `this` with a new context that has frame-specific data and keeps
-  // reference to `factory_bundle`.
+  // reference to `subresource_proxying_factory_bundle`.
   auto context = std::make_unique<FactoryContext>(
-      factory_bundle, std::move(policy_container_host));
+      subresource_proxying_factory_bundle, std::move(policy_container_host));
   loader_factory_receivers_.Add(this, std::move(receiver), std::move(context));
 }
 
@@ -239,12 +238,14 @@ KeepAliveURLLoaderService::~KeepAliveURLLoaderService() = default;
 
 void KeepAliveURLLoaderService::BindFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+    scoped_refptr<network::SharedURLLoaderFactory>
+        subresource_proxying_factory_bundle,
     scoped_refptr<PolicyContainerHost> policy_container_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(policy_container_host);
 
-  factory_->BindFactory(std::move(receiver), std::move(pending_factory),
+  factory_->BindFactory(std::move(receiver),
+                        subresource_proxying_factory_bundle,
                         std::move(policy_container_host));
 }
 

@@ -129,7 +129,7 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
 
     return browsing_topics_url_loader_service_->GetFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
-        std::move(pending_factory));
+        network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
   }
 
   network::mojom::URLResponseHeadPtr CreateResponseHead(

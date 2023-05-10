@@ -45,7 +45,8 @@ class PrefetchURLLoaderService final
   void GetFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       int frame_tree_node_id,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle,
       base::WeakPtr<RenderFrameHostImpl> render_frame_host,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache);

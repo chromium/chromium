@@ -9886,20 +9886,26 @@ void RenderFrameHostImpl::CommitNavigation(
       }
     }
 
-    // Set up prefetch loader factory.
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        factory_bundle_for_prefetch;
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        prefetch_loader_factory;
+    // Set up the subresource loader factory that will pass requests from the
+    // renderer to the originally intended network service endpoint. To save
+    // memory, this is intentionally shared for prefetch, topics, and
+    // keep-alive.
+    scoped_refptr<network::SharedURLLoaderFactory>
+        subresource_proxying_factory_bundle;
     if (subresource_loader_factories) {
       // Clone the factory bundle for prefetch.
       auto bundle = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
           std::move(subresource_loader_factories));
       subresource_loader_factories = CloneFactoryBundle(bundle);
-      factory_bundle_for_prefetch = CloneFactoryBundle(bundle);
+
+      subresource_proxying_factory_bundle =
+          network::SharedURLLoaderFactory::Create(CloneFactoryBundle(bundle));
     }
 
-    if (factory_bundle_for_prefetch) {
+    // Set up prefetch loader factory.
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        prefetch_loader_factory;
+    if (subresource_proxying_factory_bundle) {
       if (prefetched_signed_exchange_cache_) {
         prefetched_signed_exchange_cache_->RecordHistograms();
         // Reset |prefetched_signed_exchange_cache_|, not to reuse the cached
@@ -9915,8 +9921,7 @@ void RenderFrameHostImpl::CommitNavigation(
       storage_partition->GetPrefetchURLLoaderService()->GetFactory(
           prefetch_loader_factory.InitWithNewPipeAndPassReceiver(),
           navigation_request->frame_tree_node()->frame_tree_node_id(),
-          std::move(factory_bundle_for_prefetch),
-          weak_ptr_factory_.GetWeakPtr(),
+          subresource_proxying_factory_bundle, weak_ptr_factory_.GetWeakPtr(),
           EnsurePrefetchedSignedExchangeCache());
     }
 
@@ -9926,33 +9931,19 @@ void RenderFrameHostImpl::CommitNavigation(
     // are intended for disjoint request types (i.e.
     // fetch(<url>, {browsingTopics: true}) v.s. <link rel="prefetch">).
     mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory;
-    if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          factory_bundle_for_topics;
+    if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
+        subresource_proxying_factory_bundle) {
+      // Also set-up URLLoaderFactory for topics using the same loader
+      // factories.
+      base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+          GetStoragePartition()
+              ->GetBrowsingTopicsURLLoaderService()
+              ->GetFactory(
+                  topics_loader_factory.InitWithNewPipeAndPassReceiver(),
+                  subresource_proxying_factory_bundle);
 
-      if (subresource_loader_factories) {
-        // Clone the factory bundle for topics.
-        auto bundle = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
-            std::move(subresource_loader_factories));
-        subresource_loader_factories = CloneFactoryBundle(bundle);
-        factory_bundle_for_topics = CloneFactoryBundle(bundle);
-      }
-
-      if (factory_bundle_for_topics) {
-        // Also set-up URLLoaderFactory for topics using the same loader
-        // factories.
-        auto* storage_partition = GetStoragePartition();
-
-        base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext>
-            bind_context =
-                storage_partition->GetBrowsingTopicsURLLoaderService()
-                    ->GetFactory(
-                        topics_loader_factory.InitWithNewPipeAndPassReceiver(),
-                        std::move(factory_bundle_for_topics));
-
-        navigation_request->set_topics_url_loader_service_bind_context(
-            bind_context);
-      }
+      navigation_request->set_topics_url_loader_service_bind_context(
+          bind_context);
     }
 
     // Set up keepalive loader factory. It is used to proxy the keepalive
@@ -9961,29 +9952,20 @@ void RenderFrameHostImpl::CommitNavigation(
     // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit
     // Note that this loader does not depend on `prefetch_loader_factory` nor
     // `topics_loader_factory`.
+    //
+    // TODO(https://crbug.com/1441113): we should allow both keepalive and
+    // browsing_topics.
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory;
     if (base::FeatureList::IsEnabled(
-            blink::features::kKeepAliveInBrowserMigration)) {
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          factory_bundle_for_keep_alive;
-
-      if (subresource_loader_factories) {
-        // Clone the factory bundle for keepalive.
-        auto bundle = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
-            std::move(subresource_loader_factories));
-        subresource_loader_factories = CloneFactoryBundle(bundle);
-        factory_bundle_for_keep_alive = CloneFactoryBundle(bundle);
-      }
-
-      if (factory_bundle_for_keep_alive) {
-        // Also setting up URLLoaderFactory for keepalive using the same loader
-        // factories.
-        GetStoragePartition()->GetKeepAliveURLLoaderService()->BindFactory(
-            keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
-            std::move(factory_bundle_for_keep_alive),
-            navigation_request->GetPolicyContainerHost());
-      }
+            blink::features::kKeepAliveInBrowserMigration) &&
+        subresource_proxying_factory_bundle) {
+      // Also setting up URLLoaderFactory for keepalive using the same loader
+      // factories.
+      GetStoragePartition()->GetKeepAliveURLLoaderService()->BindFactory(
+          keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
+          subresource_proxying_factory_bundle,
+          navigation_request->GetPolicyContainerHost());
     }
 
     mojom::NavigationClient* navigation_client =

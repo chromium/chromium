@@ -185,7 +185,7 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
     // Receiver: Held in `loader_service_`.
     loader_service_->BindFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
-        std::move(pending_factory),
+        network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());

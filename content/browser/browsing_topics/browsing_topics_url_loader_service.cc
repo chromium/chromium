@@ -37,12 +37,12 @@ BrowsingTopicsURLLoaderService::~BrowsingTopicsURLLoaderService() = default;
 base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext>
 BrowsingTopicsURLLoaderService::GetFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory>
+        subresource_proxying_factory_bundle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto factory_bundle =
-      network::SharedURLLoaderFactory::Create(std::move(pending_factory));
 
-  auto bind_context = std::make_unique<BindContext>(factory_bundle);
+  auto bind_context =
+      std::make_unique<BindContext>(subresource_proxying_factory_bundle);
 
   base::WeakPtr<BindContext> weak_bind_context =
       bind_context->weak_ptr_factory.GetWeakPtr();
