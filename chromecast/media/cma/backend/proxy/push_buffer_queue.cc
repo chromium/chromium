@@ -111,9 +111,6 @@ PushBufferQueue::GetBufferedDataImpl() {
   // The former case is not expected to occur, but is handled to be safe.
   // The latter case is only expected if the buffer is written to when not
   // enough space is available to handle the new write.
-  //
-  // TODO(rwkeane): Eliminate handling of the former case after validating this
-  // doesn't occur in practice.
   if (!succeeded) {
     consecuitive_read_failures_++;
     if (+consecuitive_read_failures_ > kMaximumFailedReadAttempts) {
