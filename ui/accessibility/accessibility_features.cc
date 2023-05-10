@@ -276,8 +276,18 @@ BASE_FEATURE(kReadAnythingWithScreen2x,
              "ReadAnythingWithScreen2x",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature can be used as an emergency kill switch to disable Screen AI
+// main content extraction service in case of security or other issues.
+// Please talk to components/services/screen_ai/OWNERS if any changes to this
+// feature or its functionality is needed.
+BASE_FEATURE(kEmergencyDisableScreenAIMainContentExtraction,
+             "EmergencyDisableScreenAIMainContentExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsReadAnythingWithScreen2xEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x);
+  return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x) &&
+         !base::FeatureList::IsEnabled(
+             ::features::kEmergencyDisableScreenAIMainContentExtraction);
 }
 
 bool IsScreenAIServiceNeeded() {
@@ -295,10 +305,20 @@ bool IsScreenAIDebugModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAIDebugMode);
 }
 
+// This feature can be used as an emergency kill switch to disable Screen AI
+// OCR service in case of security or other issues.
+// Please talk to components/services/screen_ai/OWNERS if any changes to this
+// feature or its functionality is needed.
+BASE_FEATURE(kEmergencyDisableScreenAIOCR,
+             "EmergencyDisableScreenAIOCR",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPdfOcrEnabled() {
-  return base::FeatureList::IsEnabled(::features::kPdfOcr);
+  return base::FeatureList::IsEnabled(::features::kPdfOcr) &&
+         !base::FeatureList::IsEnabled(
+             ::features::kEmergencyDisableScreenAIOCR);
 }
 
 BASE_FEATURE(kLayoutExtraction,
