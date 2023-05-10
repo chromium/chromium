@@ -537,7 +537,7 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
 
   EXPECT_CALL(item(), GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE));
-  EXPECT_EQ("2 B \xE2\x80\xA2 Done, no issues found",
+  EXPECT_EQ("2 B \xE2\x80\xA2 Scan is done",
             base::UTF16ToUTF8(model().GetStatusText()));
 
 #if BUILDFLAG(IS_MAC)
