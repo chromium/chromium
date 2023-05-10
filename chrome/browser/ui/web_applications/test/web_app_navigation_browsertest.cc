@@ -150,7 +150,7 @@ void WebAppNavigationBrowserTest::ClickLinkWithModifiersAndWaitForURL(
       "})();",
       link_url.spec().c_str(), target == LinkTarget::SELF ? "_self" : "_blank",
       rel.c_str());
-  ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
 
   content::SimulateMouseClick(web_contents, modifiers, button);
 

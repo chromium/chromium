@@ -297,7 +297,7 @@ void NavigateToURLAndWait(Browser* browser,
         helper &&
         helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting());
     std::string javascript = "window.certificateErrorPageController.proceed();";
-    ASSERT_TRUE(content::ExecuteScript(web_contents, javascript));
+    ASSERT_TRUE(content::ExecJs(web_contents, javascript));
     observer.Wait();
   }
 }

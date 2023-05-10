@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
                                       << "', rel='" << rel << "'");
       content::TestNavigationObserver observer(GetStartUrl());
       observer.StartWatchingNewWebContents();
-      EXPECT_TRUE(content::ExecuteScript(
+      EXPECT_TRUE(content::ExecJs(
           browser()->tab_strip_model()->GetActiveWebContents(),
           content::JsReplace("{"
                              "  let el = document.createElement('a');"
@@ -296,9 +296,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, ChangeLocationHref) {
 
   content::TestNavigationObserver observer(GetStartUrl());
   observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      content::JsReplace("location.href=$1;", GetStartUrl())));
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      content::JsReplace("location.href=$1;", GetStartUrl())));
   observer.Wait();
 
   Browser* app_browser =
@@ -336,10 +336,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
                                       << "', features='" << features << "'");
       content::TestNavigationObserver observer(GetStartUrl());
       observer.StartWatchingNewWebContents();
-      EXPECT_TRUE(content::ExecuteScript(
-          browser()->tab_strip_model()->GetActiveWebContents(),
-          content::JsReplace("window.open($1, $2, $3);", GetStartUrl(), target,
-                             features)));
+      EXPECT_TRUE(
+          content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                          content::JsReplace("window.open($1, $2, $3);",
+                                             GetStartUrl(), target, features)));
       observer.Wait();
 
       Browser* app_browser =
@@ -377,10 +377,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                                       << "', features='" << features << "'");
       content::TestNavigationObserver observer(GetStartUrl());
       observer.StartWatchingNewWebContents();
-      EXPECT_TRUE(content::ExecuteScript(
-          initiating_web_contents,
-          content::JsReplace("window.open($1, $2, $3);", GetStartUrl(), target,
-                             features)));
+      EXPECT_TRUE(
+          content::ExecJs(initiating_web_contents,
+                          content::JsReplace("window.open($1, $2, $3);",
+                                             GetStartUrl(), target, features)));
       observer.Wait();
 
       Browser* app_browser =
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
   const GURL kPageURL = GetStartUrl().Resolve("/page2.html");
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::JsReplace("let el = document.createElement('a');"
                          "el.href = $1;"
@@ -947,9 +947,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
 
-  EXPECT_TRUE(content::ExecuteScript(
-      app_browser->tab_strip_model()->GetActiveWebContents(),
-      "window.close();"));
+  EXPECT_TRUE(
+      content::ExecJs(app_browser->tab_strip_model()->GetActiveWebContents(),
+                      "window.close();"));
 
   ui_test_utils::WaitForBrowserToClose(app_browser);
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
@@ -984,9 +984,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
   console_observer.SetPattern(
       "Scripts may close only the windows that were opened by them.");
 
-  EXPECT_TRUE(content::ExecuteScript(
-      app_browser->tab_strip_model()->GetActiveWebContents(),
-      "window.close();"));
+  EXPECT_TRUE(
+      content::ExecJs(app_browser->tab_strip_model()->GetActiveWebContents(),
+                      "window.close();"));
 
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
