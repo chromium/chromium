@@ -9419,26 +9419,6 @@
             ]
         }
     ],
-    "OsIntegrationSubManagers": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "stage": "execute_and_write_config"
-                    },
-                    "enable_features": [
-                        "OsIntegrationSubManagers"
-                    ]
-                }
-            ]
-        }
-    ],
     "OutOfProcessSystemDnsResolution": [
         {
             "platforms": [
