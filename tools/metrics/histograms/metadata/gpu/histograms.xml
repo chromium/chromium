@@ -1563,6 +1563,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="GPU.WebGLDisplayType" enum="EGLDisplayType"
+    expires_after="2023-08-27">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Types of EGL displays used to back WebGL contexts. Recorded at context
+    creation time in the GPU process.
+  </summary>
+</histogram>
+
+<histogram name="GPU.WebGLDisplayTypeLarge" enum="EGLDisplayType"
+    expires_after="2023-08-27">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Types of EGL displays used to back large (area &gt;= 128*128) WebGL
+    contexts. Recorded at context creation time in the GPU process.
+  </summary>
+</histogram>
+
 <histogram name="GPU.WebGraphicsContext3D_Init_CanLoseContext"
     enum="GPUWebGraphicsContext3D_Init_CanLoseContext" expires_after="M85">
   <owner>vmiura@chromium.org</owner>
