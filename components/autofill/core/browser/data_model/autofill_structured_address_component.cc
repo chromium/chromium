@@ -245,6 +245,12 @@ std::u16string AddressComponent::GetValueForOtherSupportedType(
   return {};
 }
 
+std::u16string AddressComponent::GetValueForComparisonForOtherSupportedType(
+    ServerFieldType field_type,
+    const AddressComponent& other) const {
+  return NormalizeValue(GetValueForOtherSupportedType(field_type));
+}
+
 std::u16string AddressComponent::GetBestFormatString() const {
   // If the component is atomic, the format string is just the value.
   if (IsAtomic())
@@ -360,6 +366,19 @@ std::u16string AddressComponent::GetValueForType(
   return node_for_type->GetStorageType() == field_type
              ? node_for_type->GetValue()
              : node_for_type->GetValueForOtherSupportedType(field_type);
+}
+
+std::u16string AddressComponent::GetValueForComparisonForType(
+    ServerFieldType field_type,
+    const AddressComponent& other) const {
+  const AddressComponent* node_for_type = GetNodeForType(field_type);
+  if (!node_for_type) {
+    return {};
+  }
+  return node_for_type->GetStorageType() == field_type
+             ? node_for_type->ValueForComparison(other)
+             : node_for_type->GetValueForComparisonForOtherSupportedType(
+                   field_type, other);
 }
 
 VerificationStatus AddressComponent::GetVerificationStatusForType(

@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -34,6 +35,14 @@ std::u16string AddressComponentWithRewriter::RewriteValue(
 std::u16string AddressComponentWithRewriter::ValueForComparison(
     const AddressComponent& other) const {
   return RewriteValue(NormalizedValue(), GetCommonCountryForMerge(other));
+}
+
+std::u16string
+AddressComponentWithRewriter::GetValueForComparisonForOtherSupportedType(
+    ServerFieldType field_type,
+    const AddressComponent& other) const {
+  return RewriteValue(NormalizeValue(GetValueForOtherSupportedType(field_type)),
+                      GetCommonCountryForMerge(other));
 }
 
 StreetNameNode::StreetNameNode(AddressComponent* parent)

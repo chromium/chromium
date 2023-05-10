@@ -235,7 +235,7 @@ TEST(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
        .house_number = "1600",
        .floor = "6",
        .apartment = "12"},
-      {.street_address = "1600 Amphitheatre Parkway\nSome UnparseableText",
+      {.street_address = "1600 Amphitheatre Parkway\nSome UnparsableText",
        .street_name = "Amphitheatre Parkway",
        .house_number = "1600"},
       {.street_address = "Av. Paulista, 1098\n1º andar, apto. 101",
@@ -621,6 +621,29 @@ TEST(AutofillStructuredAddress, TestGetCommonCountryForMerge) {
   country2.SetValue(u"DE", VerificationStatus::kObserved);
   EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"");
   EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"");
+}
+
+// Tests retrieving a value for comparison for a field type.
+TEST(AutofillStructuredAddress, TestGetValueForComparisonForType) {
+  CountryCodeNode country_code(nullptr);
+  country_code.SetValue(u"US", VerificationStatus::kObserved);
+  StreetAddressNode street_address(&country_code);
+  EXPECT_TRUE(street_address.SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
+                                             u"Main Street\nOther Street",
+                                             VerificationStatus::kObserved));
+  EXPECT_EQ(street_address.GetValueForComparisonForType(
+                ADDRESS_HOME_STREET_ADDRESS, street_address),
+            u"main st other st");
+  EXPECT_EQ(street_address.GetValueForComparisonForType(ADDRESS_HOME_LINE1,
+                                                        street_address),
+            u"main st");
+  EXPECT_EQ(street_address.GetValueForComparisonForType(ADDRESS_HOME_LINE2,
+                                                        street_address),
+            u"other st");
+  EXPECT_TRUE(
+      street_address
+          .GetValueForComparisonForType(ADDRESS_HOME_LINE3, street_address)
+          .empty());
 }
 
 struct HasNewerStreetAddressPrecedenceInMergingTestCase {

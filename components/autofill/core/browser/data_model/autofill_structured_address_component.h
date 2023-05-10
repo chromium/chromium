@@ -210,12 +210,19 @@ class AddressComponent {
   // verification status to |kNoStatus|.
   virtual void UnsetValue();
 
-  // Convenience method to get the value of |type|.
-  // Returns an empty string if |type| is not supported.
+  // Convenience method to get the value of |field_type|.
+  // Returns an empty string if |field_type| is not supported.
   std::u16string GetValueForType(ServerFieldType field_type) const;
 
-  // Convenience method to get the verification status of |type|.
-  // Returns |VerificationStatus::kNoStatus| if |type| is not supported.
+  // Convenience method to get the value of `field_type` to be used for
+  // comparison with `other`. Returns an empty string if `field_type` is not
+  // supported.
+  std::u16string GetValueForComparisonForType(
+      ServerFieldType field_type,
+      const AddressComponent& other) const;
+
+  // Convenience method to get the verification status of `field_type`.
+  // Returns |VerificationStatus::kNoStatus| if `field_type` is not supported.
   VerificationStatus GetVerificationStatusForType(
       ServerFieldType field_type) const;
 
@@ -411,6 +418,13 @@ class AddressComponent {
   // specific to each type.
   virtual std::u16string GetValueForOtherSupportedType(
       ServerFieldType field_type) const;
+
+  // This method is used to retrieve the value for a supported field type
+  // different from the storage type, and rewrites it for comparison with
+  // `other`. It must implement the conversion logic specific to each type.
+  virtual std::u16string GetValueForComparisonForOtherSupportedType(
+      ServerFieldType field_type,
+      const AddressComponent& other) const;
 
   // Clears all parsed and formatted values.
   void ClearAllParsedAndFormattedValues();

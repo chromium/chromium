@@ -356,6 +356,32 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetFieldTypeValue) {
             VerificationStatus::kObserved);
 }
 
+// Tests retrieving a value for comparison for a field type.
+TEST(AutofillStructuredAddressAddressComponent,
+     TestGetValueForComparisonForType) {
+  TestCompoundNameAddressComponent compound_name;
+  EXPECT_TRUE(compound_name.SetValueForType(NAME_FIRST, u"First1-First2",
+                                            VerificationStatus::kObserved));
+  EXPECT_TRUE(compound_name.SetValueForTypeAndResetSubstructure(
+      NAME_MIDDLE, u"Middle", VerificationStatus::kObserved));
+  EXPECT_TRUE(compound_name.SetValueForType(NAME_LAST, u"LAST",
+                                            VerificationStatus::kObserved));
+  EXPECT_TRUE(compound_name.CompleteFullTree());
+  EXPECT_EQ(
+      compound_name.GetValueForComparisonForType(NAME_FULL, compound_name),
+      u"first1 first2 middle last");
+  EXPECT_EQ(
+      compound_name.GetValueForComparisonForType(NAME_FIRST, compound_name),
+      u"first1 first2");
+  EXPECT_EQ(compound_name.GetValueForComparisonForType(NAME_MIDDLE_INITIAL,
+                                                       compound_name),
+            u"m");
+  EXPECT_TRUE(
+      compound_name
+          .GetValueForComparisonForType(ADDRESS_HOME_STREET_NAME, compound_name)
+          .empty());
+}
+
 // Tests adding all supported types to the set.
 TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedTypes) {
   ServerFieldTypeSet field_type_set;

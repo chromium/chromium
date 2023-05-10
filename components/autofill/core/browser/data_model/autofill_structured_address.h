@@ -28,6 +28,13 @@ class AddressComponentWithRewriter : public AddressComponent {
   // |country_code| is empty, it defaults to US.
   std::u16string RewriteValue(const std::u16string& value,
                               const std::u16string& country_code) const;
+
+  // This method is used to retrieve the value for a supported field type
+  // different from the storage type, and rewrites it for comparison with
+  // `other`. It must implement the conversion logic specific to each type.
+  std::u16string GetValueForComparisonForOtherSupportedType(
+      ServerFieldType field_type,
+      const AddressComponent& other) const override;
 };
 
 // The name of the street.
