@@ -42,6 +42,7 @@ mojo_files = [
   "media/capture/video/chromeos/mojom/camera3.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_app.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_common.mojom-webui.ts",
+  "media/capture/video/chromeos/mojom/camera_features.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.ts",
 ]

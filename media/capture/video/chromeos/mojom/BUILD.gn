@@ -9,6 +9,7 @@ mojom("cros_camera_common") {
     "camera3.mojom",
     "camera_app.mojom",
     "camera_common.mojom",
+    "camera_features.mojom",
     "camera_metadata.mojom",
     "camera_metadata_tags.mojom",
   ]
