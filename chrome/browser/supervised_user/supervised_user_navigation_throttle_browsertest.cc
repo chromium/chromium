@@ -552,8 +552,8 @@ void SupervisedUserIframeFilterTest::SendCommandToFrame(
   DCHECK(render_frame_host);
   DCHECK(render_frame_host->IsRenderFrameLive());
   std::string command = base::StrCat({"sendCommand(\'", command_name, "\')"});
-  ASSERT_TRUE(content::ExecuteScript(
-      content::ToRenderFrameHost(render_frame_host), command));
+  ASSERT_TRUE(
+      content::ExecJs(content::ToRenderFrameHost(render_frame_host), command));
 }
 
 void SupervisedUserIframeFilterTest::WaitForNavigationFinished(
