@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, TabDestroyed) {
   // valid when the test was written, but now it just prints "Scripts may close
   // only the windows that were opened by it."
   std::string script = "window.domAutomationController.send(window.close())";
-  ASSERT_TRUE(content::ExecuteScript(web_contents(), script));
+  ASSERT_TRUE(content::ExecJs(web_contents(), script));
 }
 
 class GeolocationPrerenderBrowserTest : public GeolocationBrowserTest {
