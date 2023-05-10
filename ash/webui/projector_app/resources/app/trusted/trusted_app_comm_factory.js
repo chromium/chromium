@@ -57,17 +57,6 @@ export class TrustedAppRequestHandler extends RequestHandler {
     this.registerMethod('onError', (msg) => {
       this.browserProxy_.onError(msg);
     });
-    this.registerMethod('sendXhr', (values) => {
-      if (!values || values.length != 7) {
-        return {
-          success: false,
-          error: 'INVALID_ARGUMENTS',
-        };
-      }
-      return this.browserProxy_.sendXhr(
-          values[0], values[1], values[2], values[3], values[4], values[5],
-          values[6]);
-    });
     this.registerMethod('getVideo', (args) => {
       if (!args || args.length != 2) {
         return Promise.reject('Incorrect args for getVideo');

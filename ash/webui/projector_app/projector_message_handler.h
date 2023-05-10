@@ -20,7 +20,6 @@ struct AccessTokenInfo;
 
 namespace ash {
 
-class ProjectorXhrSender;
 struct ProjectorScreencastVideo;
 
 // Enum to record the different errors that may occur in the Projector app.
@@ -46,14 +45,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
- protected:
-  // Called when the XHR request is completed. Resolves the javascript promise
-  // created by ProjectorBrowserProxy.sendXhr by calling the `js_callback_id`.
-  virtual void OnXhrRequestCompleted(const std::string& js_callback_id,
-                                     bool success,
-                                     const std::string& response_body,
-                                     const std::string& error);
-
  private:
   // Requested by the Projector SWA to list the available accounts (primary and
   // secondary accounts) in the current session. The list of accounts will be
@@ -63,9 +54,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   // Requested by the Projector SWA to get access to the OAuth token for the
   // account email provided in the `args`.
   void GetOAuthTokenForAccount(const base::Value::List& args);
-
-  // Requested by the Projector SWA to send XHR request.
-  void SendXhr(const base::Value::List& args);
 
   // Called by the Projector SWA when an error occurred.
   void OnError(const base::Value::List& args);
@@ -91,7 +79,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
                       const std::string& error_message);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
-  std::unique_ptr<ProjectorXhrSender> xhr_sender_;
 
   base::WeakPtrFactory<ProjectorMessageHandler> weak_ptr_factory_{this};
 };

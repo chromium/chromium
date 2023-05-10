@@ -10,9 +10,11 @@
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/files/safe_base_name.h"
 #include "components/prefs/pref_service.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -71,7 +73,8 @@ UntrustedProjectorPageHandlerImpl::UntrustedProjectorPageHandlerImpl(
     PrefService* pref_service)
     : receiver_(this, std::move(receiver)),
       projector_remote_(std::move(projector_remote)),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      xhr_sender_(ProjectorAppClient::Get()->GetUrlLoaderFactory()) {
   ProjectorAppClient::Get()->AddObserver(this);
 }
 
@@ -186,6 +189,45 @@ void UntrustedProjectorPageHandlerImpl::StartProjectorSession(
 
   controller->StartProjectorSession(storage_dir_name);
   std::move(callback).Run(/*success=*/true);
+}
+
+void UntrustedProjectorPageHandlerImpl::SendXhr(
+    const GURL& url,
+    projector::mojom::RequestType method,
+    const absl::optional<std::string>& request_body,
+    bool use_credentials,
+    bool use_api_key,
+    const absl::optional<base::flat_map<std::string, std::string>>& headers,
+    const absl::optional<std::string>& account_email,
+    SendXhrCallback callback) {
+  CHECK(url.is_valid());
+  xhr_sender_.Send(
+      url, method, request_body, use_credentials, use_api_key,
+      base::BindOnce(&UntrustedProjectorPageHandlerImpl::OnXhrRequestCompleted,
+                     GetWeakPtr(), std::move(callback)),
+      headers, account_email);
+}
+
+base::WeakPtr<UntrustedProjectorPageHandlerImpl>
+UntrustedProjectorPageHandlerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void UntrustedProjectorPageHandlerImpl::OnXhrRequestCompleted(
+    SendXhrCallback callback,
+    const std::string& response_body,
+    projector::mojom::XhrResponseCode response_code) {
+  // If the request made is an unsupported url, then
+  // crash the renderer.
+  if (response_code == projector::mojom::XhrResponseCode::kUnsupportedURL) {
+    receiver_.ReportBadMessage("Unsupported url requested.");
+    return;
+  }
+
+  auto response = projector::mojom::XhrResponse::New();
+  response->response = response_body;
+  response->response_code = response_code;
+  std::move(callback).Run(std::move(response));
 }
 
 }  // namespace ash

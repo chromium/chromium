@@ -3289,6 +3289,7 @@ static_library("ui") {
       "//ash/webui/personalization_app/search:mojo_bindings",
       "//ash/webui/print_management",
       "//ash/webui/projector_app",
+      "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
       "//ash/webui/scanning",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",

@@ -6,6 +6,7 @@ module ash.projector.mojom;
 import "ash/webui/projector_app/public/mojom/projector_types.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/safe_base_name.mojom";
+import "url/mojom/url.mojom";
 
 // UntrustedProjectorPageHandler handles requests that come from the
 // javascript to the browser process.
@@ -43,6 +44,28 @@ interface UntrustedProjectorPageHandler {
   // fail if the new screencast preconditions are not met.
   StartProjectorSession(
     mojo_base.mojom.SafeBaseName storage_dir_name) => (bool success);
+
+  // Used to send xhr requests through the browser process. This is
+  // needed due to cross-origin-resource-sharing restriction set by
+  // Google Drive.
+  // The parameters for the request are the following:
+  // 1. The request URL
+  // 2. The request method, for example: GET
+  // 3. The request body data.
+  // 4. A bool to indicate whether or not to use end user credential to
+  // authorize the request.
+  // 5. A bool to indicate whether or not to use api key to authorize the
+  // request.
+  // 6. Additional headers objects.
+  // 7. The email address associated with the account
+  SendXhr(
+      url.mojom.Url url,
+      RequestType method,
+      string? request_body,
+      bool use_credentials,
+      bool use_api_key,
+      map<string, string>? headers,
+      string? account_email)  => (XhrResponse response);
 };
 
 // Implemented in Javascript to handle requests from the browser process.

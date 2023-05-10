@@ -17,6 +17,10 @@ mojom("annotator_mojo_bindings") {
 
 mojom("projector_mojo_bindings") {
   sources = [ "untrusted_projector.mojom" ]
-  deps = [ "//ash/webui/projector_app/public/mojom:projector_mojo_bindings" ]
+  deps = [
+    "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/$cur_dir"
 }

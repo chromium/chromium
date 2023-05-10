@@ -606,14 +606,14 @@ void PendingScreencastManager::SendDrivePatchRequest(
 
   xhr_sender_->Send(
       GURL(base::StrCat({ash::kDriveV3BaseUrl, file_id})),
-      ash::kRequestMethodPatch, request_body,
+      ash::projector::mojom::RequestType::kPatch, request_body,
       /*use_credentials=*/false,
       /*use_api_key=*/false,
-      base::BindOnce([](bool success, const std::string& response_body,
-                        const std::string& error) {
-        if (!success) {
+      base::BindOnce([](const std::string& response_body,
+                        ash::projector::mojom::XhrResponseCode response_code) {
+        if (response_code != ash::projector::mojom::XhrResponseCode::kSuccess) {
           LOG(ERROR) << "Failed to send Drive patch request for file."
-                     << " Error: " << error;
+                     << " Error: " << response_code;
         }
       }));
 }

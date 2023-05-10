@@ -7,13 +7,16 @@
 
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/files/safe_base_name.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -58,6 +61,25 @@ class UntrustedProjectorPageHandlerImpl
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void StartProjectorSession(const base::SafeBaseName& storage_dir_name,
                              StartProjectorSessionCallback callback) override;
+  void SendXhr(
+      const GURL& url,
+      projector::mojom::RequestType method,
+      const absl::optional<std::string>& request_body,
+      bool use_credentials,
+      bool use_api_key,
+      const absl::optional<base::flat_map<std::string, std::string>>& headers,
+      const absl::optional<std::string>& account_email,
+      SendXhrCallback callback) override;
+
+ protected:
+  base::WeakPtr<UntrustedProjectorPageHandlerImpl> GetWeakPtr();
+
+  // Called when the XHR request is completed. Runs the callback with the
+  // results.
+  virtual void OnXhrRequestCompleted(
+      SendXhrCallback callback,
+      const std::string& response_body,
+      projector::mojom::XhrResponseCode response_code);
 
  private:
   mojo::Receiver<projector::mojom::UntrustedProjectorPageHandler> receiver_;
@@ -65,6 +87,10 @@ class UntrustedProjectorPageHandlerImpl
 
   // Primary user pref service.
   const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  ProjectorXhrSender xhr_sender_;
+
+  base::WeakPtrFactory<UntrustedProjectorPageHandlerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

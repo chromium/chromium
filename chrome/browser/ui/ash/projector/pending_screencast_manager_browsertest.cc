@@ -785,18 +785,19 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   network::TestURLLoaderFactory test_url_loader_factory;
   pending_screencast_manager()->SetProjectorXhrSenderForTest(
       std::make_unique<MockXhrSender>(
-          base::BindLambdaForTesting([&](const GURL& url,
-                                         const std::string& method,
-                                         const std::string& request_body) {
-            EXPECT_EQ(
-                "{\"contentHints\":{\"indexableText\":\" metadata file. "
-                "another sentence.\"}}",
-                request_body);
-            EXPECT_EQ("PATCH", method);
-            EXPECT_EQ(GURL("https://www.googleapis.com/drive/v3/files/fileId"),
-                      url);
-            run_loop.Quit();
-          }),
+          base::BindLambdaForTesting(
+              [&](const GURL& url, projector::mojom::RequestType method,
+                  const absl::optional<std::string>& request_body) {
+                EXPECT_EQ(
+                    "{\"contentHints\":{\"indexableText\":\" metadata file. "
+                    "another sentence.\"}}",
+                    *request_body);
+                EXPECT_EQ(projector::mojom::RequestType::kPatch, method);
+                EXPECT_EQ(
+                    GURL("https://www.googleapis.com/drive/v3/files/fileId"),
+                    url);
+                run_loop.Quit();
+              }),
           &test_url_loader_factory));
 
   // Mocks a metadata file finishes upload:

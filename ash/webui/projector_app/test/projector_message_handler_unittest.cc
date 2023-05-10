@@ -27,53 +27,14 @@ const char kTestUserEmail[] = "testuser1@gmail.com";
 const char kVideoFileId[] = "video_file_id";
 const char kResourceKey[] = "resource_key";
 
-const char kTestXhrUrl[] = "https://www.googleapis.com/drive/v3/files/fileID";
-const char kTestXhrUnsupportedUrl[] = "https://www.example.com";
-const char kTestXhrMethod[] = "POST";
-const char kTestXhrRequestBody[] = "{}";
-const char kTestXhrHeaderKey[] = "X-Goog-Drive-Resource-Keys";
-const char kTestXhrHeaderValue[] = "resource-key";
-
-const char kXhrResponseSuccessPath[] = "success";
-const char kXhrResponseErrorPath[] = "error";
-const char kXhrResponseStringPath[] = "response";
-
 const char kWebUIResponse[] = "cr.webUIResponse";
 const char kGetAccountsCallback[] = "getAccountsCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
-const char kSendXhrCallback[] = "sendXhrCallback";
 const char kGetVideoCallback[] = "getVideoCallback";
 
 }  // namespace
 
 namespace ash {
-
-class ProjectorMessageHandlerForTest : public ProjectorMessageHandler {
- public:
-  ProjectorMessageHandlerForTest() = default;
-  ProjectorMessageHandlerForTest(const ProjectorMessageHandlerForTest&) =
-      delete;
-  ProjectorMessageHandlerForTest& operator=(
-      const ProjectorMessageHandlerForTest&) = delete;
-  ~ProjectorMessageHandlerForTest() override = default;
-
-  // ProjectorMessageHandler:
-  void OnXhrRequestCompleted(const std::string& js_callback_id,
-                             bool success,
-                             const std::string& response_body,
-                             const std::string& error) override {
-    ProjectorMessageHandler::OnXhrRequestCompleted(js_callback_id, success,
-                                                   response_body, error);
-    std::move(quit_closure_).Run();
-  }
-
-  void SetXhrRequestRunLoopQuitClosure(base::RepeatingClosure closure) {
-    quit_closure_ = base::BindOnce(closure);
-  }
-
- private:
-  base::OnceClosure quit_closure_;
-};
 
 class ProjectorMessageHandlerUnitTest : public testing::Test {
  public:
@@ -86,7 +47,7 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
 
   // testing::Test
   void SetUp() override {
-    message_handler_ = std::make_unique<ProjectorMessageHandlerForTest>();
+    message_handler_ = std::make_unique<ProjectorMessageHandler>();
     message_handler_->set_web_ui_for_test(&web_ui());
     message_handler_->RegisterMessages();
   }
@@ -97,9 +58,7 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
     return *(web_ui().call_data()[sequence_number]);
   }
 
-  ProjectorMessageHandlerForTest* message_handler() {
-    return message_handler_.get();
-  }
+  ProjectorMessageHandler* message_handler() { return message_handler_.get(); }
   content::TestWebUI& web_ui() { return web_ui_; }
   MockProjectorController& controller() { return mock_controller_; }
   MockAppClient& mock_app_client() { return mock_app_client_; }
@@ -107,7 +66,7 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  std::unique_ptr<ProjectorMessageHandlerForTest> message_handler_;
+  std::unique_ptr<ProjectorMessageHandler> message_handler_;
   MockProjectorController mock_controller_;
   MockAppClient mock_app_client_;
   content::TestWebUI web_ui_;
@@ -159,212 +118,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetOAuthTokenForAccount) {
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
   EXPECT_EQ(call_data.arg1()->GetString(), kGetOAuthTokenCallback);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
-  const std::string& test_response_body = "{}";
-
-  base::Value::List list_args;
-  list_args.Append(kSendXhrCallback);
-  base::Value::List args;
-  args.Append(kTestXhrUrl);
-  args.Append(kTestXhrMethod);
-  args.Append(kTestXhrRequestBody);
-  // Add useCredentials.
-  args.Append(true);
-  // Add useApiKey.
-  args.Append(false);
-  // Add additional headers.
-  base::Value::Dict dict;
-  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
-  args.Append(std::move(dict));
-  args.Append(base::Value());
-  list_args.Append(std::move(args));
-
-  mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
-                                                          test_response_body);
-
-  base::RunLoop run_loop;
-  message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
-  web_ui().HandleReceivedMessage("sendXhr", list_args);
-  mock_app_client().WaitForAccessRequest(kTestUserEmail);
-
-  run_loop.Run();
-
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kSendXhrCallback);
-
-  // Whether the callback was rejected or not.
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-  ASSERT_TRUE(call_data.arg3()->is_dict());
-
-  // Verify that it is success.
-  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
-  EXPECT_TRUE(*arg3_dict.FindBool(kXhrResponseSuccessPath));
-
-  // Verify the response.
-  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
-  EXPECT_EQ(test_response_body, *response);
-
-  // Verify error is empty.
-  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
-  EXPECT_TRUE(error->empty());
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithEmail) {
-  const std::string& test_response_body = "{}";
-
-  base::Value::List list_args;
-  list_args.Append(kSendXhrCallback);
-  base::Value::List args;
-  args.Append(kTestXhrUrl);
-  args.Append(kTestXhrMethod);
-  args.Append(kTestXhrRequestBody);
-  // Add useCredentials.
-  args.Append(true);
-  // Add useApiKey.
-  args.Append(false);
-  // Add additional headers.
-  base::Value::Dict dict;
-  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
-  args.Append(std::move(dict));
-  args.Append(kTestUserEmail);
-  list_args.Append(std::move(args));
-
-  mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
-                                                          test_response_body);
-
-  base::RunLoop run_loop;
-  message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
-  web_ui().HandleReceivedMessage("sendXhr", list_args);
-  mock_app_client().WaitForAccessRequest(kTestUserEmail);
-  run_loop.Run();
-
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kSendXhrCallback);
-
-  // Whether the callback was rejected or not.
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-  ASSERT_TRUE(call_data.arg3()->is_dict());
-
-  // Verify that it is success.
-  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
-  EXPECT_TRUE(*arg3_dict.FindBool(kXhrResponseSuccessPath));
-
-  // Verify the response.
-  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
-  EXPECT_EQ(test_response_body, *response);
-
-  // Verify error is empty.
-  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
-  EXPECT_TRUE(error->empty());
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, SendXhrFailed) {
-  const std::string& test_error_response_body = "error";
-
-  base::Value::List list_args;
-  list_args.Append(kSendXhrCallback);
-  base::Value::List args;
-  args.Append(kTestXhrUrl);
-  args.Append(kTestXhrMethod);
-  args.Append(kTestXhrRequestBody);
-  // Add useCredentials.
-  args.Append(true);
-  // Add useApiKey.
-  args.Append(false);
-  // Add additional headers.
-  base::Value::Dict dict;
-  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
-  args.Append(std::move(dict));
-  args.Append(kTestUserEmail);
-  list_args.Append(std::move(args));
-
-  mock_app_client().test_url_loader_factory().AddResponse(
-      /*url=*/kTestXhrUrl,
-      /*content=*/test_error_response_body,
-      /*status=*/net::HttpStatusCode::HTTP_NOT_FOUND);
-
-  base::RunLoop run_loop;
-  message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
-  web_ui().HandleReceivedMessage("sendXhr", list_args);
-  mock_app_client().WaitForAccessRequest(kTestUserEmail);
-
-  run_loop.Run();
-
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kSendXhrCallback);
-
-  // Whether the callback was rejected.
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-  ASSERT_TRUE(call_data.arg3()->is_dict());
-
-  // Verify that request failed.
-  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
-  EXPECT_FALSE(*arg3_dict.FindBool(kXhrResponseSuccessPath));
-
-  // Verify the response.
-  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
-  EXPECT_EQ(test_error_response_body, *response);
-
-  // Verify error is empty.
-  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
-  EXPECT_EQ("XHR_FETCH_FAILURE", *error);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
-  base::Value::List list_args;
-  list_args.Append(kSendXhrCallback);
-  base::Value::List args;
-  args.Append(kTestXhrUnsupportedUrl);
-  args.Append(kTestXhrMethod);
-  args.Append(kTestXhrRequestBody);
-  // Add useCredentials.
-  args.Append(true);
-  // Add useApiKey.
-  args.Append(false);
-  // Add additional headers.
-  base::Value::Dict dict;
-  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
-  args.Append(std::move(dict));
-  args.Append(kTestUserEmail);
-  list_args.Append(std::move(args));
-
-  base::RunLoop run_loop;
-  message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
-  web_ui().HandleReceivedMessage("sendXhr", list_args);
-  run_loop.Run();
-
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kSendXhrCallback);
-
-  // Whether the callback was rejected or not.
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-  ASSERT_TRUE(call_data.arg3()->is_dict());
-
-  // Verify that it is success.
-  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
-  EXPECT_TRUE(arg3_dict.FindBool(kXhrResponseSuccessPath));
-
-  // Verify the response.
-  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
-  EXPECT_TRUE(response->empty());
-
-  // Verify error is UNSUPPORTED_URL.
-  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
-  EXPECT_EQ("UNSUPPORTED_URL", *error);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {

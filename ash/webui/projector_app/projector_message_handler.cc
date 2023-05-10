@@ -12,7 +12,6 @@
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_screencast.h"
-#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -34,9 +33,6 @@ constexpr char kToken[] = "token";
 constexpr char kExpirationTime[] = "expirationTime";
 constexpr char kError[] = "error";
 constexpr char kOAuthTokenInfo[] = "oauthTokenInfo";
-constexpr char kXhrSuccess[] = "success";
-constexpr char kXhrResponseBody[] = "response";
-constexpr char kXhrError[] = "error";
 
 // Projector Error Strings.
 constexpr char kNoneStr[] = "NONE";
@@ -69,10 +65,7 @@ std::string ProjectorErrorToString(ProjectorError mode) {
 
 }  // namespace
 
-ProjectorMessageHandler::ProjectorMessageHandler()
-    : xhr_sender_(std::make_unique<ProjectorXhrSender>(
-          ProjectorAppClient::Get()->GetUrlLoaderFactory())) {}
-
+ProjectorMessageHandler::ProjectorMessageHandler() = default;
 ProjectorMessageHandler::~ProjectorMessageHandler() = default;
 
 base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
@@ -91,10 +84,6 @@ void ProjectorMessageHandler::RegisterMessages() {
 
   web_ui()->RegisterMessageCallback(
       "onError", base::BindRepeating(&ProjectorMessageHandler::OnError,
-                                     base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
@@ -145,47 +134,6 @@ void ProjectorMessageHandler::GetOAuthTokenForAccount(
                      GetWeakPtr(), oauth_token_fetch_callback));
 }
 
-void ProjectorMessageHandler::SendXhr(const base::Value::List& args) {
-  // Two arguments. The first is callback id, and the second is the list
-  // containing function arguments for making the request.
-  DCHECK_EQ(args.size(), 2u);
-  const auto& callback_id = args[0].GetString();
-
-  const auto& func_args = args[1].GetList();
-  // Four function arguments:
-  // 1. The request URL.
-  // 2. The request method, for example: GET
-  // 3. The request body data.
-  // 4. A bool to indicate whether or not to use end user credential to
-  // authorize the request.
-  // 5. A bool to indicate whether or not to use api key to authorize the
-  // request.
-  // 6. Additional headers objects.
-  // 7. The email address associated with the account
-  DCHECK_EQ(func_args.size(), 7u);
-
-  const auto& url = func_args[0].GetString();
-  const auto& method = func_args[1].GetString();
-
-  std::string request_body =
-      func_args[2].is_string() ? func_args[2].GetString() : std::string();
-  bool use_credentials =
-      func_args[3].is_bool() ? func_args[3].GetBool() : false;
-  bool use_api_key = func_args[4].is_bool() ? func_args[4].GetBool() : false;
-  std::string account_email =
-      func_args[6].is_string() ? func_args[6].GetString() : std::string();
-
-  DCHECK(!url.empty());
-  DCHECK(!method.empty());
-  xhr_sender_->Send(
-      GURL(url), method, request_body, use_credentials, use_api_key,
-      base::BindOnce(&ProjectorMessageHandler::OnXhrRequestCompleted,
-                     GetWeakPtr(), callback_id),
-      func_args[5].is_dict() ? func_args[5].GetDict().Clone()
-                             : base::Value::Dict(),
-      account_email);
-}
-
 void ProjectorMessageHandler::OnError(const base::Value::List& args) {
   // TODO(b/195113693): Get the SWA dialog associated with this WebUI and close
   // it.
@@ -209,21 +157,6 @@ void ProjectorMessageHandler::OnAccessTokenRequestCompleted(
                  base::Value(ProjectorErrorToString(ProjectorError::kNone)));
     response.Set(kOAuthTokenInfo, AccessTokenInfoToValue(info));
   }
-
-  ResolveJavascriptCallback(base::Value(js_callback_id), response);
-}
-
-void ProjectorMessageHandler::OnXhrRequestCompleted(
-    const std::string& js_callback_id,
-    bool success,
-    const std::string& response_body,
-    const std::string& error) {
-  AllowJavascript();
-
-  base::Value::Dict response;
-  response.Set(kXhrSuccess, success);
-  response.Set(kXhrResponseBody, response_body);
-  response.Set(kXhrError, error);
 
   ResolveJavascriptCallback(base::Value(js_callback_id), response);
 }

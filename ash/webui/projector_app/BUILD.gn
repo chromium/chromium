@@ -73,6 +73,7 @@ source_set("test_support") {
     ":projector_app",
     "//ash/public/cpp:cpp",
     "//ash/public/cpp:test_support",
+    "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",

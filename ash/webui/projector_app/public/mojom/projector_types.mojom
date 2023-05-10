@@ -64,3 +64,25 @@ enum PrefsThatProjectorCanAskFor {
     kProjectorViewerOnboardingShowCount = 2,
     kProjectorGalleryOnboardingShowCount = 3,
 };
+
+// The error code for the XhrResponse.
+enum XhrResponseCode {
+    kSuccess = 0,
+    kTokenFetchFailure = 1,
+    kXhrFetchFailure = 2,
+    kUnsupportedURL = 3,
+    kInvalidAccountEmail = 4,
+};
+
+// XhrResponse sent from the browser process the JS WebUI.
+struct XhrResponse {
+    string response;
+    XhrResponseCode response_code;
+};
+
+// The HTTP request type that comes from the JS WebUI.
+enum RequestType {
+    kPost = 0,
+    kGet = 1,
+    kPatch = 2,
+};

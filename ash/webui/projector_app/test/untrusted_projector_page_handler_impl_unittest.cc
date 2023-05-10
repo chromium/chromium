@@ -20,11 +20,23 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kTestUserEmail[] = "testuser1@gmail.com";
+constexpr char kTestXhrUrl[] =
+    "https://www.googleapis.com/drive/v3/files/fileID";
+constexpr char kTestXhrUnsupportedUrl[] = "https://www.example.com";
+constexpr ash::projector::mojom::RequestType kTestXhrMethod =
+    ash::projector::mojom::RequestType::kPost;
+constexpr char kTestXhrRequestBody[] = "{}";
+constexpr char kTestXhrHeaderKey[] = "X-Goog-Drive-Resource-Keys";
+constexpr char kTestXhrHeaderValue[] = "resource-key";
+constexpr char kTestResponseBody[] = "{}";
 
 // MOCK the Projector page instance in the WebUI renderer.
 class MockUntrustedProjectorPageJs
@@ -302,6 +314,113 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SafeBaseNameTest) {
 
   // The safe base name would not even be created in this instance.
   EXPECT_FALSE(base::SafeBaseName::Create(failing_path_3));
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SendXhr) {
+  mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
+                                                          kTestResponseBody);
+  const base::flat_map<std::string, std::string> headers{
+      {std::string(kTestXhrHeaderKey), std::string(kTestXhrHeaderValue)}};
+
+  base::test::TestFuture<projector::mojom::XhrResponsePtr>
+      send_xhr_request_future;
+  page().page_handler()->SendXhr(
+      GURL(kTestXhrUrl), kTestXhrMethod, kTestXhrRequestBody,
+      /*use_credentials=*/true,
+      /*use_api_key=*/false, headers,
+      /*email=*/absl::nullopt, send_xhr_request_future.GetCallback());
+  mock_app_client().WaitForAccessRequest(kTestUserEmail);
+
+  const auto& response = send_xhr_request_future.Get();
+  EXPECT_EQ(response->response, kTestResponseBody);
+  EXPECT_EQ(response->response_code,
+            projector::mojom::XhrResponseCode::kSuccess);
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SendXhrEmptyEmail) {
+  mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
+                                                          kTestResponseBody);
+  const base::flat_map<std::string, std::string> headers{
+      {std::string(kTestXhrHeaderKey), std::string(kTestXhrHeaderValue)}};
+
+  base::test::TestFuture<projector::mojom::XhrResponsePtr>
+      send_xhr_request_future;
+  page().page_handler()->SendXhr(
+      GURL(kTestXhrUrl), kTestXhrMethod, kTestXhrRequestBody,
+      /*use_credentials=*/true,
+      /*use_api_key=*/false, headers,
+      /*email=*/"", send_xhr_request_future.GetCallback());
+  mock_app_client().WaitForAccessRequest(kTestUserEmail);
+
+  const auto& response = send_xhr_request_future.Get();
+  EXPECT_EQ(response->response, kTestResponseBody);
+  EXPECT_EQ(response->response_code,
+            projector::mojom::XhrResponseCode::kSuccess);
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SendXhrWithEmail) {
+  mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
+                                                          kTestResponseBody);
+  const base::flat_map<std::string, std::string> headers{
+      {std::string(kTestXhrHeaderKey), std::string(kTestXhrHeaderValue)}};
+  base::test::TestFuture<projector::mojom::XhrResponsePtr>
+      send_xhr_request_future;
+  page().page_handler()->SendXhr(GURL(kTestXhrUrl), kTestXhrMethod,
+                                 kTestXhrRequestBody,
+                                 /*use_credentials=*/true,
+                                 /*use_api_key=*/false, headers, kTestUserEmail,
+                                 send_xhr_request_future.GetCallback());
+  mock_app_client().WaitForAccessRequest(kTestUserEmail);
+
+  const auto& response = send_xhr_request_future.Get();
+  EXPECT_EQ(response->response, kTestResponseBody);
+  EXPECT_EQ(response->response_code,
+            projector::mojom::XhrResponseCode::kSuccess);
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SendXhrFailed) {
+  constexpr char kTestErrorResponseBody[] = "error";
+  mock_app_client().test_url_loader_factory().AddResponse(
+      /*url=*/kTestXhrUrl,
+      /*content=*/kTestErrorResponseBody,
+      /*status=*/net::HttpStatusCode::HTTP_NOT_FOUND);
+  const base::flat_map<std::string, std::string> headers{
+      {std::string(kTestXhrHeaderKey), std::string(kTestXhrHeaderValue)}};
+  base::test::TestFuture<projector::mojom::XhrResponsePtr>
+      send_xhr_request_future;
+  page().page_handler()->SendXhr(GURL(kTestXhrUrl), kTestXhrMethod,
+                                 kTestXhrRequestBody,
+                                 /*use_credentials=*/true,
+                                 /*use_api_key=*/false, headers, kTestUserEmail,
+                                 send_xhr_request_future.GetCallback());
+
+  mock_app_client().WaitForAccessRequest(kTestUserEmail);
+  const auto& response = send_xhr_request_future.Get();
+  EXPECT_EQ(response->response, kTestErrorResponseBody);
+  EXPECT_EQ(response->response_code,
+            projector::mojom::XhrResponseCode::kXhrFetchFailure);
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SendXhrWithUnSupportedUrl) {
+  auto crashing_lambda_test = [&]() {
+    const base::flat_map<std::string, std::string> headers{
+        {std::string(kTestXhrHeaderKey), std::string(kTestXhrHeaderValue)}};
+
+    base::test::TestFuture<projector::mojom::XhrResponsePtr>
+        send_xhr_request_future;
+
+    page().page_handler()->SendXhr(
+        GURL(kTestXhrUnsupportedUrl), kTestXhrMethod, kTestXhrRequestBody,
+        /*use_credentials=*/true,
+        /*use_api_key=*/false, headers, kTestUserEmail,
+        send_xhr_request_future.GetCallback());
+
+    const auto& response = send_xhr_request_future.Get();
+    EXPECT_EQ(response->response_code,
+              projector::mojom::XhrResponseCode::kUnsupportedURL);
+  };
+
+  EXPECT_DEATH_IF_SUPPORTED(crashing_lambda_test(), "");
 }
 
 }  // namespace ash

@@ -132,16 +132,9 @@ const CLIENT_DELEGATE = {
   sendXhr(
       url, method, requestBody, useCredentials, useApiKey, headers,
       accountEmail) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'sendXhr', [
-          url,
-          method,
-          requestBody ? requestBody : '',
-          !!useCredentials,
-          !!useApiKey,
-          headers,
-          accountEmail,
-        ]);
+    return browserProxy.sendXhr(
+        url, method, requestBody, !!useCredentials, !!useApiKey, headers,
+        accountEmail);
   },
 
   /**
