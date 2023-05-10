@@ -478,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlocklistable) {
   EXPECT_EQ(JSIncrementerFetch(contents), 2);
 
   // But in-page links still work even if they are javascript-links.
-  EXPECT_TRUE(content::ExecuteScript(
-      contents, "document.getElementById('link').click();"));
+  EXPECT_TRUE(
+      content::ExecJs(contents, "document.getElementById('link').click();"));
   EXPECT_EQ(JSIncrementerFetch(contents), 3);
 }
 

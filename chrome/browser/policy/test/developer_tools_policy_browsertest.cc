@@ -202,9 +202,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScript(contents, std::string(define_helpers_js)));
+  EXPECT_TRUE(content::ExecJs(contents, std::string(define_helpers_js)));
 
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents, base::StringPrintf("domAutomationController.send(%s.click());",
                                    toggle_dev_mode_accessor_js)));
 
