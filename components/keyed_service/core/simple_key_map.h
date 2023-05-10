@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -53,7 +54,7 @@ class KEYED_SERVICE_EXPORT SimpleKeyMap {
   SimpleKeyMap();
   ~SimpleKeyMap();
 
-  std::map<content::BrowserContext*, SimpleFactoryKey*> mapping_;
+  std::map<raw_ptr<content::BrowserContext>, SimpleFactoryKey*> mapping_;
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_KEY_MAP_H_
