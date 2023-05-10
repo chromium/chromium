@@ -30,14 +30,14 @@ def shell_join(cmd):
     return ' '.join(shlex.quote(c) for c in cmd)
 
 
-def run(args, cwd=None):
+def run(args):
     logging.debug(f'$ {shell_join(args)}')
-    subprocess.check_call(args, cwd=cwd)
+    subprocess.check_call(args)
 
 
-def check_output(args, cwd=None):
+def check_output(args):
     logging.debug(f'$ {shell_join(args)}')
-    return subprocess.check_output(args, cwd=cwd, text=True)
+    return subprocess.check_output(args, text=True)
 
 
 def run_node(args):
