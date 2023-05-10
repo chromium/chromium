@@ -1,0 +1,29 @@
+diff --git a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
+index 9020c2fc..7c3d4399 100644
+--- a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
++++ b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
+@@ -33,7 +33,10 @@ final class ConfigLoader {
+
+ 	static Properties load(final String resource, final Properties system) {
+ 		final Properties result = new Properties();
+-		loadResource(resource, result);
++		// Local modification: Do not read from resource file because strict mode
++		// doesn't allow this. See crbug.com/1401476. Using hardcoded properties
++		// here.
++		result.setProperty("output", "none");
+ 		loadSystemProperties(system, result);
+ 		substSystemProperties(result, system);
+ 		return result;
+diff --git a/org.jacoco.examples.test/src/test/resources/verify-offline.groovy b/org.jacoco.examples.test/src/test/resources/verify-offline.groovy
+index 0f00234b..2c37184a 100644
+--- a/org.jacoco.examples.test/src/test/resources/verify-offline.groovy
++++ b/org.jacoco.examples.test/src/test/resources/verify-offline.groovy
+@@ -10,7 +10,7 @@
+  *
+  *******************************************************************************/
+ File realBaseDir = new File(basedir, "../../../target/it-offline/build");
+-assert new File(realBaseDir, "target/site/jacoco/index.html").exists();
++// For local modification in ConfigLoader.
+ assert !new File(realBaseDir, "target/site/jacoco-it/index.html").exists();
+ assert new File(realBaseDir, "build.log").getText().contains(":restore-instrumented-classes");
+ return true;
