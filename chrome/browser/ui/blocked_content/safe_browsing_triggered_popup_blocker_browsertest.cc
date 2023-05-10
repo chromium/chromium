@@ -69,7 +69,7 @@ void RoundTripAndVerifyLogMessages(
     std::set<std::string> messages_expected,
     std::set<std::string> messages_not_expected) {
   // Round trip to the renderer to ensure the message would have gotten sent.
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "var a = 1;"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "var a = 1;"));
 
   for (size_t i = 0u; i < observer.messages().size(); ++i) {
     std::string message = observer.GetMessageAt(i);
