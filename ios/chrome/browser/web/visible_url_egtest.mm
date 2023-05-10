@@ -494,23 +494,3 @@ class PausableResponseProvider : public HtmlResponseProvider {
 }
 
 @end
-
-// Test using legacy restore.
-@interface VisibleURLWithWithLegacyRestoreTestCase
-    : VisibleURLWithCachedRestoreTestCase
-@end
-
-@implementation VisibleURLWithWithLegacyRestoreTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(web::features::kSynthesizedRestoreSession);
-  config.features_disabled.push_back(web::kRestoreSessionFromCache);
-  return config;
-}
-
-// This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
-}
-
-@end
