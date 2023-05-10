@@ -1240,10 +1240,6 @@ Value* Value::FindListPath(StringPiece path) {
   return const_cast<Value*>(std::as_const(*this).FindListPath(path));
 }
 
-size_t Value::DictSize() const {
-  return GetDict().size();
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }

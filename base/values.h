@@ -841,9 +841,6 @@ class BASE_EXPORT GSL_OWNER Value {
   Value* FindListPath(StringPiece path);
   const Value* FindListPath(StringPiece path) const;
 
-  // DEPRECATED: prefer `Value::Dict::size()`.
-  size_t DictSize() const;
-
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard
