@@ -106,12 +106,12 @@ class PasswordGenerationInteractiveTest
   }
 
   void FocusPasswordField() {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(), "document.getElementById('password_field').focus()"));
   }
 
   void FocusUsernameField() {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(), "document.getElementById('username_field').focus();"));
   }
 
@@ -314,8 +314,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   FocusPasswordField();
   EXPECT_TRUE(GenerationPopupShowing());
 
-  ASSERT_TRUE(
-      content::ExecuteScript(WebContents(), "window.scrollTo(100, 0);"));
+  ASSERT_TRUE(content::ExecJs(WebContents(), "window.scrollTo(100, 0);"));
 
   EXPECT_FALSE(GenerationPopupShowing());
 }
@@ -331,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   std::string focus_script =
       "document.getElementById('password_field').focus();";
 
-  ASSERT_TRUE(content::ExecuteScript(child_frame, focus_script));
+  ASSERT_TRUE(content::ExecJs(child_frame, focus_script));
   EXPECT_TRUE(GenerationPopupShowing());
 }
 
@@ -406,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   PasswordsNavigationObserver observer(WebContents());
   std::string submit_script =
       "document.getElementById('input_submit_button').click()";
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), submit_script));
+  ASSERT_TRUE(content::ExecJs(WebContents(), submit_script));
   ASSERT_TRUE(observer.Wait());
 
   WaitForPasswordStore();

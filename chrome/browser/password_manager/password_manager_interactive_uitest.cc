@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   BubbleObserver prompt_observer(WebContents());
   std::string submit =
       "document.getElementById('input_submit_button').click();";
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
+  ASSERT_TRUE(content::ExecJs(WebContents(), submit));
   ASSERT_TRUE(navigation_observer.Wait());
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
   prompt_observer.AcceptSavePrompt();
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("username_field", "user");
   FillElementWithValue("password_field", "1234");
   PasswordsNavigationObserver observer(WebContents());
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
+  ASSERT_TRUE(content::ExecJs(WebContents(), "send_xhr()"));
   ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
   PasswordsNavigationObserver observer(WebContents());
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
+  ASSERT_TRUE(content::ExecJs(WebContents(), "send_xhr()"));
   ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("password_field", "1234");
 
   PasswordsNavigationObserver observer(WebContents());
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
+  ASSERT_TRUE(content::ExecJs(WebContents(), "send_fetch()"));
   ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
   PasswordsNavigationObserver observer(WebContents());
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
+  ASSERT_TRUE(content::ExecJs(WebContents(), "send_fetch()"));
   ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   EXPECT_EQ(4, controller->GetLineCount());
 
   // Trigger user gesture so that autofill happens.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       WebContents(), "document.getElementById('username_field').click();"));
   WaitForElementValue("username_field", "admin");
 
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, ChangePwdFormCleared) {
   FillElementWithValue("chg_new_password_2", "new_pw", "new_pw");
 
   std::string submit = "document.getElementById('chg_clear_button').click();";
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
+  ASSERT_TRUE(content::ExecJs(WebContents(), submit));
 
   EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
 
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
             ? "document.getElementById('chg_clear_all_fields_button').click();"
             : "document.getElementById('chg_clear_some_fields_button').click()"
               ";";
-    ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
+    ASSERT_TRUE(content::ExecJs(WebContents(), submit));
 
     if (all_fields_cleared)
       EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                              : "document.getElementById('chg_clear_some_"
                                "formless_fields_button').click();";
 
-    ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
+    ASSERT_TRUE(content::ExecJs(WebContents(), submit));
 
     if (relevant_fields_cleared) {
       prompt_observer->WaitForAutomaticUpdatePrompt();

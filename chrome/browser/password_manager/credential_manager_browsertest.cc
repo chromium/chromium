@@ -86,7 +86,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
       content::WebContents* web_contents,
       const char* username,
       const char* password) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         web_contents,
         base::StringPrintf(
             "window.addEventListener(\"unload\", () => {"
@@ -284,13 +284,14 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   std::string fill_password =
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'password';";
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_password));
+  ASSERT_TRUE(content::ExecJs(WebContents(), fill_password));
 
   // Call the API to trigger the notification to the client.
-  ASSERT_TRUE(content::ExecuteScript(
-      WebContents(),
-      "navigator.credentials.get({password: true})"
-      ".then(cred => window.location = '/password/done.html')"));
+  ASSERT_TRUE(
+      content::ExecJs(WebContents(),
+                      "navigator.credentials.get({password: true})"
+                      ".then(cred => window.location = '/password/done.html')",
+                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   // Mojo calls from the renderer are asynchronous.
   BubbleObserver(WebContents()).WaitForAccountChooser();
   PasswordsModelDelegateFromWebContents(WebContents())
@@ -361,11 +362,12 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
     NavigateToFile("/password/simple_password.html");
 
     // Call the API to store 'user1' with the old password.
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(),
         "navigator.credentials.store("
         "  new PasswordCredential({ id: 'user1', password: 'abcdef' }))"
-        ".then(cred => window.location = '/password/done.html');"));
+        ".then(cred => window.location = '/password/done.html');",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
@@ -376,11 +378,12 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
     NavigateToFile("/password/simple_password.html");
 
     // Call the API to store 'user2' with the old password.
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(),
         "navigator.credentials.store("
         "  new PasswordCredential({ id: 'user2', password: '123456' }))"
-        ".then(cred => window.location = '/password/done.html');"));
+        ".then(cred => window.location = '/password/done.html');",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
@@ -448,11 +451,12 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
     NavigateToFile("/password/simple_password.html");
 
     // Call the API to store 'user1' with a new password.
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(),
         "navigator.credentials.store("
         "  new PasswordCredential({ id: 'user1', password: 'ABCDEF' }))"
-        ".then(cred => window.location = '/password/done.html');"));
+        ".then(cred => window.location = '/password/done.html');",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
@@ -463,11 +467,12 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
     NavigateToFile("/password/simple_password.html");
 
     // Call the API to store 'user2' with a new password.
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(),
         "navigator.credentials.store("
         "  new PasswordCredential({ id: 'user2', password: 'UVWXYZ' }))"
-        ".then(cred => window.location = '/password/done.html');"));
+        ".then(cred => window.location = '/password/done.html');",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
@@ -546,11 +551,12 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
     NavigateToFile("/password/simple_password.html");
 
     // Call the API to store 'user1' with a new password.
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(),
         "navigator.credentials.store("
         "  new PasswordCredential({ id: 'user1', password: 'ABCDEF' }))"
-        ".then(cred => window.location = '/password/done.html');"));
+        ".then(cred => window.location = '/password/done.html');",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
@@ -561,11 +567,12 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
     NavigateToFile("/password/simple_password.html");
 
     // Call the API to store 'user2' with a new password.
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         WebContents(),
         "navigator.credentials.store("
         "  new PasswordCredential({ id: 'user2', password: 'UVWXYZ' }))"
-        ".then(cred => window.location = '/password/done.html');"));
+        ".then(cred => window.location = '/password/done.html');",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
@@ -614,13 +621,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
                 "/password/password_form.html");
 
   // Call the API to trigger |get| and |store| and redirect.
-  ASSERT_TRUE(
-      content::ExecuteScript(WebContents(),
-                             "navigator.credentials.get({password: true})"
-                             ".then(cred => "
-                             "navigator.credentials.store(cred)"
-                             ".then(cred => "
-                             "window.location = '/password/done.html'))"));
+  ASSERT_TRUE(content::ExecJs(WebContents(),
+                              "navigator.credentials.get({password: true})"
+                              ".then(cred => "
+                              "navigator.credentials.store(cred)"
+                              ".then(cred => "
+                              "window.location = '/password/done.html'))",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Mojo calls from the renderer are asynchronous.
   BubbleObserver(WebContents()).WaitForAccountChooser();
@@ -671,11 +678,12 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
                 "/password/password_form.html");
 
   // Call the API to trigger |get| and |store| and redirect.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       WebContents(),
       "navigator.credentials.store("
       "  new PasswordCredential({ id: 'user', password: 'P4SSW0RD' }))"
-      ".then(cred => window.location = '/password/done.html');"));
+      ".then(cred => window.location = '/password/done.html');",
+      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
@@ -729,8 +737,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       browser(), https_test_server().GetURL("/password/done.html")));
 
   // Call the API to trigger the account chooser.
-  ASSERT_TRUE(content::ExecuteScript(
-      WebContents(), "navigator.credentials.get({password: true})"));
+  ASSERT_TRUE(content::ExecJs(WebContents(),
+                              "navigator.credentials.get({password: true})",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   BubbleObserver(WebContents()).WaitForAccountChooser();
 
   // Wait for the migration logic to actually touch the password store.
@@ -766,13 +775,14 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   std::string fill_password =
       "document.getElementById('username_field').value = 'trash';"
       "document.getElementById('password_field').value = 'trash';";
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_password));
+  ASSERT_TRUE(content::ExecJs(WebContents(), fill_password));
 
   // Call the API to trigger the notification to the client.
-  ASSERT_TRUE(content::ExecuteScript(
-      WebContents(),
-      "navigator.credentials.get({password: true})"
-      ".then(cred => window.location = '/password/done.html');"));
+  ASSERT_TRUE(
+      content::ExecJs(WebContents(),
+                      "navigator.credentials.get({password: true})"
+                      ".then(cred => window.location = '/password/done.html');",
+                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
@@ -833,10 +843,11 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_FALSE(client->has_binding_for_credential_manager());
   EXPECT_FALSE(client->was_store_ever_called());
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       WebContents(),
       "var c = new PasswordCredential({ id: 'user', password: 'hunter2' });"
-      "navigator.credentials.store(c);"));
+      "navigator.credentials.store(c);",
+      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   BubbleObserver prompt_observer(WebContents());
   prompt_observer.WaitForAutomaticSavePrompt();
@@ -885,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
   NavigateToFile("/password/password_form.html");
   const GURL current_url = WebContents()->GetLastCommittedURL();
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       WebContents(),
       "document.getElementById('input_submit_button').addEventListener('click',"
       "function(event) {"
@@ -894,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
       "});"));
   // Fill the password and click the button to submit the page. The API should
   // suppress the autofill password manager.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       WebContents(),
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'autofill';"
@@ -939,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
 
   NavigateToFile("/password/password_form.html");
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       WebContents(),
       "document.getElementById('input_submit_button').addEventListener('click',"
       "function(event) {"
@@ -950,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   // API should suppress the autofill password manager and overwrite the
   // password.
   PasswordsNavigationObserver form_submit_observer(WebContents());
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       WebContents(),
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'autofill';"
@@ -987,10 +998,11 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, CredentialsAutofilled) {
   NavigateToFile("/password/password_form.html");
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       RenderFrameHost(),
       "var c = new PasswordCredential({ id: 'user', password: '12345' });"
-      "navigator.credentials.store(c);"));
+      "navigator.credentials.store(c);",
+      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   BubbleObserver bubble_observer(WebContents());
   bubble_observer.WaitForAutomaticSavePrompt();
   bubble_observer.AcceptSavePrompt();
@@ -1170,8 +1182,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerAvatarTest,
   AddPasswordForURL(b_url);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
-  ASSERT_TRUE(content::ExecuteScript(
-      WebContents(), "navigator.credentials.get({password: true})"));
+  ASSERT_TRUE(content::ExecJs(WebContents(),
+                              "navigator.credentials.get({password: true})",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // The account chooser UI requested the avatar.
   BubbleObserver(WebContents()).WaitForAccountChooser();
@@ -1179,15 +1192,17 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerAvatarTest,
 
   // Navigate to the second site, the icon is requested again.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
-  ASSERT_TRUE(content::ExecuteScript(
-      WebContents(), "navigator.credentials.get({password: true})"));
+  ASSERT_TRUE(content::ExecJs(WebContents(),
+                              "navigator.credentials.get({password: true})",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   BubbleObserver(WebContents()).WaitForAccountChooser();
   WaitForAvatarCounter(2u);
 
   // Navigate back to the first site, the icon is already cached.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
-  ASSERT_TRUE(content::ExecuteScript(
-      WebContents(), "navigator.credentials.get({password: true})"));
+  ASSERT_TRUE(content::ExecJs(WebContents(),
+                              "navigator.credentials.get({password: true})",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   BubbleObserver(WebContents()).WaitForAccountChooser();
   EXPECT_EQ(avatar_request_counter(), 2u);
 }
