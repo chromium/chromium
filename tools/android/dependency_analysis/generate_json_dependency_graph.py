@@ -171,8 +171,6 @@ def _run_jdeps(jdeps_path: pathlib.Path, src_path: pathlib.Path,
     cache_path = _calculate_cache_path(filepath, src_path, build_output_dir)
     if (cache_path.exists()
             and cache_path.stat().st_mtime > filepath.stat().st_mtime):
-        logging.debug(
-            f'Found valid jdeps cache at {_relsrc(cache_path, src_path)}')
         with cache_path.open() as f:
             return f.read()
 
@@ -181,12 +179,12 @@ def _run_jdeps(jdeps_path: pathlib.Path, src_path: pathlib.Path,
         f'Running jdeps and parsing output for {_relsrc(filepath, src_path)}')
     output = subprocess_utils.run_command([
         str(jdeps_path),
-        '-R',
         '-verbose:class',
         '--multi-release',  # Some jars support multiple JDK releases.
         'base',
         str(filepath),
     ])
+    logging.debug('Writing output to cache.')
     with cache_path.open('w') as f:
         f.write(output)
     return output
