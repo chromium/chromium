@@ -2084,7 +2084,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         browser->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver observer(contents);
     const char* const kScript = "document.body.webkitRequestFullscreen()";
-    EXPECT_TRUE(content::ExecuteScript(contents, kScript));
+    EXPECT_TRUE(content::ExecJs(contents, kScript));
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
   }
@@ -2094,7 +2094,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         browser->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver observer(contents);
     const char* const kScript = "Notification.requestPermission(function(){})";
-    EXPECT_TRUE(content::ExecuteScript(contents, kScript));
+    EXPECT_TRUE(content::ExecJs(contents, kScript));
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
   }
@@ -2104,7 +2104,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         browser->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver observer(contents);
     const char* const kScript = "navigator.mediaDevices.getDisplayMedia()";
-    EXPECT_TRUE(content::ExecuteScript(contents, kScript));
+    EXPECT_TRUE(content::ExecJs(contents, kScript,
+                                content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
   }
@@ -2519,7 +2520,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(contents);
-  EXPECT_TRUE(content::ExecuteScript(contents, "alert('test')"));
+  EXPECT_TRUE(content::ExecJs(contents, "alert('test')"));
   observer.WaitForNavigationFinished();
   EXPECT_TRUE(WaitForReady(browser()));
 
@@ -2666,7 +2667,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   std::string fill_and_submit =
       "document.getElementById('retry_password_field').value = 'pw';"
       "document.getElementById('retry_submit_button').click()";
-  ASSERT_TRUE(content::ExecuteScript(contents, fill_and_submit));
+  ASSERT_TRUE(content::ExecJs(contents, fill_and_submit));
   ASSERT_TRUE(observer2.Wait());
   EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
   PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());

@@ -266,7 +266,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
         script_executing_frame =
             ChildFrameAt(script_executing_frame, subframe_index);
       }
-      ASSERT_TRUE(content::ExecuteScript(script_executing_frame, script));
+      ASSERT_TRUE(content::ExecJs(script_executing_frame, script));
     }
     // Wait for navigations on current tab and new tab (if any) to finish.
     navigation_observer.Wait();
@@ -274,7 +274,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
 
     // Since this test uses javascript to mimic clicking on a link (no actual
     // user gesture), and DidGetUserInteraction() does not respond to
-    // ExecuteScript(), navigation_transition field in resulting
+    // ExecJs(), navigation_transition field in resulting
     // NavigationEvents will always be RENDERER_INITIATED_WITHOUT_USER_GESTURE.
     // Therefore, we need to make some adjustment to relevant NavigationEvent.
     for (std::size_t i = 0U;
@@ -307,12 +307,12 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
         script_executing_frame =
             ChildFrameAt(script_executing_frame, subframe_index);
       }
-      ASSERT_TRUE(content::ExecuteScript(script_executing_frame, script));
+      ASSERT_TRUE(content::ExecJs(script_executing_frame, script));
     }
 
     // Since this test uses javascript to mimic clicking on a link (no actual
     // user gesture), and DidGetUserInteraction() does not respond to
-    // ExecuteScript(), navigation_transition field in resulting
+    // ExecJs(), navigation_transition field in resulting
     // NavigationEvents will always be RENDERER_INITIATED_WITHOUT_USER_GESTURE.
     // Therefore, we need to make some adjustment to relevant
     // PendingNavigationEvent.
@@ -331,8 +331,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
         browser()->profile()->GetDownloadManager();
     content::WebContents* current_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(
-        content::ExecuteScript(current_web_contents, "downloadViaFileApi()"));
+    ASSERT_TRUE(content::ExecJs(current_web_contents, "downloadViaFileApi()"));
     manager->GetAllDownloads(&items);
     ASSERT_EQ(0U, items.size());
   }
@@ -2950,15 +2949,15 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   EXPECT_EQ(3U, nav_list->NavigationEventsSize());
 
   // Simulates back.
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.history.back();"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.history.back();"));
   base::RunLoop().RunUntilIdle();
 
   // Simulates forward.
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.history.forward();"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.history.forward();"));
   base::RunLoop().RunUntilIdle();
 
   nav_list = navigation_event_list();
@@ -2976,9 +2975,9 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, ReloadNotRecorded) {
   EXPECT_EQ(1U, nav_list->NavigationEventsSize());
 
   // Simulates reload.
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "location.reload();"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "location.reload();"));
   base::RunLoop().RunUntilIdle();
 
   nav_list = navigation_event_list();
@@ -3003,9 +3002,9 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.location='../signed.exe'"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.location='../signed.exe'"));
   base::RunLoop().RunUntilIdle();
 
   ReferrerChain referrer_chain;

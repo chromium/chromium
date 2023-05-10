@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
   std::string script =
       "var node = document.getElementById('reset-password-button'); \n"
       "node.click();";
-  ASSERT_TRUE(content::ExecuteScript(interstitial_web_contents, script));
+  ASSERT_TRUE(content::ExecJs(interstitial_web_contents, script));
   content::TestNavigationObserver observer1(interstitial_web_contents,
                                             /*number_of_navigations=*/1);
   observer1.Wait();
