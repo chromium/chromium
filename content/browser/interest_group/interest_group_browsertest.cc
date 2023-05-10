@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -12749,6 +12750,166 @@ IN_PROC_BROWSER_TEST_F(
   // Expect automatic beacon being sent successfully with empty event data.
   EXPECT_TRUE(network_responder_->GetRequest()->content.empty());
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
+}
+
+class BiddingAndAuctionServerBrowserTestBase : public ContentBrowserTest {
+ public:
+  BiddingAndAuctionServerBrowserTestBase() = default;
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    constexpr char kBaseDataDir[] = "content/test/data/interest_group/";
+
+    // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
+    // the origin trial token in the response is associated with a fixed
+    // origin, whereas EmbeddedTestServer serves content on a random port.
+    url_loader_interceptor_ =
+        std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
+            [&](URLLoaderInterceptor::RequestParams* params) -> bool {
+              last_request_is_ad_auction_header_request_ =
+                  params->url_request.ad_auction_headers;
+
+              URLLoaderInterceptor::WriteResponse(
+                  base::StrCat(
+                      {kBaseDataDir, params->url_request.url.path_piece()}),
+                  params->client.get());
+
+              return true;
+            }));
+  }
+
+  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
+  FrameTreeNode* root() {
+    return static_cast<WebContentsImpl*>(web_contents())
+        ->GetPrimaryFrameTree()
+        .root();
+  }
+
+  bool last_request_is_ad_auction_header_request() const {
+    return last_request_is_ad_auction_header_request_;
+  }
+
+ private:
+  bool last_request_is_ad_auction_header_request_ = false;
+
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+class BiddingAndAuctionServerAllFeaturesEnabledBrowserTest
+    : public BiddingAndAuctionServerBrowserTestBase {
+ public:
+  BiddingAndAuctionServerAllFeaturesEnabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrivacySandboxAdsAPIs,
+         blink::features::kInterestGroupStorage,
+         blink::features::kFledgeBiddingAndAuctionServer},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BiddingAndAuctionServerAllFeaturesEnabledBrowserTest,
+                       AdsAPIsOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                GURL("https://example.test/empty.html"))));
+
+  EXPECT_FALSE(last_request_is_ad_auction_header_request());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BiddingAndAuctionServerAllFeaturesEnabledBrowserTest,
+    BiddingAndAuctionServerOriginTrial_AdAuctionHeadersAllowedForFetch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                GURL("https://example.test/empty.html"))));
+
+  EXPECT_TRUE(last_request_is_ad_auction_header_request());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BiddingAndAuctionServerAllFeaturesEnabledBrowserTest,
+    BiddingAndAuctionServerOriginTrial_NoFetchParam_AdAuctionHeadersNotAllowedForFetch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace("fetch($1)",
+                                GURL("https://example.test/empty.html"))));
+
+  EXPECT_FALSE(last_request_is_ad_auction_header_request());
+}
+
+class BiddingAndAuctionServerDisabledBrowserTest
+    : public BiddingAndAuctionServerBrowserTestBase {
+ public:
+  BiddingAndAuctionServerDisabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrivacySandboxAdsAPIs,
+         blink::features::kInterestGroupStorage},
+        /*disabled_features=*/{
+            blink::features::kFledgeBiddingAndAuctionServer});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BiddingAndAuctionServerDisabledBrowserTest,
+    BiddingAndAuctionServerOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                GURL("https://example.test/empty.html"))));
+
+  EXPECT_FALSE(last_request_is_ad_auction_header_request());
+}
+
+class BiddingAndAuctionServerMainFledgeFeatureDisabledBrowserTest
+    : public BiddingAndAuctionServerBrowserTestBase {
+ public:
+  BiddingAndAuctionServerMainFledgeFeatureDisabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrivacySandboxAdsAPIs,
+         blink::features::kFledgeBiddingAndAuctionServer},
+        /*disabled_features=*/{blink::features::kInterestGroupStorage});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BiddingAndAuctionServerMainFledgeFeatureDisabledBrowserTest,
+    BiddingAndAuctionServerOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                GURL("https://example.test/empty.html"))));
+
+  EXPECT_FALSE(last_request_is_ad_auction_header_request());
 }
 
 }  // namespace

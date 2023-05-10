@@ -23,6 +23,7 @@ dictionary RequestInit {
     boolean keepalive;
     [RuntimeEnabled=PriorityHints] FetchPriority priority;
     [RuntimeEnabled=TopicsAPI, Exposed=Window] boolean browsingTopics;
+    [RuntimeEnabled=FledgeBiddingAndAuctionServer, Exposed=Window] boolean adAuctionHeaders;
     AbortSignal? signal;
     [RuntimeEnabled=FetchUploadStreaming] RequestDuplex duplex;
     [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] IPAddressSpace targetAddressSpace;

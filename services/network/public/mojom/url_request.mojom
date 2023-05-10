@@ -323,6 +323,12 @@ struct URLRequest {
   // https://github.com/patcg-individual-drafts/topics
   bool browsing_topics;
 
+  // True if this is an ad auction request eligible for attaching the
+  // `Sec-Ad-Auction-Fetch` request header and processing the
+  // `X-Ad-Auction-Result` response header.
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
+  bool ad_auction_headers;
+
   // True if the request was user initiated.
   bool has_user_gesture;
 

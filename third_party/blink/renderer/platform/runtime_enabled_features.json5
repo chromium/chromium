@@ -1729,6 +1729,13 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "FledgeBiddingAndAuctionServer",
+      base_feature: "none",
+      origin_trial_feature_name: "FledgeBiddingAndAuctionServer",
+      origin_trial_allows_third_party: true,
+      public: true,
+    },
+    {
       name: "FluentScrollbars",
       base_feature: "none",
     },

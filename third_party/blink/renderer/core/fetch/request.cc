@@ -95,6 +95,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetPriority(original->Priority());
   request->SetKeepalive(original->Keepalive());
   request->SetBrowsingTopics(original->BrowsingTopics());
+  request->SetAdAuctionHeaders(original->AdAuctionHeaders());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
   if (original->URLLoaderFactory()) {
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> factory_clone;
@@ -127,8 +128,9 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasTargetAddressSpace() || init->hasCredentials() ||
          init->hasCache() || init->hasRedirect() || init->hasIntegrity() ||
          init->hasKeepalive() || init->hasBrowsingTopics() ||
-         init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
-         init->hasPrivateToken() || init->hasAttributionReporting();
+         init->hasAdAuctionHeaders() || init->hasPriority() ||
+         init->hasSignal() || init->hasDuplex() || init->hasPrivateToken() ||
+         init->hasAttributionReporting();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -550,6 +552,18 @@ Request* Request::CreateRequestWithRequestOrString(
       UseCounter::Count(execution_context,
                         mojom::blink::WebFeature::kTopicsAPIFetch);
     }
+  }
+
+  if (init->hasAdAuctionHeaders()) {
+    if (!execution_context->IsSecureContext()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "adAuctionHeaders: ad auction operations are only available in "
+          "secure contexts.");
+      return nullptr;
+    }
+
+    request->SetAdAuctionHeaders(init->adAuctionHeaders());
   }
 
   // "If |init|'s method member is present, let |method| be it and run these

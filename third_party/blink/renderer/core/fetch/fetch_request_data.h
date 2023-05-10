@@ -141,6 +141,9 @@ class CORE_EXPORT FetchRequestData final
   bool BrowsingTopics() const { return browsing_topics_; }
   void SetBrowsingTopics(bool b) { browsing_topics_ = b; }
 
+  bool AdAuctionHeaders() const { return ad_auction_headers_; }
+  void SetAdAuctionHeaders(bool b) { ad_auction_headers_ = b; }
+
   bool IsHistoryNavigation() const { return is_history_navigation_; }
   void SetIsHistoryNavigation(bool b) { is_history_navigation_ = b; }
 
@@ -221,6 +224,7 @@ class CORE_EXPORT FetchRequestData final
       network::mojom::RequestDestination::kEmpty;
   bool keepalive_ = false;
   bool browsing_topics_ = false;
+  bool ad_auction_headers_ = false;
   bool is_history_navigation_ = false;
   network::mojom::AttributionReportingEligibility
       attribution_reporting_eligibility_ =
