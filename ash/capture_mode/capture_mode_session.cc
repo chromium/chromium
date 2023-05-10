@@ -1073,10 +1073,22 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     }
 
     case ui::VKEY_TAB: {
-      event->StopPropagation();
-      event->SetHandled();
-      focus_cycler_->AdvanceFocus(/*reverse=*/event->IsShiftDown());
-      *should_update_opacity_ptr = true;
+      // We only care about specific modifiers, e.g., the interaction between
+      // Tab and Caps Lock doesn't concern us.
+      constexpr ui::EventFlags kModifiers =
+          ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
+          ui::EF_COMMAND_DOWN;
+      const auto shortcut_flags = kModifiers & event->flags();
+
+      // Only advance focus if explicitly Tab or Shift + Tab are pressed,
+      // otherwise keep propagating the event.
+      if (shortcut_flags == ui::EF_NONE ||
+          shortcut_flags == ui::EF_SHIFT_DOWN) {
+        event->StopPropagation();
+        event->SetHandled();
+        focus_cycler_->AdvanceFocus(/*reverse=*/event->IsShiftDown());
+        *should_update_opacity_ptr = true;
+      }
       return;
     }
 

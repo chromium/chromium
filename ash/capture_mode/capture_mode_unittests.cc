@@ -2580,6 +2580,69 @@ TEST_F(CaptureModeTest, IgnoreFullyOccludedWindowWhileTabbingInKWindow) {
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
 }
 
+// Tests that only Tab and Shift + Tab events advance/reverse focus and stop
+// event propagation. Other events like Alt + Tab should still behave as
+// intended.
+TEST_F(CaptureModeTest, OnlyAdvanceFocusWhenTabShiftPressed) {
+  auto window1 = CreateTestWindow();
+  auto window2 = CreateTestWindow();
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tab should advance focus forward.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+
+  // Shift + Tab should advance focus backwards (reverse focus).
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN, /*count=*/5);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+
+  // Non-shortcut modifiers like Caps Lock should not count towards the flags we
+  // are concerned with, so Tab and Shift + Tab should still work normally.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_CAPS_LOCK_ON, /*count=*/5);
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NUM_LOCK_ON | ui::EF_SHIFT_DOWN,
+          /*count=*/5);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+
+  // Alt + Tab should cycle the active window, and the focus should not change.
+  ASSERT_EQ(window_util::GetActiveWindow(), window2.get());
+  // We need to wait synchronously until the event has been fully processed to
+  // check if the activation has been changed.
+  ui::test::EmulateFullKeyPressReleaseSequence(event_generator, ui::VKEY_TAB,
+                                               false, false, true, false);
+  EXPECT_EQ(window_util::GetActiveWindow(), window1.get());
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  ui::test::EmulateFullKeyPressReleaseSequence(event_generator, ui::VKEY_TAB,
+                                               false, false, true, false);
+  EXPECT_EQ(window_util::GetActiveWindow(), window2.get());
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+
+  // Alt + Shift + Tab should also cycle the active window in the reverse
+  // direction.
+  ui::test::EmulateFullKeyPressReleaseSequence(event_generator, ui::VKEY_TAB,
+                                               false, true, true, false);
+  EXPECT_EQ(window_util::GetActiveWindow(), window1.get());
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+
+  // Ctrl + Tab and Ctrl + Shift + Tab should not do anything.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(window_util::GetActiveWindow(), window1.get());
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  SendKey(ui::VKEY_TAB, event_generator,
+          ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(window_util::GetActiveWindow(), window1.get());
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+}
+
 class CaptureModeSaveFileTest
     : public CaptureModeTest,
       public testing::WithParamInterface<CaptureModeType> {
