@@ -23,7 +23,9 @@ class SingleTabViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableIntPropertyKey START_MARGIN =
+            new PropertyModel.WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {CLICK_LISTENER, FAVICON, IS_VISIBLE, TITLE};
+            new PropertyKey[] {CLICK_LISTENER, FAVICON, IS_VISIBLE, TITLE, START_MARGIN};
 }

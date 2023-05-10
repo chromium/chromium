@@ -21,8 +21,11 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.START_MARGIN;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
@@ -31,11 +34,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -72,6 +79,10 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     private ArgumentCaptor<Callback<Drawable>> mFaviconCallbackCaptor;
     @Captor
     private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Mock
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Captor
+    private ArgumentCaptor<ConfigurationChangedObserver> mConfigurationChangedObserver;
 
     @Before
     public void setUp() {
@@ -91,8 +102,9 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
 
     @Test
     public void testSingleTabSwitcherOnTablet() {
-        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                mPropertyModel, mTabModelSelector, mTabListFaviconProvider, mTab);
+        SingleTabSwitcherOnTabletMediator mediator =
+                new SingleTabSwitcherOnTabletMediator(mPropertyModel, null, null, mTabModelSelector,
+                        mTabListFaviconProvider, mTab, false, false);
         assertNull(mPropertyModel.get(FAVICON));
         assertNull(mPropertyModel.get(TITLE));
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
@@ -117,8 +129,9 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
 
     @Test
     public void testWhenMostRecentTabIsNull() {
-        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                mPropertyModel, mTabModelSelector, mTabListFaviconProvider, null);
+        SingleTabSwitcherOnTabletMediator mediator =
+                new SingleTabSwitcherOnTabletMediator(mPropertyModel, null, null, mTabModelSelector,
+                        mTabListFaviconProvider, null, false, false);
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
 
         mediator.setVisibility(true);
@@ -131,8 +144,9 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
 
     @Test
     public void testUpdateMostRecentTabInfo() {
-        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                mPropertyModel, mTabModelSelector, mTabListFaviconProvider, mTab);
+        SingleTabSwitcherOnTabletMediator mediator =
+                new SingleTabSwitcherOnTabletMediator(mPropertyModel, null, null, mTabModelSelector,
+                        mTabListFaviconProvider, mTab, false, false);
         assertFalse(mediator.getInitialized());
 
         mediator.setVisibility(true);
@@ -157,13 +171,96 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         doReturn(true).when(mTab3).isLoading();
         doReturn("").when(mTab3).getTitle();
         doReturn(mUrl).when(mTab3).getUrl();
-        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                mPropertyModel, mTabModelSelector, mTabListFaviconProvider, mTab3);
+        SingleTabSwitcherOnTabletMediator mediator =
+                new SingleTabSwitcherOnTabletMediator(mPropertyModel, null, null, mTabModelSelector,
+                        mTabListFaviconProvider, mTab3, false, false);
         mediator.updateTitle();
         verify(mTab3).addObserver(mTabObserverCaptor.capture());
         doReturn(mTitle).when(mTab3).getTitle();
         mTabObserverCaptor.getValue().onPageLoadFinished(mTab3, mUrl);
         assertEquals(mPropertyModel.get(TITLE), mTitle);
         verify(mTab3).removeObserver(mTabObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testStartMarginWith1RowMvTilesAndMultiColumnFeedEnabled() {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
+                mPropertyModel, resources, mActivityLifecycleDispatcher, mTabModelSelector,
+                mTabListFaviconProvider, mTab3, true /* isMultiColumnFeedEnabled */,
+                true /* isScrollableMvtEnabled */);
+        verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
+
+        int marginLandscape = resources.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.single_tab_card_start_margin_landscape_tablet);
+        int marginPortrait =
+                resources.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed)
+                        / 2
+                + resources.getDimensionPixelSize(
+                        org.chromium.chrome.R.dimen.single_tab_card_start_margin_portrait_tablet);
+        // Verifies the start margins are initialized.
+        assertEquals(marginLandscape, mediator.getMarginDefaultForTesting());
+        assertEquals(marginPortrait, mediator.getMarginSmallPortraitForTesting());
+
+        // Verifies the START_MARGIN is set to the margin in the landscape mode.
+        Configuration config = Mockito.mock(Configuration.class);
+        config.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
+        assertEquals(marginLandscape, mPropertyModel.get(START_MARGIN));
+
+        // Verifies the START_MARGIN is set to the margin in the portrait mode.
+        config.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
+        assertEquals(marginPortrait, mPropertyModel.get(START_MARGIN));
+
+        mediator.destroy();
+        verify(mActivityLifecycleDispatcher).unregister(mConfigurationChangedObserver.getValue());
+    }
+
+    @Test
+    public void testStartMarginWith2RowMvTilesAndMultiColumnFeedEnabled() {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
+                mPropertyModel, resources, mActivityLifecycleDispatcher, mTabModelSelector,
+                mTabListFaviconProvider, mTab3, true /* isMultiColumnFeedEnabled */,
+                false /* isScrollableMvtEnabled */);
+        verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
+
+        int margin = resources.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.single_tab_card_start_margin_landscape_tablet);
+        // Verifies the start margins are initialized.
+        assertEquals(margin, mediator.getMarginDefaultForTesting());
+
+        mediator.setVisibility(true);
+        assertEquals(margin, mPropertyModel.get(START_MARGIN));
+
+        // Verifies the START_MARGIN is set to the margin in both landscape and portrait modes.
+        Configuration config = Mockito.mock(Configuration.class);
+        config.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
+        assertEquals(margin, mPropertyModel.get(START_MARGIN));
+
+        config.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
+        assertEquals(margin, mPropertyModel.get(START_MARGIN));
+
+        mediator.destroy();
+        verify(mActivityLifecycleDispatcher).unregister(mConfigurationChangedObserver.getValue());
+    }
+
+    @Test
+    public void testStartMarginWithMultiColumnFeedDisabled() {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
+                mPropertyModel, resources, mActivityLifecycleDispatcher, mTabModelSelector,
+                mTabListFaviconProvider, mTab3, false /* isMultiColumnFeedEnabled */,
+                false /* isScrollableMvtEnabled */);
+        verify(mActivityLifecycleDispatcher, never())
+                .register(mConfigurationChangedObserver.capture());
+
+        // Verifies the start margins are initialized.
+        assertEquals(0, mediator.getMarginDefaultForTesting());
+        assertEquals(0, mediator.getMarginSmallPortraitForTesting());
+        assertEquals(0, mPropertyModel.get(START_MARGIN));
     }
 }

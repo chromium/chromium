@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -1085,8 +1086,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mSingleTabCardContainer = (FrameLayout) ((ViewStub) mNewTabPageLayout.findViewById(
                                                          R.id.tab_switcher_module_container_stub))
                                           .inflate();
-        mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(
-                mActivity, mSingleTabCardContainer, mTabModelSelector, true, mostRecentTab);
+        mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(mActivity,
+                mSingleTabCardContainer, mActivityLifecycleDispatcher, mTabModelSelector, true,
+                isScrollableMvtEnabled(mContext), mostRecentTab);
         mSingleTabSwitcherCoordinator.initWithNative();
         setSingleTabCardVisibility(true);
     }
@@ -1098,6 +1100,12 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         if (mSingleTabSwitcherCoordinator != null) {
             mSingleTabSwitcherCoordinator.setVisibility(isVisible);
         }
+    }
+
+    static boolean isScrollableMvtEnabled(Context context) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
+                && (ChromeFeatureList.sStartSurfaceOnTablet.isEnabled()
+                        || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
     }
 
     @VisibleForTesting
