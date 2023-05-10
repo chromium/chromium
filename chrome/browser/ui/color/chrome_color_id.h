@@ -339,6 +339,8 @@
   E_CPONLY(kColorSidePanelBadgeForeground) \
   E_CPONLY(kColorSidePanelBadgeForegroundUpdated) \
   E_CPONLY(kColorSidePanelCardBackground) \
+  E_CPONLY(kColorSidePanelCardPrimaryForeground) \
+  E_CPONLY(kColorSidePanelCardSecondaryForeground) \
   E_CPONLY(kColorSidePanelContentAreaSeparator) \
   E_CPONLY(kColorSidePanelContentBackground) \
   E_CPONLY(kColorSidePanelDivider) \
