@@ -118,9 +118,14 @@ class KcerImpl : public Kcer {
       DoesKeyExistCallback callback,
       base::expected<absl::optional<Token>, Error> find_key_result);
 
-  void SetKeyNicknameWithToken(std::string nickname,
-                               StatusCallback callback,
-                               base::expected<PrivateKeyHandle, Error> key);
+  void GetKeyInfoWithToken(
+      GetKeyInfoCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
+  void SetKeyNicknameWithToken(
+      std::string nickname,
+      StatusCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
 
   // Task runner for the tokens. Can be nullptr if no tokens are available
   // to the current Kcer instance.

@@ -6,7 +6,9 @@
 
 #include <certdb.h>
 #include <pkcs11.h>
+#include <secerr.h>
 #include <stdint.h>
+
 #include <queue>
 #include <string>
 #include <vector>
@@ -19,6 +21,7 @@
 #include "chrome/browser/chromeos/kcer_nss/cert_cache_nss.h"
 #include "chrome/browser/chromeos/platform_keys/chaps_util.h"
 #include "chromeos/components/kcer/kcer_token.h"
+#include "chromeos/components/kcer/key_permissions.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/nss_key_util.h"
@@ -29,6 +32,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 // General pattern for implementing KcerToken methods:
 // * The received callbacks for the results must already be bound to correct
@@ -293,6 +297,171 @@ void RemoveCertOnWorkerThread(crypto::ScopedPK11Slot slot,
   // for a "remove" method, but it might be useful to change it after NSS is not
   // used for Kcer.
   std::move(callback).Run({});
+}
+
+std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
+                                             KeyType key_type) {
+  std::vector<SigningScheme> result;
+
+  switch (key_type) {
+      // Supported signing schemes for RSA also depend on the key length, but
+      // NSS doesn't seem to provide a convenient interface to read it. In
+      // practice 2048 bits is enough for all RSA signatures, smaller keys are
+      // not really used in practice nowadays and the SSL code is expected to
+      // also double check and shrink the list.
+    case KeyType::kRsa:
+      result.insert(result.end(), {
+                                      SigningScheme::kRsaPkcs1Sha1,
+                                      SigningScheme::kRsaPkcs1Sha256,
+                                      SigningScheme::kRsaPkcs1Sha384,
+                                      SigningScheme::kRsaPkcs1Sha512,
+                                  });
+      if (supports_pss) {
+        result.insert(result.end(), {
+                                        SigningScheme::kRsaPssRsaeSha256,
+                                        SigningScheme::kRsaPssRsaeSha384,
+                                        SigningScheme::kRsaPssRsaeSha512,
+                                    });
+      }
+      break;
+    case KeyType::kEcc:
+      result.insert(result.end(), {
+                                      SigningScheme::kEcdsaSecp256r1Sha256,
+                                      SigningScheme::kEcdsaSecp384r1Sha384,
+                                      SigningScheme::kEcdsaSecp521r1Sha512,
+                                  });
+  }
+
+  return result;
+}
+
+base::expected<absl::optional<chaps::KeyPermissions>, Error>
+GetKeyPermissionsOnWorkerThread(
+    const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
+  crypto::ScopedSECItem key_permissions_attribute(
+      SECITEM_AllocItem(/*arena=*/nullptr,
+                        /*item=*/nullptr,
+                        /*len=*/0));
+
+  SECStatus status = PK11_ReadRawAttribute(
+      /*objType=*/PK11_TypePrivKey, sec_private_key.get(),
+      pkcs11_custom_attributes::kCkaChromeOsKeyPermissions,
+      key_permissions_attribute.get());
+
+  if (status != SECSuccess) {
+    // CKR_ATTRIBUTE_TYPE_INVALID is a cryptoki function return value which is
+    // returned by Chaps if the attribute was not set before for the key. NSS
+    // maps this error to SEC_ERROR_BAD_DATA. This error is captured here so
+    // as not to return an |error| in cases of retrieving unset key attributes
+    // and to return nullopt |attribute_value| instead.
+    int error = PORT_GetError();
+    if (error == SEC_ERROR_BAD_DATA) {
+      return absl::nullopt;
+    } else {
+      return base::unexpected(Error::kFailedToReadAttribute);
+    }
+  }
+
+  chaps::KeyPermissions key_permissions;
+  if (!key_permissions.ParseFromArray(key_permissions_attribute->data,
+                                      key_permissions_attribute->len)) {
+    return base::unexpected(Error::kFailedToParseKeyPermissions);
+  }
+  return key_permissions;
+}
+
+base::expected<absl::optional<std::string>, Error>
+GetCertProvisioningIdOnWorkerThread(
+    const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
+  crypto::ScopedSECItem cert_prov_attribute(SECITEM_AllocItem(/*arena=*/nullptr,
+                                                              /*item=*/nullptr,
+                                                              /*len=*/0));
+
+  SECStatus status = PK11_ReadRawAttribute(
+      /*objType=*/PK11_TypePrivKey, sec_private_key.get(),
+      pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId,
+      cert_prov_attribute.get());
+
+  if (status != SECSuccess) {
+    // CKR_ATTRIBUTE_TYPE_INVALID is a cryptoki function return value which is
+    // returned by Chaps if the attribute was not set before for the key. NSS
+    // maps this error to SEC_ERROR_BAD_DATA. This error is captured here so
+    // as not to return an |error| in cases of retrieving unset key attributes
+    // and to return nullopt |attribute_value| instead.
+    int error = PORT_GetError();
+    if (error == SEC_ERROR_BAD_DATA) {
+      return absl::nullopt;
+    } else {
+      return base::unexpected(Error::kFailedToReadAttribute);
+    }
+  }
+
+  return std::string(cert_prov_attribute->data,
+                     cert_prov_attribute->data + cert_prov_attribute->len);
+}
+
+void GetKeyInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
+                              PrivateKeyHandle key,
+                              Kcer::GetKeyInfoCallback callback) {
+  KeyInfo key_info;
+
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+  const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+
+  constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
+  // All keys in chaps without the attribute are hardware backed.
+  key_info.is_hardware_backed = !PK11_HasAttributeSet(
+      slot.get(), sec_private_key->pkcs11ID, kKeyInSoftware,
+      /*haslock=*/PR_FALSE);
+
+  switch (SECKEY_GetPrivateKeyType(sec_private_key.get())) {
+    case rsaKey:
+      key_info.key_type = KeyType::kRsa;
+      break;
+    case ecKey:
+      key_info.key_type = KeyType::kEcc;
+      break;
+    default:
+      return std::move(callback).Run(base::unexpected(Error::kUnknownKeyType));
+  }
+
+  key_info.supported_signing_schemes = GetSigningSchemes(
+      PK11_DoesMechanism(slot.get(), CKM_RSA_PKCS_PSS), key_info.key_type);
+
+  char* nickname = PK11_GetPrivateKeyNickname(sec_private_key.get());
+  if (nickname) {
+    key_info.nickname = nickname;
+    PORT_Free(nickname);
+  }
+
+  // TODO(miersh): Temporary disable the code because on some builds unit tests
+  // fail to read custom attributes. This will be re-enabled in a following CL
+  // when custom attributes are mapped into unused normal attributes in tests.
+#if 0
+  base::expected<absl::optional<chaps::KeyPermissions>, Error> key_permissions =
+      GetKeyPermissionsOnWorkerThread(sec_private_key);
+  if (!key_permissions.has_value()) {
+    return std::move(callback).Run(base::unexpected(key_permissions.error()));
+  }
+  key_info.key_permissions = std::move(key_permissions).value();
+
+  base::expected<absl::optional<std::string>, Error> cert_prov_id =
+      GetCertProvisioningIdOnWorkerThread(sec_private_key);
+  if (!cert_prov_id.has_value()) {
+    return std::move(callback).Run(base::unexpected(cert_prov_id.error()));
+  }
+  key_info.cert_provisioning_profile_id = std::move(cert_prov_id).value();
+#endif
+  // TODO(miersh): Temporary suppress "unused method" warnings. This should be
+  // removed together with the "#if 0" above.
+  (void)GetKeyPermissionsOnWorkerThread;
+  (void)GetCertProvisioningIdOnWorkerThread;
+
+  return std::move(callback).Run(std::move(key_info));
 }
 
 void SetKeyNicknameOnWorkerThread(crypto::ScopedPK11Slot slot,
@@ -581,7 +750,24 @@ void KcerTokenImplNss::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
 void KcerTokenImplNss::GetKeyInfo(PrivateKeyHandle key,
                                   Kcer::GetKeyInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::GetKeyInfo, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetKeyInfoOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::SetKeyNickname(PrivateKeyHandle key,
