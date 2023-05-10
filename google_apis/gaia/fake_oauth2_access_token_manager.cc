@@ -124,23 +124,25 @@ void FakeOAuth2AccessTokenManager::CompleteRequests(
       GetPendingRequests();
 
   // Walk the requests and notify the callbacks.
-  for (auto it = requests.begin(); it != requests.end(); ++it) {
+  for (const PendingRequest& request : requests) {
     // Consumers can drop requests in response to callbacks on other requests
     // (e.g., OAuthMultiloginFetcher clears all of its requests when it gets an
     // error on any of them).
-    if (!it->request)
+    if (!request.request) {
       continue;
+    }
 
-    bool scope_matches = all_scopes || it->scopes == scope;
-    bool account_matches = account_id.empty() || account_id == it->account_id;
+    bool scope_matches = all_scopes || request.scopes == scope;
+    bool account_matches =
+        account_id.empty() || account_id == request.account_id;
     if (account_matches && scope_matches) {
       for (auto& diagnostic_observer : GetDiagnosticsObserversForTesting()) {
         diagnostic_observer.OnFetchAccessTokenComplete(
-            account_id, it->request->GetConsumerId(), scope, error,
+            account_id, request.request->GetConsumerId(), scope, error,
             base::Time());
       }
 
-      it->request->InformConsumer(error, token_response);
+      request.request->InformConsumer(error, token_response);
     }
   }
 }
@@ -148,10 +150,10 @@ void FakeOAuth2AccessTokenManager::CompleteRequests(
 std::vector<FakeOAuth2AccessTokenManager::PendingRequest>
 FakeOAuth2AccessTokenManager::GetPendingRequests() {
   std::vector<PendingRequest> valid_requests;
-  for (auto it = pending_requests_.begin(); it != pending_requests_.end();
-       ++it) {
-    if (it->request)
-      valid_requests.push_back(*it);
+  for (const PendingRequest& pending_request : pending_requests_) {
+    if (pending_request.request) {
+      valid_requests.push_back(pending_request);
+    }
   }
   return valid_requests;
 }
@@ -207,7 +209,8 @@ void FakeOAuth2AccessTokenManager::InvalidateAccessTokenImpl(
     const std::string& client_id,
     const FakeOAuth2AccessTokenManager::ScopeSet& scopes,
     const std::string& access_token) {
-  for (auto& observer : GetDiagnosticsObserversForTesting())
+  for (DiagnosticsObserver& observer : GetDiagnosticsObserversForTesting()) {
     observer.OnAccessTokenRemoved(account_id, scopes);
+  }
   // Do nothing else, as we don't have a cache from which to remove the token.
 }
