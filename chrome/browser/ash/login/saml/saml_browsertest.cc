@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedSingle) {
 
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   // Make sure that the password is scraped correctly.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetLoginUI()->GetWebContents(),
       "$('gaia-signin').authenticator_.addEventListener('authCompleted',"
       "    function(e) {"
@@ -1280,7 +1280,7 @@ void SAMLPolicyTest::ShowGAIALoginForm() {
   LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetLoginUI()->GetWebContents(),
       "$('gaia-signin').authenticator_.addEventListener('ready', function() {"
       "  window.domAutomationController.send('ready');"

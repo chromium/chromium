@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedSingle) {
       reauth_dialog_helper->DialogWebContents());
 
   // Make sure that the password is scraped correctly.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       reauth_dialog_helper->DialogWebContents(),
       "$('main-element').authenticator_.addEventListener('authCompleted',"
       "    function(e) {"
