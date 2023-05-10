@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
+#include <memory>
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -69,6 +72,7 @@ class TestConciergeClient : public ash::FakeConciergeClient {
   int disable_count_ = 0;
   int force_enable_count_ = 0;
 };
+
 }  // namespace
 
 class ArcVmmManagerTest : public testing::Test {
@@ -97,6 +101,14 @@ class ArcVmmManagerTest : public testing::Test {
     manager_->set_user_id_hash("test_user_hash_id");
   }
 
+  void SetTrimCall(bool trim_result) {
+    manager()->trim_call_ = base::BindLambdaForTesting(
+        [trim_result](ArcVmWorkingSetTrimExecutor::ResultCallback callback,
+                      ArcVmReclaimType reclaim_type, int page_limit) {
+          std::move(callback).Run(trim_result, "");
+        });
+  }
+
   ArcVmmManager* manager() { return manager_; }
   TestConciergeClient* client() { return concierge_client_.get(); }
 
@@ -115,6 +127,34 @@ class ArcVmmManagerTest : public testing::Test {
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
 };
+
+TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
+  InitVmmManager();
+  SetTrimCall(true);
+
+  // Send "ENABLE".
+  EXPECT_EQ(0, client()->enable_count());
+  manager()->SetSwapState(SwapState::ENABLE);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+}
+
+TEST_F(ArcVmmManagerTest, NotEnableSwapWhenTrimFail) {
+  InitVmmManager();
+  SetTrimCall(false);
+
+  // Send "ENABLE".
+  EXPECT_EQ(0, client()->enable_count());
+  manager()->SetSwapState(SwapState::ENABLE);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+}
 
 TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
   InitVmmManager();

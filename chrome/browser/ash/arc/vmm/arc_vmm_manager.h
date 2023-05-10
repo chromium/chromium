@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
+#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -52,6 +54,7 @@ class ArcVmmManager : public KeyedService {
   static void EnsureFactoryBuilt();
 
  private:
+  friend class ArcVmmManagerTest;
   // Accelerator target for experimental usage. Ctrl + Alt + Shift + O / P for
   // enable or disable vmm swap.
   class AcceleratorTarget;
@@ -73,6 +76,12 @@ class ArcVmmManager : public KeyedService {
   std::unique_ptr<ArcVmmSwapScheduler> scheduler_;
 
   std::string user_id_hash_;
+
+  base::RepeatingCallback<
+      void(ArcVmWorkingSetTrimExecutor::ResultCallback, ArcVmReclaimType, int)>
+      trim_call_;
+
+  raw_ptr<content::BrowserContext> context_ = nullptr;
 
   base::WeakPtrFactory<ArcVmmManager> weak_ptr_factory_{this};
 };
