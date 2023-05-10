@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.START_MARGIN;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
 import android.content.res.Configuration;
@@ -41,6 +41,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -192,26 +193,24 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
         int marginLandscape = resources.getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.single_tab_card_start_margin_landscape_tablet);
-        int marginPortrait =
-                resources.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed)
-                        / 2
+                R.dimen.single_tab_card_lateral_margin_landscape_tablet);
+        int marginPortrait = resources.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed) / 2
                 + resources.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.single_tab_card_start_margin_portrait_tablet);
+                        R.dimen.single_tab_card_lateral_margin_portrait_tablet);
         // Verifies the start margins are initialized.
         assertEquals(marginLandscape, mediator.getMarginDefaultForTesting());
         assertEquals(marginPortrait, mediator.getMarginSmallPortraitForTesting());
 
-        // Verifies the START_MARGIN is set to the margin in the landscape mode.
+        // Verifies the LATERAL_MARGIN is set to the margin in the landscape mode.
         Configuration config = Mockito.mock(Configuration.class);
         config.orientation = Configuration.ORIENTATION_LANDSCAPE;
         mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
-        assertEquals(marginLandscape, mPropertyModel.get(START_MARGIN));
+        assertEquals(marginLandscape, mPropertyModel.get(LATERAL_MARGIN));
 
-        // Verifies the START_MARGIN is set to the margin in the portrait mode.
+        // Verifies the LATERAL_MARGIN is set to the margin in the portrait mode.
         config.orientation = Configuration.ORIENTATION_PORTRAIT;
         mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
-        assertEquals(marginPortrait, mPropertyModel.get(START_MARGIN));
+        assertEquals(marginPortrait, mPropertyModel.get(LATERAL_MARGIN));
 
         mediator.destroy();
         verify(mActivityLifecycleDispatcher).unregister(mConfigurationChangedObserver.getValue());
@@ -226,23 +225,24 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
                 false /* isScrollableMvtEnabled */);
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
-        int margin = resources.getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.single_tab_card_start_margin_landscape_tablet);
+        int lateralMargin = resources.getDimensionPixelSize(
+                R.dimen.single_tab_card_lateral_margin_landscape_tablet);
         // Verifies the start margins are initialized.
-        assertEquals(margin, mediator.getMarginDefaultForTesting());
+        assertEquals(lateralMargin, mediator.getMarginDefaultForTesting());
 
         mediator.setVisibility(true);
-        assertEquals(margin, mPropertyModel.get(START_MARGIN));
+        assertEquals(lateralMargin, mPropertyModel.get(LATERAL_MARGIN));
 
-        // Verifies the START_MARGIN is set to the margin in both landscape and portrait modes.
+        // Verifies the LATERAL_MARGIN is set to the margin in both landscape and portrait
+        // modes.
         Configuration config = Mockito.mock(Configuration.class);
         config.orientation = Configuration.ORIENTATION_LANDSCAPE;
         mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
-        assertEquals(margin, mPropertyModel.get(START_MARGIN));
+        assertEquals(lateralMargin, mPropertyModel.get(LATERAL_MARGIN));
 
         config.orientation = Configuration.ORIENTATION_PORTRAIT;
         mConfigurationChangedObserver.getValue().onConfigurationChanged(config);
-        assertEquals(margin, mPropertyModel.get(START_MARGIN));
+        assertEquals(lateralMargin, mPropertyModel.get(LATERAL_MARGIN));
 
         mediator.destroy();
         verify(mActivityLifecycleDispatcher).unregister(mConfigurationChangedObserver.getValue());
@@ -261,6 +261,6 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         // Verifies the start margins are initialized.
         assertEquals(0, mediator.getMarginDefaultForTesting());
         assertEquals(0, mediator.getMarginSmallPortraitForTesting());
-        assertEquals(0, mPropertyModel.get(START_MARGIN));
+        assertEquals(0, mPropertyModel.get(LATERAL_MARGIN));
     }
 }

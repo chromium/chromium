@@ -7,7 +7,7 @@ package org.chromium.chrome.features.tasks;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.START_MARGIN;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
 import android.content.res.Configuration;
@@ -56,11 +56,11 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         if (isMultiColumnFeedEnabled) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
             mMarginDefaut = mResources.getDimensionPixelSize(
-                    R.dimen.single_tab_card_start_margin_landscape_tablet);
+                    R.dimen.single_tab_card_lateral_margin_landscape_tablet);
             mMarginSmallPortrait =
                     mResources.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed) / 2
                     + mResources.getDimensionPixelSize(
-                            R.dimen.single_tab_card_start_margin_portrait_tablet);
+                            R.dimen.single_tab_card_lateral_margin_portrait_tablet);
 
             if (mActivityLifecycleDispatcher != null) {
                 mActivityLifecycleDispatcher.register(this);
@@ -86,11 +86,11 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     }
 
     private void updateMargins(int orientation) {
-        int startMargin =
+        int lateralMargin =
                 mIsScrollableMvtEnabled && orientation == Configuration.ORIENTATION_PORTRAIT
                 ? mMarginSmallPortrait
                 : mMarginDefaut;
-        mPropertyModel.set(START_MARGIN, startMargin);
+        mPropertyModel.set(LATERAL_MARGIN, lateralMargin);
     }
 
     /**

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.START_MARGIN;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
 import android.app.Activity;
@@ -163,12 +163,12 @@ public class SingleTabViewBinderUnitTest {
     @Test
     @SmallTest
     public void testStartMargin() {
-        int startMargin = 100;
+        int lateralMargin = 100;
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mSingleTabView.getLayoutParams();
         assertEquals(0, marginLayoutParams.getMarginStart());
 
-        mPropertyModel.set(START_MARGIN, startMargin);
+        mPropertyModel.set(LATERAL_MARGIN, lateralMargin);
         assertEquals(100, marginLayoutParams.getMarginStart());
     }
 }
