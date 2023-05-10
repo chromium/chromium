@@ -134,11 +134,6 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
   return notification_list_view;
 }
 
-std::unique_ptr<views::View>
-MediaNotificationProviderImpl::GetActiveMediaNotificationView() {
-  return std::make_unique<views::View>();
-}
-
 void MediaNotificationProviderImpl::OnBubbleClosing() {
   item_manager_->SetDialogDelegate(nullptr);
 }

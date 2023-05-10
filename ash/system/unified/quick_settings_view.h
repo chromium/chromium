@@ -54,12 +54,10 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   views::View* AddSliderView(std::unique_ptr<views::View> slider_view);
 
   // Adds media controls view to `media_controls_container_`. Only called if
-  // media::kGlobalMediaControlsForChromeOS is enabled and
   // media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
   void AddMediaControlsView(views::View* media_controls);
 
   // Shows media controls view. Only called if
-  // media::kGlobalMediaControlsForChromeOS is enabled and
   // media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
   void ShowMediaControls();
 
@@ -140,7 +138,7 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> detailed_view_container_ = nullptr;
 
-  // Null if media::kGlobalMediaControlsForChromeOS is disabled.
+  // Null if media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
   raw_ptr<UnifiedMediaControlsContainer, ExperimentalAsh>
       media_controls_container_ = nullptr;
 

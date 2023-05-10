@@ -166,7 +166,7 @@ MediaItemUIView::MediaItemUIView(
         std::make_unique<views::SlideOutController>(this, this);
 
     if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
-      footer_view_ = footer_view_.get();
+      footer_view_ = footer_view.get();
       view = std::make_unique<
           media_message_center::MediaNotificationViewModernImpl>(
           this, std::move(item), std::move(dismiss_button_placeholder),

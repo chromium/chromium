@@ -172,8 +172,7 @@ UnifiedSystemTrayController::CreateUnifiedQuickSettingsView() {
 
   InitFeaturePods();
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS) &&
-      !Shell::Get()->session_controller()->IsScreenLocked() &&
+  if (!Shell::Get()->session_controller()->IsScreenLocked() &&
       !MediaTray::IsPinnedToShelf()) {
     media_controls_controller_ =
         std::make_unique<UnifiedMediaControlsController>(this);
@@ -201,8 +200,7 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
   auto qs_view = std::make_unique<QuickSettingsView>(this);
   quick_settings_view_ = qs_view.get();
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS) &&
-      !Shell::Get()->session_controller()->IsScreenLocked() &&
+  if (!Shell::Get()->session_controller()->IsScreenLocked() &&
       !MediaTray::IsPinnedToShelf()) {
     if (base::FeatureList::IsEnabled(
             media::kGlobalMediaControlsCrOSUpdatedUI)) {

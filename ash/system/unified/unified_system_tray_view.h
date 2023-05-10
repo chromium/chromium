@@ -199,10 +199,8 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   const raw_ptr<UnifiedSystemInfoView, ExperimentalAsh> system_info_view_;
   const raw_ptr<SystemTrayContainer, ExperimentalAsh> system_tray_container_;
   const raw_ptr<views::View, ExperimentalAsh> detailed_view_container_;
-
-  // Null if media::kGlobalMediaControlsForChromeOS is disabled.
-  raw_ptr<UnifiedMediaControlsContainer, ExperimentalAsh>
-      media_controls_container_ = nullptr;
+  const raw_ptr<UnifiedMediaControlsContainer, ExperimentalAsh>
+      media_controls_container_;
 
   // The maximum height available to the view.
   int max_height_ = 0;

@@ -78,21 +78,6 @@ bool GetIsPinnedToShelfByDefault() {
   return diagonal_len > kMinimumScreenSizeDiagonal;
 }
 
-// Used for getting default pin state for experiment.
-bool GetIsPinnedToShelfByFeatureParams() {
-  switch (media::kCrosGlobalMediaControlsPinParam.Get()) {
-    case media::kCrosGlobalMediaControlsPinOptions::kPin:
-      return true;
-    case media::kCrosGlobalMediaControlsPinOptions::kNotPin:
-      return false;
-    case media::kCrosGlobalMediaControlsPinOptions::kHeuristic:
-      return GetIsPinnedToShelfByDefault();
-  }
-
-  NOTREACHED();
-  return false;
-}
-
 // Enum that specifies the pin state of global media controls.
 enum PinState {
   kDefault = 0,
@@ -178,7 +163,7 @@ bool MediaTray::IsPinnedToShelf() {
     case PinState::kUnpinned:
       return false;
     case PinState::kDefault:
-      return GetIsPinnedToShelfByFeatureParams();
+      return GetIsPinnedToShelfByDefault();
   }
 
   NOTREACHED();

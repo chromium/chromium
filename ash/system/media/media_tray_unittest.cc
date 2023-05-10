@@ -13,9 +13,7 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/media_message_center/media_notification_view_impl.h"
-#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/event.h"
 
@@ -42,13 +40,10 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
     MediaNotificationProvider::Set(old_provider_);
   }
 
-  // Medianotificationprovider implementations.
+  // MediaNotificationProvider implementations.
   MOCK_METHOD((std::unique_ptr<views::View>),
               GetMediaNotificationListView,
               (int, bool, const std::string&));
-  MOCK_METHOD((std::unique_ptr<views::View>),
-              GetActiveMediaNotificationView,
-              ());
   MOCK_METHOD(void, OnBubbleClosing, ());
   MOCK_METHOD(global_media_controls::MediaItemManager*,
               GetMediaItemManager,
@@ -100,7 +95,6 @@ class MediaTrayTest : public AshTestBase {
   ~MediaTrayTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(media::kGlobalMediaControlsForChromeOS);
     AshTestBase::SetUp();
 
     provider_ = std::make_unique<MockMediaNotificationProvider>();
@@ -170,8 +164,6 @@ class MediaTrayTest : public AshTestBase {
   std::unique_ptr<MockMediaNotificationProvider> provider_;
   raw_ptr<MediaTray, ExperimentalAsh> media_tray_;
   std::unique_ptr<MockTrayBackgroundView> mock_tray_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(MediaTrayTest, MediaTrayVisibilityTest) {
@@ -429,53 +421,6 @@ TEST_F(MediaTrayTest, ShowBubbleWithItem) {
   EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _, item_id));
   media_tray()->ShowBubbleWithItem(item_id);
   EXPECT_NE(nullptr, media_tray()->GetBubbleView());
-}
-
-class MediaTrayPinnedParamTest : public AshTestBase {
- public:
-  MediaTrayPinnedParamTest() = default;
-  ~MediaTrayPinnedParamTest() override = default;
-
-  void SetUp() override {
-    auto& pin_param = media::kCrosGlobalMediaControlsPinParam;
-    feature_list_.InitAndEnableFeatureWithParameters(
-        media::kGlobalMediaControlsForChromeOS,
-        {{pin_param.name,
-          pin_param.GetName(media::kCrosGlobalMediaControlsPinOptions::kPin)}});
-    AshTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(MediaTrayPinnedParamTest, PinParamTest) {
-  UpdateDisplay("200x100");
-  EXPECT_TRUE(MediaTray::IsPinnedToShelf());
-}
-
-class MediaTrayNotPinnedParamTest : public AshTestBase {
- public:
-  MediaTrayNotPinnedParamTest() = default;
-  ~MediaTrayNotPinnedParamTest() override = default;
-
-  void SetUp() override {
-    auto& pin_param = media::kCrosGlobalMediaControlsPinParam;
-    feature_list_.InitAndEnableFeatureWithParameters(
-        media::kGlobalMediaControlsForChromeOS,
-        {{pin_param.name,
-          pin_param.GetName(
-              media::kCrosGlobalMediaControlsPinOptions::kNotPin)}});
-    AshTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(MediaTrayNotPinnedParamTest, PinParamTest) {
-  UpdateDisplay("2560x1440");
-  EXPECT_FALSE(MediaTray::IsPinnedToShelf());
 }
 
 }  // namespace ash

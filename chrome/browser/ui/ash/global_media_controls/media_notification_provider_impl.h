@@ -53,7 +53,6 @@ class ASH_EXPORT MediaNotificationProviderImpl
       int separator_thickness,
       bool should_clip_height,
       const std::string& item_id) override;
-  std::unique_ptr<views::View> GetActiveMediaNotificationView() override;
   void OnBubbleClosing() override;
   void SetColorTheme(
       const media_message_center::NotificationTheme& color_theme) override;

@@ -155,8 +155,7 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
     media_view_container_ = system_tray_container_->AddChildView(
         std::make_unique<QuickSettingsMediaViewContainer>(controller_));
-  } else if (base::FeatureList::IsEnabled(
-                 media::kGlobalMediaControlsForChromeOS)) {
+  } else {
     media_controls_container_ = system_tray_container_->AddChildView(
         std::make_unique<UnifiedMediaControlsContainer>());
     media_controls_container_->SetExpandedAmount(1.0f);
@@ -208,6 +207,7 @@ void QuickSettingsView::AddMediaControlsView(views::View* media_controls) {
 }
 
 void QuickSettingsView::ShowMediaControls() {
+  DCHECK(media_controls_container_);
   media_controls_container_->SetShouldShowMediaControls(true);
 
   if (detailed_view_container_->GetVisible()) {

@@ -50,7 +50,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "media/base/media_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -139,9 +138,7 @@ void StatusAreaWidget::Initialize() {
 
   palette_tray_ = AddTrayButton(std::make_unique<PaletteTray>(shelf_));
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
-    media_tray_ = AddTrayButton(std::make_unique<MediaTray>(shelf_));
-  }
+  media_tray_ = AddTrayButton(std::make_unique<MediaTray>(shelf_));
 
   if (features::IsEcheSWAEnabled()) {
     eche_tray_ = AddTrayButton(std::make_unique<EcheTray>(shelf_));

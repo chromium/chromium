@@ -57,10 +57,6 @@ class ASH_EXPORT MediaNotificationProvider {
       bool should_clip_height,
       const std::string& item_id = "") = 0;
 
-  // Returns a MediaNotificationContainerimplView for the active MediaSession.
-  // Displayed in the quick settings of the Ash shelf.
-  virtual std::unique_ptr<views::View> GetActiveMediaNotificationView() = 0;
-
   // Used for ash to notify the bubble is closing.
   virtual void OnBubbleClosing() = 0;
 

@@ -7,9 +7,7 @@
 #include "ash/system/media/unified_media_controls_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,7 +52,6 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
   ~UnifiedMediaControlsControllerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(media::kGlobalMediaControlsForChromeOS);
     AshTestBase::SetUp();
 
     mock_delegate_ = std::make_unique<MockMediaControlsDelegate>();
@@ -172,8 +169,6 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
     controller_->MediaSessionActionsChanged(
         std::vector<MediaSessionAction>(actions_.begin(), actions_.end()));
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<UnifiedMediaControlsController> controller_;

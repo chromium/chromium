@@ -673,24 +673,6 @@ BASE_FEATURE(kMediaRemotingWithoutFullscreen,
 );
 #endif
 
-// Allow Global Media Controls in system tray of CrOS.
-BASE_FEATURE(kGlobalMediaControlsForChromeOS,
-             "GlobalMediaControlsForChromeOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<kCrosGlobalMediaControlsPinOptions>::Option
-    kCrosGlobalMediaControlsParamOptions[] = {
-        {kCrosGlobalMediaControlsPinOptions::kPin, "default-pinned"},
-        {kCrosGlobalMediaControlsPinOptions::kNotPin, "default-unpinned"},
-        {kCrosGlobalMediaControlsPinOptions::kHeuristic, "heuristic"}};
-
-constexpr base::FeatureParam<kCrosGlobalMediaControlsPinOptions>
-    kCrosGlobalMediaControlsPinParam(
-        &kGlobalMediaControlsForChromeOS,
-        "CrosGlobalMediaControlsPinParam",
-        kCrosGlobalMediaControlsPinOptions::kHeuristic,
-        &kCrosGlobalMediaControlsParamOptions);
-
 // Show picture-in-picture button in Global Media Controls.
 BASE_FEATURE(kGlobalMediaControlsPictureInPicture,
              "GlobalMediaControlsPictureInPicture",

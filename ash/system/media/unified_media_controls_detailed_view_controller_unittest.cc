@@ -44,9 +44,6 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
               GetMediaNotificationListView,
               (int, bool, const std::string&));
   MOCK_METHOD(void, OnBubbleClosing, ());
-  std::unique_ptr<views::View> GetActiveMediaNotificationView() override {
-    return std::make_unique<views::View>();
-  }
   MOCK_METHOD(global_media_controls::MediaItemManager*,
               GetMediaItemManager,
               ());

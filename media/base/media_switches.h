@@ -214,7 +214,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsCrOSUpdatedUI);
 #if !BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaRemotingWithoutFullscreen);
 #endif
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsForChromeOS);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsPictureInPicture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsSeamlessTransfer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsModernUI);
@@ -461,17 +460,6 @@ MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 MEDIA_EXPORT bool IsOutOfProcessVideoDecodingEnabled();
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
-enum class kCrosGlobalMediaControlsPinOptions {
-  kPin,
-  kNotPin,
-  kHeuristic,
-};
-
-// Feature param used to force default pin/unpin for global media controls in
-// CrOS.
-MEDIA_EXPORT extern const base::FeatureParam<kCrosGlobalMediaControlsPinOptions>
-    kCrosGlobalMediaControlsPinParam;
 
 // Return bitmask of audio formats supported by EDID.
 MEDIA_EXPORT uint32_t GetPassthroughAudioFormats();
