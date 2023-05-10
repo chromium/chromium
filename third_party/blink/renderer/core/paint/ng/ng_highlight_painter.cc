@@ -40,42 +40,6 @@ using HighlightEdge = NGHighlightOverlay::HighlightEdge;
 using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
 
-DocumentMarkerVector ComputeMarkersToPaint(Node* node) {
-  // TODO(yoichio): Handle first-letter
-  auto* text_node = DynamicTo<Text>(node);
-  if (!text_node)
-    return DocumentMarkerVector();
-
-  DocumentMarkerController& document_marker_controller =
-      node->GetDocument().Markers();
-  return document_marker_controller.ComputeMarkersToPaint(*text_node);
-}
-
-DocumentMarkerVector MarkersFor(Node* node, DocumentMarker::MarkerType type) {
-  // TODO(crbug.com/17528) handle ::first-letter
-  const auto* text_node = DynamicTo<Text>(node);
-  if (!text_node)
-    return DocumentMarkerVector();
-
-  DocumentMarkerController& controller = node->GetDocument().Markers();
-
-  if (type == DocumentMarker::MarkerType::kCustomHighlight)
-    return controller.CustomHighlightMarkersNotOverlapping(*text_node);
-  return controller.MarkersFor(*text_node, DocumentMarker::MarkerTypes{type});
-}
-
-unsigned GetTextContentOffset(const Text& text, unsigned offset) {
-  // TODO(yoichio): Sanitize DocumentMarker around text length.
-  const Position position(text, std::min(offset, text.length()));
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(position);
-  DCHECK(offset_mapping);
-  const absl::optional<unsigned>& ng_offset =
-      offset_mapping->GetTextContentOffset(position);
-  DCHECK(ng_offset.has_value());
-  return ng_offset.value();
-}
-
 // ClampOffset modifies |offset| fixed in a range of |text_fragment| start/end
 // offsets.
 // |offset| points not each character but each span between character.
@@ -299,48 +263,12 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
   return false;
 }
 
-PseudoId PseudoFor(DocumentMarker::MarkerType type) {
-  switch (type) {
-    case DocumentMarker::kSpelling:
-      return kPseudoIdSpellingError;
-    case DocumentMarker::kGrammar:
-      return kPseudoIdGrammarError;
-    default:
-      NOTREACHED();
-      return {};
-  }
-}
-
 HighlightLayerType LayerFor(DocumentMarker::MarkerType type) {
   switch (type) {
     case DocumentMarker::kSpelling:
       return HighlightLayerType::kSpelling;
     case DocumentMarker::kGrammar:
       return HighlightLayerType::kGrammar;
-    default:
-      NOTREACHED();
-      return {};
-  }
-}
-
-TextDecorationLine LineFor(DocumentMarker::MarkerType type) {
-  switch (type) {
-    case DocumentMarker::kSpelling:
-      return TextDecorationLine::kSpellingError;
-    case DocumentMarker::kGrammar:
-      return TextDecorationLine::kGrammarError;
-    default:
-      NOTREACHED();
-      return {};
-  }
-}
-
-Color ColorFor(DocumentMarker::MarkerType type) {
-  switch (type) {
-    case DocumentMarker::kSpelling:
-      return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
-    case DocumentMarker::kGrammar:
-      return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
     default:
       NOTREACHED();
       return {};
@@ -524,12 +452,20 @@ NGHighlightPainter::NGHighlightPainter(
   // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
   // TODO(crbug.com/17528) handle ::first-letter
   if (!fragment_item_.IsGeneratedText()) {
-    markers_ = ComputeMarkersToPaint(node_);
-    if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-      target_ = MarkersFor(node_, DocumentMarker::kTextFragment);
-      spelling_ = MarkersFor(node_, DocumentMarker::kSpelling);
-      grammar_ = MarkersFor(node_, DocumentMarker::kGrammar);
-      custom_ = MarkersFor(node_, DocumentMarker::kCustomHighlight);
+    const auto* text_node = DynamicTo<Text>(node_);
+    if (text_node) {
+      DocumentMarkerController& controller = node_->GetDocument().Markers();
+      markers_ = controller.ComputeMarkersToPaint(*text_node);
+      if (text_node &&
+          RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+        target_ = controller.MarkersFor(
+            *text_node, DocumentMarker::MarkerTypes::TextFragment());
+        spelling_ = controller.MarkersFor(
+            *text_node, DocumentMarker::MarkerTypes::Spelling());
+        grammar_ = controller.MarkersFor(
+            *text_node, DocumentMarker::MarkerTypes::Grammar());
+        custom_ = controller.CustomHighlightMarkersNotOverlapping(*text_node);
+      }
     }
   }
 
@@ -1061,6 +997,56 @@ void NGHighlightPainter::PaintHighlightOverlays(
         PaintSpellingGrammarDecorations(part);
       }
     }
+  }
+}
+
+unsigned NGHighlightPainter::GetTextContentOffset(const Text& text,
+                                                  unsigned offset) {
+  // TODO(yoichio): Sanitize DocumentMarker around text length.
+  const Position position(text, std::min(offset, text.length()));
+  const NGOffsetMapping* const offset_mapping =
+      NGOffsetMapping::GetFor(position);
+  DCHECK(offset_mapping);
+  const absl::optional<unsigned>& ng_offset =
+      offset_mapping->GetTextContentOffset(position);
+  DCHECK(ng_offset.has_value());
+  return ng_offset.value();
+}
+
+PseudoId NGHighlightPainter::PseudoFor(DocumentMarker::MarkerType type) {
+  switch (type) {
+    case DocumentMarker::kSpelling:
+      return kPseudoIdSpellingError;
+    case DocumentMarker::kGrammar:
+      return kPseudoIdGrammarError;
+    default:
+      NOTREACHED();
+      return {};
+  }
+}
+
+TextDecorationLine NGHighlightPainter::LineFor(
+    DocumentMarker::MarkerType type) {
+  switch (type) {
+    case DocumentMarker::kSpelling:
+      return TextDecorationLine::kSpellingError;
+    case DocumentMarker::kGrammar:
+      return TextDecorationLine::kGrammarError;
+    default:
+      NOTREACHED();
+      return {};
+  }
+}
+
+Color NGHighlightPainter::ColorFor(DocumentMarker::MarkerType type) {
+  switch (type) {
+    case DocumentMarker::kSpelling:
+      return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
+    case DocumentMarker::kGrammar:
+      return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
+    default:
+      NOTREACHED();
+      return {};
   }
 }
 

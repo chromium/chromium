@@ -196,6 +196,14 @@ class CORE_EXPORT NGHighlightPainter {
                               bool paint_marker_backgrounds,
                               absl::optional<AffineTransform> rotation);
 
+  // Return the text content offset for a particular fragment offset.
+  static unsigned GetTextContentOffset(const Text& text, unsigned offset);
+
+  // Query various style pieces for the given marker type
+  static PseudoId PseudoFor(DocumentMarker::MarkerType type);
+  static TextDecorationLine LineFor(DocumentMarker::MarkerType type);
+  static Color ColorFor(DocumentMarker::MarkerType type);
+
   SelectionPaintState* Selection() { return selection_; }
 
  private:

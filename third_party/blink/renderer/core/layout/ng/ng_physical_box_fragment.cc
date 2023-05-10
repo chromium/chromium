@@ -1216,8 +1216,13 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
     // text.
     const auto* const text_combine =
         DynamicTo<LayoutNGTextCombine>(GetLayoutObject());
-    if (UNLIKELY(text_combine))
-      contents_rect.Unite(text_combine->RecalcContentsInkOverflow());
+    if (UNLIKELY(text_combine)) {
+      // Reset the cursor for text combine to provide a current item for
+      // decorations.
+      NGInlineCursor text_combine_cursor(*this, *items);
+      contents_rect.Unite(
+          text_combine->RecalcContentsInkOverflow(text_combine_cursor));
+    }
 
     // Even if this turned out to be an inline formatting context with
     // fragment items (handled above), we need to handle floating descendants.
