@@ -68,18 +68,27 @@ export class GuestOsController {
         store.dispatch(removeUiEntry({key: uiEntryKey}));
       }
     }
-    this.directoryTree_.dataModel.guestOsPlaceholders = guests.map(guest => {
+
+    // Deduplicate GuestOSes with the same name/vmType to ignore issues from the
+    // backend. b/279378611. The instances that appear later prevail, assuming
+    // they're mounted/registered more recently.
+    const uniqGuests = new Map();
+    guests.forEach(guest => {
+      uniqGuests.set(`${guest.vmType}-${guest.displayName}`, guest);
+    });
+
+    this.directoryTree_.dataModel
+        .guestOsPlaceholders = Array.from(uniqGuests.values()).map(guest => {
       const guestOsEntry =
           new GuestOsPlaceholder(guest.displayName, guest.id, guest.vmType);
       const navigationModelItem = new NavigationModelFakeItem(
           guest.displayName, NavigationModelItemType.GUEST_OS, guestOsEntry);
-      if (guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM) {
-        navigationModelItem.disabled = this.volumeManager_.isDisabled(
-            VolumeManagerCommon.VolumeType.ANDROID_FILES);
-      } else {
-        navigationModelItem.disabled = this.volumeManager_.isDisabled(
-            VolumeManagerCommon.VolumeType.GUEST_OS);
-      }
+      const volumeType =
+          guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
+          VolumeManagerCommon.VolumeType.ANDROID_FILES :
+          VolumeManagerCommon.VolumeType.GUEST_OS;
+
+      navigationModelItem.disabled = this.volumeManager_.isDisabled(volumeType);
       store.dispatch(addUiEntry({entry: guestOsEntry}));
       return navigationModelItem;
     });

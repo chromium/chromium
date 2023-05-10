@@ -373,6 +373,7 @@ ts_test_files = [
 
   # Foreground:
   "file_manager/foreground/js/file_tasks_unittest.ts",
+  "file_manager/foreground/js/guest_os_controller_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
 ]
