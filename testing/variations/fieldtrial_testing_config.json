@@ -7460,7 +7460,7 @@
                     "enable_features": [
                         "Journeys",
                         "JourneysLabel",
-                        "JourneysOmniboxAction",
+                        "JourneysOmniboxHistoryClusterProvider",
                         "JourneysPersistCachesToPrefs",
                         "PageContentAnnotations",
                         "PageEntitiesPageContentAnnotations"

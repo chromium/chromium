@@ -48,6 +48,10 @@ public class OmniboxFeatures {
     private static final MutableFlagWithSafeDefault sShouldAdaptToNarrowTabletWindows =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS, false);
+
+    private static final MutableFlagWithSafeDefault sJourneysActionChipFlag =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_ACTION_CHIP, false);
     private static final MutableFlagWithSafeDefault sJourneysRowUiFlag =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
@@ -153,6 +157,11 @@ public class OmniboxFeatures {
      */
     public static boolean shouldAddMostVisitedTilesRecycledViewPool() {
         return ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool.isEnabled();
+    }
+
+    /** Whether Journeys suggestions should be shown as an action chip. */
+    public static boolean isJourneysActionChipEnabled() {
+        return sJourneysActionChipFlag.isEnabled();
     }
 
     /** Whether Journeys suggestions should be shown in a dedicated row. */

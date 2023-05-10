@@ -18,12 +18,12 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,6 +43,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -77,6 +79,7 @@ public class OmniboxActionsTest {
             new DisableAnimationsTestRule();
     public @Rule JniMocker mJniMocker = new JniMocker();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
 
     private OmniboxTestUtils mOmniboxUtils;
@@ -84,11 +87,6 @@ public class OmniboxActionsTest {
 
     @BeforeClass
     public static void beforeClass() {
-        FeatureList.TestValues featureTestValues = new FeatureList.TestValues();
-        featureTestValues.addFeatureFlagOverride(ChromeFeatureList.HISTORY_JOURNEYS, true);
-        FeatureList.setTestValues(featureTestValues);
-        FeatureList.setTestCanUseDefaultsForTesting();
-
         sActivityTestRule.startMainActivityOnBlankPage();
         sActivityTestRule.waitForActivityNativeInitializationComplete();
         sActivityTestRule.waitForDeferredStartup();
@@ -171,8 +169,11 @@ public class OmniboxActionsTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS})
-    public void testHistoryClustersAction() throws Exception {
+    @DisableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS,
+            ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_ACTION_CHIP})
+    public void
+    testHistoryClustersAction() throws Exception {
         setSuggestions(createDummyHistoryClustersAction("query"));
         clickOnAction(0);
 

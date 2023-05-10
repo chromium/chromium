@@ -380,6 +380,8 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_CONSUMERS_IME_INSETS = "OmniboxConsumesImeInsets";
     public static final String OMNIBOX_HISTORY_CLUSTER_PROVIDER =
             "JourneysOmniboxHistoryClusterProvider";
+
+    public static final String OMNIBOX_HISTORY_CLUSTER_ACTION_CHIP = "JourneysOmniboxAction";
     public static final String OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR =
             "OmniboxMatchToolbarAndStatusBarColor";
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";
