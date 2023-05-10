@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/chrome_build.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 source_set("search_engines") {
@@ -135,9 +135,10 @@ source_set("search_engines_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-optimize_js("search_engine_js") {
-  primary_script = "resources/search_engine.js"
-  sources = [ "resources/search_engine.js" ]
+optimize_ts("search_engine_js") {
+  sources = [ "resources/search_engine.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
 source_set("eg_app_support+eg2") {
