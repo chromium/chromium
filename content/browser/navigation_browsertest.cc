@@ -5761,9 +5761,11 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
-  // The crash, if any, will manifest in the b.com renderer. Open a b.com window
-  // in the same browsing instance to ensure that the b.com renderer stays
-  // around even if the b.com speculative RenderFrameHost is discarded.
+  // Prior to implementing the UndoCommitNavigation() workaround, the race
+  // condition being tested would result in a crash in the b.com renderer. Open
+  // another b.com window in the same browsing instance to verify that the b.com
+  // renderer does not unexpectedly crash even if the b.com speculative
+  // RenderFrameHost is discarded.
   ASSERT_TRUE(ExecJs(
       shell(), JsReplace("window.open($1)", embedded_test_server()->GetURL(
                                                 "b.com", "/title1.html"))));
@@ -5804,7 +5806,7 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
     // If navigation queueing is enabled, the test should verify that a resume
     // commit closure is actually set. Install a watcher now, before beginning
-    // the next navigation, since the resume commit closure may synchronously
+    // the next navigation, since the resume commit closure may be synchronously
     // set while handling the `BeginNavigation()` IPC in the browser.
     OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
       resume_commit_closure_set_waiter.emplace(handle);
@@ -5886,7 +5888,7 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
     // If navigation queueing is enabled, the test should verify that a resume
     // commit closure is actually set. Install a watcher now, before beginning
-    // the next navigation, since the resume commit closure may synchronously
+    // the next navigation, since the resume commit closure may be synchronously
     // set while handling the `BeginNavigation()` IPC in the browser.
     OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
       resume_commit_closure_set_waiter.emplace(handle);
@@ -5928,6 +5930,213 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   EXPECT_EQ(final_url, results[1].url);
 }
 
+// Test the behavior of a navigation that gets suspended in the pending commit
+// state followed by another navigation that results in a failed navigation. A
+// failed navigation is not a navigation that results in an HTTP error page; it
+// is a situation where the network request itself fails, e.g. DNS resolution
+// failed, and Chrome commits an error page instead.
+IN_PROC_BROWSER_TEST_P(
+    CommitNavigationRaceBrowserTest,
+    BeginNewNavigationDuringCommitFailedNavigationInMainFrame) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Prior to implementing the UndoCommitNavigation() workaround, the race
+  // condition being tested would result in a crash in the b.com renderer. Open
+  // another b.com window in the same browsing instance to verify that the b.com
+  // renderer does not unexpectedly crash even if the b.com speculative
+  // RenderFrameHost is discarded.
+  ASSERT_TRUE(ExecJs(
+      shell(), JsReplace("window.open($1)", embedded_test_server()->GetURL(
+                                                "b.com", "/title1.html"))));
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(Shell::windows()[1]->web_contents());
+  WaitForLoadStop(new_web_contents);
+  RenderProcessHost* const b_com_render_process_host =
+      new_web_contents->GetPrimaryMainFrame()->GetProcess();
+
+  NavigationLogger logger(shell()->web_contents());
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for b.com.
+  const GURL infinitely_loading_url =
+      embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), infinitely_loading_url));
+
+  // Ensure the speculative RFH is in the expected process (i.e. the b.com
+  // process that was created for the navigation in the new window earlier).
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* speculative_render_frame_host =
+      web_contents->GetPrimaryFrameTree()
+          .root()
+          ->render_manager()
+          ->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Pause (and potentially ignore, if navigation queueing is disabled) the next
+  // `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  absl::optional<ResumeCommitClosureSetWaiter> resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the next navigation, since the resume commit closure may be synchronously
+    // set while handling the `BeginNavigation()` IPC in the browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  // Now begin a new navigation to c.com while the previous b.com navigation
+  // above is paused in the pending commit state. This navigation will fail and
+  // commit an error page.
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(final_url,
+                                                   net::ERR_DNS_TIMED_OUT);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, final_url));
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    resume_commit_closure_set_waiter->Wait();
+    commit_pauser.ResumePausedCommit();
+  }
+
+  // The top-level page completes loading but is an error page, so
+  // `WaitForLoadStop()` should return false, since the navigation entry will
+  // have `PAGE_TYPE_ERROR`.
+  EXPECT_FALSE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
+
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  EXPECT_EQ(infinitely_loading_url, results[0].url);
+  // If navigation queueing is enabled, the first navigation will complete the
+  // commit as the new navigation gets queued until the first navigation's
+  // commit finished. If navigation queueing is disabled, the pending commit
+  // navigation will be cancelled.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    EXPECT_TRUE(results[0].committed);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[0].origin);
+  } else {
+    EXPECT_FALSE(results[0].committed);
+    EXPECT_EQ(absl::nullopt, results[0].origin);
+  }
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_TRUE(results[1].origin->opaque());
+  EXPECT_EQ(embedded_test_server()
+                ->GetOrigin("c.com")
+                .GetTupleOrPrecursorTupleIfOpaque(),
+            results[1].origin->GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_EQ(final_url, results[1].url);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    CommitNavigationRaceBrowserTest,
+    BeginNewNavigationDuringCommitFailedNavigationInSubFrame) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "b.com", "/cross_site_iframe_factory.html?b(a)")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* first_subframe_node =
+      web_contents->GetPrimaryMainFrame()->child_at(0);
+  RenderProcessHost* const b_com_render_process_host =
+      web_contents->GetPrimaryFrameTree()
+          .root()
+          ->render_manager()
+          ->current_frame_host()
+          ->GetProcess();
+
+  NavigationLogger logger(web_contents);
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for b.com.
+  const GURL infinitely_loading_url =
+      embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
+                                             infinitely_loading_url));
+
+  // Ensure the speculative RFH is in the expected process.
+  RenderFrameHostImpl* speculative_render_frame_host =
+      first_subframe_node->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Pause (and potentially ignore, if navigation queueing is disabled) the next
+  // `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  absl::optional<ResumeCommitClosureSetWaiter> resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the next navigation, since the resume commit closure may be synchronously
+    // set while handling the `BeginNavigation()` IPC in the browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  // Now begin a new navigation to c.com while the previous b.com navigation
+  // above is paused in the pending commit state. This navigation will fail and
+  // commit an error page.
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(final_url,
+                                                   net::ERR_DNS_TIMED_OUT);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node, final_url));
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    resume_commit_closure_set_waiter->Wait();
+    commit_pauser.ResumePausedCommit();
+  }
+
+  // The top-level page completes loading. Unlike the main frame variant of this
+  // test, `WaitForLoadStop()` should return true, since the navigation entry
+  // will have `PAGE_TYPE_NORMAL` as only a subframe failed to load.
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, first_subframe_node->render_manager()
+                           ->current_frame_host()
+                           ->GetLastCommittedURL());
+  EXPECT_TRUE(first_subframe_node->render_manager()
+                  ->current_frame_host()
+                  ->IsErrorDocument());
+
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  // If navigation queueing is enabled, the first navigation will complete the
+  // commit as the new navigation gets queued until the first navigation's
+  // commit finished. If navigation queueing is disabled, the pending commit
+  // navigation will be cancelled.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    EXPECT_TRUE(results[0].committed);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[0].origin);
+  } else {
+    EXPECT_FALSE(results[0].committed);
+    EXPECT_EQ(absl::nullopt, results[0].origin);
+  }
+  EXPECT_EQ(infinitely_loading_url, results[0].url);
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_TRUE(results[1].origin->opaque());
+  EXPECT_EQ(embedded_test_server()
+                ->GetOrigin("c.com")
+                .GetTupleOrPrecursorTupleIfOpaque(),
+            results[1].origin->GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_EQ(final_url, results[1].url);
+}
+
 // about:blank navigations do not require a URL loader and go through a
 // different path to commit the navigation in the renderer.
 IN_PROC_BROWSER_TEST_P(
@@ -5936,9 +6145,11 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
-  // The crash, if any, will manifest in the b.com renderer. Open a b.com window
-  // in the same browsing instance to ensure that the b.com renderer stays
-  // around even if the b.com speculative RenderFrameHost is discarded.
+  // Prior to implementing the UndoCommitNavigation() workaround, the race
+  // condition being tested would result in a crash in the b.com renderer. Open
+  // another b.com window in the same browsing instance to verify that the b.com
+  // renderer does not unexpectedly crash even if the b.com speculative
+  // RenderFrameHost is discarded.
   ASSERT_TRUE(ExecJs(
       shell(), JsReplace("window.open($1)", embedded_test_server()->GetURL(
                                                 "b.com", "/title1.html"))));
@@ -5979,7 +6190,7 @@ IN_PROC_BROWSER_TEST_P(
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
     // If navigation queueing is enabled, the test should verify that a resume
     // commit closure is actually set. Install a watcher now, before beginning
-    // the next navigation, since the resume commit closure may synchronously
+    // the next navigation, since the resume commit closure may be synchronously
     // set while handling the `BeginNavigation()` IPC in the browser.
     OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
       resume_commit_closure_set_waiter.emplace(handle);
@@ -6059,7 +6270,7 @@ IN_PROC_BROWSER_TEST_P(
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
     // If navigation queueing is enabled, the test should verify that a resume
     // commit closure is actually set. Install a watcher now, before beginning
-    // the next navigation, since the resume commit closure may synchronously
+    // the next navigation, since the resume commit closure may be synchronously
     // set while handling the `BeginNavigation()` IPC in the browser.
     OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
       resume_commit_closure_set_waiter.emplace(handle);

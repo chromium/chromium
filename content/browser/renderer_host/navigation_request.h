@@ -1364,7 +1364,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_download,
       absl::optional<SubresourceLoaderParams> subresource_loader_params);
   void SelectFrameHostForOnRequestFailedInternal(
-      const network::URLLoaderCompletionStatus& status,
+      bool exists_in_cache,
       bool skip_throttles,
       const absl::optional<std::string>& error_page_content);
   void SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader();

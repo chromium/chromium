@@ -4677,12 +4677,12 @@ void NavigationRequest::OnRequestFailedInternal(
       policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
       url::Origin(), net::NetworkAnonymizationKey::CreateTransient());
 
-  SelectFrameHostForOnRequestFailedInternal(status, skip_throttles,
-                                            error_page_content);
+  SelectFrameHostForOnRequestFailedInternal(status.exists_in_cache,
+                                            skip_throttles, error_page_content);
 }
 
 void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
-    const network::URLLoaderCompletionStatus& status,
+    bool exists_in_cache,
     bool skip_throttles,
     const absl::optional<std::string>& error_page_content) {
   switch (ComputeErrorPageProcess()) {
@@ -4731,9 +4731,11 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
         // removed in the future.
         break;
       case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
-        // TODO(https://crbug.com/1220337): Split OnRequestFailedInternal()
-        // so the process selection logic is at the top of its own method.
-        break;
+        resume_commit_closure_ = base::BindOnce(
+            &NavigationRequest::SelectFrameHostForOnRequestFailedInternal,
+            weak_factory_.GetWeakPtr(), exists_in_cache, skip_throttles,
+            error_page_content);
+        return;
     }
   }
 
@@ -4769,7 +4771,7 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
     }
   }
 
-  has_stale_copy_in_cache_ = status.exists_in_cache;
+  has_stale_copy_in_cache_ = exists_in_cache;
 
   if (skip_throttles) {
     // The NavigationHandle shouldn't be notified about renderer-debug URLs.
