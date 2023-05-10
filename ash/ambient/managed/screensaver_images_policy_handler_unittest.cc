@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_path_override.h"
-#include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -97,7 +96,8 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
               policy_handler.image_downloader_->GetDowloadDirForTesting());
   }
 
-  void RegisterUserWithUserPrefs(const AccountId& account_id) {
+  void RegisterUserWithUserPrefs(const AccountId& account_id,
+                                 user_manager::UserType user_type) {
     // Create a fake user prefs map.
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
     RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
@@ -107,7 +107,7 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
 
     GetSessionControllerClient()->Reset();
     GetSessionControllerClient()->AddUserSession(
-        kUserEmail, user_manager::USER_TYPE_REGULAR,
+        kUserEmail, user_type,
         /*provide_pref_service=*/false);
     GetSessionControllerClient()->SetUserPrefService(account_id,
                                                      std::move(user_prefs));
@@ -117,7 +117,8 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
   }
 
   void CreateHandlerInstanceWithUserProfile() {
-    RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail));
+    RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
+                              user_manager::USER_TYPE_REGULAR);
 
     policy_handler_ =
         std::make_unique<ScreensaverImagesPolicyHandler>(user_prefs_);
@@ -168,10 +169,9 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
 
 TEST_F(ScreensaverImagesPolicyHandlerTest,
        SharedDirectoryForManagedGuestSessions) {
-  ash::ScopedTestPublicSessionLoginState test_scoped_mgs_session;
-
   // Register the user profile with its own pref service.
-  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail));
+  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
+                            user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
   ScreensaverImagesPolicyHandler policy_handler(user_prefs());
 

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -13,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -31,7 +31,9 @@ constexpr char kManagedGuestsCacheDirectoryPath[] =
 constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
 
 base::FilePath GetDownloaderRootPath() {
-  if (LoginState::IsInitialized() && LoginState::Get()->IsPublicSessionUser()) {
+  SessionControllerImpl& session =
+      CHECK_DEREF(Shell::Get()->session_controller());
+  if (session.IsUserPublicAccount()) {
     return base::FilePath(kManagedGuestsCacheDirectoryPath);
   }
   // TODO(b/271093537): Support the folder location for sign-in screensaver.
