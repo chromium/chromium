@@ -1336,11 +1336,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableBulkPinning(),
         TestCase("toolbarCloudIconWhenPressedShouldOpenCloudPanel")
             .EnableBulkPinning(),
-// TODO(https://crbug.com/1444076): Flaky on linux-chromeos-rel
-#if !BUILDFLAG(IS_CHROMEOS)
         TestCase("toolbarCloudIconShouldNotShowWhenPrefDisabled")
             .EnableBulkPinning(),
-#endif
         TestCase("toolbarCloudIconShouldShowOnStartupEvenIfSyncing")
             .EnableBulkPinning(),
         TestCase("toolbarCloudIconShouldShowWhenPausedState")
