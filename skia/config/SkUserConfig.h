@@ -251,6 +251,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 /* Restrict formats for Skia font matching to SFNT type fonts. */
 #define SK_FONT_CONFIG_INTERFACE_ONLY_ALLOW_SFNT_FONTS
 
+// Temporarily enable new strike cache pinning logic, for staging.
+#define SK_STRIKE_CACHE_DOESNT_AUTO_CHECK_PINNERS
+
 #define SK_IGNORE_BLURRED_RRECT_OPT
 #define SK_USE_DISCARDABLE_SCALEDIMAGECACHE
 

@@ -68,6 +68,7 @@
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -2904,13 +2905,15 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   // Unlock all font handles. This needs to be deferred until
   // SkSurface::flush since that flushes batched Gr operations
   // in skia that access the glyph data.
-  // TODO(khushalsagar): We just unlocked a bunch of handles, do we need to
-  // give a call to skia to attempt to purge any unlocked handles?
   if (!font_manager_->Unlock(locked_handles_)) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                        "Invalid font discardable handle.");
   }
   locked_handles_.clear();
+
+  // We just unlocked a bunch of handles. Give a call to skia to
+  // attempt to purge any unlocked handles.
+  SkGraphics::PurgePinnedFontCache();
 
   // We just flushed a tile's worth of GPU work from the SkSurface in
   // flush above. Yield to the Scheduler to allow pre-emption before
