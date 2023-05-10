@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -51,6 +52,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/wm/window_util.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -70,7 +72,9 @@ constexpr int kTopControlsHeight = 30;
 constexpr int kFrameBorderThickness = 4;
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr int kResizeBorder = 10;
+#endif
 constexpr int kResizeAreaCornerSize = 16;
 
 // The time duration that the top bar animation will take in total.
@@ -359,6 +363,8 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::window_util::SetChildrenUseExtendedHitRegionForWindow(
+      frame->GetNativeWindow()->parent());
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(
       frame->GetNativeWindow());
 #endif
@@ -420,19 +426,17 @@ gfx::Rect PictureInPictureBrowserFrameView::GetWindowBoundsForClientBounds(
 
 int PictureInPictureBrowserFrameView::NonClientHitTest(
     const gfx::Point& point) {
-  // Do nothing if the click is outside the window.
-  if (!GetLocalBounds().Contains(point))
-    return HTNOWHERE;
-
   // Allow interacting with the buttons.
   if (GetLocationIconViewBounds().Contains(point) ||
       GetBackToTabControlsBounds().Contains(point) ||
-      GetCloseControlsBounds().Contains(point))
+      GetCloseControlsBounds().Contains(point)) {
     return HTCLIENT;
+  }
 
   for (size_t i = 0; i < content_setting_views_.size(); i++) {
-    if (GetContentSettingViewBounds(i).Contains(point))
+    if (GetContentSettingViewBounds(i).Contains(point)) {
       return HTCLIENT;
+    }
   }
 
   // Allow dragging and resizing the window.
@@ -879,6 +883,8 @@ gfx::Insets PictureInPictureBrowserFrameView::FrameBorderInsets() const {
 gfx::Insets PictureInPictureBrowserFrameView::ResizeBorderInsets() const {
 #if BUILDFLAG(IS_LINUX)
   return FrameBorderInsets();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return gfx::Insets(chromeos::kResizeInsideBoundsSize);
 #else
   return gfx::Insets(kResizeBorder);
 #endif
