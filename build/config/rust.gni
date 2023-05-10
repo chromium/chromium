@@ -94,7 +94,7 @@ declare_args() {
   enable_rust_mojo = enable_all_rust_features
 
   # Support for the 'gnrt' Rust tool.
-  enable_rust_gnrt = enable_all_rust_features
+  enable_rust_gnrt = host_toolchain == current_toolchain
 
   # Rust gtest interop
   enable_rust_gtest_interop = enable_all_rust_features
