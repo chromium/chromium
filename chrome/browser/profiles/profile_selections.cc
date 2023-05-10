@@ -13,20 +13,13 @@
 #include "chrome/common/chrome_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-BASE_FEATURE(kSystemProfileSelectionDefaultNone,
-             "SystemProfileSelectionDefaultNone",
-             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
-
 bool AreKeyedServicesDisabledForProfileByDefault(const Profile* profile) {
+  // By default disable all services for System Profile.
+  // Even though having no services is also the default value for Guest Profile,
+  // this is not really the case in practice because a lot of Service Factories
+  // override the default value for the `ProfileSelection` of the Guest Profile.
   if (profile && profile->IsSystemProfile()) {
-    // The default behavior of the system profile selection depends on the value
-    // of `kSystemProfileSelectionDefaultNone` feature flag.
-    ProfileSelection system_profile_default =
-        base::FeatureList::IsEnabled(kSystemProfileSelectionDefaultNone)
-            ? ProfileSelections::kSystemProfileExperimentDefault
-            : ProfileSelections::kRegularProfileDefault;
-
-    return system_profile_default == ProfileSelection::kNone;
+    return true;
   }
 
   return false;
@@ -173,20 +166,10 @@ ProfileSelection ProfileSelections::GetProfileSelection(
   }
 
   if (profile->IsSystemProfile()) {
-    // Default value depends on the experiment
-    // `kSystemProfileSelectionDefaultNone`. If experiment is active default
-    // value is ProfileSelection::kNone, otherwise the behavior is redirected to
-    // the `regular_profile_selection_` value (old default behavior).
-    ProfileSelection system_profile_default =
-        base::FeatureList::IsEnabled(kSystemProfileSelectionDefaultNone)
-            ? ProfileSelections::kSystemProfileExperimentDefault
-            : regular_profile_selection_;
-
-    // If the value for SystemProfileSelection is set, use it.
-    // Otherwise, use the default value set above.
-    // This is used for both original system profile (not user visible) and for
-    // the off-the-record system profile (used in the Profile Picker).
-    return system_profile_selection_.value_or(system_profile_default);
+    // If a value is not set for the System Profile Selection,
+    // `ProfileSelection::kNone` is set by default, meaning no profile will be
+    // selected.
+    return system_profile_selection_.value_or(ProfileSelection::kNone);
   }
 
   NOTREACHED();

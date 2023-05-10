@@ -44,12 +44,11 @@ bool WifiConfigurationSyncServiceFactory::ShouldRunInProfile(
 }
 
 WifiConfigurationSyncServiceFactory::WifiConfigurationSyncServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "WifiConfigurationSyncService",
-          ProfileSelections::Builder()
-              .WithGuest(ProfileSelections::kRegularProfileDefault)
-              .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {
+    : ProfileKeyedServiceFactory("WifiConfigurationSyncService",
+                                 ProfileSelections::Builder()
+                                     .WithGuest(ProfileSelection::kOriginalOnly)
+                                     .WithAshInternals(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

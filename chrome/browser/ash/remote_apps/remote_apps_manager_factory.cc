@@ -30,13 +30,12 @@ RemoteAppsManagerFactory* RemoteAppsManagerFactory::GetInstance() {
 }
 
 RemoteAppsManagerFactory::RemoteAppsManagerFactory()
-    : ProfileKeyedServiceFactory(
-          "RemoteAppsManager",
-          ProfileSelections::Builder()
-              .WithGuest(ProfileSelections::kRegularProfileDefault)
-              .WithSystem(ProfileSelection::kNone)
-              .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {
+    : ProfileKeyedServiceFactory("RemoteAppsManager",
+                                 ProfileSelections::Builder()
+                                     .WithGuest(ProfileSelection::kOriginalOnly)
+                                     .WithSystem(ProfileSelection::kNone)
+                                     .WithAshInternals(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(extensions::EventRouterFactory::GetInstance());

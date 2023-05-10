@@ -149,15 +149,10 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
     // tests. If a feature is integrated in the fieldtrial_testing_config.json,
     // it might not be considered under an official build. Adding it under a
     // InitWithFeatures to activate it would neglect that difference.
-    //
-    // Force init `kSystemProfileSelectionDefaultNone` to make sure that this
-    // test catches all new creation of services for System Profile, even during
-    // the transition period when the feature experiment is partially active.
-    //
+
     // clang-format off
     feature_list_.InitWithFeatures(
         {
-          kSystemProfileSelectionDefaultNone,
 #if !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
 #endif  // !BUILDFLAG(IS_ANDROID)

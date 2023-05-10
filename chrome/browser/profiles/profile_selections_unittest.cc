@@ -24,6 +24,35 @@ class ProfileSelectionsTest : public testing::Test,
   }
 };
 
+TEST_F(ProfileSelectionsTest, DefaultConstructor) {
+  // This is equivalent to `ProfileSelections()` which is private and can only
+  // be called this way in production.
+  ProfileSelections selections = ProfileSelections::Builder().Build();
+
+  TestProfileSelection(selections, regular_profile(), regular_profile());
+  TestProfileSelection(selections, incognito_profile(), nullptr);
+
+  TestProfileSelection(selections, guest_profile(), nullptr);
+  TestProfileSelection(selections, guest_profile_otr(), nullptr);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  TestProfileSelection(selections, system_profile(), nullptr);
+  TestProfileSelection(selections, system_profile_otr(), nullptr);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 TEST_F(ProfileSelectionsTest, CustomImplementation) {
   ProfileSelections selections =
       ProfileSelections::Builder()
@@ -227,66 +256,3 @@ TEST_F(ProfileSelectionsTest, NoProfiles) {
   TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)s
 }
-
-// Testing default behavior with System Profile Experiment.
-// Param:
-// - bool system_experiment: used to activate/deactivate the
-// `kSystemProfileSelectionDefaultNone` experiment.
-class ProfileSelectionsTestWithParams
-    : public ProfileSelectionsTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    ProfileSelectionsTest::SetUp();
-
-    // TODO(rsult): move the below code to be in the
-    // `ProfileSelectionsTestWithParams` constructor, once the System and Guest
-    // Profiles can be created with the experiment activated.
-    bool activate_system_experiment = GetParam();
-    feature_list_.InitWithFeatureState(kSystemProfileSelectionDefaultNone,
-                                       activate_system_experiment);
-  }
-
- protected:
-  bool IsSystemExperimentActive() const {
-    return base::FeatureList::IsEnabled(kSystemProfileSelectionDefaultNone);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(ProfileSelectionsTestWithParams, DefaultConstructor) {
-  // This is equivalent to `ProfileSelections()` which is private and can only
-  // be called this way in production.
-  ProfileSelections selections = ProfileSelections::Builder().Build();
-
-  TestProfileSelection(selections, regular_profile(), regular_profile());
-  TestProfileSelection(selections, incognito_profile(), nullptr);
-
-  TestProfileSelection(selections, guest_profile(), nullptr);
-  TestProfileSelection(selections, guest_profile_otr(), nullptr);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  bool system_experiment = IsSystemExperimentActive();
-  TestProfileSelection(selections, system_profile(),
-                       system_experiment ? nullptr : system_profile());
-  TestProfileSelection(selections, system_profile_otr(), nullptr);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestProfileSelection(selections, signin_profile(), signin_profile());
-  TestProfileSelection(selections, signin_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
-  TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreenapp_profile(),
-                       lockscreenapp_profile());
-  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-INSTANTIATE_TEST_SUITE_P(DefaultBehaviorWithSystemProfileExperiment,
-                         ProfileSelectionsTestWithParams,
-                         ::testing::Bool());

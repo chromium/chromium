@@ -9,31 +9,18 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// This feature flag will change the default beahvoir of
-// `ProfileSelections::system_profile_selection_` when the value is not set. The
-// old behavior simply follows `regular_profile_selection_` value, with the
-// experiment active the default value will be `ProfileSelection::kNone`,
-// meaning the default ProfileSelection for System Profile will be no profile.
-// This feature flag will only affect builders that has are marked as
-// `Experimental Builders` below, and any customized builder that will not
-// explicitly use `ProfileSelections::Builder::WithSystem()`.
-BASE_DECLARE_FEATURE(kSystemProfileSelectionDefaultNone);
-
 class Profile;
 
 // A helper function that checks whether Keyed Services should be created for
-// the given `profile` based on the default profile type value. Currently checks
-// if it is the System Profile and if it's equivalent feature flag to disable
-// the creation of Keyed Services (`kSystemProfileSelectionDefaultNone`) is
-// activated.
+// the given `profile` based on the default profile type value. Currently only
+// returns true for a valid System Profile.
+// This method is intended to be used only to bypass multiple factory/service
+// checks.
 bool AreKeyedServicesDisabledForProfileByDefault(const Profile* profile);
 
 // The class `ProfileSelections` and enum `ProfileSelection` are not coupled
-// with the usage of `ProfileKeyedServiceFactory`, however the experiment of
-// changing the default value of `ProfileSelections` behavior is mainly done for
-// the `ProfileKeyedServiceFactory`.
-// If other usages are needed it is best not to use the builders that contains
-// experimental code (mentioned below).
+// with the usage of `ProfileKeyedServiceFactory` and can be used separately to
+// filter out profiles based on their types.
 
 // Enum used to map the logic of selecting the right profile based on the given
 // profile.
@@ -56,12 +43,8 @@ class ProfileSelections {
   ProfileSelections(const ProfileSelections& other);
   ~ProfileSelections();
 
-  static const ProfileSelection kRegularProfileDefault =
-      ProfileSelection::kOriginalOnly;
-  static const ProfileSelection kSystemProfileExperimentDefault =
-      ProfileSelection::kNone;
-
-  // Builder to construct the `ProfileSelections` parameters.
+  // Builder to construct the `ProfileSelections` parameters for different
+  // profile types.
   class Builder {
    public:
     Builder();
@@ -184,7 +167,7 @@ class ProfileSelections {
   // Default constructor settings sets Regular Profile ->
   // `ProfileSelection::kOriginalOnly`. It should be constructed through the
   // Builder. Value for Guest, System and Ash internals profile not being
-  // overridden will default to the behaviour of Regular Profile.
+  // overridden will default to `ProfileSelection::kNone`.
   ProfileSelections();
 
   void SetProfileSelectionForRegular(ProfileSelection selection);
@@ -198,10 +181,9 @@ class ProfileSelections {
 
   // Default value for the mapping of
   // Regular Profile -> `ProfileSelection::kOriginalOnly`
-  // Not assigning values for Guest and System Profiles now defaults to the
-  // behavior of regular profiles. This will change later on to default to
+  // Not assigning values for Guest and System Profiles defaults to
   // `ProfileSelection::kNone`.
-  ProfileSelection regular_profile_selection_ = kRegularProfileDefault;
+  ProfileSelection regular_profile_selection_ = ProfileSelection::kOriginalOnly;
   absl::optional<ProfileSelection> guest_profile_selection_;
   absl::optional<ProfileSelection> system_profile_selection_;
   absl::optional<ProfileSelection> ash_internals_profile_selection_;
