@@ -28,7 +28,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
 namespace {
 
 constexpr int kMemoryLabelSizeDelta = 12;
-constexpr int kGaugeRadius = 80;
+constexpr int kGaugeRadius = 70;
 constexpr int kStrokeWidth = 8;
 constexpr int kTickStrokeWidth = 2;
 constexpr int kBucketCount = 4;
@@ -79,7 +79,7 @@ class GaugeView : public views::FlexLayoutView {
     }
 
     DrawArc(canvas, center, memory_angle,
-            GetColorProvider()->GetColor(ui::kColorAccent));
+            GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent));
 
     const SkColor tick_color =
         GetColorProvider()->GetColor(ui::kColorDialogBackground);
