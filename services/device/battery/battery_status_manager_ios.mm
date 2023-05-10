@@ -36,8 +36,9 @@ mojom::BatteryStatus GetInternalBatteriesStates() {
       status.charging = false;
       break;
   }
-  float battery_level = [UIDevice currentDevice].batteryLevel;
-  status.level = battery_level;
+  if ([UIDevice currentDevice].batteryState != UIDeviceBatteryStateUnknown) {
+    status.level = [UIDevice currentDevice].batteryLevel;
+  }
   // It's not recommended to calculate time from
   // https://developer.apple.com/documentation/uikit/uidevicebatteryleveldidchangenotification
   // Set `charging_time` to +Infinity if not fully charged, otherwise leave the
