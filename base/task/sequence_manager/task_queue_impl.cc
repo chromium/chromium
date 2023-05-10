@@ -34,6 +34,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -273,6 +274,9 @@ scoped_refptr<SingleThreadTaskRunner> TaskQueueImpl::CreateTaskRunner(
 
 void TaskQueueImpl::UnregisterTaskQueue() {
   TRACE_EVENT0("base", "TaskQueueImpl::UnregisterTaskQueue");
+  // Invalidate weak pointers now so no voters reference this in a partially
+  // torn down state.
+  voter_weak_ptr_factory_.InvalidateWeakPtrs();
   // Detach task runners.
   {
     ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
@@ -1487,6 +1491,60 @@ void TaskQueueImpl::OnQueueUnblocked() {
         .enqueue_order_at_which_we_became_unblocked_with_normal_priority =
         main_thread_only().enqueue_order_at_which_we_became_unblocked;
   }
+}
+
+std::unique_ptr<TaskQueue::QueueEnabledVoter>
+TaskQueueImpl::CreateQueueEnabledVoter() {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  return WrapUnique(
+      new TaskQueue::QueueEnabledVoter(voter_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TaskQueueImpl::AddQueueEnabledVoter(bool voter_is_enabled,
+                                         TaskQueue::QueueEnabledVoter& voter) {
+  ++main_thread_only().voter_count;
+  if (voter_is_enabled) {
+    ++main_thread_only().enabled_voter_count;
+  }
+}
+
+void TaskQueueImpl::RemoveQueueEnabledVoter(
+    bool voter_is_enabled,
+    TaskQueue::QueueEnabledVoter& voter) {
+  bool was_enabled = AreAllQueueEnabledVotersEnabled();
+  if (voter_is_enabled) {
+    --main_thread_only().enabled_voter_count;
+    DCHECK_GE(main_thread_only().enabled_voter_count, 0);
+  }
+
+  --main_thread_only().voter_count;
+  DCHECK_GE(main_thread_only().voter_count, 0);
+
+  bool is_enabled = AreAllQueueEnabledVotersEnabled();
+  if (was_enabled != is_enabled) {
+    SetQueueEnabled(is_enabled);
+  }
+}
+
+void TaskQueueImpl::OnQueueEnabledVoteChanged(bool enabled) {
+  bool was_enabled = AreAllQueueEnabledVotersEnabled();
+  if (enabled) {
+    ++main_thread_only().enabled_voter_count;
+    DCHECK_LE(main_thread_only().enabled_voter_count,
+              main_thread_only().voter_count);
+  } else {
+    --main_thread_only().enabled_voter_count;
+    DCHECK_GE(main_thread_only().enabled_voter_count, 0);
+  }
+
+  bool is_enabled = AreAllQueueEnabledVotersEnabled();
+  if (was_enabled != is_enabled) {
+    SetQueueEnabled(is_enabled);
+  }
+}
+
+void TaskQueueImpl::CompleteInitializationOnBoundThread() {
+  voter_weak_ptr_factory_.BindToCurrentSequence(PassKey<TaskQueueImpl>());
 }
 
 TaskQueueImpl::DelayedIncomingQueue::DelayedIncomingQueue() = default;

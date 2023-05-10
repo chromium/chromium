@@ -5599,6 +5599,41 @@ TEST(
   sequence_manager.reset();
 }
 
+TEST(SequenceManagerTest, BindOnDifferentThreadWithActiveVoters) {
+  auto sequence_manager = CreateUnboundSequenceManager();
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
+  auto voter = queue->CreateQueueEnabledVoter();
+  {
+    // Create a second voter that gets destroyed while unbound.
+    auto voter2 = queue->CreateQueueEnabledVoter();
+  }
+
+  voter->SetVoteToEnable(false);
+  EXPECT_FALSE(queue->IsQueueEnabled());
+
+  std::vector<bool> results;
+  WaitableEvent done_event;
+  Thread thread("TestThread");
+  thread.Start();
+  auto task = BindLambdaForTesting([&]() {
+    // Move `voter` so it gets destroyed on the bound thread.
+    auto scoped_voter = std::move(voter);
+    // Bind `sequence_manager` to this thread.
+    auto scoped_mgr = std::move(sequence_manager);
+    scoped_mgr->BindToCurrentThread();
+
+    results.push_back(queue->IsQueueEnabled());
+    scoped_voter->SetVoteToEnable(true);
+    results.push_back(queue->IsQueueEnabled());
+    done_event.Signal();
+  });
+  thread.task_runner()->PostTask(FROM_HERE, std::move(task));
+  done_event.Wait();
+  thread.Stop();
+  EXPECT_THAT(results, ElementsAre(false, true));
+}
+
 }  // namespace internal
 }  // namespace sequence_manager
 }  // namespace base
