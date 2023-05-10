@@ -227,8 +227,8 @@ void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
   // invoked.
   std::string kHistoryReplaceState =
       "history.replaceState({ test: 'test' }, null);";
-  EXPECT_TRUE(ExecuteScript(browser_view()->GetActiveWebContents(),
-                            kHistoryReplaceState));
+  EXPECT_TRUE(
+      ExecJs(browser_view()->GetActiveWebContents(), kHistoryReplaceState));
   EXPECT_FALSE(browser_view()->ShouldDescendIntoChildForEventHandling(
       browser_view()->GetWidget()->GetNativeView(), draggable_point));
 
