@@ -1203,6 +1203,8 @@ component("base") {
       "android/event_log.cc",
       "android/event_log.h",
       "android/feature_list_jni.cc",
+      "android/feature_map.cc",
+      "android/feature_map.h",
       "android/features_jni.cc",
       "android/field_trial_list.cc",
       "android/important_file_writer_android.cc",

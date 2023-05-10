@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/android/feature_map.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
@@ -410,23 +411,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &network::features::kPrivateStateTokens,
 };
 
-const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
-  static auto kFeaturesExposedToJavaMap = base::NoDestructor(
-      base::MakeFlatMap<base::StringPiece, const base::Feature*>(
-          kFeaturesExposedToJava, {},
-          [](const base::Feature* a)
-              -> std::pair<base::StringPiece, const base::Feature*> {
-            return std::make_pair(a->name, a);
-          }));
-
-  auto it = kFeaturesExposedToJavaMap->find(base::StringPiece(feature_name));
-  if (it != kFeaturesExposedToJavaMap->end()) {
-    return it->second;
-  }
-
-  NOTREACHED() << "Queried feature cannot be found in ChromeFeatureList: "
-               << feature_name;
-  return nullptr;
+// static
+base::android::FeatureMap* GetFeatureMap() {
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
+      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  return kFeatureMap.get();
 }
 
 }  // namespace
@@ -1154,8 +1143,8 @@ BASE_FEATURE(kWebApkTrampolineOnInitialIntent,
 static jboolean JNI_ChromeFeatureList_IsEnabled(
     JNIEnv* env,
     const JavaParamRef<jstring>& jfeature_name) {
-  const base::Feature* feature =
-      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  const base::Feature* feature = GetFeatureMap()->FindFeatureExposedToJava(
+      base::StringPiece(ConvertJavaStringToUTF8(env, jfeature_name)));
   return base::FeatureList::IsEnabled(*feature);
 }
 
@@ -1164,8 +1153,8 @@ JNI_ChromeFeatureList_GetFieldTrialParamByFeature(
     JNIEnv* env,
     const JavaParamRef<jstring>& jfeature_name,
     const JavaParamRef<jstring>& jparam_name) {
-  const base::Feature* feature =
-      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  const base::Feature* feature = GetFeatureMap()->FindFeatureExposedToJava(
+      base::StringPiece(ConvertJavaStringToUTF8(env, jfeature_name)));
   const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
   const std::string& param_value =
       base::GetFieldTrialParamValueByFeature(*feature, param_name);
@@ -1177,8 +1166,8 @@ static jint JNI_ChromeFeatureList_GetFieldTrialParamByFeatureAsInt(
     const JavaParamRef<jstring>& jfeature_name,
     const JavaParamRef<jstring>& jparam_name,
     const jint jdefault_value) {
-  const base::Feature* feature =
-      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  const base::Feature* feature = GetFeatureMap()->FindFeatureExposedToJava(
+      base::StringPiece(ConvertJavaStringToUTF8(env, jfeature_name)));
   const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
   return base::GetFieldTrialParamByFeatureAsInt(*feature, param_name,
                                                 jdefault_value);
@@ -1189,8 +1178,8 @@ static jdouble JNI_ChromeFeatureList_GetFieldTrialParamByFeatureAsDouble(
     const JavaParamRef<jstring>& jfeature_name,
     const JavaParamRef<jstring>& jparam_name,
     const jdouble jdefault_value) {
-  const base::Feature* feature =
-      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  const base::Feature* feature = GetFeatureMap()->FindFeatureExposedToJava(
+      base::StringPiece(ConvertJavaStringToUTF8(env, jfeature_name)));
   const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
   return base::GetFieldTrialParamByFeatureAsDouble(*feature, param_name,
                                                    jdefault_value);
@@ -1201,8 +1190,8 @@ static jboolean JNI_ChromeFeatureList_GetFieldTrialParamByFeatureAsBoolean(
     const JavaParamRef<jstring>& jfeature_name,
     const JavaParamRef<jstring>& jparam_name,
     const jboolean jdefault_value) {
-  const base::Feature* feature =
-      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  const base::Feature* feature = GetFeatureMap()->FindFeatureExposedToJava(
+      base::StringPiece(ConvertJavaStringToUTF8(env, jfeature_name)));
   const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
   return base::GetFieldTrialParamByFeatureAsBool(*feature, param_name,
                                                  jdefault_value);
@@ -1211,11 +1200,11 @@ static jboolean JNI_ChromeFeatureList_GetFieldTrialParamByFeatureAsBoolean(
 static ScopedJavaLocalRef<jobjectArray>
 JNI_ChromeFeatureList_GetFlattedFieldTrialParamsForFeature(
     JNIEnv* env,
-    const JavaParamRef<jstring>& feature_name) {
+    const JavaParamRef<jstring>& jfeature_name) {
   base::FieldTrialParams params;
   std::vector<std::string> keys_and_values;
-  const base::Feature* feature =
-      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, feature_name));
+  const base::Feature* feature = GetFeatureMap()->FindFeatureExposedToJava(
+      base::StringPiece(ConvertJavaStringToUTF8(env, jfeature_name)));
   if (feature && base::GetFieldTrialParamsByFeature(*feature, &params)) {
     for (const auto& param_pair : params) {
       keys_and_values.push_back(param_pair.first);
