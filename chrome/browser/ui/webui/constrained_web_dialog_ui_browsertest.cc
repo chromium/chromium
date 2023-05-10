@@ -206,20 +206,20 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest,
       &IsEqualSizes, gfx::Size(initial_size, initial_size), dialog_delegate)));
 
   // Resize to dimensions within expected bounds.
-  EXPECT_TRUE(ExecuteScript(dialog_delegate->GetWebContents(),
-      GetChangeDimensionsScript(175)));
+  EXPECT_TRUE(ExecJs(dialog_delegate->GetWebContents(),
+                     GetChangeDimensionsScript(175)));
   ASSERT_TRUE(RunLoopUntil(base::BindRepeating(
       &IsEqualSizes, gfx::Size(new_size, new_size), dialog_delegate)));
 
   // Resize to dimensions smaller than the minimum bounds.
-  EXPECT_TRUE(ExecuteScript(dialog_delegate->GetWebContents(),
-      GetChangeDimensionsScript(50)));
+  EXPECT_TRUE(
+      ExecJs(dialog_delegate->GetWebContents(), GetChangeDimensionsScript(50)));
   ASSERT_TRUE(RunLoopUntil(
       base::BindRepeating(&IsEqualSizes, min_size, dialog_delegate)));
 
   // Resize to dimensions greater than the maximum bounds.
-  EXPECT_TRUE(ExecuteScript(dialog_delegate->GetWebContents(),
-      GetChangeDimensionsScript(250)));
+  EXPECT_TRUE(ExecJs(dialog_delegate->GetWebContents(),
+                     GetChangeDimensionsScript(250)));
   ASSERT_TRUE(RunLoopUntil(
       base::BindRepeating(&IsEqualSizes, max_size, dialog_delegate)));
 }
@@ -251,14 +251,14 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest,
             dialog_delegate->GetConstrainedWebDialogPreferredSize());
 
   // Resize <body> to dimension smaller than dialog.
-  EXPECT_TRUE(ExecuteScript(dialog_delegate->GetWebContents(),
-      GetChangeDimensionsScript(100)));
+  EXPECT_TRUE(ExecJs(dialog_delegate->GetWebContents(),
+                     GetChangeDimensionsScript(100)));
   ASSERT_TRUE(RunLoopUntil(base::BindRepeating(
       &IsEqualSizes, initial_dialog_size, dialog_delegate)));
 
   // Resize <body> to dimension larger than dialog.
-  EXPECT_TRUE(ExecuteScript(dialog_delegate->GetWebContents(),
-      GetChangeDimensionsScript(500)));
+  EXPECT_TRUE(ExecJs(dialog_delegate->GetWebContents(),
+                     GetChangeDimensionsScript(500)));
   ASSERT_TRUE(RunLoopUntil(base::BindRepeating(
       &IsEqualSizes, initial_dialog_size, dialog_delegate)));
 }

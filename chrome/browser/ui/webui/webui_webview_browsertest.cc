@@ -367,8 +367,8 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
   // RenderWidgetHosts in order to work with OOPIFs. See crbug.com/647249.
 
   {
-    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
-                                       "console.log('step1: Drag Enter')"));
+    EXPECT_TRUE(content::ExecJs(embedder_web_contents,
+                                "console.log('step1: Drag Enter')"));
 
     WebUIMessageListener listener(embedder_web_contents->GetWebUI(),
                                   "Step1: destNode gets dragenter");
@@ -380,8 +380,8 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
   }
 
   {
-    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
-                                       "console.log('step2: Drag Over')"));
+    EXPECT_TRUE(content::ExecJs(embedder_web_contents,
+                                "console.log('step2: Drag Over')"));
 
     WebUIMessageListener listener(embedder_web_contents->GetWebUI(),
                                   "Step2: destNode gets dragover");
@@ -392,8 +392,8 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
   }
 
   {
-    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
-                                       "console.log('step3: Drop')"));
+    EXPECT_TRUE(
+        content::ExecJs(embedder_web_contents, "console.log('step3: Drop')"));
 
     DNDToInputNavigationObserver observer(embedder_web_contents);
     WebUIMessageListener listener(embedder_web_contents->GetWebUI(),
