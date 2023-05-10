@@ -206,7 +206,7 @@ void XrBrowserTestBase::RunJavaScriptOrFail(
     return;
   }
 
-  ASSERT_TRUE(content::ExecuteScript(web_contents, js_expression))
+  ASSERT_TRUE(content::ExecJs(web_contents, js_expression))
       << "Failed to run given JavaScript: " << js_expression;
 }
 
