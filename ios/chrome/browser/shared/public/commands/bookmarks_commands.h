@@ -10,6 +10,7 @@
 
 #import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
 
+class GURL;
 @class ReadingListAddCommand;
 
 // Protocol for commands arounds Bookmarks manipulation.
@@ -25,8 +26,8 @@
 - (void)bookmark:(BookmarkAddCommand*)command;
 
 // Opens the Bookmarks UI in edit mode and selects the bookmark node
-// corresponding to the values provided within `command`.
-- (void)openToExternalBookmark:(BookmarkAddCommand*)command;
+// corresponding to `URL`.
+- (void)openToExternalBookmark:(GURL)URL;
 
 @end
 

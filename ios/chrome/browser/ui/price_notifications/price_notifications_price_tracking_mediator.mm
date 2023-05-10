@@ -18,9 +18,9 @@
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
-#import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_alert_presenter.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
@@ -170,10 +170,8 @@ using PriceNotificationItems =
 
 - (void)navigateToBookmarks {
   [self.handler hidePriceNotifications];
-  BookmarkAddCommand* command =
-      [[BookmarkAddCommand alloc] initWithWebState:self.webState
-                              presentFolderChooser:NO];
-  [self.bookmarksHandler openToExternalBookmark:command];
+  GURL URL = _webState->GetLastCommittedURL();
+  [self.bookmarksHandler openToExternalBookmark:URL];
 }
 
 #pragma mark - Private

@@ -563,15 +563,13 @@ enum class PresentedState {
   [self presentFolderChooser];
 }
 
-- (void)openToExternalBookmark:(BookmarkAddCommand*)command {
-  if (!_profileBookmarkModel->loaded() || command.URLs.count != 1 ||
-      command.presentFolderChooser) {
+- (void)openToExternalBookmark:(GURL)URL {
+  if (!_profileBookmarkModel->loaded()) {
     return;
   }
 
   const BookmarkNode* existingBookmark =
-      _profileBookmarkModel->GetMostRecentlyAddedUserNodeForURL(
-          command.URLs.firstObject.URL);
+      _profileBookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
   [self
       presentBookmarksAtDisplayedFolderNode:_profileBookmarkModel->mobile_node()
                           selectingBookmark:existingBookmark];
