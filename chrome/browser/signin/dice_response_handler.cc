@@ -126,14 +126,7 @@ class DiceResponseHandlerFactory : public ProfileKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<DiceResponseHandlerFactory>;
 
   DiceResponseHandlerFactory()
-      : ProfileKeyedServiceFactory(
-            "DiceResponseHandler",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/1418376): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOriginalOnly)
-                .Build()) {
+      : ProfileKeyedServiceFactory("DiceResponseHandler") {
     DependsOn(AboutSigninInternalsFactory::GetInstance());
     DependsOn(AccountReconcilorFactory::GetInstance());
     DependsOn(ChromeSigninClientFactory::GetInstance());
