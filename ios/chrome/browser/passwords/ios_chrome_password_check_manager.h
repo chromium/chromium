@@ -104,6 +104,9 @@ class IOSChromePasswordCheckManager
 
   void NotifyPasswordCheckStatusChanged();
 
+  // Logs counts of insecure credentials after each password check.
+  void LogInsecureCredentialsCountMetrics();
+
   // Remembers whether a password check is running right now.
   bool is_check_running_ = false;
 

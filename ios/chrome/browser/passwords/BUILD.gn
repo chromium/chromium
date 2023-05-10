@@ -36,6 +36,7 @@ source_set("passwords") {
   ]
   deps = [
     ":infobar_delegates",
+    ":password_checkup_metrics",
     ":store_factory",
     "//base",
     "//base:i18n",
@@ -226,7 +227,7 @@ source_set("unit_tests") {
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
-    ":password_checkup_utils",
+    ":password_checkup_metrics",
     ":passwords",
     "//base",
     "//base/test:test_support",

@@ -9,6 +9,14 @@
 
 namespace password_manager {
 
+// Name of the histogram for logging count of unique pairs of username and
+// password present in insecure credential warnings.
+extern const char kInsecureCredentialsCountHistogram[];
+
+// Name of the histogram for logging count of unique pairs of username and
+// password present in insecure credentials warnings not muted by the user.
+extern const char kUnmutedInsecureCredentialsCountHistogram[];
+
 // Logs the user action of changing an insecure password on its affiliated
 // website.
 void LogChangePasswordOnWebsite(WarningType context);
@@ -39,6 +47,14 @@ void LogStartPasswordCheckAutomatically();
 
 // Logs the user action of opening the password checkup home page.
 void LogOpenPasswordCheckupHomePage();
+
+// Logs the number of unique pairs of username and password present in an
+// insecure credential warning.
+void LogCountOfInsecureUsernamePasswordPairs(int count);
+
+// Logs the number of unique pairs of username and password present in an
+// insecure credential warning not muted by the user.
+void LogCountOfUnmutedInsecureUsernamePasswordPairs(int count);
 
 }  // namespace password_manager
 

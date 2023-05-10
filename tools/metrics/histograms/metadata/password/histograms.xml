@@ -1083,6 +1083,27 @@ chromium-metrics-reviews@google.com.
   <summary>Error encountered during the password bulk check.</summary>
 </histogram>
 
+<histogram name="PasswordManager.BulkCheck.InsecureCredentials.Count"
+    units="credentials" expires_after="2023-11-01">
+  <owner>eic@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <summary>
+    Count of unique pairs of username-password present in a compromised, weak or
+    reused credential warning. Recorded after every successful password check.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.InsecureCredentials.Unmuted.Count"
+    units="credentials" expires_after="2023-11-01">
+  <owner>eic@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <summary>
+    Count of unique pairs of username-password present in a compromised, weak or
+    reused credential warning not muted by the user. Recorded after every
+    successful password check.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BulkCheck.LeaksFound" units="credentials"
     expires_after="2023-09-10">
   <owner>vasilii@chromium.org</owner>

@@ -82,6 +82,12 @@ void LogGeneralPasswordCheckInteraction(
 
 namespace password_manager {
 
+const char kInsecureCredentialsCountHistogram[] =
+    "PasswordManager.BulkCheck.InsecureCredentials.Count";
+
+const char kUnmutedInsecureCredentialsCountHistogram[] =
+    "PasswordManager.BulkCheck.InsecureCredentials.Unmuted.Count";
+
 void LogChangePasswordOnWebsite(WarningType context) {
   LogPasswordCheckInteraction(
       PasswordCheckInteractionIOS::kChangePasswordOnWebsite, context);
@@ -130,6 +136,15 @@ void LogStartPasswordCheckAutomatically() {
 void LogOpenPasswordCheckupHomePage() {
   LogGeneralPasswordCheckInteraction(
       PasswordCheckInteractionIOSWithoutContext::kOpenCheckupHomepage);
+}
+
+void LogCountOfInsecureUsernamePasswordPairs(int count) {
+  base::UmaHistogramCounts1000(kInsecureCredentialsCountHistogram, count);
+}
+
+void LogCountOfUnmutedInsecureUsernamePasswordPairs(int count) {
+  base::UmaHistogramCounts1000(kUnmutedInsecureCredentialsCountHistogram,
+                               count);
 }
 
 }  // namespace password_manager
