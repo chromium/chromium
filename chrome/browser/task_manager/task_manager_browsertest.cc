@@ -951,9 +951,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
 
   GURL d_url = embedded_test_server()->GetURL(
       "d.com", "/cross_site_iframe_factory.html?d(e)");
-  ASSERT_TRUE(content::ExecuteScript(
-      tab->GetPrimaryMainFrame(),
-      "frames[0][0].location.href = '" + d_url.spec() + "';"));
+  ASSERT_TRUE(
+      content::ExecJs(tab->GetPrimaryMainFrame(),
+                      "frames[0][0].location.href = '" + d_url.spec() + "';"));
 
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(0, MatchSubframe("http://c.com/")));
@@ -1083,7 +1083,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
 
   // Reload the subframe and verify it has re-appeared in the task manager.
   // This is a regression test for https://crbug.com/642958.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       browser()
           ->tab_strip_model()
           ->GetActiveWebContents()
@@ -1230,11 +1230,11 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   const std::string r_script =
       R"( document.getElementById('frame1').src='/title1.html';
           document.title='aac'; )";
-  ASSERT_TRUE(content::ExecuteScript(browser()
-                                         ->tab_strip_model()
-                                         ->GetActiveWebContents()
-                                         ->GetPrimaryMainFrame(),
-                                     r_script));
+  ASSERT_TRUE(content::ExecJs(browser()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetPrimaryMainFrame(),
+                              r_script));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("aac")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
   if (!ShouldExpectSubframes()) {
