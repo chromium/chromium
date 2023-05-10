@@ -21,7 +21,7 @@ class AddressComponentWithRewriter : public AddressComponent {
 
  protected:
   // Apply a country-specific rewriter to the normalized value.
-  std::u16string ValueForComparison(
+  std::u16string GetValueForComparison(
       const AddressComponent& other) const override;
 
   // Applies the |country_code| specific rewriter to the normalized value. If
@@ -213,7 +213,7 @@ class PostalCodeNode : public AddressComponentWithRewriter {
  protected:
   // In contrast to the base class, the normalization removes all white spaces
   // from the value.
-  std::u16string NormalizedValue() const override;
+  std::u16string GetNormalizedValue() const override;
 };
 
 // Stores the sorting code.

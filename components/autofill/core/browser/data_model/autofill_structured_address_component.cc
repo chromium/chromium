@@ -147,7 +147,7 @@ bool AddressComponent::IsValueValid() const {
   return true;
 }
 
-std::u16string AddressComponent::GetCommonCountryForMerge(
+std::u16string AddressComponent::GetCommonCountry(
     const AddressComponent& other) const {
   const std::u16string country_a =
       GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
@@ -376,7 +376,7 @@ std::u16string AddressComponent::GetValueForComparisonForType(
     return {};
   }
   return node_for_type->GetStorageType() == field_type
-             ? node_for_type->ValueForComparison(other)
+             ? node_for_type->GetValueForComparison(other)
              : node_for_type->GetValueForComparisonForOtherSupportedType(
                    field_type, other);
 }
@@ -761,9 +761,9 @@ const std::vector<AddressToken> AddressComponent::GetSortedTokens() const {
 bool AddressComponent::IsMergeableWithComponent(
     const AddressComponent& newer_component) const {
   const std::u16string older_comparison_value =
-      ValueForComparison(newer_component);
+      GetValueForComparison(newer_component);
   const std::u16string newer_comparison_value =
-      newer_component.ValueForComparison(*this);
+      newer_component.GetValueForComparison(*this);
 
   // If both components are the same, there is nothing to do.
   if (SameAs(newer_component))
@@ -878,8 +878,9 @@ bool AddressComponent::MergeWithComponent(
     bool newer_was_more_recently_used) {
   // If both components are the same, there is nothing to do.
 
-  const std::u16string value = ValueForComparison(newer_component);
-  const std::u16string value_newer = newer_component.ValueForComparison(*this);
+  const std::u16string value = GetValueForComparison(newer_component);
+  const std::u16string value_newer =
+      newer_component.GetValueForComparison(*this);
 
   bool newer_component_has_better_or_equal_status =
       !IsLessSignificantVerificationStatus(
@@ -1110,8 +1111,8 @@ bool AddressComponent::HasNewerValuePrecedenceInMerging(
 bool AddressComponent::MergeTokenEquivalentComponent(
     const AddressComponent& newer_component) {
   if (!AreSortedTokensEqual(
-          TokenizeValue(ValueForComparison(newer_component)),
-          TokenizeValue(newer_component.ValueForComparison(*this)))) {
+          TokenizeValue(GetValueForComparison(newer_component)),
+          TokenizeValue(newer_component.GetValueForComparison(*this)))) {
     return false;
   }
 
@@ -1338,13 +1339,13 @@ int AddressComponent::GetStructureVerificationScore() const {
   return result;
 }
 
-std::u16string AddressComponent::NormalizedValue() const {
+std::u16string AddressComponent::GetNormalizedValue() const {
   return NormalizeValue(GetValue());
 }
 
-std::u16string AddressComponent::ValueForComparison(
+std::u16string AddressComponent::GetValueForComparison(
     const AddressComponent& other) const {
-  return NormalizedValue();
+  return GetNormalizedValue();
 }
 
 }  // namespace autofill

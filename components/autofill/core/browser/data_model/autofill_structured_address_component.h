@@ -315,11 +315,11 @@ class AddressComponent {
   bool IsValueForTypeValid(ServerFieldType field_type,
                            bool wipe_if_not = false);
 
-  // While merging two structured addresses, if only one of them has their
+  // While processing two structured addresses, if only one of them has their
   // country set, the other should assume the non-empty one while merging. This
   // is required to do consistent address rewriting.
   // Returns the common country to be used.
-  std::u16string GetCommonCountryForMerge(const AddressComponent& other) const;
+  std::u16string GetCommonCountry(const AddressComponent& other) const;
 
   // Deletes the stored structure and returns true if |IsStructureValid()|
   // returns false.
@@ -369,9 +369,9 @@ class AddressComponent {
   void SetMergeModeForTesting(int merge_mode) { merge_mode_ = merge_mode; }
 
   // Returns the value used for comparison for testing purposes.
-  std::u16string ValueForComparisonForTesting(
+  std::u16string GetValueForComparisonForTesting(
       const AddressComponent& other) const {
-    return ValueForComparison(other);
+    return GetValueForComparison(other);
   }
 #endif
 
@@ -457,7 +457,7 @@ class AddressComponent {
   // In the default implementation, this converts the value to lower case and
   // removes white spaces. This function may be reimplemented to perform
   // different normalization operations.
-  virtual std::u16string NormalizedValue() const;
+  virtual std::u16string GetNormalizedValue() const;
 
   // Returns a value used for comparison.
   // In the default implementation this is just the normalized value but this
@@ -465,7 +465,7 @@ class AddressComponent {
   // the normalized value.
   // |other| represents the component we are comparing with and is required
   // for consistent rewriting rules.
-  virtual std::u16string ValueForComparison(
+  virtual std::u16string GetValueForComparison(
       const AddressComponent& other) const;
 
   // Returns true if the merging of two token identical values should give

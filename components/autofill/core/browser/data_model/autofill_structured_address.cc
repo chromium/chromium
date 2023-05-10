@@ -32,9 +32,9 @@ std::u16string AddressComponentWithRewriter::RewriteValue(
                                 value);
 }
 
-std::u16string AddressComponentWithRewriter::ValueForComparison(
+std::u16string AddressComponentWithRewriter::GetValueForComparison(
     const AddressComponent& other) const {
-  return RewriteValue(NormalizedValue(), GetCommonCountryForMerge(other));
+  return RewriteValue(GetNormalizedValue(), GetCommonCountry(other));
 }
 
 std::u16string
@@ -42,7 +42,7 @@ AddressComponentWithRewriter::GetValueForComparisonForOtherSupportedType(
     ServerFieldType field_type,
     const AddressComponent& other) const {
   return RewriteValue(NormalizeValue(GetValueForOtherSupportedType(field_type)),
-                      GetCommonCountryForMerge(other));
+                      GetCommonCountry(other));
 }
 
 StreetNameNode::StreetNameNode(AddressComponent* parent)
@@ -360,7 +360,7 @@ PostalCodeNode::PostalCodeNode(AddressComponent* parent)
 
 PostalCodeNode::~PostalCodeNode() = default;
 
-std::u16string PostalCodeNode::NormalizedValue() const {
+std::u16string PostalCodeNode::GetNormalizedValue() const {
   return NormalizeValue(GetValue(), /*keep_white_space=*/false);
 }
 
