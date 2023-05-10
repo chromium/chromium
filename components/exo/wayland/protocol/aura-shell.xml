@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="52">
+  <interface name="zaura_shell" version="53">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -764,7 +764,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="52">
+  <interface name="zaura_toplevel" version="53">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1138,6 +1138,18 @@
       commit.
       </description>
       <arg name="persistable" type="uint" enum="persistable" summary="is the argument persistable"/>
+    </request>
+
+    <!-- Version 53 additions -->
+    <request name="set_shape" since="53">
+      <description summary="set the shape of the surface in DP">
+        Sets the shape of the toplevel window in DP. Passing NULL will reset the
+        shape of the window.
+
+        This should be used only in support of the existing (deprecated) Chrome
+        Apps SetShape API and not for any other purpose.
+      </description>
+      <arg name="region" type="object" interface="wl_region" allow-null="true"/>
     </request>
   </interface>
 

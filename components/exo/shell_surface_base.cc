@@ -459,6 +459,25 @@ void ShellSurfaceBase::UpdateSystemModal() {
       system_modal_ ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_NONE);
 }
 
+void ShellSurfaceBase::UpdateShape() {
+  if (!host_window() || !host_window()->layer()) {
+    return;
+  }
+
+  if (!shape_rects_dp_.has_value()) {
+    host_window()->layer()->SetAlphaShape(nullptr);
+    return;
+  }
+
+  auto scaled_rects = std::make_unique<std::vector<gfx::Rect>>();
+  for (const gfx::Rect& rect_dp : shape_rects_dp_.value()) {
+    const float scale_factor = host_window()->layer()->device_scale_factor();
+    scaled_rects->push_back(gfx::ScaleToEnclosedRect(rect_dp, scale_factor));
+  }
+
+  host_window()->layer()->SetAlphaShape(std::move(scaled_rects));
+}
+
 void ShellSurfaceBase::SetApplicationId(const char* application_id) {
   // Store the value in |application_id_| in case the window does not exist yet.
   if (application_id)
@@ -1692,7 +1711,8 @@ void ShellSurfaceBase::UpdateShadow() {
 
   aura::Window* window = widget_->GetNativeWindow();
 
-  if (!shadow_bounds_) {
+  // Window shadows should be disabled if a window shape has been set.
+  if (!shadow_bounds_ || shape_rects_dp_.has_value()) {
     wm::SetShadowElevation(window, wm::kShadowElevationNone);
   } else {
     // Use a small style shadow for popup surface.
@@ -1893,6 +1913,7 @@ void ShellSurfaceBase::CommitWidget() {
   // Apply new window geometry.
   geometry_ = pending_geometry_;
   display_id_ = pending_display_id_;
+  shape_rects_dp_ = pending_shape_rects_dp_;
 
   // Apply new minimum/maximium size.
   bool size_constraint_changed = minimum_size_ != pending_minimum_size_ ||
@@ -1949,6 +1970,7 @@ void ShellSurfaceBase::CommitWidget() {
   }
 
   UpdateSurfaceBounds();
+  UpdateShape();
 
   // Don't show yet if the shell surface doesn't have content or is minimized
   // while waiting for content.
@@ -2054,6 +2076,20 @@ void ShellSurfaceBase::SetZOrder(ui::ZOrderLevel z_order) {
 
   // Otherwise, we want to save `z_order` for when `widget_` is initialized.
   initial_z_order_ = z_order;
+}
+
+void ShellSurfaceBase::SetShape(absl::optional<cc::Region> shape) {
+  pending_shape_rects_dp_.reset();
+  if (!shape) {
+    return;
+  }
+
+  ShapeRects shape_rects_dp;
+  for (gfx::Rect rect : shape.value()) {
+    shape_rects_dp.push_back(std::move(rect));
+  }
+
+  pending_shape_rects_dp_ = std::move(shape_rects_dp);
 }
 
 // static
