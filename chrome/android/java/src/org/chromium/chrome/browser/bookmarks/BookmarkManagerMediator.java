@@ -346,9 +346,6 @@ class BookmarkManagerMediator
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
 
-    private int mBookmarkStartIndex;
-    private int mBookmarkEndIndex;
-
     BookmarkManagerMediator(Context context, BookmarkModel bookmarkModel,
             BookmarkOpener bookmarkOpener, SelectableListLayout<BookmarkId> selectableListLayout,
             SelectionDelegate<BookmarkId> selectionDelegate, RecyclerView recyclerView,
@@ -843,8 +840,7 @@ class BookmarkManagerMediator
         // TODO(https://crbug.com/1413463): Rework promo/header methods to simplify initial index.
         int index = hasPromoHeader() ? 1 : 0;
         for (BookmarkListEntry bookmarkListEntry : bookmarkListEntryList) {
-            updateOrAdd(index, buildBookmarkListItem(bookmarkListEntry, index));
-            index++;
+            updateOrAdd(index++, buildBookmarkListItem(bookmarkListEntry));
         }
 
         if (mModelList.size() > index) {
@@ -877,24 +873,14 @@ class BookmarkManagerMediator
             ListItem listItem = mModelList.get(i);
             final @ViewType int viewType = listItem.type;
             if ((viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER
-                        || viewType == ViewType.SHOPPING_POWER_BOOKMARK)
+                        || viewType == ViewType.SHOPPING_POWER_BOOKMARK
+                        || viewType == ViewType.IMPROVED_BOOKMARK_COMPACT
+                        || viewType == ViewType.IMPROVED_BOOKMARK_VISUAL)
                     && isMovable(listItem.model)) {
                 return i;
             }
         }
         return -1;
-    }
-
-    private @Location int getLocationFromPositionInList(int position) {
-        if (position == mBookmarkStartIndex && position == mBookmarkEndIndex) {
-            return Location.SOLO;
-        } else if (position == mBookmarkStartIndex) {
-            return Location.TOP;
-        } else if (position == mBookmarkEndIndex) {
-            return Location.BOTTOM;
-        } else {
-            return Location.MIDDLE;
-        }
     }
 
     private void updateAllLocations() {
@@ -1019,11 +1005,12 @@ class BookmarkManagerMediator
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
 
-    private ListItem buildBookmarkListItem(BookmarkListEntry bookmarkListEntry, int index) {
+    private ListItem buildBookmarkListItem(BookmarkListEntry bookmarkListEntry) {
         if (bookmarkListEntry.getViewType() == ViewType.IMPROVED_BOOKMARK_COMPACT
                 || bookmarkListEntry.getViewType() == ViewType.IMPROVED_BOOKMARK_VISUAL) {
-            return buildImprovedBookmarkRow(bookmarkListEntry, index);
+            return buildImprovedBookmarkRow(bookmarkListEntry);
         }
+
         BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
         BookmarkId bookmarkId = bookmarkItem == null ? null : bookmarkItem.getId();
         PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
@@ -1044,7 +1031,7 @@ class BookmarkManagerMediator
     }
 
     @VisibleForTesting
-    ListItem buildImprovedBookmarkRow(BookmarkListEntry bookmarkListEntry, int position) {
+    ListItem buildImprovedBookmarkRow(BookmarkListEntry bookmarkListEntry) {
         PropertyModel propertyModel = new PropertyModel(ImprovedBookmarkRowProperties.ALL_KEYS);
         BookmarkItem item = bookmarkListEntry.getBookmarkItem();
         BookmarkId id = item.getId();
@@ -1063,8 +1050,9 @@ class BookmarkManagerMediator
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
         propertyModel.set(ImprovedBookmarkRowProperties.DRAG_ENABLED, false);
-        propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU,
-                createListMenuForBookmark(id, getLocationFromPositionInList(position)));
+        // TODO(crbug.com/1442044): Invesigate caching ModelList for the menu.
+        propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
+                () -> createListMenuForBookmark(propertyModel));
         propertyModel.set(ImprovedBookmarkRowProperties.EDITABLE, item.isEditable());
         propertyModel.set(
                 ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK, () -> openBookmarkId(id));
@@ -1171,14 +1159,12 @@ class BookmarkManagerMediator
                 });
     }
 
-    private ModelList createListMenuModelList(BookmarkId bookmarkId, @Location int location) {
+    @VisibleForTesting
+    ModelList createListMenuModelList(BookmarkId bookmarkId, @Location int location) {
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
         // Reading list items can sometimes be movable (for type swapping purposes), but for
         // UI purposes they shouldn't be movable.
         boolean canMove = bookmarkItem != null && BookmarkUtils.isMovable(bookmarkItem);
-        // Re-add mFromFilterView support.
-        boolean canReorder = bookmarkItem != null && bookmarkItem.isReorderable();
-
         ModelList listItems = new ModelList();
         if (bookmarkId.getType() == BookmarkType.READING_LIST) {
             if (bookmarkItem != null) {
@@ -1187,17 +1173,15 @@ class BookmarkManagerMediator
                                 : R.string.reading_list_mark_as_read,
                         0, 0));
             }
-            listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
-            listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
-            listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
-            listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0));
-        } else {
-            listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
-            listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
-            listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
-            listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
         }
 
+        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
+        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
+        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
+        listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
+
+        boolean canReorder = bookmarkItem != null && bookmarkItem.isReorderable()
+                && !Objects.equals(getCurrentFolderId(), mBookmarkModel.getRootFolderId());
         if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
         } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER && location != Location.SOLO
@@ -1214,8 +1198,11 @@ class BookmarkManagerMediator
         return listItems;
     }
 
-    private ListMenu createListMenuForBookmark(BookmarkId bookmarkId, @Location int location) {
-        ModelList listItems = createListMenuModelList(bookmarkId, location);
+    @VisibleForTesting
+    ListMenu createListMenuForBookmark(PropertyModel model) {
+        BookmarkId bookmarkId = model.get(BookmarkManagerProperties.BOOKMARK_ID);
+        ModelList listItems =
+                createListMenuModelList(bookmarkId, model.get(BookmarkManagerProperties.LOCATION));
         ListMenu.Delegate delegate = item -> {
             int textId = item.get(ListMenuItemProperties.TITLE_ID);
             if (textId == R.string.bookmark_item_select) {

@@ -29,8 +29,9 @@ class ImprovedBookmarkRowViewBinder {
             row.setFolderChildCount(model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
         } else if (key == ImprovedBookmarkRowProperties.ACCESSORY_VIEW) {
             row.setAccessoryView(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
-        } else if (key == ImprovedBookmarkRowProperties.LIST_MENU) {
-            row.setListMenu(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        } else if (key == ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE) {
+            row.setListMenuButtonDelegate(
+                    model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         } else if (key == ImprovedBookmarkRowProperties.POPUP_LISTENER) {
             row.setPopupListener(
                     () -> model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER).run());

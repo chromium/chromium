@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
 
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -24,7 +24,8 @@ class ImprovedBookmarkRowProperties {
             new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey FOLDER_CHILD_COUNT = new WritableIntPropertyKey();
     static final WritableObjectPropertyKey<View> ACCESSORY_VIEW = new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<ListMenu> LIST_MENU = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<ListMenuButtonDelegate> LIST_MENU_BUTTON_DELEGATE =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Runnable> POPUP_LISTENER =
             new WritableObjectPropertyKey<>();
     static final WritableBooleanPropertyKey SELECTED = new WritableBooleanPropertyKey();
@@ -35,7 +36,8 @@ class ImprovedBookmarkRowProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {BookmarkManagerProperties.BOOKMARK_LIST_ENTRY,
-            BookmarkManagerProperties.BOOKMARK_ID, TITLE, DESCRIPTION, BOOKMARK_DRAWABLE,
-            FOLDER_DRAWABLES, FOLDER_CHILD_COUNT, ACCESSORY_VIEW, LIST_MENU, POPUP_LISTENER,
-            SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, OPEN_BOOKMARK_CALLBACK};
+            BookmarkManagerProperties.BOOKMARK_ID, BookmarkManagerProperties.LOCATION, TITLE,
+            DESCRIPTION, BOOKMARK_DRAWABLE, FOLDER_DRAWABLES, FOLDER_CHILD_COUNT, ACCESSORY_VIEW,
+            LIST_MENU_BUTTON_DELEGATE, POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED,
+            EDITABLE, OPEN_BOOKMARK_CALLBACK};
 }

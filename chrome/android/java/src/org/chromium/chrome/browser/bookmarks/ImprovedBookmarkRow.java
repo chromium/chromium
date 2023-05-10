@@ -18,9 +18,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 
@@ -125,8 +125,8 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mAccessoryViewGroup.addView(view);
     }
 
-    void setListMenu(ListMenu listMenu) {
-        mMoreButton.setDelegate(() -> listMenu);
+    void setListMenuButtonDelegate(ListMenuButtonDelegate listMenuButtonDelegate) {
+        mMoreButton.setDelegate(listMenuButtonDelegate);
         mMoreButton.setVisibility(View.VISIBLE);
     }
 

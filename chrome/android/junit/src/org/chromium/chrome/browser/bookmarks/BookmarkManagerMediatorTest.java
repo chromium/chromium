@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -48,7 +49,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
+import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -67,6 +70,8 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
+import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.IconType;
@@ -309,6 +314,11 @@ public class BookmarkManagerMediatorTest {
         }
     }
 
+    void verifyBookmarkListMenuItem(ListItem item, @StringRes int titleId, boolean enabled) {
+        assertEquals(item.model.get(ListMenuItemProperties.TITLE_ID), titleId);
+        assertEquals(item.model.get(ListMenuItemProperties.ENABLED), enabled);
+    }
+
     @Test
     public void initAndLoadBookmarkModel() {
         finishLoading();
@@ -490,7 +500,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
     }
@@ -524,10 +534,8 @@ public class BookmarkManagerMediatorTest {
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         assertEquals(1, mModelList.size());
 
-        ListItem item = mMediator.buildImprovedBookmarkRow(
-                BookmarkListEntry.createBookmarkEntry(
-                        mBookmarkItem21, null, mBookmarkUiPrefs.getBookmarkRowDisplayPref()),
-                0);
+        ListItem item = mMediator.buildImprovedBookmarkRow(BookmarkListEntry.createBookmarkEntry(
+                mBookmarkItem21, null, mBookmarkUiPrefs.getBookmarkRowDisplayPref()));
         assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, item.type);
 
         PropertyModel model = item.model;
@@ -542,7 +550,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
     }
@@ -598,7 +606,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
     }
@@ -626,7 +634,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
     }
@@ -664,7 +672,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
     }
@@ -702,8 +710,81 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
+    }
+
+    @Test
+    public void testcreateListMenuModelList() {
+        finishLoading();
+        mMediator.openFolder(mFolderId2);
+
+        ModelList modelList = mMediator.createListMenuModelList(mBookmarkId21, Location.MIDDLE);
+        assertEquals(6, modelList.size());
+        verifyBookmarkListMenuItem(modelList.get(0), R.string.bookmark_item_select, true);
+        verifyBookmarkListMenuItem(modelList.get(1), R.string.bookmark_item_edit, true);
+        verifyBookmarkListMenuItem(modelList.get(2), R.string.bookmark_item_move, true);
+        verifyBookmarkListMenuItem(modelList.get(3), R.string.bookmark_item_delete, true);
+        verifyBookmarkListMenuItem(modelList.get(4), R.string.menu_item_move_up, true);
+        verifyBookmarkListMenuItem(modelList.get(5), R.string.menu_item_move_down, true);
+
+        modelList = mMediator.createListMenuModelList(mBookmarkId21, Location.TOP);
+        assertEquals(5, modelList.size());
+        verifyBookmarkListMenuItem(modelList.get(4), R.string.menu_item_move_down, true);
+
+        modelList = mMediator.createListMenuModelList(mBookmarkId21, Location.BOTTOM);
+        assertEquals(5, modelList.size());
+        verifyBookmarkListMenuItem(modelList.get(4), R.string.menu_item_move_up, true);
+
+        mMediator.openFolder(mRootFolderId);
+        modelList = mMediator.createListMenuModelList(mBookmarkId21, Location.MIDDLE);
+        assertEquals("neither move option should be visible", 4, modelList.size());
+
+        mMediator.openSearchUi();
+        modelList = mMediator.createListMenuModelList(mBookmarkId21, Location.MIDDLE);
+        assertEquals(5, modelList.size());
+        verifyBookmarkListMenuItem(modelList.get(4), R.string.bookmark_show_in_folder, true);
+    }
+
+    @Test
+    public void testCreateListMenuModelList_ReadingList() {
+        finishLoading();
+        mMediator.openFolder(mReadingListFolderId);
+
+        ModelList modelList = mMediator.createListMenuModelList(mReadingListId, Location.MIDDLE);
+        assertEquals(5, modelList.size());
+        verifyBookmarkListMenuItem(modelList.get(0), R.string.reading_list_mark_as_read, true);
+        verifyBookmarkListMenuItem(modelList.get(1), R.string.bookmark_item_select, true);
+        verifyBookmarkListMenuItem(modelList.get(2), R.string.bookmark_item_edit, true);
+        verifyBookmarkListMenuItem(modelList.get(3), R.string.bookmark_item_move, true);
+        verifyBookmarkListMenuItem(modelList.get(4), R.string.bookmark_item_delete, true);
+    }
+
+    @Test
+    public void testCreateListMenuForBookmark() {
+        finishLoading();
+        mMediator.openFolder(mFolderId2);
+
+        // This is the first item mFolderId2.
+        BasicListMenu menu =
+                (BasicListMenu) mMediator.createListMenuForBookmark(mModelList.get(0).model);
+        assertNotNull(menu);
+
+        // select
+        menu.onItemClick(null, null, 0, 0);
+        verify(mSelectionDelegate).toggleSelectionForItem(mBookmarkId21);
+
+        // edit
+        // TODO(crbug.com/1444544): This doesn't actually open the activity yet.
+        menu.onItemClick(null, null, 1, 0);
+
+        // move
+        // TODO(crbug.com/1444544): This doesn't actually open the activity yet.
+        menu.onItemClick(null, null, 2, 0);
+
+        // delete.
+        menu.onItemClick(null, null, 3, 0);
+        verify(mBookmarkModel).deleteBookmarks(mBookmarkId21);
     }
 }

@@ -147,7 +147,8 @@ public class ImprovedBookmarkRowRenderTest {
                                              mActivityTestRule.getActivity().getResources(),
                                              mBitmap))
                              .with(ImprovedBookmarkRowProperties.SELECTED, false)
-                             .with(ImprovedBookmarkRowProperties.LIST_MENU, buildListMenu())
+                             .with(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
+                                     () -> buildListMenu())
                              .build();
 
             PropertyModelChangeProcessor.create(

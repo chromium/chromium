@@ -25,7 +25,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -52,7 +52,7 @@ public class ImprovedBookmarkRowTest {
     @Mock
     ViewGroup mViewGroup;
     @Mock
-    ListMenu mListMenu;
+    ListMenuButtonDelegate mListMenuButtonDelegate;
     @Mock
     Runnable mPopupListener;
     @Mock
@@ -71,7 +71,8 @@ public class ImprovedBookmarkRowTest {
                          .with(ImprovedBookmarkRowProperties.TITLE, TITLE)
                          .with(ImprovedBookmarkRowProperties.DESCRIPTION, DESCRIPTION)
                          .with(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, mIcon)
-                         .with(ImprovedBookmarkRowProperties.LIST_MENU, mListMenu)
+                         .with(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
+                                 mListMenuButtonDelegate)
                          .with(ImprovedBookmarkRowProperties.POPUP_LISTENER, mPopupListener)
                          .with(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK,
                                  mOpenBookmarkCallback)
