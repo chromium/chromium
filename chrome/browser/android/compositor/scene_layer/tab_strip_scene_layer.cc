@@ -116,7 +116,6 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jint width,
                                              jint height,
                                              jfloat y_offset,
-                                             jboolean should_readd_background,
                                              jint background_color) {
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
@@ -127,20 +126,6 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
   // Content tree should not be affected by tab strip scene layer visibility.
   if (content_tree_)
     content_tree_->layer()->SetPosition(gfx::PointF(0, -y_offset));
-
-  // Make sure tab strip changes are committed after rotating the device.
-  // See https://crbug.com/503930 for more details.
-  // InsertChild() forces the tree sync, which seems to fix the problem.
-  // Note that this is a workaround.
-  // TODO(changwan): find out why the update is not committed after rotation.
-  if (should_readd_background) {
-    int background_index = 0;
-    if (content_tree_ && content_tree_->layer()) {
-      background_index = 1;
-    }
-    DCHECK(layer()->children()[background_index] == tab_strip_layer_);
-    layer()->InsertChild(tab_strip_layer_, background_index);
-  }
 }
 
 void TabStripSceneLayer::UpdateNewTabButton(

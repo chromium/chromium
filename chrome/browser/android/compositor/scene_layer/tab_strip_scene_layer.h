@@ -55,7 +55,6 @@ class TabStripSceneLayer : public SceneLayer {
                            jint width,
                            jint height,
                            jfloat y_offset,
-                           jboolean should_readd_background,
                            jint background_color);
 
   void UpdateNewTabButton(
