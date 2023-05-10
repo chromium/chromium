@@ -67,7 +67,7 @@ void PermissionStatusListener::OnPermissionStatusChange(
   // created and destroyed in the JS event handler function. To avoid UAF and
   // list modification issues, a temporary snapshot of the observers is made and
   // used instead.
-  HeapHashSet<WeakMember<Observer>> observers;
+  HeapHashSet<WeakMember<Observer>, WTF::MemberHashRecordReplayId<Observer>> observers;
   for (const auto& observer : observers_) {
     observers.insert(observer);
   }
