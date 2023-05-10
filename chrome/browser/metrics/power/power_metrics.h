@@ -83,6 +83,13 @@ void ReportBatteryHistograms(base::TimeDelta interval_duration,
                              bool is_initial_interval,
                              const std::vector<const char*>& scenario_suffixes);
 
+#if BUILDFLAG(IS_WIN)
+// Report battery metrics captured over a >10 minutes interval.
+void ReportBatteryHistogramsTenMinutesInterval(
+    base::TimeDelta interval_duration,
+    BatteryDischarge battery_discharge);
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_MAC)
 void ReportShortIntervalHistograms(
     const char* scenario_suffix,

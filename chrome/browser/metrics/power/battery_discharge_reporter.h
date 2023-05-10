@@ -35,6 +35,26 @@ class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
           battery_state) override;
 
  private:
+  // Reports battery discharge histograms for a 1 minute interval.
+  void ReportOneMinuteInterval(
+      base::TimeDelta interval_duration,
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+          battery_state);
+
+#if BUILDFLAG(IS_WIN)
+  // Reports battery discharge histograms for a 10 minutes interval.
+  //
+  // On Windows, the reported battery discharge over a 1 minute interval is
+  // frequently zero. This could be explained by some systems having a battery
+  // level granularity insufficient to measure the typical discharge over a
+  // 1 minute interval or by a refresh rate lower than once per minute. We'll
+  // verify if using a longer interval alleviates the problem.
+  void ReportTenMinutesInterval(
+      base::TimeDelta interval_duration,
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+          battery_state);
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_MAC)
   // Records the time delta between two events received from IOPMPowerSource.
   void RecordIOPMPowerSourceSampleEventDelta(
@@ -49,11 +69,19 @@ class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
   std::unique_ptr<UsageScenarioTracker> battery_usage_scenario_tracker_;
   raw_ptr<UsageScenarioDataStore> battery_usage_scenario_data_store_;
 
-  // The time ticks from when the last event was received from
-  // |sampling_event_source_|.
-  absl::optional<base::TimeTicks> last_event_time_ticks_;
+  // The time and battery state at the last event received from
+  // `sampling_event_source_`.
+  absl::optional<base::TimeTicks> one_minute_interval_start_time_;
+  absl::optional<base::BatteryLevelProvider::BatteryState>
+      one_minute_interval_start_battery_state_;
 
-  absl::optional<base::BatteryLevelProvider::BatteryState> last_battery_state_;
+#if BUILDFLAG(IS_WIN)
+  // The time and battery state at an event received from
+  // `sampling_event_source_` up to 10 minutes in the past.
+  absl::optional<base::TimeTicks> ten_minutes_interval_start_time_;
+  absl::optional<base::BatteryLevelProvider::BatteryState>
+      ten_minutes_interval_start_battery_state_;
+#endif  // BUILDFLAG(IS_WIN)
 
   // The first battery sample is potentially outdated because it is not taken
   // upon receiving a notification from the OS. This is used to differentiate

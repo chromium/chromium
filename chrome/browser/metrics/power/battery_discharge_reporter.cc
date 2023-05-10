@@ -47,29 +47,53 @@ void BatteryDischargeReporter::OnBatteryStateSampled(
   base::TimeTicks now_ticks = base::TimeTicks::Now();
 
   // First sampling event. Remember the time and skip.
-  if (!last_event_time_ticks_) {
-    last_event_time_ticks_ = now_ticks;
-    last_battery_state_ = battery_state;
+  if (!one_minute_interval_start_time_) {
+    one_minute_interval_start_time_ = now_ticks;
+    one_minute_interval_start_battery_state_ = battery_state;
+#if BUILDFLAG(IS_WIN)
+    ten_minutes_interval_start_time_ = now_ticks;
+    ten_minutes_interval_start_battery_state_ = battery_state;
+#endif  // BUILDFLAG(IS_WIN)
     return;
   }
 
-  base::TimeDelta sampling_event_delta = now_ticks - *last_event_time_ticks_;
-  *last_event_time_ticks_ = now_ticks;
-
+  // One minute interval.
+  base::TimeDelta one_minute_interval_duration =
+      now_ticks - *one_minute_interval_start_time_;
 #if BUILDFLAG(IS_MAC)
-  RecordIOPMPowerSourceSampleEventDelta(sampling_event_delta);
+  RecordIOPMPowerSourceSampleEventDelta(one_minute_interval_duration);
 #endif
+  ReportOneMinuteInterval(one_minute_interval_duration, battery_state);
+  one_minute_interval_start_time_ = now_ticks;
+  one_minute_interval_start_battery_state_ = battery_state;
+  is_initial_interval_ = false;
 
+#if BUILDFLAG(IS_WIN)
+  // Ten minutes interval.
+  base::TimeDelta ten_minutes_interval_duration =
+      now_ticks - *ten_minutes_interval_start_time_;
+  if (ten_minutes_interval_duration >= base::Minutes(10)) {
+    ReportTenMinutesInterval(ten_minutes_interval_duration, battery_state);
+    ten_minutes_interval_start_time_ = now_ticks;
+    ten_minutes_interval_start_battery_state_ = battery_state;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void BatteryDischargeReporter::ReportOneMinuteInterval(
+    base::TimeDelta interval_duration,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        battery_state) {
   // Evaluate battery discharge mode and rate.
   auto battery_discharge = GetBatteryDischargeDuringInterval(
-      last_battery_state_, battery_state, sampling_event_delta);
-  last_battery_state_ = battery_state;
+      one_minute_interval_start_battery_state_, battery_state,
+      interval_duration);
 
   // Intervals are expected to be approximately 1 minute long. Exclude samples
   // where the interval length deviate significantly from that value. 1 second
   // tolerance was chosen to include ~70% of all samples.
   if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
-      !IsWithinTolerance(sampling_event_delta, base::Minutes(1),
+      !IsWithinTolerance(interval_duration, base::Minutes(1),
                          base::Seconds(1))) {
     battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
   }
@@ -107,10 +131,33 @@ void BatteryDischargeReporter::OnBatteryStateSampled(
   // suffix.
   const std::vector<const char*> long_interval_suffixes{
       "", long_interval_scenario_params.histogram_suffix};
-  ReportBatteryHistograms(sampling_event_delta, battery_discharge,
+  ReportBatteryHistograms(interval_duration, battery_discharge,
                           is_initial_interval_, long_interval_suffixes);
-  is_initial_interval_ = false;
 }
+
+#if BUILDFLAG(IS_WIN)
+void BatteryDischargeReporter::ReportTenMinutesInterval(
+    base::TimeDelta interval_duration,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        battery_state) {
+  auto battery_discharge = GetBatteryDischargeDuringInterval(
+      ten_minutes_interval_start_battery_state_, battery_state,
+      interval_duration);
+
+  // Intervals are expected to be approximately 10 minutes long. Exclude samples
+  // when the interval length deviates significantly from that value, as that
+  // could indicate that the system went to sleep. The tolerance is the same as
+  // the one used for 1 minute intervals.
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
+      !IsWithinTolerance(interval_duration, base::Minutes(10),
+                         base::Seconds(1))) {
+    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
+  }
+
+  ReportBatteryHistogramsTenMinutesInterval(interval_duration,
+                                            battery_discharge);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 void BatteryDischargeReporter::RecordIOPMPowerSourceSampleEventDelta(

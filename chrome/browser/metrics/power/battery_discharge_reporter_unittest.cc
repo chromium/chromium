@@ -20,8 +20,12 @@ namespace {
 
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode5";
+constexpr const char* kBatteryDischargeModeTenMinutesHistogramName =
+    "Power.BatteryDischargeMode5.TenMinutes";
 constexpr const char* kBatteryDischargeRateMilliwattsHistogramName =
     "Power.BatteryDischargeRateMilliwatts6";
+constexpr const char* kBatteryDischargeRateMilliwattsTenMinutesHistogramName =
+    "Power.BatteryDischargeRateMilliwatts6.TenMinutes";
 constexpr const char* kBatteryDischargeRateRelativeHistogramName =
     "Power.BatteryDischargeRateRelative5";
 
@@ -129,6 +133,8 @@ class BatteryDischargeReporterTest : public testing::Test {
     ExpectHistogramSamples(&histogram_tester_, suffixes,
                            {{kBatteryDischargeModeHistogramName,
                              static_cast<int>(expected_mode)}});
+    histogram_tester_.ExpectTotalCount(
+        kBatteryDischargeModeTenMinutesHistogramName, 0);
   }
 
  protected:
@@ -172,6 +178,10 @@ TEST_F(BatteryDischargeReporterTest, Simple) {
   ExpectHistogramSamples(&histogram_tester_, suffixes,
                          {{kBatteryDischargeRateRelativeHistogramName,
                            kExpectedDischargeRateRelative}});
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeModeTenMinutesHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeRateMilliwattsTenMinutesHistogramName, 0);
 }
 
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooLate) {
@@ -495,5 +505,74 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeGranularity) {
       kGranularityMilliwattHours, 1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeGranularityRelative2", kGranularityRelative, 1);
+}
+
+TEST_F(BatteryDischargeReporterTest, TenMinutesInterval) {
+  TestUsageScenarioDataStoreImpl usage_scenario_data_store;
+
+  base::BatteryStateSampler battery_state_sampler(
+      std::make_unique<NoopSamplingEventSource>(),
+      std::make_unique<NoopBatteryLevelProvider>());
+  BatteryDischargeReporter battery_discharge_reporter(
+      &battery_state_sampler, &usage_scenario_data_store);
+
+  {
+    base::HistogramTester tester;
+
+    // t = 0: No 10-minutes histograms emitted.
+    battery_discharge_reporter.OnBatteryStateSampled(
+        MakeBatteryState(kHalfBatteryChargeLevel));
+
+    // t = 1 to 9 minutes: No 10-minutes histograms emitted.
+    for (int i = 0; i < 9; ++i) {
+      task_environment_.FastForwardBy(base::Minutes(1));
+      battery_discharge_reporter.OnBatteryStateSampled(
+          MakeBatteryState(kHalfBatteryChargeLevel - 2));
+      tester.ExpectTotalCount(kBatteryDischargeModeTenMinutesHistogramName, 0);
+      tester.ExpectTotalCount(
+          kBatteryDischargeRateMilliwattsTenMinutesHistogramName, 0);
+    }
+
+    // t = 10 minutes: Expect 10-minutes histograms to be emitted.
+    task_environment_.FastForwardBy(base::Minutes(1));
+    battery_discharge_reporter.OnBatteryStateSampled(
+        MakeBatteryState(kHalfBatteryChargeLevel - 100));
+    // 100 mWh discharge over 10 minutes equals 600 mW.
+    const int64_t kExpectedDischargeRate_mW = 600;
+    tester.ExpectUniqueSample(kBatteryDischargeModeTenMinutesHistogramName,
+                              BatteryDischargeMode::kDischarging, 1);
+    tester.ExpectUniqueSample(
+        kBatteryDischargeRateMilliwattsTenMinutesHistogramName,
+        kExpectedDischargeRate_mW, 1);
+  }
+
+  {
+    base::HistogramTester tester;
+
+    // t = 20 minutes: Expect 10-minutes histograms to be emitted again.
+    task_environment_.FastForwardBy(base::Minutes(10));
+    battery_discharge_reporter.OnBatteryStateSampled(
+        MakeBatteryState(kHalfBatteryChargeLevel - 300));
+    // 200 mWh discharge over 10 minutes equals 1200 mW.
+    const int64_t kExpectedDischargeRate_mW = 1200;
+    tester.ExpectUniqueSample(kBatteryDischargeModeTenMinutesHistogramName,
+                              BatteryDischargeMode::kDischarging, 1);
+    tester.ExpectUniqueSample(
+        kBatteryDischargeRateMilliwattsTenMinutesHistogramName,
+        kExpectedDischargeRate_mW, 1);
+  }
+
+  {
+    base::HistogramTester tester;
+
+    // t = 31 minutes: The interval duration is invalid.
+    task_environment_.FastForwardBy(base::Minutes(11));
+    battery_discharge_reporter.OnBatteryStateSampled(
+        MakeBatteryState(kHalfBatteryChargeLevel - 400));
+    tester.ExpectUniqueSample(kBatteryDischargeModeTenMinutesHistogramName,
+                              BatteryDischargeMode::kInvalidInterval, 1);
+    tester.ExpectTotalCount(
+        kBatteryDischargeRateMilliwattsTenMinutesHistogramName, 0);
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
