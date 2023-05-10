@@ -278,17 +278,17 @@ content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
 void AccessCodeCastIntegrationBrowserTest::CloseDialog(
     content::WebContents* dialog_contents) {
   ASSERT_TRUE(dialog_contents);
-  EXPECT_TRUE(ExecuteScript(dialog_contents, std::string(GetElementScript()) +
-                                                 ".cancelButtonPressed();"));
+  EXPECT_TRUE(ExecJs(dialog_contents, std::string(GetElementScript()) +
+                                          ".cancelButtonPressed();"));
 }
 
 void AccessCodeCastIntegrationBrowserTest::SetAccessCode(
     std::string access_code,
     content::WebContents* dialog_contents) {
   ASSERT_TRUE(dialog_contents);
-  EXPECT_TRUE(ExecuteScript(dialog_contents,
-                            GetElementScript() + ".switchToCodeInput();"));
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(
+      ExecJs(dialog_contents, GetElementScript() + ".switchToCodeInput();"));
+  EXPECT_TRUE(ExecJs(
       dialog_contents,
       GetElementScript() + ".setAccessCodeForTest('" + access_code + "');"));
 }
@@ -296,8 +296,8 @@ void AccessCodeCastIntegrationBrowserTest::SetAccessCode(
 void AccessCodeCastIntegrationBrowserTest::PressSubmit(
     content::WebContents* dialog_contents) {
   ASSERT_TRUE(dialog_contents);
-  EXPECT_TRUE(ExecuteScript(dialog_contents,
-                            GetElementScript() + ".addSinkAndCast();"));
+  EXPECT_TRUE(
+      ExecJs(dialog_contents, GetElementScript() + ".addSinkAndCast();"));
 }
 
 void AccessCodeCastIntegrationBrowserTest::PressSubmitAndWaitForClose(
