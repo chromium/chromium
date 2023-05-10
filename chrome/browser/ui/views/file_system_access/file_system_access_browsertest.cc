@@ -228,25 +228,26 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
                             "  self.entry = e;"
                             "  return e.name; })()"));
 
-  EXPECT_TRUE(
-      content::ExecuteScript(web_contents,
-                             "(async () => {"
-                             "  await document.body.requestFullscreen();"
-                             "})()"));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "(async () => {"
+                              "  await document.body.requestFullscreen();"
+                              "})()",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Wait until the fullscreen operation completes.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsFullscreen());
 
-  EXPECT_TRUE(content::ExecuteScript(
-      web_contents,
-      "(async () => {"
-      "  let fsChangePromise = new Promise((resolve) => {"
-      "    document.onfullscreenchange = resolve;"
-      "  });"
-      "  const w = await self.entry.createWritable();"
-      "  await fsChangePromise;"
-      "  return; })()"));
+  EXPECT_TRUE(
+      content::ExecJs(web_contents,
+                      "(async () => {"
+                      "  let fsChangePromise = new Promise((resolve) => {"
+                      "    document.onfullscreenchange = resolve;"
+                      "  });"
+                      "  const w = await self.entry.createWritable();"
+                      "  await fsChangePromise;"
+                      "  return; })()",
+                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Wait until the fullscreen exit operation completes.
   base::RunLoop().RunUntilIdle();
@@ -566,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   content::TestNavigationObserver popup_observer(nullptr);
   popup_observer.StartWatchingNewWebContents();
   auto iframe_url = https_server.GetURL("a.com", "/iframe_cross_site.html");
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       first_party_web_contents,
       "self.third_party_window = window.open('" + iframe_url.spec() + "');"));
   popup_observer.Wait();
@@ -746,7 +747,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   content::TestNavigationObserver popup_observer(nullptr);
   popup_observer.StartWatchingNewWebContents();
   auto iframe_url = https_server.GetURL("a.com", "/iframe_cross_site.html");
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       first_party_web_contents,
       "self.third_party_window = window.open('" + iframe_url.spec() + "');"));
   popup_observer.Wait();
@@ -1217,8 +1218,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameFileSystemAccessBrowserTest,
                                 PermissionRequestOutcome::kInvalidFrame);
 }
 
-// The helper methods in this class uses ExecuteScriptXXX, because WebUI has
-// a Content Security Policy that interferes with ExecJs and EvalJs.
 class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
  public:
   FileSystemAccessBrowserTestForWebUI() {
