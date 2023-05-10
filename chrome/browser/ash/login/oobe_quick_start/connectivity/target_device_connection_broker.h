@@ -164,6 +164,12 @@ class TargetDeviceConnectionBroker {
   // Clients should check  GetFeatureSupportStatus()  before calling
   // StartAdvertising().
   //
+  // If the target device is attempting to resume a Quick Start connection after
+  // an update, it skips the Fast Pair advertising step and automatically
+  // begins Nearby Connections advertising. Since the source device "remembers"
+  // the target device, we don't need to require manual user confirmation with
+  // the Fast Pair half-sheet.
+  //
   // If |use_pin_authentication| is true, then the target device will
   // advertise its preference to use pin authentication instead of QR code
   // authentication. This should be false unless the user would benefit from

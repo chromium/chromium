@@ -458,6 +458,28 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
 
   PrefService* GetLocalState() { return local_state_.Get(); }
 
+  void ResumeAfterUpdate() {
+    // The connection broker expects these prefs to be set if resuming after an
+    // update.
+    GetLocalState()->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot,
+                                true);
+    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
+    GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
+                             std::move(info));
+    std::string expected_random_session_id = GetRandomSessionId().ToString();
+    TargetDeviceConnectionBroker::SharedSecret expected_shared_secret =
+        GetSecondarySharedSecret();
+
+    connection_broker_ =
+        ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
+            fake_nearby_connections_manager_.GetWeakPtr(),
+            mojo::SharedRemote<mojom::QuickStartDecoder>(
+                fake_quick_start_decoder_->GetRemote()),
+            /*is_resume_after_update=*/true);
+    ASSERT_EQ(expected_random_session_id, GetRandomSessionId().ToString());
+    ASSERT_EQ(expected_shared_secret, GetSharedSecret());
+  }
+
  protected:
   bool is_bluetooth_powered_ = true;
   bool is_bluetooth_present_ = true;
@@ -863,26 +885,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest, ConstructWhenResumeAfterUpdate) {
-  // The connection broker expects these prefs to be set if resuming after an
-  // update.
-  base::Value::Dict prepare_for_update_info =
-      connection_broker_->GetPrepareForUpdateInfo();
-  GetLocalState()->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-  base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
-  GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
-                           std::move(info));
-  std::string expected_random_session_id = GetRandomSessionId().ToString();
-  TargetDeviceConnectionBroker::SharedSecret expected_shared_secret =
-      GetSecondarySharedSecret();
-
-  connection_broker_ =
-      ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
-          fake_nearby_connections_manager_.GetWeakPtr(),
-          mojo::SharedRemote<mojom::QuickStartDecoder>(
-              fake_quick_start_decoder_->GetRemote()),
-          /*is_resume_after_update=*/true);
-  EXPECT_EQ(expected_random_session_id, GetRandomSessionId().ToString());
-  EXPECT_EQ(expected_shared_secret, GetSharedSecret());
+  ResumeAfterUpdate();
 
   // Prefs should be cleared after the |connection_broker_| construction.
   ASSERT_FALSE(
@@ -890,6 +893,29 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, ConstructWhenResumeAfterUpdate) {
   ASSERT_TRUE(GetLocalState()
                   ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
                   .empty());
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       StartAdvertisingWhenResumeAfterUpdate) {
+  ResumeAfterUpdate();
+  FinishFetchingBluetoothAdapter();
+  EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+  EXPECT_FALSE(fake_nearby_connections_manager_.IsAdvertising());
+
+  connection_broker_->StartAdvertising(
+      &connection_lifecycle_listener_, /* use_pin_authentication= */ false,
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  // When the target device resumes the connection after an update, it should
+  // begin Nearby Connections advertising without ever Fast Pair advertising.
+  EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+  EXPECT_TRUE(fake_nearby_connections_manager_.IsAdvertising());
+  EXPECT_EQ(PowerLevel::kHighPower,
+            fake_nearby_connections_manager_.advertising_power_level());
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_TRUE(start_advertising_callback_success_);
 }
 
 }  // namespace ash::quick_start

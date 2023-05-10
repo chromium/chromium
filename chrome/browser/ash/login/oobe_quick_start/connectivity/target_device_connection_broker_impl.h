@@ -126,6 +126,7 @@ class TargetDeviceConnectionBrokerImpl
   std::unique_ptr<Connection> connection_;
 
   mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder_;
+  bool is_resume_after_update_;
 
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImpl> weak_ptr_factory_{
       this};
