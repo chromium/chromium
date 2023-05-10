@@ -45,3 +45,15 @@ goog.exportSymbol = function(name, object, opt_objectToExportTo) {
 goog.exportProperty = function(object, publicName, symbol) {
   object[publicName] = symbol;
 };
+
+/**
+ * @param {string} name
+ */
+goog.provide = function(name) {
+  goog.exportSymbol(name, null, null);
+};
+
+/**
+ * @param {string} namespace
+ */
+goog.require = function(namespace) {};
