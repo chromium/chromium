@@ -222,7 +222,10 @@ class NotarizeAndStapleLevel(enum.Enum):
 
     @classmethod
     def from_string(cls, str):
-        return cls[str.upper().replace('-', '_')]
+        try:
+            return cls[str.upper().replace('-', '_')]
+        except KeyError:
+            raise ValueError(f'Invalid NotarizeAndStapleLevel: {str}')
 
 
 class NotarizationTool(enum.Enum):
