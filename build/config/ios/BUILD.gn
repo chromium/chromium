@@ -231,6 +231,8 @@ config("xctest_config") {
   ]
 }
 
+# TODO(crbug.com/1444308): any target that uses this config will miscompile.
+# This needs to be fixed if we want to use Swift - C++ interop.
 config("enable_swift_cxx_interop") {
   swiftflags = [ "-enable-experimental-cxx-interop" ]
 }
