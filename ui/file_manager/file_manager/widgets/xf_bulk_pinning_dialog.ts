@@ -42,7 +42,6 @@ const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
 @customElement('xf-bulk-pinning-dialog')
 export class XfBulkPinningDialog extends XfBase {
   @query('cr-dialog') private $dialog_!: CrDialogElement;
-  @query('#point1') private $point1_!: HTMLElement;
   @query('#continue-button') private $button_!: CrButtonElement;
   @query('#offline-footer') private $offlineFooter_!: HTMLElement;
   @query('#listing-footer') private $listingFooter_!: HTMLElement;
@@ -128,7 +127,6 @@ export class XfBulkPinningDialog extends XfBase {
 
   async show() {
     this.state = DialogState.LISTING;
-    this.$point1_.innerHTML = str('BULK_PINNING_POINT_1');
     this.$dialog_.showModal();
     this.store_.subscribe(this);
     try {
@@ -175,15 +173,15 @@ export class XfBulkPinningDialog extends XfBase {
         <div slot="body">
           <div class="description">
             ${str('BULK_PINNING_EXPLANATION')}
+            &ensp;
+            <a href="_blank" @click="${this.onViewStorage}">
+              ${str('LEARN_MORE_LABEL')}
+            </a>
           </div>
           <ul>
             <li>
               <xf-icon type="my_files"></xf-icon>
-              <span id="point1"></span>
-            </li>
-            <li>
-              <xf-icon type="offline"></xf-icon>
-              ${str('BULK_PINNING_POINT_2')}
+              ${str('BULK_PINNING_POINT_1')}
             </li>
           </ul>
           <div id="offline-footer" class="offline-footer">
