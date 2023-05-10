@@ -33,8 +33,12 @@ class Companion(perf_benchmark.PerfBenchmark):
     # Enable companion-specific logging.
     options.AppendExtraBrowserArgs('--enable-stats-collection-bindings')
     options.AppendExtraBrowserArgs(
-        '--enable-features=ui-debug-tools-enable-synthetic-events')
+        '--enable-features=ui-debug-tools-enable-synthetic-events,SidePanelCompanion'
+    )
+    options.AppendExtraBrowserArgs(
+        '--disable-checking-companion-user-permissions')
+    options.AppendExtraBrowserArgs('--disable-features=SideSearch')
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_companion'
+    return 'contrib.companion'

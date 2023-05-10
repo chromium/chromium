@@ -7,7 +7,6 @@ UNSCHEDULED_blink_perf.base64,csharrison@chromium.org,Blink>Internals>WTF,https:
 UNSCHEDULED_blink_perf.performance_apis,yoavweiss@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.service_worker,"yyanagisawa@chromium.org, chrome-worker@google.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
 UNSCHEDULED_blink_perf.view_transitions,"bokan@chromium.org, khushalsagar@chromium.org, vmpstr@chromium.org",Blink>ViewTransitions,https://bit.ly/blink-perf-benchmarks,all
-UNSCHEDULED_companion,mgeorgaklis@google.com,UI>Browser,https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/side_panel/companion/,
 UNSCHEDULED_loading.mbi,blink-isolation-dev@chromium.org,Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
 UNSCHEDULED_speedometer1.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer,all
 UNSCHEDULED_speedometer2.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.0,all

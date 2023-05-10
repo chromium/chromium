@@ -468,7 +468,6 @@ benchmarks/benchmark_smoke_unittest.py
 benchmarks/benchmark_unittest.py
 benchmarks/blink_perf.py
 benchmarks/blink_perf_unittest.py
-benchmarks/companion.py
 benchmarks/desktop_ui.py
 benchmarks/dummy_benchmark.py
 benchmarks/jetstream2.py
@@ -532,6 +531,7 @@ contrib/cluster_telemetry/v8_loading_ct.py
 contrib/cluster_telemetry/v8_loading_runtime_stats_ct.py
 contrib/download_mobile/__init__.py
 contrib/download_mobile/download_mobile.py
+contrib/intelligence/companion.py
 contrib/leak_detection/__init__.py
 contrib/leak_detection/leak_detection.py
 contrib/leak_detection/page_sets.py
