@@ -550,13 +550,15 @@ INSTANTIATE_TEST_SUITE_P(
         // (last item in the list).
         // In this case, the most recently connected external keyboard does not
         // have a browser forward key.
+        // As the most recently connected keyboard and the internal keyboards
+        // are both ChromeOS keyboards, no alias is generated.
         {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
           ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
           ui::InputDeviceType::INPUT_DEVICE_USB},
          {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified,
           kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE},
-         {ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_COMMAND_DOWN}}},
+         {}},
 
         // Since the external keyboard uses Layout1 by default, it should map to
         // F2.

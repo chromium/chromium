@@ -168,6 +168,16 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
       GetPriorityExternalKeyboard();
   absl::optional<ui::KeyboardDevice> internal_keyboard = GetInternalKeyboard();
 
+  // If the external and internal keyboards are either both non-chromeos
+  // keyboards (ex ChromeOS flex devices) or if they are both ChromeOS keyboards
+  // (ex ChromeOS external keyboard), do not show aliases for the internal
+  // keyboard.
+  if (priority_external_keyboard && internal_keyboard &&
+      (IsChromeOSKeyboard(*priority_external_keyboard) ==
+       IsChromeOSKeyboard(*internal_keyboard))) {
+    internal_keyboard = absl::nullopt;
+  }
+
   // Set is used to get rid of possible duplicate accelerators.
   base::flat_set<ui::Accelerator> aliases_set;
 
@@ -423,6 +433,16 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
   std::vector<ui::Accelerator> filtered_accelerators;
   auto priority_keyboard = GetPriorityExternalKeyboard();
   auto internal_keyboard = GetInternalKeyboard();
+
+  // If the external and internal keyboards are either both non-chromeos
+  // keyboards (ex ChromeOS flex devices) or if they are both ChromeOS keyboards
+  // (ex ChromeOS external keyboard), do not show aliases for the internal
+  // keyboard.
+  if (priority_keyboard && internal_keyboard &&
+      (IsChromeOSKeyboard(*priority_keyboard) ==
+       IsChromeOSKeyboard(*internal_keyboard))) {
+    internal_keyboard = absl::nullopt;
+  }
 
   for (const auto& accelerator : accelerators) {
     if (auto action_key = ui::KeyboardCapability::ConvertToTopRowActionKey(
