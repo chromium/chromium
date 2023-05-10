@@ -68,6 +68,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
+#include "third_party/blink/renderer/core/style/offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
@@ -2458,26 +2461,52 @@ scoped_refptr<StylePath> StyleBuilderConverter::ConvertPathOrNone(
   return nullptr;
 }
 
+namespace {
+
+scoped_refptr<OffsetPathOperation> ConvertOffsetPathValueToOperation(
+    StyleResolverState& state,
+    const CSSValue& value,
+    CoordBox coord_box) {
+  if (value.IsRayValue() || value.IsBasicShapeValue()) {
+    return ShapeOffsetPathOperation::Create(BasicShapeForValue(state, value),
+                                            coord_box);
+  }
+  if (auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value)) {
+    return ShapeOffsetPathOperation::Create(path_value->GetStylePath(),
+                                            coord_box);
+  }
+  const auto& url_value = To<cssvalue::CSSURIValue>(value);
+  SVGResource* resource =
+      state.GetElementStyleResources().GetSVGResourceFromValue(
+          CSSPropertyID::kOffsetPath, url_value);
+  return ReferenceOffsetPathOperation::Create(url_value.ValueForSerialization(),
+                                              resource, coord_box);
+}
+
+}  // namespace
+
 scoped_refptr<OffsetPathOperation> StyleBuilderConverter::ConvertOffsetPath(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsRayValue() || value.IsBasicShapeValue()) {
-    return ShapeOffsetPathOperation::Create(BasicShapeForValue(state, value));
+  if (value.IsIdentifierValue()) {
+    DCHECK(To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone);
+    // none: The element does not have an offset transform.
+    return nullptr;
   }
-  if (auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value)) {
-    return ShapeOffsetPathOperation::Create(path_value->GetStylePath());
+  const auto& list = To<CSSValueList>(value);
+  if (const auto* identifier = DynamicTo<CSSIdentifierValue>(list.First())) {
+    // If <offset-path> is omitted, it defaults to inset(0 round X),
+    // where X is the value of border-radius on the element that
+    // establishes the containing block for this element.
+    return CoordBoxOffsetPathOperation::Create(
+        identifier->ConvertTo<CoordBox>());
   }
-  if (const auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
-    SVGResource* resource =
-        state.GetElementStyleResources().GetSVGResourceFromValue(
-            CSSPropertyID::kOffsetPath, *url_value);
-    return ReferenceOffsetPathOperation::Create(
-        url_value->ValueForSerialization(), resource);
-  }
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  DCHECK(identifier_value &&
-         identifier_value->GetValueID() == CSSValueID::kNone);
-  return nullptr;
+  // If <coord-box> is omitted, it defaults to border-box.
+  CoordBox coord_box =
+      list.length() == 2
+          ? To<CSSIdentifierValue>(list.Last()).ConvertTo<CoordBox>()
+          : CoordBox::kBorderBox;
+  return ConvertOffsetPathValueToOperation(state, list.First(), coord_box);
 }
 
 scoped_refptr<BasicShape> StyleBuilderConverter::ConvertObjectViewBox(

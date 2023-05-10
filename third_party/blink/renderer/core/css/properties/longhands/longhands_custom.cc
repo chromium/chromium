@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
@@ -5660,12 +5661,33 @@ const CSSValue* OffsetPath::CSSValueFromComputedStyleInternal(
   if (operation) {
     if (const auto* shape_operation =
             DynamicTo<ShapeOffsetPathOperation>(operation)) {
-      return ValueForBasicShape(style, &shape_operation->GetBasicShape());
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      CSSValue* shape =
+          ValueForBasicShape(style, &shape_operation->GetBasicShape());
+      list->Append(*shape);
+      CoordBox coord_box = shape_operation->GetCoordBox();
+      if (coord_box != CoordBox::kBorderBox) {
+        list->Append(*CSSIdentifierValue::Create(coord_box));
+      }
+      return list;
+    }
+    if (const auto* coord_box_operation =
+            DynamicTo<CoordBoxOffsetPathOperation>(operation)) {
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      CoordBox coord_box = coord_box_operation->GetCoordBox();
+      list->Append(*CSSIdentifierValue::Create(coord_box));
+      return list;
     }
     const auto& reference_operation =
         To<ReferenceOffsetPathOperation>(*operation);
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
     AtomicString url = reference_operation.Url();
-    return MakeGarbageCollected<cssvalue::CSSURIValue>(url);
+    list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(url));
+    CoordBox coord_box = reference_operation.GetCoordBox();
+    if (coord_box != CoordBox::kBorderBox) {
+      list->Append(*CSSIdentifierValue::Create(coord_box));
+    }
+    return list;
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }

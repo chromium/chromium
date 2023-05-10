@@ -14,8 +14,10 @@ namespace blink {
 class ShapeOffsetPathOperation final : public OffsetPathOperation {
  public:
   static scoped_refptr<ShapeOffsetPathOperation> Create(
-      scoped_refptr<BasicShape> shape) {
-    return base::AdoptRef(new ShapeOffsetPathOperation(std::move(shape)));
+      scoped_refptr<BasicShape> shape,
+      CoordBox coord_box) {
+    return base::AdoptRef(
+        new ShapeOffsetPathOperation(std::move(shape), coord_box));
   }
 
   bool IsEqualAssumingSameType(const OffsetPathOperation& o) const override {
@@ -28,8 +30,8 @@ class ShapeOffsetPathOperation final : public OffsetPathOperation {
   const BasicShape& GetBasicShape() const { return *shape_; }
 
  private:
-  explicit ShapeOffsetPathOperation(scoped_refptr<BasicShape> shape)
-      : shape_(std::move(shape)) {
+  ShapeOffsetPathOperation(scoped_refptr<BasicShape> shape, CoordBox coord_box)
+      : OffsetPathOperation(coord_box), shape_(std::move(shape)) {
     DCHECK(shape_);
   }
 

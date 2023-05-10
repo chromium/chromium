@@ -3646,6 +3646,13 @@ CSSIdentifierValue* ConsumeVisualBox(CSSParserTokenRange& range) {
                       CSSValueID::kBorderBox>(range);
 }
 
+// https://drafts.csswg.org/css-box-4/#typedef-coord-box
+CSSIdentifierValue* ConsumeCoordBox(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kContentBox, CSSValueID::kPaddingBox,
+                      CSSValueID::kBorderBox, CSSValueID::kFillBox,
+                      CSSValueID::kStrokeBox, CSSValueID::kViewBox>(range);
+}
+
 void AddProperty(CSSPropertyID resolved_property,
                  CSSPropertyID current_shorthand,
                  const CSSValue& value,
@@ -6552,29 +6559,53 @@ CSSValue* ConsumeScrollStart(CSSParserTokenRange& range,
 
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
                             const CSSParserContext& context) {
-  CSSValue* value = nullptr;
+  CSSValue* offset_path = nullptr;
+  CSSValue* coord_box = nullptr;
+
+  if (CSSValue* none = ConsumeIdent<CSSValueID::kNone>(range)) {
+    return none;
+  }
+  if (RuntimeEnabledFeatures::CSSOffsetPathCoordBoxEnabled()) {
+    coord_box = ConsumeCoordBox(range);
+  }
+
   const CSSValueID function_id = range.Peek().FunctionId();
   if (RuntimeEnabledFeatures::CSSOffsetPathRayEnabled() &&
       function_id == CSSValueID::kRay) {
-    value = ConsumeRay(range, context);
+    offset_path = ConsumeRay(range, context);
   }
-  if (!value && IsBasicShapeSupportedByOffsetPath(function_id)) {
-    value = ConsumeBasicShape(range, context, AllowPathValue::kAllow,
-                              AllowBasicShapeRectValue::kAllow,
-                              AllowBasicShapeXYWHValue::kAllow);
+  if (!offset_path && IsBasicShapeSupportedByOffsetPath(function_id)) {
+    offset_path = ConsumeBasicShape(range, context, AllowPathValue::kAllow,
+                                    AllowBasicShapeRectValue::kAllow,
+                                    AllowBasicShapeXYWHValue::kAllow);
   }
-  if (!value && RuntimeEnabledFeatures::CSSOffsetPathUrlEnabled()) {
-    value = ConsumeUrl(range, context);
+  if (!offset_path && RuntimeEnabledFeatures::CSSOffsetPathUrlEnabled()) {
+    offset_path = ConsumeUrl(range, context);
   }
-  if (!value) {
-    value = ConsumePathOrNone(range);
+  if (!offset_path) {
+    offset_path = ConsumePathFunction(range);
+  }
+
+  if (!coord_box && RuntimeEnabledFeatures::CSSOffsetPathCoordBoxEnabled()) {
+    coord_box = ConsumeCoordBox(range);
+  }
+
+  if (!offset_path && !coord_box) {
+    return nullptr;
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (offset_path) {
+    list->Append(*offset_path);
+  }
+  if (coord_box) {
+    list->Append(*coord_box);
   }
 
   // Count when we receive a valid path other than 'none'.
-  if (value && !value->IsIdentifierValue()) {
-    context.Count(WebFeature::kCSSOffsetInEffect);
-  }
-  return value;
+  context.Count(WebFeature::kCSSOffsetInEffect);
+
+  return list;
 }
 
 CSSValue* ConsumePathOrNone(CSSParserTokenRange& range) {

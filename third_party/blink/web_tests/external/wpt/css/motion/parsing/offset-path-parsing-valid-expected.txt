@@ -22,7 +22,7 @@ PASS e.style['offset-path'] = "path(\" \")" should set the property value
 PASS e.style['offset-path'] = "url(\"http://www.example.com/index.html#polyline1\")" should set the property value
 PASS e.style['offset-path'] = "circle(100px)" should set the property value
 FAIL e.style['offset-path'] = "margin-box" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['offset-path'] = "inset(10% 20% 30% 40%) border-box" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['offset-path'] = "fill-box ellipse(50% 60%)" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['offset-path'] = "inset(10% 20% 30% 40%) border-box" should set the property value
+FAIL e.style['offset-path'] = "fill-box ellipse(50% 60%)" should set the property value assert_equals: serialization should be canonical expected "ellipse(50% 60%) fill-box" but got "ellipse(50% 60% at 50% 50%) fill-box"
 Harness: the test ran to completion.
 

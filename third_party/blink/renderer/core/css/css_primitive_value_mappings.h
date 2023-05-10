@@ -1662,6 +1662,53 @@ inline CSSIdentifierValue::CSSIdentifierValue(TextUnderlinePosition position)
 }
 
 template <>
+inline CoordBox CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kContentBox:
+      return CoordBox::kContentBox;
+    case CSSValueID::kPaddingBox:
+      return CoordBox::kPaddingBox;
+    case CSSValueID::kBorderBox:
+      return CoordBox::kBorderBox;
+    case CSSValueID::kFillBox:
+      return CoordBox::kFillBox;
+    case CSSValueID::kStrokeBox:
+      return CoordBox::kStrokeBox;
+    case CSSValueID::kViewBox:
+      return CoordBox::kViewBox;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return CoordBox::kBorderBox;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(CoordBox coord_box)
+    : CSSValue(kIdentifierClass) {
+  switch (coord_box) {
+    case CoordBox::kContentBox:
+      value_id_ = CSSValueID::kContentBox;
+      break;
+    case CoordBox::kPaddingBox:
+      value_id_ = CSSValueID::kPaddingBox;
+      break;
+    case CoordBox::kBorderBox:
+      value_id_ = CSSValueID::kBorderBox;
+      break;
+    case CoordBox::kFillBox:
+      value_id_ = CSSValueID::kFillBox;
+      break;
+    case CoordBox::kStrokeBox:
+      value_id_ = CSSValueID::kStrokeBox;
+      break;
+    case CoordBox::kViewBox:
+      value_id_ = CSSValueID::kViewBox;
+      break;
+  }
+}
+
+template <>
 inline TextUnderlinePosition CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kAuto:

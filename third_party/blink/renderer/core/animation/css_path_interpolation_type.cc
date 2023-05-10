@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
@@ -54,7 +55,9 @@ void SetPath(const CSSProperty& property,
       builder.SetD(std::move(path));
       return;
     case CSSPropertyID::kOffsetPath:
-      builder.SetOffsetPath(ShapeOffsetPathOperation::Create(std::move(path)));
+      // TODO(sakhapov): handle coord box.
+      builder.SetOffsetPath(ShapeOffsetPathOperation::Create(
+          std::move(path), CoordBox::kBorderBox));
       return;
     case CSSPropertyID::kClipPath:
       builder.SetClipPath(ShapeClipPathOperation::Create(std::move(path)));
@@ -132,10 +135,15 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers&) const {
-  auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value);
-  if (!path_value)
+  const cssvalue::CSSPathValue* path_value = nullptr;
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    path_value = DynamicTo<cssvalue::CSSPathValue>(list->First());
+  } else {
+    path_value = DynamicTo<cssvalue::CSSPathValue>(value);
+  }
+  if (!path_value) {
     return nullptr;
-
+  }
   return PathInterpolationFunctions::ConvertValue(
       path_value->GetStylePath(), PathInterpolationFunctions::kForceAbsolute);
 }

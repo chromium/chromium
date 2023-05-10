@@ -976,6 +976,11 @@
       base_feature: "none",
     },
     {
+      name: "CSSOffsetPathCoordBox",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "CSSOffsetPathRay",
       status: "experimental",
       base_feature: "none",

@@ -1386,6 +1386,9 @@
     "ray",
     "sides",
 
+    // coord-box
+    "stroke-box",
+
     // math functions
     // https://drafts.csswg.org/css-values-4/#math
     "calc",

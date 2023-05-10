@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
@@ -127,10 +128,12 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   const auto& ray_non_interpolable_value =
       To<CSSRayNonInterpolableValue>(*non_interpolable_value);
+  // TODO(sakhapov): handle coord box.
   state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
       StyleRay::Create(To<InterpolableNumber>(interpolable_value).Value(),
                        ray_non_interpolable_value.Mode().Size(),
-                       ray_non_interpolable_value.Mode().Contain())));
+                       ray_non_interpolable_value.Mode().Contain()),
+      CoordBox::kBorderBox));
 }
 
 void CSSRayInterpolationType::Composite(
@@ -213,10 +216,17 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
     const StyleResolverState* state,
     ConversionCheckers&) const {
   DCHECK(state);
-  if (!value.IsRayValue())
+  scoped_refptr<BasicShape> shape = nullptr;
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    if (list->First().IsRayValue()) {
+      shape = BasicShapeForValue(*state, list->First());
+    }
+  } else if (value.IsRayValue()) {
+    shape = BasicShapeForValue(*state, value);
+  }
+  if (!shape) {
     return nullptr;
-
-  scoped_refptr<BasicShape> shape = BasicShapeForValue(*state, value);
+  }
   return CreateValue(To<StyleRay>(*shape).Angle(),
                      RayMode(To<StyleRay>(*shape)));
 }
