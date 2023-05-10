@@ -435,6 +435,7 @@ source_set("unit_tests") {
     "browser_version_service_ash_unittest.cc",
     "cert_provisioning_ash_unittest.cc",
     "chrome_app_window_tracker_ash_unittest.cc",
+    "clipboard_history_ash_unittest.cc",
     "copy_migrator_unittest.cc",
     "crosapi_util_unittest.cc",
     "desk_ash_unittest.cc",

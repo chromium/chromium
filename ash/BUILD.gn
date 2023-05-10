@@ -3942,6 +3942,8 @@ static_library("test_support") {
     "capture_mode/test_capture_mode_delegate.h",
     "clipboard/test_support/clipboard_history_item_builder.cc",
     "clipboard/test_support/clipboard_history_item_builder.h",
+    "clipboard/test_support/mock_clipboard_history_controller.cc",
+    "clipboard/test_support/mock_clipboard_history_controller.h",
     "display/display_configuration_controller_test_api.cc",
     "display/display_configuration_controller_test_api.h",
     "display/mirror_window_test_api.cc",

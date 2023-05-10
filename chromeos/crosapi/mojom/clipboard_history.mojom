@@ -74,11 +74,22 @@ struct ClipboardHistoryItemDescriptor {
 // ClipboardHistory (//ash/clipboard) is an Ash-Chrome feature that shows the
 // last few things copied. It is shown by accelerator and contextual menu. This
 // allows Lacros-Chrome to show the ClipboardHistory menu by contextual menu.
-// Next method ID: 1
+// Next MinVersion: 2
+// Next method ID: 2
 [Stable, Uuid="2dc3f126-d79f-4d9e-a7a7-0989c1be8acd"]
 interface ClipboardHistory {
   // Shows a menu in Ash-Chrome with the last few things copied.
   ShowClipboard@0(gfx.mojom.Rect anchor_point,
       ui.mojom.MenuSourceType menu_source_type,
       crosapi.mojom.ClipboardHistoryControllerShowSource show_source);
+
+   // Pastes the clipboard item specified by `item_id` from `paste_source`.
+   // No-op if:
+   // 1. The clipboard item specified by `item_id` does not exist; or
+   // 2. The clipboard history is not allowed when Ash receives the calls.
+  [MinVersion=1]
+  PasteClipboardItemById@1(
+    mojo_base.mojom.UnguessableToken item_id,
+    int32 event_flags,
+    ClipboardHistoryControllerShowSource paste_source);
 };

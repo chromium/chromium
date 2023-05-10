@@ -89,11 +89,11 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // history is enabled. Otherwise, returns an empty list.
   virtual std::vector<std::string> GetHistoryItemIds() const = 0;
 
-  // Pastes the clipboard item specified by `item_id` from `show_source`.
+  // Pastes the clipboard item specified by `item_id` from `paste_source`.
   virtual bool PasteClipboardItemById(
       const std::string& item_id,
       int event_flags,
-      crosapi::mojom::ClipboardHistoryControllerShowSource show_source) = 0;
+      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) = 0;
 
   // Deletes the clipboard item specified by the item id.
   virtual bool DeleteClipboardItemById(const std::string& item_id) = 0;
