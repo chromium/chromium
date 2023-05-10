@@ -34,6 +34,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -2444,6 +2446,120 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+class StartupBrowserCreatorTestWithGuestParam
+    : public StartupBrowserCreatorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsGuest() const { return GetParam(); }
+
+  GURL GetTestURL() const { return GURL("https://www.youtube.com"); }
+
+  // Creates a browser for a new profile (which may be Guest, based on
+  // `IsGuest()`).
+  Browser* CreateBrowser() {
+    if (IsGuest()) {
+      profiles::SwitchToGuestProfile();
+    } else {
+      base::FilePath profile_path = g_browser_process->profile_manager()
+                                        ->GenerateNextProfileDirectoryPath();
+      profiles::SwitchToProfile(profile_path, /*always_create=*/true);
+    }
+    Browser* test_browser = ui_test_utils::WaitForBrowserToOpen();
+    profiles::SetLastUsedProfile(test_browser->profile()->GetBaseName());
+    return test_browser;
+  }
+
+  void OpenTabAlreadyRunning() {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendArg(GetTestURL().spec());
+    ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
+        command_line, /*current_directory=*/{});
+  }
+};
+
+// Tests that receiving a launch notification while Chrome is already running
+// opens the URL in the current browser window.
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
+                       ProcessCommandLineAlreadyRunning) {
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
+                             KeepAliveRestartOption::DISABLED);
+  CloseBrowserSynchronously(browser());
+
+  // Create a browser for a new profile.
+  Browser* test_browser = CreateBrowser();
+  ASSERT_TRUE(test_browser);
+  ASSERT_EQ(test_browser->profile()->IsGuestSession(), IsGuest());
+  TabStripModel* tab_strip = test_browser->tab_strip_model();
+  int initial_tab_count = tab_strip->count();
+
+  // Open a URL while a browser is already open.
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
+  OpenTabAlreadyRunning();
+  content::WebContents* contents = tab_waiter.Wait();
+
+  EXPECT_EQ(initial_tab_count + 1, tab_strip->count());
+  EXPECT_EQ(contents, tab_strip->GetWebContentsAt(tab_strip->count() - 1));
+  EXPECT_EQ(GetTestURL(), contents->GetVisibleURL());
+}
+
+// Tests that receiving a launch notification while Chrome is already running,
+// but there was no browser window, reopens the last profile if it was regular,
+// and opens the profile picker if it was guest.
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
+                       ProcessCommandLineAlreadyRunningAfterBrowserClose) {
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
+                             KeepAliveRestartOption::DISABLED);
+  CloseBrowserSynchronously(browser());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Create a browser for a new profile.
+  Browser* test_browser = CreateBrowser();
+  Profile* last_profile = test_browser->profile();
+  ASSERT_TRUE(test_browser);
+  ASSERT_EQ(last_profile->IsGuestSession(), IsGuest());
+
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
+  if (!IsGuest()) {
+    // Keep the profile alive to avoid unloading and immediately reloading it,
+    // which causes some flakiness within the HistoryService.
+    // This is not done for the guest profile because:
+    // - the test scenario does not involve reloading the guest profile,
+    // - it is not allowed to take a keep alive on a OTR profile.
+    profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        last_profile, ProfileKeepAliveOrigin::kBackgroundMode);
+  }
+
+  CloseBrowserSynchronously(test_browser);
+  // Closing the browser did not change the last used profile.
+  EXPECT_EQ(profile_manager->GetLastUsedProfileDir(), last_profile->GetPath());
+  ASSERT_FALSE(ProfilePicker::IsOpen());
+
+  // Open a URL after the last active browser was closed.
+  OpenTabAlreadyRunning();
+
+  if (IsGuest()) {
+    // The profile picker opens. There is no browser, the URL is not loaded.
+    profiles::testing::WaitForPickerWidgetCreated();
+    EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  } else {
+    // The last used profile is reopened and the URL is loaded.
+    Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+    Profile* profile = browser->profile();
+    EXPECT_FALSE(profile->IsGuestSession());
+    TabStripModel* tab_strip = browser->tab_strip_model();
+    EXPECT_EQ(
+        tab_strip->GetWebContentsAt(tab_strip->count() - 1)->GetVisibleURL(),
+        GetTestURL());
+    EXPECT_FALSE(ProfilePicker::IsOpen());
+    EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+    EXPECT_EQ(last_profile, profile);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         StartupBrowserCreatorTestWithGuestParam,
+                         testing::Bool());
+
 class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
  protected:
   StartupBrowserWithRealWebAppTest() = default;

@@ -89,7 +89,7 @@ enum class StartupProfileModeReason {
 // Bundles the startup profile path together with a StartupProfileMode.
 // Depending on `StartupProfileModeFromReason(reason)`, `path` is either:
 // - regular profile path for kBrowserWindow; if the guest mode is requested,
-//   contains default profile path with kBrowserWindow mode
+//   may contain either the default profile path or the guest profile path
 // - guest profile path for kProfilePicker,
 // - empty path for kError
 // TODO(https://crbug.com/1150326): return a guest profile path for the Guest
@@ -102,7 +102,7 @@ struct StartupProfilePathInfo {
 // Bundles the startup profile together with a StartupProfileMode.
 // Depending on the `mode` value, `profile` is either:
 // - regular profile for kBrowserWindow; if the Guest mode is requested,
-//   contains default profile with kBrowserWindow mode
+//   may contain either the default profile path or the guest profile path
 // - guest profile for kProfilePicker,
 // - nullptr for kError
 // TODO(https://crbug.com/1150326): return a guest profile for the Guest mode

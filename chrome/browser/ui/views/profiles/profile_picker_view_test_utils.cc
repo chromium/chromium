@@ -178,6 +178,12 @@ ProfileManagementStepTestView::CreateFlowController(
 namespace profiles::testing {
 
 void WaitForPickerWidgetCreated() {
+  if (!ProfilePicker::IsOpen()) {
+    base::RunLoop run_loop;
+    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
   ViewAddedWaiter(ProfilePicker::GetViewForTesting()).Wait();
 }
 
