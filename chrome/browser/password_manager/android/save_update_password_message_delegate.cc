@@ -421,8 +421,8 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
     // TODO(crbug.com/439853): Check if the bottom sheet was shown a month ago
     // or more.
-    std::move(create_migration_warning_callback_)
-        .Run(web_contents_->GetTopLevelNativeWindow());
+    create_migration_warning_callback_.Run(
+        web_contents_->GetTopLevelNativeWindow());
   }
 }
 
