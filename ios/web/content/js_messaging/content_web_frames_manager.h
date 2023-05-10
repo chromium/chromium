@@ -22,6 +22,7 @@ class JsCommunicationHost;
 
 namespace web {
 
+class ContentJavaScriptFeatureManager;
 class ContentWebState;
 
 // ContentWebFramesManager is a WebFramesManager that is built on top
@@ -45,6 +46,7 @@ class ContentWebFramesManager : public WebFramesManager,
   // WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void PrimaryPageChanged(content::Page& page) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -72,6 +74,9 @@ class ContentWebFramesManager : public WebFramesManager,
 
   // Used for receiving messages from JavaScript.
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
+
+  // Manages JavaScriptFeatures.
+  std::unique_ptr<ContentJavaScriptFeatureManager> js_feature_manager_;
 };
 
 }  // namespace web

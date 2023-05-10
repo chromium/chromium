@@ -11,9 +11,11 @@
 #import "content/public/browser/navigation_handle.h"
 #import "content/public/browser/page.h"
 #import "content/public/browser/web_contents.h"
+#import "ios/web/content/js_messaging/content_java_script_feature_manager.h"
 #import "ios/web/content/js_messaging/content_web_frame.h"
 #import "ios/web/content/js_messaging/ios_web_message_host_factory.h"
 #import "ios/web/content/web_state/content_web_state.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,6 +33,23 @@ ContentWebFramesManager::ContentWebFramesManager(
   auto message_host_factory = std::make_unique<IOSWebMessageHostFactory>();
   js_communication_host_->AddWebMessageHostFactory(
       std::move(message_host_factory), u"webkitMessageHandler", {"*"});
+
+  std::vector<JavaScriptFeature*> java_script_features;
+  java_script_features.push_back(
+      java_script_features::GetBaseJavaScriptFeature());
+
+  // TODO(crbug.com/1423527): Insert another feature that overrides the
+  // definition of sendWebKitMessage from common.js, to use
+  // webkitMessageHandler.postMessage.
+  java_script_features.push_back(
+      java_script_features::GetCommonJavaScriptFeature());
+  java_script_features.push_back(
+      java_script_features::GetMessageJavaScriptFeature());
+
+  // TODO(crbug.com/1423527): Insert other JavaScriptFeatures.
+  js_feature_manager_ = std::make_unique<ContentJavaScriptFeatureManager>(
+      std::move(java_script_features));
+  js_feature_manager_->AddDocumentStartScripts(js_communication_host_.get());
 }
 
 ContentWebFramesManager::~ContentWebFramesManager() = default;
@@ -103,6 +122,11 @@ void ContentWebFramesManager::RenderFrameDeleted(
   content_to_web_id_map_.erase(web_id_it);
 }
 
+void ContentWebFramesManager::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  js_feature_manager_->InjectDocumentEndScripts(render_frame_host);
+}
+
 void ContentWebFramesManager::PrimaryPageChanged(content::Page& page) {
   main_frame_content_id_ = page.GetMainDocument().GetGlobalId();
 }
@@ -117,6 +141,9 @@ void ContentWebFramesManager::DidFinishNavigation(
   if (!render_frame_host) {
     return;
   }
+
+  // TODO(crbug.com/1423527): Inject JavaScript to override `getFrameId` to
+  // return the WebFrame id chosen in `RenderFrameCreated`.
 
   content::GlobalRenderFrameHostId content_id =
       render_frame_host->GetGlobalId();

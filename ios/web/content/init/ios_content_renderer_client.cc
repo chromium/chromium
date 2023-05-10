@@ -25,8 +25,9 @@ void IOSContentRendererClient::RenderFrameCreated(
 
 void IOSContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
-  // TODO(crbug.com/1423527): Inject document start scripts from
-  // JavaScriptFeatures.
+  js_injection::JsCommunication* communication =
+      js_injection::JsCommunication::Get(render_frame);
+  communication->RunScriptsAtDocumentStart();
 }
 
 void IOSContentRendererClient::RunScriptsAtDocumentEnd(
