@@ -105,7 +105,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     base_module_target = ":system_webview_base_bundle_module"
     bundle_name = "SystemWebView"
     min_sdk_version = default_min_sdk_version
-    compress_shared_libraries = true
   }
 
   if (is_official_build) {

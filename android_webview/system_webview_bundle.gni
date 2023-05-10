@@ -95,8 +95,6 @@ template("system_webview_bundle") {
     enable_language_splits = true
     if (_is_trichrome) {
       min_sdk_version = 29
-    } else {
-      compress_shared_libraries = true
     }
     if (webview_includes_weblayer) {
       extra_modules = [ _weblayer_module_desc ]

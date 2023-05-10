@@ -4828,9 +4828,6 @@ if (enable_java_templates && is_android) {
   #    proguard_android_sdk_dep: Optional. android_system_java_prebuilt() target
   #      used as a library jar for synchronized proguarding.
   #
-  #    compress_shared_libraries: Optional. Whether to compress shared libraries
-  #      such that they are extracted upon install.
-  #
   #    system_image_locale_allowlist: List of locales that should be included
   #      on system APKs generated from this bundle.
   #
@@ -5331,10 +5328,6 @@ if (enable_java_templates && is_android) {
       ]
       if (_split_dimensions != []) {
         args += [ "--split-dimensions=$_split_dimensions" ]
-      }
-      if (defined(invoker.compress_shared_libraries) &&
-          invoker.compress_shared_libraries) {
-        args += [ "--compress-shared-libraries" ]
       }
 
       # Android P+ support loading from stored dex.
