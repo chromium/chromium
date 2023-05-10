@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -796,6 +797,74 @@ TEST_F(TouchSelectionControllerImplTest,
   EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 }
 
+// Tests that the magnifier is shown when directly dragging the cursor in the
+// textfield, i.e. when performing a scroll gesture on the textfield rather than
+// on the touch handles.
+TEST_F(TouchSelectionControllerImplTest, MagnifierShownWhenDraggingCursor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  CreateTextfield();
+  textfield_->SetText(u"some text in a textfield");
+  ui::test::EventGenerator generator(
+      textfield_->GetWidget()->GetNativeView()->GetRootWindow());
+
+  // Scroll in a horizontal direction over the textfield to move the cursor.
+  // Magnifier should be shown during the dragging movement, then hidden once
+  // dragging ends.
+  const gfx::Point drag_start =
+      GetCursorPosition(gfx::SelectionModel(6, gfx::CURSOR_FORWARD));
+  const gfx::Point drag_end = drag_start + gfx::Vector2d(80, 0);
+  generator.GestureScrollSequenceWithCallback(
+      drag_start, drag_end, /*duration=*/base::Milliseconds(50),
+      /*steps=*/5,
+      base::BindRepeating([](ui::EventType event_type,
+                             const gfx::Vector2dF& offset) {
+        if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+          EXPECT_TRUE(
+              ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+        }
+      }));
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+}
+
+// Tests that touch handles are correctly shown when directly dragging the
+// cursor in the textfield.
+TEST_F(TouchSelectionControllerImplTest, DraggingCursorShowsHandle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  CreateTextfield();
+  textfield_->SetText(u"some text in a textfield");
+  ui::test::EventGenerator generator(
+      textfield_->GetWidget()->GetNativeView()->GetRootWindow());
+
+  // Scroll in a horizontal direction over the textfield to move the cursor.
+  // Touch handles should be hidden during the dragging movement, then the
+  // cursor handle should be shown once dragging ends.
+  const gfx::Point drag_start =
+      GetCursorPosition(gfx::SelectionModel(6, gfx::CURSOR_FORWARD));
+  const gfx::Point drag_end = drag_start + gfx::Vector2d(80, 0);
+  generator.GestureScrollSequenceWithCallback(
+      drag_start, drag_end, /*duration=*/base::Milliseconds(50),
+      /*steps=*/5,
+      base::BindLambdaForTesting(
+          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+              EXPECT_FALSE(IsCursorHandleVisible());
+              EXPECT_FALSE(IsSelectionHandle1Visible());
+              EXPECT_FALSE(IsSelectionHandle2Visible());
+            }
+          }));
+  EXPECT_TRUE(IsCursorHandleVisible());
+  EXPECT_FALSE(IsSelectionHandle1Visible());
+  EXPECT_FALSE(IsSelectionHandle2Visible());
+}
+
 TEST_F(TouchSelectionControllerImplTest, TapOnHandleTogglesMenu) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -953,6 +1022,7 @@ class TestTouchEditable : public ui::TouchEditable {
   }
   gfx::Rect GetBounds() override { return gfx::Rect(bounds_.size()); }
   gfx::NativeView GetNativeView() const override { return window_; }
+  bool IsSelectionDragging() const override { return false; }
   void ConvertPointToScreen(gfx::Point* point) override {
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(window_->GetRootWindow());

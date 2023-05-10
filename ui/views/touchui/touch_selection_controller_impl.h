@@ -158,6 +158,11 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // Selection bounds, clipped to client view's boundaries.
   gfx::SelectionBound selection_bound_1_clipped_;
   gfx::SelectionBound selection_bound_2_clipped_;
+
+  // Used to track whether the client is selection dragging. If the client's
+  // selection dragging state changes, then the handles need to be updated on
+  // the next selection change notification.
+  bool is_client_selection_dragging_ = false;
 };
 
 }  // namespace views

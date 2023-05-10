@@ -90,6 +90,12 @@ class COMPONENT_EXPORT(UI_BASE) TouchEditable
   // Gets the NativeView hosting the client.
   virtual gfx::NativeView GetNativeView() const = 0;
 
+  // Checks whether the client is currently in a selection dragging state, i.e.
+  // whether it is currently handling scroll gestures to adjust the cursor or
+  // selection. If so, selection changes will notify the controller to update
+  // the quick menu and touch selection magnifier without showing touch handles.
+  virtual bool IsSelectionDragging() const = 0;
+
   // Converts a point to/from screen coordinates from/to client view.
   virtual void ConvertPointToScreen(gfx::Point* point) = 0;
   virtual void ConvertPointFromScreen(gfx::Point* point) = 0;

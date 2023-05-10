@@ -435,16 +435,26 @@ void TouchSelectionControllerImpl::SelectionChanged() {
       ConvertToScreen(client_view_, anchor);
   gfx::SelectionBound screen_bound_focus_clipped =
       ConvertToScreen(client_view_, focus);
-  if (screen_bound_anchor_clipped == selection_bound_1_clipped_ &&
-      screen_bound_focus_clipped == selection_bound_2_clipped_)
+  const bool is_client_selection_dragging = client_view_->IsSelectionDragging();
+  if (is_client_selection_dragging == is_client_selection_dragging_ &&
+      screen_bound_anchor_clipped == selection_bound_1_clipped_ &&
+      screen_bound_focus_clipped == selection_bound_2_clipped_) {
     return;
+  }
 
+  is_client_selection_dragging_ = is_client_selection_dragging;
   selection_bound_1_ = screen_bound_anchor;
   selection_bound_2_ = screen_bound_focus;
   selection_bound_1_clipped_ = screen_bound_anchor_clipped;
   selection_bound_2_clipped_ = screen_bound_focus_clipped;
 
-  if (dragging_handle_) {
+  if (is_client_selection_dragging) {
+    selection_handle_1_->SetWidgetVisible(false);
+    selection_handle_2_->SetWidgetVisible(false);
+    cursor_handle_->SetWidgetVisible(false);
+    UpdateQuickMenu();
+    ShowMagnifier(screen_bound_focus);
+  } else if (dragging_handle_) {
     // We need to reposition only the selection handle that is being dragged.
     // The other handle stays the same. Also, the selection handle being dragged
     // will always be at the end of selection, while the other handle will be at
@@ -485,6 +495,7 @@ void TouchSelectionControllerImpl::SelectionChanged() {
       quick_menu_requested_ = true;
     }
     UpdateQuickMenu();
+    HideMagnifier();
   }
 }
 

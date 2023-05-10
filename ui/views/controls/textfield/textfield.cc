@@ -845,12 +845,14 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
               GetRenderText()->GetUpdatedDisplayOffset().x();
           show_touch_handles_after_scroll_ =
               touch_selection_controller_ != nullptr;
+          // Deactivate touch selection controller when scrolling.
+          DestroyTouchSelection();
         } else {
+          // Create touch selection controller to show a magnifier when
+          // selection dragging.
+          CreateTouchSelectionControllerAndNotifyIt();
           show_touch_handles_after_scroll_ = true;
         }
-        // Deactivate touch selection handles when scrolling or selection
-        // dragging.
-        DestroyTouchSelection();
         event->SetHandled();
       }
       break;
@@ -864,6 +866,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
           drag_start_location_x_ = event->location().x();
           drag_start_display_offset_ =
               GetRenderText()->GetUpdatedDisplayOffset().x();
+          DestroyTouchSelection();
           show_touch_handles_after_scroll_ = true;
         }
         switch (selection_dragging_state_) {
@@ -889,11 +892,11 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
       if (HasFocus()) {
+        selection_dragging_state_ = SelectionDraggingState::kNone;
         if (show_touch_handles_after_scroll_) {
           CreateTouchSelectionControllerAndNotifyIt();
           show_touch_handles_after_scroll_ = false;
         }
-        selection_dragging_state_ = SelectionDraggingState::kNone;
         event->SetHandled();
       }
       break;
@@ -1387,6 +1390,10 @@ gfx::Rect Textfield::GetBounds() {
 
 gfx::NativeView Textfield::GetNativeView() const {
   return GetWidget()->GetNativeView();
+}
+
+bool Textfield::IsSelectionDragging() const {
+  return selection_dragging_state_ != SelectionDraggingState::kNone;
 }
 
 void Textfield::ConvertPointToScreen(gfx::Point* point) {

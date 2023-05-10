@@ -389,6 +389,7 @@ class VIEWS_EXPORT Textfield : public View,
                              gfx::SelectionBound* focus) override;
   gfx::Rect GetBounds() override;
   gfx::NativeView GetNativeView() const override;
+  bool IsSelectionDragging() const override;
   void ConvertPointToScreen(gfx::Point* point) override;
   void ConvertPointFromScreen(gfx::Point* point) override;
   void OpenContextMenu(const gfx::Point& anchor) override;
