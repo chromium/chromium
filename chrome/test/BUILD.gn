@@ -1324,6 +1324,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
+      "//build/config/coverage:buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",

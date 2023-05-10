@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 
@@ -40,4 +41,9 @@ config("default_coverage") {
       cflags += [ "-fno-use-cxa-atexit" ]
     }
   }
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "USE_JAVASCRIPT_COVERAGE=$use_javascript_coverage" ]
 }

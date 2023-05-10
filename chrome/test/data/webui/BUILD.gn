@@ -130,6 +130,7 @@ if (include_js_tests) {
 
     deps = [
       "//build:branding_buildflags",
+      "//build/config/coverage:buildflags",
       "//chrome/browser/ui",
       "//crypto:buildflags",
       "//services/network/public/cpp",
