@@ -116,10 +116,15 @@ input[type=checkbox] {
 .menu-header .icon,
 .menu-item .icon,
 .menu-item.expandable::after {
+  align-items: center;
+  /* TODO(pihsun): Remove these two after all background image
+   * usage are removed. */
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
   flex-shrink: 0;
   height: 40px;
+  justify-content: center;
   width: 40px;
 }
 
@@ -1263,35 +1268,6 @@ html[dir=rtl] .menu-header .icon {
   background-color: var(--cros-sys-hover_on_subtle);
 }
 
-#settings-gridtype .icon {
-  background-image: url(/images/settings_grid_type.svg);
-}
-
-#settings-timerdur .icon {
-  background-image: url(/images/settings_timer_duration.svg);
-}
-
-#settings-photo-resolution .icon,
-#settings-video-resolution .icon {
-  background-image: url(/images/settings_resolution.svg);
-}
-
-#settings-photo-aspect-ratio .icon {
-  background-image: url(/images/settings_aspect_ratio.svg);
-}
-
-#settings-expert .icon {
-  background-image: url(/images/settings_expert.svg);
-}
-
-#settings-feedback .icon {
-  background-image: url(/images/settings_feedback.svg);
-}
-
-#settings-help .icon {
-  background-image: url(/images/settings_help.svg);
-}
-
 #view-warning,
 .dialog {
   align-items: center;
@@ -1434,26 +1410,15 @@ body:not(.video) #settings-video-resolution {
 }
 
 .fps-button {
+  border-radius: 12px;
   height: 40px;
   margin-inline-end: 8px;
   margin-inline-start: 8px;
   width: 40px;
 }
 
-#view-video-resolution-settings .fps-30 {
-  background-image: url(/images/camera_button_fps_30_unchecked.svg);
-}
-
-#view-video-resolution-settings .fps-30.checked {
-  background-image: url(/images/camera_button_fps_30_checked.svg);
-}
-
-#view-video-resolution-settings .fps-60 {
-  background-image: url(/images/camera_button_fps_60_unchecked.svg);
-}
-
-#view-video-resolution-settings .fps-60.checked {
-  background-image: url(/images/camera_button_fps_60_checked.svg);
+.fps-button.checked {
+  background: var(--cros-sys-primary_container);
 }
 
 [tabindex] {

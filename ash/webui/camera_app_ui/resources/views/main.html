@@ -319,46 +319,50 @@
         </div>
         <button id="settings-photo-resolution" class="menu-item inkdrop
                 expandable" tabindex="0">
-          <div class="icon"></div>
+          <div class="icon" data-svg="settings_resolution.svg"></div>
           <div>
             <div i18n-text="photo_resolution_button"></div>
             <div class="description">
               <span></span>
             </div>
           </div>
+          <div class="expand" data-svg="settings_button_expand.svg"></div>
         </button>
         <button id="settings-video-resolution" class="menu-item inkdrop
                 expandable" tabindex="0">
-          <div class="icon"></div>
+          <div class="icon" data-svg="settings_resolution.svg"></div>
           <div>
             <div i18n-text="video_resolution_button"></div>
             <div class="description">
               <span></span>
             </div>
           </div>
+          <div class="expand" data-svg="settings_button_expand.svg"></div>
         </button>
         <button id="settings-photo-aspect-ratio" class="menu-item inkdrop
                 expandable" tabindex="0">
-          <div class="icon"></div>
+          <div class="icon" data-svg="settings_aspect_ratio.svg"></div>
           <div>
             <div i18n-text="photo_aspect_ratio_button"></div>
             <div class="description">
               <span></span>
             </div>
           </div>
+          <div class="expand" data-svg="settings_button_expand.svg"></div>
         </button>
         <button id="settings-expert" class="menu-item inkdrop expandable"
                 tabindex="0">
-          <div class="icon"></div>
+          <div class="icon" data-svg="settings_expert.svg"></div>
           <div i18n-text="expert_mode_button">
           </div>
+          <div class="expand" data-svg="settings_button_expand.svg"></div>
         </button>
         <button id="settings-feedback" class="menu-item inkdrop" tabindex="0">
-          <div class="icon"></div>
+          <div class="icon" data-svg="settings_feedback.svg"></div>
           <div i18n-text="feedback_button"></div>
         </button>
         <button id="settings-help" class="menu-item inkdrop" tabindex="0">
-          <div class="icon"></div>
+          <div class="icon" data-svg="settings_help.svg"></div>
           <div i18n-text="help_button"></div>
         </button>
       </div>
@@ -574,14 +578,18 @@
       </label>
     </template>
     <template id="video-resolution-item-template">
-      <label class="menu-item circle resolution-option inkdrop">
+      <label class="menu-item resolution-option inkdrop">
         <input class="icon" type="radio" tabindex="0">
         <span></span>
         <div class="fps-buttons">
           <button class="fps-button fps-30" i18n-aria="label_30fps"
-                  tabindex="0"></button>
+                  tabindex="0">
+            <svg-wrapper name="camera_button_fps_30.svg"></svg-wrapper>
+          </button>
           <button class="fps-button fps-60" i18n-aria="label_60fps"
-                  tabindex="0"></button>
+                  tabindex="0">
+            <svg-wrapper name="camera_button_fps_60.svg"></svg-wrapper>
+          </button>
         </div>
       </label>
     </template>

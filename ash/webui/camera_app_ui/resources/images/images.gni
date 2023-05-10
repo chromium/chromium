@@ -8,10 +8,8 @@ in_app_images = [
   "barcode_copy.svg",
   "barcode_scan_box_border_mask.svg",
   "barcode_url.svg",
-  "camera_button_fps_30_checked.svg",
-  "camera_button_fps_30_unchecked.svg",
-  "camera_button_fps_60_checked.svg",
-  "camera_button_fps_60_unchecked.svg",
+  "camera_button_fps_30.svg",
+  "camera_button_fps_60.svg",
   "camera_button_grid_off.svg",
   "camera_button_grid_on.svg",
   "camera_button_mic_off.svg",
@@ -60,10 +58,8 @@ in_app_images = [
   "settings_button_expand.svg",
   "settings_expert.svg",
   "settings_feedback.svg",
-  "settings_grid_type.svg",
   "settings_help.svg",
   "settings_resolution.svg",
-  "settings_timer_duration.svg",
 ]
 
 icon_images = [

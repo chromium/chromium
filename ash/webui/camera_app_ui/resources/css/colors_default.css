@@ -166,3 +166,20 @@ button.shutter {
 #view-document-review .delete {
   border-radius: 50%;
 }
+
+.fps-button {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+
+  :is(svg-wrapper) {
+    color: var(--grey-400);
+  }
+}
+
+.fps-button.checked {
+  background: var(--blue-300);
+
+  :is(svg-wrapper) {
+    color: var(--grey-900);
+  }
+}
