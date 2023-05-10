@@ -64121,6 +64121,7 @@ from previous Chrome versions.
   <int value="904811479" label="query-tiles-enable-trending"/>
   <int value="907051864" label="UseMultiPlaneFormatForHardwareVideo:disabled"/>
   <int value="907056713" label="DetectFormSubmissionOnFormClear:enabled"/>
+  <int value="907696422" label="SafetyHub:disabled"/>
   <int value="908302031"
       label="OmniboxUIExperimentElideSuggestionUrlAfterHost:enabled"/>
   <int value="908370794" label="UserActivityPredictionMlService:enabled"/>
@@ -65338,6 +65339,7 @@ from previous Chrome versions.
   <int value="1577205328"
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>
   <int value="1577544798" label="StartSurfaceWithAccessibility:disabled"/>
+  <int value="1577651674" label="SafetyHub:enabled"/>
   <int value="1579084737" label="TemporaryUnexpireFlagsM80:disabled"/>
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
   <int value="1580340993" label="EnableTabMuting:enabled"/>

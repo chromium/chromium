@@ -1001,6 +1001,9 @@ const base::FeatureParam<int>
     kSafetyCheckNotificationPermissionsLowEnagementLimit{
         &kSafetyCheckNotificationPermissions,
         "low-engagement-notification-count", 4};
+
+// Enables Safety Hub feature.
+BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

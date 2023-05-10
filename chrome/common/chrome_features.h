@@ -580,6 +580,9 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int>
     kSafetyCheckNotificationPermissionsLowEnagementLimit;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kSafetyHub);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1597,6 +1597,9 @@ extern const char kSafetyCheckNotificationPermissionsDescription[];
 extern const char kSafetyCheckUnusedSitePermissionsName[];
 extern const char kSafetyCheckUnusedSitePermissionsDescription[];
 
+extern const char kSafetyHubName[];
+extern const char kSafetyHubDescription[];
+
 extern const char kSameAppWindowCycleName[];
 extern const char kSameAppWindowCycleDescription[];
 

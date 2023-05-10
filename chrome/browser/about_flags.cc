@@ -9333,6 +9333,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          permissions::features::kRecordPermissionExpirationTimestamps)},
+
+    {"safety-hub", flag_descriptions::kSafetyHubName,
+     flag_descriptions::kSafetyHubDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSafetyHub)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

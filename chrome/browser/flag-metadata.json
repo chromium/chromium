@@ -6549,6 +6549,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "safety-hub",
+    "owners": [
+      "sideyilmaz"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "sanitizer-api",
     "owners": [ "//third_party/blink/renderer/modules/sanitizer_api/OWNERS" ],
     "expiry_milestone": 109
