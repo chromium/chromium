@@ -43,7 +43,11 @@ UserPermissionServiceImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool UserPermissionServiceImpl::ShouldCollectConsent() {
+bool UserPermissionServiceImpl::HasUserConsented() const {
+  return user_prefs_->GetBoolean(prefs::kDeviceSignalsConsentReceived);
+}
+
+bool UserPermissionServiceImpl::ShouldCollectConsent() const {
   if (HasUserConsented()) {
     // Already have the user consent, so no need to collect.
     return false;
@@ -71,7 +75,7 @@ bool UserPermissionServiceImpl::ShouldCollectConsent() {
 }
 
 UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
-    const UserContext& user_context) {
+    const UserContext& user_context) const {
   // Return "unknown user" if no user ID was given.
   if (user_context.user_id.empty()) {
     return UserPermission::kMissingUser;
@@ -104,7 +108,7 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
   return UserPermission::kGranted;
 }
 
-UserPermission UserPermissionServiceImpl::CanCollectSignals() {
+UserPermission UserPermissionServiceImpl::CanCollectSignals() const {
   if (HasUserConsented()) {
     return UserPermission::kGranted;
   }
@@ -151,10 +155,6 @@ void UserPermissionServiceImpl::ResetUserConsentIfNeeded() {
 bool UserPermissionServiceImpl::IsConsentFlowPolicyEnabled() const {
   return user_prefs_->GetBoolean(
       prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);
-}
-
-bool UserPermissionServiceImpl::HasUserConsented() const {
-  return user_prefs_->GetBoolean(prefs::kDeviceSignalsConsentReceived);
 }
 
 bool UserPermissionServiceImpl::IsDeviceCloudManaged() const {

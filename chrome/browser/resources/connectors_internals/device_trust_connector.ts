@@ -4,7 +4,7 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {DeviceTrustState, Int32Value, KeyInfo, KeyManagerInitializedValue, KeyManagerPermanentFailure, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import {ConsentMetadata, DeviceTrustState, Int32Value, KeyInfo, KeyManagerInitializedValue, KeyManagerPermanentFailure, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
 import {getTemplate} from './device_trust_connector.html.js';
 
 const TrustLevelStringMap = {
@@ -42,13 +42,26 @@ export class DeviceTrustConnectorElement extends CustomElement {
     return getTemplate();
   }
 
-  public set enabledString(str: string) {
-    const strEl = (this.$('#enabled-string') as HTMLElement);
-    if (strEl) {
-      strEl.innerText = str;
-    } else {
-      console.error('Could not find #enabled-string element.');
+  public set enabledString(isEnabledString: string) {
+    this.setValueToElement('#enabled-string', isEnabledString);
+  }
+
+  public set consentMetadata(consentMetadata: ConsentMetadata|undefined) {
+    const consentDetailsEl = (this.$('#consent-details') as HTMLElement);
+    const noConsentDetailsEl = (this.$('#no-consent') as HTMLElement);
+    if (!consentMetadata) {
+      this.showElement(noConsentDetailsEl);
+      this.hideElement(consentDetailsEl);
+      return;
     }
+
+    this.showElement(consentDetailsEl);
+    this.hideElement(noConsentDetailsEl);
+
+    this.setValueToElement(
+        '#consent-received', `${consentMetadata.consentReceived}`);
+    this.setValueToElement(
+        '#can-collect', `${consentMetadata.canCollectSignals}`);
   }
 
   public set keyInfo(keyInfo: KeyInfo) {
@@ -145,9 +158,8 @@ export class DeviceTrustConnectorElement extends CustomElement {
     }
 
     this.enabledString = `${state.isEnabled}`;
-
+    this.consentMetadata = state.consentMetadata;
     this.keyInfo = state.keyInfo;
-
     this.signalsString = state.signalsJson;
   }
 
@@ -172,6 +184,15 @@ export class DeviceTrustConnectorElement extends CustomElement {
 
   private hideElement(element: HTMLElement) {
     element?.classList.add('hidden');
+  }
+
+  private setValueToElement(elementId: string, stringValue: string) {
+    const htmlElement = (this.$(elementId) as HTMLElement);
+    if (htmlElement) {
+      htmlElement.innerText = stringValue;
+    } else {
+      console.error(`Could not find ${elementId} element.`);
+    }
   }
 
   private trustLevelToString(trustLevel: KeyTrustLevel): string {

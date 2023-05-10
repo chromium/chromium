@@ -715,6 +715,7 @@ static_library("ui") {
       "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
       "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
+      "//components/device_signals/core/browser",
     ]
   }
   if (is_chromeos) {
@@ -4297,7 +4298,6 @@ static_library("ui") {
       "views/device_signals_consent/device_signals_consent_dialog_coordinator.cc",
       "views/device_signals_consent/device_signals_consent_dialog_coordinator.h",
     ]
-    deps += [ "//components/device_signals/core/browser" ]
   }
 
   if (enable_webui_certificate_viewer) {

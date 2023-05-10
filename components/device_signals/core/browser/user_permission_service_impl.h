@@ -38,19 +38,16 @@ class UserPermissionServiceImpl : public UserPermissionService {
   base::WeakPtr<UserPermissionServiceImpl> GetWeakPtr();
 
   // UserPermissionService:
-  bool ShouldCollectConsent() override;
+  bool ShouldCollectConsent() const override;
   UserPermission CanUserCollectSignals(
-      const UserContext& user_context) override;
-  UserPermission CanCollectSignals() override;
+      const UserContext& user_context) const override;
+  UserPermission CanCollectSignals() const override;
+  bool HasUserConsented() const override;
   void ResetUserConsentIfNeeded() override;
 
  private:
   // Returns true if the specific consent flow policy is enabled.
   bool IsConsentFlowPolicyEnabled() const;
-
-  // Returns whether the user has explicitly agreed to device signals being
-  // shared or not.
-  bool HasUserConsented() const;
 
   // Returns true if the device is Cloud-managed.
   bool IsDeviceCloudManaged() const;

@@ -50,18 +50,24 @@ class UserPermissionService : public KeyedService {
 
   // Returns true if consent is required based on the current context and is
   // missing.
-  virtual bool ShouldCollectConsent() = 0;
+  virtual bool ShouldCollectConsent() const = 0;
 
   // Will verify whether context-aware signals can be collected
   // on behalf of the user represented by `user_context`. Returns `kGranted` if
   // collection is allowed.
   virtual UserPermission CanUserCollectSignals(
-      const UserContext& user_context) = 0;
+      const UserContext& user_context) const = 0;
 
   // Will verify whether context-aware signals can be collected
   // based on the current context (e.g. browser-wide management, user logged-in
   // to a Profile). Returns `kGranted` if collection is allowed.
-  virtual UserPermission CanCollectSignals() = 0;
+  virtual UserPermission CanCollectSignals() const = 0;
+
+  // Returns whether the user has explicitly agreed to device signals being
+  // shared or not. Depending on the current management context, the returned
+  // value could be false even though signals can be collected. This function
+  // is exposed publicly mostly for debugging purposes.
+  virtual bool HasUserConsented() const = 0;
 
   // Will evaluate whether the user's consent should be reset or not based on
   // the current management context.
