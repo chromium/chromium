@@ -35,15 +35,6 @@ LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
   return LayoutUnit(base::checked_cast<int>(temp_product.ValueOrDie()));
 }
 
-void ClearNeedsLayoutOnHiddenFrames(LayoutObject* object) {
-  for (; object; object = object->NextSibling()) {
-    object->ClearNeedsLayout();
-    if (auto* box = DynamicTo<LayoutBox>(object))
-      box->ClearLayoutResults();
-    ClearNeedsLayoutOnHiddenFrames(object->SlowFirstChild());
-  }
-}
-
 }  // namespace
 
 NGFrameSetLayoutAlgorithm::NGFrameSetLayoutAlgorithm(
@@ -70,7 +61,7 @@ const NGLayoutResult* NGFrameSetLayoutAlgorithm::Layout() {
       LayoutAxis(col_count, frame_set.ColLengths(), frame_set.ColDeltas(),
                  size.width - (col_count - 1) * layout_data->border_thickness);
 
-  LayoutChildren(*layout_data, size);
+  LayoutChildren(*layout_data);
 
   container_builder_.TransferFrameSetLayoutData(std::move(layout_data));
   return container_builder_.ToBoxFragment();
@@ -279,33 +270,22 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
 }
 
 void NGFrameSetLayoutAlgorithm::LayoutChildren(
-    const FrameSetLayoutData& layout_data,
-    const PhysicalSize& frameset_size) {
+    const FrameSetLayoutData& layout_data) {
   PhysicalOffset position;
   NGLayoutInputNode child = Node().FirstChild();
   if (!child)
     return;
-  auto container_direction = Style().GetWritingDirection();
   for (wtf_size_t row = 0; row < layout_data.row_sizes.size(); ++row) {
     position.left = LayoutUnit();
     const LayoutUnit row_size = layout_data.row_sizes[row];
     for (wtf_size_t col = 0; col < layout_data.col_sizes.size(); ++col) {
       const LayoutUnit col_size = layout_data.col_sizes[col];
-      const bool kNewFormattingContext = true;
-      NGConstraintSpaceBuilder space_builder(
-          container_direction.GetWritingMode(),
-          child.Style().GetWritingDirection(), kNewFormattingContext);
-      space_builder.SetAvailableSize(container_direction.IsHorizontal()
-                                         ? LogicalSize(col_size, row_size)
-                                         : LogicalSize(row_size, col_size));
-      space_builder.SetIsFixedInlineSize(true);
-      space_builder.SetIsFixedBlockSize(true);
-      const NGLayoutResult* result =
-          To<NGBlockNode>(child).Layout(space_builder.ToConstraintSpace());
-      container_builder_.AddResult(
-          *result, position.ConvertToLogical(container_direction, frameset_size,
-                                             {col_size, row_size}));
-
+      const LogicalSize available_size(
+          Style().GetWritingDirection().IsHorizontal()
+              ? LogicalSize(col_size, row_size)
+              : LogicalSize(row_size, col_size));
+      LayoutChild(child, available_size, position,
+                  PhysicalSize(col_size, row_size));
       child = child.NextSibling();
       if (!child)
         return;
@@ -313,10 +293,37 @@ void NGFrameSetLayoutAlgorithm::LayoutChildren(
     }
     position.top += row_size + layout_data.border_thickness;
   }
-
-  if (!NGDisableSideEffectsScope::IsDisabled()) {
-    ClearNeedsLayoutOnHiddenFrames(child.GetLayoutBox());
+  // We have more children than what's defined by the frameset's grid. We want
+  // those to generate fragments as well, so that LayoutBox traversal code can
+  // generally assume that each box has at least one fragment. Give them zero
+  // size and they'll show up nowhere.
+  while (child) {
+    LayoutChild(child, /* available_size */ LogicalSize(),
+                /* position */ PhysicalOffset(),
+                /* child_size */ PhysicalSize());
+    child = child.NextSibling();
   }
+}
+
+void NGFrameSetLayoutAlgorithm::LayoutChild(const NGLayoutInputNode& child,
+                                            LogicalSize available_size,
+                                            PhysicalOffset position,
+                                            PhysicalSize child_size) {
+  const PhysicalSize frameset_size = ToPhysicalSize(
+      container_builder_.Size(), ConstraintSpace().GetWritingMode());
+  const auto container_direction = Style().GetWritingDirection();
+  const bool kNewFormattingContext = true;
+  NGConstraintSpaceBuilder space_builder(container_direction.GetWritingMode(),
+                                         child.Style().GetWritingDirection(),
+                                         kNewFormattingContext);
+  space_builder.SetAvailableSize(available_size);
+  space_builder.SetIsFixedInlineSize(true);
+  space_builder.SetIsFixedBlockSize(true);
+  const NGLayoutResult* result =
+      To<NGBlockNode>(child).Layout(space_builder.ToConstraintSpace());
+  container_builder_.AddResult(
+      *result, position.ConvertToLogical(container_direction, frameset_size,
+                                         child_size));
 }
 
 }  // namespace blink

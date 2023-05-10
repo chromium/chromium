@@ -28,8 +28,11 @@ class CORE_EXPORT NGFrameSetLayoutAlgorithm
                                 const Vector<HTMLDimension>& grid,
                                 const Vector<int>& deltas,
                                 LayoutUnit available_length);
-  void LayoutChildren(const FrameSetLayoutData& layout_data,
-                      const PhysicalSize& frameset_size);
+  void LayoutChildren(const FrameSetLayoutData& layout_data);
+  void LayoutChild(const NGLayoutInputNode&,
+                   LogicalSize available_size,
+                   PhysicalOffset position,
+                   PhysicalSize child_size);
 };
 
 }  // namespace blink
