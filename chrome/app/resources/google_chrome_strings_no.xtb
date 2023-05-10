@@ -82,6 +82,7 @@
 <translation id="2467438592969358367">Google Chrome forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
 <translation id="2534507159460261402">Google Pay (kopiert til Chrome)</translation>
+<translation id="2556847002339236023">Organisasjonen din lukker Chrome når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Nettlesingsdataene ble slettet. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="2559253115192232574">Senere kan nettsteder du besøker, spørre Chrome om interessene dine for å kunne sette personlig preg på annonsene du ser. Chrome kan dele opptil tre interesser.</translation>
 <translation id="2563121210305478421">Vil du starte Chrome på nytt?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget på denne Chrome-profilen. For å holde surfingen din atskilt kan Chrome opprette en egen profil til deg.</translation>
@@ -266,6 +267,7 @@
 <translation id="6113794647360055231">Nå er Chrome blitt enda bedre</translation>
 <translation id="6145313976051292476">Åpne PDF-filer i Chrome</translation>
 <translation id="6155960517327665396">Minnesparing har gjort Chrome raskere</translation>
+<translation id="6157638032135951407">Organisasjonen din sletter Chrome-data når de ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – betaversjon av Google Chrome</translation>
 <translation id="6235018212288296708">Regel om innkommende trafikk for Google Chrome for å tillate mDNS-trafikk.</translation>
@@ -281,6 +283,7 @@
 <translation id="6418662306461808273">Vil du bytte til den eksisterende Chrome-profilen?</translation>
 <translation id="648319183876919572">Safe Browsing med økt beskyttelse gjør mer for å beskytte deg mot farlige nettsteder og nedlastinger</translation>
 <translation id="6493527311031785448">Google Chrome prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome ble lukket automatisk</translation>
 <translation id="6506909944137591434">Chrome trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for utviklere</translation>
 <translation id="659498884637196217">I Google Passordlagring på denne enheten</translation>
@@ -317,6 +320,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7155997830309522122">I så fall bør du endre det lagrede passordet i Chrome så det samsvarer med det nye passordet.</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>
 <translation id="7177959540995930968">Du kan finne ut mer om disse funksjonene i Chrome-innstillingene.</translation>
+<translation id="7193885263065350793">Organisasjonen din lukker Chrome når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chrome-dataene dine atskilte. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Dette språket brukes for UI-et i Google Chrome</translation>
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>

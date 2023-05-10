@@ -1673,6 +1673,7 @@
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
 <translation id="5051305769747448211">લાઇવ કૉમેડી</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}one{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}other{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલો મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}}</translation>
+<translation id="5060419232449737386">કૅપ્શન સેટિંગ</translation>
 <translation id="5060483733937416656">તમે <ph name="PROVIDER_ORIGIN" />નો ઉપયોગ કરતી વેબસાઇટ પર Windows Hello વડે ચકાસણી કરવાનું પસંદ કર્યું છે. આ પ્રદાતાએ તમારી ચુકવણી પદ્ધતિ વિશેની માહિતી કદાચ સ્ટોર કરી હોઈ શકે છે, જેને તમે <ph name="LINK_TEXT" /> કરી શકો છો.</translation>
 <translation id="5061227663725596739">શું તમારો અર્થ <ph name="LOOKALIKE_DOMAIN" /> હતો?</translation>
 <translation id="5066056036849835175">પ્રિન્ટનો ઇતિહાસ</translation>

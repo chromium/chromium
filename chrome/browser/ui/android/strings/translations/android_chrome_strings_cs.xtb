@@ -285,6 +285,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2587052924345400782">Je dostupná novější verze</translation>
 <translation id="2593272815202181319">Neproporcionální</translation>
 <translation id="2603212228005142861">Pokud chcete spravovat své předvolby, přihlaste se</translation>
+<translation id="260403163289591229">Sledováno</translation>
 <translation id="2604446170045642109">Tmavý motiv můžete pro weby v nastavení vypnout.</translation>
 <translation id="2612676031748830579">Číslo karty</translation>
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
@@ -584,6 +585,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4198423547019359126">Nejsou k dispozici žádná umístění stažených souborů</translation>
 <translation id="4202218894997543208">Témata, která jste zablokovali</translation>
 <translation id="4214315110991671325">Pokud máte povolené soubory cookie, může je Chrome používat k předběžnému načítání.</translation>
+<translation id="4225725533026049334">Sledováno</translation>
 <translation id="4225895483398857530">Zkratka lišty</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4248098802131000011">Ochraňte svá hesla před porušeními zabezpečení údajů a jinými bezpečnostními problémy</translation>
@@ -922,6 +924,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6005538289190791541">Navrhované heslo</translation>
 <translation id="6011308810877101166">Vylepšovat návrhy ve vyhledávání</translation>
 <translation id="6026538407078977628">Rozbalit na celou obrazovku</translation>
+<translation id="6030719887161080597">Spravovat informace, pomocí nichž weby měří výkon reklam</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="604124094241169006">Automaticky</translation>

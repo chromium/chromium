@@ -82,6 +82,7 @@
 <translation id="2467438592969358367">Google Chrome ต้องการส่งออกรหัสผ่านของคุณ พิมพ์รหัสผ่าน Windows เพื่ออนุญาตให้ดำเนินการ</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
 <translation id="2534507159460261402">Google Pay (คัดลอกไปยัง Chrome)</translation>
+<translation id="2556847002339236023">องค์กรจะปิด Chrome เมื่อไม่มีการใช้งานเป็นเวลา <ph name="TIMEOUT_DURATION" /> ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด</translation>
 <translation id="2559253115192232574">ภายหลัง เว็บไซต์ที่คุณเข้าชมอาจขอข้อมูลความสนใจจาก Chrome เพื่อปรับการแสดงโฆษณาให้เหมาะกับคุณ Chrome สามารถแชร์ความสนใจได้สูงสุด 3 รายการ</translation>
 <translation id="2563121210305478421">เปิด Chrome อีกครั้ง</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้โปรไฟล์ Chrome นี้แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก Chrome สร้างโปรไฟล์ให้คุณโดยเฉพาะได้</translation>
@@ -266,6 +267,7 @@
 <translation id="6113794647360055231">Chrome ดีขึ้นกว่าเดิม</translation>
 <translation id="6145313976051292476">เปิด PDF ใน Chrome</translation>
 <translation id="6155960517327665396">โหมดประหยัดหน่วยความจําช่วยให้ Chrome ทํางานได้เร็วขึ้น</translation>
+<translation id="6157638032135951407">องค์กรจะลบข้อมูล Chrome เมื่อไม่มีการใช้งานเป็นเวลา <ph name="TIMEOUT_DURATION" /> ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome เบต้า</translation>
 <translation id="6235018212288296708">กฎขาเข้าสำหรับ Google Chrome เพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
@@ -281,6 +283,7 @@
 <translation id="6418662306461808273">เปลี่ยนไปใช้โปรไฟล์ Chrome ที่มีอยู่ไหม</translation>
 <translation id="648319183876919572">Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นทำสิ่งต่างๆ ได้มากขึ้นเพื่อปกป้องคุณจากเว็บไซต์และการดาวน์โหลดที่เป็นอันตราย</translation>
 <translation id="6493527311031785448">Google Chrome กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">มีการปิด Chrome โดยอัตโนมัติ</translation>
 <translation id="6506909944137591434">Chrome ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
@@ -317,6 +320,7 @@
 <translation id="7155997830309522122">หากเปลี่ยนแล้ว โปรดแก้ไขรหัสผ่านที่บันทึกไว้ใน Chrome ให้ตรงกับรหัสผ่านใหม่</translation>
 <translation id="7161904924553537242">ยินดีต้อนรับสู่ Google Chrome</translation>
 <translation id="7177959540995930968">คุณดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์เหล่านี้ได้ในการตั้งค่า Chrome</translation>
+<translation id="7193885263065350793">องค์กรจะปิด Chrome เมื่อไม่มีการใช้งานเป็นเวลา <ph name="TIMEOUT_DURATION" /></translation>
 <translation id="7242029209006116544">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Google Chrome ของคุณ ข้อมูล Chrome เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น คุณสามารถเลือกที่จะสร้างโปรไฟล์ใหม่เพื่อแยกเก็บข้อมูล Chrome ที่มีอยู่ของคุณ <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">นี่เป็นภาษาที่ใช้ในการแสดง UI ของ Google Chrome</translation>
 <translation id="7296210096911315575">ข้อมูลสำคัญเกี่ยวกับการใช้งานและความปลอดภัย</translation>

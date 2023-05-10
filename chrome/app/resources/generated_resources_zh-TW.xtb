@@ -592,6 +592,7 @@
 <translation id="1506187449813838456">提高音調</translation>
 <translation id="1507170440449692343">系統已封鎖這個網頁存取你的攝影機。</translation>
 <translation id="1507246803636407672">捨棄(&amp;D)</translation>
+<translation id="1508931164824684991">網站可以使用 JavaScript</translation>
 <translation id="1509163368529404530">還原群組 (&amp;R)</translation>
 <translation id="1509281256533087115">透過 USB 存取任何 <ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1510238584712386396">啟動器</translation>
@@ -847,6 +848,7 @@
 <translation id="1708291623166985230">已停用無線基地台</translation>
 <translation id="1708338024780164500">(無法使用)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID：<ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">下載完成後不再顯示</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1709217939274742847">選擇要用於驗證的票證。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">網路設定</translation>
@@ -1666,6 +1668,7 @@
 <translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 卡設定檔。請前往<ph name="LINK_BEGIN" />行動設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
 <translation id="2399699884460174994">已開啟通知功能</translation>
 <translation id="2399939490305346086">安全金鑰登入資料</translation>
+<translation id="2400323785194108001">永不停用這個網站</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
 <translation id="2402226831639195063">音調</translation>
 <translation id="2406153734066939945">要刪除這個設定檔和相關資料嗎？</translation>
@@ -1981,6 +1984,7 @@
 <translation id="2673135533890720193">讀取你的瀏覽記錄</translation>
 <translation id="2674764818721168631">關閉</translation>
 <translation id="2675570801872027281">移除 Bruschetta 時發生錯誤，請再試一次。</translation>
+<translation id="2676084251379299915">Chrome 線上應用程式商店已沒有這個擴充功能，因此企業政策已將其停用。</translation>
 <translation id="267708982776801183">「紅 - 綠」濾鏡 (紅色弱)</translation>
 <translation id="2678063897982469759">重新啟用</translation>
 <translation id="2678100101831051676">無法投放。</translation>
@@ -1989,6 +1993,7 @@
 <translation id="2682498795777673382">你的家長已更新設定</translation>
 <translation id="2683638487103917598">資料夾已排序</translation>
 <translation id="2684004000387153598">如要繼續操作，請依序點選 [確定] 和 [新增使用者]，為你的電子郵件地址建立新的設定檔。</translation>
+<translation id="2685193395980129388">已允許 - <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
 <translation id="2687621393791886981">稍後再詢問我</translation>
@@ -2077,6 +2082,7 @@
 <translation id="2755349111255270002">重設這部 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">管理無障礙功能</translation>
 <translation id="275662540872599901">螢幕已關閉</translation>
+<translation id="2756936198272359372">不允許使用 JavaScript</translation>
 <translation id="2757161511365746634">查看印表機</translation>
 <translation id="2757338480560142065">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> 找不到與「<ph name="SEARCH_QUERY" />」相符的搜尋結果</translation>
@@ -2109,6 +2115,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">已允許執行這個網站的擴充功能</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
+<translation id="2783024642731649028">購物車中 1 項商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">已下載</translation>
 <translation id="2783321960289401138">建立捷徑...</translation>
 <translation id="2783829359200813069">選取加密類型</translation>
@@ -2891,6 +2898,7 @@
 <translation id="3496213124478423963">縮小</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (未選取)</translation>
 <translation id="3496689104192986836">電池電量 <ph name="PERCENTAGE" />%</translation>
+<translation id="3496995426334945408">網站通常會使用 JavaScript 顯示互動功能，例如電玩遊戲或網路表單</translation>
 <translation id="3497501929010263034">來自 <ph name="VENDOR_NAME" /> 的 USB 裝置 (產品 ID：<ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">分享 Doodle</translation>
 <translation id="3500417806337761827">掛接檔案共用區時發生錯誤。已掛接過多 SMB 檔案共用區。</translation>
@@ -2935,6 +2943,7 @@
 <translation id="354060433403403521">AC 變壓器</translation>
 <translation id="354068948465830244">可讀取及變更網站資料</translation>
 <translation id="3541823293333232175">已指派</translation>
+<translation id="354204985370574425">永不停用這個網站</translation>
 <translation id="3543393733900874979">更新失敗 (錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">使用 SHA-512 的 X9.62 ECDSA 簽章</translation>
 <translation id="3544058026430919413">公司可定義網站群組，指定哪些網站能夠使用 Cookie 分享你在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
@@ -3828,6 +3837,7 @@
 <translation id="4324577459193912240">檔案未完成下載</translation>
 <translation id="4325237902968425115">正在解除安裝「<ph name="LINUX_APP_NAME" />」...</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全防護功能可進一步協助你防範危險的網站、下載內容和擴充功能</translation>
+<translation id="4326484226728068206">購物車中的商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">設定家長監護功能</translation>
@@ -4189,6 +4199,7 @@
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
 <translation id="4648491805942548247">權限不足</translation>
+<translation id="4650037136970677721">已釋出記憶體</translation>
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
 <translation id="4651484272688821107">無法使用示範模式的資源載入線上元件。</translation>
 <translation id="4651921906638302153">無法登入這個帳戶</translation>
@@ -4423,6 +4434,7 @@
 <translation id="4863702650881330715">擴充相容性</translation>
 <translation id="4863769717153320198">螢幕解析度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (預設)</translation>
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
+<translation id="486505726797718946">已釋出記憶體</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4868281708609571334">訓練 Google 助理辨識<ph name="SUPERVISED_USER_NAME" />的聲音</translation>
 <translation id="4868284252360267853">這個對話方塊未處於聚焦狀態。按下 Command + Shift + Option + A 鍵即可聚焦這個對話方塊。</translation>
@@ -4515,6 +4527,7 @@
 <translation id="4940448324259979830">這個帳戶是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">預留磁碟大小</translation>
 <translation id="4941074198479265146">網站通常會連線到 MIDI 裝置以提供建立和編輯音樂等功能</translation>
+<translation id="4941243352516004658">購物車中的 <ph name="PRODUCT_ITEM_COUNT" /> 項商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">為企業管理服務註冊裝置時使用這個裝置申請單：</translation>
 <translation id="4941627891654116707">字型大小</translation>
 <translation id="4941963255146903244">查看手機上的相片、媒體和應用程式</translation>
@@ -5468,6 +5481,7 @@
 <translation id="5832970156002835240">允許在所有網站上執行</translation>
 <translation id="5833397272224757657">使用你所造訪網站的內容、瀏覽器活動和瀏覽器互動行為，提供個人化的使用體驗</translation>
 <translation id="5833726373896279253">你必須是擁有者，才能修改這些設定：</translation>
+<translation id="5833899990800318936">禁止網站使用 JavaScript</translation>
 <translation id="583431638776747">無法存取網站</translation>
 <translation id="5834581999798853053">剩下 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{「<ph name="EXTENSION1" />」正在存取 HID 裝置}=2{正在存取裝置的擴充功能：<ph name="EXTENSION1" />、<ph name="EXTENSION2" />}other{正在存取裝置的擴充功能：<ph name="EXTENSION1" />、<ph name="EXTENSION2" />和另外 {3} 個}}</translation>
@@ -5697,6 +5711,7 @@
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - 已連接 USB 裝置</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6028117231645531007">新增指紋</translation>
+<translation id="6030719887161080597">管理網站用來評估廣告成效的資訊</translation>
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
 <translation id="6032715498678347852">如要授予擴充功能這個網站的存取權，請按一下該擴充功能。</translation>
 <translation id="6032912588568283682">檔案系統</translation>
@@ -5931,6 +5946,7 @@
 <translation id="623755660902014047">朗讀模式</translation>
 <translation id="6238767809035845642">從其他裝置分享的文字</translation>
 <translation id="6238923052227198598">在鎖定畫面上顯示最新記事</translation>
+<translation id="6238982280403036866">允許使用 JavaScript</translation>
 <translation id="6239558157302047471">重新載入頁框(&amp;F)</translation>
 <translation id="6240821072888636753">每次都詢問</translation>
 <translation id="6241530762627360640">存取與系統配對的藍牙裝置資訊並搜尋附近的藍牙裝置。</translation>
@@ -6074,6 +6090,7 @@
 <translation id="6378392501584240055">開啟 Wi-Fi 網路清單</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
 <translation id="6382958439467370461">沒有無效捷徑</translation>
+<translation id="6383382161803538830">這個頁面上無法使用朗讀模式</translation>
 <translation id="638418309848716977">支援的連結</translation>
 <translation id="6384275966486438344">將你的搜尋設定變更為：<ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{未命名的群組 - 1 個分頁}other{未命名的群組 - # 個分頁}}</translation>
@@ -6470,6 +6487,7 @@
 <translation id="6729192290958770680">請輸入你的使用者名稱</translation>
 <translation id="6731320427842222405">這可能需要幾分鐘的時間</translation>
 <translation id="6733620523445262364">已建立「<ph name="BOOKMARK_TITLE" />」。</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID：<ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">顯示 Cookie 和其他網站資料...</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6737393581255281855">要清除顯示的資料嗎？</translation>

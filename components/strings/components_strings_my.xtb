@@ -1674,6 +1674,7 @@
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="5051305769747448211">တိုက်ရိုက်လွှင့် ဟာသ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
+<translation id="5060419232449737386">ခေါင်းစီး ဆက်တင်များ</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> သုံးသည့် ဝဘ်ဆိုက်များတွင် Windows Hello ဖြင့် အတည်ပြုရန် သင်ရွေးထားသည်။ သင့်ငွေပေးချေနည်းလမ်း အချက်အလက်တွေကို ဤပံ့ပိုးသူက သိမ်းထားနိုင်ပြီး ၎င်းတို့ကို <ph name="LINK_TEXT" />နိုင်ပါသည်။</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ကို ဆိုလိုခြင်းဖြစ်ပါသလား။</translation>
 <translation id="5066056036849835175">ပုံနှိပ်ထုတ်ယူမှု မှတ်တမ်း</translation>

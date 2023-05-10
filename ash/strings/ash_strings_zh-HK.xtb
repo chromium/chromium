@@ -56,6 +56,7 @@
 <translation id="121097972571826261">往前一個字詞</translation>
 <translation id="1217633719248931900">前往應用程式</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />，「Play 商店」應用程式</translation>
+<translation id="1219309685806246869">返回「<ph name="APP_TITLE" />」</translation>
 <translation id="1225748608451425081">由於發生已知問題，因此 Chromebook 已鎖定。您將可在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
 <translation id="1235458158152011030">已知網絡</translation>
@@ -1059,6 +1060,7 @@
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
 <translation id="5881663018261910378">已停用</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
+<translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="589817443623831496">點掃瞄</translation>
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
@@ -1589,6 +1591,7 @@
 <translation id="8349964124165471584">在新視窗中開啟連結</translation>
 <translation id="8351131234907093545">建立筆記</translation>
 <translation id="8364673525741149932">切換「捷徑列群組」。<ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />使用中</translation>
 <translation id="8369166482916924789">儲存咗嘅桌面，<ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">往前一個字母</translation>
 <translation id="8371991222807690464">在訪客模式下，周邊裝置效能可能受到限制</translation>

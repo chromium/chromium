@@ -250,6 +250,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="6475912303565314141">Dit beheer ook watter bladsy gewys word wanneer jy Chromium begin.</translation>
 <translation id="648319183876919572">Verbeterde Veiligblaai doen meer om jou teen gevaarlike webwerwe en aflaaie te beskerm</translation>
 <translation id="6510925080656968729">Deïnstalleer Chromium</translation>
+<translation id="6539122709674868420">Jou organisasie maak Chromium toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Blaaierdata is uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
 <translation id="6542839706527980775">Elke profiel hou sy eie Chromium-inligting soos boekmerke, geskiedenis, wagwoorde en meer</translation>
 <translation id="656935081669708576">Jy kan oorskakel om wagwoorde van ’n ander Chromium-profiel af te sien</translation>
 <translation id="6570579332384693436">Chromium stuur die teks wat jy in teksvelde intik na Google toe om spelfoute reg te maak</translation>
@@ -287,6 +288,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="7025789849649390912">Installering is gestop.</translation>
 <translation id="705851970750939768">Dateer Chromium op</translation>
 <translation id="7067091210845072982">As 'n prent nie 'n nuttige beskrywing het nie, sal Chromium probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep.</translation>
+<translation id="7173822816570314652">Jou organisasie vee Chromium-data uit wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
 <translation id="718435575166326686">Chromium het kameratoestemming vir hierdie werf nodig</translation>
 <translation id="7196312274710523067">Kon nie Chromium begin nie. Probeer weer.</translation>
 <translation id="7197677400338048821">Chromium kan nie jou wagwoorde nagaan nie. Probeer weer ná 24 uur.</translation>
@@ -341,6 +343,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8248265253516264921">As 'n prent nie 'n nuttige beskrywing het nie, sal Chromium probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>
 <translation id="8266560134891435528">Chromium kan nie jou wagwoorde nagaan nie, want jy is nie aangemeld nie</translation>
 <translation id="8290862415967981663">Hierdie lêer kan gevaarlik wees en daarom het Chromium dit geblokkeer.</translation>
+<translation id="8318772038038596122">Jou organisasie maak Chromium toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie.</translation>
 <translation id="8325404639443959713">Doen meer met Chromium</translation>
 <translation id="8330519371938183845">Meld aan om Chromium op al jou toestelle te sinkroniseer en personaliseer</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chromium gebruik</translation>
@@ -376,6 +379,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="9019929317751753759">Om Chromium veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
 <translation id="907832235989677238">Meld by Chromium aan. As jy ’n rekening net een keer wil aanmeld, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Chromium is outomaties toegemaak</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sal oor 'n uur herbegin}other{Chromium sal oor # uur herbegin}}</translation>
 <translation id="9106612006984859720">Jy het Windows 10 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.1.</translation>

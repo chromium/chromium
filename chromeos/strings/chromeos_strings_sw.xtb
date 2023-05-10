@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Imeshindwa kusuluhisha DNS</translation>
 <translation id="1018656279737460067">Imeghairiwa</translation>
 <translation id="1022433422498218992">Vidhibiti vya Jumla</translation>
+<translation id="1022628058306505708">Kulingana na Dunia</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Vitendo zaidi</translation>
 <translation id="2926057806159140518">Weka neno lako la mtumiaji na nenosiri au uchanganue msimbo wako wa QR</translation>
 <translation id="2940811910881150316">Huwezi kujaribu kifaa. Fungua tena kifuniko ili ujaribu.</translation>
+<translation id="2981143481017883351">Sasa vipengee vya kipekee vya Chromebook vinapatikana</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
 <translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="3017079585324758401">Mandhari ya nyuma</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
 <translation id="3369013195428705271">Una uhakika kuwa ungependa kufuta historia yote ya kuchapisha? Kazi unazoendelea kuchapisha hazitafutwa.</translation>
+<translation id="3386675685417744672">Mahususi kwa Chromebook</translation>
 <translation id="3404249063913988450">Washa taswira ya skrini</translation>
 <translation id="3413935475507503304">Ili uendelee na sasisho, bofya Inayofuata.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">ONYO</translation>
 <translation id="4054683689023980771">Inapakua picha</translation>
 <translation id="4060260348856573701">APN Mpya</translation>
+<translation id="4079743696465895866">Chagua kazi ya sanaa ya kipekee ya Chromebook</translation>
 <translation id="4093865285251893588">Picha ya wasifu</translation>
 <translation id="409427325554347132">Hifadhi maelezo ya jaribio</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Nguvu za betri hupungua kadri inavyotumiwa</translation>
 <translation id="6191293864534840972">Seva za majina zilizo na hitilafu</translation>
+<translation id="6205145102504628069">Kulingana na Wingu</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Funga hali ya skrini nzima</translation>
 <translation id="6223752125779001553">Hakuna vichanganuzi vilivyopatikana</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Kuweka mapendeleo</translation>
 <translation id="6500818810472529210">Angalia matokeo katika huduma ya Tafuta na Google</translation>
 <translation id="650266656685499220">Ili ufungue albamu mpya, nenda katika huduma ya Picha kwenye Google</translation>
+<translation id="6505750420152840539">Asubuhi mpaka usiku</translation>
 <translation id="6516990319416533844">Ili uweze kupima kasi ya kuchaji ya betri, ruhusu betri yako itumike kwa muda mfupi</translation>
 <translation id="6517239166834772319">Gundua</translation>
 <translation id="6526200165918397681">Linganisha mandhari</translation>

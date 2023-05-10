@@ -285,6 +285,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="2587052924345400782">Der findes en nyere version</translation>
 <translation id="2593272815202181319">Enkelt tegnafstand</translation>
 <translation id="2603212228005142861">Log ind for at administrere dine præferencer</translation>
+<translation id="260403163289591229">Følger</translation>
 <translation id="2604446170045642109">Du kan deaktivere mørkt tema for websites i dine indstillinger.</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2625189173221582860">Adgangskoden er kopieret</translation>
@@ -442,7 +443,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="3421726884497337397">Vælg, hvornår tredjepartscookies skal blokeres</translation>
 <translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
-<translation id="3429160811076349561">Prøvefunktioner er slået fra</translation>
+<translation id="3429160811076349561">Labs er slået fra</translation>
 <translation id="3432973700170747422">Slet de seneste 15 minutter</translation>
 <translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
@@ -584,6 +585,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
 <translation id="4202218894997543208">Emner, du har blokeret</translation>
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
+<translation id="4225725533026049334">Følger</translation>
 <translation id="4225895483398857530">Genvej til værktøjslinje</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4248098802131000011">Beskyt dine adgangskoder mod brud på datasikkerheden og andre sikkerhedsproblemer</translation>
@@ -922,6 +924,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6005538289190791541">Foreslået adgangskode</translation>
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
 <translation id="6026538407078977628">Udvid til fuld skærm</translation>
+<translation id="6030719887161080597">Administrer oplysninger, der anvendes af websites til at måle annonceeffektivitet</translation>
 <translation id="6039379616847168523">Gå til den næste fane</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="604124094241169006">Automatisk</translation>
@@ -1412,7 +1415,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8466613982764129868">Sørg for, at <ph name="TARGET_DEVICE_NAME" /> har forbindelse til internettet</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="847433688444405067">Få samme indhold på flere enheder</translation>
-<translation id="8481980314595922412">Prøvefunktioner er slået til</translation>
+<translation id="8481980314595922412">Labs er slået til</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Åbn siden med historik</translation>
 <translation id="8493948351860045254">Frigør plads</translation>

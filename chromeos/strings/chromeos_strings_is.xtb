@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Ekki er hægt að leysa úr DNS</translation>
 <translation id="1018656279737460067">Hætt við</translation>
 <translation id="1022433422498218992">Almennar stýringar</translation>
+<translation id="1022628058306505708">Jarðarflæði</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> þræðir, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nýr eiginleiki í boði, notaðu ör upp-lykilinn til að fá frekari upplýsingar.</translation>
 <translation id="1059913517121127803">Ekki tókst að skanna</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Fleiri aðgerðir</translation>
 <translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
 <translation id="2940811910881150316">Ekki hægt að prófa tæki. Opnaðu lokið aftur til að prófa.</translation>
+<translation id="2981143481017883351">Sérstakir Chromebook-eiginleikar eru nú fáanlegir</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="3017079585324758401">Bakgrunnur</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Gluggar</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369013195428705271">Viltu örugglega hreinsa allan prentferil? Prentverk sem eru í gangi verða ekki hreinsuð.</translation>
+<translation id="3386675685417744672">Aðeins fyrir Chromebook</translation>
 <translation id="3404249063913988450">Virkja skjávara</translation>
 <translation id="3413935475507503304">Til að halda áfram að uppfæra skaltu smella á „Áfram“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">VIÐVÖRUN</translation>
 <translation id="4054683689023980771">Sækir mynd</translation>
 <translation id="4060260348856573701">Nýr aðgangsstaður</translation>
+<translation id="4079743696465895866">Velja sérstök Chromebook-listaverk</translation>
 <translation id="4093865285251893588">Prófílmynd</translation>
 <translation id="409427325554347132">Vista niðurstöður prófunar</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Hleðslugeta rafhlöðunnar minnkar með notkun</translation>
 <translation id="6191293864534840972">Gallaðir nafnaþjónar</translation>
+<translation id="6205145102504628069">Skýjaflæði</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Hætta að nota allan skjáinn</translation>
 <translation id="6223752125779001553">Enginn skanni í boði</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Sérsnið</translation>
 <translation id="6500818810472529210">Sjá niðurstöður í Google leit</translation>
 <translation id="650266656685499220">Farðu í Google-myndir til að búa til möppur</translation>
+<translation id="6505750420152840539">Frá dögun til rökkurs</translation>
 <translation id="6516990319416533844">Til að prófa hleðsluhraða rafhlöðunnar skaltu láta rafhleðsluna minnka í stutta stund</translation>
 <translation id="6517239166834772319">Kanna</translation>
 <translation id="6526200165918397681">Samsvara veggfóðri</translation>

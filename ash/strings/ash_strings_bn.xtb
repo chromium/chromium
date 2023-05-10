@@ -56,6 +56,7 @@
 <translation id="121097972571826261">শব্দ অনুসারে এগিয়ে যান</translation>
 <translation id="1217633719248931900">অ্যাপে যান</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store অ্যাপ</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" />-এ ফিরুন।</translation>
 <translation id="1225748608451425081">কোনও পরিচিত সমস্যার কারণে আপনার Chromebook লক হয়ে গেছে। আপনি এতক্ষণ পর আবার সাইন-ইন করতে পারবেন: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">বেছে নেওয়ার কাজটি থামান</translation>
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
@@ -350,6 +351,7 @@
 <translation id="2620016719323068571">আপনার <ph name="CATEGORY" />, ফাইল, অ্যাপ এবং আরও অনেক কিছু সার্চ করুন...</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
+<translation id="2624588537172718173">ডিভাইসের অডিও ও মাইক্রোফোন</translation>
 <translation id="263399434338050016">"সবকটি বেছে নিন"</translation>
 <translation id="2644422758626431000">বাঁদিকে উইন্ডো পিন করুন</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -410,6 +412,7 @@
 <translation id="2942350706960889382">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2942516765047364088">তাকের লোকেশন</translation>
 <translation id="2946119680249604491">সংযোগ জুড়ুন</translation>
+<translation id="295852781144570696">ডিভাইস অডিও</translation>
 <translation id="2960314608273155470">ক্যাপচার মোড, <ph name="SOURCE" /> <ph name="TYPE" /> ডিফল্ট হিসেবে সেট করা হয়েছে। কীবোর্ড ব্যবহার করে নেভিগেট করতে Tab কী প্রেস করুন।</translation>
 <translation id="2961963223658824723">কিছু সমস্যা হয়েছে। কয়েক সেকেন্ডের মধ্যে আবার চেষ্টা করুন।</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -459,6 +462,7 @@
 <translation id="316086887565479535">টেমপ্লেটে এমন কিছু অ্যাপ আছে যা কাজ করে না</translation>
 <translation id="3161500364292033097">ডেস্ক ও উইন্ডো বন্ধ করুন</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আগের ভার্সনে ফিরিয়ে নিয়ে যাচ্ছে। আপনার ডিভাইস রিসেট করা হবে এবং সব ডেটা মুছে যাবে।</translation>
+<translation id="3171170659304083361">'ইনপুট পদ্ধতি' সম্পর্কিত সেটিংস</translation>
 <translation id="3181441307743005334">রিস্টার্ট করতে কিছুক্ষণ সময় লাগতে পারে</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{একটি ডিভাইসে কানেক্ট রয়েছে}one{#টি ডিভাইসে কানেক্ট রয়েছে}other{#টি ডিভাইসে কানেক্ট রয়েছে}}</translation>
 <translation id="320207200541803018">টাইমার সেট করুন</translation>
@@ -1059,6 +1063,7 @@
 <translation id="5881540930187678962">পরে ফোন হাব সেট আপ করুন</translation>
 <translation id="5881663018261910378">বন্ধ আছে</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> উইন্ডো <ph name="DESK_TITLE" /> ডেস্কে অ্যাসাইন এবং অন্যান্য সব ডেস্ক থেকে আনঅ্যাসাইন করা হয়েছে</translation>
+<translation id="588817334757907802">Chrome ব্রাউজারে ফাইল খুলুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="589817443623831496">পয়েন্ট স্ক্যানিং</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1115,7 @@
 <translation id="6074087755403037157">বিটা চ্যানেল</translation>
 <translation id="6093867385179428431">অ্যাডমিন এটি বন্ধ করেছেন</translation>
 <translation id="6095008505822982596">স্পিচ রেট</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" />-এর মাধ্যমে কানেকশন যোগ করুন</translation>
 <translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
 <translation id="6103838137565245112">সিস্টেম</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
@@ -1589,6 +1595,7 @@
 <translation id="8349964124165471584">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="8351131234907093545">নোট তৈরি করুন</translation>
 <translation id="8364673525741149932">শেল্ফ পার্টি টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ব্যবহার করা হচ্ছে।</translation>
 <translation id="8369166482916924789">সেভ করা ডেস্ক, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">অক্ষর অনুযায়ী এগিয়ে যান</translation>
 <translation id="8371991222807690464">কেবলমাত্র 'গেস্ট' মোডেই পেরিফেরাল পারফর্ম্যান্স সীমাবদ্ধ থাকতে পারে</translation>

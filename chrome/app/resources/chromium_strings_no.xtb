@@ -248,6 +248,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6475912303565314141">Den styrer også hvilken side som vises når du starter Chromium.</translation>
 <translation id="648319183876919572">Safe Browsing med økt beskyttelse gjør mer for å beskytte deg mot farlige nettsteder og nedlastinger</translation>
 <translation id="6510925080656968729">Avinstaller Chromium</translation>
+<translation id="6539122709674868420">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Nettlesingsdataene ble slettet. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="6542839706527980775">Hver profil har sin egen Chromium-informasjon, som bokmerker, logg, passord med mer</translation>
 <translation id="656935081669708576">Du kan bytte til å se passord fra en annen Chromium-profil</translation>
 <translation id="6570579332384693436">For å rette opp i skrivefeil sender Chromium sender tekst du skriver i tekstfelt, til Google</translation>
@@ -284,6 +285,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="7025789849649390912">Installasjonen er stoppet.</translation>
 <translation id="705851970750939768">Oppdater Chromium</translation>
 <translation id="7067091210845072982">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
+<translation id="7173822816570314652">Organisasjonen din sletter Chromium-data når de ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="718435575166326686">Chromium trenger kameratillatelse for dette nettstedet</translation>
 <translation id="7196312274710523067">Kunne ikke starte Chromium. Prøv på nytt.</translation>
 <translation id="7197677400338048821">Chromium kan ikke sjekke passordene dine. Prøv på nytt når det har gått 24 timer.</translation>
@@ -338,6 +340,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8248265253516264921">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>
 <translation id="8266560134891435528">Chromium kan ikke sjekke passordene dine, siden du ikke er logget på</translation>
 <translation id="8290862415967981663">Denne filen kan være farlig, så Chromium har blokkert den.</translation>
+<translation id="8318772038038596122">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Gjør mer med Chromium</translation>
 <translation id="8330519371938183845">Logg på for å synkronisere og gi Chromium et personlig preg på alle enhetene dine</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brukte Chromium tidligere</translation>
@@ -373,6 +376,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9019929317751753759">For å gjøre Chromium tryggere har vi slått av følgende utvidelse som ikke finnes i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt til uten at du vet det.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
 <translation id="907832235989677238">Logg på Chromium. Hvis du vil logge på en konto bare én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruke enheten som gjest<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Chromium ble lukket automatisk</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium startes på nytt om en time}other{Chromium startes på nytt om # timer}}</translation>
 <translation id="9106612006984859720">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.1.</translation>

@@ -84,6 +84,7 @@
 <translation id="2467438592969358367">Google Chrome soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
 <translation id="2534507159460261402">Google Pay (kopeeritud Chrome'i)</translation>
+<translation id="2556847002339236023">Teie organisatsioon suleb Chrome'i, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Sirvimisandmed kustutati. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
 <translation id="2559253115192232574">Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame. Chrome võib jagada kuni kolme huvi.</translation>
 <translation id="2563121210305478421">Kas käivitada Chrome uuesti?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> on juba sellele Chrome'i profiilile sisse logitud. Teie sirvimise eraldi hoidmiseks saab Chrome teile luua oma profiili.</translation>
@@ -270,6 +271,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6113794647360055231">Chrome muutus just paremaks</translation>
 <translation id="6145313976051292476">Ava PDF-id Chrome'is</translation>
 <translation id="6155960517327665396">Mälusäästja muutis Chrome'i kiiremaks</translation>
+<translation id="6157638032135951407">Teie organisatsioon kustutab Chrome'i andmed, kui neid ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome'i beetaversioon</translation>
 <translation id="6235018212288296708">Sissetuleku reegel Google Chrome'ile mDNS-liikluse lubamiseks.</translation>
@@ -285,6 +287,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
 <translation id="648319183876919572">Täiustatud ohutu sirvimine kaitseb teid paremini ohtlike veebisaitide ja allalaadimiste eest</translation>
 <translation id="6493527311031785448">Google Chrome proovib teha järgmist: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome suleti automaatselt</translation>
 <translation id="6506909944137591434">Chrome vajab kaamera kasutamise luba, et luua teie ümbruskonnast 3D-kaart</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">Selle seadme Google'i paroolihalduris</translation>
@@ -321,6 +324,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7155997830309522122">Sellisel juhul muutke Chrome'is oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
 <translation id="7161904924553537242">Tere tulemast Google Chrome'i</translation>
 <translation id="7177959540995930968">Nende funktsioonide kohta leiate lisateavet Chrome'i seadetest.</translation>
+<translation id="7193885263065350793">Teie organisatsioon suleb Chrome'i, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul.</translation>
 <translation id="7242029209006116544">Logite sisse hallatud kontoga ja annate selle administraatorile üle oma Google Chrome'i profiili juhtimise. Teie Chrome'i andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed Google'i kontode juhtpaneeli kaudu kustutada, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Seda keelt kasutatakse Google Chrome’i UI kuvamiseks</translation>
 <translation id="7296210096911315575">Tähtis kasutus- ja ohutusteave</translation>

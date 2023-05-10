@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Kan DNS niet omzetten</translation>
 <translation id="1018656279737460067">Geannuleerd</translation>
 <translation id="1022433422498218992">Algemene bedieningselementen</translation>
+<translation id="1022628058306505708">Aardestroom</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nieuwe functie beschikbaar, gebruik de pijl-omhoog voor meer informatie.</translation>
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Meer acties</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
 <translation id="2940811910881150316">Kan apparaat niet testen. Open de klep opnieuw om te testen.</translation>
+<translation id="2981143481017883351">Er zijn nu exclusieve Chromebook-items beschikbaar</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3017079585324758401">Achtergrond</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Vensters</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
+<translation id="3386675685417744672">Exclusief voor Chromebook</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">WAARSCHUWING</translation>
 <translation id="4054683689023980771">Afbeelding downloaden</translation>
 <translation id="4060260348856573701">Nieuwe APN</translation>
+<translation id="4079743696465895866">Selecteer kunstwerken exclusief voor de Chromebook</translation>
 <translation id="4093865285251893588">Profielafbeelding</translation>
 <translation id="409427325554347132">Testgegevens opslaan</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">De batterijcapaciteit gaat achteruit naarmate een batterij langer wordt gebruikt</translation>
 <translation id="6191293864534840972">Nameservers met onjuiste notatie</translation>
+<translation id="6205145102504628069">Wolkenstroom</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Volledig scherm sluiten</translation>
 <translation id="6223752125779001553">Geen scanners beschikbaar</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Aanpassing</translation>
 <translation id="6500818810472529210">Resultaat bekijken in Google Zoeken</translation>
 <translation id="650266656685499220">Ga naar Google Foto's om albums te maken</translation>
+<translation id="6505750420152840539">Dageraad naar donker</translation>
 <translation id="6516990319416533844">Als je de oplaadsnelheid van de batterij wilt testen, laat je de batterij korte tijd leeg lopen</translation>
 <translation id="6517239166834772319">Ontdekken</translation>
 <translation id="6526200165918397681">Aanpassen aan achtergrond</translation>

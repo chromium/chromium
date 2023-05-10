@@ -1031,6 +1031,7 @@
 <translation id="3531780078352352885">İş vərəqləri</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> mikrofonunuzu istifadə etmək istəyir</translation>
 <translation id="3533328374079021623">Poçt qutusu 5</translation>
+<translation id="3536227077203206203">Bu dəfə üçün icazə verilib</translation>
 <translation id="3537165859691846083">Məktub Plyus</translation>
 <translation id="3542628208405253498">Kart şəkli</translation>
 <translation id="3542768452570884558">Keçidi Yeni Pəncərədə açın</translation>
@@ -2449,6 +2450,7 @@
 <translation id="7030436163253143341">Sertifikat etibarlı deyil</translation>
 <translation id="7031646650991750659">Quraşdırdığınız Google Play tətbiqləri</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Hesabınızın məxfilik ayarlarını idarə edin</translation>
+<translation id="7044081119134178347">Bu dəfə üçün kameraya icazə verilib</translation>
 <translation id="7048095965575426564">Avropa Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> domeninə girmək istədiniz, lakin server etibarlıq müddəti güvənmək üçün həddən uzun olan sertifikat təqdim edib.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Hazırda bu kartı yadda saxlamaq mümkün deyil}other{Hazırda bu kartları yadda saxlamaq mümkün deyil}}</translation>
@@ -3041,6 +3043,7 @@
 <translation id="8416694386774425977">Şəbəkə konfiqurasiyası yanlışdır və import edilə bilməz.
 Əlavə məlumat:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Bu dəfə üçün mikrofona icazə verilib</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
@@ -3096,6 +3099,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{İcazəni sıfırlayın}other{İcazələri sıfırlayın}}</translation>
 <translation id="8555010941760982128">Ödəniş zamanı bu koddan istifadə edin</translation>
 <translation id="8557066899867184262">CVC kartın arxasında yerləşir.</translation>
+<translation id="8558347880669160417">Bu dəfə üçün kamera və mikrofona icazə verilib</translation>
 <translation id="8559762987265718583">Cihazınızın tarixi və vaxtı (<ph name="DATE_AND_TIME" />) yanlış olduğundan, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeninə şəxsi bağlantı yaradıla bilməz.</translation>
 <translation id="8564182942834072828">Ayrıca sənədlər/Sıralanmamış nüsxələr</translation>
 <translation id="8564985650692024650">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chromium <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parolunuzu sıfırlamağı tövsiyə edir.</translation>
@@ -3212,6 +3216,7 @@
 <translation id="8870494189203302833">Eyni sıra ilə üzü aşağı</translation>
 <translation id="8870700989640064057">Məxfi fayl çap edilsin?</translation>
 <translation id="8871553383647848643">Brauzerinizin görünüşünü fərdiləşdirin</translation>
+<translation id="8871603420762394026">Chrome reklamın göstərildiyi vaxt kimi məhdud sayda məlumatı saytlar arasında paylaşır ki, saytlar reklam performansını ölçsün.</translation>
 <translation id="8874824191258364635">Düzgün kart nömrəsi daxil edin</translation>
 <translation id="8876033571432926051">Əyləncə oyunları</translation>
 <translation id="8877780815363510165">Balıqçılıq</translation>
@@ -3365,6 +3370,7 @@
 <translation id="949314938206378263">Bu saytı ziyarət etməyi istəmisiniz. Valideyniniz Family Link'də cavab verə bilər.</translation>
 <translation id="950736567201356821">Yuxarıdan üçlü deşik açın</translation>
 <translation id="961663415146723894">Aşağıdan uclarını qovuşdurun</translation>
+<translation id="961930410699694996">Bu dəfə üçün məkana icazə verilib</translation>
 <translation id="962484866189421427">Bu kontent başqa tətbiqə oxşayan və ya Sizi izləmək məqsədilə data əldə edən aldadıcı tətbiqləri quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />İstənilən halda göstərin<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Bütün istifadəçilər</translation>
 <translation id="964050462028070434">Parolları və Giriş Açarlarını idarə edin…</translation>

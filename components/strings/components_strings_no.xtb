@@ -1034,6 +1034,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3531780078352352885">Jobbark</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ber om å bruke mikrofonen din</translation>
 <translation id="3533328374079021623">Postkasse 5</translation>
+<translation id="3536227077203206203">Tillatt denne gangen</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kortbilde</translation>
 <translation id="3542768452570884558">Åpne linken i et nytt vindu</translation>
@@ -1672,6 +1673,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="5051305769747448211">Livekomedie</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
+<translation id="5060419232449737386">Innstillinger for teksting</translation>
 <translation id="5060483733937416656">Du har valgt å bekrefte med Windows Hello på nettsteder som bruker <ph name="PROVIDER_ORIGIN" />. Denne leverandøren kan ha lagret informasjon om betalingsmåten din, som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Utskriftslogg</translation>
@@ -2453,6 +2455,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7030436163253143341">Sertifikatet er ikke gyldig</translation>
 <translation id="7031646650991750659">hvilke Google Play-apper du har installert</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere personverninnstillingene for Google-kontoen din</translation>
+<translation id="7044081119134178347">Kamera er tillatt denne gangen</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Du prøvde å nå <ph name="DOMAIN" />. Tjeneren presenterte et sertifikat som har en gyldighetsperiode som er for lang til å være pålitelig.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kan ikke lagre dette kortet akkurat nå}other{Kan ikke lagre disse kortene akkurat nå}}</translation>
@@ -3044,6 +3047,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8416694386774425977">Nettverkskonfigurasjonen er ugyldig og kan ikke importeres.
 Mer informasjon:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon er tillatt denne gangen</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
@@ -3099,6 +3103,7 @@ Mer informasjon:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Tilbakestill tillatelse}other{Tilbakestill tillatelser}}</translation>
 <translation id="8555010941760982128">Bruk denne koden i kassen</translation>
 <translation id="8557066899867184262">CVC-koden finner du på baksiden av kortet.</translation>
+<translation id="8558347880669160417">Kamera og mikrofon er tillatt denne gangen</translation>
 <translation id="8559762987265718583">En privat tilkobling til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kunne ikke etableres fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) er feil på enheten.</translation>
 <translation id="8564182942834072828">Separate dokumenter / ukollaterte eksemplarer</translation>
 <translation id="8564985650692024650">Chromium anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
@@ -3369,6 +3374,7 @@ Mer informasjon:
 <translation id="949314938206378263">Du ba om å få besøke dette nettstedet. Forelderen din kan svare i Family Link.</translation>
 <translation id="950736567201356821">Tre hull topp</translation>
 <translation id="961663415146723894">Innbinding bunn</translation>
+<translation id="961930410699694996">Posisjon er tillatt denne gangen</translation>
 <translation id="962484866189421427">Dette innholdet kan prøve å installere villedende apper som gir seg ut for å være noe annet, eller samle inn data som kan brukes til å spore deg. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alle brukere</translation>
 <translation id="964050462028070434">Administrer passord og tilgangsnøkler…</translation>

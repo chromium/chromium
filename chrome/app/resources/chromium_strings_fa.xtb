@@ -247,6 +247,7 @@
 <translation id="6475912303565314141">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="648319183876919572">«مرور ایمن پیشرفته» کارهای بیشتری برای محافظت از شما درمقابل وب‌سایت‌ها و بارگیری‌های خطرناک انجام می‌دهد</translation>
 <translation id="6510925080656968729">‏حذف نصب Chromium </translation>
+<translation id="6539122709674868420">‏اگر <ph name="TIMEOUT_DURATION" /> از Chromium استفاده نشود، سازمانتان آن را می‌بندد. داده‌های مرور حذف شد. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="6542839706527980775">‏هرکدام از نمایه‌ها دارای اطلاعات Chromium مختص خودش است (مثلاً نشانک‌ها، سابقه، گذرواژه‌ها، و غیره)</translation>
 <translation id="656935081669708576">‏برای دیدن گذرواژه‌های نمایه Chromium دیگر، می‌توانید به آن نمایه بروید</translation>
 <translation id="6570579332384693436">‏برای رفع خطاهای املائی، Chromium نوشتاری را که در فیلد نوشتار تایپ می‌کنید، برای Google ارسال می‌کند</translation>
@@ -284,6 +285,7 @@
 <translation id="7025789849649390912">نصب متوقف شد.</translation>
 <translation id="705851970750939768">‏به‌روزرسانی Chromium</translation>
 <translation id="7067091210845072982">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود.</translation>
+<translation id="7173822816570314652">‏اگر <ph name="TIMEOUT_DURATION" /> از Chromium استفاده نشود، سازمانتان داده‌های آن را حذف می‌کند. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="718435575166326686">‏Chromium برای این سایت به اجازه دوربین نیاز دارد</translation>
 <translation id="7196312274710523067">‏Chromium راه‌اندازی نشد. دوباره امتحان کنید.</translation>
 <translation id="7197677400338048821">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید.</translation>
@@ -337,6 +339,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8248265253516264921">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="8266560134891435528">‏چون به سیستم وارد نشده‌اید، Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="8290862415967981663">‏این فایل ممکن است خطرناک باشد، بنابراین Chromium آن را مسدود کرده است.</translation>
+<translation id="8318772038038596122">‏اگر <ph name="TIMEOUT_DURATION" /> از Chromium استفاده نشود، سازمانتان آن را می‌بندد.</translation>
 <translation id="8325404639443959713">‏با Chromium می‌توانید کارهای بیشتری انجام دهید</translation>
 <translation id="8330519371938183845">‏برای همگام‌سازی و شخصی‌سازی Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
 <translation id="8340674089072921962">‏<ph name="USER_EMAIL_ADDRESS" /> قبلاً از Chromium استفاده می‌کرد</translation>
@@ -372,6 +375,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="9019929317751753759">‏برای ایمن‌تر کردن Chromium، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
 <translation id="907832235989677238">‏ورود به سیستم Chromium اگر فقط یک‌بار می‌خواهید به سیستم حساب وارد شوید، می‌توانید <ph name="GUEST_LINK_BEGIN" />به‌عنوان مهمان از دستگاه استفاده کنید<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">‏Chromium به‌طور خودکار بسته شد</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏Chromium یک ساعت دیگر راه‌اندازی مجدد می‌شود}one{‏Chromium # ساعت دیگر راه‌اندازی مجدد می‌شود}other{‏Chromium # ساعت دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="9106612006984859720">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8.1 استفاده می‌کند.</translation>

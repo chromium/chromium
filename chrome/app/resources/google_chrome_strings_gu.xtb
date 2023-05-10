@@ -87,6 +87,7 @@
 <translation id="2467438592969358367">Google Chrome તમારા પાસવર્ડની નિકાસ કરવા માગે છે. આને મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="2485422356828889247">અનઇન્સ્ટૉલ કરો</translation>
 <translation id="2534507159460261402">Google Pay (Chrome પર કૉપિ કરેલ છે)</translation>
+<translation id="2556847002339236023">જ્યારે તમારી સંસ્થા <ph name="TIMEOUT_DURATION" /> માટે Chromeનો ઉપયોગ ન કરે ત્યારે તેને બંધ કરે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવ્યો હતો. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.</translation>
 <translation id="2559253115192232574">પછી, તમે જેની મુલાકાત લો તે સાઇટ Chromeને તમારી રુચિઓ જોવા માટે કહી શકે છે, જેથી તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવી શકાય. Chrome વધુમાં વધુ 3 રુચિ શેર કરી શકે છે.</translation>
 <translation id="2563121210305478421">Chrome ફરીથી લૉન્ચ કરીએ?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chrome તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
@@ -275,6 +276,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6113794647360055231">Chrome હવે પહેલાંથી બહેતર બન્યું છે</translation>
 <translation id="6145313976051292476">Chromeમાં PDFs ખોલો</translation>
 <translation id="6155960517327665396">મેમરી સેવર Chromeને વધુ ઝડપી બનાવે છે</translation>
+<translation id="6157638032135951407">જ્યારે તમારી સંસ્થા <ph name="TIMEOUT_DURATION" /> માટે Chromeનો ઉપયોગ ન કરે ત્યારે તેને ડિલીટ કરે છે. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome બીટા</translation>
 <translation id="6235018212288296708">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome માટે ઇનબાઉન્ડ નિયમ.</translation>
@@ -290,6 +292,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6418662306461808273">વર્તમાન Chrome પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="648319183876919572">Safe Browsingમાં વધારેલી સુરક્ષા તમને જોખમી વેબસાઇટ અને ડાઉનલોડ સામે વધુ સુરક્ષા આપે છે</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" />નો પ્રયાસ કરી રહ્યું છે</translation>
+<translation id="6497147134301593682">Chrome ઑટોમેટિક રીતે બંધ થઈ ગયું હતું</translation>
 <translation id="6506909944137591434">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં</translation>
@@ -326,6 +329,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7155997830309522122">જો એવું હોય, તો કૃપા કરીને Chromeમાં તમારા સાચવેલા પાસવર્ડમાં ફેરફાર કરો જેથી તે તમારા નવા પાસવર્ડ સાથે મેળ ખાય.</translation>
 <translation id="7161904924553537242">Google Chrome માં સ્વાગત છે</translation>
 <translation id="7177959540995930968">તમે Chrome સેટિંગમાં આ સુવિધાઓ વિશે વધુ જાણી શકો છો.</translation>
+<translation id="7193885263065350793">જ્યારે તમારી સંસ્થા <ph name="TIMEOUT_DURATION" /> માટે Chromeનો ઉપયોગ ન કરે ત્યારે તેને બંધ કરે છે.</translation>
 <translation id="7242029209006116544">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર ઍડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી જોડાયેલા રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડ દ્વારા આ ડેટાને ડિલીટ કરી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહીં. તમે હાલના Chrome ડેટાને અલગ રાખવા માટે વૈકલ્પિક રીતે એક નવી પ્રોફાઇલ બનાવી શકો છો. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">આ ભાષાનો ઉપયોગ Google Chrome UI પ્રદર્શિત કરવા માટે થાય છે</translation>
 <translation id="7296210096911315575">મહત્વપૂર્ણ ઉપયોગ અને સુરક્ષા માહિતી</translation>

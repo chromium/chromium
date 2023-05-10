@@ -117,6 +117,7 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
 <translation id="1105711894873068933">Une fois <ph name="LACROS_NAME" /> désactivé, toutes les données utilisateur sont supprimées à la connexion suivante.</translation>
 <translation id="1107538157073168076">Désactiver l'extension des insights</translation>
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111324374369583989">Ne pas afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
 <translation id="1118093128235245168">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil USB connecté</translation>
 <translation id="111910763555783249">Paramètres de notification</translation>
@@ -685,6 +686,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       </translation>
 <translation id="1613327425322354195">Signaler l'état de sécurité des appareils</translation>
 <translation id="1615221548356595305">Autoriser le multiplexage des connexions HTTP/2 pour les hôtes qui utilisent des certificats client</translation>
+<translation id="1615734278280392199">Utiliser la recherche sans être anonyme.</translation>
 <translation id="1616280227447957376">Autoriser l'accès malgré un avertissement SSL depuis certaines origines</translation>
 <translation id="1617235075406854669">Activer la suppression de l'historique du navigateur et de l'historique des téléchargements</translation>
 <translation id="1620510694547887537">Caméra</translation>
@@ -908,6 +910,17 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1844972978764975668">Autoriser l'envoi de requêtes à un serveur Google visant à récupérer un horodatage précis</translation>
 <translation id="1845405905602899692">Paramètres de kiosque</translation>
 <translation id="1845429996559814839">Limiter le mode d'impression par code</translation>
+<translation id="1845567452014584154">Contrôle si le navigateur peut utiliser les extensions Manifest V2.
+
+Les extensions Manifest V2 seront obsolètes et toutes les extensions devront être migrées vers V3 à l'avenir. Vous trouverez plus d'informations et le calendrier de la migration sur https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Si la règle est définie sur <ph name="DEFAULT" /> (0) ou n'est pas configurée, le chargement des extensions V2 est déterminé par le navigateur, selon le calendrier ci-dessus.
+Si la règle est définie sur <ph name="DISABLE" /> (1), l'installation des extensions V2 est bloquée et les extensions existantes sont désactivées. L'option sera traitée de la même manière que si la règle n'était pas définie après la désactivation par défaut de V2.
+Si la règle est définie sur <ph name="ENABLE" /> (2), les extensions V2 sont autorisées. L'option sera traitée de la même manière que si la règle n'était pas définie avant la désactivation par défaut de V2.
+Si cette règle est définie sur <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), les extensions V2 installées d'office sont autorisées. Cela inclut les extensions listées par <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> avec <ph name="INSTALLATION_MODE" /> "force_installed" ou "normal_installed". Toutes les autres extensions V2 sont désactivées. Cette option est toujours disponible, quel que soit l'état de la migration.
+
+
+La disponibilité des extensions est toujours contrôlée par d'autres règles.</translation>
 <translation id="1846545322805269573">Les utilisateurs ne peuvent pas personnaliser l'arrière-plan de la page "Nouvel onglet"</translation>
 <translation id="1847960418907100918">Spécifie les paramètres utilisés pour la recherche instantanée avec POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur est équivalente à un paramètre modèle, comme "{searchTerms}" dans l'exemple ci-dessus, elle est remplacée par des termes de recherche réels.
 
@@ -1060,6 +1073,7 @@ Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extens
 
       Pour que les modifications apportées à cette règle puissent être appliquées, ARC ne doit pas être en cours d'exécution (par exemple, au démarrage de Chrome OS).</translation>
 <translation id="1984934843478301531">Automatisation du lancement des applis</translation>
+<translation id="1985545260037812875">Afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
 <translation id="1985598967415986700">La réduction user-agent pourra être contrôlée via les tests en conditions réelles et la phase d'évaluation.</translation>
 <translation id="1987789058026551147">Activer les rapports sur les sessions kiosque de l'appareil</translation>
 <translation id="1988345404999458987">Fournit les configurations des serveurs d'impression disponibles.
@@ -2299,6 +2313,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="3118552207903834734">Autoriser l'utilisateur à configurer le nom d'hôte de son appareil</translation>
+<translation id="3120434599585109871">Utiliser la recherche anonyme.</translation>
 <translation id="3122082892722698079">Contrôler l'utilisation des exceptions liées au contenu non sécurisé</translation>
 <translation id="3125472566440502628">Désactiver Sélectionner pour prononcer</translation>
 <translation id="3126748868885248792">Le bouton de droite est le bouton principal</translation>
@@ -2884,6 +2899,9 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3606571057705314194">Outil de sélection du profil désactivé au démarrage</translation>
 <translation id="3608206578291537084">Activer le pipeline de rapports chiffrés</translation>
 <translation id="3608281460204780443">Afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> et sur la page de nouvel onglet</translation>
+<translation id="3616490235694929053">Cette règle définit si l'utilisateur voit l'écran de configuration de la taille d'affichage la première fois qu'il se connecte.
+      Si cette règle est définie sur "False", l'écran n'est pas affiché.
+      Si cette règle est définie sur "True", l'écran est affiché.</translation>
 <translation id="3622463490728773174">Autoriser la nouvelle implémentation</translation>
 <translation id="3623332696371971798">Empêcher l'accès à Google Photos depuis l'appli de personnalisation</translation>
 <translation id="3627678165642179114">Activer ou désactiver le service Web de correction orthographique</translation>
@@ -3380,6 +3398,17 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
 <translation id="4102347680024644994">Signaler les événements de détection et réponse étendues (XDR)</translation>
 <translation id="4105989332710272578">Désactiver l'application des règles de transparence des certificats pour une liste d'URL</translation>
+<translation id="410740968939768919">Contrôle si les extensions Manifest V2 peuvent être utilisées sur l'écran de connexion <ph name="PRODUCT_OS_NAME" />.
+
+Les extensions Manifest V2 seront obsolètes et toutes les extensions devront être migrées vers V3 à l'avenir. Vous trouverez plus d'informations et le calendrier de la migration sur https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Si la règle est définie sur <ph name="DEFAULT" /> (0) ou n'est pas configurée, le chargement des extensions V2 est déterminé par l'appareil, selon le calendrier ci-dessus.
+Si la règle est définie sur <ph name="DISABLE" /> (1), l'installation des extensions V2 est bloquée et les extensions existantes sont désactivées. L'option sera traitée de la même manière que si la règle n'était pas définie après la désactivation par défaut de V2.
+Si la règle est définie sur <ph name="ENABLE" /> (2), les extensions V2 sont autorisées. L'option sera traitée de la même manière que si la règle n'était pas définie avant la désactivation par défaut de V2.
+Si cette règle est définie sur <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), les extensions V2 installées d'office sont autorisées. Cela inclut les extensions listées par <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> avec <ph name="INSTALLATION_MODE" /> "force_installed" ou "normal_installed". Toutes les autres extensions V2 sont désactivées. Cette option est toujours disponible, quel que soit l'état de la migration.
+
+
+La disponibilité des extensions est toujours contrôlée par d'autres règles.</translation>
 <translation id="4110126170080699437">Pour des raisons de sécurité, l'API Web <ph name="GET_DISPLAY_MEDIA_API_NAME" /> nécessite un geste préalable de l'utilisateur ("activation temporaire"). Sinon, une erreur se produit.
 
 Une fois cette règle définie, les administrateurs peuvent préciser les origines sur lesquelles cette API peut être appelée sans geste préalable de l'utilisateur.
@@ -3748,6 +3777,17 @@ Cette règle constitue une solution temporaire au cas où des entreprises rencon
 <translation id="4483649828988077221">Désactiver les mises à jour automatiques</translation>
 <translation id="4484515651939984695">Définir la durée d'affichage (en secondes) d'un appareil Cast sélectionné via un code d'accès ou un code QR dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurer l'URL de la page "Nouvel onglet"</translation>
+<translation id="4490420545181481759">Les certificats X.509 peuvent encoder des contraintes, telles que des contraintes de nom, dans les extensions du certificat. RFC 5280 spécifie que l'application de ces contraintes sur les certificats d'ancres de confiance est facultative. À partir de <ph name="PRODUCT_NAME" /> 112, de telles contraintes dans les certificats chargées à partir du magasin de certificats de la plate-forme seront désormais appliquées.
+
+Cette règle existe en tant que désactivation temporaire, au cas où une entreprise rencontre des problèmes avec les contraintes encodées dans ses racines privées. Dans ce cas, cette règle peut être utilisée pour désactiver temporairement l'application des contraintes tout en corrigeant les problèmes de certificat.
+
+Si cette règle n'est pas configurée ou qu'elle est activée, <ph name="PRODUCT_NAME" /> appliquera des contraintes encodées dans les ancres de confiance chargées à partir du magasin de confiance de la plate-forme.
+
+Lorsque cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'appliquera pas les contraintes encodées dans les ancres de confiance chargées depuis le magasin de confiance de la plate-forme.
+
+Dans la version 112 de <ph name="PRODUCT_NAME" />, cette règle n'a aucun effet si la règle <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> est désactivée.
+
+Elle sera supprimée de la version 118 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4491607814095953976">Choisissez si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé</translation>
 <translation id="4492287494009043413">Désactiver les captures d'écran</translation>
 <translation id="4494132853995232608">Dispositif DTC de Wilco</translation>
@@ -4565,6 +4605,7 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
 <translation id="528302483493794684">Une configuration de VM. Indique le type de VM que l'utilisateur peut installer, qui sera associée de manière persistante à l'ID de cette configuration, ainsi que les commandes qui s'appliquent à ce type de VM.</translation>
 <translation id="5283457834853986457">Désactiver l'outil de recherche de plug-ins (obsolète)</translation>
 <translation id="5286579716704722323">Autoriser les utilisateurs à passer les pages d'avertissement SSL</translation>
+<translation id="5288713554963040955">Activer l'affichage de l'écran de configuration de la taille d'affichage lors de la connexion</translation>
 <translation id="5288772341821359899">Si cette règle est définie, la portée du port UDP utilisé par WebRTC est restreinte à l'intervalle de port spécifié (points de terminaison inclus).
 
       Si cette règle n'est pas définie, ou si elle est définie sur la chaîne vide ou sur une portée de port non valide, WebRTC peut utiliser n'importe quel port UDP local disponible.</translation>
@@ -7586,6 +7627,7 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
       Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
       Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Impression en mode natif</translation>
+<translation id="8055051642109241571">Activer la recherche anonyme</translation>
 <translation id="8056237304861875584">Autorisez la tâche Phone Hub à se poursuivre.</translation>
 <translation id="8056273037819805106">Les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> seront utilisés pour l'authentification réseau sur un proxy géré.</translation>
 <translation id="8056800559672904373">Un compte géré doit être un compte principal sans comptes secondaires. L'importation de données de navigation existantes est autorisée au moment de la création du profil</translation>
@@ -8324,6 +8366,9 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 <translation id="8728854710675158426">Hachages non sécurisés lors de handshakes TLS activés</translation>
 <translation id="8734543507835977857">Démarrer les délais de gestion de l'alimentation et les limites de longueur de session au démarrage de la session</translation>
 <translation id="8736538322216687231">Appliquer un mode restreint minimal sur YouTube</translation>
+<translation id="874149307422233209">Cette règle permet aux administrateurs de contrôler comment Google traite les données utilisateur envoyées à la recherche Google via les fonctionnalités <ph name="PRODUCT_OS_NAME" />.
+Lorsque cette règle est activée, l'utilisateur peut utiliser le champ de recherche du Lanceur d'applications de <ph name="PRODUCT_OS_NAME" /> et le champ d'adresse du navigateur <ph name="PRODUCT_NAME" /> dans <ph name="PRODUCT_OS_NAME" />, de sorte que l'historique de ses recherches ne soit pas associé à son identité.
+Si cette règle n'est pas configurée ou qu'elle est désactivée, les données de l'utilisateur issues de ces recherches sont associées à son identité.</translation>
 <translation id="8744844164152340112">Contrôle le thème utilisé pour afficher l'UI pendant la configuration initiale et en cours de session (sombre/clair/auto).
       Le mode Auto alterne automatiquement entre le thème sombre et le thème clair au lever et au coucher du soleil.
       Cette règle devrait être recommandée, car elle permet aux utilisateurs de modifier le thème dans les paramètres système.</translation>

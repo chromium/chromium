@@ -1030,6 +1030,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3531780078352352885">Vazifa varaqlari</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> mikrofoningizdan foydalanmoqchi</translation>
 <translation id="3533328374079021623">Pochta qutisi 5</translation>
+<translation id="3536227077203206203">Shu safar ruxsat berildi</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Karta rasmi</translation>
 <translation id="3542768452570884558">Havolani yangi oynada ochish</translation>
@@ -1667,6 +1668,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
 <translation id="5051305769747448211">Jonli komediya</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}other{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}}</translation>
+<translation id="5060419232449737386">Izoh sozlamalari</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> saytlarida shaxsni Windows Hello yordamida tasdiqlash mumkin. Bu provayder toʻlov usulingiz axborotini saqlashi mumkin, lekin uning <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Buni nazarda tutdingizmi: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Chop etish tarixi</translation>
@@ -2447,6 +2449,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7030436163253143341">Sertifikat yaroqsiz</translation>
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobi maxfiylik sozlamalarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="7044081119134178347">Kameraga shu safar ruxsat berildi</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Siz <ph name="DOMAIN" /> domenini ochmoqchi bo‘ldingiz, lekin server taqdim qilgan sertifikat juda uzoq ishonchsiz muddatga ega.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Bu karta saqlanmadi}other{Bu kartalar saqlanmadi}}</translation>
@@ -3039,6 +3042,7 @@ Batafsil axborot:
 <translation id="8416694386774425977">Tarmoq sozlamasi noto‘g‘ri, uni import qilib bo‘lmadi.
 Batafsil axborot:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofonga shu safar ruxsat berildi</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Sozlamalar</translation>
@@ -3094,6 +3098,7 @@ Batafsil axborot:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ruxsatni tiklash}other{Ruxsatlarni tiklash}}</translation>
 <translation id="8555010941760982128">Hisob-kitob vaqtida ushbu kodni kiriting</translation>
 <translation id="8557066899867184262">CVC kod kartangizning orqa tomonida joylashgan.</translation>
+<translation id="8558347880669160417">Kamera va mikrofonga shu safar ruxsat berildi</translation>
 <translation id="8559762987265718583">Tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi sababli <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan havfsiz aloqa o‘rnatib bo‘lmadi.</translation>
 <translation id="8564182942834072828">Bir nechta hujjat/Tartibsiz nusxalarda</translation>
 <translation id="8564985650692024650">Parolingizni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan almashtirishingizni tavsiya etamiz.</translation>
@@ -3364,6 +3369,7 @@ Batafsil axborot:
 <translation id="949314938206378263">Bu saytga kirish uchun ruxsat soʻradingiz. Ota-onangiz Family Link orqali javob berishi mumkin.</translation>
 <translation id="950736567201356821">Yuqoridan 3 ta teshik ochish</translation>
 <translation id="961663415146723894">Quyi chekkasini belgilash</translation>
+<translation id="961930410699694996">Joylashuv axborotiga shu safar ruxsat berildi</translation>
 <translation id="962484866189421427">Bu kontent soxta ilovalarni o‘rnatishga urinishi mumkin. Shuningdek, sizni kuzatishi yoki axborot yig‘ishi mumkin. <ph name="BEGIN_LINK" />Baribir ko‘rsatilsin<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Barcha foydalanuvchilar</translation>
 <translation id="964050462028070434">Parol va kodlarni boshqarish…</translation>

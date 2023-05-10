@@ -285,6 +285,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="2587052924345400782">Rendelkezésre áll új verzió</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Jelentkezzen be a beállításai kezeléséhez</translation>
+<translation id="260403163289591229">Követve</translation>
 <translation id="2604446170045642109">A webhelyeknél használt sötét témát bármikor kikapcsolhatja a beállításokban.</translation>
 <translation id="2612676031748830579">Kártyaszám</translation>
 <translation id="2625189173221582860">Jelszó vágólapra másolva</translation>
@@ -584,6 +585,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
 <translation id="4202218894997543208">Ön által letiltott témák</translation>
 <translation id="4214315110991671325">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chrome előtöltéshez használja fel őket.</translation>
+<translation id="4225725533026049334">Követve</translation>
 <translation id="4225895483398857530">Eszköztár gyorsparancs</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
 <translation id="4248098802131000011">Védje meg jelszavait az adatvédelmi incidensektől és más biztonsági problémáktól</translation>
@@ -846,7 +848,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="562289928968387744">Reakciók kezelése</translation>
 <translation id="5626134646977739690">Név:</translation>
 <translation id="5628604359369369630">Olvasatlan (Offline hozzáférhető)</translation>
-<translation id="5635091213277904818">A Chrome automatikusan törli a 30 napnál régebbi webhelyeket. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. Emellett lehetősége van arra is, hogy letiltsa az egyes webhelyek számára, hogy hirdetéseket javasoljanak Önnek.</translation>
+<translation id="5635091213277904818">A Chrome automatikusan törli a 30 napnál régebbi webhelyeket. Előfordulhat, hogy egy újból felkeresett webhely ismét megjelenik a listán. Emellett lehetősége van arra is, hogy letiltsa az egyes webhelyek számára, hogy hirdetéseket javasoljanak Önnek.</translation>
 <translation id="5639724618331995626">Minden webhely engedélyezése</translation>
 <translation id="5641456720590409793">A <ph name="BEGIN_LINK1" />keresési előzményeket<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />más tevékenységtípusokat<ph name="END_LINK2" /> a rendszer elmentheti az Ön Google-fiókjába.</translation>
 <translation id="564667659802381754">Adatvédelmi útmutató <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
@@ -922,6 +924,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6005538289190791541">Javasolt jelszó</translation>
 <translation id="6011308810877101166">Keresési javaslatok javítása</translation>
 <translation id="6026538407078977628">Kibontás teljes képernyőre</translation>
+<translation id="6030719887161080597">A webhelyek által a hirdetésteljesítmény méréséhez használt adatok kezelése</translation>
 <translation id="6039379616847168523">Ugrás a következő lapra</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="604124094241169006">Automatikus</translation>
@@ -1366,7 +1369,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8209050860603202033">Kép megnyitása</translation>
 <translation id="8216351761227087153">Megtekintés</translation>
 <translation id="8218622182176210845">Fiók kezelése</translation>
-<translation id="8221401890884589479">Letilthatja a nem kívánt webhelyeket. A Chrome emellett automatikusan törli a listáról a 30 napnál régebbi webhelyeket. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="8221401890884589479">Önnek lehetősége van a nem kívánt webhelyek letiltására. A Chrome emellett automatikusan törli a listáról a 30 napnál régebbi webhelyeket. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8223642481677794647">A hírcsatornakártya menüje</translation>
 <translation id="8236097722223016103">Hozzáadás a könyvjelzőkhöz</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>

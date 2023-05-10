@@ -1034,6 +1034,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3531780078352352885">Hojas de tarea</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> quiere usar el micrófono</translation>
 <translation id="3533328374079021623">Buzón de correo 5</translation>
+<translation id="3536227077203206203">Se permite esta vez</translation>
 <translation id="3537165859691846083">Carta plus</translation>
 <translation id="3542628208405253498">Imagen de la tarjeta</translation>
 <translation id="3542768452570884558">Abrir enlace en una ventana nueva</translation>
@@ -2453,6 +2454,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7030436163253143341">El certificado no es válido</translation>
 <translation id="7031646650991750659">Qué aplicaciones de Google Play tienes instaladas</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para gestionar la configuración de privacidad de tu cuenta de Google.</translation>
+<translation id="7044081119134178347">Cámara permitida esta vez</translation>
 <translation id="7048095965575426564">Continuo europeo</translation>
 <translation id="7050187094878475250">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado cuyo periodo de validez es demasiado largo para que se considere de confianza.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ahora no se puede guardar esta tarjeta}other{Ahora no se pueden guardar estas tarjetas}}</translation>
@@ -3045,6 +3047,7 @@ Más información:
 <translation id="8416694386774425977">La configuración de red no es válida y no se ha podido importar.
 Más información:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Micrófono permitido esta vez</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500x750 mm</translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -3100,6 +3103,7 @@ Más información:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Restablecer permiso}other{Restablecer permisos}}</translation>
 <translation id="8555010941760982128">Usa este código al tramitar la compra</translation>
 <translation id="8557066899867184262">Puedes encontrar el CVC en el reverso de la tarjeta.</translation>
+<translation id="8558347880669160417">Cámara y micrófono permitidos esta vez</translation>
 <translation id="8559762987265718583">No se puede establecer una conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora de tu dispositivo (<ph name="DATE_AND_TIME" />) no son correctas.</translation>
 <translation id="8564182942834072828">Separar documentos/Copias sin intercalar</translation>
 <translation id="8564985650692024650">Chromium te recomienda que cambies tu contraseña de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si la has vuelto a utilizar en otros sitios.</translation>
@@ -3216,6 +3220,7 @@ Más información:
 <translation id="8870494189203302833">Mismo orden boca abajo</translation>
 <translation id="8870700989640064057">¿Imprimir archivo confidencial?</translation>
 <translation id="8871553383647848643">Personaliza el aspecto de tu navegador</translation>
+<translation id="8871603420762394026">Ahora, Chrome solo comparte información muy limitada entre sitios (por ejemplo, cuándo se te ha mostrado un anuncio) para ayudar a los sitios a medir el rendimiento de los anuncios.</translation>
 <translation id="8874824191258364635">Introduce un número de tarjeta válido</translation>
 <translation id="8876033571432926051">Juegos casuales</translation>
 <translation id="8877780815363510165">Pesca</translation>
@@ -3369,6 +3374,7 @@ Más información:
 <translation id="949314938206378263">Has solicitado visitar este sitio. Tus padres pueden responder en Family Link.</translation>
 <translation id="950736567201356821">Perforado triple en la parte superior</translation>
 <translation id="961663415146723894">Encuadernar por la parte inferior</translation>
+<translation id="961930410699694996">Ubicación permitida esta vez</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar aplicaciones engañosas que se hagan pasar por otra persona o recojan datos que podrían usarse para realizar un seguimiento de tu actividad. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Todos los usuarios</translation>
 <translation id="964050462028070434">Gestionar contraseñas y claves de acceso…</translation>

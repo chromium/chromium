@@ -1035,6 +1035,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3531780078352352885">Užduoties lapai</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> nori naudoti mikrofoną</translation>
 <translation id="3533328374079021623">5 pašto dėžutė</translation>
+<translation id="3536227077203206203">Leidžiama šį kartą</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kortelės vaizdas</translation>
 <translation id="3542768452570884558">Atidaryti nuorodą naujame lange</translation>
@@ -2454,6 +2455,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7030436163253143341">Sertifikatas negalioja</translation>
 <translation id="7031646650991750659">Kurias „Google Play“ programas įdiegėte</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tvarkyti „Google“ paskyros privatumo nustatymus.</translation>
+<translation id="7044081119134178347">Vaizdo kamera leidžiama šį kartą</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė sertifikatą, kurio galiojimo laikotarpis per ilgas, kad būtų patikimas.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Šiuo metu šios kortelės išsaugoti negalima}one{Šiuo metu šių kortelių išsaugoti negalima}few{Šiuo metu šių kortelių išsaugoti negalima}many{Šiuo metu šių kortelių išsaugoti negalima}other{Šiuo metu šių kortelių išsaugoti negalima}}</translation>
@@ -3046,6 +3048,7 @@ Papildoma išsami informacija:
 <translation id="8416694386774425977">Tinklo konfigūracija netinkama ir jos nepavyko importuoti.
 Papildoma išsami informacija:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofonas leidžiamas šį kartą</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
@@ -3101,6 +3104,7 @@ Papildoma išsami informacija:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Iš naujo nustatyti leidimą}one{Iš naujo nustatyti leidimus}few{Iš naujo nustatyti leidimus}many{Iš naujo nustatyti leidimus}other{Iš naujo nustatyti leidimus}}</translation>
 <translation id="8555010941760982128">Naudokite šį kodą atsiskaitydami</translation>
 <translation id="8557066899867184262">Kortelės saugos kodas (CVC) nurodytas kitoje kortelės pusėje.</translation>
+<translation id="8558347880669160417">Vaizdo kamera ir mikrofonas leidžiami šį kartą</translation>
 <translation id="8559762987265718583">Nepavyksta užmegzti privataus ryšio su <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, nes įrenginio data ir laikas (<ph name="DATE_AND_TIME" />) yra netinkami.</translation>
 <translation id="8564182942834072828">Atskiras dokumentas / nesugretintos kopijos</translation>
 <translation id="8564985650692024650">„Chromium“ rekomenduoja iš naujo nustatyti <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> slaptažodį, jei naudojate jį kitose svetainėse.</translation>
@@ -3218,6 +3222,7 @@ Papildoma išsami informacija:
 <translation id="8870494189203302833">Ta pačia tvarka, gerąja puse į apačią</translation>
 <translation id="8870700989640064057">Spausdinti konfidencialų failą?</translation>
 <translation id="8871553383647848643">Tinkinti naršyklės išvaizdą</translation>
+<translation id="8871603420762394026">Dabar „Chrome“ bendrina tik labai ribotą informaciją svetainėse, pvz., kada skelbimas buvo rodomas, kad padėtų svetainėms įvertinti skelbimų našumą.</translation>
 <translation id="8874824191258364635">Įveskite tinkamą kortelės numerį</translation>
 <translation id="8876033571432926051">Paprasti žaidimai</translation>
 <translation id="8877780815363510165">Žvejyba</translation>
@@ -3371,6 +3376,7 @@ Papildoma išsami informacija:
 <translation id="949314938206378263">Prašėte leidimo apsilankyti šioje svetainėje. Vienas iš tėvų gali atsakyti programoje „Family Link“.</translation>
 <translation id="950736567201356821">Trys skylės viršuje</translation>
 <translation id="961663415146723894">Įrišimas apačioje</translation>
+<translation id="961930410699694996">Vietovės informacija leidžiama šį kartą</translation>
 <translation id="962484866189421427">Šis turinys gali bandyti įdiegti klaidinančių programų, kurios apsimeta kitomis programomis, arba rinkti duomenis, naudojamus jums stebėti. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Visi vartotojai</translation>
 <translation id="964050462028070434">Tvarkyti slaptažodžius ir „passkey“…</translation>

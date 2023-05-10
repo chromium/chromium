@@ -1034,6 +1034,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3531780078352352885">Feuilles de travail</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> souhaite utiliser votre micro</translation>
 <translation id="3533328374079021623">Boîte aux lettres 5</translation>
+<translation id="3536227077203206203">Accès autorisé cette fois-ci</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Image de la carte</translation>
 <translation id="3542768452570884558">Ouvrir le lien dans une nouvelle fenêtre</translation>
@@ -2453,6 +2454,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7030436163253143341">Certificat non valide</translation>
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer les paramètres de confidentialité de votre compte Google</translation>
+<translation id="7044081119134178347">Accès à l'appareil photo autorisé cette fois-ci</translation>
 <translation id="7048095965575426564">Fanfold européen</translation>
 <translation id="7050187094878475250">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais la durée de validité du certificat du serveur est trop longue pour être fiable.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Impossible d'enregistrer cette carte pour le moment}one{Impossible d'enregistrer cette carte pour le moment}other{Impossible d'enregistrer ces cartes pour le moment}}</translation>
@@ -3046,6 +3048,7 @@ Informations supplémentaires :
 <translation id="8416694386774425977">Impossible d'importer la configuration du réseau : elle n'est pas valide.
 Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Accès au micro autorisé cette fois-ci</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Paramètres</translation>
@@ -3101,6 +3104,7 @@ Informations supplémentaires :
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Réinitialiser l'autorisation}one{Réinitialiser l'autorisation}other{Réinitialiser les autorisations}}</translation>
 <translation id="8555010941760982128">Utilisez ce code au moment de payer</translation>
 <translation id="8557066899867184262">Le code CVC figure au recto de votre carte.</translation>
+<translation id="8558347880669160417">Accès à l'appareil photo et au micro autorisé cette fois-ci</translation>
 <translation id="8559762987265718583">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> : la date et l'heure de votre appareil (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="8564182942834072828">Documents séparés/Copies non assemblées</translation>
 <translation id="8564985650692024650">L'équipe Chromium vous recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
@@ -3217,6 +3221,7 @@ Informations supplémentaires :
 <translation id="8870494189203302833">Même ordre, face vers le bas</translation>
 <translation id="8870700989640064057">Imprimer le fichier confidentiel ?</translation>
 <translation id="8871553383647848643">Personnalisez l'apparence de votre navigateur</translation>
+<translation id="8871603420762394026">Chrome ne partage actuellement que des informations très limitées entre les sites, comme le moment où une annonce vous a été présentée, afin d'aider les sites à mesurer les performances des annonces.</translation>
 <translation id="8874824191258364635">Saisissez un numéro de carte valide</translation>
 <translation id="8876033571432926051">Jeux grand public</translation>
 <translation id="8877780815363510165">Pêche</translation>
@@ -3370,6 +3375,7 @@ Informations supplémentaires :
 <translation id="949314938206378263">Tu as demandé à consulter ce site. Ton parent peut répondre dans Family Link.</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="961663415146723894">Reliure en bas</translation>
+<translation id="961930410699694996">Accès à la position autorisé cette fois-ci</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses se faisant passer pour d'autres, ou de collecter des données afin de vous surveiller. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Tous les utilisateurs</translation>
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>

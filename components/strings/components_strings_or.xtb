@@ -1032,6 +1032,7 @@
 <translation id="3531780078352352885">ଜବ୍ ସିଟ୍ସ</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3533328374079021623">ମେଲବକ୍ସ 5</translation>
+<translation id="3536227077203206203">ଏହି ଥର ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="3537165859691846083">ଲେଟର ପ୍ଲସ</translation>
 <translation id="3542628208405253498">କାର୍ଡର ଇମେଜ</translation>
 <translation id="3542768452570884558">ନୂଆ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
@@ -2450,6 +2451,7 @@
 <translation id="7030436163253143341">ସାର୍ଟିଫିକେଟଟି ବୈଧ ନୁହେଁ</translation>
 <translation id="7031646650991750659">ଆପଣ କେଉଁ Google Play ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରିଛନ୍ତି</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଗୋପନୀୟତା ସେଟିଂସକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="7044081119134178347">ଏହି ଥର କେମେରାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="7048095965575426564">ୟୁରୋପିଆନ ଫେନଫୋଲ୍ଡ</translation>
 <translation id="7050187094878475250">ଆପଣଙ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ପ୍ରୟାସ କରିଛନ୍ତି, କିନ୍ତୁ ବିଶ୍ଵାସଯୋଗ୍ୟ ହେବା ପାଇଁ ସର୍ଭର ଉପସ୍ଥାପନ କରିଥିବା ସାର୍ଟିଫିକେଟ୍‌ର ବୈଧତା ସମୟ ଅବଧି ଅଧିକ ଲମ୍ବା।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ବର୍ତ୍ତମାନ ସମୟରେ ସେଭ୍ କରାଯାଇପାରିବ ନାହିଁ}other{ଏହି କାର୍ଡଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ସମୟରେ ସେଭ୍ କରାଯାଇପାରିବ ନାହିଁ}}</translation>
@@ -3042,6 +3044,7 @@
 <translation id="8416694386774425977">ନେଟ୍‍ୱର୍କ କନ୍‍ଫିଗରେସନ୍‌ ଅବୈଧ ଅଟେ ଏବଂ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିଲା ନାହିଁ।
 ଅତିରିକ୍ତ ବିବରଣୀ:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">ଏହି ଥର ମାଇକ୍ରୋଫୋନକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 ମିମି</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
@@ -3097,6 +3100,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ଅନୁମତିକୁ ରିସେଟ୍ କରନ୍ତୁ}other{ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="8555010941760982128">ଚେକଆଉଟ ସମୟରେ ଏହି କୋଡକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8557066899867184262">CVC ଆପଣଙ୍କ କାର୍ଡର ପଛପଟେ ଅଛି।</translation>
+<translation id="8558347880669160417">ଏହି ଥର କେମେରା ଓ ମାଇକ୍ରୋଫୋନକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />କୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ, ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ତାରିଖ ଏବଂ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ ଅଛି।</translation>
 <translation id="8564182942834072828">ଅଲଗା ଡକ୍ୟୁମେଣ୍ଟଗୁଡ଼ିକ/ସଂଗ୍ରହ କରାଯାଇନଥିବା କପିଗୁଡ଼ିକ</translation>
 <translation id="8564985650692024650">ଆପଣ ଯଦି ଆପଣଙ୍କର <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ପାସ୍‌ୱାର୍ଡକୁ ଅନ୍ୟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ ପୁନଃ ବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chromium ଆପଣଙ୍କୁ ଏହି ପାସ୍‌ୱାର୍ଡକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
@@ -3213,6 +3217,7 @@
 <translation id="8870494189203302833">ସେହି ସମାନ ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="8870700989640064057">ଗୋପନୀୟ ଫାଇଲ ପ୍ରିଣ୍ଟ କରିବେ?</translation>
 <translation id="8871553383647848643">ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
+<translation id="8871603420762394026">Chrome ବର୍ତ୍ତମାନ ଆପଣଙ୍କୁ ଏକ ବିଜ୍ଞାପନ ଦେଖାଇବା ସମୟରେ ବିଜ୍ଞାପନଗୁଡ଼ିକର ପରଫରମାନ୍ସ ମାପିବାରେ ସାଇଟଗୁଡ଼ିକୁ ସାହାଯ୍ୟ କରିବା ପରି ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ଅତି ସୀମିତ ସୂଚନା କେବଳ ସେୟାର କରେ।</translation>
 <translation id="8874824191258364635">ଏକ ବୈଧ କାର୍ଡ ନମ୍ବର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="8876033571432926051">କାଜୁଆଲ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="8877780815363510165">ଫିସିଂ</translation>
@@ -3366,6 +3371,7 @@
 <translation id="949314938206378263">ତୁମେ ଏହି ସାଇଟକୁ ଭିଜିଟ କରିବା ପାଇଁ ପଚାରିଛ। ତୁମର ବାପାମା Family Linkରେ ପ୍ରତ୍ୟୁତ୍ତର ଦେଇପାରିବେ।</translation>
 <translation id="950736567201356821">ଉପର ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
 <translation id="961663415146723894">ତଳ ପଟରେ ବାଇଣ୍ଡ</translation>
+<translation id="961930410699694996">ଏହି ଥର ଲୋକେସନକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="962484866189421427">ଏହି ବିଷୟବସ୍ତୁ ପ୍ରତାରଣାତ୍ମକ ଆପ୍ସ ଇନ୍‍ଷ୍ଟଲ୍‍ କରିପାରେ ଯାହା ଅନ୍ୟ କିଛି ହେବାର ଛଳନା କରନ୍ତି କିମ୍ବା ଏପରି ଡାଟା ସଂଗ୍ରହ କରିପାରନ୍ତି ଯାହା ଆପଣଙ୍କୁ ଟ୍ରାକ୍‍ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">ସମସ୍ତ ୟୁଜର</translation>
 <translation id="964050462028070434">ପାସୱାର୍ଡ ଏବଂ ପାସକୀ'ଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ…</translation>

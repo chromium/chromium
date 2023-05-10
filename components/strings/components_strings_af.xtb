@@ -1034,6 +1034,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3531780078352352885">Taakbladsye</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> wil jou mikrofoon gebruik</translation>
 <translation id="3533328374079021623">Posbus 5</translation>
+<translation id="3536227077203206203">Hierdie keer toegelaat</translation>
 <translation id="3537165859691846083">Brief Plus</translation>
 <translation id="3542628208405253498">Kaartprent</translation>
 <translation id="3542768452570884558">Maak skakel in nuwe venster oop</translation>
@@ -1672,6 +1673,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
 <translation id="5051305769747448211">Regstreekse komedie</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêer met Nabydeling wil stuur}other{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêers met Nabydeling wil stuur}}</translation>
+<translation id="5060419232449737386">Onderskrifinstellings</translation>
 <translation id="5060483733937416656">Jy het gekies om met Windows Hello te verifieer op webwerwe wat <ph name="PROVIDER_ORIGIN" /> gebruik. Hierdie verskaffer het dalk inligting oor jou betaalmetode geberg, wat jy kan <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Het jy bedoel <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Drukgeskiedenis</translation>
@@ -2453,6 +2455,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7030436163253143341">Sertifikaat is nie geldig nie</translation>
 <translation id="7031646650991750659">Watter Google Play-programme jy geïnstalleer het</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou Google-rekening se privaatheidsinstellings te bestuur</translation>
+<translation id="7044081119134178347">Kamera hierdie keer toegelaat</translation>
 <translation id="7048095965575426564">Europese Valvou</translation>
 <translation id="7050187094878475250">Jy het <ph name="DOMAIN" /> probeer bereik, maar die bediener het 'n sertifikaat aangebied waarvan die geldigheidtydperk te lank is om betroubaar te wees.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Hierdie kaart kan nie op die oomblik gestoor word nie}other{Hierdie kaarte kan nie op die oomblik gestoor word nie}}</translation>
@@ -3045,6 +3048,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8416694386774425977">Die netwerkopstelling is ongeldig en kon nie ingevoer word nie.
 Bykomende besonderhede:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofoon hierdie keer toegelaat</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500x750 mm</translation>
 <translation id="8428213095426709021">Instellings</translation>
@@ -3100,6 +3104,7 @@ Bykomende besonderhede:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Stel toestemming terug}other{Stel toestemmings terug}}</translation>
 <translation id="8555010941760982128">Gebruik hierdie kode by die betaalpunt</translation>
 <translation id="8557066899867184262">Die CVC is agterop jou kaart.</translation>
+<translation id="8558347880669160417">Kamera en mikrofoon hierdie keer toegelaat</translation>
 <translation id="8559762987265718583">'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan nie gevestig word nie omdat jou toestel se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.</translation>
 <translation id="8564182942834072828">Afsonderlike dokumente/nie-ingesorteerde kopieë</translation>
 <translation id="8564985650692024650">Chromium beveel aan dat jy jou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
@@ -3370,6 +3375,7 @@ Bykomende besonderhede:
 <translation id="949314938206378263">Jy het gevra om hierdie werf te besoek. Jou ouer kan in Family Link antwoord.</translation>
 <translation id="950736567201356821">Tripelpons bo</translation>
 <translation id="961663415146723894">Gebind onder</translation>
+<translation id="961930410699694996">Ligging nie hierdie keer toegelaat nie</translation>
 <translation id="962484866189421427">Hierdie inhoud kan probeer om misleidende programme te installeer wat voorgee om iets anders te wees of wat data insamel wat gebruik kan word om jou na te spoor. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alle gebruikers</translation>
 <translation id="964050462028070434">Bestuur wagwoorde en wagwoordsleutels …</translation>

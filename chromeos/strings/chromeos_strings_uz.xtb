@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS manzil olinmadi</translation>
 <translation id="1018656279737460067">Bekor qilindi</translation>
 <translation id="1022433422498218992">Umumiy boshqaruv tugmalari</translation>
+<translation id="1022628058306505708">Yer</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" /> GGs)</translation>
 <translation id="1047773237499189053">Yangi funksiya chiqdi, batafsil axborot uchun tepaga strelkani bosing</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Boshqa amallar</translation>
 <translation id="2926057806159140518">Login va parolingizni kiriting yoki QR kodni skanerlang</translation>
 <translation id="2940811910881150316">Qurilmani sinash imkonsiz. Sinash uchun qurlimani yopib, keyin qayta oching</translation>
+<translation id="2981143481017883351">Chromebook ekskluziv obyektlari chiqdi</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
 <translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
 <translation id="3017079585324758401">Orqa fon</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Oynalar</translation>
 <translation id="3368922792935385530">Ulangan</translation>
 <translation id="3369013195428705271">Chop etish tarixi tozalansinmi? Joriy chop etish vazifalari oʻchirib tashlanmaydi.</translation>
+<translation id="3386675685417744672">Faqat Chromebookda</translation>
 <translation id="3404249063913988450">Ekran lavhasini faollashtirish</translation>
 <translation id="3413935475507503304">Yangilashda davom etish uchun Keyingisi tugmasini bosing</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">Diqqat!</translation>
 <translation id="4054683689023980771">Rasm yuklab olinmoqda</translation>
 <translation id="4060260348856573701">Yangi APN</translation>
+<translation id="4079743696465895866">Chromebook ekskluziv afishasini tanlang</translation>
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batareya sigʻimi ishlatilishi davomida kamayadi</translation>
 <translation id="6191293864534840972">Nom serverlarida xato</translation>
+<translation id="6205145102504628069">Bulutlar</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Butun ekran rejimidan chiqish</translation>
 <translation id="6223752125779001553">Hech qanday skaner mavjud emas</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Moslashtirish</translation>
 <translation id="6500818810472529210">Google Qidiruv natijalarini oching</translation>
 <translation id="650266656685499220">Albomlar yaratish uchun Google Photos sahifasini oching</translation>
+<translation id="6505750420152840539">Tongdan tungacha</translation>
 <translation id="6516990319416533844">Batareyaning quvvatlanish tezligini bilish uchun uni biroz muddat sarflang</translation>
 <translation id="6517239166834772319">Tanishuv</translation>
 <translation id="6526200165918397681">Mos fon rasmi</translation>

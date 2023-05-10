@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">Листове за заданието</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> иска да използва микрофона ви</translation>
 <translation id="3533328374079021623">Пощенска кутия 5</translation>
+<translation id="3536227077203206203">Разрешено този път</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Изображение на картата</translation>
 <translation id="3542768452570884558">Отваряне на връзката в нов прозорец</translation>
@@ -1672,6 +1673,7 @@
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="5051305769747448211">Комедия на живо</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
+<translation id="5060419232449737386">Настройки за надписите</translation>
 <translation id="5060483733937416656">Избрахте опцията за потвърждаване чрез Windows Hello в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Може би имахте предвид <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">История на отпечатаното</translation>
@@ -2453,6 +2455,7 @@
 <translation id="7030436163253143341">Сертификатът не е валиден</translation>
 <translation id="7031646650991750659">Кои приложения от Google Play сте инсталирали</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате настройките за поверителност за профила си в Google</translation>
+<translation id="7044081119134178347">Достъпът до камерата е разрешен този път</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Опитахте да се свържете с/ъс <ph name="DOMAIN" />, но сървърът предостави сертификат, чийто период на валидност е твърде дълъг, за да е надежден.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Тази карта не може да бъде запазена в момента}other{Тези карти не могат да бъдат запазени в момента}}</translation>
@@ -3045,6 +3048,7 @@
 <translation id="8416694386774425977">Конфигурацията на мрежата е невалидна и не можа да се импортира.
 Допълнителни подробности:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Достъпът до микрофона е разрешен този път</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 мм</translation>
 <translation id="8428213095426709021">Настройки</translation>
@@ -3100,6 +3104,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Нулиране на разрешението}other{Нулиране на разрешенията}}</translation>
 <translation id="8555010941760982128">Използвайте този код при плащане</translation>
 <translation id="8557066899867184262">Кодът за проверка се намира на гърба на картата ви.</translation>
+<translation id="8558347880669160417">Достъпът до камерата и микрофона е разрешен този път</translation>
 <translation id="8559762987265718583">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на устройството ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
 <translation id="8564182942834072828">Отделни документи/неподредени копия</translation>
 <translation id="8564985650692024650">Chromium препоръчва да зададете повторно паролата си за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, ако сте я използвали и на други сайтове.</translation>
@@ -3216,6 +3221,7 @@
 <translation id="8870494189203302833">В същия ред с отпечатаната страна надолу</translation>
 <translation id="8870700989640064057">Да се отпечата ли поверителен файл?</translation>
 <translation id="8871553383647848643">Персонализиране на облика на браузъра ви</translation>
+<translation id="8871603420762394026">Chrome вече споделя само много ограничена информация между сайтовете, като например кога ви е показана дадена реклама, за да им помогне да измерват ефективността на рекламите.</translation>
 <translation id="8874824191258364635">Въведете валиден номер на карта</translation>
 <translation id="8876033571432926051">Казуални игри</translation>
 <translation id="8877780815363510165">Риболов</translation>
@@ -3369,6 +3375,7 @@
 <translation id="949314938206378263">Поискахте да посетите този сайт. Родителят ви може да отговори във Family Link.</translation>
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
+<translation id="961930410699694996">Достъпът до местоположението е разрешен този път</translation>
 <translation id="962484866189421427">Въпросното съдържание може да се опита да инсталира измамни приложения, които се представят за нещо друго или събират данни, които може да се използват за проследяването ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Всички потребители</translation>
 <translation id="964050462028070434">Управление на паролите и кодовете за достъп…</translation>

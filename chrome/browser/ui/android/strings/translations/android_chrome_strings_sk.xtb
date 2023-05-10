@@ -285,6 +285,7 @@ Tokeny súkromného stavu zlepšujú ochranu súkromia na internete a nedá sa 
 <translation id="2587052924345400782">Je dostupná novšia verzia</translation>
 <translation id="2593272815202181319">Neproporcionálne</translation>
 <translation id="2603212228005142861">Ak chcete spravovať predvoľby, prihláste sa</translation>
+<translation id="260403163289591229">Sledovaný</translation>
 <translation id="2604446170045642109">Tmavý režim pre weby môžete vypnúť v nastaveniach.</translation>
 <translation id="2612676031748830579">Číslo karty</translation>
 <translation id="2625189173221582860">Heslo bolo skopírované.</translation>
@@ -584,6 +585,7 @@ Tokeny súkromného stavu zlepšujú ochranu súkromia na internete a nedá sa 
 <translation id="4198423547019359126">Nie sú k dispozícii žiadne umiestnenia stiahnutých súborov</translation>
 <translation id="4202218894997543208">Blokované témy</translation>
 <translation id="4214315110991671325">Keď povolíte súbory cookies, Chrome môže pomocou nich prednačítavať.</translation>
+<translation id="4225725533026049334">Sledovaný</translation>
 <translation id="4225895483398857530">Skratka panela s nástrojmi</translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4248098802131000011">Ochráňte svoje heslá pred porušením ochrany údajov a ďalšími bezpečnostnými problémami</translation>
@@ -922,6 +924,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="6005538289190791541">Navrhované heslo</translation>
 <translation id="6011308810877101166">Zlepšovať návrhy vyhľadávania</translation>
 <translation id="6026538407078977628">Rozbaliť na celú obrazovku</translation>
+<translation id="6030719887161080597">Správa informácií, pomocou ktorých merajú weby výkonnosť reklám</translation>
 <translation id="6039379616847168523">Prechod na ďalšiu kartu</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="604124094241169006">Automatické</translation>

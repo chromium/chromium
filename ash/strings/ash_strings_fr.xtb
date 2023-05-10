@@ -56,6 +56,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="121097972571826261">Avancer par mot</translation>
 <translation id="1217633719248931900">Accéder à l'appli</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
+<translation id="1219309685806246869">Revenir à <ph name="APP_TITLE" /></translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
 <translation id="1235458158152011030">Réseaux connus</translation>
@@ -459,6 +460,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="316086887565479535">Le modèle contient des applis non compatibles</translation>
 <translation id="3161500364292033097">Fermer le bureau et les fenêtres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
+<translation id="3171170659304083361">Paramètres des modes de saisie</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre du temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
 <translation id="320207200541803018">Régler le minuteur</translation>
@@ -1058,6 +1060,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5881540930187678962">Configurer Phone Hub plus tard</translation>
 <translation id="5881663018261910378">Désactivé</translation>
 <translation id="5887954372087850114">La fenêtre <ph name="WINDOW_TITLE" /> est associée à <ph name="DESK_TITLE" /> et dissociée de tous les autres bureaux</translation>
+<translation id="588817334757907802">Ouvrir le fichier dans le navigateur Chrome</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="589817443623831496">Exploration par position</translation>
 <translation id="5901316534475909376">Maj+Échap</translation>
@@ -1109,6 +1112,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6074087755403037157">Version bêta</translation>
 <translation id="6093867385179428431">Désactivé par l'administrateur</translation>
 <translation id="6095008505822982596">Débit</translation>
+<translation id="6095425951508823973">Ajouter une connexion à <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modifié le mois dernier</translation>
 <translation id="6103838137565245112">système</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
@@ -1588,6 +1592,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8349964124165471584">Ouvrir le lien dans une nouvelle fenêtre</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8364673525741149932">Activer/Désactiver Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en cours d'utilisation.</translation>
 <translation id="8369166482916924789">Bureau enregistré, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avancer par lettre</translation>
 <translation id="8371991222807690464">Les performances du périphérique peuvent être limitées en mode Invité</translation>

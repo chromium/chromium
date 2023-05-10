@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS විසඳිය නොහැකිය</translation>
 <translation id="1018656279737460067">අවලංගු විය</translation>
 <translation id="1022433422498218992">පොදු පාලන</translation>
+<translation id="1022628058306505708">පෘථිවි ප්‍රවාහය</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (පොටවල් <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">නව විශේෂාංගයක් ලබා ගත හැකිය, තව දැන ගැනීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
 <translation id="1059913517121127803">ස්කෑන් කිරීම ආරම්භ කිරීමට නොහැකි විය</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">තවත් ක්‍රියා</translation>
 <translation id="2926057806159140518">ඔබගේ පරිශීලක නාමය සහ මුරපදය ඇතුළත් කරන්න හෝ ඔබගේ QR කේතය ස්කෑන් කරන්න</translation>
 <translation id="2940811910881150316">උපාංගය පරීක්ෂා කළ නොහැක. පරීක්ෂා කිරීමට පියන නැවත විවෘත කරන්න.</translation>
+<translation id="2981143481017883351">සුවිශේෂී Chromebook වත්කම් දැන් තිබේ</translation>
 <translation id="3008341117444806826">නැවුම් කරන්න</translation>
 <translation id="3009958530611748826">සුරැකීමට ෆෝල්ඩරයක් තෝරන්න</translation>
 <translation id="3017079585324758401">පසුබිම</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
 <translation id="3369013195428705271">ඔබට මුද්‍රණ ඉතිහාස සියල්ල හිස් කිරීමට අවශ්‍ය බව ඔබට තහවුරුද? ඔබේ පවතින මුද්‍රණ වැඩ හිස් නොකෙරේ.</translation>
+<translation id="3386675685417744672">Chromebook සුවිශේෂී</translation>
 <translation id="3404249063913988450">තිර සුරැකුම සබල කරන්න</translation>
 <translation id="3413935475507503304">යාවත්කාලීනය සමග ඉදිරියට යාමට, ඊළඟ ක්ලික් කරන්න.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">අවවාදයයි</translation>
 <translation id="4054683689023980771">රූපය බාගනිමින්</translation>
 <translation id="4060260348856573701">නව APN</translation>
+<translation id="4079743696465895866">Chromebook සුවිශේෂී කලා කටයුත්ත තෝරන්න</translation>
 <translation id="4093865285251893588">පැතිකඩ රූපය</translation>
 <translation id="409427325554347132">පරීක්ෂණ විස්තර පෙන්වන්න</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">භාවිතය සමඟ බැටරි ධාරිතාව පහත වැටේ</translation>
 <translation id="6191293864534840972">විකෘති වූ නම් සේවාදායක</translation>
+<translation id="6205145102504628069">ක්ලවුඩ් ප්‍රවාහය</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">පූර්ණයෙන් පිටවීම</translation>
 <translation id="6223752125779001553">ස්කෑනර ලබා ගත නොහැකිය</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">අභිරුචිකරණය</translation>
 <translation id="6500818810472529210">Google සෙවීම තුළ ප්‍රතිඵල බලන්න</translation>
 <translation id="650266656685499220">ඇල්බම තැනීමට, Google ඡායාරූප වෙත යන්න</translation>
+<translation id="6505750420152840539">අලුයම සිට අඳුර දක්වා</translation>
 <translation id="6516990319416533844">බැටරිය ආරෝපණය වීමේ වේගය පරීක්ෂා කිරීමට, කෙටි කාලයක් සඳහා ඔබගේ බැටරිය බැස යාමට ඉඩ දෙන්න</translation>
 <translation id="6517239166834772319">ගවේෂණය</translation>
 <translation id="6526200165918397681">වෝල්පේපරය ගළපන්න</translation>

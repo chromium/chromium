@@ -86,6 +86,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2467438592969358367">Google Chrome wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
 <translation id="2534507159460261402">Google Pay (gekopieerd naar Chrome)</translation>
+<translation id="2556847002339236023">Je organisatie sluit Chrome als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt. Browsegegevens zijn verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.</translation>
 <translation id="2559253115192232574">Later kan een site die je bezoekt Chrome vragen om je interesses te bekijken zodat de advertenties die je ziet kunnen worden gepersonaliseerd. Chrome kan maximaal 3 interesses delen.</translation>
 <translation id="2563121210305478421">Chrome opnieuw starten?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is al ingelogd bij dit Chrome-profiel. Als je je browsegegevens gescheiden wilt houden, kan Chrome een eigen profiel voor je maken.</translation>
@@ -272,6 +273,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6113794647360055231">Chrome is nu nog beter</translation>
 <translation id="6145313976051292476">Pdf's openen in Chrome</translation>
 <translation id="6155960517327665396">Geheugenbesparing maakte Chrome sneller</translation>
+<translation id="6157638032135951407">Je organisatie verwijdert Chrome-gegevens als deze <ph name="TIMEOUT_DURATION" /> niet worden gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Bèta</translation>
 <translation id="6235018212288296708">Inkomende regel zodat Google Chrome mDNS-verkeer toestaat.</translation>
@@ -287,6 +289,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6418662306461808273">Overschakelen naar bestaand Chrome-profiel?</translation>
 <translation id="648319183876919572">De uitgebreide versie van Safe Browsing doet meer om je te beschermen tegen gevaarlijke websites en downloads</translation>
 <translation id="6493527311031785448">Google Chrome probeert het volgende te doen: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome is automatisch gesloten</translation>
 <translation id="6506909944137591434">Chrome heeft camerarechten nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">In Google Wachtwoordmanager op dit apparaat</translation>
@@ -323,6 +326,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7155997830309522122">Als dit het geval is, bewerk je het opgeslagen wachtwoord in Chrome, zodat het overeenkomt met je nieuwe wachtwoord.</translation>
 <translation id="7161904924553537242">Welkom bij Google Chrome</translation>
 <translation id="7177959540995930968">Bekijk meer informatie over deze functies in de Chrome-instellingen.</translation>
+<translation id="7193885263065350793">Je organisatie sluit Chrome als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt.</translation>
 <translation id="7242029209006116544">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt ook een nieuw profiel maken om je bestaande Chrome-gegevens gescheiden te houden. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Deze taal wordt gebruikt om de Google Chrome-UI weer te geven</translation>
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>

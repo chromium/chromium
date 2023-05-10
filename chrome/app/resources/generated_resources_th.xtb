@@ -348,6 +348,7 @@
 <translation id="1288300545283011870">คุณสมบัติของเสียงพูด</translation>
 <translation id="1289619947962767206">ระบบไม่รองรับตัวเลือกนี้แล้ว หากต้องการนำเสนอแท็บ โปรดใช้ <ph name="GOOGLE_MEET" /></translation>
 <translation id="1291119821938122630">ข้อกำหนดในการให้บริการของ <ph name="MANAGER" /></translation>
+<translation id="1291421198328146277">รีเซ็ตแป้น</translation>
 <translation id="1292849930724124745">เสียบสมาร์ทการ์ดเพื่อให้อยู่ในระบบต่อไป</translation>
 <translation id="1293264513303784526">อุปกรณ์ USB-C (พอร์ตด้านซ้าย)</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
@@ -579,6 +580,7 @@
 <translation id="1493892686965953381">กำลังรอ <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">เว็บไซต์สามารถขอใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์ได้</translation>
 <translation id="1494429729245089920">มีเครื่องเสมือน "<ph name="VM_NAME" />" อยู่แล้ว แต่ดูเหมือนจะไม่ใช่เครื่องเสมือนที่ถูกต้องของ <ph name="APP_NAME" /> โปรดติดต่อผู้ดูแลระบบ</translation>
+<translation id="1495201326198374770">ใช้แป้นฟังก์ชันเป็นแป้นประจำแถวบนสุดของ Chromebook</translation>
 <translation id="1495677929897281669">กลับไปที่แท็บ</translation>
 <translation id="1498498210836053409">ปิดโหมดกดค้างเมื่อแก้ไขข้อความ (โหมดกดค้างอัจฉริยะ)</translation>
 <translation id="1500297251995790841">อุปกรณ์ที่ไม่รู้จัก [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1315,6 +1317,7 @@
 <translation id="2105809836724866556">ซ่อน<ph name="MODULE_TITLE" />แล้ว</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{หมายเลขโทรศัพท์}other{# หมายเลขโทรศัพท์}}</translation>
 <translation id="2110941575868943054">อนุญาตให้ค้นหาอุปกรณ์บลูทูธ</translation>
+<translation id="2111238878637848860">กดแป้น Launcher ค้างไว้เพื่อเปลี่ยนระหว่างแป้นฟังก์ชัน</translation>
 <translation id="211144231511833662">ล้างประเภท</translation>
 <translation id="2111670510994270194">แท็บใหม่อยู่ด้านขวา</translation>
 <translation id="2112554630428445878">ยินดีต้อนรับ <ph name="USERNAME" /></translation>
@@ -2360,11 +2363,13 @@
 <translation id="3000378525979847272">อนุญาตให้เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3001144475369593262">บัญชีของบุตรหลาน</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{ไม่มีแป้นที่กำหนดเอง}=1{มีแป้นที่กำหนดเอง 1 แป้น}other{มีแป้นที่กำหนดเอง {COUNT} แป้น}}</translation>
 <translation id="3001835006423291524">แตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาล่างของแป้นพิมพ์ ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="3003144360685731741">เครือข่ายที่ต้องการ</translation>
 <translation id="3003623123441819449">แคช CSS</translation>
 <translation id="3003828226041301643">นำอุปกรณ์เข้าร่วมโดเมนไม่ได้ ตรวจสอบบัญชีว่ามีสิทธิ์เพิ่มอุปกรณ์</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> จะสร้างการเชื่อมต่อ Wi-Fi ส่วนตัว</translation>
+<translation id="3004385386820284928">ปรับแต่งแป้นต่างๆ บนแป้นพิมพ์</translation>
 <translation id="3005574332301273731">ไม่แสดง</translation>
 <translation id="3006881078666935414">ไม่มีข้อมูลการใช้งาน</translation>
 <translation id="3007410324195400631">เพิ่มโน้ตเกี่ยวกับหน้านี้</translation>
@@ -3380,6 +3385,7 @@
 <translation id="389901847090970821">เลือกแป้นพิมพ์</translation>
 <translation id="3900966090527141178">ส่งออกรหัสผ่าน</translation>
 <translation id="3902789559055749153">เลือกวิธีที่คุณต้องการสร้างพาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
+<translation id="3903158219409898205">ใช้แป้น Launcher เพื่อเปลี่ยนการทำงานของแป้นประจำแถวบนสุดของ Chromebook</translation>
 <translation id="3903187154317825986">แป้นพิมพ์ในตัว</translation>
 <translation id="3904326018476041253">บริการตำแหน่ง</translation>
 <translation id="3905761538810670789">ซ่อมแอป</translation>
@@ -3790,6 +3796,7 @@
 <translation id="4279129444466079448">คุณติดตั้งโปรไฟล์ eSIM ในอุปกรณนี้ได้สูงสุด <ph name="PROFILE_LIMIT" /> โปรไฟล์ หากต้องการเพิ่มโปรไฟล์ ให้นำโปรไฟล์ที่มีอยู่ออกก่อน</translation>
 <translation id="4280325816108262082">อุปกรณ์จะยกเลิกการเชื่อมต่อโดยอัตโนมัติเมื่อปิดหรือไม่ได้ใช้งานอุปกรณ์</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
+<translation id="428200245206114206">ตอนนี้แป้น F จะทำงานเป็นแป้นประจำแถวบนสุดของ Chromebook</translation>
 <translation id="4282196459431406533">Smart Lock เปิดอยู่</translation>
 <translation id="4284903252249997120">โปรแกรมอ่านหน้าจอ ChromeVox และฟีเจอร์เลือกเพื่อให้อ่าน</translation>
 <translation id="4285418559658561636">อัปเดตรหัสผ่าน</translation>
@@ -4577,6 +4584,7 @@
 <translation id="4991420928586866460">ใช้แป้นแถวบนสุดเป็นแป้นฟังก์ชัน</translation>
 <translation id="4992458225095111526">ยืนยัน Powerwash</translation>
 <translation id="4992473555164495036">ผู้ดูแลระบบจำกัดวิธีการป้อนข้อมูลที่ใช้ได้เอาไว้</translation>
+<translation id="4994426888044765950">หากกดแป้นค้างไว้ อักขระของแป้นจะพิมพ์ซ้ำ</translation>
 <translation id="4994754230098574403">กำลังตั้งค่า</translation>
 <translation id="4995293419989417004">ดูข้อมูลเพิ่มเติมเกี่ยวกับหัวข้อโฆษณา</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ไม่พบ VM <ph name="VM_TYPE" />}=1{พบ VM <ph name="VM_TYPE" /> 1 รายการ: <ph name="VM_NAME_LIST" />}other{พบ VM <ph name="VM_TYPE" /> {NUM_VMS} รายการ: <ph name="VM_NAME_LIST" />}}</translation>
@@ -6125,6 +6133,7 @@
 <translation id="6410328738210026208">เปลี่ยนช่องและ Powerwash</translation>
 <translation id="6410390304316730527">Google Safe Browsing ปกป้องคุณจากผู้โจมตีที่อาจหลอกล่อให้ทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์ที่ประสงค์ร้ายหรือเปิดเผยข้อมูลส่วนบุคคล เช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต หากคุณปิดใช้ โปรดระวังขณะเรียกดูเว็บไซต์ที่ไม่คุ้นเคยหรือไม่เป็นที่รู้จัก</translation>
 <translation id="6410668567036790476">เพิ่มเครื่องมือค้นหา</translation>
+<translation id="6411135999030237579">กดค้างไว้เพื่อพิมพ์อักขระบนแป้นซ้ำโดยอัตโนมัติ</translation>
 <translation id="641469293210305670">ติดตั้งอัปเดตและแอป</translation>
 <translation id="6414878884710400018">เปิดค่ากำหนดของระบบ</translation>
 <translation id="6415816101512323589">เปิดการกู้คืนข้อมูลในเครื่องเพื่อปกป้องข้อมูลของคุณไหม</translation>
@@ -7974,7 +7983,7 @@
 <translation id="8028993641010258682">ขนาด</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ขอสิทธิ์ กด ⌘ + Option + ลูกศรขึ้นเพื่อตอบกลับ</translation>
 <translation id="8030169304546394654">ยกเลิกการเชื่อมต่อแล้ว</translation>
-<translation id="8030852056903932865">อนุญาต</translation>
+<translation id="8030852056903932865">อนุมัติ</translation>
 <translation id="8032244173881942855">ไม่สามารถแคสต์แท็บ</translation>
 <translation id="8032569120109842252">กำลังติดตาม</translation>
 <translation id="8033023935541439900">เมนูเครื่องหมายการเน้นเสียงเปิดอยู่ กดซ้ายหรือขวาเพื่อเลือกเครื่องหมายที่ต้องการและกด Enter เพื่อแทรก</translation>
@@ -8799,6 +8808,7 @@
 
           &lt;p&gt;แต่คุณยังคงสามารถกำหนดค่าผ่านบรรทัดคำสั่งได้ โปรดดูที่ &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการตั้งค่าสถานะและตัวแปรแวดล้อม&lt;/p&gt;</translation>
 <translation id="8755175579224030324">ทำงานด้านความปลอดภัยให้องค์กร เช่น จัดการใบรับรองและคีย์ที่จัดเก็บไว้ในอุปกรณ์</translation>
+<translation id="875532100880844232">สำหรับ <ph name="DEVICE_NAME" /> ให้เลือกการดำเนินการสำหรับแต่ละแป้น</translation>
 <translation id="8755376271068075440">ใ&amp;หญ่ขึ้น</translation>
 <translation id="8755584192133371929">เลือกแท็บที่ต้องการแชร์</translation>
 <translation id="875604634276263540">URL ของรูปภาพไม่ถูกต้อง</translation>
@@ -9324,6 +9334,7 @@
 <translation id="9218430445555521422">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (แอปที่ไม่รองรับ)</translation>
 <translation id="9219582468404818260">ช่วยเราสร้างเว็บที่ดียิ่งขึ้น</translation>
+<translation id="9219741625496141320">มีการลบข้อมูลการท่องเว็บโดยอัตโนมัติ</translation>
 <translation id="9220525904950070496">ลบบัญชี</translation>
 <translation id="9220723036554088545">อัปโหลดไฟล์</translation>
 <translation id="9220820413868316583">ยกนิ้วขึ้นแล้วลองอีกครั้ง</translation>

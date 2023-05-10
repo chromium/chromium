@@ -1,4 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1356944128023012143">Nakasara ang listahan ng mga naka-sync na device at piniling tab mula sa mga device na iyon na ire-restore sa bagong na-restore na workflow.</translation>
+<translation id="1816430105422765050">Palitan ng iba pang naka-sync na device sa ilalim ng item sa menu na ito.</translation>
+<translation id="3347725959865138210">Piliin ang device kung saan mo gustong kumuha ng mga tab</translation>
+<translation id="3575801299326994724">Suriin ang mga piniling tab na ire-restore mula sa kasalukuyang piniling device.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab, huling in-update: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> tab, huling in-update: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> na tab, huling in-update: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="3983305234037158273">Available na mabago ang mga naka-sync na device para sa pag-restore ng tab sa pamamagitan ng pagpindot. Mag-navigate para suriin o i-restore ang mga piniling tab para sa kasalukuyang device sa pamamagitan ng pagpindot. Naka-hide ang keyboard.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{Buksan ang <ph name="TABS_COUNT_ONE" /> tab}one{Buksan ang <ph name="TABS_COUNT_MANY" /> tab}other{Buksan ang <ph name="TABS_COUNT_MANY" /> na tab}}</translation>
+<translation id="4811934403802581334">Ire-restore ang lahat ng piniling tab mula sa kasalukuyang piniling device.</translation>
+<translation id="5336031759968328813">Suriin ang lahat ng tab</translation>
+<translation id="8725404154479306799">Kunin ang mga tab na iniwan mong nakabukas sa mga lumang device</translation>
 </translationbundle>

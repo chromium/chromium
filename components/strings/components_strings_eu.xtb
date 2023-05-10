@@ -1030,6 +1030,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3531780078352352885">Lan-orriak</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> webguneak mikrofonoa erabili nahi du</translation>
 <translation id="3533328374079021623">5. postontzia</translation>
+<translation id="3536227077203206203">Erabil daiteke une honetan</translation>
 <translation id="3537165859691846083">Eskutitza (handiagoa)</translation>
 <translation id="3542628208405253498">Txartelaren argazkia</translation>
 <translation id="3542768452570884558">Ireki esteka beste leiho batean</translation>
@@ -2448,6 +2449,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7030436163253143341">Ziurtagiriak ez du balio</translation>
 <translation id="7031646650991750659">Instalatuta dauzkazun Google Play-ko aplikazioak.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla Google-ko kontuaren pribatutasun-ezarpenak kudeatzeko.</translation>
+<translation id="7044081119134178347">Kamera erabil daiteke une honetan</translation>
 <translation id="7048095965575426564">Fanfold europarra</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> atzitzen saiatu zara, baina zerbitzariak balio-epe luzeegia duen ziurtagiri bat aurkeztu du eta ez da fidagarria.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ezin da gorde txartela une honetan}other{Ezin dira gorde txartelak une honetan}}</translation>
@@ -3040,6 +3042,7 @@ Xehetasun gehiago:
 <translation id="8416694386774425977">Sarearen konfigurazioak ez du balio eta ezin izan da inportatu.
 Xehetasun gehiago:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofonoa erabil daiteke une honetan</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
@@ -3095,6 +3098,7 @@ Xehetasun gehiago:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Berrezarri baimena}other{Berrezarri baimenak}}</translation>
 <translation id="8555010941760982128">Erabili kode hau ordainketa-prozesuan</translation>
 <translation id="8557066899867184262">Txartelaren atzealdean agertzen da CVC kodea.</translation>
+<translation id="8558347880669160417">Kamera eta mikrofonoa erabil daitezke une honetan</translation>
 <translation id="8559762987265718583">Ezin da ezarri <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeinurako konexio pribatua gailuaren data eta ordua (<ph name="DATE_AND_TIME" />) okerrak direlako.</translation>
 <translation id="8564182942834072828">Dokumentu bereiziak / Elkartu gabeko kopiak</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chromium-ek.</translation>
@@ -3211,6 +3215,7 @@ Xehetasun gehiago:
 <translation id="8870494189203302833">Ordena berean, ahuspez</translation>
 <translation id="8870700989640064057">Isilpeko fitxategia inprimatu nahi duzu?</translation>
 <translation id="8871553383647848643">Pertsonalizatu arakatzailearen itxura</translation>
+<translation id="8871603420762394026">Orain, webguneei iragarkien errendimendua neurtzen laguntzeko informazio oso mugatua soilik partekatzen du Chrome-k webguneen artean; adibidez, noiz erakutsi dizuten iragarki bat.</translation>
 <translation id="8874824191258364635">Idatzi balio duen txartel-zenbaki bat</translation>
 <translation id="8876033571432926051">Casual jokoak</translation>
 <translation id="8877780815363510165">Arrantza</translation>
@@ -3364,6 +3369,7 @@ Xehetasun gehiago:
 <translation id="949314938206378263">Webgune hau bisitatzeko baimena eskatu duzu. Zure gurasoak Family Link-en erantzun dezake.</translation>
 <translation id="950736567201356821">Hiru zulo goian</translation>
 <translation id="961663415146723894">Koadernatu behetik</translation>
+<translation id="961930410699694996">Kokapena erabil daiteke une honetan</translation>
 <translation id="962484866189421427">Eduki hau beste zerbaiten plantak egiten dituzten aplikazio iruzurtiak instalatzen saia daiteke edo datuak bil ditzake zure jarraipena egiteko. <ph name="BEGIN_LINK" />Erakutsi hala ere<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Erabiltzaile guztiak</translation>
 <translation id="964050462028070434">Kudeatu pasahitzak eta sarbide-gakoak…</translation>

@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">დავალების ფურცლები</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ითხოვს თქვენი მიკროფონის გამოყენების ნებართვას</translation>
 <translation id="3533328374079021623">საფოსტო ყუთი 5</translation>
+<translation id="3536227077203206203">დაშვებულია ამჯერად</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">ბარათის სურათი</translation>
 <translation id="3542768452570884558">ბმულის გახსნა ახალ ფანჯარაში</translation>
@@ -2453,6 +2454,7 @@
 <translation id="7030436163253143341">სერთიფიკატი არ არის მოქმედი</translation>
 <translation id="7031646650991750659">თქვენ მიერ დაინსტალირებული Google Play აპები</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, თქვენი Google ანგარიშის კონფიდენციალურობის პარამეტრების სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
+<translation id="7044081119134178347">კამერა დაშვებულია ამჯერად</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">თქვენ ცდილობდით <ph name="DOMAIN" />-თან დაკავშირებას, მაგრამ სერვერის მიერ წარმოდგენილი სერთიფიკატის მოქმედების პერიოდი ზედმეტად ხანგრძლივია, იმისათვის რომ სანდო იყოს.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ამ ბარათის შენახვა ამჟამად ვერ მოხერხდება}other{ამ ბარათების შენახვა ამჟამად ვერ მოხერხდება}}</translation>
@@ -3045,6 +3047,7 @@
 <translation id="8416694386774425977">ქსელის კონფიგურაცია არასწორია და მისი იმპორტირება ვერ მოხერხდა.
 დამატებითი დეტალები:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">მიკროფონი დაშვებულია ამჯერად</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 მმ</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
@@ -3100,6 +3103,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ნებართვის გადაყენება}other{ნებართვების გადაყენება}}</translation>
 <translation id="8555010941760982128">გამოიყენეთ ეს კოდი შეკვეთის გაფორმებისას</translation>
 <translation id="8557066899867184262">CVC მითითებულია თქვენი ბარათის უკანა ნაწილზე.</translation>
+<translation id="8558347880669160417">კამერა და მიკროფონი დაშვებულია ამჯერად</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-თან პირადი კავშირის დამყარება შეუძლებელია, რადგან თქვენი მოწყობილობის თარიღი და დრო (<ph name="DATE_AND_TIME" />) არასწორია.</translation>
 <translation id="8564182942834072828">სხვადასხვა დოკუმენტი/შეურჩეველი ასლები</translation>
 <translation id="8564985650692024650">Chromium გირჩევთ, გადააყენოთ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ის პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
@@ -3370,6 +3374,7 @@
 <translation id="949314938206378263">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობელს გამოხმაურება შეუძლია Family Link-იდან.</translation>
 <translation id="950736567201356821">სამმაგად გახვრეტა ზემოთ</translation>
 <translation id="961663415146723894">აკინძვა ქვემოთ</translation>
+<translation id="961930410699694996">მდებარეობა დაშვებულია ამჯერად</translation>
 <translation id="962484866189421427">ამ კონტენტის მეშვეობით შეიძლება დაინსტალირდეს შეცდომაში შემყვანი აპები, რომლებსაც შეუძლია თავის გასაღება სხვა აპებად ან ისეთი მონაცემების შეგროვება, რომელთა მეშვეობითაც შესაძლებელი იქნება თქვენთვის თვალის მიდევნება. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">ყველა მომხმარებელი</translation>
 <translation id="964050462028070434">პაროლებისა და წვდომის გასაღებების მართვა…</translation>

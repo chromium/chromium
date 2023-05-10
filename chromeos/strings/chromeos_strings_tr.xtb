@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS çözümlenemiyor</translation>
 <translation id="1018656279737460067">İptal Edildi</translation>
 <translation id="1022433422498218992">Genel Kontroller</translation>
+<translation id="1022628058306505708">Toprak Kayması</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> iş parçacığı, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için yukarı ok tuşunu kullanın.</translation>
 <translation id="1059913517121127803">Tarama işlemi başlatılamadı</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Diğer işlemler</translation>
 <translation id="2926057806159140518">Kullanıcı adınızı ve şifrenizi girin ya da QR kodunuzu tarayın</translation>
 <translation id="2940811910881150316">Cihaz test edilemiyor. Test etmek için kapağı tekrar açın.</translation>
+<translation id="2981143481017883351">Özel Chromebook öğeleri artık kullanılabilir</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="3017079585324758401">Arka plan</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
+<translation id="3386675685417744672">Chromebook'a özel</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">UYARI</translation>
 <translation id="4054683689023980771">Resim indiriliyor</translation>
 <translation id="4060260348856573701">Yeni APN</translation>
+<translation id="4079743696465895866">Chromebook'a özel posteri seçin</translation>
 <translation id="4093865285251893588">Profil resmi</translation>
 <translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Pil kapasitesi kullanıldıkça azalır</translation>
 <translation id="6191293864534840972">Alan adı sunucuları geçersiz</translation>
+<translation id="6205145102504628069">Bulut Akışı</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Tam ekran modundan çık</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Özelleştirme</translation>
 <translation id="6500818810472529210">Sonucu Google Arama'da göster</translation>
 <translation id="650266656685499220">Albüm oluşturmak için Google Fotoğraflar'a gidin</translation>
+<translation id="6505750420152840539">Şafaktan geceye</translation>
 <translation id="6516990319416533844">Pilin şarj olma hızını test etmek için kısa bir süre için şarjınızın azalmasına izin verin</translation>
 <translation id="6517239166834772319">Keşfet</translation>
 <translation id="6526200165918397681">Duvar kağıdıyla eşleştir</translation>

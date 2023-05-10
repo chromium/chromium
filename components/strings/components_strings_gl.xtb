@@ -1034,6 +1034,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3531780078352352885">Follas do traballo</translation>
 <translation id="3532844647053365774">O host <ph name="HOST" /> quere usar o teu micrófono</translation>
 <translation id="3533328374079021623">Caixa de correo 5</translation>
+<translation id="3536227077203206203">Permítese esta vez</translation>
 <translation id="3537165859691846083">Carta plus</translation>
 <translation id="3542628208405253498">Imaxe da tarxeta</translation>
 <translation id="3542768452570884558">Abrir ligazón nunha ventá nova</translation>
@@ -2453,6 +2454,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7030436163253143341">O certificado non é válido</translation>
 <translation id="7031646650991750659">As aplicacións de Google Play que teñas instaladas</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de privacidade da túa Conta de Google, preme Tabulador e, a continuación, Introducir</translation>
+<translation id="7044081119134178347">Permítese o uso da cámara esta vez</translation>
 <translation id="7048095965575426564">Continuo europeo</translation>
 <translation id="7050187094878475250">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado cun período de validez demasiado longo para ser fiable.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Esta tarxeta non se pode gardar neste momento}other{Estas tarxetas non se poden gardar neste momento}}</translation>
@@ -3045,6 +3047,7 @@ Detalles adicionais:
 <translation id="8416694386774425977">A configuración de rede non é válida e non se puido importar.
 Detalles adicionais:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Permítese o uso do micrófono esta vez</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -3100,6 +3103,7 @@ Detalles adicionais:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Restablecer permiso}other{Restablecer permisos}}</translation>
 <translation id="8555010941760982128">Usa este código ao tramitar a compra</translation>
 <translation id="8557066899867184262">O código CVC atópase na parte traseira da tarxeta</translation>
+<translation id="8558347880669160417">Permítense o uso do micrófono e da cámara esta vez</translation>
 <translation id="8559762987265718583">Non se pode establecer unha conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e a hora do dispositivo (<ph name="DATE_AND_TIME" />) son incorrectas.</translation>
 <translation id="8564182942834072828">Documentos independentes/copias non intercaladas</translation>
 <translation id="8564985650692024650">Chromium recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
@@ -3216,6 +3220,7 @@ Detalles adicionais:
 <translation id="8870494189203302833">A mesma orde cara abaixo</translation>
 <translation id="8870700989640064057">Queres imprimir o ficheiro confidencial?</translation>
 <translation id="8871553383647848643">Personalizar o aspecto do navegador</translation>
+<translation id="8871603420762394026">Agora Chrome só comparte información moi limitada entre os sitios (como, por exemplo, cando se che mostrou un anuncio) co fin de axudarlles a medir o rendemento dos anuncios.</translation>
 <translation id="8874824191258364635">Introduce un número de tarxeta válido</translation>
 <translation id="8876033571432926051">Xogos casuais</translation>
 <translation id="8877780815363510165">Pesca</translation>
@@ -3369,6 +3374,7 @@ Detalles adicionais:
 <translation id="949314938206378263">Pediches permiso para visitar este sitio. O teu pai ou nai pode responder en Family Link.</translation>
 <translation id="950736567201356821">Tres perforacións na parte superior</translation>
 <translation id="961663415146723894">Encadernación na parte inferior</translation>
+<translation id="961930410699694996">Permítese o uso da localización esta vez</translation>
 <translation id="962484866189421427">Este contido pode tentar instalar aplicacións enganosas que pretenden pasar por algo que non son ou recompilar datos que se poden utilizar para facer un seguimento das túas accións. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Todos os usuarios</translation>
 <translation id="964050462028070434">Xestionar contrasinais e claves de acceso…</translation>

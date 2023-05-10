@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">برگ‌های کار</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> می‌خواهد از میکروفن شما استفاده کند</translation>
 <translation id="3533328374079021623">صندوق پست ۵</translation>
+<translation id="3536227077203206203">این بار مجاز شد</translation>
 <translation id="3537165859691846083">نامه افزوده</translation>
 <translation id="3542628208405253498">تصویر کارت</translation>
 <translation id="3542768452570884558">باز کردن پیوند در پنجره جدید</translation>
@@ -1672,6 +1673,7 @@
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
 <translation id="5051305769747448211">کمدی زنده</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}one{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}other{برای ارسال این فایل‌ها ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}}</translation>
+<translation id="5060419232449737386">تنظیمات زیرنویس ناشنوایان</translation>
 <translation id="5060483733937416656">‏قبلاً انتخاب کرده‌اید در وب‌سایت‌هایی که از <ph name="PROVIDER_ORIGIN" /> استفاده می‌کنند درستی‌سنجی با Windows Hello انجام شود. این ارائه‌دهنده ممکن است اطلاعات روش پرداختتان را ذخیره کرده باشد، که می‌توانید <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">منظورتان <ph name="LOOKALIKE_DOMAIN" /> بود؟</translation>
 <translation id="5066056036849835175">سابقه چاپ</translation>
@@ -2453,6 +2455,7 @@
 <translation id="7030436163253143341">گواهی معتبر نیست</translation>
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات حریم خصوصی «حساب Google» خود، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="7044081119134178347">دوربین این بار مجاز شد</translation>
 <translation id="7048095965575426564">تاشوی اروپایی</translation>
 <translation id="7050187094878475250">تلاش کردید به دامنه <ph name="DOMAIN" /> بروید اما گواهینامه‌ای که سرور ارائه کرد، دارای یک تاریخ اعتبار بسیار طولانی است و مورداعتماد نیست.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{درحال‌حاضر این کارت ذخیره نمی‌شود}one{درحال‌حاضر این کارت‌ها ذخیره نمی‌شوند}other{درحال‌حاضر این کارت‌ها ذخیره نمی‌شوند}}</translation>
@@ -3045,6 +3048,7 @@
 <translation id="8416694386774425977">پیکربندی شبکه نامعتبر است و نمی‌توان آن را وارد کرد.
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">میکروفون این بار مجاز شد</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">۷۵۰ × ۵۰۰ میلی‌متر</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
@@ -3100,6 +3104,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{بازنشانی اجازه}one{بازنشانی اجازه}other{بازنشانی اجازه‌ها}}</translation>
 <translation id="8555010941760982128">هنگام تسویه‌حساب، از این کد استفاده کنید</translation>
 <translation id="8557066899867184262">‏CVC در پشت کارتتان قرار گرفته است.</translation>
+<translation id="8558347880669160417">دوربین و میکروفون این بار مجاز شدند</translation>
 <translation id="8559762987265718583">اتصال خصوصی به <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> انجام نمی‌شود، زیرا تاریخ و زمان دستگاه شما (<ph name="DATE_AND_TIME" />) نادرست است.</translation>
 <translation id="8564182942834072828">اسناد جداگانه/کپی‌های تلفیق‌نشده</translation>
 <translation id="8564985650692024650">‏Chromium توصیه می‌کند اگر از گذرواژه <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> خود در سایت دیگری استفاده کردید آن را بازنشانی کنید.</translation>
@@ -3216,6 +3221,7 @@
 <translation id="8870494189203302833">ترتیب یکسان، روبه‌پایین</translation>
 <translation id="8870700989640064057">فایل محرمانه چاپ شود؟</translation>
 <translation id="8871553383647848643">سفارشی کردن ظاهر مرورگر</translation>
+<translation id="8871603420762394026">‏درحال‌حاضر Chrome فقط اطلاعات بسیار محدودی را بین سایت‌ها هم‌رسانی می‌کند (مثلاً زمان نمایش آگهی به شما) تا به سایت‌ها کمک کند عملکرد آگهی‌ها را اندازه‌گیری کنند.</translation>
 <translation id="8874824191258364635">شماره کارت معتبری وارد کنید</translation>
 <translation id="8876033571432926051">بازی نامرتب</translation>
 <translation id="8877780815363510165">ماهی‌گیری</translation>
@@ -3369,6 +3375,7 @@
 <translation id="949314938206378263">‏درخواست کرده‌اید از این سایت بازدید کنید. ولی‌تان می‌تواند در Family Link پاسخ دهد.</translation>
 <translation id="950736567201356821">سه سوراخ در بالا</translation>
 <translation id="961663415146723894">به‌هم چسباندن از پایین</translation>
+<translation id="961930410699694996">مکان این بار مجاز شد</translation>
 <translation id="962484866189421427">این محتوا ممکن است برنامه‌های فریب‌دهنده‌ای نصب کند که وانمود می‌کنند برنامه دیگری هستند یا اینکه داده‌هایی برای ردیابی شما جمع‌آوری می‌کنند. <ph name="BEGIN_LINK" />درهرصورت نشان داده شود<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">همه کاربران</translation>
 <translation id="964050462028070434">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>

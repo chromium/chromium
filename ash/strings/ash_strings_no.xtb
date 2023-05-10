@@ -56,6 +56,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="121097972571826261">Ett ord frem</translation>
 <translation id="1217633719248931900">Gå til appen</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" /> – Play Butikk-app</translation>
+<translation id="1219309685806246869">Gå tilbake til <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Chromebooken er låst på grunn av en kjent feil. Du kan logge på om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Slutt å merke</translation>
 <translation id="1235458158152011030">Kjente nettverk:</translation>
@@ -350,6 +351,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2620016719323068571">Søk i <ph name="CATEGORY" />, filer, apper med mer …</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Sikret</translation>
+<translation id="2624588537172718173">Enhetslyd og mikrofon</translation>
 <translation id="263399434338050016">«Merk alt»</translation>
 <translation id="2644422758626431000">Fest vinduet til venstre</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -410,6 +412,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2942350706960889382">Dokket lupe</translation>
 <translation id="2942516765047364088">Hylleposisjon</translation>
 <translation id="2946119680249604491">Legg til forbindelse</translation>
+<translation id="295852781144570696">Enhetslyd</translation>
 <translation id="2960314608273155470">Opptaksmodus – standard er <ph name="SOURCE" /> <ph name="TYPE" />. Trykk på Tab for å navigere med tastaturet.</translation>
 <translation id="2961963223658824723">Noe gikk galt. Prøv på nytt om noen sekunder.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -459,6 +462,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="316086887565479535">Apper som ikke støttes, i malen</translation>
 <translation id="3161500364292033097">Lukk skrivebordet og vinduene</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> utfører en rollback på <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
+<translation id="3171170659304083361">Innstillinger for inndatametoder</translation>
 <translation id="3181441307743005334">Det kan ta en stund å starte på nytt</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Koblet til en enhet}other{Koblet til # enheter}}</translation>
 <translation id="320207200541803018">Start en nedtelling</translation>
@@ -1111,6 +1115,7 @@ Koble enheten til strøm.</translation>
 <translation id="6074087755403037157">Betakanal</translation>
 <translation id="6093867385179428431">Deaktivert av administratoren</translation>
 <translation id="6095008505822982596">Lesehastighet</translation>
+<translation id="6095425951508823973">Legg til forbindelse med <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Redigert den siste måneden</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
@@ -1590,6 +1595,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8349964124165471584">Åpne link i et nytt vindu</translation>
 <translation id="8351131234907093545">Opprett et notat</translation>
 <translation id="8364673525741149932">Slå av/på hyllegruppen. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> er i bruk.</translation>
 <translation id="8369166482916924789">Lagret skrivebord, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Én bokstav frem</translation>
 <translation id="8371991222807690464">Ytelsen til den eksterne enheten kan være begrenset i Gjestemodus</translation>

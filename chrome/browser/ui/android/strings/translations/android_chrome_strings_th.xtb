@@ -727,6 +727,7 @@
 <translation id="492284538114688557">พบการลดราคา</translation>
 <translation id="4925120120285606924">ภาพหน้าจอ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">ระบบจะส่งออกรหัสผ่านให้ดาวน์โหลดเป็นไฟล์ข้อความ ซึ่งใครหรือแอปใดก็ตามที่มีสิทธิ์เข้าถึงโฟลเดอร์ที่บันทึกไฟล์ไว้จะเห็นรหัสผ่านเหล่านี้ได้</translation>
+<translation id="4926901776383726965">คุณบันทึกรูปภาพและไฟล์เพื่อดูแบบออฟไลน์หรือแชร์ในแอปอื่นๆ ได้</translation>
 <translation id="4932247056774066048">เนื่องจากคุณกำลังจะออกจากระบบบัญชีที่จัดการโดย <ph name="DOMAIN_NAME" /> ข้อมูลใน Chrome จะถูกลบออกจากอุปกรณ์นี้ แต่จะยังคงอยู่ในบัญชี Google</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">ไม่มีผลการค้นหา</translation>
@@ -1326,7 +1327,7 @@
 <translation id="8015452622527143194">เปลี่ยนทุกอย่างบนหน้ากลับไปเป็นขนาดเริ่มต้น</translation>
 <translation id="8026334261755873520">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="8027863900915310177">เลือกตำแหน่งที่จะดาวน์โหลด</translation>
-<translation id="8030852056903932865">อนุญาต</translation>
+<translation id="8030852056903932865">อนุมัติ</translation>
 <translation id="8032569120109842252">กำลังติดตาม</translation>
 <translation id="8035133914807600019">โฟลเดอร์ใหม่…</translation>
 <translation id="8037750541064988519">เหลือ <ph name="DAYS" /> วัน</translation>
@@ -1425,6 +1426,7 @@
 <translation id="8503559462189395349">รหัสผ่าน Chrome</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8505766168025405649">ดูสถานะการดาวน์โหลดในการแจ้งเตือน</translation>
+<translation id="8506357771923193001">คุณจะเห็นการดาวน์โหลดที่นี่</translation>
 <translation id="8514477925623180633">ส่งออกรหัสผ่านที่เก็บไว้ใน Chrome</translation>
 <translation id="8516012719330875537">โปรแกรมแก้ไขรูปภาพ</translation>
 <translation id="8516431725144212809">ความสนใจของคุณที่ได้รับการคาดคะเนโดย Chrome</translation>

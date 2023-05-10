@@ -460,6 +460,7 @@
 <translation id="316086887565479535">Үлгүдө колдоого алынбаган колдонмолор</translation>
 <translation id="3161500364292033097">Иш такта менен терезелерди жабуу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мурунку версияга кайтарууда. Түзмөгүңүз баштапкы абалга келтирилип, бардык дайын-даректер өчүрүлөт.</translation>
+<translation id="3171170659304083361">Киргизүү ыкмаларынын параметрлери</translation>
 <translation id="3181441307743005334">Өчүрүп күйгүзүү бир нече убакытка созулушу мүмкүн</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Бир түзмөккө туташты}other{# түзмөккө туташты}}</translation>
 <translation id="320207200541803018">Таймер кой</translation>
@@ -1112,6 +1113,7 @@
 <translation id="6074087755403037157">Бета версия</translation>
 <translation id="6093867385179428431">Администратор өчүрүп койгон</translation>
 <translation id="6095008505822982596">Кеп ылдамдыгы</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> менен байланышты кошуу</translation>
 <translation id="6099678161144790572">Мурунку айда түзөтүлгөн</translation>
 <translation id="6103838137565245112">тутум</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынды</translation>

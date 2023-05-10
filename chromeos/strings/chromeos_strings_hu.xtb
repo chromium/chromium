@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">A DNS nem oldható fel</translation>
 <translation id="1018656279737460067">Megszakítva</translation>
 <translation id="1022433422498218992">Általános vezérlők</translation>
+<translation id="1022628058306505708">A Föld mozgása</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
 <translation id="1059913517121127803">Nem sikerült elindítani a szkennelést</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">További műveletek</translation>
 <translation id="2926057806159140518">Adja meg felhasználónevét és jelszavát, vagy olvassa be QR-kódját.</translation>
 <translation id="2940811910881150316">Az eszköz tesztelése nem sikerült. Nyissa fel újra a fedelet a teszteléshez.</translation>
+<translation id="2981143481017883351">Mostantól rendelkezésre állnak kizárólag Chromebookon hozzáférhető elemek</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3017079585324758401">Háttér</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Ablakok</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
+<translation id="3386675685417744672">Csak Chromebookon</translation>
 <translation id="3404249063913988450">Képernyővédő engedélyezése</translation>
 <translation id="3413935475507503304">A frissítéssel való folytatáshoz kattintson a Tovább lehetőségre.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">FIGYELMEZTETÉS</translation>
 <translation id="4054683689023980771">Kép letöltése</translation>
 <translation id="4060260348856573701">Új APN</translation>
+<translation id="4079743696465895866">Kizárólag Chromebookon hozzáférhető műalkotások kiválasztása</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Az akkumulátor kapacitása egyre csökken a folyamatos használat során</translation>
 <translation id="6191293864534840972">Rosszul formázott névszerverek</translation>
+<translation id="6205145102504628069">Szálló felhők</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Kilépés a teljes képernyős nézetből</translation>
 <translation id="6223752125779001553">Nem áll rendelkezésre szkenner</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Személyre szabás</translation>
 <translation id="6500818810472529210">Az eredmény megtekintése a Google Keresőben</translation>
 <translation id="650266656685499220">Albumok létrehozásához nyissa meg a Google Fotók szolgáltatást</translation>
+<translation id="6505750420152840539">Hajnaltól sötétig</translation>
 <translation id="6516990319416533844">Az akkumulátor töltési sebességének teszteléséhez egy kis ideig hagyja merülni az akkumulátort</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6526200165918397681">Háttérkép igazítása</translation>

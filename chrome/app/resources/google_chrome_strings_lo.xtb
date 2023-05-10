@@ -87,6 +87,7 @@
 <translation id="2467438592969358367">Google Chrome ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ. ກະລຸນາພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
 <translation id="2485422356828889247">ຖອນ​ຕິດ​ຕັ້ງ</translation>
 <translation id="2534507159460261402">Google Pay (ສຳເນົາໄວ້ໃນ Chrome ແລ້ວ)</translation>
+<translation id="2556847002339236023">ອົງກອນຂອງທ່ານປິດ Chrome ໄວ້ເມື່ອມັນບໍ່ໄດ້ຖືກນຳໃຊ້ເປັນເວລາ <ph name="TIMEOUT_DURATION" />. ຂໍ້ມູນການທ່ອງເວັບຖືກລຶບອອກແລ້ວ. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.</translation>
 <translation id="2559253115192232574">ເວັບໄຊໃດໜຶ່ງທີ່ທ່ານເຂົ້າເບິ່ງຈະສາມາດຂໍ Chrome ເພື່ອເບິ່ງຄວາມສົນໃຈຂອງທ່ານໃນພາຍຫຼັງໄດ້ເພື່ອປັບແຕ່ງໂຄສະນາທີ່ທ່ານເຫັນໃຫ້ເປັນສ່ວນຕົວ. Chrome ສາມາດແບ່ງປັນຄວາມສົນໃຈໄດ້ສູງສຸດ 3 ຢ່າງ.</translation>
 <translation id="2563121210305478421">ເລີ່ມເປີດໃຊ້ Chrome ໃໝ່ບໍ?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chrome ນີ້ຢູ່ກ່ອນແລ້ວ. ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, Chrome ສາມາດສ້າງໂປຣໄຟລ໌ຂອງທ່ານເອງໃຫ້ທ່ານໄດ້.</translation>
@@ -275,6 +276,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6113794647360055231">Chrome ​ດີກ​ວ່າແລ້ວ</translation>
 <translation id="6145313976051292476">ເປີດ PDF ໃນ Chrome</translation>
 <translation id="6155960517327665396">ຕົວປະຢັດໜ່ວຍຄວາມຈຳເຮັດໃຫ້ Chrome ໄວຂຶ້ນ</translation>
+<translation id="6157638032135951407">ອົງກອນຂອງທ່ານລຶບຂໍ້ມູນຂອງ Chrome ອອກເມື່ອມັນບໍ່ໄດ້ຖືກນຳໃຊ້ເປັນເວລາ <ph name="TIMEOUT_DURATION" />. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome ເພື່ອອະນຸຍາດໃຫ້ການຈາລະຈອນ mDNS.</translation>
@@ -290,6 +292,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6418662306461808273">ສະຫຼັບໄປຫາໂປຣໄຟລ໌ Chrome ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="648319183876919572">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຊ່ວຍປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ອັນຕະລາຍ</translation>
 <translation id="6493527311031785448">Google Chrome ກຳລັງພະຍາຍາມ <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome ຖືກປິດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6506909944137591434">Chrome ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງອ້ອມຕົວທ່ານ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">ໃນຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້</translation>
@@ -326,6 +329,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7155997830309522122">ຖ້າເປັນເຊັ່ນນັ້ນ, ກະລຸນາແກ້ໄຂລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານໃນ Chrome ເພື່ອໃຫ້ມັນກົງກັບລະຫັດຜ່ານໃໝ່ຂອງທ່ານ.</translation>
 <translation id="7161904924553537242">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Google Chrome</translation>
 <translation id="7177959540995930968">ທ່ານສາມາດສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດເຫຼົ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ Chrome.</translation>
+<translation id="7193885263065350793">ອົງກອນຂອງທ່ານປິດ Chrome ໄວ້ເມື່ອມັນບໍ່ໄດ້ຖືກນຳໃຊ້ເປັນເວລາ <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">ທ່ານກໍາລັງລົງຊື່ເຂົ້າໃຊ້ດ້ວຍບັນຊີທີ່ມີການຄຸ້ມຄອງ ແລະໃຫ້ຜູ້ຄວບຄຸມຂອງມັນຄວບຄຸມໂປຣໄຟລ໌ Google Chrome ຂອງທ່ານ. ຂໍ້ມູນ Chrome ຂອງທ່ານ, ເຊັ່ນ ແອັບ, ບຸກມາກສ໌, ປະຫວັດ, ລະຫັດຜ່ານ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຜູກ​ມັດກັບ <ph name="USER_NAME" /> ຢ່າງຖາວອນ. ທ່ານຈະສາມາດລຶບຂໍ້ມູນນີ້ໄດ້ຜ່ານ Google Accounts Dashboard, ແຕ່ທ່ານຈະບໍ່ສາມາດເອົາຂໍ້ມູນນີ້ເຂົ້າຮ່ວມກັບບັນຊີອື່ນໄດ້. ​ໂດຍ​ເລືອກ​ໄດ້ ທ່ານສາມາດສ້າງໂປຣໄຟລ໌​ໃໝ່ ເພື່ອຮັກສາຂໍ້ມູນ Chrome ທີ່​ມີ​ຢູ່ຂອງທ່ານ​ແຍກຕ່າງຫາກ. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">ລະບົບໃຊ້ພາສານີ້ເພື່ອສະແດງສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ Google Chrome</translation>
 <translation id="7296210096911315575">ຂໍ້ມູນດ້ານການໃຊ້ ແລະ ຄວາມປອດໄພທີ່ສຳຄັນ</translation>

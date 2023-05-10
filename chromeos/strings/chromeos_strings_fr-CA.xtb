@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Impossible de résoudre le DNS</translation>
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1022433422498218992">Commandes générales</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Une nouvelle fonctionnalité est proposée, servez-vous de la touche de flèche vers le haut pour en savoir plus.</translation>
 <translation id="1059913517121127803">Impossible de démarrer la numérisation</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrir le couvercle pour tester.</translation>
+<translation id="2981143481017883351">Éléments Chromebook exclusifs maintenant offerts</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
+<translation id="3386675685417744672">Exclusivité Chromebook</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">AVERTISSEMENT</translation>
 <translation id="4054683689023980771">Téléchargement de l'image en cours</translation>
 <translation id="4060260348856573701">Nouveau nom du point d'accès</translation>
+<translation id="4079743696465895866">Sélectionnez une illustration exclusive Chromebook</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacité des piles décline avec l'usage</translation>
 <translation id="6191293864534840972">Le format des serveurs de nom est incorrect</translation>
+<translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Quitter le mode plein écran</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Personnalisation</translation>
 <translation id="6500818810472529210">Affichez les résultats dans la recherche Google</translation>
 <translation id="650266656685499220">Pour créer des albums, servez-vous de Google Photos</translation>
+<translation id="6505750420152840539">De l'aube à l'obscurité</translation>
 <translation id="6516990319416533844">Pour évaluer la vitesse de recharge de la pile, laissez votre pile se décharger pendant une courte période</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6526200165918397681">Fond d'écran assorti</translation>

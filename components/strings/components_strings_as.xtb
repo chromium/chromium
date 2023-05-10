@@ -1031,6 +1031,7 @@
 <translation id="3531780078352352885">কামৰ শ্বীটসমূহ</translation>
 <translation id="3532844647053365774"><ph name="HOST" />এ আপোনাৰ মাইক্ৰ'ফ'ন ব্যৱহাৰ কৰিব খোজে</translation>
 <translation id="3533328374079021623">মেইলবক্স ৫</translation>
+<translation id="3536227077203206203">এইবাৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="3537165859691846083">লেটাৰ প্লাছ</translation>
 <translation id="3542628208405253498">কাৰ্ডৰ প্ৰতিচ্ছবি</translation>
 <translation id="3542768452570884558">লিংকটো নতুন ৱিণ্ড’ত খোলক</translation>
@@ -1668,6 +1669,7 @@
 <translation id="5045550434625856497">ভুল পাছৱৰ্ড</translation>
 <translation id="5051305769747448211">লাইভ কমেডী</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share ব্যৱহাৰ কৰি এই ফাইলটো পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}one{Nearby Share ব্যৱহাৰ কৰি এই ফাইলসমূহ পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}other{Nearby Share ব্যৱহাৰ কৰি এই ফাইলসমূহ পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}}</translation>
+<translation id="5060419232449737386">কেপশ্বনৰ ছেটিং</translation>
 <translation id="5060483733937416656">আপুনি <ph name="PROVIDER_ORIGIN" /> ব্যৱহাৰ কৰা ৱেবছাইটসমূহত Windows Helloৰ জৰিয়তে সত্যাপন কৰিবলৈ বাছনি কৰিছে। এই প্ৰদানকাৰীয়ে হয়তো আপোনাৰ পৰিশোধ পদ্ধতিৰ বিষয়ে তথ্য ষ্ট’ৰ কৰি ৰাখিব পাৰে, যিটো আপুনি <ph name="LINK_TEXT" /> পাৰে।</translation>
 <translation id="5061227663725596739">আপুনি <ph name="LOOKALIKE_DOMAIN" />ৰ কথা বুজাব বিচাৰিছিল নেকি?</translation>
 <translation id="5066056036849835175">প্ৰিণ্ট কৰাৰ ইতিহাস</translation>
@@ -2448,6 +2450,7 @@
 <translation id="7030436163253143341">প্ৰমাণপত্ৰখন মান্য নহয়</translation>
 <translation id="7031646650991750659">আপুনি কোনবোৰ Google Play এপ্‌ ইনষ্টল কৰিছে</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপোনাৰ Google একাউণ্টৰ গোপনীয়তাৰ ছেটিং পৰিচালনা কৰিবলৈ প্ৰথমে টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
+<translation id="7044081119134178347">এইবাৰ কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="7048095965575426564">ইউৰোপীয়ান ফেনফ’ল্ড</translation>
 <translation id="7050187094878475250">আপুনি <ph name="DOMAIN" />লৈ যাবলৈ চেষ্টা কৰিছিল, কিন্তু ছাৰ্ভাৰটোৱে এখন প্ৰমাণপত্ৰ উপস্থাপন কৰিছে যাৰ ম্যাদ উকলাৰ সময় অৱধি যথেষ্ট দীঘল হোৱাৰ বাবে সেইখন বিশ্বাস কৰিব নোৱাৰি।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{এই মুহূৰ্তত এই কার্ডখন ছেভ কৰিব নোৱাৰি}one{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}other{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}}</translation>
@@ -3040,6 +3043,7 @@
 <translation id="8416694386774425977">নেটৱৰ্ক কনফিগাৰেশ্বনটো অমান্য আৰু এইটো আমদানি কৰিব পৰা নাযায়।
 অতিৰিক্ত বিৱৰণ:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">এইবাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">৫০০ x ৭৫০ মি.মি.</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
@@ -3095,6 +3099,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{অনুমতি ৰিছেট কৰক}one{অনুমতি ৰিছেট কৰক}other{অনুমতি ৰিছেট কৰক}}</translation>
 <translation id="8555010941760982128">চেকআউট কৰাৰ সময়ত এই ক’ডটো ব্যৱহাৰ কৰক</translation>
 <translation id="8557066899867184262">CVCটো আপোনাৰ কাৰ্ডৰ পিছফালে আছে।</translation>
+<translation id="8558347880669160417">এইবাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="8559762987265718583">আপোনাৰ ডিভাইচৰ তাৰিখ আৰু সময় (<ph name="DATE_AND_TIME" />) অশুদ্ধ হোৱাৰ বাবে <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />লৈ কোনো ব্যক্তিগত সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>
 <translation id="8564182942834072828">পৃথক নথি/নিমিলোৱা প্ৰতিলিপিসমূহ</translation>
 <translation id="8564985650692024650">আপুনি যদি নিজৰ পাছৱৰ্ডটো অন্য ছাইটত পুনৰ ব্যৱহাৰ কৰিছিল <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />এ আপোনাৰ পাছৱর্ডটো ৰিছেট কৰিবলৈ চুপাৰিছ কৰে।</translation>
@@ -3365,6 +3370,7 @@
 <translation id="949314938206378263">আপোনাক এই ছাইটটোলৈ যাবলৈ কোৱা হৈছে। আপোনাৰ অভিভাৱকে Family Linkত প্ৰত্যুত্তৰ দিব পাৰে।</translation>
 <translation id="950736567201356821">ওপৰৰ অংশত তিনিবাৰ পাঞ্চ কৰা</translation>
 <translation id="961663415146723894">তলৰ অংশত সংযুক্ত কৰক</translation>
+<translation id="961930410699694996">এইবাৰ অৱস্থান ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="962484866189421427">এই সমলে বিভ্ৰান্তিকৰ এপ্ ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে যি আন ছদ্মৱেশ ধাৰণ কৰিব পাৰে বা আপোনাৰ কাৰ্যকলাপৰ ওপৰত চকু ৰাখিবলৈ ব্যৱহাৰ কৰা ডেটা সংগ্ৰহ কৰিব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">সকলো ব্যৱহাৰকাৰী</translation>
 <translation id="964050462028070434">পাছৱৰ্ড আৰু পাছকী পৰিচালনা কৰক…</translation>

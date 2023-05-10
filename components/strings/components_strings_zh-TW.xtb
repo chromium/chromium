@@ -1033,6 +1033,7 @@
 <translation id="3531780078352352885">工作表</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> 要求使用麥克風</translation>
 <translation id="3533328374079021623">出紙槽 5</translation>
+<translation id="3536227077203206203">這次允許</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">卡片圖片</translation>
 <translation id="3542768452570884558">在新視窗中開啟連結</translation>
@@ -2452,6 +2453,7 @@
 <translation id="7030436163253143341">憑證無效</translation>
 <translation id="7031646650991750659">你安裝的 Google Play 應用程式</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理 Google 帳戶隱私權設定</translation>
+<translation id="7044081119134178347">這次允許使用相機</translation>
 <translation id="7048095965575426564">歐洲 Fanfold</translation>
 <translation id="7050187094878475250">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證有效期限太長，因此難以信任。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{目前無法儲存這張卡片}other{目前無法儲存這些卡片}}</translation>
@@ -3044,6 +3046,7 @@
 <translation id="8416694386774425977">網路設定無效，無法匯入。
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">這次允許使用麥克風</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 公釐</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -3099,6 +3102,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重設權限}other{重設權限}}</translation>
 <translation id="8555010941760982128">結帳時請使用這個促銷代碼</translation>
 <translation id="8557066899867184262">信用卡驗證碼位於信用卡背面。</translation>
+<translation id="8558347880669160417">這次允許使用相機和麥克風</translation>
 <translation id="8559762987265718583">你裝置的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法與 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私人連線。</translation>
 <translation id="8564182942834072828">個別文件/未自動分頁的副本</translation>
 <translation id="8564985650692024650">如果你在其他網站上重複使用過你的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chromium 會建議你重設密碼。</translation>
@@ -3215,6 +3219,7 @@
 <translation id="8870494189203302833">相同順序 (正面朝下)</translation>
 <translation id="8870700989640064057">要列印機密檔案嗎？</translation>
 <translation id="8871553383647848643">自訂瀏覽器外觀</translation>
+<translation id="8871603420762394026">Chrome 現在只會在網站之間分享有限的資訊 (例如向使用者放送廣告的時段)，協助網站評估廣告成效。</translation>
 <translation id="8874824191258364635">請輸入有效的信用卡號碼</translation>
 <translation id="8876033571432926051">休閒遊戲</translation>
 <translation id="8877780815363510165">釣魚</translation>
@@ -3368,6 +3373,7 @@
 <translation id="949314938206378263">你已要求造訪這個網站，家長可以透過 Family Link 回覆要求。</translation>
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="961663415146723894">裝訂 (底部)</translation>
+<translation id="961930410699694996">這次允許存取位置資訊</translation>
 <translation id="962484866189421427">這項內容可能會試圖讓你安裝身分不實的欺騙性應用程式，或是收集可用於追蹤你的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">所有使用者</translation>
 <translation id="964050462028070434">管理密碼和密碼金鑰…</translation>

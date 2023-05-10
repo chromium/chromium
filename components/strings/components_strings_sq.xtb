@@ -1034,6 +1034,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3531780078352352885">Fletët e punës</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> kërkon të përdorë mikrofonin</translation>
 <translation id="3533328374079021623">Kutia postare 5</translation>
+<translation id="3536227077203206203">Lejohet këtë herë</translation>
 <translation id="3537165859691846083">Letër plus</translation>
 <translation id="3542628208405253498">Imazhi i kartës</translation>
 <translation id="3542768452570884558">Hape lidhjen në një dritare të re</translation>
@@ -2452,6 +2453,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7030436163253143341">Certifikata nuk është e vlefshme</translation>
 <translation id="7031646650991750659">Cilat aplikacione të Google Play ke instaluar</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar cilësimet e privatësisë së "Llogarisë sate të Google"</translation>
+<translation id="7044081119134178347">Kamera lejohet këtë herë</translation>
 <translation id="7048095965575426564">Palosje fizarmonikë (evropiane)</translation>
 <translation id="7050187094878475250">Tentove të arrije <ph name="DOMAIN" />, por serveri paraqiti një certifikatë, periudha e vlefshmërisë së të cilës është tepër e gjatë dhe nuk mund të jetë e besueshme.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kjo kartë nuk mund të ruhet për momentin}other{Këto karta nuk mund të ruhen për momentin}}</translation>
@@ -3044,6 +3046,7 @@ Detaje shtesë:
 <translation id="8416694386774425977">Konfigurimi i rrjetit është i pavlefshëm dhe nuk mund të importohej.
 Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofoni lejohet këtë herë</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
@@ -3099,6 +3102,7 @@ Detaje shtesë:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{RIvendos lejen}other{Rivendos lejet}}</translation>
 <translation id="8555010941760982128">Përdor këtë kod në përfundim të blerjes</translation>
 <translation id="8557066899867184262">Kodi CVC ndodhet në pjesën e pasme të kartës.</translation>
+<translation id="8558347880669160417">Kamera dhe mikrofoni lejohen këtë herë</translation>
 <translation id="8559762987265718583">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />sepse data dhe ora (<ph name="DATE_AND_TIME" />) e pajisjes tënde nuk janë të sakta.</translation>
 <translation id="8564182942834072828">Dokumente të ndara/kopje të parenditura</translation>
 <translation id="8564985650692024650">Chromium rekomandon rivendosjen e fjalëkalimit tënd të <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> nëse e ke ripërdorur në sajte të tjera.</translation>
@@ -3215,6 +3219,7 @@ Detaje shtesë:
 <translation id="8870494189203302833">E njëjta renditje e kthyer poshtë</translation>
 <translation id="8870700989640064057">Të printohet skedari konfidencial?</translation>
 <translation id="8871553383647848643">Personalizo pamjen e shfletuesit tënd</translation>
+<translation id="8871603420762394026">Chrome tani ndan vetëm informacione shumë të kufizuara mes sajteve, si p.sh. kur të është shfaqur një reklamë, për t'i ndihmuar sajtet të matin performancën e reklamave.</translation>
 <translation id="8874824191258364635">Fut një numër të vlefshëm karte</translation>
 <translation id="8876033571432926051">Lojërat e rastësishme</translation>
 <translation id="8877780815363510165">Peshkimi</translation>
@@ -3368,6 +3373,7 @@ Detaje shtesë:
 <translation id="949314938206378263">Ti kërkove që të vizitoje këtë sajt. Prindi yt mund të përgjigjet në Family Link.</translation>
 <translation id="950736567201356821">Tri shpime lart</translation>
 <translation id="961663415146723894">Lidhje poshtë</translation>
+<translation id="961930410699694996">Vendndodhja lejohet këtë herë</translation>
 <translation id="962484866189421427">Kjo përmbajtje mund të përpiqet të instalojë aplikacione mashtruese që pretendojnë se janë diçka tjetër ose që mbledhin të dhëna që mund të përdoren për të të gjurmuar. <ph name="BEGIN_LINK" />Shfaq gjithsesi<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Të gjithë përdoruesit</translation>
 <translation id="964050462028070434">Menaxho fjalëkalimet dhe çelësat e kalimit…</translation>

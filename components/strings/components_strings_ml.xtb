@@ -1672,6 +1672,7 @@
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
 <translation id="5051305769747448211">തൽസമയ ഹാസ്യം</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയൽ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}other{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയലുകൾ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}}</translation>
+<translation id="5060419232449737386">അടിക്കുറിപ്പ് ക്രമീകരണം</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> ഉപയോഗിക്കുന്ന വെബ്സൈറ്റുകളിൽ Windows Hello ഉപയോഗിച്ച് പരിശോധിച്ചുറപ്പിക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തു. നിങ്ങളുടെ പേയ്മെന്റ് രീതിയുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ഈ ദാതാവ് സംഭരിച്ചിട്ടുണ്ടാകാം, നിങ്ങൾക്ക് ഇത് <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="5066056036849835175">പ്രിന്റിംഗ് ചരിത്രം</translation>

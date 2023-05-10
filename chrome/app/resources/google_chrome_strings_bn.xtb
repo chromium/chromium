@@ -85,6 +85,7 @@
 <translation id="2467438592969358367">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
 <translation id="2534507159460261402">Google Pay (Chrome এ কপি করা হয়েছে)</translation>
+<translation id="2556847002339236023"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chrome বন্ধ করে দেয়। ব্রাউজ করা ডেটা মুছে ফেলা হয়েছে। এর মধ্যে ইতিহাস, অটোফিল এবং ডাউনলোড সংক্রান্ত ডেটা থাকতে পারে।</translation>
 <translation id="2559253115192232574">পরে, আপনি যে সাইটটি দেখেন সেটি আপনার দেখা বিজ্ঞাপনগুলিকে পছন্দমতো করার জন্য Chrome-কে আপনার আগ্রহগুলি দেখতে বলতে পারে। Chrome সর্বাধিক ৩টি আগ্রহ শেয়ার করতে পারে।</translation>
 <translation id="2563121210305478421">Chrome আবার লঞ্চ করবেন?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> আগে থেকেই এই Chrome প্রোফাইলে সাইন-ইন করে আছেন। আপনার ব্রাউজিং আলাদা করতে, Chrome আপনার জন্য প্রোফাইল তৈরি করে দিতে পারে।</translation>
@@ -271,6 +272,7 @@
 <translation id="6113794647360055231">Chrome আরও ভাল হয়ে উঠেছে</translation>
 <translation id="6145313976051292476">Chrome-এ পিডিএফ ফাইল খুলুন</translation>
 <translation id="6155960517327665396">মেমরি সেভার Chrome-এর স্পিড বাড়িয়ে দেয়</translation>
+<translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chrome ডেটা মুছে দেয়। এর মধ্যে ইতিহাস, অটোফিল এবং ডাউনলোড সংক্রান্ত ডেটা থাকতে পারে।</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
 <translation id="6235018212288296708">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome এর জন্য ইনবাউন্ড নিয়ম।</translation>
@@ -286,6 +288,7 @@
 <translation id="6418662306461808273">বর্তমান Chrome প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="648319183876919572">উন্নত Safe Browsing আপনাকে বিপজ্জনক ওয়েবসাইট, ডাউনলোড থেকে আরও সুরক্ষা দেয়</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" />-এর চেষ্টা করছে</translation>
+<translation id="6497147134301593682">Chrome অটোমেটিক বন্ধ হয়ে গেছে</translation>
 <translation id="6506909944137591434">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">এই ডিভাইসে Google পাসওয়ার্ড ম্যানেজারে</translation>
@@ -322,6 +325,7 @@
 <translation id="7155997830309522122">যদি তাই হয়, তাহলে Chrome-এ আপনার সেভ করা পাসওয়ার্ড এডিট করুন যাতে এটি আপনার নতুন পাসওয়ার্ডের সাথে ম্যাচ করে।</translation>
 <translation id="7161904924553537242">Google Chrome-এ আপনাকে স্বাগতম</translation>
 <translation id="7177959540995930968">আপনি Chrome সেটিংস থেকে এই ফিচার সম্পর্কে আরও জানতে পারবেন।</translation>
+<translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chrome বন্ধ করে দেয়।</translation>
 <translation id="7242029209006116544">আপনি একটি পরিচালিত অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Google Chrome প্রোফাইলের উপরে নিয়ন্ত্রণ দিচ্ছেন৷ আপনার Chrome ডেটা, যেমন অ্যাপ, বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস <ph name="USER_NAME" /> এতে স্থায়ীভাবে সম্পৃক্ত হবে৷ আপনি Google অ্যাকাউন্টের ড্যাশবোর্ডের মাধ্যমে এই ডেটাগুলি মুছতে পারবেন, কিন্তু অন্য অ্যাকাউন্টের সাথে এই ডেটা সংশ্লিষ্ট করতে পারবেন না৷ বিকল্প হিসেবে আপনি আপনার বিদ্যমান Chrome ডেটা আলাদা রাখার জন্য একটি নতুন প্রোফাইল তৈরি করতে পারেন৷ <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Google Chrome UI-এ দেখানোর জন্য এই ভাষা ব্যবহার করা হয়</translation>
 <translation id="7296210096911315575">ব্যবহার ও নিরাপত্তা সম্পর্কে গুরুত্বপূর্ণ তথ্য</translation>

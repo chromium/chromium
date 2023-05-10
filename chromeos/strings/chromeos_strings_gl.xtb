@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Non se puido resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelados</translation>
 <translation id="1022433422498218992">Controis xerais</translation>
+<translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
 <translation id="1059913517121127803">Non se puido iniciar o escaneo</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Máis accións</translation>
 <translation id="2926057806159140518">Escribe o teu nome de usuario e contrasinal ou escanea o código QR</translation>
 <translation id="2940811910881150316">Non se puido realizar a proba do dispositivo. Abre a tapa de novo para realizala.</translation>
+<translation id="2981143481017883351">Recursos exclusivos de Chromebook xa dispoñibles</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3017079585324758401">Fondo</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Ventás</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
+<translation id="3386675685417744672">Exclusivo de Chromebook</translation>
 <translation id="3404249063913988450">Activar protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar coa actualización, fai clic en Seguinte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">ADVERTENCIA</translation>
 <translation id="4054683689023980771">Descargando imaxe</translation>
 <translation id="4060260348856573701">Novo APN</translation>
+<translation id="4079743696465895866">Selecciona o material gráfico exclusivo de Chromebook</translation>
 <translation id="4093865285251893588">Imaxe do perfil</translation>
 <translation id="409427325554347132">Gardar detalles da proba</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">A capacidade da batería diminúe co uso</translation>
 <translation id="6191293864534840972">Os servidores de nomes teñen un formato incorrecto</translation>
+<translation id="6205145102504628069">Fluxo das nubes</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Saír da pantalla completa</translation>
 <translation id="6223752125779001553">Non hai ningún escáner dispoñible</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Personalización</translation>
 <translation id="6500818810472529210">Consulta o resultado na Busca de Google</translation>
 <translation id="650266656685499220">Para crear álbums, vai a Google Fotos</translation>
+<translation id="6505750420152840539">Do amencer ao solpor</translation>
 <translation id="6516990319416533844">Se queres comprobar a taxa de carga da batería, agarda un anaco para deixar que se descargue un pouco</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6526200165918397681">Combinar co fondo de pantalla</translation>

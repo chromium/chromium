@@ -285,6 +285,7 @@
 <translation id="2587052924345400782">יש גרסה חדשה יותר</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
 <translation id="2603212228005142861">צריך להיכנס לחשבון כדי לנהל את ההעדפות</translation>
+<translation id="260403163289591229">במעקב</translation>
 <translation id="2604446170045642109">בהגדרות, יש לך אפשרות לכבות את העיצוב הכהה באתרים.</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2625189173221582860">הסיסמה הועתקה</translation>
@@ -584,6 +585,7 @@
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
 <translation id="4202218894997543208">נושאים שחסמת</translation>
 <translation id="4214315110991671325">‏אם מאפשרים שימוש בקובצי Cookie, יכול להיות שמערכת Chrome תשתמש בהם בטעינה מראש.</translation>
+<translation id="4225725533026049334">במעקב</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4248098802131000011">הגנה על הסיסמאות שלך מפני פרצות באבטחת המידע ובעיות אבטחה אחרות</translation>
@@ -846,7 +848,7 @@
 <translation id="562289928968387744">ניהול התגובות</translation>
 <translation id="5626134646977739690">שם:</translation>
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
-<translation id="5635091213277904818">‏Chrome מוחק באופן אוטומטי אתרים שנוספו לפני יותר מ-30 יום. אתר שבחרת לבקר בו פעם נוספת עשוי להופיע שוב ברשימה. אפשר גם לחסום את האפשרות של אתרים להציע מודעות.</translation>
+<translation id="5635091213277904818">‏אתרים שנוספו לפני יותר מ-30 יום נמחקים מ-Chrome באופן אוטומטי. אתר שבחרת לבקר בו פעם נוספת עשוי להופיע שוב ברשימה. אפשר גם לחסום את האפשרות של אתרים להציע מודעות.</translation>
 <translation id="5639724618331995626">התרת גישה לכל האתרים</translation>
 <translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> עשויים להישמר בחשבון Google.</translation>
 <translation id="564667659802381754">מדריך בנושא פרטיות <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -922,6 +924,7 @@
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
 <translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
 <translation id="6026538407078977628">הרחבה למסך מלא</translation>
+<translation id="6030719887161080597">ניהול המידע שמשמש אתרים למדידת ביצועי מודעות</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="604124094241169006">אוטומטי</translation>
@@ -1263,6 +1266,7 @@
 <translation id="7709918231054955894">הצגת כל הכרטיסיות</translation>
 <translation id="772434085369393266">‏הניווטים ישודרגו ל-HTTPS ותוצג אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS. לא ניתן לשנות את ההגדרה הזו כי ההגנה המתקדמת מופעלת.</translation>
 <translation id="7725024127233776428">הדפים שהוספת לסימניות מופיעים כאן</translation>
+<translation id="7733878270780732638">אין מספיק נפח אחסון פנוי במכשיר.</translation>
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
@@ -1365,7 +1369,7 @@
 <translation id="8209050860603202033">פתיחת התמונה</translation>
 <translation id="8216351761227087153">צפייה</translation>
 <translation id="8218622182176210845">ניהול החשבון</translation>
-<translation id="8221401890884589479">‏אפשר לחסום אתרים שלא רוצים לתת להם הרשאה. בנוסף, Chrome מוחק מהרשימה באופן אוטומטי אתרים שנוספו לפני יותר מ-30 יום. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="8221401890884589479">‏אפשר לחסום אתרים שלא רוצים לתת להם הרשאה. בנוסף, אתרים שנוספו לפני יותר מ-30 יום נמחקים מהרשימה ב-Chrome באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
 <translation id="8236097722223016103">הוספה לסימניות</translation>
 <translation id="8250920743982581267">מסמכים</translation>

@@ -285,6 +285,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="2587052924345400782">Nouvelle version disponible</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Connectez-vous pour gérer vos préférences</translation>
+<translation id="260403163289591229">Suivis</translation>
 <translation id="2604446170045642109">Vous pouvez désactiver le thème sombre pour les sites dans les paramètres.</translation>
 <translation id="2612676031748830579">Numéro de carte</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
@@ -584,6 +585,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4198423547019359126">Aucun emplacement de téléchargements disponible</translation>
 <translation id="4202218894997543208">Thèmes que vous avez bloqués</translation>
 <translation id="4214315110991671325">Si vous autorisez les cookies, Chrome peut les utiliser pour le préchargement.</translation>
+<translation id="4225725533026049334">Suivi</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes liés à la sécurité</translation>
@@ -922,6 +924,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6026538407078977628">Afficher en plein écran</translation>
+<translation id="6030719887161080597">Gérer les informations utilisées par les sites pour mesurer les performances des annonces</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604124094241169006">Automatique</translation>
@@ -1366,7 +1369,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8209050860603202033">Ouvrir l'image</translation>
 <translation id="8216351761227087153">Regarder</translation>
 <translation id="8218622182176210845">Gérer votre compte</translation>
-<translation id="8221401890884589479">Vous pouvez bloquer les sites qui ne vous intéressent pas. De plus, Chrome supprime automatiquement de la liste les sites datant de plus de 30 jours. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8221401890884589479">Vous pouvez bloquer les sites qui ne vous intéressent pas. De plus, Chrome supprime automatiquement de la liste les sites de plus de 30 jours. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Menu de la carte de flux</translation>
 <translation id="8236097722223016103">Ajouter aux favoris</translation>
 <translation id="8250920743982581267">Documents</translation>

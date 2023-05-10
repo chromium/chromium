@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">גיליונות עבודה</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> רוצה להשתמש במיקרופון שלך</translation>
 <translation id="3533328374079021623">תיבת דואר 5</translation>
+<translation id="3536227077203206203">יש אישור לשימוש חד-פעמי</translation>
 <translation id="3537165859691846083">‏8.5x12.67 אינץ' (Letter Plus)</translation>
 <translation id="3542628208405253498">תמונת הכרטיס</translation>
 <translation id="3542768452570884558">פתיחת הקישור בחלון חדש</translation>
@@ -1060,7 +1061,7 @@
 <translation id="3587738293690942763">אמצעי</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}=1{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}one{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}two{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יומיים ({NUM_DAYS}).}other{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
-<translation id="360335678635752619">‏Chrome מוחק באופן אוטומטי נושאים ואתרים שמציעים מודעות שנוספו לפני יותר מ-30 יום. יש לך גם אפשרות לחסום נושאים ואתרים ספציפיים שלא מעניינים אותך.</translation>
+<translation id="360335678635752619">‏נושאים ואתרים שמציעים מודעות שנוספו לפני יותר מ-30 יום נמחקים מ-Chrome באופן אוטומטי. יש לך גם אפשרות לחסום נושאים ואתרים ספציפיים שלא מעניינים אותך.</translation>
 <translation id="3603507503523709">האפליקציה נחסמה על ידי מנהל המערכת</translation>
 <translation id="3605899229568538311">‏5x5 אינץ'</translation>
 <translation id="3608932978122581043">כיוון הזנה</translation>
@@ -1190,7 +1191,7 @@
 <translation id="3906954721959377182">טאבלט</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">‏יש לך אפשרות לשנות את הבחירה בכל שלב בהגדרות Chrome.</translation>
-<translation id="3919748199683685809">‏<ph name="BEGIN_BOLD" />איך לנהל את הנתונים:<ph name="END_BOLD" /> Chrome מוחק באופן אוטומטי אתרים שנוספו לפני יותר מ-30 יום. אתר שבחרת לבקר בו פעם נוספת עשוי להופיע שוב ברשימה. אפשר גם לחסום את האפשרות של אתרים להציע לך מודעות, ולהשבית את התכונה 'מודעות לפי הצעת האתר' בהגדרות Chrome.</translation>
+<translation id="3919748199683685809">‏<ph name="BEGIN_BOLD" />איך לנהל את הנתונים:<ph name="END_BOLD" /> אתרים שנוספו לפני יותר מ-30 יום נמחקים מ-Chrome באופן אוטומטי. אתר שבחרת לבקר בו פעם נוספת עשוי להופיע שוב ברשימה. אפשר גם לחסום את האפשרות של אתרים להציע לך מודעות, ולהשבית את התכונה 'מודעות שאתרים מציעים' בהגדרות Chrome.</translation>
 <translation id="3921869355029467742">יש להזין את קוד האבטחה</translation>
 <translation id="3927932062596804919">דחייה</translation>
 <translation id="393316646445601645">אינטרנט וטלקום</translation>
@@ -2458,6 +2459,7 @@ Del</translation>
 <translation id="7030436163253143341">האישור לא תקין</translation>
 <translation id="7031646650991750659">‏אילו אפליקציות התקנת מ-Google Play.</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לנהל את הגדרות הפרטיות בחשבון Google.</translation>
+<translation id="7044081119134178347">יש אישור לשימוש חד-פעמי במצלמה</translation>
 <translation id="7048095965575426564">‏8.5x12 אינץ' (Fanfold – אירופה)</translation>
 <translation id="7050187094878475250">ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור שתקופת התוקף שלו ארוכה מדי ולכן אינו מהימן.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{אי אפשר לשמור עכשיו את הכרטיס הזה}one{אי אפשר לשמור עכשיו את הכרטיסים האלה}two{אי אפשר לשמור עכשיו את הכרטיסים האלה}other{אי אפשר לשמור עכשיו את הכרטיסים האלה}}</translation>
@@ -3050,6 +3052,7 @@ Del</translation>
 <translation id="8416694386774425977">תצורת הרשת אינה חוקית ולא ניתן לייבא אותה.
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">יש אישור לשימוש חד-פעמי במיקרופון</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">‏500x750 מ"מ</translation>
 <translation id="8428213095426709021">הגדרות</translation>
@@ -3105,6 +3108,7 @@ Del</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{איפוס ההרשאה}one{איפוס ההרשאות}two{איפוס ההרשאות}other{איפוס ההרשאות}}</translation>
 <translation id="8555010941760982128">צריך להזין את הקוד הזה בקופה</translation>
 <translation id="8557066899867184262">קוד האימות נמצא בגב הכרטיס.</translation>
+<translation id="8558347880669160417">יש אישור לשימוש חד-פעמי במצלמה ובמיקרופון</translation>
 <translation id="8559762987265718583">לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> מפני שהתאריך והשעה (<ph name="DATE_AND_TIME" />) במכשיר שלך שגויים.</translation>
 <translation id="8564182942834072828">מסמכים נפרדים/עותקים לא מסודרים</translation>
 <translation id="8564985650692024650">‏אם הזנת את הסיסמה של <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> באתרים אחרים, ההמלצה של Chromium היא לאפס אותה.</translation>
@@ -3221,6 +3225,7 @@ Del</translation>
 <translation id="8870494189203302833">באותו סדר עם הפנים כלפי מטה</translation>
 <translation id="8870700989640064057">להדפיס קובץ סודי?</translation>
 <translation id="8871553383647848643">התאמה אישית של מראה הדפדפן</translation>
+<translation id="8871603420762394026">‏Chrome משתף עכשיו מידע מוגבל מאוד בין אתרים, למשל מתי הוצגה לך מודעה, כדי לעזור לבעלי אתרים למדוד את הביצועים של מודעות.</translation>
 <translation id="8874824191258364635">עליך להזין מספר כרטיס חוקי</translation>
 <translation id="8876033571432926051">משחקים לקהל הרחב</translation>
 <translation id="8877780815363510165">דיג</translation>
@@ -3374,6 +3379,7 @@ Del</translation>
 <translation id="949314938206378263">‏ביקשת לבקר באתר הזה. להורה שלך יש אפשרות לענות ב-Family Link.</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>
+<translation id="961930410699694996">יש אישור לשימוש חד-פעמי במיקום</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">כל המשתמשים</translation>
 <translation id="964050462028070434">ניהול של סיסמאות ומפתחות גישה…</translation>

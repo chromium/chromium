@@ -1031,6 +1031,7 @@
 <translation id="3531780078352352885">工作表</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> 想使用您的麦克风</translation>
 <translation id="3533328374079021623">信箱 5</translation>
+<translation id="3536227077203206203">这次可以使用</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">虚拟卡图片</translation>
 <translation id="3542768452570884558">在新窗口中打开链接</translation>
@@ -1186,7 +1187,7 @@
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">如果您改变了想法，可随时在 Chrome 设置中做出更改</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据：<ph name="END_BOLD" />Chrome 会自动删除保留时长超过 30 天的网站。您再次访问的网站可能会再次出现在列表中。您还可随时在 Chrome 设置中禁止某个网站向您展示建议的广告，以及停用网站建议的广告。</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据：<ph name="END_BOLD" />Chrome 会自动删除保留时长超过 30 天的网站。您再次访问的网站可能会重新出现在列表中。您还可随时在 Chrome 设置中禁止某个网站向您展示建议的广告，以及停用网站建议的广告。</translation>
 <translation id="3921869355029467742">输入您的安全码</translation>
 <translation id="3927932062596804919">拒绝</translation>
 <translation id="393316646445601645">互联网与电信</translation>
@@ -2448,6 +2449,7 @@
 <translation id="7030436163253143341">证书无效</translation>
 <translation id="7031646650991750659">您已安装的 Google Play 应用</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您的 Google 帐号隐私设置</translation>
+<translation id="7044081119134178347">这次可以使用摄像头</translation>
 <translation id="7048095965575426564">欧洲 Fanfold</translation>
 <translation id="7050187094878475250">您尝试访问 <ph name="DOMAIN" />，但服务器提供的证书不可信（有效期过长）。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{此刻无法保存这张卡}other{此刻无法保存这些卡}}</translation>
@@ -3040,6 +3042,7 @@
 <translation id="8416694386774425977">网络配置无效，因此无法导入。
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">这次可以使用麦克风</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> - <ph name="SECOND_LABEL" /> - <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 毫米</translation>
 <translation id="8428213095426709021">设置</translation>
@@ -3095,6 +3098,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重置这项权限}other{重置这些权限}}</translation>
 <translation id="8555010941760982128">结账时请使用此促销代码</translation>
 <translation id="8557066899867184262">银行卡验证码 (CVC) 位于银行卡背面。</translation>
+<translation id="8558347880669160417">这次可以使用摄像头和麦克风</translation>
 <translation id="8559762987265718583">您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="8564182942834072828">单独的文档/非逐份打印的副本</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
@@ -3212,6 +3216,7 @@
 <translation id="8870494189203302833">顺序不变，正面朝下</translation>
 <translation id="8870700989640064057">打印机密文件？</translation>
 <translation id="8871553383647848643">自定义您的浏览器外观</translation>
+<translation id="8871603420762394026">Chrome 现在只会在网站之间分享非常有限的信息（例如向您展示广告的时段），以帮助网站衡量广告效果。</translation>
 <translation id="8874824191258364635">请输入有效的信用卡号</translation>
 <translation id="8876033571432926051">休闲游戏</translation>
 <translation id="8877780815363510165">钓鱼</translation>
@@ -3365,6 +3370,7 @@
 <translation id="949314938206378263">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
 <translation id="950736567201356821">三孔（顶部）</translation>
 <translation id="961663415146723894">装订（底部）</translation>
+<translation id="961930410699694996">这次可以使用位置信息</translation>
 <translation id="962484866189421427">此内容可能会尝试安装欺骗性应用，而这些应用能够冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">所有用户</translation>
 <translation id="964050462028070434">管理密码和通行密钥…</translation>

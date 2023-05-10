@@ -117,6 +117,7 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
 <translation id="1105711894873068933">Nadat <ph name="LACROS_NAME" /> is uitgezet, worden alle gebruikersgegevens verwijderd als er weer wordt ingelogd.</translation>
 <translation id="1107538157073168076">Extensie voor inzichten uitzetten</translation>
 <translation id="1110426799149444997">Regio doorzoeken uitzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111324374369583989">Instellingenscherm voor de weergavegrootte niet tonen tijdens inloggen</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
@@ -685,6 +686,7 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
       </translation>
 <translation id="1613327425322354195">Beveiligingsstatus van apparaat rapporteren</translation>
 <translation id="1615221548356595305">Toestaan dat HTTP/2-verbindingen voor deze hosts kunnen worden samengevoegd, zelfs als client certificates worden gebruikt</translation>
+<translation id="1615734278280392199">Zoeken in niet-anonieme modus gebruiken.</translation>
 <translation id="1616280227447957376">Doorgaan vanaf de SSL-waarschuwingspagina toestaan voor specifieke herkomsten</translation>
 <translation id="1617235075406854669">Verwijdering van browser- en downloadgeschiedenis aanzetten</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -1071,6 +1073,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 
       Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bijvoorbeeld bij het opstarten van Chrome OS.</translation>
 <translation id="1984934843478301531">Automatisering om apps te starten</translation>
+<translation id="1985545260037812875">Instellingenscherm voor weergavegrootte tonen tijdens inloggen</translation>
 <translation id="1985598967415986700">Inkorting van user-agent kan worden beheerd via field trials en origin trials.</translation>
 <translation id="1987789058026551147">Rapportage voor kiosksessies op apparaat aanzetten</translation>
 <translation id="1988345404999458987">Biedt configuraties voor beschikbare printerservers.
@@ -2307,6 +2310,7 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
 <translation id="3118552207903834734">Toestaan dat een gebruiker de hostnaam van het eigen apparaat instelt</translation>
+<translation id="3120434599585109871">Zoeken in anonieme modus gebruiken.</translation>
 <translation id="3122082892722698079">Gebruik van niet-beveiligde contentuitzonderingen beheren</translation>
 <translation id="3125472566440502628">'Selecteer om voor te lezen' uitzetten</translation>
 <translation id="3126748868885248792">Rechterknop is primair</translation>
@@ -2888,6 +2892,9 @@ Zorg dat je dit beleid niet altijd toepast, vooral niet tijdens productie-implem
 <translation id="3606571057705314194">Profielkiezer staat uit bij opstarten</translation>
 <translation id="3608206578291537084">De Encrypted Reporting Pipeline aanzetten</translation>
 <translation id="3608281460204780443">Het Chrome Web Store-icoon tonen in de <ph name="PRODUCT_OS_NAME" />-launcher en op de pagina Nieuw tabblad</translation>
+<translation id="3616490235694929053">Met dit beleid bepaal je of het instellingenscherm voor de weergavegrootte aan de gebruiker wordt getoond als deze de eerste keer inlogt.
+      Als je dit beleid instelt op False, wordt het instellingenscherm voor de weergavegrootte niet getoond.
+      Als je dit instelt op True, wordt het instellingenscherm voor de weergavegrootte getoond.</translation>
 <translation id="3622463490728773174">Nieuwe implementatie toestaan</translation>
 <translation id="3623332696371971798">Voorkomen dat Google Foto's toegang krijgt vanuit de personalisatie-app</translation>
 <translation id="3627678165642179114">Webservice voor spellingcontrole aan- of uitzetten</translation>
@@ -4582,6 +4589,7 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 <translation id="528302483493794684">Een VM-configuratie. Geeft een type VM aan dat de gebruiker kan installeren. Dit is permanent gekoppeld aan de ID van deze configuratie en bedieningselementen die van toepassing zijn op dit type VM.</translation>
 <translation id="5283457834853986457">Plug-inzoeker uitzetten (beëindigd)</translation>
 <translation id="5286579716704722323">Toestaan dat gebruikers doorklikken bij SSL-waarschuwingspagina's</translation>
+<translation id="5288713554963040955">Weergave van instellingenscherm voor weergavegrootte aanzetten tijdens inloggen</translation>
 <translation id="5288772341821359899">Als het beleid is ingesteld, wordt het door WebRTC gebruikte UDP-poortbereik beperkt tot het opgegeven poortinterval (inclusief eindpunten).
 
       Als het beleid niet wordt ingesteld, of als dit wordt ingesteld voor een lege tekenreeks of een ongeldig poortbereik, kan WebRTC gebruikmaken van elke lokale UDP-poort.</translation>
@@ -7584,6 +7592,7 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
       Dit beleid geldt alleen als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
       Dit beleid geldt altijd voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Systeemeigen printer</translation>
+<translation id="8055051642109241571">Zoeken in een anonieme modus aanzetten</translation>
 <translation id="8056237304861875584">Toestaan dat Phone Hub-taakvoortzetting wordt aangezet.</translation>
 <translation id="8056273037819805106">De inloggegevens van <ph name="PRODUCT_OS_NAME" /> worden gebruikt voor netwerkverificatie van een beheerde proxy.</translation>
 <translation id="8056800559672904373">Een beheerd account moet een primair account zijn, mag geen secundaire accounts hebben en bestaande browsegegevens mogen worden geïmporteerd bij het maken van een profiel</translation>
@@ -8219,6 +8228,15 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 
        Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat gesproken feedback in eerste instantie uit, maar kunnen gebruikers deze functie op elk moment aanzetten.</translation>
 <translation id="8656110680728938054">'Selecteer om voor te lezen' aanzetten</translation>
+<translation id="8657026983981036230">Als je het beleid instelt, wordt de directory ingesteld die Chrome gebruikt voor het downloaden van bestanden. Chrome gebruikt de opgegeven directory, ongeacht of de gebruiker een directory heeft gespecificeerd of heeft aangegeven dat er elke keer om een downloadlocatie moet worden gevraagd.
+
+      Dit beleid overschrijft het beleid <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Als je het beleid niet instelt, gebruikt Chrome de standaard downloaddirectory en kunnen gebruikers deze wijzigen.
+
+      In <ph name="PRODUCT_OS_NAME" /> kun je deze alleen instellen op Google Drive-directory's.
+
+      Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="8657543427358173663">Verzamelen van WebRTC-gebeurtenislogboeken van Google-services toestaan</translation>
 <translation id="8659843732895043951">Klembord toestaan op deze sites</translation>
 <translation id="8661297125441579970">Gegevensmigratie en ARC niet toestaan.</translation>
@@ -8321,6 +8339,9 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
 <translation id="8728854710675158426">Onveilige hashes in TLS-handshakes aangezet</translation>
 <translation id="8734543507835977857">Vertragingen in energiebeheer en limieten voor de sessieduur starten na het begin van de sessie</translation>
 <translation id="8736538322216687231">Minimale 'Beperkte modus' op YouTube afdwingen</translation>
+<translation id="874149307422233209">Met dit beleid kunnen beheerders bepalen hoe Google gebruikersgegevens verwerkt die via <ph name="PRODUCT_OS_NAME" />-functies naar Zoeken worden gestuurd.
+Als je het beleid aanzet, kunnen gebruikers het zoekvak van de<ph name="PRODUCT_OS_NAME" />-launcher en het adresvak van de <ph name="PRODUCT_NAME" />-browser in <ph name="PRODUCT_OS_NAME" /> gebruiken, zodat de zoekgeschiedenis van de gebruiker niet aan hun identiteit wordt gekoppeld.
+Als je het beleid niet instelt of niet toepast, worden de gegevens van deze zoekopdrachten van de gebruiker aan hun identiteit gekoppeld.</translation>
 <translation id="8744844164152340112">Bepaalt het thema dat wordt gebruikt om de UI weer te geven tijdens OOBE en in sessies (donker/licht/automatisch).
       De automatische modus schakelt automatisch tussen het donkere en lichte thema bij zonsopgang en -ondergang.
       Dit beleid moet worden aanbevolen, om gebruikers de mogelijkheid te geven het thema te wijzigen in de systeeminstellingen.</translation>

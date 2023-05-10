@@ -1,4 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1356944128023012143">Затворен је ток рада листа синхронизованих уређаја и изабраних картица са тих уређаја које треба вратити новим враћањем.</translation>
+<translation id="1816430105422765050">Пређите на друге синхронизоване уређаје у оквиру ове ставке менија.</translation>
+<translation id="3347725959865138210">Одаберите уређај са ког желите да добијате картице</translation>
+<translation id="3575801299326994724">Прегледајте изабране картице које желите да вратите са тренутно изабраног уређаја.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картица, последњи пут ажурирана: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> картица, последњи пут ажурирана: <ph name="TIME_SINCE_MODIFIED" />}few{<ph name="TABS_COUNT_MANY" /> картице, последњи пут ажуриране: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> картица, последњи пут ажуриране: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="3983305234037158273">Синхронизовани уређаји за враћање картица су доступни за промену при додиру. Крећите се да бисте прегледали или вратили изабране картице за актуелни уређај на додир. Тастатура је сакривена.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{Отвори <ph name="TABS_COUNT_ONE" /> картицу}one{Отвори <ph name="TABS_COUNT_MANY" /> картицу}few{Отвори <ph name="TABS_COUNT_MANY" /> картице}other{Отвори <ph name="TABS_COUNT_MANY" /> картица}}</translation>
+<translation id="4811934403802581334">Биће враћене све изабране картице са тренутно изабраног уређаја.</translation>
+<translation id="5336031759968328813">Прегледај све картице</translation>
+<translation id="8725404154479306799">Преузмите картице које сте оставили на старим уређајима</translation>
 </translationbundle>

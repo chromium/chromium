@@ -1034,6 +1034,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3531780078352352885">Vinnslublöð</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> vill fá að nota hljóðnemann</translation>
 <translation id="3533328374079021623">Pósthólf 5</translation>
+<translation id="3536227077203206203">Leyft í þetta skipti</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Mynd á korti</translation>
 <translation id="3542768452570884558">Opna tengil í nýjum glugga</translation>
@@ -2453,6 +2454,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7030436163253143341">Vottorðið er ekki gilt</translation>
 <translation id="7031646650991750659">Hvaða Google Play forrit þú hefur sett upp</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að stjórna persónuverndarstillingum Google reikningsins</translation>
+<translation id="7044081119134178347">Myndavél leyfð í þetta skipti</translation>
 <translation id="7048095965575426564">Evrópskt Fanfold</translation>
 <translation id="7050187094878475250">Þú reyndir að ná sambandi við <ph name="DOMAIN" /> en þjónninn framvísaði vottorði sem er með of langan gildistíma til að hægt sé að treysta því.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ekki er hægt að vista þetta kort núna}one{Ekki er hægt að vista þessi kort núna}other{Ekki er hægt að vista þessi kort núna}}</translation>
@@ -3045,6 +3047,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8416694386774425977">Netstillingarnar eru ógildar og ekki var hægt að flytja þær inn.
 Ítarlegar upplýsingar:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Hljóðnemi leyfður í þetta skipti</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Stillingar</translation>
@@ -3100,6 +3103,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Endurstilla heimild}one{Endurstilla heimild}other{Endurstilla heimildir}}</translation>
 <translation id="8555010941760982128">Notaðu þennan kóða við greiðslu</translation>
 <translation id="8557066899867184262">CVC-númer er aftan á kortinu.</translation>
+<translation id="8558347880669160417">Hljóðnemi og myndavél leyfð í þetta skipti</translation>
 <translation id="8559762987265718583">Ekki er hægt að koma á lokaðri tengingu við <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vegna þess að dag- og tímasetning tækisins (<ph name="DATE_AND_TIME" />) er röng.</translation>
 <translation id="8564182942834072828">Aðskilin skjöl / ekki samröðuð eintök</translation>
 <translation id="8564985650692024650">Chromium mælir með því að þú endurstillir aðgangsorðið fyrir <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ef þú notaðir það einnig á öðrum síðum.</translation>
@@ -3216,6 +3220,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8870494189203302833">Sama röð, snýr niður</translation>
 <translation id="8870700989640064057">Prenta skrá sem er trúnaðarmál?</translation>
 <translation id="8871553383647848643">Sérsníddu útlit vafrans</translation>
+<translation id="8871603420762394026">Eins og er deilir Chrome aðeins mjög takmörkuðum upplýsingum á milli vefsvæða s.s. um hvenær auglýsing birtist þér, til að auðvelda vefsvæðum að mæla árangur auglýsinga.</translation>
 <translation id="8874824191258364635">Færðu inn gilt kortanúmer</translation>
 <translation id="8876033571432926051">Hversdagsleikir</translation>
 <translation id="8877780815363510165">Stangveiði</translation>
@@ -3369,6 +3374,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="949314938206378263">Þú baðst um að opna þetta vefsvæði. Foreldri þitt getur svarað í Family Link.</translation>
 <translation id="950736567201356821">Þrjú göt efst</translation>
 <translation id="961663415146723894">Bundið neðst</translation>
+<translation id="961930410699694996">Staðsetning leyfð í þetta skipti</translation>
 <translation id="962484866189421427">Þetta efni gæti verið að reyna að setja upp villandi forrit sem virðast vera eitthvað annað en þau eru eða safna gögnum sem má nota til að fylgjast með þér. <ph name="BEGIN_LINK" />Sýna samt<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Allir notendur</translation>
 <translation id="964050462028070434">Stjórna aðgangsorðum og aðgangslyklum…</translation>

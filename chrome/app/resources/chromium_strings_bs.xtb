@@ -250,6 +250,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6475912303565314141">Također kontrolira koja stranica se prikazuje kada pokrenete Chromium.</translation>
 <translation id="648319183876919572">Poboljšano Sigurno pregledanje vas bolje štiti od opasnih web lokacija i preuzimanja</translation>
 <translation id="6510925080656968729">Deinstaliraj Chromium</translation>
+<translation id="6539122709674868420">Vaš organizacija zatvara Chromium kada se ne koristi <ph name="TIMEOUT_DURATION" />. Podaci o pregledanju su izbrisani. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6542839706527980775">Svaki profil sadrži svoje Chromium informacije, poput oznaka, historije, lozinki i još mnogo toga</translation>
 <translation id="656935081669708576">Možete se prebaciti da vidite lozinke s drugog Chromium profila</translation>
 <translation id="6570579332384693436">Zbog ispravke pravopisnih grešaka, Chromium šalje Googleu tekst koji napišete u polja.</translation>
@@ -287,6 +288,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="7025789849649390912">Instalacija je zaustavljena.</translation>
 <translation id="705851970750939768">Ažuriraj Chromium</translation>
 <translation id="7067091210845072982">Ako slika ne sadrži koristan opis, Chromium će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa.</translation>
+<translation id="7173822816570314652">Vaša organizacija briše podatke Chromiuma kada se ne koristi <ph name="TIMEOUT_DURATION" />. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="718435575166326686">Chromiumu je za ovu web lokaciju potrebno odobrenje za kameru</translation>
 <translation id="7196312274710523067">Pokretanje Chromiuma nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="7197677400338048821">Chromium ne može provjeravati vaše lozinke. Pokušajte ponovo za 24 sata.</translation>
@@ -341,6 +343,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8248265253516264921">Ako slika ne sadrži koristan opis, Chromium će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa. To možete isključiti u postavkama kad god želite.</translation>
 <translation id="8266560134891435528">Chromium ne može provjeravati vaše lozinke jer niste prijavljeni</translation>
 <translation id="8290862415967981663">Ovaj fajl može biti opasan i zato ga je Chromium blokirao.</translation>
+<translation id="8318772038038596122">Vaš organizacija zatvara Chromium kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Učinite više uz Chromium</translation>
 <translation id="8330519371938183845">Prijavite se da sinhronizirate i personalizirate Chrome na svim svojim uređajima</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> je prethodno koristio/la Chromium</translation>
@@ -376,6 +379,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="9019929317751753759">Kako bi Chromium bio sigurniji, onemogućili smo sljedeću ekstenziju koja nije navedena na stranici <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koja je dodana bez vašeg znanja.</translation>
 <translation id="9022552996538154597">Prijavite se u Chromium</translation>
 <translation id="907832235989677238">Prijavite se u Chromium. Ako se želite prijaviti na račun samo jedanput, možete <ph name="GUEST_LINK_BEGIN" />koristiti uređaj kao gost<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Chromium je automatski zatvoren</translation>
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium će se ponovo pokrenuti za jedan sat}one{Chromium će se ponovo pokrenuti za # sat}few{Chromium će se ponovo pokrenuti za # sata}other{Chromium će se ponovo pokrenuti za # sati}}</translation>
 <translation id="9106612006984859720">Da primate buduća ažuriranja za Chromium, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.1.</translation>

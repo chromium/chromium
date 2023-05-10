@@ -56,6 +56,7 @@
 <translation id="121097972571826261">Уперад на адно слова</translation>
 <translation id="1217633719248931900">Перайсці ў праграму</translation>
 <translation id="1218444235442067213">Праграма Крамы Play (<ph name="APP_NAME" />)</translation>
+<translation id="1219309685806246869">Вярнуцца да інтэрфейсу: <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Chromebook заблакіраваны з-за вядомай праблемы. Вы зможаце ўвайсці праз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спыніць выбар</translation>
 <translation id="1235458158152011030">Вядомыя сеткі</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">У шаблоне ёсць праграмы, якія не падтрымліваюцца</translation>
 <translation id="3161500364292033097">Закрыць працоўны стол і вокны</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> выконвае адкат на прыладзе <ph name="DEVICE_TYPE" />. Налады прылады будуць скінуты, а ўсе даныя выдалены.</translation>
+<translation id="3171170659304083361">Налады спосабаў уводу</translation>
 <translation id="3181441307743005334">Перазапуск можа заняць некаторы час</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Падключана да прылады}one{Падключана да # прылады}few{Падключана да # прылад}many{Падключана да # прылад}other{Падключана да # прылады}}</translation>
 <translation id="320207200541803018">Задаць таймер</translation>
@@ -1059,6 +1061,7 @@
 <translation id="5881540930187678962">Наладзьце Тэлефонны цэнтр пазней</translation>
 <translation id="5881663018261910378">Выключана</translation>
 <translation id="5887954372087850114">Акно "<ph name="WINDOW_TITLE" />" прызначана для працоўнага стала "<ph name="DESK_TITLE" />". Прызначэнне гэтага акна для іншых працоўных сталоў скасавана</translation>
+<translation id="588817334757907802">Адкрыць файл у браўзеры Chrome</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="589817443623831496">Кропкавае сканіраванне</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@
 <translation id="6074087755403037157">Бэта-версія</translation>
 <translation id="6093867385179428431">Адключана адміністратарам</translation>
 <translation id="6095008505822982596">Хуткасць маўлення</translation>
+<translation id="6095425951508823973">Дадаць падключэнне праз <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Зменена ў мінулым месяцы</translation>
 <translation id="6103838137565245112">сістэма</translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
@@ -1589,6 +1593,7 @@
 <translation id="8349964124165471584">Адкрыць спасылку ў новым акне</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>
 <translation id="8364673525741149932">Уключыць/выключыць рэжым Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152">Выкарыстоўваецца <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Захаваны працоўны стол, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Уперад на адну літару</translation>
 <translation id="8371991222807690464">Прадукцыйнасць перыферыйных прылад у гасцявым рэжыме можа быць абмежаванай</translation>

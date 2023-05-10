@@ -1035,6 +1035,7 @@
 <translation id="3531780078352352885">Ажлын хүснэгт</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> таны микрофоныг ашиглах хүсэлтэй байна</translation>
 <translation id="3533328374079021623">Шуудангийн хайрцаг 5</translation>
+<translation id="3536227077203206203">Энэ удаад зөвшөөрсөн</translation>
 <translation id="3537165859691846083">Том захидал</translation>
 <translation id="3542628208405253498">Картын зураг</translation>
 <translation id="3542768452570884558">Холбоосыг шинэ цонхонд нээх</translation>
@@ -2453,6 +2454,7 @@
 <translation id="7030436163253143341">Гэрчилгээ хүчингүй байна</translation>
 <translation id="7031646650991750659">Таны Google Play-н ямар апп суулгасан болох</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлийнхээ нууцлалын тохиргоог удирдахын тулд Tab, дараа нь Enter дээр дарна уу.</translation>
+<translation id="7044081119134178347">Камерыг энэ удаад зөвшөөрсөн</translation>
 <translation id="7048095965575426564">Европын Фанфолд</translation>
 <translation id="7050187094878475250">Та <ph name="DOMAIN" />-д хандах оролдлого хийсэн боловч серверээс таны оруулсан гэрчилгээний хугацаа хүчин төгөлдөр гэж үзэх хугацаанаас хэтэрхий урт хугацаанд хүчинтэй байна гэж үзсэн байна.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Энэ картыг одоогоор хадгалах боломжгүй байна}other{Эдгээр картыг одоогоор хадгалах боломжгүй байна}}</translation>
@@ -3045,6 +3047,7 @@
 <translation id="8416694386774425977">Сүлжээний тохируулга буруу тул импортлох боломжгүй байна.
 Нэмэлт дэлгэрэнгүй мэдээлэл:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Микрофоныг энэ удаад зөвшөөрсөн</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 мм</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
@@ -3100,6 +3103,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Зөвшөөрлийг шинэчлэх}other{Зөвшөөрлүүдийг шинэчлэх}}</translation>
 <translation id="8555010941760982128">Тооцоо хийхдээ энэ кодыг ашиглаарай</translation>
 <translation id="8557066899867184262">Карт баталгаажуулалтын код таны картын ард байрладаг.</translation>
+<translation id="8558347880669160417">Камер болон микрофоныг энэ удаад зөвшөөрсөн</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> руу таны төхөөрөмжийн он сар өдөр, цаг <ph name="DATE_AND_TIME" /> ) буруу байгаа учраас хувийн холболт үүсгэж болохгүй байна.</translation>
 <translation id="8564182942834072828">Тусдаа документ/Зэрэгцүүлээгүй хувь</translation>
 <translation id="8564985650692024650">Хэрэв та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-н нууц үгийг бусад сайтад дахин ашигласан бол Chromium-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
@@ -3216,6 +3220,7 @@
 <translation id="8870494189203302833">Нүүрээр нь доош харуулж, хуудасны дарааллын дагуу</translation>
 <translation id="8870700989640064057">Нууцлалтай файлыг хэвлэх үү?</translation>
 <translation id="8871553383647848643">Хөтчийнхөө харагдах байдлыг өөрчлөх</translation>
+<translation id="8871603420762394026">Chrome одоо сайтуудад зарын гүйцэтгэлийг хэмжихэд туслахын тулд зарыг танд хэзээ харуулсан зэрэг зөвхөн маш хязгаарлагдмал мэдээллийг сайтуудын хооронд хуваалцана.</translation>
 <translation id="8874824191258364635">Зөв картны дугаар оруулна уу</translation>
 <translation id="8876033571432926051">Энгийн тоглоом</translation>
 <translation id="8877780815363510165">Загасчлал</translation>
@@ -3369,6 +3374,7 @@
 <translation id="949314938206378263">Та энэ сайтад зочлохыг хүссэн. Таны эцэг эх Family Link-д хариу бичих боломжтой.</translation>
 <translation id="950736567201356821">Баруун дээд буланд гурван нүх цоолох</translation>
 <translation id="961663415146723894">Доод булан дагуу үдэж хавтаслах</translation>
+<translation id="961930410699694996">Байршлыг энэ удаад зөвшөөрсөн</translation>
 <translation id="962484866189421427">Энэ контент ямар нэг дүр эсгэсэн эсвэл таныг хянахын тулд өгөгдөл цуглуулах зорилготой хуурамч апп суулгахыг оролдож болзошгүй. <ph name="BEGIN_LINK" />Ямартай ч харуулах<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Бүх хэрэглэгч</translation>
 <translation id="964050462028070434">Нууц үг болон Passkey-г удирдах…</translation>

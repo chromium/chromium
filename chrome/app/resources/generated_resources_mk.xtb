@@ -596,6 +596,7 @@
 <translation id="1506187449813838456">Наголемување висина</translation>
 <translation id="1507170440449692343">Страницата е блокирана да не пристапува до фотоапаратот.</translation>
 <translation id="1507246803636407672">&amp;Отфрли</translation>
+<translation id="1508931164824684991">Сајтовите може да користат JavaScript</translation>
 <translation id="1509163368529404530">&amp;Врати ја групата</translation>
 <translation id="1509281256533087115">Пристапи на секој <ph name="DEVICE_NAME_AND_VENDOR" /> преку USB</translation>
 <translation id="1510238584712386396">Стартер</translation>
@@ -859,6 +860,7 @@
 <translation id="1708291623166985230">Точката на пристап е оневозможена</translation>
 <translation id="1708338024780164500">(Неактивна)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Не прикажувај кога ќе завршат преземањата</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (природна)</translation>
 <translation id="1709217939274742847">Изберете билет што ќе го користите за проверка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Поставки за мрежата</translation>
@@ -1682,6 +1684,7 @@
 <translation id="2398546389094871088">Фабричкото ресетирање на уредот нема да ги отстрани вашите профили на eSIM. Одете на <ph name="LINK_BEGIN" />Мобилни поставки<ph name="LINK_END" /> за да ги отстраните профиливе рачно.</translation>
 <translation id="2399699884460174994">Известувањата се вклучени</translation>
 <translation id="2399939490305346086">Податоци за најавување на безбедносниот клуч</translation>
+<translation id="2400323785194108001">Никогаш не го деактивирај сајтов</translation>
 <translation id="2400664245143453337">Потребно е итно ажурирање</translation>
 <translation id="2402226831639195063">Тонови</translation>
 <translation id="2406153734066939945">Да се избрише профилот и неговите податоци?</translation>
@@ -1997,6 +2000,7 @@
 <translation id="2673135533890720193">Прочитајте ја историјата на прелистувачот</translation>
 <translation id="2674764818721168631">Исклучено</translation>
 <translation id="2675570801872027281">Грешка при отстранување на Bruschetta. Обидете се повторно.</translation>
+<translation id="2676084251379299915">Екстензијава е оневозможена со правилата на претпријатието затоа што веќе не е достапна во „Веб-продавницата на Chrome“.</translation>
 <translation id="267708982776801183">Филтер за црвена и зелена боја (слаба црвена, протаномалија)</translation>
 <translation id="2678063897982469759">Овозможи повторно</translation>
 <translation id="2678100101831051676">Не може да се емитува.</translation>
@@ -2005,6 +2009,7 @@
 <translation id="2682498795777673382">Ажурирање од родителот</translation>
 <translation id="2683638487103917598">Папката е подредена</translation>
 <translation id="2684004000387153598">За да продолжите, кликнете „Во ред“, а потоа кликнете „Додај лице“ за да создадете нов профил за адресата на е-пошта.</translation>
+<translation id="2685193395980129388">Дозволено: <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2687407218262674387">Услови за користење на Google</translation>
 <translation id="2687621393791886981">Прашај ме подоцна</translation>
@@ -2093,6 +2098,7 @@
 <translation id="2755349111255270002">Ресетирајте го овој <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Управувајте со функциите за пристапност</translation>
 <translation id="275662540872599901">екранот е исклучен</translation>
+<translation id="2756936198272359372">Не е дозволено да се користи JavaScript</translation>
 <translation id="2757161511365746634">Приказ на печатачот</translation>
 <translation id="2757338480560142065">Погрижете се лозинката што ја зачувувате да се совпаѓа со лозинката за <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Не добивме резултати од пребарување за <ph name="SEARCH_QUERY" /></translation>
@@ -2125,6 +2131,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Екстензиите се дозволени на овој сајт</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
+<translation id="2783024642731649028">1 ставка во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Преземено</translation>
 <translation id="2783321960289401138">Креирај кратенка...</translation>
 <translation id="2783829359200813069">Избор на типови шифрирање</translation>
@@ -2907,6 +2914,7 @@
 <translation id="3496213124478423963">Одзумирај</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (не е избран)</translation>
 <translation id="3496689104192986836">Ниво на батерија <ph name="PERCENTAGE" /> %</translation>
+<translation id="3496995426334945408">Сајтовите обично користат JavaScript за прикажување интерактивни функции како видеоигри или интернет-формулари</translation>
 <translation id="3497501929010263034">USB-уред од <ph name="VENDOR_NAME" /> (производ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Сподели Doodle</translation>
 <translation id="3500417806337761827">Грешка при прикачување на споделувањето. Веќе се прикачени премногу SMB-споделувања.</translation>
@@ -2951,6 +2959,7 @@
 <translation id="354060433403403521">Адаптер за наизменична струја</translation>
 <translation id="354068948465830244">Може да ги чита и изменува податоците за сајтот</translation>
 <translation id="3541823293333232175">Назначено</translation>
+<translation id="354204985370574425">Никогаш не го деактивирај сајтов</translation>
 <translation id="3543393733900874979">Ажурирањето не успеа (грешка: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA потпис со SHA-512</translation>
 <translation id="3544058026430919413">Компанијата може да дефинира група на сајтови што може да користат колачиња за да ја споделуваат вашата активност во групата. Ова е исклучено во „Инкогнито“.</translation>
@@ -3845,6 +3854,7 @@
 <translation id="4324577459193912240">Датотеката не е целосна</translation>
 <translation id="4325237902968425115">Се деинсталира <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Најсилната безбедност на Chrome нуди поголема заштита од опасни веб-сајтови, преземања и екстензии</translation>
+<translation id="4326484226728068206">Ставки во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Вода со мраз</translation>
 <translation id="4330387663455830245">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Поставете родителски контроли</translation>
@@ -4207,6 +4217,7 @@
 <translation id="4647090755847581616">&amp;Затвори ја картичката</translation>
 <translation id="4647283074445570750">Чекор <ph name="CURRENT_STEP" /> од <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Недоволно дозволи</translation>
+<translation id="4650037136970677721">Споменот се зачуван</translation>
 <translation id="4650591383426000695">Прекинете ја врската помеѓу телефонот и <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не може да се вчита онлајн компонентата со ресурси во демо-режим.</translation>
 <translation id="4651921906638302153">Не може да се најавите со сметкава</translation>
@@ -4441,6 +4452,7 @@
 <translation id="4863702650881330715">Прошири компатибилност</translation>
 <translation id="4863769717153320198">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (стандардна)</translation>
 <translation id="4864805589453749318">Изберете го родителот што дава дозвола за да додадете училишна сметка.</translation>
+<translation id="486505726797718946">Споменот се зачуван</translation>
 <translation id="486635084936119914">Отворај одредени типови датотеки автоматски по преземањето</translation>
 <translation id="4868281708609571334">Обучете го „Помошникот на Google“ да го препознава гласот на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Дијалогов не е нагласен во моментов. Притиснете Command-Shift-Опција A за да го нагласите дијалогов.</translation>
@@ -4533,6 +4545,7 @@
 <translation id="4940448324259979830">Со сметкава управува <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Резервирајте големина на дискот</translation>
 <translation id="4941074198479265146">Сајтовите обично се поврзуваат со MIDI-уредите за функциите за создавање и уредување музика</translation>
+<translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> ставки во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Употреби го ова барање за уреди кога се запишува уредот за компаниско управување:</translation>
 <translation id="4941627891654116707">Големина на фонт</translation>
 <translation id="4941963255146903244">Прегледувајте ги фотографиите, аудиовизуелните содржини и апликациите од телефонот</translation>
@@ -5280,7 +5293,7 @@
 <translation id="5633149627228920745">Дознајте повеќе за барањата на системот</translation>
 <translation id="563371367637259496">Мобилна</translation>
 <translation id="5634446357546764049">Погледнете спомени за вашите неодамнешни патувања и друго</translation>
-<translation id="5635091213277904818">Chrome автоматски ги брише сајтовите што се постари од 30 дена. Сајт што ќе го отворите повторно можно е пак да се појави на списокот. Или може да блокирате сајт за да не ви прикажува реклами.</translation>
+<translation id="5635091213277904818">Chrome автоматски ги брише сајтовите што се постари од 30 дена. Сајт што ќе го отворите повторно може одново да се појави на списокот. Или може да блокирате сајт да ви прикажува реклами.</translation>
 <translation id="5635312199252507107">Дозволи на конкретни сајтови</translation>
 <translation id="5636012309446422">Да се отстрани <ph name="DEVICE" /> од <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">За да го користите <ph name="NETWORK_ID" />, можеби прво ќе треба да ја <ph name="LINK_START" />посетите страницата за пријавување преку мрежа<ph name="LINK_END" />, која автоматски ќе се отвори за неколку секунди. Доколку тоа не се случи, мрежата не може да се користи.</translation>
@@ -5488,6 +5501,7 @@
 <translation id="5832970156002835240">Дозволи на сите сајтови</translation>
 <translation id="5833397272224757657">За персонализација ги користи содржините на сајтовите што ги посетувате, како и активноста и интеракциите на прелистувачот</translation>
 <translation id="5833726373896279253">Овие поставки може да ги менува само сопственикот:</translation>
+<translation id="5833899990800318936">Не им дозволувај на сајтовите да користат JavaScript</translation>
 <translation id="583431638776747">Сајтот не беше достапен</translation>
 <translation id="5834581999798853053">Преостануваат околу <ph name="TIME" /> минути</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> пристапува до HID-уреди}=2{Екстензии што пристапуваат до уреди: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Екстензии што пристапуваат до уреди: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и уште {3}}other{Екстензии што пристапуваат до уреди: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и уште {3}}}</translation>
@@ -5718,6 +5732,7 @@
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - поврзан е USB-уред</translation>
 <translation id="6027945736510816438">Дали мислевте на <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Додај отпечаток</translation>
+<translation id="6030719887161080597">Управувајте со податоците што ги користат сајтовите за мерење на перформансите на рекламите</translation>
 <translation id="6031600495088157824">Опции за внесување во алатникот</translation>
 <translation id="6032715498678347852">Кликнете на екстензијата за да ѝ дадете пристап до сајтов.</translation>
 <translation id="6032912588568283682">Датотечен систем</translation>
@@ -5952,6 +5967,7 @@
 <translation id="623755660902014047">Режим на читање</translation>
 <translation id="6238767809035845642">Текст споделен од друг уред</translation>
 <translation id="6238923052227198598">Прикажувај ја последната забелешка на заклучениот екран</translation>
+<translation id="6238982280403036866">Дозволено е да се користи JavaScript</translation>
 <translation id="6239558157302047471">Повторно вчитај ја &amp;рамката</translation>
 <translation id="6240821072888636753">Прашувај секогаш</translation>
 <translation id="6241530762627360640">Пристапете до информации за уреди со Bluetooth што се спарени со вашиот систем и откријте уреди со Bluetooth во близина</translation>
@@ -6095,6 +6111,7 @@
 <translation id="6378392501584240055">Отвори во Wi-Fi мрежи</translation>
 <translation id="6380143666419481200">Прифати и продолжи</translation>
 <translation id="6382958439467370461">Нема неактивни кратенки</translation>
+<translation id="6383382161803538830">„Режим на читање“ не е достапен на страницава</translation>
 <translation id="638418309848716977">Поддржани линкови</translation>
 <translation id="6384275966486438344">Променете ги поставките за пребарување на: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Неименувана група - 1 картичка}one{Неименувана група - # картичка}other{Неименувана група - # картички}}</translation>
@@ -6493,6 +6510,7 @@
 <translation id="6729192290958770680">Внесете го вашето корисничко име</translation>
 <translation id="6731320427842222405">Ова може да потрае неколку минути</translation>
 <translation id="6733620523445262364">Ознаката „<ph name="BOOKMARK_TITLE" />“ е создадена.</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Прикажи колачиња и други податоци за локација…</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737393581255281855">Да се избришат прикажаните податоци?</translation>

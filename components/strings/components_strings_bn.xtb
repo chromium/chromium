@@ -1035,6 +1035,7 @@
 <translation id="3531780078352352885">জব শিট</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> আপনার মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="3533328374079021623">মেলবক্স ৫</translation>
+<translation id="3536227077203206203">এই সময় অনুমতি দেওয়া আছে</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">কার্ডের ছবি</translation>
 <translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
@@ -1191,7 +1192,7 @@
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">আপনি Chrome সেটিংস থেকে যেকোনও সময় আপনার সিদ্ধান্ত পরিবর্তন করতে পারেন</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারবেন:<ph name="END_BOLD" /> ৩০ দিনের পুরনো সাইট Chrome অটোমেটিক মুছে দেয়। আপনি আবার দেখেছেন এমন সাইট তালিকায় আবার দেখা যেতে পারে। এছাড়াও আপনি একটি সাইটকে আপনার জন্য বিজ্ঞাপনের সাজেশন দেওয়া থেকে ব্লক করতে এবং Chrome সেটিংসে যেকোনও সময় সাইটের সাজেস্ট করা বিজ্ঞাপনগুলি বন্ধ করতে পারবেন।</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারবেন:<ph name="END_BOLD" /> ৩০ দিনের পুরনো সাইট Chrome অটোমেটিক মুছে দেয়। আপনি আবার ভিজিট করেছেন এমন সাইট, তালিকায় আবার দেখা যেতে পারে। এছাড়াও আপনি একটি সাইটকে আপনার জন্য বিজ্ঞাপনের সাজেশন দেওয়া থেকে ব্লক করতে এবং Chrome সেটিংসে যেকোনও সময় সাইটের সাজেস্ট করা বিজ্ঞাপনগুলি বন্ধ করতে পারবেন।</translation>
 <translation id="3921869355029467742">আপনার নিরাপত্তা কোড লিখুন</translation>
 <translation id="3927932062596804919">অস্বীকার</translation>
 <translation id="393316646445601645">ইন্টারনেট ও টেলিকম</translation>
@@ -1673,6 +1674,7 @@
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="5051305769747448211">লাইভ কমেডি</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইল পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}one{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}other{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}}</translation>
+<translation id="5060419232449737386">ক্যাপশন সেটিংস</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> ব্যবহার করে এমন ওয়েবসাইটে Windows Hello ব্যবহার করে যাচাই করার বিকল্প বেছে নিয়েছেন। এই পরিষেবা প্রদানকারী আপনার পেমেন্ট পদ্ধতি সম্পর্কে তথ্য স্টোর করে থাকতে পারে যা আপনি <ph name="LINK_TEXT" /> পারেন।</translation>
 <translation id="5061227663725596739">আপনি কি <ph name="LOOKALIKE_DOMAIN" /> ডোমেনের কথা বলছেন?</translation>
 <translation id="5066056036849835175">প্রিন্ট করার ইতিহাস</translation>
@@ -2453,6 +2455,7 @@
 <translation id="7030436163253143341">সার্টিফিকেটটি সঠিক নয়</translation>
 <translation id="7031646650991750659">কোন কোন Google Play অ্যাপ আপনি ইনস্টল করেছেন</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টের গোপনীয়তা সেটিংস ম্যানেজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
+<translation id="7044081119134178347">এই সময় ক্যামেরার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">আমি <ph name="DOMAIN" />-এ সংযোগ করার চেষ্টা করেছেন, কিন্তু সার্ভার একটি সার্টিফিকেট উপস্থাপন করেছে যার বৈধতার সময়সীমা এত বেশী যে বিশ্বাসযোগ্য নয়।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{এই মুহূর্তে কার্ডটি সেভ করা যাবে না}one{এই মুহূর্তে কার্ডগুলি সেভ করা যাবে না}other{এই মুহূর্তে কার্ডগুলি সেভ করা যাবে না}}</translation>
@@ -3045,6 +3048,7 @@
 <translation id="8416694386774425977">নেটওয়ার্ক কনফিগারেশনটি সঠিক নয় এবং ইমপোর্ট করা যায়নি৷
 অতিরিক্ত বিবরণ:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">৫০০ x ৭৫০ মিমি</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
@@ -3100,6 +3104,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{অনুমতি রিসেট করুন}one{অনুমতি রিসেট করুন}other{অনুমতি রিসেট করুন}}</translation>
 <translation id="8555010941760982128">চেকআউটের সময় এই কোড ব্যবহার করুন</translation>
 <translation id="8557066899867184262">আপনার কার্ডের পিছনে CVC ছবিটি আছে।</translation>
+<translation id="8558347880669160417">এই সময় ক্যামেরা ও মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার ডিভাইসের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="8564182942834072828">আলাদা ডকুমেন্ট/সংগ্রহ না করা কপি</translation>
 <translation id="8564985650692024650">Chromium-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
@@ -3216,6 +3221,7 @@
 <translation id="8870494189203302833">একই অর্ডার, সামনের দিক নীচে</translation>
 <translation id="8870700989640064057">গোপনীয় ফাইল প্রিন্ট করবেন?</translation>
 <translation id="8871553383647848643">আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
+<translation id="8871603420762394026">বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করার জন্য বিভিন্ন সাইটকে সাহায্য করতে Chrome এখন নানাবিধ সাইটের মধ্যে শুধুমাত্র খুব সীমিত তথ্য শেয়ার করে, যেমন কোনও বিজ্ঞাপন আপনাকে কখন দেখানো হয়েছিল।</translation>
 <translation id="8874824191258364635">একটি সঠিক কার্ড নম্বর লিখুন</translation>
 <translation id="8876033571432926051">ক্যাজুয়াল গেম</translation>
 <translation id="8877780815363510165">মাছ ধরা</translation>
@@ -3369,6 +3375,7 @@
 <translation id="949314938206378263">তুমি এই সাইট দেখার অনুমতি চেয়েছ। আপনার অভিভাবক Family Link-এ উত্তর দিতে পারেন।</translation>
 <translation id="950736567201356821">উপরে তিনটি পাঞ্চ</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
+<translation id="961930410699694996">এই সময় লোকেশনের অনুমতি দেওয়া আছে</translation>
 <translation id="962484866189421427">এই কন্টেন্টটি প্রতারণামূলক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি অন্যান্য আপের থেকে আলাদা করা যায় না অথবা যেগুলি এমন ডেটা সংগ্রহ করে যা দিয়ে আপনার উপরে নজর রাখা যাবে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">সকল ব্যবহারকারী</translation>
 <translation id="964050462028070434">পাসওয়ার্ড ও 'পাসকী' ম্যানেজ করুন…</translation>

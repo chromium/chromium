@@ -1061,7 +1061,7 @@
 <translation id="3587738293690942763">Central</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Poți reseta oricând grupul. Durează aproximativ o zi să te alături unui alt grup.}=1{Poți reseta oricând grupul. Durează aproximativ o zi să te alături unui alt grup.}few{Poți reseta oricând grupul. Durează aproximativ {NUM_DAYS} zile să te alături unui alt grup.}other{Poți reseta oricând grupul. Durează aproximativ {NUM_DAYS} de zile să te alături unui alt grup.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
-<translation id="360335678635752619">Chrome șterge automat subiectele și site-urile care sugerează anunțuri mai vechi de 30 de zile. În plus, poți bloca anumite subiecte și site-uri care nu îți plac.</translation>
+<translation id="360335678635752619">Chrome șterge automat subiectele și site-urile mai vechi de 30 de zile care sugerează anunțuri. În plus, poți bloca anumite subiecte și site-uri care nu îți plac.</translation>
 <translation id="3603507503523709">Aplicația a fost blocată de administrator</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Orientarea alimentării</translation>

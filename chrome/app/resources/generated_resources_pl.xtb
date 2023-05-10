@@ -350,6 +350,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1288300545283011870">Właściwości syntezy mowy</translation>
 <translation id="1289619947962767206">Ta opcja nie jest już obsługiwana. Do prezentowania kart używaj <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291119821938122630">Warunki korzystania z usługi <ph name="MANAGER" /></translation>
+<translation id="1291421198328146277">Zresetuj klawisze</translation>
 <translation id="1292849930724124745">Aby nie nastąpiło wylogowanie, włóż kartę inteligentną</translation>
 <translation id="1293264513303784526">Urządzenie USB-C (lewy port)</translation>
 <translation id="1293556467332435079">Pliki</translation>
@@ -581,6 +582,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1493892686965953381">Czekam na <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Witryny mogą pytać, czy zezwalasz na używanie czcionek zainstalowanych na urządzeniu</translation>
 <translation id="1494429729245089920">Maszyna wirtualna „<ph name="VM_NAME" />” istnieje, ale nie jest prawidłową maszyną wirtualną typu <ph name="APP_NAME" />. Skontaktuj się z administratorem.</translation>
+<translation id="1495201326198374770">Używaj klawiszy funkcyjnych jako klawiszy z górnego rzędu Chromebooka</translation>
 <translation id="1495677929897281669">Wróć do karty</translation>
 <translation id="1498498210836053409">Wyłącz tryb klawiszy trwałych podczas edytowania tekstu (inteligentny tryb klawiszy trwałych)</translation>
 <translation id="1500297251995790841">Nieznane urządzenie [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1313,6 +1315,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2105809836724866556">Sekcja <ph name="MODULE_TITLE" /> jest ukryta</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numer telefonu}few{# numery telefonów}many{# numerów telefonów}other{# numeru telefonu}}</translation>
 <translation id="2110941575868943054">Zezwolono na wyszukiwanie urządzeń Bluetooth</translation>
+<translation id="2111238878637848860">Przytrzymaj klawisz Menu z aplikacjami, aby przełączać się między klawiszami funkcyjnymi</translation>
 <translation id="211144231511833662">Wyczyść typy</translation>
 <translation id="2111670510994270194">Nowa karta po prawej</translation>
 <translation id="2112554630428445878">Cześć <ph name="USERNAME" />,</translation>
@@ -2347,11 +2350,13 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3000378525979847272">Przyznano uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
 <translation id="3001144475369593262">Konta dla dzieci</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Brak dostosowanych kluczy}=1{1 dostosowany klucz}few{{COUNT} dostosowane klucze}many{{COUNT} dostosowanych kluczy}other{{COUNT} dostosowanego klucza}}</translation>
 <translation id="3001835006423291524">Dotknij czytnika linii papilarnych w prawym dolnym rogu klawiatury. Odcisk palca jest przechowywany w bezpieczny sposób i jest dostępny tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Preferowane sieci</translation>
 <translation id="3003623123441819449">Pamięć podręczna CSS</translation>
 <translation id="3003828226041301643">Nie można dołączyć urządzenia do domeny. Sprawdź, czy masz uprawnienia do dodawania urządzeń.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> utworzy prywatne połączenie Wi-Fi.</translation>
+<translation id="3004385386820284928">Dostosuj klawisze na klawiaturze</translation>
 <translation id="3005574332301273731">Nie pokazuj</translation>
 <translation id="3006881078666935414">Brak danych o użytkowaniu</translation>
 <translation id="3007410324195400631">Dodaj notatki na temat tej strony</translation>
@@ -3367,6 +3372,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="389901847090970821">Wybierz klawiaturę</translation>
 <translation id="3900966090527141178">Eksportuj hasła</translation>
 <translation id="3902789559055749153">Wybierz sposób tworzenia klucza dla aplikacji <ph name="APP_NAME" /></translation>
+<translation id="3903158219409898205">Używaj klawisza Menu z aplikacjami, aby zmieniać działanie klawiszy z górnego rzędu Chromebooka</translation>
 <translation id="3903187154317825986">Klawiatura wbudowana</translation>
 <translation id="3904326018476041253">Usługi lokalizacyjne</translation>
 <translation id="3905761538810670789">Napraw aplikację</translation>
@@ -3777,6 +3783,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4279129444466079448">Na tym urządzeniu nie możesz zainstalować więcej niż <ph name="PROFILE_LIMIT" /> profili eSIM. Aby dodać kolejny profil, najpierw usuń jeden z istniejących profili.</translation>
 <translation id="4280325816108262082">Gdy urządzenie zostanie wyłączone lub nie będzie używane, automatycznie się rozłączy</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
+<translation id="428200245206114206">Klawisze F będą teraz działać tak samo jak klawisze w górnym rzędzie Chromebooka.</translation>
 <translation id="4282196459431406533">Funkcja Smart Lock jest włączona</translation>
 <translation id="4284903252249997120">Czytnik ekranu ChromeVox i funkcja Przeczytaj na głos</translation>
 <translation id="4285418559658561636">Aktualizuj hasło</translation>
@@ -4564,6 +4571,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4991420928586866460">Traktuj klawisze z górnego rzędu jak klawisze funkcyjne</translation>
 <translation id="4992458225095111526">Potwierdzanie Powerwash</translation>
 <translation id="4992473555164495036">Administrator ograniczył dostępne metody wprowadzania.</translation>
+<translation id="4994426888044765950">Podczas przytrzymywania klawisza jego znak będzie powtarzany</translation>
 <translation id="4994754230098574403">Konfiguruję</translation>
 <translation id="4995293419989417004">Więcej informacji o tematach reklam</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nie znaleziono maszyn wirtualnych typu <ph name="VM_TYPE" />}=1{Znaleziono 1 maszynę wirtualną typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Znaleziono {NUM_VMS} maszyny wirtualne typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Znaleziono {NUM_VMS} maszyn wirtualnych typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Znaleziono {NUM_VMS} maszyny wirtualnej typu <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
@@ -6114,6 +6122,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6410328738210026208">Zmień kanał i wykonaj Powerwash</translation>
 <translation id="6410390304316730527">Bezpieczne przeglądanie chroni Cię przed osobami przeprowadzającymi ataki, które mogą podstępem nakłonić Cię do wykonania niebezpiecznych czynności, takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). Gdy wyłączasz tę funkcję, zachowaj ostrożność, przeglądając nieznane lub cieszące się złą sławą strony.</translation>
 <translation id="6410668567036790476">Dodaj wyszukiwarkę</translation>
+<translation id="6411135999030237579">Naciśnij i przytrzymaj, aby automatycznie powtarzać znak</translation>
 <translation id="641469293210305670">Instalowanie aktualizacji i aplikacji</translation>
 <translation id="6414878884710400018">Otwórz Preferencje systemowe</translation>
 <translation id="6415816101512323589">Włączyć przywracanie danych lokalnych w celu ochrony danych?</translation>
@@ -8788,6 +8797,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 
           &lt;p&gt;Serwer proxy można jeszcze skonfigurować za pomocą wiersza poleceń. Więcej informacji na temat flag i zmiennych środowiskowych zawiera instrukcja &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Wykonywanie na użytek Twojej organizacji zadań związanych z bezpieczeństwem, takich jak zarządzanie certyfikatami i kluczami zapisanymi na urządzeniu</translation>
+<translation id="875532100880844232">Wybierz działanie każdego klawisza urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Większy</translation>
 <translation id="8755584192133371929">Wybierz kartę do udostępnienia</translation>
 <translation id="875604634276263540">URL obrazu jest nieprawidłowy</translation>
@@ -9310,6 +9320,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9218430445555521422">Ustaw jako domyślną</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nieobsługiwana aplikacja)</translation>
 <translation id="9219582468404818260">Pomóż nam w tworzeniu lepszego internetu</translation>
+<translation id="9219741625496141320">Dane przeglądania zostały automatycznie usunięte</translation>
 <translation id="9220525904950070496">Usuń konto</translation>
 <translation id="9220723036554088545">prześlij plik</translation>
 <translation id="9220820413868316583">Unieś i spróbuj ponownie.</translation>

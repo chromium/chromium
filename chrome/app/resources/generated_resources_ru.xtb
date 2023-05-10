@@ -595,6 +595,7 @@
 <translation id="1506187449813838456">Повысить тон</translation>
 <translation id="1507170440449692343">Доступ к вашей камере для этой страницы заблокирован.</translation>
 <translation id="1507246803636407672">&amp;Отменить</translation>
+<translation id="1508931164824684991">Разрешить сайтам использовать JavaScript</translation>
 <translation id="1509163368529404530">&amp;Восстановить группу</translation>
 <translation id="1509281256533087115">Доступ к любому устройству <ph name="DEVICE_NAME_AND_VENDOR" /> по USB</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
@@ -849,6 +850,7 @@
 <translation id="1708291623166985230">Точка доступа отключена</translation>
 <translation id="1708338024780164500">(неактивно)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (идентификатор: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Не уведомлять о завершении скачивания</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (оригинальное)</translation>
 <translation id="1709217939274742847">Выберите билет для аутентификации. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Настройки сети</translation>
@@ -1668,6 +1670,7 @@
 <translation id="2398546389094871088">При использовании функции Powerwash профили eSIM не удаляются. Это можно сделать вручную в разделе <ph name="LINK_BEGIN" />настроек для мобильных устройств<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Уведомления включены</translation>
 <translation id="2399939490305346086">Учетные данные электронного ключа</translation>
+<translation id="2400323785194108001">Не учитывать этот сайт при определении неактивных вкладок</translation>
 <translation id="2400664245143453337">Требуется немедленно обновить ОС</translation>
 <translation id="2402226831639195063">Тональные символы</translation>
 <translation id="2406153734066939945">Удалить профиль и все его данные?</translation>
@@ -1983,6 +1986,7 @@
 <translation id="2673135533890720193">Чтение истории просмотров</translation>
 <translation id="2674764818721168631">Отключено</translation>
 <translation id="2675570801872027281">При удалении Bruschetta произошла ошибка. Повторите попытку.</translation>
+<translation id="2676084251379299915">Это расширение было отключено в соответствии с корпоративными правилами, так как оно больше не доступно в интернет-магазине Chrome.</translation>
 <translation id="267708982776801183">Красно-зеленый фильтр (слабость восприятия красного цвета, протаномалия)</translation>
 <translation id="2678063897982469759">Включить снова</translation>
 <translation id="2678100101831051676">Не удалось запустить трансляцию</translation>
@@ -1991,6 +1995,7 @@
 <translation id="2682498795777673382">Ваш родитель изменил настройки</translation>
 <translation id="2683638487103917598">Содержимое папки отсортировано</translation>
 <translation id="2684004000387153598">Чтобы продолжить, нажмите "OK". Затем создайте другой профиль для своего адреса электронной почты, выбрав "Добавить пользователя".</translation>
+<translation id="2685193395980129388">Разрешено (<ph name="PERMISSION_DETAILS" />)</translation>
 <translation id="2687403674020088961">Блокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="2687407218262674387">Условия использования Google</translation>
 <translation id="2687621393791886981">Напомнить позже</translation>
@@ -2079,6 +2084,7 @@
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Настроить специальные возможности</translation>
 <translation id="275662540872599901">экран выключен</translation>
+<translation id="2756936198272359372">Сайты, которым запрещено использовать JavaScript</translation>
 <translation id="2757161511365746634">Информация о принтере</translation>
 <translation id="2757338480560142065">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> По запросу "<ph name="SEARCH_QUERY" />" результатов не найдено</translation>
@@ -2111,6 +2117,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Расширения разрешены на этом сайте</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
+<translation id="2783024642731649028">1 товар в вашей корзине, к которому относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Сохранено</translation>
 <translation id="2783321960289401138">Создать ярлык...</translation>
 <translation id="2783829359200813069">Выбор типа шифрования</translation>
@@ -2893,6 +2900,7 @@
 <translation id="3496213124478423963">Уменьшить</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (не выбран)</translation>
 <translation id="3496689104192986836">Уровень заряда батареи: <ph name="PERCENTAGE" /> %</translation>
+<translation id="3496995426334945408">Обычно сайты используют JavaScript, чтобы показывать интерактивный контент, например видеоигры или веб-формы.</translation>
 <translation id="3497501929010263034">USB-устройство <ph name="VENDOR_NAME" /> (продукт <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Поделиться дудлом</translation>
 <translation id="3500417806337761827">Произошла ошибка. Подключено слишком много общих папок SMB.</translation>
@@ -2937,6 +2945,7 @@
 <translation id="354060433403403521">Зарядное устройство</translation>
 <translation id="354068948465830244">Расширение может получать доступ к данным сайта и изменять их</translation>
 <translation id="3541823293333232175">Назначено</translation>
+<translation id="354204985370574425">Не учитывать этот сайт при определении неактивных вкладок</translation>
 <translation id="3543393733900874979">Не удалось выполнить обновление (ошибка <ph name="ERROR_NUMBER" />).</translation>
 <translation id="3543597750097719865">Подпись ECDSA X9.62 с SHA-512</translation>
 <translation id="3544058026430919413">Компания может определить группу сайтов, которым разрешено использовать файлы cookie для передачи друг другу информации о действиях пользователя. В режиме инкогнито эта функция не работает.</translation>
@@ -3831,6 +3840,7 @@
 <translation id="4324577459193912240">Файл скачан не полностью</translation>
 <translation id="4325237902968425115">Удаление приложения "<ph name="LINUX_APP_NAME" />"…</translation>
 <translation id="4326146840124313313">Это самый высокий уровень защиты в Chrome, который позволяет обезопасить вас от угроз на сайтах, а также от вредоносных расширений и загрузок.</translation>
+<translation id="4326484226728068206">Товары в вашей корзине, к которым относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Вода со льдом</translation>
 <translation id="4330387663455830245">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Настройка родительского контроля</translation>
@@ -4192,6 +4202,7 @@
 <translation id="4647090755847581616">&amp;Закрыть вкладку</translation>
 <translation id="4647283074445570750">Шаг <ph name="CURRENT_STEP" /> из <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Недостаточно прав</translation>
+<translation id="4650037136970677721">Освобождены ресурсы памяти</translation>
 <translation id="4650591383426000695">Телефон будет отключен от устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не удалось загрузить онлайн-компонент с ресурсами демонстрационного режима.</translation>
 <translation id="4651921906638302153">Не удалось войти в аккаунт</translation>
@@ -4426,6 +4437,7 @@
 <translation id="4863702650881330715">Расширенная совместимость</translation>
 <translation id="4863769717153320198">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /> (разрешение по умолчанию)</translation>
 <translation id="4864805589453749318">Выбери, кто из родителей разрешает добавить учебный аккаунт.</translation>
+<translation id="486505726797718946">Освобождены ресурсы памяти</translation>
 <translation id="486635084936119914">Автоматически открывать некоторые типы файлов после скачивания</translation>
 <translation id="4868281708609571334">Научите Google Ассистента узнавать голос пользователя <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Это диалоговое окно находится не в фокусе. Чтобы это исправить, нажмите Command + Shift + Option + A.</translation>
@@ -4518,6 +4530,7 @@
 <translation id="4940448324259979830">Этим аккаунтом управляет администратор домена <ph name="PROFILE_NAME" />.</translation>
 <translation id="4940845626435830013">Зарезервировать место на диске</translation>
 <translation id="4941074198479265146">Обычно сайты подключаются к MIDI-устройствам, чтобы использовать функции, которые позволяют создавать и изменять музыку.</translation>
+<translation id="4941243352516004658">Товары в вашей корзине (<ph name="PRODUCT_ITEM_COUNT" />), к которым относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Воспользуйтесь этой заявкой при регистрации устройства в домене предприятия:</translation>
 <translation id="4941627891654116707">Размер шрифта</translation>
 <translation id="4941963255146903244">Просмотр фотографий, медиафайлов и приложений с телефона</translation>
@@ -5473,6 +5486,7 @@
 <translation id="5832970156002835240">Разрешить на всех сайтах</translation>
 <translation id="5833397272224757657">Использовать для персонализации информацию с посещенных вами сайтов и данные о действиях в браузере</translation>
 <translation id="5833726373896279253">Изменять данные настройки может только владелец:</translation>
+<translation id="5833899990800318936">Запретить сайтам использовать JavaScript</translation>
 <translation id="583431638776747">Сайт недоступен</translation>
 <translation id="5834581999798853053">Осталось <ph name="TIME" /> мин.</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{У расширения "<ph name="EXTENSION1" />" есть доступ к HID-устройствам.}=2{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />.}one{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}few{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}many{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}other{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}}</translation>
@@ -5703,6 +5717,7 @@
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: подключено USB-устройство</translation>
 <translation id="6027945736510816438">Вам нужен домен <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Добавить отпечаток пальца</translation>
+<translation id="6030719887161080597">Управление информацией, которая помогает оценивать эффективность рекламы на сайтах</translation>
 <translation id="6031600495088157824">Показать настройки ввода на панели инструментов</translation>
 <translation id="6032715498678347852">Чтобы предоставить расширению доступ к сайту, нажмите на него</translation>
 <translation id="6032912588568283682">Файловая система</translation>
@@ -5937,6 +5952,7 @@
 <translation id="623755660902014047">Режим чтения</translation>
 <translation id="6238767809035845642">Текст, полученный с другого устройства</translation>
 <translation id="6238923052227198598">Показывать последнюю заметку на заблокированном экране</translation>
+<translation id="6238982280403036866">Сайты, которым разрешено использовать JavaScript</translation>
 <translation id="6239558157302047471">Перезагрузить &amp;фрейм</translation>
 <translation id="6240821072888636753">Спрашивать каждый раз</translation>
 <translation id="6241530762627360640">Доступ к информации об устройствах Bluetooth, связанных с вашей системой, и обнаружение устройств Bluetooth рядом с вами.</translation>
@@ -6080,6 +6096,7 @@
 <translation id="6378392501584240055">Открыть список сетей Wi-Fi</translation>
 <translation id="6380143666419481200">Принять условия и продолжить</translation>
 <translation id="6382958439467370461">Нет неактивных сочетаний клавиш.</translation>
+<translation id="6383382161803538830">Режим чтения недоступен на этой странице</translation>
 <translation id="638418309848716977">Поддерживаемые ссылки</translation>
 <translation id="6384275966486438344">Использование поисковой системы <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Безымянная группа – 1 вкладка}one{Безымянная группа – # вкладка}few{Безымянная группа – # вкладки}many{Безымянная группа – # вкладок}other{Безымянная группа – # вкладки}}</translation>
@@ -6482,6 +6499,7 @@
 <translation id="6729192290958770680">Введите имя пользователя.</translation>
 <translation id="6731320427842222405">Это может занять несколько минут</translation>
 <translation id="6733620523445262364">Закладка "<ph name="BOOKMARK_TITLE" />" создана.</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (идентификатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Показать cookie и другие данные...</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737393581255281855">Удалить показанные данные?</translation>
@@ -7967,7 +7985,7 @@
 <translation id="8028993641010258682">Размер</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите ⌘ + Option + Стрелка вверх, чтобы ответить.</translation>
 <translation id="8030169304546394654">Отключено</translation>
-<translation id="8030852056903932865">Одобрить</translation>
+<translation id="8030852056903932865">Разрешить</translation>
 <translation id="8032244173881942855">Невозможно транслировать вкладку</translation>
 <translation id="8032569120109842252">Вы подписаны</translation>
 <translation id="8033023935541439900">Меню диакритических знаков открыто. С помощью клавиш со стрелками влево и вправо выберите символ, а потом нажмите Ввод, чтобы вставить его.</translation>

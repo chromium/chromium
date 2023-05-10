@@ -56,6 +56,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
 <translation id="1217633719248931900">Ir para o app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app da Play Store</translation>
+<translation id="1219309685806246869">Voltar para o app <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Seu Chromebook está bloqueado devido a um problema conhecido. Você poderá fazer login em <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar de selecionar</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
@@ -459,6 +460,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="316086887565479535">Apps sem suporte no modelo</translation>
 <translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revertendo seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
+<translation id="3171170659304083361">Configurações de métodos de entrada</translation>
 <translation id="3181441307743005334">A reinicialização pode demorar um pouco</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a um dispositivo}one{Conectado a # dispositivo}other{Conectado a # dispositivos}}</translation>
 <translation id="320207200541803018">Definir timer</translation>
@@ -1111,6 +1113,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6074087755403037157">Canal Beta</translation>
 <translation id="6093867385179428431">Desativada pelo administrador</translation>
 <translation id="6095008505822982596">Velocidade da fala</translation>
+<translation id="6095425951508823973">Adicionar conexão com o provedor <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editado no último mês</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Download de arquivos de fala em <ph name="LANGUAGE" /> concluído</translation>
@@ -1590,6 +1593,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8349964124165471584">Abrir link em uma nova janela</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8364673525741149932">Alterne o modo Grupo de estantes. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> em uso.</translation>
 <translation id="8369166482916924789">Espaço de trabalho salvo: <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8371991222807690464">O desempenho dos periféricos pode ser limitado no modo visitante</translation>

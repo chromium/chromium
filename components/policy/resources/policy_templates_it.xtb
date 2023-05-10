@@ -118,6 +118,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 <translation id="1105711894873068933">Dopo la disattivazione di <ph name="LACROS_NAME" />, tutti i dati utente vengono rimossi all'accesso successivo.</translation>
 <translation id="1107538157073168076">Disattiva estensione Insights</translation>
 <translation id="1110426799149444997">Disattiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111324374369583989">Non visualizzare la schermata di impostazione delle dimensioni di visualizzazione durante l'accesso</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
@@ -685,6 +686,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       </translation>
 <translation id="1613327425322354195">Segnala stato di sicurezza del dispositivo</translation>
 <translation id="1615221548356595305">Consenti la coalescenza di connessioni HTTP/2 per questi host anche quando sono in uso i certificati client</translation>
+<translation id="1615734278280392199">Utilizza la ricerca in modalità non anonima.</translation>
 <translation id="1616280227447957376">Consenti di proseguire dalla pagina di avviso SSL su origini specifiche</translation>
 <translation id="1617235075406854669">Attiva eliminazione cronologia del browser e dei download</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
@@ -903,6 +905,17 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
 <translation id="1844972978764975668">Consenti query al server di Google per recuperare un timestamp accurato</translation>
 <translation id="1845405905602899692">Impostazioni kiosk</translation>
 <translation id="1845429996559814839">Limita la modalità di stampa PIN</translation>
+<translation id="1845567452014584154">Consente di stabilire se le estensioni Manifest v2 possono essere utilizzate dal browser.
+
+Il supporto delle estensioni Manifest v2 verrà ritirato e in futuro sarà necessario eseguire la migrazione di tutte le estensioni alla versione 3. Ulteriori informazioni e tempistiche della migrazione sono disponibili all'indirizzo https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Se il criterio viene impostato su <ph name="DEFAULT" /> (0) o se non viene configurato, il caricamento delle estensioni v2 viene determinato dal browser, in base alle tempistiche indicate nella pagina precedente.
+Se il criterio viene impostato su <ph name="DISABLE" /> (1), l'installazione delle estensioni v2 viene bloccata, mentre le estensioni esistenti vengono disattivate. L'opzione verrà trattata come se il criterio non fosse impostato dopo la disattivazione del supporto della versione 2 per impostazione predefinita.
+Se il criterio viene impostato su <ph name="ENABLE" /> (2), le estensioni v2 sono consentite. L'opzione verrà trattata come se il criterio non fosse impostato prima della disattivazione del supporto della versione 2 per impostazione predefinita.
+Se il criterio viene impostato su <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), le estensioni v2 con installazione forzata sono consentite. Sono incluse le estensioni elencate da <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Tutte le altre estensioni v2 vengono disattivate. L'opzione è sempre disponibile indipendentemente dallo stato della migrazione.
+
+
+La disponibilità delle estensioni è comunque controllata da altri criteri.</translation>
 <translation id="1846545322805269573">Gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda</translation>
 <translation id="1847960418907100918">Consente di specificare i parametri utilizzati durante la ricerca istantanea con POST. Si tratta di coppie di nome/valore separate da virgole. Se un valore è il parametro di un modello, come {searchTerms} nell'esempio precedente, verrà sostituito con i dati dei termini di ricerca reali.
 
@@ -1059,6 +1072,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 
       Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione, ad esempio durante l'avvio di ChromeOS.</translation>
 <translation id="1984934843478301531">Automazione del lancio di app</translation>
+<translation id="1985545260037812875">Visualizza la schermata di impostazione delle dimensioni di visualizzazione durante l'accesso</translation>
 <translation id="1985598967415986700">La riduzione dello user agent sarà controllabile tramite Field-Trials e Origin-Trials.</translation>
 <translation id="1987789058026551147">Attiva i report sulle sessioni kiosk del dispositivo</translation>
 <translation id="1988345404999458987">Consente di specificare le configurazioni dei server di stampa disponibili.
@@ -2299,6 +2313,7 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="3118552207903834734">Consente a un utente di configurare il nome host del suo dispositivo</translation>
+<translation id="3120434599585109871">Utilizza la ricerca in modalità anonima.</translation>
 <translation id="3122082892722698079">Controlla l'utilizzo delle eccezioni per i contenuti non sicuri</translation>
 <translation id="3125472566440502628">Disattiva Seleziona per ascoltare</translation>
 <translation id="3126748868885248792">Il pulsante destro è il principale</translation>
@@ -2895,6 +2910,9 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
+<translation id="3616490235694929053">Questo criterio consente di stabilire se mostrare o meno la schermata di impostazione delle dimensioni di visualizzazione all'utente durante il primo accesso.
+      Se viene impostato su false, la schermata di impostazione delle dimensioni di visualizzazione non verrà visualizzata.
+      Se il valore è impostato su true, viene visualizzata la schermata di impostazione delle dimensioni del display.</translation>
 <translation id="3622463490728773174">Consenti nuova implementazione</translation>
 <translation id="3623332696371971798">Impedisci l'accesso a Google Foto dall'app di personalizzazione</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
@@ -3391,6 +3409,17 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
 <translation id="4102347680024644994">Segnala eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="4105989332710272578">Disattiva l'imposizione di Certificate Transparency per un elenco di URL</translation>
+<translation id="410740968939768919">Controlla se le estensioni Manifest v2 possono essere utilizzate nella schermata di accesso di <ph name="PRODUCT_OS_NAME" />.
+
+Il supporto delle estensioni Manifest v2 verrà ritirato e in futuro sarà necessario eseguire la migrazione di tutte le estensioni alla versione 3. Ulteriori informazioni e tempistiche della migrazione sono disponibili all'indirizzo https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Se il criterio viene impostato su <ph name="DEFAULT" /> (0) o se non viene configurato, il caricamento delle estensioni v2 viene determinato dal dispositivo, in base alle tempistiche indicate nella pagina precedente.
+Se il criterio viene impostato su <ph name="DISABLE" /> (1), l'installazione delle estensioni v2 viene bloccata, mentre le estensioni esistenti vengono disattivate. L'opzione verrà trattata come se il criterio non fosse impostato dopo la disattivazione del supporto della versione 2 per impostazione predefinita.
+Se il criterio viene impostato su <ph name="ENABLE" /> (2), le estensioni v2 sono consentite. L'opzione verrà trattata come se il criterio non fosse impostato prima della disattivazione del supporto della versione 2 per impostazione predefinita.
+Se il criterio viene impostato su <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), le estensioni v2 con installazione forzata sono consentite. Sono incluse le estensioni elencate da <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Tutte le altre estensioni v2 vengono disattivate. L'opzione è sempre disponibile indipendentemente dallo stato della migrazione.
+
+
+La disponibilità delle estensioni è comunque controllata da altri criteri.</translation>
 <translation id="4110126170080699437">Per motivi di sicurezza, l'API web <ph name="GET_DISPLAY_MEDIA_API_NAME" /> richiede che venga chiamato un gesto dell'utente precedente ("attivazione temporanea") o la chiamata non andrà a buon fine.
 
 Con questo criterio, gli amministratori possono specificare le origini da cui è possibile chiamare l'API senza gesto dell'utente precedente.
@@ -3759,6 +3788,17 @@ Questo criterio è una soluzione alternativa temporanea qualora le aziende risco
 <translation id="4483649828988077221">Disattiva l'aggiornamento automatico</translation>
 <translation id="4484515651939984695">Specifica per quanto tempo (in secondi) un dispositivo di trasmissione selezionato con un codice di accesso o un codice QR rimane nell'elenco del menu di <ph name="PRODUCT_NAME" /> dei dispositivi di trasmissione.</translation>
 <translation id="4485425108474077672">Configura l'URL per la pagina Nuova scheda</translation>
+<translation id="4490420545181481759">I certificati X.509 possono codificare i vincoli, ad esempio i vincoli relativi ai nomi, nelle estensioni dei certificati. RFC 5280 specifica che l'applicazione forzata di questi vincoli sui certificati per trust anchor è facoltativa. A partire dalla versione 112 di <ph name="PRODUCT_NAME" />, questi vincoli nei certificati caricati dall'archivio certificati della piattaforma verranno applicati.
+
+Questo criterio è una soluzione di disattivazione temporanea nel caso in cui un'azienda riscontri problemi con i vincoli codificati nei propri certificati root privati. In questo caso è possibile usare questo criterio per disattivare temporaneamente l'applicazione forzata dei vincoli durante la risoluzione dei problemi dei certificati.
+
+Se questo criterio non viene configurato o se viene attivato, <ph name="PRODUCT_NAME" /> forzerà l'applicazione dei vincoli codificati nei trust anchor caricati dall'archivio di attendibilità della piattaforma.
+
+Se questo criterio viene disattivato, <ph name="PRODUCT_NAME" /> non forzerà l'applicazione dei vincoli codificati nei trust anchor caricati dall'archivio di attendibilità della piattaforma.
+
+Nella versione 112 di <ph name="PRODUCT_NAME" />, questo criterio non ha effetto se il criterio <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> viene disattivato.
+
+È prevista la rimozione di questo criterio nella versione 118 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4491607814095953976">Scegli se è possibile o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci</translation>
 <translation id="4492287494009043413">Disabilita l'acquisizione di screenshot</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
@@ -4582,6 +4622,7 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="528302483493794684">La configurazione di una VM. Indica un tipo di VM che l'utente può installare e che verrà associato in modo permanente all'ID di questa configurazione, nonché i controlli che si applicano a questo tipo di VM.</translation>
 <translation id="5283457834853986457">Disattiva la ricerca dei plug-in (ritirata)</translation>
 <translation id="5286579716704722323">Consenti il clickthrough degli utenti su pagine di avviso SSL</translation>
+<translation id="5288713554963040955">Attiva la visualizzazione della schermata di impostazione delle dimensioni di visualizzazione durante l'accesso</translation>
 <translation id="5288772341821359899">Se la norma viene impostata, l'intervallo di porte UDP utilizzato da WebRTC viene limitato all'intervallo di porte specificato (endpoint inclusi).
 
       Se la norma non viene impostata oppure è impostata sulla stringa vuota o su un intervallo di porte non valido, WebRTC è autorizzato a utilizzare qualsiasi porta UDP locale disponibile.</translation>
@@ -7597,6 +7638,7 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
       Questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
       Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Stampa nativa</translation>
+<translation id="8055051642109241571">Attiva la ricerca in modalità anonima</translation>
 <translation id="8056237304861875584">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="8056273037819805106">Verranno usate le credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete su un proxy gestito.</translation>
 <translation id="8056800559672904373">Un account gestito deve essere un account principale e non deve avere account secondari. L'importazione dei dati di navigazione esistenti è consentita al momento della creazione del profilo</translation>
@@ -8232,6 +8274,15 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
        Se imposti il criterio, gli utenti non possono modificarlo. Se il criterio non è impostato, la funzione di lettura vocale è disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="8656110680728938054">Attiva Seleziona per ascoltare</translation>
+<translation id="8657026983981036230">Se il criterio viene impostato, viene impostata anche la directory utilizzata da Chrome per il download dei file. Viene utilizzata la directory fornita, indipendentemente dal fatto che gli utenti ne specifichino una o abbiano attivato il flag da richiedere ogni volta per il percorso di download.
+
+      Questo criterio sostituisce il criterio <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, Chrome utilizzerà la directory predefinita per il download, che gli utenti potranno modificare.
+
+      Su <ph name="PRODUCT_OS_NAME" /> è possibile impostarlo solo sulle directory di Google Drive.
+
+      Nota: vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="8657543427358173663">Consenti la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="8659843732895043951">Consenti gli appunti su questi siti</translation>
 <translation id="8661297125441579970">Non consentire migrazione dei dati e ARC.</translation>
@@ -8334,6 +8385,9 @@ Se il criterio non viene configurato, alla prima esecuzione non vengono importat
 <translation id="8728854710675158426">Hash non sicuri in handshake TLS attivi</translation>
 <translation id="8734543507835977857">Avvia i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni all'inizio della sessione</translation>
 <translation id="8736538322216687231">Imponi livello minimo della Modalità con restrizioni di YouTube</translation>
+<translation id="874149307422233209">Questo criterio consente agli amministratori di controllare il modo in cui Google tratta i dati utente inviati alla Ricerca tramite le funzionalità di <ph name="PRODUCT_OS_NAME" />.
+Se il criterio viene attivato, l'utente potrà usare la casella di ricerca di Avvio app di <ph name="PRODUCT_OS_NAME" /> e la casella di indirizzo del browser <ph name="PRODUCT_NAME" /> in <ph name="PRODUCT_OS_NAME" />, in modo che la cronologia delle ricerche dell'utente non venga collegata alla sua identità.
+Se il criterio non viene configurato o se viene disattivato, i dati dell'utente di queste ricerche vengono collegati alla sua identità.</translation>
 <translation id="8744844164152340112">Consente di stabilire il tema (scuro/chiaro/automatico) usato per eseguire il rendering dell'UI durante l'OOBE e nella sessione.
       Con la modalità automatica viene effettuato il passaggio automatico tra tema scuro e tema chiaro all'alba e al tramonto.
       Questo criterio dovrebbe essere consigliato per dare agli utenti la possibilità di cambiare il tema nelle impostazioni di sistema.</translation>

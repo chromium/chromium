@@ -1032,6 +1032,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3531780078352352885">Munkalapok</translation>
 <translation id="3532844647053365774">A(z) <ph name="HOST" /> használni szeretné a mikrofont</translation>
 <translation id="3533328374079021623">5. postaláda</translation>
+<translation id="3536227077203206203">Erre az alkalomra engedélyezve van</translation>
 <translation id="3537165859691846083">„Letter Plus” méret</translation>
 <translation id="3542628208405253498">Kártyakép</translation>
 <translation id="3542768452570884558">Link megnyitása új ablakban</translation>
@@ -1188,7 +1189,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3906954721959377182">Táblagép</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Beállításait bármikor módosíthatja a Chrome-beállítások között</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: A Chrome automatikusan törli a 30 napnál régebbi webhelyeket. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. A Chrome beállításai között letilthatja, hogy egy adott webhely hirdetéseket javasoljon Önnek, és bármikor kikapcsolhatja a webhelyek által javasolt hirdetéseket.</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: A Chrome automatikusan törli a 30 napnál régebbi webhelyeket. Előfordulhat, hogy egy újból felkeresett webhely ismét megjelenik a listán. A Chrome beállításai között letilthatja, hogy egy adott webhely hirdetéseket javasoljon Önnek, és bármikor kikapcsolhatja a webhelyek által javasolt hirdetéseket.</translation>
 <translation id="3921869355029467742">Adja meg a biztonsági kódot</translation>
 <translation id="3927932062596804919">Megtagadás</translation>
 <translation id="393316646445601645">Internet és telekommunikáció</translation>
@@ -2451,6 +2452,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7030436163253143341">A tanúsítvány nem érvényes</translation>
 <translation id="7031646650991750659">Ön milyen Google Play-alkalmazásokat telepített.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a Google-fiók adatvédelmi beállításainak kezeléséhez.</translation>
+<translation id="7044081119134178347">A kamera erre az alkalomra engedélyezve van</translation>
 <translation id="7048095965575426564">„Európai Fanfold” méret</translation>
 <translation id="7050187094878475250">Ön megpróbálta elérni a(z) <ph name="DOMAIN" /> domaint, de a szerver olyan tanúsítványt küldött, amelynek érvényességi ideje túl hosszú ahhoz, hogy megbízható legyen.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ez a kártya jelenleg nem menthető}other{Ezeket a kártyákat jelenleg nem lehet menteni}}</translation>
@@ -3043,6 +3045,7 @@ További részletek:
 <translation id="8416694386774425977">A hálózati konfiguráció érvénytelen és nem importálható.
 További részletek:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">A mikrofon erre az alkalomra engedélyezve van</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Beállítások</translation>
@@ -3098,6 +3101,7 @@ További részletek:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Engedély visszaállítása}other{Engedélyek visszaállítása}}</translation>
 <translation id="8555010941760982128">Adja meg ezt a kódot a fizetésnél:</translation>
 <translation id="8557066899867184262">A CVC-kód a kártya hátulján található.</translation>
+<translation id="8558347880669160417">A kamera és a mikrofon erre az alkalomra engedélyezve van</translation>
 <translation id="8559762987265718583">Nem hozható létre privát kapcsolat a következővel: <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, mert az eszköz dátum- és időbeállítása helytelen (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Különálló dokumentumok/Nem szétválogatott másolatok</translation>
 <translation id="8564985650692024650">A Chromium azt javasolja, hogy adjon meg új <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
@@ -3215,6 +3219,7 @@ További részletek:
 <translation id="8870494189203302833">Azonos sorrend, lefelé fordítva</translation>
 <translation id="8870700989640064057">Biztosan kinyomtatja a bizalmas fájlt?</translation>
 <translation id="8871553383647848643">Személyre szabhatja a böngésző megjelenését</translation>
+<translation id="8871603420762394026">A Chrome mostantól az információk csak nagyon korlátozott körét osztja a hirdetések teljesítményének mérése céljára a webhelyek között (például amikor megjelent Önnek egy hirdetés).</translation>
 <translation id="8874824191258364635">Érvényes kártyaszámot adjon meg</translation>
 <translation id="8876033571432926051">Egyszerű játékok</translation>
 <translation id="8877780815363510165">Halászat és horgászat</translation>
@@ -3368,6 +3373,7 @@ További részletek:
 <translation id="949314938206378263">A webhely felkeresését kérelmezted. Szülőd a Family Linkben reagálhat rá.</translation>
 <translation id="950736567201356821">Három lyuk felül</translation>
 <translation id="961663415146723894">Kötés alul</translation>
+<translation id="961930410699694996">A helyadatok erre az alkalomra engedélyezve vannak</translation>
 <translation id="962484866189421427">Ez a tartalom megtévesztő alkalmazásokat telepíthet, amelyek más alkalmazásnak tettethetik magukat, illetve az Ön nyomon követésére alkalmas adatokat gyűjthetnek. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Minden felhasználó</translation>
 <translation id="964050462028070434">Jelszavak és azonosítókulcsok kezelése…</translation>

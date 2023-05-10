@@ -56,6 +56,7 @@
 <translation id="121097972571826261">1 語進む</translation>
 <translation id="1217633719248931900">アプリに移動</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />、Play ストア アプリ</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> に戻ります。</translation>
 <translation id="1225748608451425081">既知の問題により、Chromebook はロックされています。<ph name="TIME_LEFT" /> 後にログインできるようになります。</translation>
 <translation id="1229194443904279055">選択を終了</translation>
 <translation id="1235458158152011030">既知のネットワーク</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">テンプレートでサポートされていないアプリ</translation>
 <translation id="3161500364292033097">デスクとウィンドウを閉じる</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックしています。デバイスはリセットされ、データはすべて削除されます。</translation>
+<translation id="3171170659304083361">入力方法の設定</translation>
 <translation id="3181441307743005334">再起動には時間がかかる場合があります</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{1 台のデバイスと接続されています}other{# 台のデバイスと接続されています}}</translation>
 <translation id="320207200541803018">タイマーを設定して</translation>
@@ -1059,6 +1061,7 @@
 <translation id="5881540930187678962">スマートフォン ハブを後で設定</translation>
 <translation id="5881663018261910378">オフ</translation>
 <translation id="5887954372087850114">ウィンドウ <ph name="WINDOW_TITLE" /> を <ph name="DESK_TITLE" /> に割り当て、他のすべてのデスクへの割り当てを解除しました</translation>
+<translation id="588817334757907802">Chrome ブラウザでファイルを開く</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="589817443623831496">ポイント スキャン</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@
 <translation id="6074087755403037157">Beta チャンネル</translation>
 <translation id="6093867385179428431">管理者により無効にされています</translation>
 <translation id="6095008505822982596">話す速さ</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> との接続を追加</translation>
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
 <translation id="6103838137565245112">システム</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
@@ -1590,6 +1594,7 @@
 <translation id="8349964124165471584">新しいウィンドウでリンクを開く</translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8364673525741149932">シェルフ グループを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> を使用中です。</translation>
 <translation id="8369166482916924789">保存したデスク、<ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">1 字進む</translation>
 <translation id="8371991222807690464">ゲストモードでは、周辺機器のパフォーマンスが制限される場合があります</translation>

@@ -727,6 +727,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="492284538114688557">Wykryto obniżkę ceny</translation>
 <translation id="4925120120285606924">Zrzut ekranu <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Twoje hasła zostaną wyeksportowane i pobrane jako plik tekstowy. Twoje hasła będą widoczne dla każdej osoby i aplikacji, która ma dostęp do folderu docelowego.</translation>
+<translation id="4926901776383726965">Możesz zapisywać obrazy i pliki, aby przeglądać je offline lub udostępniać w innych aplikacjach</translation>
 <translation id="4932247056774066048">Wylogowujesz się z konta zarządzanego w domenie <ph name="DOMAIN_NAME" />, więc Twoje dane w Chrome zostaną usunięte z tego urządzenia. Pozostaną one na Twoim koncie Google.</translation>
 <translation id="4943703118917034429">Rzeczywistość wirtualna</translation>
 <translation id="4943872375798546930">Brak wyników</translation>
@@ -1425,6 +1426,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8503559462189395349">Hasła w Chrome</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8505766168025405649">Stan pobierania możesz sprawdzić w powiadomieniu</translation>
+<translation id="8506357771923193001">Tutaj znajdziesz pobrane pliki</translation>
 <translation id="8514477925623180633">Eksportuj hasła zapisane w Chrome</translation>
 <translation id="8516012719330875537">Edytor obrazów</translation>
 <translation id="8516431725144212809">Twoje zainteresowania oszacowane według Chrome</translation>

@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Չհաջողվեց փոխակերպել DNS-ը</translation>
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
 <translation id="1022433422498218992">Ընդհանուր կարգավորումներ</translation>
+<translation id="1022628058306505708">Հողահոսք</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
 <translation id="1047773237499189053">Հասանելի է նոր գործառույթ։ Ավելին իմանալու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Այլ գործողություններ</translation>
 <translation id="2926057806159140518">Մուտքագրեք ձեր անունը և գաղտնաբառը կամ սկանավորեք QR կոդը</translation>
 <translation id="2940811910881150316">Հնարավոր չէ փորձարկել սարքը։ Փորձարկելու համար կրկին բացեք կափարիչը։</translation>
+<translation id="2981143481017883351">Բացառիկ բովանդակություն Chromebook-ի համար</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
 <translation id="3017079585324758401">Ֆոն</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Պատուհաններ</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
+<translation id="3386675685417744672">Միայն Chromebook սարքերում</translation>
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
 <translation id="3413935475507503304">Թարմացումը շարունակելու համար սեղմեք «Առաջ»։</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
 <translation id="4054683689023980771">Պատկերը ներբեռնվում է</translation>
 <translation id="4060260348856573701">Նոր APN</translation>
+<translation id="4079743696465895866">Ընտրել բացառիկ պաստառ Chromebook-ի համար</translation>
 <translation id="4093865285251893588">Պրոֆիլի պատկեր</translation>
 <translation id="409427325554347132">Պահել թեստի մանրամասները</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
 <translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
+<translation id="6205145102504628069">Ամպերի հոսք</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Դուրս գալ լիաէկրան ռեժիմից</translation>
 <translation id="6223752125779001553">Հասանելի սկաներներ չկան</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Անհատականացում</translation>
 <translation id="6500818810472529210">Դիտեք արդյունքները Google Որոնում ծառայությունում</translation>
 <translation id="650266656685499220">Ալբոմներ ստեղծելու համար անցեք Google Լուսանկարներ</translation>
+<translation id="6505750420152840539">Լուսաբացից մայրամուտ</translation>
 <translation id="6516990319416533844">Մարտկոցի լիցքավորման արագությունը ստուգելու համար թողեք, որ մարտկոցը մի փոքր լիցքաթափվի</translation>
 <translation id="6517239166834772319">Հնարավորություններ</translation>
 <translation id="6526200165918397681">Համապատասխանեցնել պաստառին</translation>

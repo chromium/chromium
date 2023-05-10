@@ -1031,6 +1031,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3531780078352352885">Hárky úlohy</translation>
 <translation id="3532844647053365774">Web <ph name="HOST" /> chce používať mikrofón</translation>
 <translation id="3533328374079021623">Poštová schránka č. 5</translation>
+<translation id="3536227077203206203">Momentálne povolené</translation>
 <translation id="3537165859691846083">List (Plus)</translation>
 <translation id="3542628208405253498">Obrázok karty</translation>
 <translation id="3542768452570884558">Otvoriť odkaz v novom okne</translation>
@@ -2448,6 +2449,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7030436163253143341">Certifikát je neplatný</translation>
 <translation id="7031646650991750659">Ktoré aplikácie Google Play máte nainštalované.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter spravujte nastavenia ochrany súkromia svojho účtu Google</translation>
+<translation id="7044081119134178347">Kamera je momentálne povolená</translation>
 <translation id="7048095965575426564">Európsky skladaný formát</translation>
 <translation id="7050187094878475250">Pokúsili ste sa prejsť do domény <ph name="DOMAIN" />, ale server udelil certifikát, ktorého obdobie platnosti je príliš dlhé, a preto nie je dôveryhodný</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Túto kartu nie je momentálne možné uložiť}few{Tieto karty nie je momentálne možné uložiť}many{Tieto karty nie je momentálne možné uložiť}other{Tieto karty nie je momentálne možné uložiť}}</translation>
@@ -3040,6 +3042,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8416694386774425977">Konfigurácia siete je neplatná a nepodarilo sa ju importovať.
 Ďalšie podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofón je momentálne povolený</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
@@ -3095,6 +3098,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetovať povolenie}few{Resetovať povolenia}many{Resetovať povolenia}other{Resetovať povolenia}}</translation>
 <translation id="8555010941760982128">Tento kód použite pri platbe</translation>
 <translation id="8557066899867184262">Kód CVC nájdete na zadnej strane karty.</translation>
+<translation id="8558347880669160417">Kamera a mikrofón sú momentálne povolené</translation>
 <translation id="8559762987265718583">Súkromné pripojenie k doméne <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sa nedá nadviazať, pretože dátum a čas (<ph name="DATE_AND_TIME" />) vášho zariadenia sú nesprávne.</translation>
 <translation id="8564182942834072828">Samostatné dokumenty alebo nezoradené kópie</translation>
 <translation id="8564985650692024650">Ak ste heslo organizácie <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili aj na iných weboch, Chromium ho odporúča obnoviť.</translation>
@@ -3212,6 +3216,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8870494189203302833">V rovnakom poradí lícom nadol</translation>
 <translation id="8870700989640064057">Chcete vytlačiť dôverný súbor?</translation>
 <translation id="8871553383647848643">Prispôsobiť vzhľad prehliadača</translation>
+<translation id="8871603420762394026">Chrome teraz zdieľa medzi webmi iba veľmi obmedzené informácie, napríklad kedy sa vám reklama zobrazila, aby pomáhal webom merať výkonnosť reklám.</translation>
 <translation id="8874824191258364635">Zadajte platné číslo karty</translation>
 <translation id="8876033571432926051">Jednoduché hry</translation>
 <translation id="8877780815363510165">Rybolov</translation>
@@ -3365,6 +3370,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="949314938206378263">Požiadal(a) si o návštevu tohto webu. Tvoj rodič môže odpovedať v aplikácii Family Link.</translation>
 <translation id="950736567201356821">Tri dierky hore</translation>
 <translation id="961663415146723894">Zviazať dolu</translation>
+<translation id="961930410699694996">Poloha je momentálne povolená</translation>
 <translation id="962484866189421427">Tento obsah sa môže pokúsiť nainštalovať klamlivé aplikácie vydávajúce sa za iné aplikácie alebo zhromažďovať údaje, ktoré sa dajú použiť na sledovanie vašej osoby. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Všetci používatelia</translation>
 <translation id="964050462028070434">Spravovať heslá a prístupové kľúče…</translation>

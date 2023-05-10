@@ -815,6 +815,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6331180460633101391">Ponownie użyte hasła: <ph name="COUNT" /></translation>
 <translation id="6337234675334993532">Szyfrowanie</translation>
 <translation id="633809752005859102">Coś poszło nie tak. Zajmiemy się tym.</translation>
+<translation id="6339793034470834130">Aby użyć Inspektora sieci, połącz się z Safari na komputerze, korzystając z kabla, i przejdź do iPhone'a w menu Programowanie. Menu Programowanie możesz włączyć w sekcji Zaawansowane w ustawieniach Safari na komputerze.</translation>
 <translation id="6340285871011301182">Częściowe tłumaczenie jest niedostępne.</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6344783595350022745">Wyczyść tekst</translation>
@@ -822,6 +823,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6347953390226388422">{count,plural, =1{Ten adres zostanie usunięty z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}few{Te adresy zostaną usunięte z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}many{Te adresy zostaną usunięte z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}other{Te adresy zostaną usunięte z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}}</translation>
 <translation id="634878792104344809">Synchronizuj hasła, historię i inne dane na wszystkich Twoich urządzeniach</translation>
 <translation id="6348855835728304880">Korzystaj z haseł w Chrome i innych ustawień w innych aplikacjach na tym urządzeniu.</translation>
+<translation id="63519665078626091">Aby użyć Inspektora sieci, połącz się z Safari na komputerze, korzystając z kabla, i przejdź do iPada w menu Programowanie. Menu Programowanie możesz włączyć w sekcji Zaawansowane w ustawieniach Safari na komputerze.</translation>
 <translation id="6355820205320395730">Słabe hasła są łatwe do odgadnięcia. Pamiętaj, aby używać tylko silnych haseł. <ph name="BEGIN_LINK" />Więcej wskazówek dotyczących bezpieczeństwa<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Obserwuj: <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Brak kart incognito</translation>
@@ -1082,6 +1084,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
 <translation id="8005666035647241369">W menedżerze haseł Google w przypadku tego urządzenia</translation>
+<translation id="8011489434346330032">Inspektor sieci</translation>
 <translation id="8016714545083187120">Zawsze używaj bezpiecznych połączeń</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8023878949384262191">Rozwija sekcję.</translation>

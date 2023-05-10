@@ -87,6 +87,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2467438592969358367">Google Chrome wil jou wagwoorde uitvoer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
 <translation id="2534507159460261402">Google Pay (na Chrome gekopieer)</translation>
+<translation id="2556847002339236023">Jou organisasie maak Chrome toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Blaaierdata is uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
 <translation id="2559253115192232574">Later kan ’n werf wat jy besoek Chrome vra om jou belangstellings te sien om die advertensies wat jy sien, te personaliseer. Chrome kan tot 3 belangstellings deel.</translation>
 <translation id="2563121210305478421">Herbegin Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is reeds by hierdie Chrome-profiel aangemeld. Chrome kan jou eie profiel vir jou skep om jou blaaidata apart te hou.</translation>
@@ -275,6 +276,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6113794647360055231">Chrome het pas beter geword</translation>
 <translation id="6145313976051292476">Maak PDF's in Chrome oop</translation>
 <translation id="6155960517327665396">Geheuebespaarder het Chrome vinniger gemaak</translation>
+<translation id="6157638032135951407">Jou organisasie vee Chrome-data uit wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inkomende reël vir Google Chrome om mDNS-verkeer toe te laat.</translation>
@@ -290,6 +292,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6418662306461808273">Skakel oor na bestaande Chrome-profiel?</translation>
 <translation id="648319183876919572">Verbeterde Veiligblaai doen meer om jou teen gevaarlike webwerwe en aflaaie te beskerm</translation>
 <translation id="6493527311031785448">Google Chrome probeer tans om <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome is outomaties toegemaak</translation>
 <translation id="6506909944137591434">Chrome het kameratoestemming nodig om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">In Google Wagwoordbestuurder op hierdie toestel</translation>
@@ -326,6 +329,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="7155997830309522122">Indien wel moet jy asseblief jou gestoorde wagwoord in Chrome wysig sodat dit met jou nuwe wagwoord ooreenstem.</translation>
 <translation id="7161904924553537242">Welkom by Google Chrome</translation>
 <translation id="7177959540995930968">Jy kan in Chrome-instellings meer oor hierdie kenmerke te wete kom.</translation>
+<translation id="7193885263065350793">Jou organisasie maak Chrome toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie.</translation>
 <translation id="7242029209006116544">Jy meld tans aan met 'n bestuurde rekening en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. Jou ander opsie is om 'n nuwe profiel te skep om jou Chrome-data apart te hou. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Hierdie taal word gebruik om die Google Chrome UI te wys</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>

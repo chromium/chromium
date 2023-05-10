@@ -56,6 +56,7 @@
 <translation id="121097972571826261">Προώθηση ανά λέξη</translation>
 <translation id="1217633719248931900">Μετάβαση στην εφαρμογή</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, εφαρμογή Play Store</translation>
+<translation id="1219309685806246869">Επιστροφή σε <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Το Chromebook κλειδώθηκε λόγω γνωστού προβλήματος. Θα μπορέσετε να συνδεθείτε σε: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Διακοπή επιλογής</translation>
 <translation id="1235458158152011030">Γνωστά δίκτυα</translation>
@@ -1060,6 +1061,7 @@
 <translation id="5881540930187678962">Ρυθμίστε το Phone Hub αργότερα</translation>
 <translation id="5881663018261910378">Απενεργοποιημένο</translation>
 <translation id="5887954372087850114">Το παράθυρο <ph name="WINDOW_TITLE" /> εκχωρήθηκε στο γραφείο <ph name="DESK_TITLE" /> και η εκχώρησή του καταργήθηκε από τα άλλα γραφεία</translation>
+<translation id="588817334757907802">Άνοιγμα αρχείου στο πρόγραμμα περιήγησης Chrome</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="589817443623831496">Σάρωση σημείων</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1591,6 +1593,7 @@
 <translation id="8349964124165471584">Άνοιγμα συνδέσμου σε νέο παράθυρο</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8364673525741149932">Εναλλαγή Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> σε χρήση.</translation>
 <translation id="8369166482916924789">Αποθηκευμένο γραφείο, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>
 <translation id="8371991222807690464">Η απόδοση των περιφερειακών ενδέχεται να περιορίζεται στη Λειτουργία επισκέπτη</translation>

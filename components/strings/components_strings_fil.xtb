@@ -1034,6 +1034,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3531780078352352885">Mga sheet ng trabaho</translation>
 <translation id="3532844647053365774">Gustong gamitin ng <ph name="HOST" /> ang iyong mikropono</translation>
 <translation id="3533328374079021623">Mailbox 5</translation>
+<translation id="3536227077203206203">Pinapayagan sa ngayon</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Larawan sa card</translation>
 <translation id="3542768452570884558">Buksan ang Link sa Bagong Window</translation>
@@ -1672,6 +1673,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5045550434625856497">Hindi wastong password</translation>
 <translation id="5051305769747448211">Live na komedya</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para ipadala ang file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}one{Para ipadala ang mga file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}other{Para ipadala ang mga file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}}</translation>
+<translation id="5060419232449737386">Mga setting ng caption</translation>
 <translation id="5060483733937416656">Pinili mong mag-verify gamit ang Windows Hello sa mga website na gumagamit ng <ph name="PROVIDER_ORIGIN" />. Ang provider na ito ay posibleng nag-store ng impormasyon tungkol sa iyong paraan ng pagbabayad, na puwede mong <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Ang ibig mo bang sabihin ay <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">History ng pag-print</translation>
@@ -2453,6 +2455,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7030436163253143341">Hindi valid ang certificate</translation>
 <translation id="7031646650991750659">Aling mga Google Play app ang na-install mo</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan ang mga setting ng privacy ng iyong Google Account</translation>
+<translation id="7044081119134178347">Pinapayagan ang camera sa ngayon</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Sinubukan mong puntahan ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng certificate na masyadong mahaba ang panahon ng pagkakaroon ng bisa upang maging mapagkakatiwalaan.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Hindi mase-save sa ngayon ang card na ito}one{Hindi mase-save sa ngayon ang mga card na ito}other{Hindi mase-save sa ngayon ang mga card na ito}}</translation>
@@ -3045,6 +3048,7 @@ Mga karagdagang detalye:
 <translation id="8416694386774425977">Invalid ang configuration ng network at hindi ito ma-import.
 Mga karagdagang detalye:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Pinapayagan ang mikropono sa ngayon</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
@@ -3100,6 +3104,7 @@ Mga karagdagang detalye:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{I-reset ang pahintulot}one{I-reset ang mga pahintulot}other{I-reset ang mga pahintulot}}</translation>
 <translation id="8555010941760982128">Gamitin ang code na ito kapag nag-checkout</translation>
 <translation id="8557066899867184262">Makikita ang CVC sa likod ng iyong card.</translation>
+<translation id="8558347880669160417">Pinapayagan ang camera at mikropono sa ngayon</translation>
 <translation id="8559762987265718583">Hindi makapagtatag ng pribadong koneksyon sa <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> dahil mali ang petsa at oras ng iyong device (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Mga hiwalay na dokumento/Mga hindi naka-collate na kopya</translation>
 <translation id="8564985650692024650">Inirerekomenda ng Chromium na i-reset ang iyong password sa <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> kung ginamit mo ito sa iba pang site.</translation>
@@ -3370,6 +3375,7 @@ Mga karagdagang detalye:
 <translation id="949314938206378263">Hiniling mong bisitahin ang site na ito. Puwedeng sumagot ang iyong magulang sa Family Link.</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="961663415146723894">Bind bottom</translation>
+<translation id="961930410699694996">Pinapayagan ang lokasyon sa ngayon</translation>
 <translation id="962484866189421427">Maaaring subukan ng content na itong mag-install ng mga mapanlinlang na app na nagpapanggap na ibang bagay o nangongolekta ng data na maaaring gamitin para subaybayan ka. <ph name="BEGIN_LINK" />Ipakita pa rin<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Lahat ng user</translation>
 <translation id="964050462028070434">Pamahalaan ang Mga Password at Passkey…</translation>

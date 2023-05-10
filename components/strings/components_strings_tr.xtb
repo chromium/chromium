@@ -1034,6 +1034,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3531780078352352885">İş sayfaları</translation>
 <translation id="3532844647053365774"><ph name="HOST" />, mikrofonunuzu kullanmak istiyor</translation>
 <translation id="3533328374079021623">Posta kutusu 5</translation>
+<translation id="3536227077203206203">Şu anda izin veriliyor</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kart resmi</translation>
 <translation id="3542768452570884558">Bağlantıyı Yeni Pencerede Aç</translation>
@@ -2453,6 +2454,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7030436163253143341">Sertifika geçerli değil</translation>
 <translation id="7031646650991750659">Hangi Google Play uygulamalarını yüklediğiniz</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınızın gizlilik ayarlarını yönetmek için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="7044081119134178347">Şu anda kameraya izin veriliyor</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> alan adına erişmeyi denediniz, ancak sunucu, geçerlilik dönemi güvenilir olmayacak kadar uzun olan bir sertifika sundu.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Bu kart şu anda kaydedilemiyor}other{Bu kartlar şu anda kaydedilemiyor}}</translation>
@@ -3045,6 +3047,7 @@ Ek ayrıntılar:
 <translation id="8416694386774425977">Ağ yapılandırması geçersiz ve içe aktarılamadı.
 Ek ayrıntılar:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Şu anda mikrofona izin veriliyor</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
@@ -3100,6 +3103,7 @@ Ek ayrıntılar:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{İzni sıfırla}other{İzinleri sıfırla}}</translation>
 <translation id="8555010941760982128">Ödeme sırasında bu kodu kullanın</translation>
 <translation id="8557066899867184262">CVC, kartınızın arkasında bulunur.</translation>
+<translation id="8558347880669160417">Şu anda kamera ve mikrofona izin veriliyor</translation>
 <translation id="8559762987265718583">Cihazınızın tarih ve saati (<ph name="DATE_AND_TIME" />) yanlış olduğundan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alan adına gizli bir bağlantı kurulamıyor.</translation>
 <translation id="8564182942834072828">Ayrı dokümanlar/Harmanlanmamış kopyalar</translation>
 <translation id="8564985650692024650">Chromium, <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
@@ -3217,6 +3221,7 @@ Ek ayrıntılar:
 <translation id="8870494189203302833">Aynı sırada ön yüz aşağı bakacak şekilde</translation>
 <translation id="8870700989640064057">Gizli dosya yazdırılsın mı?</translation>
 <translation id="8871553383647848643">Tarayıcınızın görünümünü özelleştirin</translation>
+<translation id="8871603420762394026">Chrome şu anda sitelerin gösterdikleri reklamların performansını ölçmesine yardımcı olmak için siteler arasında çok sınırlı bilgi (ör. bir reklamın size gösterildiği saat) paylaşıyor.</translation>
 <translation id="8874824191258364635">Geçerli bir kart numarası girin</translation>
 <translation id="8876033571432926051">Basit oyunlar</translation>
 <translation id="8877780815363510165">Balıkçılık</translation>
@@ -3370,6 +3375,7 @@ Ek ayrıntılar:
 <translation id="949314938206378263">Bu siteyi ziyaret etme isteğinde bulundunuz. Anne veya babanız bu isteğe Family Link'te yanıt verebilir.</translation>
 <translation id="950736567201356821">Üstte üçlü delik</translation>
 <translation id="961663415146723894">Alttan bağlı</translation>
+<translation id="961930410699694996">Şu anda konuma izin veriliyor</translation>
 <translation id="962484866189421427">Bu içerik başka bir şeyi taklit eden aldatıcı uygulamalar yükleyebilir veya sizi izlemek için kullanılabilecek veriler toplayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Tüm kullanıcılar</translation>
 <translation id="964050462028070434">Şifreleri ve şifre anahtarlarını yönetin…</translation>

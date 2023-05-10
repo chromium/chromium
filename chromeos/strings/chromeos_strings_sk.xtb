@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS sa nedá preložiť</translation>
 <translation id="1018656279737460067">Zrušené</translation>
 <translation id="1022433422498218992">Všeobecné ovládanie</translation>
+<translation id="1022628058306505708">Tok zeme</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
 <translation id="1059913517121127803">Skenovanie sa nepodarilo spustiť</translation>
@@ -34,7 +35,7 @@
 <translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
 <translation id="1264369926465113395">Pozrite si nový digitálny časopis Chromebooku pre autorov</translation>
 <translation id="1270369111467284986">Predpokladá sa prihlasovací portál</translation>
-<translation id="1290331692326790741">Slabý signál</translation>
+<translation id="1290331692326790741">slabý signál</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aktualizuje sa (dokončené na <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">K dispozícii nie je žiadna sieť <ph name="NETWORK_NAME" /></translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Ďalšie akcie</translation>
 <translation id="2926057806159140518">Zadajte používateľské meno a heslo alebo naskenujte QR kód</translation>
 <translation id="2940811910881150316">Zariadenie sa nedá testovať. Ak chcete testovať, znova otvorte kryt.</translation>
+<translation id="2981143481017883351">K dispozícii sú exkluzívne podklady pre Chromebook</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3017079585324758401">Pozadie</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
+<translation id="3386675685417744672">Exkluzívne pre Chromebook</translation>
 <translation id="3404249063913988450">Aktivovať šetrič obrazovky</translation>
 <translation id="3413935475507503304">Ak chcete pokračovať v aktualizácii, kliknite na Ďalej.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">UPOZORNENIE</translation>
 <translation id="4054683689023980771">Sťahuje sa obrázok</translation>
 <translation id="4060260348856573701">Nový názov prístupového bodu (APN)</translation>
+<translation id="4079743696465895866">Vyberte exkluzívny plagát pre Chromebook</translation>
 <translation id="4093865285251893588">Profilový obrázok</translation>
 <translation id="409427325554347132">Uložiť podrobnosti o teste</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapacita batérie používaním klesá</translation>
 <translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
+<translation id="6205145102504628069">Tok oblakov</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Ukončiť režim celej obrazovky</translation>
 <translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Prispôsobenie</translation>
 <translation id="6500818810472529210">Zobrazte si výsledok vo Vyhľadávaní Google</translation>
 <translation id="650266656685499220">Ak chcete vytvoriť albumy, prejdite do Fotiek Google</translation>
+<translation id="6505750420152840539">Od úsvitu do tmy</translation>
 <translation id="6516990319416533844">Ak chcete otestovať rýchlosť nabíjania batérie, nechajte batériu chvíľu vybíjať.</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6526200165918397681">Prispôsobiť tapetu</translation>

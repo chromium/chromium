@@ -4,7 +4,7 @@
 <translation id="1012876632442809908">USB-C gailua (aurrealdeko ataka)</translation>
 <translation id="1013598600051641573"><ph name="RESOLUTION" />-ko bereizmenera (<ph name="REFRESH_RATE" /> Hz) aldatu da <ph name="DISPLAY_NAME" /> pantaila. Aldaketak gordetzeko, sakatu berresteko botoia. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
 <translation id="1013923882670373915">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Idatzi PIN kode hau gailuan: <ph name="PINCODE" /></translation>
-<translation id="1014722676793506285">Honen bidez, <ph name="APP_NAME" /> aplikazioak, kokapena atzitzeko baimena daukaten aplikazio eta webgune guztiek eta ChromeOS-ek wifiaren eta sare mugikorren araberako kokapena erabili ahal izango dute.</translation>
+<translation id="1014722676793506285">Honen bidez, <ph name="APP_NAME" /> aplikazioak, kokapena erabiltzeko baimena daukaten aplikazio eta webgune guztiek eta ChromeOS-ek wifiaren eta sare mugikorren araberako kokapena erabili ahal izango dute.</translation>
 <translation id="1017556409696559990">Minimizatu goiko leihoa Chrome-n atzera egiteko historiarik ez dagoenean</translation>
 <translation id="1024364763893396229">Gorde <ph name="NAME" /> gailua</translation>
 <translation id="1032891413405719768">Pila agortzen ari zaio arkatzari</translation>
@@ -56,6 +56,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="121097972571826261">Joan hurrengo hitzera</translation>
 <translation id="1217633719248931900">Joan aplikaziora</translation>
 <translation id="1218444235442067213">Play Store-ko aplikazioa (<ph name="APP_NAME" />)</translation>
+<translation id="1219309685806246869">Itzuli <ph name="APP_TITLE" /> aplikaziora.</translation>
 <translation id="1225748608451425081">Chromebook-a blokeatuta dago arazo ezagun bat dela eta. <ph name="TIME_LEFT" /> barru hasi ahalko duzu saioa.</translation>
 <translation id="1229194443904279055">Utzi hautatzeari</translation>
 <translation id="1235458158152011030">Sare ezagunak</translation>
@@ -459,6 +460,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="316086887565479535">Bateragarriak ez diren aplikazio batzuk daude txantiloian</translation>
 <translation id="3161500364292033097">Itxi lan-eremuak eta leihoak</translation>
 <translation id="316356270129335934"><ph name="DEVICE_TYPE" /> gailua aurreko bertsiora itzuliko du <ph name="MANAGER" /> kudeatzaileak. Gailua berrezarri egingo da, eta datu guztiak ezabatuko dira.</translation>
+<translation id="3171170659304083361">Idazketa-metodoen ezarpenak</translation>
 <translation id="3181441307743005334">Baliteke berrabiarazteko prozesua zertxobait luzatzea</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Gailu batera konektatuta}other{# gailutara konektatuta}}</translation>
 <translation id="320207200541803018">Ezarri tenporizadore bat</translation>
@@ -587,7 +589,7 @@ Konektatu gailua korrontera.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, erabiltzaile kudeatua</translation>
 <translation id="3666266999138159418">Pasatu hatza leiho gainerakorra ezkutatzeko</translation>
 <translation id="367531336287639526">Hautatu helbide-barraren ezkerraldeko lehenengo ikonoa</translation>
-<translation id="3677931086890821290">Honen bidez, kokapena atzitzeko baimena daukaten aplikazio eta webgune guztiek eta ChromeOS-ek wifiaren eta sare mugikorren araberako kokapena erabili ahal izango dute.</translation>
+<translation id="3677931086890821290">Honen bidez, kokapena erabiltzeko baimena daukaten aplikazio eta webgune guztiek eta ChromeOS-ek wifiaren eta sare mugikorren araberako kokapena erabili ahal izango dute.</translation>
 <translation id="3679827876008292680">Joan leihoko azken fitxara</translation>
 <translation id="36813544980941320">Wifi-sareak telefonoaren eta <ph name="DEVICE_NAME" /> gailuaren artean partekatuko dira</translation>
 <translation id="3694122362646626770">Webguneak</translation>
@@ -1060,6 +1062,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5881540930187678962">Konfiguratu Phone Hub geroago</translation>
 <translation id="5881663018261910378">Desaktibatuta</translation>
 <translation id="5887954372087850114"><ph name="DESK_TITLE" /> lan-eremuari esleitu zaio <ph name="WINDOW_TITLE" /> leihoa, eta beste lan-eremu guztien esleipenak kendu zaizkio</translation>
+<translation id="588817334757907802">Ireki fitxategia Chrome arakatzailean</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="589817443623831496">Puntukako mugimendua</translation>
 <translation id="5901316534475909376">Maius + Ihes</translation>
@@ -1111,6 +1114,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6074087755403037157">Beta-kanala</translation>
 <translation id="6093867385179428431">Administratzaileak desgaitu du</translation>
 <translation id="6095008505822982596">Hizketaren abiadura</translation>
+<translation id="6095425951508823973">Gehitu <ph name="PROVIDER" /> bidezko konexioa</translation>
 <translation id="6099678161144790572">Azken hilabetean editatu da</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Deskargatu dira hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
@@ -1589,6 +1593,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8349964124165471584">Ireki esteka beste leiho batean</translation>
 <translation id="8351131234907093545">Sortu oharra</translation>
 <translation id="8364673525741149932">Aktibatu edo desaktibatu Apal-festa. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> erabiltzen.</translation>
 <translation id="8369166482916924789">Gordetako lan-eremua, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Joan hurrengo hizkira</translation>
 <translation id="8371991222807690464">Baliteke gailu periferikoaren errendimendua mugatuta egotea gonbidatu moduan</translation>
@@ -1768,7 +1773,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> bereizmena honako bereizmen honetara aldatu da: <ph name="RESOLUTION" />. Sakatu "Berretsi" aldaketak gordetzeko. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
 <translation id="9201044636667689546">Konektatu <ph name="NAME" /> Chromebook honekin</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />. Administratzaileak kudeatua.</translation>
-<translation id="9207682216934703221">Honen bidez, <ph name="APP_NAME" /> eta <ph name="APP2_NAME" /> aplikazioek, kokapena atzitzeko baimena daukaten aplikazio eta webgune guztiek eta ChromeOS-ek wifiaren eta sare mugikorren araberako kokapena erabili ahal izango dute.</translation>
+<translation id="9207682216934703221">Honen bidez, <ph name="APP_NAME" /> eta <ph name="APP2_NAME" /> aplikazioek, kokapena erabiltzeko baimena daukaten aplikazio eta webgune guztiek eta ChromeOS-ek wifiaren eta sare mugikorren araberako kokapena erabili ahal izango dute.</translation>
 <translation id="9210037371811586452">Mahaigain bateratuko modutik irteten</translation>
 <translation id="9211490828691860325">Lan-eremu guztiak</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> bateria guztiz kargatu arte.</translation>

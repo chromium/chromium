@@ -84,6 +84,7 @@
 <translation id="2467438592969358367">Pārlūkā Google Chrome tiek mēģināts eksportēt jūsu paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
 <translation id="2534507159460261402">Google Pay (kopēts pārlūkā Chrome)</translation>
+<translation id="2556847002339236023">Jūsu organizācija aizver pārlūku Chrome, ja tas <ph name="TIMEOUT_DURATION" /> netiek izmantots. Pārlūkošanas dati tika izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.</translation>
 <translation id="2559253115192232574">Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome atļauju skatīt jūsu intereses, lai personalizētu jums rādāmās reklāmas. Pārlūks Chrome var kopīgot līdz trim interesēm.</translation>
 <translation id="2563121210305478421">Vai atkārtoti palaist pārlūkprogrammu Chrome?</translation>
 <translation id="2574930892358684005">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chrome profilā. Lai atdalītu pārlūkošanu, pārlūkā Chrome varat izveidot atsevišķu profilu.</translation>
@@ -270,6 +271,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6113794647360055231">Pārlūkā Chrome ir veikti uzlabojumi</translation>
 <translation id="6145313976051292476">Atvērt PDF failus pārlūkā Chrome</translation>
 <translation id="6155960517327665396">Atmiņas taupīšana nodrošināja ātrāku Chrome darbību</translation>
+<translation id="6157638032135951407">Jūsu organizācija dzēš Chrome datus, ja šis pārlūks <ph name="TIMEOUT_DURATION" /> netiek izmantots. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome beta versija</translation>
 <translation id="6235018212288296708">Ienākošo savienojumu kārtula pārlūkam Google Chrome, lai atļautu mDNS datplūsmu.</translation>
@@ -285,6 +287,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6418662306461808273">Vai pāriet uz esošo Chrome profilu?</translation>
 <translation id="648319183876919572">Droša pārlūkošana ar papildu aizsardzību nodrošina efektīvāku aizsardzību pret bīstamām vietnēm un lejupielādēm</translation>
 <translation id="6493527311031785448">Google Chrome mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Pārlūks Chrome tika automātiski aizvērts</translation>
 <translation id="6506909944137591434">Pārlūkam Chrome ir nepieciešama atļauja izmantot kameru, lai varētu izveidot jūsu apkārtnes 3D karti.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome izstrādātāju versija</translation>
 <translation id="659498884637196217">Google paroļu pārvaldniekā šajā ierīcē</translation>
@@ -321,6 +324,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7155997830309522122">Ja tā ir, lūdzu, rediģējiet saglabāto paroli pārlūkprogrammā Chrome, lai tā atbilstu jūsu jaunajai parolei.</translation>
 <translation id="7161904924553537242">Laipni lūdzam Google Chrome</translation>
 <translation id="7177959540995930968">Chrome iestatījumos varat uzzināt vairāk par šīm funkcijām.</translation>
+<translation id="7193885263065350793">Jūsu organizācija aizver pārlūku Chrome, ja tas <ph name="TIMEOUT_DURATION" /> netiek izmantots.</translation>
 <translation id="7242029209006116544">Jūs pierakstāties ar pārvaldītu kontu un nodrošināt, ka tā administrators var pārvaldīt jūsu Google Chrome profilu. Jūsu Chrome dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet saistīt šos datus ar citu kontu. Ja vēlaties, varat izveidot jaunu profilu, lai atsevišķi glabātu Chrome datus. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Šī valoda tiek izmantota, lai attēlotu Google Chrome lietotāja saskarni</translation>
 <translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>

@@ -1034,6 +1034,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3531780078352352885">Helaian tugas</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ingin menggunakan mikrofon anda</translation>
 <translation id="3533328374079021623">Peti mel 5</translation>
+<translation id="3536227077203206203">Dibenarkan pada masa ini</translation>
 <translation id="3537165859691846083">Surat Plus</translation>
 <translation id="3542628208405253498">Imej kad</translation>
 <translation id="3542768452570884558">Buka pautan dalam Tetingkap Baharu</translation>
@@ -2454,6 +2455,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7030436163253143341">Sijil tidak sah</translation>
 <translation id="7031646650991750659">Apl Google Play yang telah anda pasang</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus tetapan privasi Google Account anda</translation>
+<translation id="7044081119134178347">Kamera dibenarkan pada masa ini</translation>
 <translation id="7048095965575426564">Fanfold Eropah</translation>
 <translation id="7050187094878475250">Anda cuba untuk mencapai <ph name="DOMAIN" />, tetapi pelayan memberikan sijil yang tempoh sahnya terlalu panjang untuk boleh dipercayai.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kad ini tidak dapat disimpan sekarang}other{Kad ini tidak dapat disimpan sekarang}}</translation>
@@ -3046,6 +3048,7 @@ Butiran tambahan:
 <translation id="8416694386774425977">Konfigurasi rangkaian tidak sah dan tidak boleh diimport.
 Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon dibenarkan pada masa ini</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Tetapan</translation>
@@ -3101,6 +3104,7 @@ Butiran tambahan:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Tetapkan semula kebenaran}other{Tetapkan semula kebenaran}}</translation>
 <translation id="8555010941760982128">Gunakan kod ini semasa semak keluar</translation>
 <translation id="8557066899867184262">CVC terletak di belakang kad anda.</translation>
+<translation id="8558347880669160417">Kamera dan mikrofon dibenarkan pada masa ini</translation>
 <translation id="8559762987265718583">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa peranti anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>
 <translation id="8564182942834072828">Dokumen berasingan/Salinan berasingan</translation>
 <translation id="8564985650692024650">Chromium mengesyorkan penetapan semula kata laluan <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
@@ -3372,6 +3376,7 @@ Butiran tambahan:
 <translation id="949314938206378263">Anda meminta untuk melawat laman ini. Ibu bapa anda boleh membalas dalam Family Link.</translation>
 <translation id="950736567201356821">Tiga tebukan atas</translation>
 <translation id="961663415146723894">Ikatan bawah</translation>
+<translation id="961930410699694996">Lokasi dibenarkan pada masa ini</translation>
 <translation id="962484866189421427">Kandungan ini mungkin cuba memasang apl mengelirukan yang berpura-pura menjadi sesuatu yang lain atau mengumpulkan data yang mungkin digunakan untuk menjejak anda. <ph name="BEGIN_LINK" />Tunjukkan juga <ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Semua pengguna</translation>
 <translation id="964050462028070434">Urus Kata Laluan dan Kunci Laluan…</translation>

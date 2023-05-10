@@ -113,6 +113,7 @@
 <translation id="1657011748321897393">Споделянето не бе успешно, защото нямате връзка с мрежата.</translation>
 <translation id="1657641691196698092">Блокирани „бисквитки“</translation>
 <translation id="165877110639533037">Няма отворени раздели</translation>
+<translation id="166310177317698233">Можете да намерите фиксираните си раздели, като докоснете бутона „Показване на разделите“.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Заявка за мобилния сайт</translation>
 <translation id="168715261339224929">Включете синхронизирането, за да получите отметките си на всичките си устройства.</translation>
@@ -814,6 +815,7 @@
 <translation id="6331180460633101391"><ph name="COUNT" /> повторно използвани пароли</translation>
 <translation id="6337234675334993532">Шифроване</translation>
 <translation id="633809752005859102">Нещо сериозно се обърка. Ще работим по него.</translation>
+<translation id="6339793034470834130">За да използвате Web Inspector, свържете се със Safari на компютъра си чрез кабел и осъществете достъп до своя iPhone от менюто Develop. Можете да активирате това меню в секцията Advanced на настройките на Safari на компютъра си.</translation>
 <translation id="6340285871011301182">Частичният превод не е налице.</translation>
 <translation id="6342069812937806050">Току-що</translation>
 <translation id="6344783595350022745">Изчистване на текста</translation>
@@ -821,6 +823,7 @@
 <translation id="6347953390226388422">{count,plural, =1{Този адрес ще бъде изтрит от профила ви в Google (<ph name="USER_EMAIL" />) и от това устройство.}other{Тези адреси ще бъдат изтрити от профила ви в Google (<ph name="USER_EMAIL" />) и от това устройство.}}</translation>
 <translation id="634878792104344809">Синхронизиране на вашите пароли, история и др. на всичките ви устройства</translation>
 <translation id="6348855835728304880">Осъществявайте достъп до паролите и другите си данни в Chrome от други приложения на това устройство.</translation>
+<translation id="63519665078626091">За да използвате Web Inspector, свържете се със Safari на компютъра си чрез кабел и осъществете достъп до своя iPad от менюто Develop. Можете да активирате това меню в секцията Advanced на настройките на Safari на компютъра си.</translation>
 <translation id="6355820205320395730">Ненадеждните пароли са лесни за отгатване. Уверете се, че създаваните от вас са надеждни. <ph name="BEGIN_LINK" />Вижте още съвети за сигурност<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Следване на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Няма раздели в режим „инкогнито“</translation>
@@ -1081,6 +1084,7 @@
 <translation id="7993619969781047893">Функциите в някои сайтове може да не работят правилно</translation>
 <translation id="800361585186029508">Въведените URL адреси се отварят в Google Chrome.</translation>
 <translation id="8005666035647241369">Към мениджъра на паролите в Google на това устройство</translation>
+<translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Винаги да се използват сигурни връзки</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8023878949384262191">Разгъва секцията.</translation>

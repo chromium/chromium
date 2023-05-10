@@ -285,6 +285,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="2587052924345400782">Nýrri útgáfa er í boði</translation>
 <translation id="2593272815202181319">Jafnbreitt</translation>
 <translation id="2603212228005142861">Skráðu þig inn til að stjórna kjörstillingum</translation>
+<translation id="260403163289591229">Fylgir</translation>
 <translation id="2604446170045642109">Þú getur slökkt á dökku þema fyrir vefsvæði í stillingunum.</translation>
 <translation id="2612676031748830579">Kortanúmer</translation>
 <translation id="2625189173221582860">Aðgangsorð afritað</translation>
@@ -584,6 +585,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
 <translation id="4202218894997543208">Umfjöllunarefni sem þú hefur sett á bannlista</translation>
 <translation id="4214315110991671325">Chrome kann að nota fótspor við forhleðslu ef þú leyfir fótspor.</translation>
+<translation id="4225725533026049334">Fylgir</translation>
 <translation id="4225895483398857530">Flýtileið á tækjastiku</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="4248098802131000011">Tryggðu öryggi aðgangsorðanna gagnvart öryggisbrotum og öðrum öryggisvandamálum</translation>
@@ -922,6 +924,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="6005538289190791541">Útbúið aðgangsorð</translation>
 <translation id="6011308810877101166">Bæta leitartillögur</translation>
 <translation id="6026538407078977628">Birta á öllum skjánum</translation>
+<translation id="6030719887161080597">Stjórna upplýsingum sem vefsvæði nota til að mæla árangur auglýsinga</translation>
 <translation id="6039379616847168523">Stökkva í næsta flipa</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="604124094241169006">Sjálfvirkt</translation>

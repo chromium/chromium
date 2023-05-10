@@ -1034,6 +1034,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3531780078352352885">Fulls de treball</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> vol utilitzar el micròfon</translation>
 <translation id="3533328374079021623">Bústia de correu 5</translation>
+<translation id="3536227077203206203">S'ha permès aquesta vegada</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Imatge de la targeta</translation>
 <translation id="3542768452570884558">Obre l'enllaç en una finestra nova</translation>
@@ -2453,6 +2454,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7030436163253143341">El certificat no és vàlid</translation>
 <translation id="7031646650991750659">Quines aplicacions de Google Play has instal·lat</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la configuració de privadesa del teu Compte de Google</translation>
+<translation id="7044081119134178347">S'ha permès l'ús de la càmera aquesta vegada</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Has provat de connectar-te a <ph name="DOMAIN" />, però el servidor ha presentat un certificat amb un període de validesa massa llarg per poder confiar-hi.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{En aquest moment no es pot desar la targeta}other{En aquest moment no es poden desar les targetes}}</translation>
@@ -3045,6 +3047,7 @@ Detalls addicionals:
 <translation id="8416694386774425977">La configuració de la xarxa no és vàlida i no s'ha pogut importar.
 Detalls addicionals:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">S'ha permès l'ús del micròfon aquesta vegada</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Configuració</translation>
@@ -3100,6 +3103,7 @@ Detalls addicionals:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Restableix el permís}other{Restableix els permisos}}</translation>
 <translation id="8555010941760982128">Utilitza aquest codi en el moment de tramitar la compra</translation>
 <translation id="8557066899867184262">El CVC es troba a la part posterior de la targeta.</translation>
+<translation id="8558347880669160417">S'ha permès l'ús de la càmera i del micròfon aquesta vegada</translation>
 <translation id="8559762987265718583">No es pot establir una connexió privada amb <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perquè la data i l'hora (<ph name="DATE_AND_TIME" />) del dispositiu són incorrectes.</translation>
 <translation id="8564182942834072828">Documents independents / Còpies sense recopilar</translation>
 <translation id="8564985650692024650">Chromium et recomana que restableixis la contrasenya per a <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si l'has fet servir en altres llocs web.</translation>
@@ -3216,6 +3220,7 @@ Detalls addicionals:
 <translation id="8870494189203302833">Ordre idèntic de cara avall</translation>
 <translation id="8870700989640064057">Vols imprimir el fitxer confidencial?</translation>
 <translation id="8871553383647848643">Personalitza l'aspecte del teu navegador</translation>
+<translation id="8871603420762394026">Ara Chrome només comparteix informació molt limitada entre llocs web, com ara quan se t'ha mostrat un anunci, per ajudar els llocs web a mesurar el rendiment dels anuncis.</translation>
 <translation id="8874824191258364635">Introdueix un número de targeta vàlid</translation>
 <translation id="8876033571432926051">Jocs de gran públic</translation>
 <translation id="8877780815363510165">Pesca</translation>
@@ -3369,6 +3374,7 @@ Detalls addicionals:
 <translation id="949314938206378263">Has demanat visitar aquest lloc web. El teu pare o mare pot respondre a Family Link.</translation>
 <translation id="950736567201356821">Encunyació triple a la part superior</translation>
 <translation id="961663415146723894">Enquadernació per la part inferior</translation>
+<translation id="961930410699694996">S'ha permès l'ús de la ubicació aquesta vegada</translation>
 <translation id="962484866189421427">Pot ser que aquest contingut provi d'instal·lar aplicacions enganyoses que es facin passar per d'altres o que recullin dades que podrien utilitzar-se per fer un seguiment de la teva activitat. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Tots els usuaris</translation>
 <translation id="964050462028070434">Gestiona les contrasenyes i les claus d'accés…</translation>

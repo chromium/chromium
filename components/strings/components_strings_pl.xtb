@@ -1673,6 +1673,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
 <translation id="5051305769747448211">Kabaret</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Aby wysłać plik przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}few{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}many{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}other{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}}</translation>
+<translation id="5060419232449737386">Ustawienia napisów</translation>
 <translation id="5060483733937416656">W witrynach korzystających z <ph name="PROVIDER_ORIGIN" /> potwierdzasz swoją tożsamość za pomocą Windows Hello. Możliwe, że ten dostawca przechowuje dane Twojej formy płatności. Możesz <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historia drukowania</translation>

@@ -119,6 +119,7 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
 <translation id="1105711894873068933">Después de inhabilitar <ph name="LACROS_NAME" />, se quitarán todos los datos del usuario durante el siguiente acceso.</translation>
 <translation id="1107538157073168076">Inhabilitar la extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
+<translation id="1111324374369583989">No mostrar la pantalla de configuración del tamaño de visualización durante el acceso</translation>
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
 <translation id="1118093128235245168">Permite que los sitios soliciten al usuario que otorgue acceso a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configuración de notificaciones</translation>
@@ -687,6 +688,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       </translation>
 <translation id="1613327425322354195">Informar el estado de seguridad del dispositivo</translation>
 <translation id="1615221548356595305">Permitir la integración de conexiones HTTP/2 para estos hosts incluso cuando se usan certificados de cliente</translation>
+<translation id="1615734278280392199">Usar la búsqueda en el modo no anónimo</translation>
 <translation id="1616280227447957376">Permite continuar desde la página de advertencia de SSL en orígenes específicos</translation>
 <translation id="1617235075406854669">Habilita la eliminación del historial de descargas y del navegador.</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -909,6 +911,19 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="1844972978764975668">Permite que las consultas enviadas a un servidor de Google recuperen una marca de tiempo precisa</translation>
 <translation id="1845405905602899692">Configuración del kiosco</translation>
 <translation id="1845429996559814839">Restringe el modo de impresión con PIN</translation>
+<translation id="1845567452014584154">Controla si el navegador puede usar extensiones de Manifest V2.
+
+La compatibilidad con extensiones de Manifest V2 dejará de estar disponible y todas las extensiones deberán
+migrar a V3 en el futuro. Para obtener más información y el cronograma de
+migración, consulta https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Si estableces la política como <ph name="DEFAULT" /> (0) o no la estableces, el navegador determinará las cargas de las extensiones de V2, de acuerdo con el cronograma que se indica más arriba.
+Si estableces la política como <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de V2 y se inhabilitarán las extensiones existentes. La opción se tratará de la misma manera que si no estableces la política después de que la compatibilidad con V2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE" /> (2), se permitirán las extensiones de V2. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con V2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirán las extensiones de V2 instaladas de manera automática. Esto incluye las extensiones que aparecen en la lista de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o de <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Todas las demás extensiones de V2 están inhabilitadas. La opción siempre está disponible, independientemente del estado de migración.
+
+
+La disponibilidad de las extensiones aún se controla mediante otras políticas.</translation>
 <translation id="1846545322805269573">Los usuarios no pueden personalizar el fondo de la página Nueva pestaña</translation>
 <translation id="1847960418907100918">Especifica los parámetros utilizados al realizar búsquedas instantáneas con POST. Se compone de pares de nombre/valor separados por coma. Si un valor es un parámetro de plantilla, como {searchTerms} en el ejemplo anterior, se reemplazará por datos de términos de búsqueda reales.
 
@@ -1064,6 +1079,7 @@ Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (1), se inhabi
 
       Los cambios que se realicen en la política solo se aplicarán cuando ARC no se ejecute, por ejemplo, mientras se inicia Chrome OS.</translation>
 <translation id="1984934843478301531">Automatización de la ejecución de apps</translation>
+<translation id="1985545260037812875">Mostrar la pantalla de configuración del tamaño de visualización durante el acceso</translation>
 <translation id="1985598967415986700">Se podrá controlar la reducción de usuario-agente mediante las pruebas de campo y de origen</translation>
 <translation id="1987789058026551147">Habilitar los informes de las sesiones de kiosco del dispositivo</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
@@ -2318,6 +2334,7 @@ Esta política es temporal y se quitará en el futuro.</translation>
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL.</translation>
 <translation id="3118552207903834734">Permitir que el usuario configure el nombre de host de su dispositivo</translation>
+<translation id="3120434599585109871">Usar la búsqueda en modo anónimo</translation>
 <translation id="3122082892722698079">Controla el uso de excepciones de contenido no seguro</translation>
 <translation id="3125472566440502628">Inhabilitar Seleccionar para pronunciar</translation>
 <translation id="3126748868885248792">El botón principal es el derecho</translation>
@@ -2917,6 +2934,9 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3606571057705314194">Selector de perfiles inhabilitado en el inicio</translation>
 <translation id="3608206578291537084">Habilitar la canalización de informes encriptados</translation>
 <translation id="3608281460204780443">Mostrar el ícono de Chrome Web Store en el selector <ph name="PRODUCT_OS_NAME" /> y en la página de la nueva pestaña</translation>
+<translation id="3616490235694929053">Esta política controla si se muestra la pantalla de configuración del tamaño de visualización al usuario durante el primer acceso.
+      Si la estableces como falsa, no se mostrará la pantalla de configuración del tamaño de visualización.
+      Si la estableces como verdadera, se mostrará la pantalla de configuración del tamaño de visualización.</translation>
 <translation id="3622463490728773174">Permitir la implementación nueva</translation>
 <translation id="3623332696371971798">Impedir el acceso a Google Fotos desde la app de personalización</translation>
 <translation id="3627678165642179114">Habilita o inhabilita el servicio web de revisión ortográfica.</translation>
@@ -3414,6 +3434,19 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="4101282687722389021">Una marca de tiempo (UTC) que indica la última vez que se actualizó esta entrada. Se envía como un string ya que la marca de tiempo no entra en un valor entero.</translation>
 <translation id="4102347680024644994">Informar eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="4105989332710272578">Inhabilitar la aplicación del Certificado de transparencia para una lista de URL</translation>
+<translation id="410740968939768919">Controla si se pueden usar extensiones de Manifest V2 en la pantalla de acceso de <ph name="PRODUCT_OS_NAME" />.
+
+La compatibilidad con extensiones de Manifest V2 dejará de estar disponible y todas las extensiones deberán
+migrar a V3 en el futuro. Para obtener más información y el cronograma de
+migración, consulta https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Si estableces la política como <ph name="DEFAULT" /> (0) o no la estableces, el dispositivo determinará las cargas de las extensiones de V2, de acuerdo con el cronograma que se indica más arriba.
+Si estableces la política como <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de V2 y se inhabilitarán las extensiones existentes. La opción se tratará de la misma manera que si no estableces la política después de que la compatibilidad con V2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE" /> (2), se permitirán las extensiones de V2. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con V2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirán las extensiones de V2 instaladas de manera automática. Esto incluye las extensiones que aparecen en la lista de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o de <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Todas las demás extensiones de V2 están inhabilitadas. La opción siempre está disponible, independientemente del estado de migración.
+
+
+La disponibilidad de las extensiones aún se controla mediante otras políticas.</translation>
 <translation id="4110126170080699437">Por motivos de seguridad, la
 API web de <ph name="GET_DISPLAY_MEDIA_API_NAME" /> requiere
 que se llame a un gesto previo del usuario ("activación transitoria") o fallará si esto no ocurre.
@@ -3807,6 +3840,33 @@ se quitará esta política.</translation>
 <translation id="4483649828988077221">Inhabilitar la actualización automática</translation>
 <translation id="4484515651939984695">Especificar el tiempo (en segundos) que un dispositivo de transmisión seleccionado con un código QR o de acceso permanece en la lista de dispositivos de transmisión del menú de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4485425108474077672">Configurar la URL de la página Nueva pestaña</translation>
+<translation id="4490420545181481759">Los certificados X.509 pueden codificar restricciones, como limitaciones de nombres,
+en las extensiones del certificado. RFC 5280 especifica que la aplicación forzosa de tales
+restricciones en los certificados de anclas de confianza es opcional. A partir de
+la versión 112 de <ph name="PRODUCT_NAME" />,
+se aplicarán de manera forzosa estas restricciones
+en los certificados cargados desde el almacén de certificados de la plataforma.
+
+Esta política existe como una inhabilitación temporal en caso de que una empresa encuentre
+problemas con las restricciones codificadas en sus raíces privadas. En ese caso, esta
+política se puede usar para inhabilitar de forma temporal la aplicación forzosa de las restricciones
+y, a la vez, corregir los problemas de certificación.
+
+Si no estableces esta política o la habilitas,
+<ph name="PRODUCT_NAME" /> aplicará de manera forzosa
+las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.
+
+Si la inhabilitas,
+<ph name="PRODUCT_NAME" /> no aplicará de manera forzosa
+las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.
+
+En la versión 112 de <ph name="PRODUCT_NAME" />,
+esta política no tiene efecto si
+se inhabilita la política
+<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
+
+Se planea quitar esta política en la
+versión 118 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4491607814095953976">Elegir si se puede inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de medición de anuncios</translation>
 <translation id="4492287494009043413">Inhabilitar la toma de capturas de pantalla</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
@@ -4648,6 +4708,7 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
 <translation id="528302483493794684">Una configuración de VM. Indica un tipo de VM que el usuario puede instalar, la cual se asociará de manera persistente con el ID de esta configuración y los controles que se aplican a este tipo de VM.</translation>
 <translation id="5283457834853986457">Inhabilitar el buscador de complementos (obsoleto)</translation>
 <translation id="5286579716704722323">Permitir que los usuarios hagan clic para omitir páginas de advertencia de SSL</translation>
+<translation id="5288713554963040955">Habilitar la opción para mostrar la pantalla de configuración del tamaño de visualización durante el acceso</translation>
 <translation id="5288772341821359899">Si se establece la política, el intervalo de puertos UDP que usa WebRTC está restringido al intervalo de puertos especificado (extremos incluidos).
 
       Si la política no se establece, se establece con un intervalo de puertos no válido o se deja como una cadena vacía, WebRTC puede usar cualquier puerto UDP local disponible.</translation>
@@ -7764,6 +7825,7 @@ también es seguro.</translation>
       Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Impresión nativa</translation>
+<translation id="8055051642109241571">Habilitar la búsqueda en modo anónimo</translation>
 <translation id="8056237304861875584">Permite habilitar la continuación de tareas en Phone Hub</translation>
 <translation id="8056273037819805106">Se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red en un proxy administrado.</translation>
 <translation id="8056800559672904373">Una cuenta administrada debe ser una cuenta principal sin cuentas secundarias asociadas y se pueden importar datos de navegación cuando crees el perfil</translation>
@@ -8536,6 +8598,9 @@ Si no estableces la política, no se importará ninguna contraseña guardada en 
 <translation id="8728854710675158426">Habilitar hashes no seguros en protocolos de enlace TLS</translation>
 <translation id="8734543507835977857">Iniciar los tiempos de espera para la administración de la energía y los límites de la extensión de la sesión al inicio de la sesión</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido mínimo en YouTube</translation>
+<translation id="874149307422233209">Esta política permite que los administradores controlen la manera en que Google procesa los datos del usuario que se envían a la Búsqueda a través de las funciones de <ph name="PRODUCT_OS_NAME" />.
+Si habilitas la política, el usuario podrá utilizar el cuadro de búsqueda del Selector de <ph name="PRODUCT_OS_NAME" /> y el cuadro de direcciones del navegador <ph name="PRODUCT_NAME" /> en <ph name="PRODUCT_OS_NAME" /> para que su historial de búsqueda no se vincule a su identidad.
+Si no la estableces o la inhabilitas, los datos del usuario relacionados con estas búsquedas se vincularán a su identidad.</translation>
 <translation id="8744844164152340112">Controla el tema que se usa para renderizar la IU durante la OOBE y en la sesión (oscuro, claro o automático).
       El modo automático alterna entre temas oscuros y claros de forma automática al amanecer y al atardecer.
       Se debe recomendar esta política, lo que les da a los usuarios la posibilidad de cambiar el tema en la configuración del sistema.</translation>

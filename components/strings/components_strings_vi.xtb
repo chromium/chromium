@@ -1061,7 +1061,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3587738293690942763">Ở giữa</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Bạn có thể đặt lại nhóm của mình bất cứ lúc nào. Bạn sẽ mất khoảng 1 ngày để tham gia một nhóm mới.}=1{Bạn có thể đặt lại nhóm của mình bất cứ lúc nào. Bạn sẽ mất khoảng 1 ngày để tham gia một nhóm mới.}other{Bạn có thể đặt lại nhóm của mình bất cứ lúc nào. Bạn sẽ mất {NUM_DAYS} ngày để tham gia một nhóm mới.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
-<translation id="360335678635752619">Chrome tự động xoá các chủ đề và trang web đề xuất quảng cáo đã tồn tại hơn 30 ngày. Ngoài ra, bạn có thể chặn các chủ đề và trang web cụ thể mà bạn không cần.</translation>
+<translation id="360335678635752619">Chrome tự động xoá các chủ đề và trang web gợi ý quảng cáo mà đã hơn 30 ngày bạn không truy cập. Ngoài ra, bạn có thể chặn các chủ đề và trang web cụ thể mà bạn không cần.</translation>
 <translation id="3603507503523709">Quản trị viên đã chặn ứng dụng</translation>
 <translation id="3605899229568538311">5 x 5 inch</translation>
 <translation id="3608932978122581043">Hướng nạp giấy</translation>
@@ -1127,7 +1127,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3736520371357197498">Nếu bạn hiểu các rủi ro bảo mật, bạn có thể <ph name="BEGIN_LINK" />truy cập trang web không an toàn này<ph name="END_LINK" /> trước khi các chương trình nguy hiểm bị xóa.</translation>
 <translation id="3738166223076830879">Quản trị viên quản lý trình duyệt của bạn.</translation>
 <translation id="3740319564441798148">Xe buýt và tàu đường dài</translation>
-<translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
+<translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
 <translation id="3744286742364977428">Các tệp bạn tải xuống được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: các tệp này có thể được quét để tìm dữ liệu nhạy cảm hoặc phần mềm độc hại và có thể được lưu trữ dựa trên chính sách của công ty.</translation>
 <translation id="3744899669254331632">Bạn không thể truy cập <ph name="SITE" /> ngay bây giờ vì trang web này đã gửi thông tin đăng nhập hỗn độn mà Chromium không thể xử lý. Lỗi mạng và các cuộc tấn công thường chỉ diễn ra tạm thời nên trang này có thể sẽ hoạt động sau.</translation>
 <translation id="3748148204939282805">Những kẻ tấn công trên <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> có thể đánh lừa bạn làm việc gì đó nguy hiểm như cài đặt phần mềm hoặc tiết lộ thông tin cá nhân (ví dụ: mật khẩu, số điện thoại hoặc thẻ tín dụng). <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1191,7 +1191,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3906954721959377182">Máy tính bảng</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Bạn có thể thay đổi quyết định bất cứ lúc nào trong phần cài đặt Chrome</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Chrome tự động xoá các trang web đã tồn tại hơn 30 ngày. Trang web bạn truy cập lại có thể xuất hiện lại trong danh sách. Bạn cũng có thể ngăn một trang web đề xuất quảng cáo cho bạn và tắt quảng cáo do trang web gợi ý bất cứ lúc nào trong phần cài đặt Chrome.</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Chrome tự động xoá các trang web mà đã hơn 30 ngày bạn không truy cập. Những trang web bạn truy cập lại có thể xuất hiện lại trong danh sách. Bạn cũng có thể ngăn một trang web đề xuất quảng cáo cho bạn và tắt quảng cáo do trang web gợi ý bất cứ lúc nào trong phần cài đặt Chrome.</translation>
 <translation id="3921869355029467742">Nhập mã bảo mật của bạn</translation>
 <translation id="3927932062596804919">Từ chối</translation>
 <translation id="393316646445601645">Internet và viễn thông</translation>
@@ -1673,6 +1673,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5045550434625856497">Mật khẩu sai</translation>
 <translation id="5051305769747448211">Hài kịch trực tiếp</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Để gửi tệp này bằng tính năng Chia sẻ lân cận, hãy giải phóng dung lượng (<ph name="DISK_SPACE_SIZE" />) trên thiết bị của bạn}other{Để gửi các tệp này bằng tính năng Chia sẻ lân cận, hãy giải phóng dung lượng (<ph name="DISK_SPACE_SIZE" />) trên thiết bị của bạn}}</translation>
+<translation id="5060419232449737386">Cài đặt phụ đề</translation>
 <translation id="5060483733937416656">Bạn đã chọn xác minh với Windows Hello trên các trang web sử dụng <ph name="PROVIDER_ORIGIN" />. Nhà cung cấp này có thể đã lưu trữ thông tin về phương thức thanh toán của bạn mà bạn có thể <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Ý của bạn là <ph name="LOOKALIKE_DOMAIN" /> phải không?</translation>
 <translation id="5066056036849835175">Danh sách tài liệu đã in</translation>
@@ -2565,7 +2566,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7304030187361489308">Cao</translation>
 <translation id="7304562222803846232">Quản lý chế độ cài đặt quyền riêng tư của Tài khoản Google</translation>
 <translation id="7305756307268530424">Bắt đầu tốc độ chậm hơn</translation>
-<translation id="7308436126008021607">đồng bộ hóa dưới nền</translation>
+<translation id="7308436126008021607">đồng bộ hoá trong nền</translation>
 <translation id="7310392214323165548">Thiết bị sẽ sớm khởi động lại</translation>
 <translation id="7311244614769792472">Không tìm thấy kết quả nào</translation>
 <translation id="7319430975418800333">A3</translation>

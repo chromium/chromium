@@ -592,6 +592,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1506187449813838456">Rrit tonin</translation>
 <translation id="1507170440449692343">Për këtë faqe është bllokuar qasja te kamera.</translation>
 <translation id="1507246803636407672">&amp;Hidhi poshtë</translation>
+<translation id="1508931164824684991">Sajtet mund të përdorin JavaScript</translation>
 <translation id="1509163368529404530">&amp;Restauro grupin</translation>
 <translation id="1509281256533087115">Qasu në çdo <ph name="DEVICE_NAME_AND_VENDOR" /> përmes USB</translation>
 <translation id="1510238584712386396">Nisësi</translation>
@@ -844,6 +845,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1708291623166985230">Zona e qasjes për internet u çaktivizua</translation>
 <translation id="1708338024780164500">(Joaktive)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Mos e shfaq kur të përfundojnë shkarkimet</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (origjinal)</translation>
 <translation id="1709217939274742847">Zgjidh një biletë për ta përdorur për vërtetim. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Cilësimet e rrjetit</translation>
@@ -1664,6 +1666,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2398546389094871088">Kryerja e Powerwash për pajisjen tënde nuk do t'i heqë profilet e kartës eSIM. Shko te <ph name="LINK_BEGIN" />Cilësimet e celularit<ph name="LINK_END" /> për t'i hequr këto profile në mënyrë manuale.</translation>
 <translation id="2399699884460174994">Njoftimet janë të aktivizuara</translation>
 <translation id="2399939490305346086">Të dhënat e identifikimit të çelësit të sigurisë</translation>
+<translation id="2400323785194108001">Mos e çaktivizo asnjëherë këtë sajt</translation>
 <translation id="2400664245143453337">Kërkohet përditësimi i menjëhershëm</translation>
 <translation id="2402226831639195063">Tonet</translation>
 <translation id="2406153734066939945">Të fshihet ky profil dhe të dhënat e tij?</translation>
@@ -1979,6 +1982,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2673135533890720193">Lexo historikun e shfletimit</translation>
 <translation id="2674764818721168631">Joaktive</translation>
 <translation id="2675570801872027281">Gabim gjatë heqjes së Bruschetta. Provo përsëri.</translation>
+<translation id="2676084251379299915">Kjo shtesë është çaktivizuar nga politika e ndërmarrjes sepse ajo nuk ofrohet më në "Dyqanin e uebit të Chrome".</translation>
 <translation id="267708982776801183">Filtri i ngjyrës së kuqe - jeshile (dobësi me ngjyrën e kuqe, protanomali)</translation>
 <translation id="2678063897982469759">Aktivizoje përsëri</translation>
 <translation id="2678100101831051676">Nuk mund të transmetohet.</translation>
@@ -1987,6 +1991,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2682498795777673382">Përditësim nga prindi</translation>
 <translation id="2683638487103917598">Dosja u sistemua</translation>
 <translation id="2684004000387153598">Për të vazhduar, kliko te "Në rregull" dhe më pas kliko te "Shto person" për të krijuar një profil të ri për adresën tënde të email-it.</translation>
+<translation id="2685193395980129388">Lejohet - <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="2687407218262674387">Kushtet e shërbimit të Google</translation>
 <translation id="2687621393791886981">Më pyet më vonë</translation>
@@ -2075,6 +2080,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2755349111255270002">Rivendose këtë <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Menaxho veçoritë e qasshmërisë</translation>
 <translation id="275662540872599901">ekrani joaktiv</translation>
+<translation id="2756936198272359372">Nuk lejohen të përdorin JavaScript</translation>
 <translation id="2757161511365746634">Shiko printerinView printer</translation>
 <translation id="2757338480560142065">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Nuk u morën rezultate kërkimi për "<ph name="SEARCH_QUERY" />"</translation>
@@ -2107,6 +2113,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Shtesat nuk lejohen në këtë sajt</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
+<translation id="2783024642731649028">1 artikull në karrocën tënde me <ph name="DISCOUNT_TEXT" /> nga <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, shikuar <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">U shkarkua</translation>
 <translation id="2783321960289401138">Krijo një shkurtore...</translation>
 <translation id="2783829359200813069">Zgjidh llojet e enkriptimit</translation>
@@ -2889,6 +2896,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3496213124478423963">Zvogëlo</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (nuk është zgjedhur)</translation>
 <translation id="3496689104192986836">Niveli i baterisë: <ph name="PERCENTAGE" />%</translation>
+<translation id="3496995426334945408">Sajtet përdorin zakonisht JavaScript për të shfaqur veçoritë ndërvepruese, si p.sh. videolojëra ose formularë uebi</translation>
 <translation id="3497501929010263034">Pajisja USB nga <ph name="VENDOR_NAME" /> (produkti <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Ndaje vizatimin Doodle</translation>
 <translation id="3500417806337761827">Gabim në montimin e ndarjes. Janë montuar tashmë shumë ndarje SMB.</translation>
@@ -2933,6 +2941,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="354060433403403521">Adaptor AC</translation>
 <translation id="354068948465830244">Kjo mund të lexojë dhe të ndryshojë të dhënat e sajtit</translation>
 <translation id="3541823293333232175">U caktua</translation>
+<translation id="354204985370574425">Mos e çaktivizo asnjëherë këtë sajt</translation>
 <translation id="3543393733900874979">Përditësimi dështoi (gabim: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Nënshkrimi X9.62 ECDSA me SHA-512</translation>
 <translation id="3544058026430919413">Një kompani mund të përcaktojë një grup sajtesh që mund të përdorin kukit për ta ndarë aktivitetin tënd te grupi. Kjo është joaktive në modalitetin "e fshehtë".</translation>
@@ -3827,6 +3836,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4324577459193912240">Skedari i paplotë</translation>
 <translation id="4325237902968425115">Po çinstalohet <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">Siguria më e fortë e Chrome bën më shumë për të të mbrojtur nga sajtet e uebit, shkarkimet dhe shtesat e rrezikshme</translation>
+<translation id="4326484226728068206">Artikujt në karrocën tënde me <ph name="DISCOUNT_TEXT" /> nga <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, shikuar <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Ujë me akull</translation>
 <translation id="4330387663455830245">Asnjëherë mos e përkthe gjuhën <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Konfiguro "Kontrollet prindërore"</translation>
@@ -4188,6 +4198,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4647090755847581616">&amp;Mbylle skedën</translation>
 <translation id="4647283074445570750">Hapi <ph name="CURRENT_STEP" /> nga <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Lejet e pamjaftueshme</translation>
+<translation id="4650037136970677721">Memoria e kursyer</translation>
 <translation id="4650591383426000695">Shkëput telefonin tënd nga <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Komponenti në linjë me burimet e modalitetit të demonstrimit nuk mund të ngarkohej.</translation>
 <translation id="4651921906638302153">Nuk mund të identifikohesh me këtë llogari</translation>
@@ -4422,6 +4433,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4863702650881330715">Zgjero përputhshmërinë</translation>
 <translation id="4863769717153320198">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /> (e parazgjedhur)</translation>
 <translation id="4864805589453749318">Zgjidh prindin që po jep lejen për shtimin e një llogarie shkolle.</translation>
+<translation id="486505726797718946">Memoria e kursyer</translation>
 <translation id="486635084936119914">Hap automatikisht lloje të caktuara të skedarëve pas shkarkimit</translation>
 <translation id="4868281708609571334">Mësoje "Asistentin e Google" të njohë zërin e <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Ky dialog nuk është aktualisht në fokus. Shtyp Command-Shift-Option dhe A për të fokusuar këtë dialog.</translation>
@@ -4514,6 +4526,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4940448324259979830">Kjo llogari menaxhohet nga <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Rezervo madhësinë e diskut</translation>
 <translation id="4941074198479265146">Sajtet lidhen zakonisht me pajisjet MIDI për veçoritë për krijimin dhe modifikimin e muzikës</translation>
+<translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> artikuj në karrocën tënde me <ph name="DISCOUNT_TEXT" /> nga <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, shikuar <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Përdor urdhrin e kësaj pajisjeje gjatë regjistrimit të pajisjes për menaxhimin e ndërmarrjes:</translation>
 <translation id="4941627891654116707">Madhësia e shkrimit</translation>
 <translation id="4941963255146903244">Shiko fotografitë, mediat dhe aplikacionet e telefonit tënd</translation>
@@ -5469,6 +5482,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5832970156002835240">Lejo në të gjitha sajtet</translation>
 <translation id="5833397272224757657">Përdor për personalizim përmbajtjen e faqeve që ti viziton, si dhe aktivitetin dhe bashkëveprimet nga shfletuesi</translation>
 <translation id="5833726373896279253">Këto cilësime mund të modifikohen vetëm nga zotëruesi:</translation>
+<translation id="5833899990800318936">Mos lejo që sajtet të përdorin JavaScript</translation>
 <translation id="583431638776747">Sajti nuk ofrohej</translation>
 <translation id="5834581999798853053">Rreth <ph name="TIME" /> minuta të mbetura</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> ka qasje te pajisjet HID}=2{Shtesat që kanë qasje te pajisjet: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Shtesat që kanë qasje te pajisjet: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} të tjera}}</translation>
@@ -5699,6 +5713,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - pajisja USB e lidhur</translation>
 <translation id="6027945736510816438">Mos dëshiron të thuash <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Shto gjurmë gishti</translation>
+<translation id="6030719887161080597">Menaxho informacionet e përdorura nga sajtet për të matur performancën e reklamave</translation>
 <translation id="6031600495088157824">Opsionet e hyrjes në shiritin e veglave</translation>
 <translation id="6032715498678347852">Për të lejuar qasjen e një shtese te ky sajt, kliko te shtesa.</translation>
 <translation id="6032912588568283682">Sistemi i skedarëve</translation>
@@ -5933,6 +5948,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="623755660902014047">Modaliteti i leximit</translation>
 <translation id="6238767809035845642">Teksti i ndarë nga pajisje tjetër</translation>
 <translation id="6238923052227198598">Mbaj shënimin më të fundit në ekranin e kyçjes</translation>
+<translation id="6238982280403036866">Lejohen të përdorin JavaScript</translation>
 <translation id="6239558157302047471">Ringarko &amp;kornizën</translation>
 <translation id="6240821072888636753">Pyet çdo herë</translation>
 <translation id="6241530762627360640">Qasu tek informacionet për pajisjet me Bluetooth të çiftuara me sistemin tënd dhe zbulo pajisjet me Bluetooth në afërsi.</translation>
@@ -6076,6 +6092,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6378392501584240055">Hape në rrjetet e Wi-Fi</translation>
 <translation id="6380143666419481200">Prano dhe vazhdo</translation>
 <translation id="6382958439467370461">Nuk ka shkurtore joaktive</translation>
+<translation id="6383382161803538830">Modaliteti i leximit nuk ofrohet në këtë faqe</translation>
 <translation id="638418309848716977">Lidhjet e mbështetura</translation>
 <translation id="6384275966486438344">Ndryshoji cilësimet e kërkimit në: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grup pa emër - 1 skedë}other{Grup pa emër - # skeda}}</translation>
@@ -6472,6 +6489,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6729192290958770680">Fut emrin e përdoruesit</translation>
 <translation id="6731320427842222405">Kjo mund të zgjasë disa minuta</translation>
 <translation id="6733620523445262364">"<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Shfaq kukit dhe të dhëna të tjera të faqes...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737393581255281855">Të pastrohen të dhënat e shfaqura?</translation>

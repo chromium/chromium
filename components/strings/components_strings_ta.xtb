@@ -1030,6 +1030,7 @@
 <translation id="3531780078352352885">பணித் தாள்கள்</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> உங்கள் மைக்ரோஃபோனைப் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="3533328374079021623">அஞ்சல் பெட்டி 5</translation>
+<translation id="3536227077203206203">இந்த முறை அனுமதி வழங்கப்பட்டது</translation>
 <translation id="3537165859691846083">லெட்டர் பிளஸ்</translation>
 <translation id="3542628208405253498">கார்டின் படம்</translation>
 <translation id="3542768452570884558">புதிய சாளரத்தில் இணைப்பைத் திற</translation>
@@ -2448,6 +2449,7 @@
 <translation id="7030436163253143341">தவறான சான்றிதழ்</translation>
 <translation id="7031646650991750659">நீங்கள் நிறுவியுள்ள Google Play ஆப்ஸ்</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. உங்கள் Google கணக்கின் தனியுரிமை அமைப்புகளை நிர்வகிக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
+<translation id="7044081119134178347">இந்த முறை கேமராவிற்கான அனுமதி வழங்கப்பட்டது</translation>
 <translation id="7048095965575426564">ஐரோப்பிய ஃபேன்ஃபோல்ட்</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" />ஐ அடைய முயற்சித்துள்ளீர்கள், சேவையகம் வழங்கிய சான்றிதழ் நம்புவதற்கு சாத்தியமற்ற நீண்ட செல்லுபடிக்காலத்தைக் கொண்டுள்ளது.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{இந்தக் கார்டை இப்போது சேமிக்க முடியவில்லை}other{இந்தக் கார்டுகளை இப்போது சேமிக்க முடியவில்லை}}</translation>
@@ -3040,6 +3042,7 @@
 <translation id="8416694386774425977">நெட்வொர்க் உள்ளமைவு தவறானது மேலும் அதை இறக்குமதி செய்ய முடியவில்லை.
 கூடுதல் விவரங்கள்:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">இந்த முறை மைக்ரோஃபோனுக்கான அனுமதி வழங்கப்பட்டது</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 மிமீ</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
@@ -3095,6 +3098,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{அனுமதியை மீட்டமை}other{அனுமதிகளை மீட்டமை}}</translation>
 <translation id="8555010941760982128">செக்-அவுட்டின்போது இந்தக் குறியீட்டைப் பயன்படுத்துங்கள்</translation>
 <translation id="8557066899867184262">உங்கள் கார்டின் பின்புறத்தில் CVC எண் இருக்கும்.</translation>
+<translation id="8558347880669160417">இந்த முறை கேமரா மற்றும் மைக்ரோஃபோனுக்கான அனுமதி வழங்கப்பட்டது</translation>
 <translation id="8559762987265718583">உங்கள் சாதனத்தின் தேதி மற்றும் நேரம் (<ph name="DATE_AND_TIME" />) தவறாக உள்ளதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
 <translation id="8564182942834072828">தனித்தனி ஆவணங்கள்/தொகுக்கப்படாத நகல்கள்</translation>
 <translation id="8564985650692024650">பிற தளங்களில் உங்கள் <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> கடவுச்சொல்லை மீண்டும் பயன்படுத்தினால், அதை மீட்டமைக்கும்படி Chromium பரிந்துரைக்கிறது.</translation>
@@ -3211,6 +3215,7 @@
 <translation id="8870494189203302833">அதே வரிசையில் கீழ்நோக்கிய பாணி</translation>
 <translation id="8870700989640064057">ரகசிய ஃபைலை அச்சிடவா?</translation>
 <translation id="8871553383647848643">உலாவியின் தோற்றத்தைப் பிரத்தியேகமாக்கும்</translation>
+<translation id="8871603420762394026">விளம்பரங்களின் செயல்திறனை அளவிட தளங்களுக்கு உதவ, அவற்றுக்கு இடையே Chrome இப்போது மிகக் குறைவான தகவல்களையே (எ.கா. உங்களுக்கு விளம்பரம் எப்போது காட்டப்பட்டது) பகிர்ந்துகொள்கிறது.</translation>
 <translation id="8874824191258364635">சரியான கார்டு எண்ணை உள்ளிடவும்</translation>
 <translation id="8876033571432926051">சிம்பிள் கேம்கள்</translation>
 <translation id="8877780815363510165">மீன்பிடித்தல்</translation>
@@ -3365,6 +3370,7 @@
 <translation id="949314938206378263">இந்தத் தளத்தைப் பார்வையிட வேண்டும் எனக் கேட்டுள்ளீர்கள். Family Link மூலம் உங்கள் பெற்றோர் பதிலளிக்கலாம்.</translation>
 <translation id="950736567201356821">டிரிப்பில் பஞ்ச் டாப்</translation>
 <translation id="961663415146723894">பைண்டு பாட்டம்</translation>
+<translation id="961930410699694996">இந்த முறை இருப்பிட அனுமதி வழங்கப்பட்டது</translation>
 <translation id="962484866189421427">இந்த உள்ளடக்கம், வேறொரு பிரபல ஆப்ஸ் போலத் தோற்றமளிக்கக்கூடிய அல்லது உங்களைக் கண்காணிக்கப் பயன்படுத்தக்கூடிய தரவைச் சேகரிக்கும் போலியான ஆப்ஸை நிறுவ முயலலாம். <ph name="BEGIN_LINK" />பரவாயில்லை, பக்கத்தைக் காட்டு<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">எல்லாப் பயனர்களுக்கும்</translation>
 <translation id="964050462028070434">கடவுச்சொற்களையும் கடவுக்குறியீடுகளையும் நிர்வகியுங்கள்…</translation>

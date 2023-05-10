@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Nelze přeložit název DNS</translation>
 <translation id="1018656279737460067">Zrušeno</translation>
 <translation id="1022433422498218992">Obecné ovládací prvky</translation>
+<translation id="1022628058306505708">Plynoucí Země</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Další akce</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
 <translation id="2940811910881150316">Zařízení nelze otestovat. Znovu otevřete víko.</translation>
+<translation id="2981143481017883351">Jsou k dispozici exkluzivní položky pro Chromebooky</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017079585324758401">Pozadí</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
+<translation id="3386675685417744672">Exkluzivně na Chromeboocích</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">UPOZORNĚNÍ</translation>
 <translation id="4054683689023980771">Stahování obrázku</translation>
 <translation id="4060260348856573701">Nový přístupový bod (APN)</translation>
+<translation id="4079743696465895866">Vybrat umělecké dílo dostupné pouze na Chromeboocích</translation>
 <translation id="4093865285251893588">Profilová fotka</translation>
 <translation id="409427325554347132">Uložit podrobnosti testu</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapacita baterie se používáním snižuje</translation>
 <translation id="6191293864534840972">Názvové servery nemají správný formát</translation>
+<translation id="6205145102504628069">Plynoucí oblaka</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Zavřít režim celé obrazovky</translation>
 <translation id="6223752125779001553">Nejsou k dispozici žádné skenery</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Přizpůsobení</translation>
 <translation id="6500818810472529210">Zobrazit výsledek ve Vyhledávání Google</translation>
 <translation id="650266656685499220">Pokud chcete vytvořit alba, přejděte do Fotek Google</translation>
+<translation id="6505750420152840539">Od úsvitu do setmění</translation>
 <translation id="6516990319416533844">Pokud chcete otestovat rychlost nabíjení baterie, nechte ji po krátkou dobu vybíjet</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">Přizpůsobit tapetě</translation>

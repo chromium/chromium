@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Не може да се одреди со DNS</translation>
 <translation id="1018656279737460067">Откажано</translation>
 <translation id="1022433422498218992">Општи контроли</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Достапна е нова функција. Користете го копчето со стрелка нагоре за да дознаете повеќе.</translation>
 <translation id="1059913517121127803">Не можеше да се започне со скенирање</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Повеќе дејства</translation>
 <translation id="2926057806159140518">Внесете корисничко име и лозинка или скенирајте ваш QR-код</translation>
 <translation id="2940811910881150316">Не можете да го тестирате уредот. Отворете го капакот повторно за да тестирате.</translation>
+<translation id="2981143481017883351">Сега се достапни средства ексклузивни за Chromebook</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3017079585324758401">Заднина</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Прозорци</translation>
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
+<translation id="3386675685417744672">Ексклузивно за Chromebook</translation>
 <translation id="3404249063913988450">Овозможете го заштитникот на екранот</translation>
 <translation id="3413935475507503304">За да продолжите со ажурирањето, кликнете „Следно“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">ПРЕДУПРЕДУВАЊЕ</translation>
 <translation id="4054683689023980771">Сликата се презема</translation>
 <translation id="4060260348856573701">Нов APN</translation>
+<translation id="4079743696465895866">Изберете постер ексклузивен за Chromebook</translation>
 <translation id="4093865285251893588">Профилна слика</translation>
 <translation id="409427325554347132">Зачувај детали од тестот</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Капацитетот на батеријата се намалува со користењето</translation>
 <translation id="6191293864534840972">Неправилно форматирани сервери за име</translation>
+<translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Излези од прозорецот на цел екран</translation>
 <translation id="6223752125779001553">Нема достапни скенери</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Приспособување</translation>
 <translation id="6500818810472529210">Видете го резултатот во „Пребарување на Google“</translation>
 <translation id="650266656685499220">За да создадете албум, одете во „Фотографии на Google“</translation>
+<translation id="6505750420152840539">Од зора до мрак</translation>
 <translation id="6516990319416533844">За да ја тестирате брзината на полнење на батеријата, оставете ја батеријата да се празни краток период</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">Совпаѓање со тапетот</translation>

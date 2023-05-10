@@ -87,6 +87,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2467438592969358367">Gustong i-export ng Google Chrome ang iyong mga password. I-type ang password mo sa Windows para payagan ito.</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
 <translation id="2534507159460261402">Google Pay (kinopya sa Chrome)</translation>
+<translation id="2556847002339236023">Isinasara ng iyong organisasyon ang Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Na-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="2559253115192232574">Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chrome na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo. Puwedeng magbahagi ng hanggang 3 interes ang Chrome.</translation>
 <translation id="2563121210305478421">Muling ilunsad ang Chrome?</translation>
 <translation id="2574930892358684005">Naka-sign in na si <ph name="EXISTING_USER" /> sa profile sa Chrome na ito. Para panatilihing hiwalay ang iyong pag-browse, puwedeng gumawa ang Chrome ng sarili mong profile para sa iyo.</translation>
@@ -275,6 +276,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6113794647360055231">Mas mahusay na ang Chrome</translation>
 <translation id="6145313976051292476">Magbukas ng mga PDF sa Chrome</translation>
 <translation id="6155960517327665396">Pinabilis ng Memory Saver ang Chrome</translation>
+<translation id="6157638032135951407">Nagde-delete ang iyong organisasyon ng data ng Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inbound na panuntunan para sa Google Chrome upang payagan ang trapiko ng mDNS.</translation>
@@ -290,6 +292,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6418662306461808273">Lumipat sa kasalukuyang profile sa Chrome?</translation>
 <translation id="648319183876919572">Mas maraming magagawa ang Pinahusay na Ligtas na Pag-browse para protektahan ka laban sa mga mapanganib na website at download</translation>
 <translation id="6493527311031785448">Sinusubukan ng Google Chrome na <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Awtomatikong isinara ang Chrome</translation>
 <translation id="6506909944137591434">Kailangan ng Chrome ng pahintulot sa camera para makagawa ng 3D na mapa ng iyong kapaligiran</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Sa Google Password Manager sa device na ito</translation>
@@ -326,6 +329,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7155997830309522122">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chrome para tumugma ito sa bago mong password.</translation>
 <translation id="7161904924553537242">Maligayang pagdating sa Google Chrome</translation>
 <translation id="7177959540995930968">Puwede kang matuto pa tungkol sa mga feature na ito sa mga setting ng Chrome.</translation>
+<translation id="7193885263065350793">Isinasara ng iyong organisasyon ang Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Google Chrome. Permanenteng mauugnay ang iyong data sa Chrome, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. Maaari ka ring gumawa ng bagong profile upang ihiwalay ang iyong umiiral na data sa Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Ginagamit ang wikang ito para ipakita ang Google Chrome UI</translation>
 <translation id="7296210096911315575">Mahalagang impormasyon sa paggamit at kaligtasan</translation>

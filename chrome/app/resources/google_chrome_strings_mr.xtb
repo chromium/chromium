@@ -86,6 +86,7 @@
 <translation id="2467438592969358367">Google Chrome ला तुमचे पासवर्ड निर्यात करायचे आहेत. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
 <translation id="2534507159460261402">Google Pay (Chrome वर कॉपी केले)</translation>
+<translation id="2556847002339236023"><ph name="TIMEOUT_DURATION" /> कालावधीसाठी Chrome वापरले जात नाही, तेव्हा तुमची संस्था ते बंद करते. ब्राउझिंग डेटा हटवला गेला. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो.</translation>
 <translation id="2559253115192232574">त्यानंतर, तुम्ही पाहता त्या जाहिराती पर्सनलाइझ करण्यासाठी तुम्ही भेट देता ती साइट Chrome कडे तुमची स्वारस्ये पाहण्याची अनुमती मागू शकते. Chrome कमाल तीन स्वारस्ये शेअर करू शकते.</translation>
 <translation id="2563121210305478421">Chrome पुन्हा लाँच करायचे का?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, Chrome तुमच्याकरिता तुमची स्वतःची प्रोफाइल तयार करू शकते.</translation>
@@ -273,6 +274,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6113794647360055231">Chrome आता उत्कृष्ट झाले आहे</translation>
 <translation id="6145313976051292476">Chrome मध्ये PDF उघडा</translation>
 <translation id="6155960517327665396">मेमरी सेव्हरने Chrome ला आणखी जलद केले आहे</translation>
+<translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> कालावधीसाठी Chrome डेटा वापरला जात नाही, तेव्हा तुमची संस्था तो हटवते. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
 <translation id="6235018212288296708">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome साठी अंतर्गामी नियम.</translation>
@@ -288,6 +290,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6418662306461808273">सध्याच्या Chrome प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="648319183876919572">वर्धित सुरक्षित ब्राउझिंग धोकादायक वेबसाइट आणि डाउनलोडपासून तुमचे संरक्षण करण्यासाठी बरेच काही करते</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" /> याचा प्रयत्न करत आहे</translation>
+<translation id="6497147134301593682">Chrome आपोआप बंद झाले</translation>
 <translation id="6506909944137591434">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमच्या कॅमेराची परवानगी आवश्यक आहे</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
 <translation id="659498884637196217">या डिव्हाइसवरील Google पासवर्ड व्यवस्थापक मध्ये</translation>
@@ -324,6 +327,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7155997830309522122">कृपया Chrome मध्ये सेव्ह केलेला तुमचा पासवर्ड संपादित करा जेणेकरून तो नवीन पासवर्डशी जुळेल.</translation>
 <translation id="7161904924553537242">Google Chromeमध्ये तुमचे स्वागत आहे</translation>
 <translation id="7177959540995930968">तुम्ही Chrome सेटिंग्जमध्ये या वैशिष्ट्यांबाबत अधिक जाणून घेऊ शकता.</translation>
+<translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> कालावधीसाठी Chrome वापरले जात नाही, तेव्हा तुमची संस्था ते बंद करते.</translation>
 <translation id="7242029209006116544">तुम्ही एका व्यवस्थापित खात्यासह साइन इन करत आहात आणि तुमच्या Google Chrome प्रोफाइलवर त्याच्या ॲडमिनिस्ट्रेटरला नियंत्रण देत आहात. तुमचा Chrome डेटा, जसे की तुमचे अ‍ॅप्स, बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज <ph name="USER_NAME" /> वर कायमच्या बद्ध होतील. तुम्ही Google खाती डॅशबोर्डद्वारे हा डेटा हटवण्यात सक्षम व्हाल, परंतु तुम्ही दुसर्‍या खात्यासह हा डेटा संबद्ध करण्यात सक्षम असणार नाही. तुम्ही तुमचा विद्यमान Chrome डेटा वेगळा ठेवण्यासाठी एक नवीन प्रोफाइल वैकल्पिकपणे तयार करू शकता. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">ही भाषा Google Chrome UI दाखवण्यासाठी वापरली जाते</translation>
 <translation id="7296210096911315575">महत्त्वाचा वापर आणि सुरक्षा माहिती</translation>

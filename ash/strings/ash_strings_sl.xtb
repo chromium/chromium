@@ -56,6 +56,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="121097972571826261">Naprej po besedo</translation>
 <translation id="1217633719248931900">Odpri aplikacijo</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacija Trgovina Play</translation>
+<translation id="1219309685806246869">Nazaj na <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Chromebook je zaklenjen zaradi znane težave. Prijavili se boste lahko čez toliko časa: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ustavi izbiranje</translation>
 <translation id="1235458158152011030">Znana omrežja</translation>
@@ -459,6 +460,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="316086887565479535">Nepodprte aplikacije v predlogi</translation>
 <translation id="3161500364292033097">Zapri namizje in okna</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vrača napravo <ph name="DEVICE_TYPE" /> na prejšnjo različico. Naprava se bo ponastavila in vaši podatki bodo izbrisani.</translation>
+<translation id="3171170659304083361">Nastavitve načinov vnosa</translation>
 <translation id="3181441307743005334">Vnovičen zagon lahko traja nekaj časa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Vzpostavljena je povezava z eno napravo}one{Vzpostavljena je povezava z # napravo}two{Vzpostavljena je povezava z # napravama}few{Vzpostavljena je povezava s # napravami}other{Vzpostavljena je povezava s # napravami}}</translation>
 <translation id="320207200541803018">Nastavitev merilnika časa</translation>
@@ -1059,6 +1061,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5881540930187678962">Nastavitve telefonsko središče pozneje</translation>
 <translation id="5881663018261910378">Izklopljeno</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> je dodeljeno namizju <ph name="DESK_TITLE" /> in njegova dodelitev je preklicana za vsa druga namizja.</translation>
+<translation id="588817334757907802">Odpiranje datoteke v brskalniku Chrome</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="589817443623831496">Točkovno iskanje</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -1110,6 +1113,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6074087755403037157">Preizkusna različica (beta)</translation>
 <translation id="6093867385179428431">Onemogočil skrbnik</translation>
 <translation id="6095008505822982596">Hitrost govora</translation>
+<translation id="6095425951508823973">Dodajanje povezavo s ponudnikom <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
@@ -1589,6 +1593,7 @@ Nova namestitev</translation>
 <translation id="8349964124165471584">Odpiranje povezave v novem oknu</translation>
 <translation id="8351131234907093545">Ustvarjanje zapiska</translation>
 <translation id="8364673525741149932">Preklop Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> je v uporabi.</translation>
 <translation id="8369166482916924789">Shranjeno namizje, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Naprej po črko</translation>
 <translation id="8371991222807690464">Delovanje zunanje dodatne opreme je v načinu za goste morda omejeno.</translation>

@@ -56,6 +56,7 @@
 <translation id="121097972571826261">በየቃሉ ወደፊት</translation>
 <translation id="1217633719248931900">ወደ መተግበሪያ ይሂዱ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />፣ የPlay መደብር መተግበሪያ</translation>
+<translation id="1219309685806246869">ወደ <ph name="APP_TITLE" /> ተመለስ።</translation>
 <translation id="1225748608451425081">የእርስዎ Chromebook በአንድ የታወቀ ችግር ምክንያት ተቆልፏል። ከሚከተለው ያህል ጊዜ በኋላ ወደ መለያ መግባት ይችላሉ፦ <ph name="TIME_LEFT" />።</translation>
 <translation id="1229194443904279055">መምረጥ ያቁሙ</translation>
 <translation id="1235458158152011030">የታወቁ አውታረ መረቦች</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">በቅንብር ደንብ ውስጥ የማይደገፉ መተግበሪያዎች</translation>
 <translation id="3161500364292033097">ዴስክን እና መስኮቶችን ዝጋ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> እየመለሰው ነው። መሣሪያዎ ዳግም ይጀመራል እና ሁሉም ውሂብ ይሰረዛል።</translation>
+<translation id="3171170659304083361">የግቤት ስልቶች ቅንብሮች</translation>
 <translation id="3181441307743005334">ዳግም ማስነሳት ትንሽ ጊዜ ሊወስድ ይችላል</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ከአንድ መሣሪያ ጋር ተገናኝቷል}one{ከ# መሣሪያዎች ጋር ተገናኝቷል}other{ከ# መሣሪያዎች ጋር ተገናኝቷል}}</translation>
 <translation id="320207200541803018">ሰዓት ቆጣሪ አዘጋጅ</translation>
@@ -1059,6 +1061,7 @@
 <translation id="5881540930187678962">የስልክ መገናኛን በኋላ ላይ ያቀናብሩ</translation>
 <translation id="5881663018261910378">ጠፍቷል</translation>
 <translation id="5887954372087850114">መስኮት <ph name="WINDOW_TITLE" /> ለ<ph name="DESK_TITLE" /> የተመደበ እና ከሌሎች ሁሉም ዴስኮች ተመድቧል</translation>
+<translation id="588817334757907802">በChrome አሳሸ ውስጥ ፋይል ይክፈቱ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="589817443623831496">ነጥብ መቃኘት</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@
 <translation id="6074087755403037157">የቅድመ-ይሁንታ ሰርጥ</translation>
 <translation id="6093867385179428431">በአስተዳዳሪ ተሰናክሏል</translation>
 <translation id="6095008505822982596">የንግግር ፍጥነት</translation>
+<translation id="6095425951508823973">ከ<ph name="PROVIDER" /> ጋር ግንኙነት ያክሉ</translation>
 <translation id="6099678161144790572">ባለፈው ወር ውስጥ አርትዖት ተደርጓል</translation>
 <translation id="6103838137565245112">ሥርዓት</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> የንግግር ፋይሎች ወርደዋል</translation>
@@ -1589,6 +1593,7 @@
 <translation id="8349964124165471584">አገናኝን በአዲስ መስኮት ውስጥ ይክፈቱ</translation>
 <translation id="8351131234907093545">ማስታወሻን ይፍጠሩ</translation>
 <translation id="8364673525741149932">የመደርደሪያ ፓርቲን ቀያይር። <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> በጥቅም ላይ።</translation>
 <translation id="8369166482916924789">የተቀመጠ ዴስክ፣ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">በየፊደሉ ወደፊት</translation>
 <translation id="8371991222807690464">የተቀጥላ ክፍል አፈጻጸም በእንግዳ ሁኔታ ውስጥ ውስን ሊሆን ይችላል።</translation>

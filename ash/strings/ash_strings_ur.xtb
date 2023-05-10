@@ -351,6 +351,7 @@
 <translation id="2620016719323068571">اپنی <ph name="CATEGORY" />، فائلز، ایپس اور بہت کچھ تلاش کریں...</translation>
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
+<translation id="2624588537172718173">آلہ کا آڈیو اور مائیکروفون</translation>
 <translation id="263399434338050016">"تمام منتخب کریں"</translation>
 <translation id="2644422758626431000">ونڈو کو بائیں طرف پن کریں</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -411,6 +412,7 @@
 <translation id="2942350706960889382">ڈاک کردہ میگنیفائر</translation>
 <translation id="2942516765047364088">شیلف پوزیشن</translation>
 <translation id="2946119680249604491">کنکشن شامل کریں</translation>
+<translation id="295852781144570696">آلہ کا آڈیو</translation>
 <translation id="2960314608273155470">کیپچر وضع، <ph name="SOURCE" /> <ph name="TYPE" /> ڈیفالٹ موڈ ہے۔ کی بورڈ نیویگیشن کے لیے ٹیب دبائیں۔</translation>
 <translation id="2961963223658824723">کچھ غلط ہو گیا۔ چند سیکنڈ میں دوبارہ کوشش کریں۔</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -460,6 +462,7 @@
 <translation id="316086887565479535">تمثیل میں غیر تعاون یافتہ ایپس</translation>
 <translation id="3161500364292033097">ڈیسک اور ونڈوز بند کریں</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> آپ کے <ph name="DEVICE_TYPE" /> کو واپس کر رہا ہے۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
+<translation id="3171170659304083361">اندراج کے طریقوں کی ترتیبات</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ایک آلہ سے منسلک ہے}other{# آلات سے منسلک ہے}}</translation>
 <translation id="320207200541803018">ٹائمر سیٹ کریں</translation>
@@ -1112,6 +1115,7 @@
 <translation id="6074087755403037157">بی ٹا چینل</translation>
 <translation id="6093867385179428431">منتظم کی طرف سے غیر فعال کردہ</translation>
 <translation id="6095008505822982596">اسپیچ کی شرح</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> کے ساتھ کنکشن شامل کریں</translation>
 <translation id="6099678161144790572">گزشتہ مہینے میں ترمیم کی</translation>
 <translation id="6103838137565245112">سسٹم</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>

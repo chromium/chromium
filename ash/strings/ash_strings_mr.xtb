@@ -351,6 +351,7 @@
 <translation id="2620016719323068571">तुमचे <ph name="CATEGORY" />, फाइल, अ‍ॅप्स आणि आणखी बरेच काही शोधा...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
+<translation id="2624588537172718173">डिव्हाइस ऑडिओ आणि मायक्रोफोन</translation>
 <translation id="263399434338050016">"सर्व निवडा"</translation>
 <translation id="2644422758626431000">विंडो डावीकडे पिन करा</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -411,6 +412,7 @@
 <translation id="2942350706960889382">डॉक केलेले मॅग्निफायर</translation>
 <translation id="2942516765047364088">शेल्फ स्थिती</translation>
 <translation id="2946119680249604491">कनेक्शन जोडा</translation>
+<translation id="295852781144570696">डिव्हाइस ऑडिओ</translation>
 <translation id="2960314608273155470">कॅप्चर मोड, <ph name="SOURCE" /> <ph name="TYPE" /> हा डीफॉल्ट आहे. कीबोर्ड नेव्हिगेशनसाठी टॅब प्रेस करा.</translation>
 <translation id="2961963223658824723">काहीतरी चूक झाली. काही सेकंदांनी पुन्हा प्रयत्न करा.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -460,6 +462,7 @@
 <translation id="316086887565479535">टेंप्लेटमधील सपोर्ट करत नसलेली ॲप्स</translation>
 <translation id="3161500364292033097">डेस्‍क आणि विंडो बंद करा</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तुमचे <ph name="DEVICE_TYPE" /> मागे घेत आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
+<translation id="3171170659304083361">इनपुट पद्धतींची सेटिंग्ज</translation>
 <translation id="3181441307743005334">रीस्टार्टला थोडा वेळ लागू शकतो</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{डिव्हाइसशी कनेक्ट केले}other{# डिव्हाइसशी कनेक्ट केले}}</translation>
 <translation id="320207200541803018">टायमर सेट करा</translation>
@@ -1060,6 +1063,7 @@
 <translation id="5881540930187678962">नंतर फोन हब सेट करा</translation>
 <translation id="5881663018261910378">बंद आहे</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> विंडो ही <ph name="DESK_TITLE" /> साठी असाइन केली आहे आणि इतर सर्व डेस्कवरून अनअसाइन केली आहे</translation>
+<translation id="588817334757907802">Chrome ब्राउझर मध्ये फाइल उघडा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="589817443623831496">पॉइंट स्कॅनिंग</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1111,6 +1115,7 @@
 <translation id="6074087755403037157">बीटा चॅनल</translation>
 <translation id="6093867385179428431">ॲडमिनने बंद केलेले</translation>
 <translation id="6095008505822982596">स्पीच रेट</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> द्वारे कनेक्शन जोडा</translation>
 <translation id="6099678161144790572">मागील महिन्यात संपादित केलेली</translation>
 <translation id="6103838137565245112">सिस्टीम</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड केल्या आहेत</translation>

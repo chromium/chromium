@@ -56,6 +56,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="121097972571826261">Endavant per paraula</translation>
 <translation id="1217633719248931900">Ves a l'aplicació</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicació de Play Store</translation>
+<translation id="1219309685806246869">Torna a <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
 <translation id="1235458158152011030">Xarxes conegudes</translation>
@@ -459,6 +460,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="316086887565479535">Aplicacions no admeses a la plantilla</translation>
 <translation id="3161500364292033097">Tanca l'escriptori i les finestres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> està tornant el dispositiu <ph name="DEVICE_TYPE" /> a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
+<translation id="3171170659304083361">Configuració dels mètodes d'introducció de text</translation>
 <translation id="3181441307743005334">Pot tardar una estona a reiniciar-se</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connectat a un dispositiu}other{Connectat a # dispositius}}</translation>
 <translation id="320207200541803018">Inicia el temporitzador</translation>
@@ -1059,6 +1061,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5881540930187678962">Configura El meu telèfon més tard</translation>
 <translation id="5881663018261910378">Desactivat</translation>
 <translation id="5887954372087850114">La finestra <ph name="WINDOW_TITLE" /> s'ha assignat a l'escriptori <ph name="DESK_TITLE" /> i s'ha deixat d'assignar a tota la resta d'escriptoris</translation>
+<translation id="588817334757907802">Obre un fitxer al navegador Chrome</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="589817443623831496">Cerca per punt</translation>
 <translation id="5901316534475909376">Maj + Esc</translation>
@@ -1110,6 +1113,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6074087755403037157">Canal Beta</translation>
 <translation id="6093867385179428431">Desactivat per l'administrador</translation>
 <translation id="6095008505822982596">Velocitat de parla</translation>
+<translation id="6095425951508823973">Afegeix una connexió amb <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
@@ -1586,6 +1590,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8349964124165471584">Obre l'enllaç en una finestra nova</translation>
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8364673525741149932">Commutador Grup de prestatges.<ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en ús.</translation>
 <translation id="8369166482916924789">Escriptori desat <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Endavant per lletra</translation>
 <translation id="8371991222807690464">El rendiment perifèric pot estar limitat en el mode de convidat</translation>

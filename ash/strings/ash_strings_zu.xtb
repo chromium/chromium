@@ -351,6 +351,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2620016719323068571">Sesha i-<ph name="CATEGORY" />, amafayela, ama-app akho, nokuningi...</translation>
 <translation id="2620436844016719705">Isistimu</translation>
 <translation id="2621713457727696555">Kuvikelwe</translation>
+<translation id="2624588537172718173">Umsindo wedivayisi nemakrofoni</translation>
 <translation id="263399434338050016">"Khetha konke"</translation>
 <translation id="2644422758626431000">Phina iwindi kwesobunxele</translation>
 <translation id="2645435784669275700">I-ChromeOS</translation>
@@ -411,6 +412,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2942350706960889382">Isikhulisi esidokhiwe</translation>
 <translation id="2942516765047364088">Isimo seshelufu</translation>
 <translation id="2946119680249604491">Engeza ukuxhumeka</translation>
+<translation id="295852781144570696">Umsindo wedivayisi</translation>
 <translation id="2960314608273155470">Imodi Yokuthatha, okuzenzakalelayo ngu-<ph name="SOURCE" /> <ph name="TYPE" />. Chofoza ithebhu yokuzulazula kwekhibhodi.</translation>
 <translation id="2961963223658824723">Kukhona okungahambanga kahle. Zama futhi kumasekhondi ambalwa.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -460,6 +462,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="316086887565479535">Ama-app angasekelwe kusifanekiso</translation>
 <translation id="3161500364292033097">Vala itafula namawindi</translation>
 <translation id="316356270129335934">I-<ph name="MANAGER" /> ibuyisa i-<ph name="DEVICE_TYPE" /> yakho. Idivayisi yakho izosethwa kabusha futhi yonke idatha izosulwa.</translation>
+<translation id="3171170659304083361">Amasethingi ezindlela zokufaka</translation>
 <translation id="3181441307743005334">Ukuqala kabusha kungathatha isikhathi</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Kuxhunywe kudivayisi}one{Kuxhunywe kumadivayisi angu-#}other{Kuxhunywe kumadivayisi angu-#}}</translation>
 <translation id="320207200541803018">Setha isikhathi</translation>
@@ -1112,6 +1115,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="6074087755403037157">Isiteshi se-Beta</translation>
 <translation id="6093867385179428431">Kukhutshazwe ngumphathi</translation>
 <translation id="6095008505822982596">Isilinganiso senkulumo</translation>
+<translation id="6095425951508823973">Faka uxhumano no-<ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Kuhlelwe enyangeni edlule</translation>
 <translation id="6103838137565245112">isistimu</translation>
 <translation id="6114505516289286752">Amafayela wenkulumo ye-<ph name="LANGUAGE" /> alandiwe</translation>

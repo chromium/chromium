@@ -1031,6 +1031,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3531780078352352885">Listy úlohy</translation>
 <translation id="3532844647053365774">Stránka <ph name="HOST" /> chce použít váš mikrofon</translation>
 <translation id="3533328374079021623">Schránka 5</translation>
+<translation id="3536227077203206203">Tentokrát povolit</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Obrázek karty</translation>
 <translation id="3542768452570884558">Otevřít odkaz v novém okně</translation>
@@ -2448,6 +2449,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7030436163253143341">Certifikát není platný</translation>
 <translation id="7031646650991750659">Které aplikace Google Play máte nainstalované</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat nastavení ochrany soukromí v účtu Google</translation>
+<translation id="7044081119134178347">Použití kamery bylo pro tentokrát povoleno</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Pokusili jste se připojit k doméně <ph name="DOMAIN" />, ale server předložil certifikát, který má příliš dlouhé období platnosti a je proto nedůvěryhodný.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Tuto kartu v tuto chvíli nelze uložit}few{Tyto karty v tuto chvíli nelze uložit}many{Tyto karty v tuto chvíli nelze uložit}other{Tyto karty v tuto chvíli nelze uložit}}</translation>
@@ -3039,6 +3041,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8416694386774425977">Konfigurace sítě je neplatná a nelze ji importovat.
 Další podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Použití mikrofonu bylo pro tentokrát povoleno</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Nastavení</translation>
@@ -3094,6 +3097,7 @@ Další podrobnosti:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetovat oprávnění}few{Resetovat oprávnění}many{Resetovat oprávnění}other{Resetovat oprávnění}}</translation>
 <translation id="8555010941760982128">Při placení použijte tento kód</translation>
 <translation id="8557066899867184262">Kód CVC je uveden na zadní straně karty.</translation>
+<translation id="8558347880669160417">Použití kamery a mikrofonu bylo pro tentokrát povoleno</translation>
 <translation id="8559762987265718583">Soukromé připojení k doméně <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nelze navázat, protože máte v zařízení nastaveno chybné datum a čas (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Oddělené dokumenty / nekompletované kopie</translation>
 <translation id="8564985650692024650">Pokud jste heslo organizace <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili na jiném webu, doporučujeme vám ho resetovat.</translation>
@@ -3211,6 +3215,7 @@ Další podrobnosti:
 <translation id="8870494189203302833">Stejné pořadí lícem dolů</translation>
 <translation id="8870700989640064057">Vytisknout důvěrný soubor?</translation>
 <translation id="8871553383647848643">Přizpůsobte si vzhled prohlížeče</translation>
+<translation id="8871603420762394026">Chrome nyní mezi weby sdílí jen velmi omezené informace – například kdy se vám zobrazila reklama, aby weby mohly měřit výkon reklam.</translation>
 <translation id="8874824191258364635">Zadejte platné číslo karty</translation>
 <translation id="8876033571432926051">Nenáročné hry</translation>
 <translation id="8877780815363510165">Rybaření</translation>
@@ -3364,6 +3369,7 @@ Další podrobnosti:
 <translation id="949314938206378263">Chceš navštívit web, ale je třeba povolení. Rodič může odpovědět v aplikaci Family Link.</translation>
 <translation id="950736567201356821">Tři díry nahoře</translation>
 <translation id="961663415146723894">Vazba dole</translation>
+<translation id="961930410699694996">Přístup k poloze byl pro tentokrát povolen</translation>
 <translation id="962484866189421427">Tento obsah by se mohl pokusit instalovat klamavé aplikace, které se vydávají za něco jiného nebo shromažďují data ke sledování vaší aktivity. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Všichni uživatelé</translation>
 <translation id="964050462028070434">Spravovat hesla a přístupové klíče…</translation>

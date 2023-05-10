@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS ਸੰਬੰਧੀ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
 <translation id="1022433422498218992">ਆਮ ਕੰਟਰੋਲ</translation>
+<translation id="1022628058306505708">ਧਰਤੀ ਪ੍ਰਵਾਹ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ਥ੍ਰੈੱਡ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਹੈ, ਹੋਰ ਜਾਣਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1059913517121127803">ਸਕੈਨ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="2926057806159140518">ਆਪਣਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ ਜਾਂ ਆਪਣਾ QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="2940811910881150316">ਡੀਵਾਈਸ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਜਾਂਚ ਕਰਨ ਲਈ ਢੱਕਣ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ।</translation>
+<translation id="2981143481017883351">Chromebook ਲਈ ਖਾਸ ਸੰਪਤੀਆਂ ਹੁਣ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="3008341117444806826">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="3009958530611748826">ਇੱਥੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="3017079585324758401">ਬੈਕਗ੍ਰਾਊਂਡ</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="3369013195428705271">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਆਪਣਾ ਸਾਰਾ ਪ੍ਰਿੰਟ ਇਤਿਹਾਸ ਕਲੀਅਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਤੁਹਾਡੀਆਂ ਚੱਲ ਰਹੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਕਲੀਅਰ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="3386675685417744672">Chromebook ਲਈ ਖਾਸ</translation>
 <translation id="3404249063913988450">ਸਕ੍ਰੀਨ ਸੇਵਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3413935475507503304">ਅੱਪਡੇਟ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਲਈ, 'ਅੱਗੇ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">ਚਿਤਾਵਨੀ</translation>
 <translation id="4054683689023980771">ਚਿੱਤਰ ਡਾਊਨਲੋਡ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="4060260348856573701">ਨਵਾਂ APN</translation>
+<translation id="4079743696465895866">Chromebook ਲਈ ਖਾਸ ਆਰਟਵਰਕ ਚੁਣੋ</translation>
 <translation id="4093865285251893588">ਪ੍ਰੋਫਾਈਲ ਚਿੱਤਰ</translation>
 <translation id="409427325554347132">ਟੈਸਟ ਦੇ ਵੇਰਵੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ਵਰਤੋਂ ਨਾਲ ਬੈਟਰੀ ਦੀ ਸਮਰੱਥਾ ਵਿੱਚ ਕਮੀ ਆਉਂਦੀ ਹੈ</translation>
 <translation id="6191293864534840972">ਨੁਕਸਦਾਰ ਨਾਮ ਸਰਵਰ</translation>
+<translation id="6205145102504628069">ਕਲਾਊਡ ਪ੍ਰਵਾਹ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="6223752125779001553">ਕੋਈ ਸਕੈਨਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">ਵਿਉਂਤਬੱਧਕਰਨ</translation>
 <translation id="6500818810472529210">Google Search ਵਿੱਚ ਨਤੀਜਾ ਦੇਖੋ</translation>
 <translation id="650266656685499220">ਐਲਬਮਾਂ ਬਣਾਉਣ ਲਈ, Google Photos 'ਤੇ ਜਾਓ</translation>
+<translation id="6505750420152840539">ਸਵੇਰ ਤੋਂ ਰਾਤ ਤੱਕ</translation>
 <translation id="6516990319416533844">ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਦਰ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ, ਥੋੜ੍ਹੇ ਸਮੇਂ ਲਈ ਆਪਣੀ ਬੈਟਰੀ ਦੀ ਖਪਤ ਹੋਣ ਦਿਓ</translation>
 <translation id="6517239166834772319">ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="6526200165918397681">ਵਾਲਪੇਪਰ ਦਾ ਮਿਲਾਨ ਕਰੋ</translation>

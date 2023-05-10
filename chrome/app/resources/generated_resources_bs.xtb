@@ -352,6 +352,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1288300545283011870">Svojstva govora</translation>
 <translation id="1289619947962767206">Ova opcija više nije podržana. Da prikažete karticu, koristite <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291119821938122630">Uslovi korištenja usluge za <ph name="MANAGER" /></translation>
+<translation id="1291421198328146277">Vrati tipke na zadano</translation>
 <translation id="1292849930724124745">Umetnite pametnu karticu da ostanete prijavljeni</translation>
 <translation id="1293264513303784526">USB-C uređaj (lijevi priključak)</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
@@ -584,6 +585,7 @@ Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. 
 <translation id="1493892686965953381">Čeka se <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Web lokacije mogu tražiti fontove instalirane na uređaju</translation>
 <translation id="1494429729245089920">Virtuelna mašina <ph name="VM_NAME" /> postoji, ali izgleda da nije važeća <ph name="APP_NAME" /> virtuelna mašina. Kontaktirajte administratora.</translation>
+<translation id="1495201326198374770">Koristi funkcijske tipke kao tipke u gornjem redu Chromebookove tastature</translation>
 <translation id="1495677929897281669">Nazad na karticu</translation>
 <translation id="1498498210836053409">Isključite ljepljivi način rada prilikom uređivanja teksta (Pametni ljepljivi način rada)</translation>
 <translation id="1500297251995790841">Nepoznat uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -597,7 +599,7 @@ Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. 
 <translation id="1506187449813838456">Povećaj visinu tona</translation>
 <translation id="1507170440449692343">Ovoj stranici je blokiran pristup vašoj kameri.</translation>
 <translation id="1507246803636407672">&amp;Odbaci</translation>
-<translation id="1508931164824684991">Web-lokacije mogu upotrebljavati JavaScript</translation>
+<translation id="1508931164824684991">Web lokacije mogu koristiti JavaScript</translation>
 <translation id="1509163368529404530">&amp;Vrati grupu</translation>
 <translation id="1509281256533087115">Pristupiti bilo kojem uređaju <ph name="DEVICE_NAME_AND_VENDOR" /> putem USB-a</translation>
 <translation id="1510238584712386396">Pokretač</translation>
@@ -858,7 +860,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1708291623166985230">Pristupna tačka je onemogućena</translation>
 <translation id="1708338024780164500">(Neaktivan)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708979186656821319">Ne prikazuj kad preuzimanja završe</translation>
+<translation id="1708979186656821319">Ne prikazuj kada se preuzimanja završe</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorna)</translation>
 <translation id="1709217939274742847">Odaberite tiket za autentifikaciju. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Postavke mreže</translation>
@@ -1326,6 +1328,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2105809836724866556">Skriveno: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Broj telefona}one{# broj telefona}few{# broja telefona}other{# brojeva telefona}}</translation>
 <translation id="2110941575868943054">Web lokacije kojima je dozvoljeno pretraživanje Bluetooth uređaja</translation>
+<translation id="2111238878637848860">Držite tipku pokretača da izmjenjujete funkcijske tipke</translation>
 <translation id="211144231511833662">Obrši vrste</translation>
 <translation id="2111670510994270194">Nova kartica s desne strane</translation>
 <translation id="2112554630428445878">Dobro došli, <ph name="USERNAME" /></translation>
@@ -1682,7 +1685,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2398546389094871088">Ako izvršite powerwash uređaja, nećete ukloniti profile eSIM-a. Idite u <ph name="LINK_BEGIN" />postavke mobilnog uređaja<ph name="LINK_END" /> da ručno uklonite te profile.</translation>
 <translation id="2399699884460174994">Obavještenja su uključena</translation>
 <translation id="2399939490305346086">Podaci za prijavu sigurnosnog ključa</translation>
-<translation id="2400323785194108001">Nikad ne deaktiviraj ovu web-lokaciju</translation>
+<translation id="2400323785194108001">Nemoj nikad deaktivirati ovu web lokaciju</translation>
 <translation id="2400664245143453337">Potrebno je odmah ažurirati</translation>
 <translation id="2402226831639195063">Tonovi</translation>
 <translation id="2406153734066939945">Izbrisati ovaj profil i njegove podatke?</translation>
@@ -1998,7 +2001,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2673135533890720193">Čitati vašu historiju pregledanja</translation>
 <translation id="2674764818721168631">Isključeno</translation>
 <translation id="2675570801872027281">Greška prilikom uklanjanja Bruschette. Pokušajte ponovo.</translation>
-<translation id="2676084251379299915">Ovo proširenje onemogućilo je pravilo tvrtke jer više nije dostupno u Chrome web-trgovini.</translation>
+<translation id="2676084251379299915">Ekstenzija je onemogućena prema pravilima preduzeća jer više nije dostupna u Chrome Web trgovini.</translation>
 <translation id="267708982776801183">Crveno-zeleni filter (poremećaj prepoznavanja crvene boje, protanomalija)</translation>
 <translation id="2678063897982469759">Ponovo omogući</translation>
 <translation id="2678100101831051676">Nije moguće emitirati.</translation>
@@ -2007,7 +2010,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2682498795777673382">Roditelj je izvršio ažuriranje</translation>
 <translation id="2683638487103917598">Folder je sortiran</translation>
 <translation id="2684004000387153598">Da nastavite, kliknite na Uredu, a zatim kliknite na Dodaj osobu da kreirate novi profil za svoju adresu e-pošte.</translation>
-<translation id="2685193395980129388">Dopušteno – <ph name="PERMISSION_DETAILS" /></translation>
+<translation id="2685193395980129388">Dozvoljeno – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="2687407218262674387">Googleovi uslovi korištenja usluge</translation>
 <translation id="2687621393791886981">Pitaj me kasnije</translation>
@@ -2096,7 +2099,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2755349111255270002">Vratite uređaj <ph name="DEVICE_TYPE" /> na zadano</translation>
 <translation id="2755367719610958252">Upravljajte funkcijama pristupačnosti</translation>
 <translation id="275662540872599901">ekran je isključen</translation>
-<translation id="2756936198272359372">Nije dopuštena upotreba JavaScripta</translation>
+<translation id="2756936198272359372">Nije dozvoljeno korištenje JavaScripta</translation>
 <translation id="2757161511365746634">Prikaz štampača</translation>
 <translation id="2757338480560142065">Provjerite podudara li se lozinka koju želite sačuvati s lozinkom za web lokaciju <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Nije pronađen nijedan rezultat za upit <ph name="SEARCH_QUERY" /></translation>
@@ -2129,7 +2132,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Ekstenzije su dozvoljene na ovoj web lokaciji</translation>
 <translation id="2782104745158847185">Greška prilikom instalacije Linux aplikacije</translation>
-<translation id="2783024642731649028">Jedan artikl u vašoj košarici: <ph name="DISCOUNT_TEXT" />, <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledan <ph name="RELATIVE_TIME" /></translation>
+<translation id="2783024642731649028">1 artikal u kolicima <ph name="DISCOUNT_TEXT" /> kod trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledano <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Preuzeto</translation>
 <translation id="2783321960289401138">Kreiranje prečice...</translation>
 <translation id="2783829359200813069">Odaberite vrste šifriranja</translation>
@@ -2374,11 +2377,13 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3000378525979847272">Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
 <translation id="3001144475369593262">Računi djece</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Nijedan ključ nije prilagođen}=1{1 prilagođeni ključ}one{{COUNT} prilagođeni ključ}few{{COUNT} prilagođena ključa}other{{COUNT} prilagođenih ključeva}}</translation>
 <translation id="3001835006423291524">Dodirnite senzor za otisak prsta u donjem desnom uglu tastature. Vaši podaci otiska prsta se sigurno pohranjuju i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Preferirane mreže</translation>
 <translation id="3003623123441819449">Keš memroija CSS-a</translation>
 <translation id="3003828226041301643">Nije moguće pridružiti uređaj domeni. Provjerite račun da budete sigurni da imate privilegije za dodavanje uređaja.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> će kreirati privatnu WiFi vezu.</translation>
+<translation id="3004385386820284928">Prilagodite tipke tastature</translation>
 <translation id="3005574332301273731">Ne prikazuj</translation>
 <translation id="3006881078666935414">Nema podataka o korištenju</translation>
 <translation id="3007410324195400631">Dodajte bilješke o ovoj stranici</translation>
@@ -2912,7 +2917,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3496213124478423963">Umanji</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (nije odabrano)</translation>
 <translation id="3496689104192986836">Nivo napunjenosti baterije je <ph name="PERCENTAGE" />%</translation>
-<translation id="3496995426334945408">Web-lokacije obično upotrebljavaju JavaScript za prikaz interaktivnih značajki, primjerice videoigara ili web-obrazaca</translation>
+<translation id="3496995426334945408">Web lokacije obično koriste JavaScript da prikažu interaktivne funkcije, kao što su video igre ili web obrasci</translation>
 <translation id="3497501929010263034">USB uređaj dobavljača <ph name="VENDOR_NAME" /> (proizvod: <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Dijeli crtež</translation>
 <translation id="3500417806337761827">Greška prilikom aktiviranja dijeljenja. Previše MSP dijeljenja je već aktivirano.</translation>
@@ -2957,7 +2962,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="354060433403403521">AC adapter</translation>
 <translation id="354068948465830244">Može čitati i mijenjati podatke na ovoj web lokaciji</translation>
 <translation id="3541823293333232175">Dodijeljeno</translation>
-<translation id="354204985370574425">Nikad ne deaktiviraj ovu web-lokaciju</translation>
+<translation id="354204985370574425">Nemoj nikad deaktivirati ovu web lokaciju</translation>
 <translation id="3543393733900874979">Ažuriranje nije uspjelo (greška: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA potpis uz SHA-512</translation>
 <translation id="3544058026430919413">Kompanija može definirati grupu web lokacija koje mogu koristiti kolačiće da dijele vašu aktivnost u grupi. Ovo je isključeno u anonimnom načinu rada.</translation>
@@ -3394,6 +3399,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="389901847090970821">Odaberite tastaturu</translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
 <translation id="3902789559055749153">Odaberite način na koji želite kreirati pristupni ključ za aplikaciju <ph name="APP_NAME" /></translation>
+<translation id="3903158219409898205">Koristi tipku pokretača za promjenu ponašanja tipki u gornjem redu Chromebookove tastature</translation>
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
 <translation id="3904326018476041253">Usluge lokacije</translation>
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
@@ -3804,6 +3810,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4279129444466079448">Možete instalirati najviše <ph name="PROFILE_LIMIT" /> eSIM profil/a na ovom uređaju. Da dodate drugi profil, najprije uklonite postojeći profil.</translation>
 <translation id="4280325816108262082">Povezanost s uređajem se neće automatski prekinuti kada se isključi ili ne koristi</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
+<translation id="428200245206114206">F tipke će se sada ponašati kao tipke u gornjem redu Chromebookove tastature.</translation>
 <translation id="4282196459431406533">Pametno zaključavanje je uključeno</translation>
 <translation id="4284903252249997120">Čitač ekrana ChromeVox i Odaberite za govor</translation>
 <translation id="4285418559658561636">Ažuriraj lozinku</translation>
@@ -3852,7 +3859,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4324577459193912240">Fajl je nekompletan</translation>
 <translation id="4325237902968425115">Deinstaliranje aplikacije <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">Chromeova najjača sigurnost vas bolje štiti od opasnih web lokacija, preuzimanja i ekstenzija</translation>
-<translation id="4326484226728068206">Artikli u košarici: <ph name="DISCOUNT_TEXT" /> kod trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledani <ph name="RELATIVE_TIME" /></translation>
+<translation id="4326484226728068206">Artikli u kolicima <ph name="DISCOUNT_TEXT" /> kod trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledano <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Ledena voda</translation>
 <translation id="4330387663455830245">Nikada ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Postavite Roditeljski nadzor</translation>
@@ -4215,7 +4222,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4647090755847581616">&amp;Zatvori karticu</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />. korak od <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Nedovoljno odobrenja</translation>
-<translation id="4650037136970677721">Uspomena je spremljena</translation>
+<translation id="4650037136970677721">Memorija je ušteđena</translation>
 <translation id="4650591383426000695">Prekinite povezanost telefona i uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Nije moguće učitati online komponentu pomoću resursa u načinu rada za demonstraciju.</translation>
 <translation id="4651921906638302153">Nije se moguće prijaviti s ovim računom</translation>
@@ -4450,7 +4457,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4863702650881330715">Proširi kompatibilnost</translation>
 <translation id="4863769717153320198">Izgleda kao <ph name="WIDTH" /> x <ph name="HEIGHT" /> (zadano)</translation>
 <translation id="4864805589453749318">Odaberite roditelja koji daje odobrenje za dodavanje školskog računa.</translation>
-<translation id="486505726797718946">Uspomena je spremljena</translation>
+<translation id="486505726797718946">Memorija je ušteđena</translation>
 <translation id="486635084936119914">Automatski otvori određene vrste fajlova nakon preuzimanja</translation>
 <translation id="4868281708609571334">Naučite Google Asistenta da prepozna glas djeteta <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Ovaj dijaloški okvir trenutno nije u fokusu. Pritisnite Command-Shift-Option A da fokusirate ovaj dijaloški okvir.</translation>
@@ -4543,7 +4550,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4940448324259979830">Ovim računom upravlja domena <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Rezerviraj veličinu diska</translation>
 <translation id="4941074198479265146">Web lokacije se obično povezuju s MIDI uređajima radi funkcija za kreiranje i uređivanje muzike</translation>
-<translation id="4941243352516004658">Artikli u vašoj košarici: njih <ph name="PRODUCT_ITEM_COUNT" />, <ph name="DISCOUNT_TEXT" />, <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledani <ph name="RELATIVE_TIME" /></translation>
+<translation id="4941243352516004658">Artikli (ukupno <ph name="PRODUCT_ITEM_COUNT" />) u kolicima <ph name="DISCOUNT_TEXT" /> kod trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledano <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Koristite taj zahtjev pri prijavi uređaja za poslovno upravljanje:</translation>
 <translation id="4941627891654116707">Veličina fonta</translation>
 <translation id="4941963255146903244">Pregledajte fotografije, medijski sadržaj i aplikacije telefona</translation>
@@ -4592,6 +4599,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4991420928586866460">Tretirajte tipke u gornjem redu kao funkcijske tipke</translation>
 <translation id="4992458225095111526">Potvrdi Powerwash</translation>
 <translation id="4992473555164495036">Vaš administrator je ograničio dostupne načine unosa.</translation>
+<translation id="4994426888044765950">Ako zadržite tipku, znak tipke će se ponoviti</translation>
 <translation id="4994754230098574403">Postavljanje</translation>
 <translation id="4995293419989417004">Saznajte više o temama oglasa</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nijedan VM <ph name="VM_TYPE" /> nije pronađen}=1{Pronađen je 1 VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Pronađen je {NUM_VMS} VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Pronađena su {NUM_VMS} VM-a <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Pronađeno je {NUM_VMS} VM-ova <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
@@ -5499,7 +5507,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5832970156002835240">Dozvoli na svim web lokacijama</translation>
 <translation id="5833397272224757657">Koristi sadržaj na web lokacijama koje posjećujete te aktivnosti i interakcije prilikom pregledanja radi personalizacije</translation>
 <translation id="5833726373896279253">Ove postavke može promijeniti samo vlasnik.</translation>
-<translation id="5833899990800318936">Ne dopuštaj web-lokacijama korištenje JavaScripta</translation>
+<translation id="5833899990800318936">Nemoj dozvoliti web lokacijama da koriste JavaScript</translation>
 <translation id="583431638776747">Web lokacija nije bila dostupna</translation>
 <translation id="5834581999798853053">Preostalo otprilike <ph name="TIME" /> min</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{Ekstenzija <ph name="EXTENSION1" /> pristupa uređajima s korisničkim interfejsom}=2{Ekstenzije koje pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Ekstenzije koje pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> i još {3}}few{Ekstenzije koje pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> i još {3}}other{Ekstenzije koje pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> i još {3}}}</translation>
@@ -5730,7 +5738,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB uređaj je povezan</translation>
 <translation id="6027945736510816438">Jeste li mislili <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Dodajte otisak prsta</translation>
-<translation id="6030719887161080597">Upravljanje podacima koje web-lokacije koriste za mjerenje izvedbe oglasa</translation>
+<translation id="6030719887161080597">Upravljajte informacijama koje web lokacije koriste za mjerenje performansi oglasa</translation>
 <translation id="6031600495088157824">Opcije unosa na alatnoj traci</translation>
 <translation id="6032715498678347852">Da ekstenziji omogućite pristup ovoj web lokaciji, kliknite na nju.</translation>
 <translation id="6032912588568283682">Sistem fajlova</translation>
@@ -5965,7 +5973,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="623755660902014047">Način rada za čitanje</translation>
 <translation id="6238767809035845642">Tekst dijeljen s drugog uređaja</translation>
 <translation id="6238923052227198598">Zadrži posljednju napomenu na zaključanom ekranu</translation>
-<translation id="6238982280403036866">Dopuštena je upotreba JavaScripta</translation>
+<translation id="6238982280403036866">Dozvoljeno je korištenje JavaScripta</translation>
 <translation id="6239558157302047471">Ponovo učitaj &amp;okvir</translation>
 <translation id="6240821072888636753">Pitaj svaki put</translation>
 <translation id="6241530762627360640">Pristup informacijama o Bluetooth uređajima koji su upareni s vašim sistemom i Bluetooth uređajima otkrivenim u blizini.</translation>
@@ -6109,7 +6117,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6378392501584240055">Otvori samo putem WiFi mreža</translation>
 <translation id="6380143666419481200">Prihvati i nastavi</translation>
 <translation id="6382958439467370461">Nema neaktivnih prečica</translation>
-<translation id="6383382161803538830">Način čitanja nije dostupan na ovoj stranici</translation>
+<translation id="6383382161803538830">Način rada za čitanje nije dostupan na ovoj stranici</translation>
 <translation id="638418309848716977">Podržani linkovi</translation>
 <translation id="6384275966486438344">Promijenite svoje postavke pretraživanja na: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Neimenovana grupa – 1 kartica}one{Neimenovana grupa – # kartica}few{Neimenovana grupa – # kartice}other{Neimenovana grupa – # kartica}}</translation>
@@ -6143,6 +6151,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6410328738210026208">Promijeni kanal i pokreni Powerwash</translation>
 <translation id="6410390304316730527">Sigurno pregledanje vas štiti od napadača koji vas mogu prevarom navesti da uradite nešto opasno, naprimjer, da instalirate zlonamjerni softver ili otkrijete lične informacije kao što su lozinke i brojevi telefona ili kreditne kartice. Ako ga isključite, budite oprezni prilikom pregledanja nepoznatih ili sumnjivih web lokacija.</translation>
 <translation id="6410668567036790476">Dodajte pretraživač</translation>
+<translation id="6411135999030237579">Automatsko ponavljanje tipke pritiskom i zadržavanjem</translation>
 <translation id="641469293210305670">Instaliranje ažuriranja i aplikacija</translation>
 <translation id="6414878884710400018">Otvorite postavke sistema</translation>
 <translation id="6415816101512323589">Uključiti vraćanje lokalnih podataka radi zaštite podataka?</translation>
@@ -8822,6 +8831,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 
           &lt;p&gt;Konfiguraciju i dalje možete izvršiti putem komandne linije.  Više informacija o oznakama i varijablama okruženja potražite u &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Izvršavajte zadatke u vezi sa sigurnošću za svoju organizaciju, kao što su upravljanje certifikatima i ključevima pohranjenim na uređaju</translation>
+<translation id="875532100880844232">Za uređaj <ph name="DEVICE_NAME" /> odaberite radnju za svaku tipku</translation>
 <translation id="8755376271068075440">&amp;Veće</translation>
 <translation id="8755584192133371929">Odaberite karticu za dijeljenje</translation>
 <translation id="875604634276263540">URL slike nije važeći</translation>
@@ -9349,6 +9359,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nepodržana aplikacija)</translation>
 <translation id="9219582468404818260">Pomozite nam da izgradimo bolji web</translation>
+<translation id="9219741625496141320">Podaci o pregledanju su automatski izbrisani</translation>
 <translation id="9220525904950070496">Ukloni račun</translation>
 <translation id="9220723036554088545">otpremite fajl</translation>
 <translation id="9220820413868316583">Podignite prst, a zatim pokušajte ponovo.</translation>

@@ -285,6 +285,7 @@
 <translation id="2587052924345400782">نسخه جدیدتری در دسترس است</translation>
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
 <translation id="2603212228005142861">برای مدیریت اولویت‌هایتان، به سیستم وارد شوید</translation>
+<translation id="260403163289591229">دنبال می‌کنید</translation>
 <translation id="2604446170045642109">در تنظیمات، می‌توانید زمینه تیره را برای سایت‌ها خاموش کنید.</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
@@ -584,6 +585,7 @@
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
 <translation id="4202218894997543208">موضوع‌هایی که مسدود کرده‌اید</translation>
 <translation id="4214315110991671325">‏اگر کوکی‌ها را مجاز کنید، ممکن است Chrome از آن‌ها برای پیش‌بارگذاری استفاده کند.</translation>
+<translation id="4225725533026049334">دنبال می‌کنید</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4248098802131000011">گذرواژه خود را از نقض داده و سایر مسائل امنیتی ایمن نگه دارید</translation>
@@ -725,6 +727,7 @@
 <translation id="492284538114688557">کاهش قیمت شناسایی شد</translation>
 <translation id="4925120120285606924">نماگرفت <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">گذرواژه‌هایتان به‌صورت فایل نوشتاری صادر و بارگیری خواهد شد. گذرواژه‌هایتان برای همه افراد و برنامه‌هایی که به پوشه مقصد دسترسی دارند نمایان خواهد بود.</translation>
+<translation id="4926901776383726965">می‌توانید تصاویر و فایل‌ها را برای مشاهده آفلاین یا هم‌رسانی در برنامه‌های دیگر ذخیره کنید</translation>
 <translation id="4932247056774066048">‏از آنجایی‌که درحال خروج از سیستم حساب مدیریت‌شده توسط <ph name="DOMAIN_NAME" /> هستید، داده‌های Chrome شما از این دستگاه حذف می‌شود. این مورد در حساب Google شما باقی می‌ماند.</translation>
 <translation id="4943703118917034429">واقعیت مجازی</translation>
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
@@ -922,6 +925,7 @@
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
 <translation id="6011308810877101166">بهبود پیشنهادهای جستجو</translation>
 <translation id="6026538407078977628">گسترده کردن به‌حالت تمام‌صفحه</translation>
+<translation id="6030719887161080597">مدیریت اطلاعات مورداستفاده سایت‌ها برای سنجش عملکرد آگهی</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604124094241169006">خودکار</translation>
@@ -1422,6 +1426,7 @@
 <translation id="8503559462189395349">‏گذرواژه‌های Chrome</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8505766168025405649">دیدن اعلان وضعیت بارگیری</translation>
+<translation id="8506357771923193001">بارگیری‌هایتان را اینجا خواهید دید</translation>
 <translation id="8514477925623180633">‏صادر کردن گذرواژه‌های ذخیره‌شده در Chrome</translation>
 <translation id="8516012719330875537">ویرایشگر تصویر</translation>
 <translation id="8516431725144212809">‏علایق شما به‌طوری‌که Chrome برآورد کرده است</translation>

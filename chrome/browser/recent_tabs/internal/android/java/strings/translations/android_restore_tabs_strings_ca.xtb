@@ -1,4 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1356944128023012143">La llista de dispositius sincronitzats i de pestanyes seleccionades d'aquests dispositius que es restauraran està tancada.</translation>
+<translation id="1816430105422765050">Canvia a altres dispositius sincronitzats en aquest element de menú.</translation>
+<translation id="3347725959865138210">Tria el dispositiu del qual vulguis revisar pestanyes</translation>
+<translation id="3575801299326994724">Revisa les pestanyes seleccionades per restaurar-les des del dispositiu seleccionat actualment.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya; darrera actualització: <ph name="TIME_SINCE_MODIFIED" />.}other{<ph name="TABS_COUNT_MANY" /> pestanyes; darrera actualització: <ph name="TIME_SINCE_MODIFIED" />.}}</translation>
+<translation id="3983305234037158273">Les pestanyes dels dispositius sincronitzats es poden restaurar amb un toc. Navega per revisar o restaurar amb un toc les pestanyes seleccionades per al dispositiu actual. El teclat està amagat.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{Obre <ph name="TABS_COUNT_ONE" /> pestanya}other{Obre <ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
+<translation id="4811934403802581334">Es restauraran totes les pestanyes seleccionades del dispositiu seleccionat actualment.</translation>
+<translation id="5336031759968328813">Revisa totes les pestanyes</translation>
+<translation id="8725404154479306799">Accedeix a les pestanyes que has visitat en dispositius anteriors</translation>
 </translationbundle>

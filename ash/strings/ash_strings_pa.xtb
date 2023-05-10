@@ -56,6 +56,7 @@
 <translation id="121097972571826261">ਇੱਕ ਸ਼ਬਦ ਅੱਗੇ ਜਾਓ</translation>
 <translation id="1217633719248931900">ਐਪ 'ਤੇ ਜਾਓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ਐਪ</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> 'ਤੇ ਵਾਪਸ ਜਾਓ।</translation>
 <translation id="1225748608451425081">ਕਿਸੇ ਜਾਣੂ ਸਮੱਸਿਆ ਕਰਕੇ ਤੁਹਾਡੀ Chromebook ਲਾਕ ਹੈ। ਤੁਸੀਂ ਇੰਨੇ ਸਮੇਂ ਬਾਅਦ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋਗੇ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ਚੋਣ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="1235458158152011030">ਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">ਟੈਮਪਲੇਟ ਵਿੱਚ ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
 <translation id="3161500364292033097">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="3171170659304083361">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3181441307743005334">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ਇੱਕ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}one{# ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}other{# ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="320207200541803018">ਟਾਈਮਰ ਸੈੱਟ ਕਰੋ</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6074087755403037157">ਬੀਟਾ ਚੈਨਲ</translation>
 <translation id="6093867385179428431">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6095008505822982596">ਬੋਲਣ ਦੀ ਗਤੀ</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> ਰਾਹੀਂ ਕਨੈਕਸ਼ਨ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6099678161144790572">ਪਿਛਲੇ ਮਹੀਨੇ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6103838137565245112">ਸਿਸਟਮ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
@@ -1591,6 +1594,7 @@
 <translation id="8349964124165471584">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="8351131234907093545">ਨੋਟ-ਕਥਨ ਬਣਾਓ</translation>
 <translation id="8364673525741149932">ਸ਼ੈਲਫ ਪਾਰਟੀ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ਵਰਤੋਂ ਵਿੱਚ ਹੈ।</translation>
 <translation id="8369166482916924789">ਰੱਖਿਅਤ ਕੀਤਾ ਡੈਸਕ, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ਇੱਕ ਅੱਖਰ ਅੱਗੇ ਜਾਓ</translation>
 <translation id="8371991222807690464">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>

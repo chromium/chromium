@@ -460,6 +460,7 @@
 <translation id="316086887565479535">ಟೆಂಪ್ಲೇಟ್‌ನಲ್ಲಿ ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="3161500364292033097">ಡೆಸ್ಕ್ ಮತ್ತು ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="316356270129335934">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು <ph name="MANAGER" /> ಹಿಂತಿರುಗಿಸುತ್ತಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="3171170659304083361">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3181441307743005334">ಮರುಪ್ರಾರಂಭಗೊಳ್ಳಲು ಸ್ವಲ್ಪ ಸಮಯ ಬೇಕಾಗಬಹುದು</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ಒಂದು ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ}one{# ಸಾಧನಗಳಿಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ}other{# ಸಾಧನಗಳಿಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ}}</translation>
 <translation id="320207200541803018">ಟೈಮರ್ ಹೊಂದಿಸಿ</translation>
@@ -1112,6 +1113,7 @@
 <translation id="6074087755403037157">ಬೀಟಾ ಚಾನಲ್</translation>
 <translation id="6093867385179428431">ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="6095008505822982596">ಮಾತಿನ ವೇಗ</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> ಜೊತೆಗೆ ಕನೆಕ್ಷನ್ ಸೇರಿಸಿ</translation>
 <translation id="6099678161144790572">ಕಳೆದ ತಿಂಗಳು ಎಡಿಟ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="6103838137565245112">ಸಿಸ್ಟಂ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>

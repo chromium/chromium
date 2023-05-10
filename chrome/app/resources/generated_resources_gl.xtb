@@ -592,6 +592,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1506187449813838456">Sube o ton</translation>
 <translation id="1507170440449692343">Bloqueouse o acceso desta páxina á túa cámara.</translation>
 <translation id="1507246803636407672">&amp;Descartar</translation>
+<translation id="1508931164824684991">Os sitios poden usar JavaScript</translation>
 <translation id="1509163368529404530">&amp;Restaurar grupo</translation>
 <translation id="1509281256533087115">Acceder a calquera <ph name="DEVICE_NAME_AND_VENDOR" /> por USB</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
@@ -846,6 +847,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1708291623166985230">A zona wifi está desactivada</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Non mostrar cando se completan as descargas</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Escolle o tícket que queres utilizar para a autenticación. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Configuración de rede</translation>
@@ -1665,6 +1667,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2398546389094871088">Os perfís de eSIM non se quitarán ao executar a función Powerwash do dispositivo. Para quitalos de xeito manual, vai a <ph name="LINK_BEGIN" />Configuración para móbiles<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Activáronse as notificacións</translation>
 <translation id="2399939490305346086">Datos de inicio de sesión da chave de seguranza</translation>
+<translation id="2400323785194108001">Non desactivar nunca este sitio</translation>
 <translation id="2400664245143453337">Requírese unha actualización de inmediato</translation>
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2406153734066939945">Querer borrar este perfil e os seus datos?</translation>
@@ -1980,6 +1983,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2673135533890720193">Ler o teu historial de navegación</translation>
 <translation id="2674764818721168631">Non</translation>
 <translation id="2675570801872027281">Produciuse un erro ao quitar Bruschetta. Téntao de novo.</translation>
+<translation id="2676084251379299915">De acordo coa política de Enterprise, desactivouse esta extensión porque deixou de estar dispoñible en Chrome Web Store.</translation>
 <translation id="267708982776801183">Filtro vermello-verde (vermello suave, protanomalía)</translation>
 <translation id="2678063897982469759">Reactivar</translation>
 <translation id="2678100101831051676">Non se puido emitir contido.</translation>
@@ -1988,6 +1992,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2682498795777673382">Cambio feito polo teu pai ou nai</translation>
 <translation id="2683638487103917598">Cartafol ordenado</translation>
 <translation id="2684004000387153598">Para continuar, fai clic en Aceptar e despois en Engadir persoa se queres crear un novo perfil para o teu enderezo de correo electrónico.</translation>
+<translation id="2685193395980129388">Permiso concedido: <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="2687407218262674387">Condicións de servizo de Google</translation>
 <translation id="2687621393791886981">Preguntar máis tarde</translation>
@@ -2076,6 +2081,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2755349111255270002">Restablecer este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2755367719610958252">Xestionar as funcións de accesibilidade</translation>
 <translation id="275662540872599901">pantalla apagada</translation>
+<translation id="2756936198272359372">Uso de JavaScript non permitido</translation>
 <translation id="2757161511365746634">Ver impresora</translation>
 <translation id="2757338480560142065">Asegúrate de que o contrasinal que gardas coincida co contrasinal de <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Non hai resultados da busca para <ph name="SEARCH_QUERY" /></translation>
@@ -2108,6 +2114,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Permitíronse as extensións neste sitio</translation>
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
+<translation id="2783024642731649028">Hai 1 produto no teu carro cun <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) visto <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Descargado</translation>
 <translation id="2783321960289401138">Crear atallo...</translation>
 <translation id="2783829359200813069">Seleccionar tipos de encriptación</translation>
@@ -2890,6 +2897,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3496213124478423963">Afastar</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (non seleccionado)</translation>
 <translation id="3496689104192986836">Nivel de batería <ph name="PERCENTAGE" /> %</translation>
+<translation id="3496995426334945408">Os sitios adoitan usar JavaScript para ofrecerche determinadas funcións interactivas (por exemplo, videoxogos ou formularios web)</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (produto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3500417806337761827">Produciuse un erro ao montar o recurso compartido. Xa hai montados demasiados recursos compartidos SMB.</translation>
@@ -2934,6 +2942,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="354060433403403521">Adaptador de CA</translation>
 <translation id="354068948465830244">Pode consultar e modificar os datos do sitio</translation>
 <translation id="3541823293333232175">Asignado</translation>
+<translation id="354204985370574425">Non desactivar nunca este sitio</translation>
 <translation id="3543393733900874979">Non se puido efectuar a actualización (erro: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Sinatura X9.62 ECDSA con SHA-512</translation>
 <translation id="3544058026430919413">Unha empresa pode definir un grupo de sitios que poden usar as cookies para compartir a túa actividade no grupo. Esta opción está desactivada no modo de incógnito.</translation>
@@ -3828,6 +3837,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4324577459193912240">Ficheiro incompleto</translation>
 <translation id="4325237902968425115">Desinstalando <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">A potentísima seguranza de Chrome é máis eficaz á hora de protexerte de sitios web, descargas e extensións perigosos</translation>
+<translation id="4326484226728068206">Hai produtos no teu carro cun <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) vistos <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Auga xeada</translation>
 <translation id="4330387663455830245">Non traducir nunca do <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configurar os controis parentais</translation>
@@ -4189,6 +4199,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4647090755847581616">&amp;Pechar pestana</translation>
 <translation id="4647283074445570750">Paso <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
+<translation id="4650037136970677721">Memoria aforrada</translation>
 <translation id="4650591383426000695">Desconecta o teléfono do <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Non se puido cargar o compoñente en liña cos recursos do modo de demostración.</translation>
 <translation id="4651921906638302153">Non se pode iniciar sesión con esta conta</translation>
@@ -4423,6 +4434,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4863702650881330715">Ampliar compatibilidade</translation>
 <translation id="4863769717153320198">A resolución parece de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (predeterminada)</translation>
 <translation id="4864805589453749318">Indica se será o teu pai ou a túa nai quen che dará permiso para engadir unha conta de centro educativo.</translation>
+<translation id="486505726797718946">Memoria aforrada</translation>
 <translation id="486635084936119914">Abre determinados tipos de ficheiro automaticamente despois da descarga</translation>
 <translation id="4868281708609571334">Ensínalle ao Asistente de Google a recoñecer a voz de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Este cadro de diálogo non está enfocado nestes momentos. Para enfocalo, preme Comando + Maiúsculas + Opción + A.</translation>
@@ -4515,6 +4527,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> xestiona esta conta</translation>
 <translation id="4940845626435830013">Reservar tamaño de disco</translation>
 <translation id="4941074198479265146">Os sitios adoitan conectarse aos dispositivos MIDI para ofrecerche determinadas funcións relacionadas coa creación e a edición de música</translation>
+<translation id="4941243352516004658">Hai <ph name="PRODUCT_ITEM_COUNT" /> produtos no teu carro cun <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) vistos <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Utiliza esta solicitude de dispositivo ao inscribir o dispositivo para a xestión empresarial:</translation>
 <translation id="4941627891654116707">Tamaño do tipo de letra</translation>
 <translation id="4941963255146903244">Accede ás fotos, ao contido multimedia e ás aplicacións do teu teléfono</translation>
@@ -5468,6 +5481,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5832970156002835240">Permitir en todos os sitios</translation>
 <translation id="5833397272224757657">Para personalizar a experiencia, utiliza o contido dos sitios que visitas e mais as interaccións e a actividade do navegador</translation>
 <translation id="5833726373896279253">O único que pode modificar esta configuración é o propietario:</translation>
+<translation id="5833899990800318936">Non permitir que os sitios utilicen JavaScript</translation>
 <translation id="583431638776747">O sitio non estaba dispoñible</translation>
 <translation id="5834581999798853053">Quedan uns <ph name="TIME" /> minutos</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> ten acceso a dispositivos de interface humana}=2{Extensións con acceso a dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Extensións con acceso a dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> e {3} máis}}</translation>
@@ -5697,6 +5711,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: conectouse a un dispositivo USB</translation>
 <translation id="6027945736510816438">Querías dicir "<ph name="WEBSITE" />"?</translation>
 <translation id="6028117231645531007">Engadir impresión dixital</translation>
+<translation id="6030719887161080597">Xestiona a información que usan os sitios para medir o rendemento publicitario</translation>
 <translation id="6031600495088157824">Opcións de entrada na barra de ferramentas</translation>
 <translation id="6032715498678347852">Para permitir o acceso dunha extensión a este sitio, fai clic nela.</translation>
 <translation id="6032912588568283682">Sistema de ficheiros</translation>
@@ -5931,6 +5946,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="623755660902014047">Modo de lectura</translation>
 <translation id="6238767809035845642">O texto compartiuse desde outro dispositivo</translation>
 <translation id="6238923052227198598">Conservar a última nota na pantalla de bloqueo</translation>
+<translation id="6238982280403036866">Uso de JavaScript permitido</translation>
 <translation id="6239558157302047471">Volver cargar &amp;marco</translation>
 <translation id="6240821072888636753">Preguntar sempre</translation>
 <translation id="6241530762627360640">Acceder á información sobre os dispositivos Bluetooth sincronizados co teu sistema e detectar dispositivos Bluetooth cerca.</translation>
@@ -6074,6 +6090,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6378392501584240055">Abrir nas redes wifi</translation>
 <translation id="6380143666419481200">Aceptar e continuar</translation>
 <translation id="6382958439467370461">Non hai atallos inactivos</translation>
+<translation id="6383382161803538830">O modo de lectura non se pode usar nesta páxina</translation>
 <translation id="638418309848716977">Ligazóns compatibles</translation>
 <translation id="6384275966486438344">Cambiar a túa configuración de busca a: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupo sen nome (1 pestana)}other{Grupo sen nome (# pestanas)}}</translation>
@@ -6470,6 +6487,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6729192290958770680">Escribe o teu nome de usuario</translation>
 <translation id="6731320427842222405">É posible que isto tarde uns minutos</translation>
 <translation id="6733620523445262364">Creouse "<ph name="BOOKMARK_TITLE" />".</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (código: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Mostrar cookies e datos doutros sitios...</translation>
 <translation id="6736243959894955139">Enderezo</translation>
 <translation id="6737393581255281855">Queres borrar os datos que se mostran?</translation>

@@ -56,6 +56,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="121097972571826261">Avanti per parola</translation>
 <translation id="1217633719248931900">Vai all'app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app Play Store</translation>
+<translation id="1219309685806246869">Torna a <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Il Chromebook è bloccato a causa di un problema noto. Potrai accedere dopo: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Interrompi la selezione</translation>
 <translation id="1235458158152011030">Reti note</translation>
@@ -350,6 +351,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, file, app e altro ancora…</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protetta</translation>
+<translation id="2624588537172718173">Microfono e audio del dispositivo</translation>
 <translation id="263399434338050016">"Seleziona tutto"</translation>
 <translation id="2644422758626431000">Blocca la finestra a sinistra</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -410,6 +412,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2942350706960889382">Lente d'ingrandimento ancorata</translation>
 <translation id="2942516765047364088">Posizione barra delle app</translation>
 <translation id="2946119680249604491">Aggiungi connessione</translation>
+<translation id="295852781144570696">Audio del dispositivo</translation>
 <translation id="2960314608273155470">Modalità di acquisizione, l'impostazione predefinita è <ph name="TYPE" /> <ph name="SOURCE" />. Premi Tab per usare la navigazione da tastiera.</translation>
 <translation id="2961963223658824723">Si è verificato un problema. Riprova tra qualche secondo.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -459,6 +462,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="316086887565479535">App non supportate nel modello</translation>
 <translation id="3161500364292033097">Chiudi scrivania e finestre</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sta eseguendo il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
+<translation id="3171170659304083361">Impostazioni metodi di immissione</translation>
 <translation id="3181441307743005334">Il riavvio potrebbe richiedere un po' di tempo</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connesso a un dispositivo}other{Connesso a # dispositivi}}</translation>
 <translation id="320207200541803018">Imposta il timer</translation>
@@ -1056,6 +1060,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5881540930187678962">Configura Phone Hub in un secondo momento</translation>
 <translation id="5881663018261910378">Off</translation>
 <translation id="5887954372087850114">Finestra <ph name="WINDOW_TITLE" /> assegnata a <ph name="DESK_TITLE" />; assegnazione della finestra a tutte le altre scrivanie annullata</translation>
+<translation id="588817334757907802">Apri un file nel browser Chrome</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="589817443623831496">Scansione per punto</translation>
 <translation id="5901316534475909376">MAIUSC+ESC</translation>
@@ -1107,6 +1112,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6074087755403037157">Canale beta</translation>
 <translation id="6093867385179428431">Opzione disattivata dall'amministratore</translation>
 <translation id="6095008505822982596">Velocità voce</translation>
+<translation id="6095425951508823973">Aggiungi una connessione con <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modificato il mese scorso</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
@@ -1586,6 +1592,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8349964124165471584">Apri link in una nuova finestra</translation>
 <translation id="8351131234907093545">Crea nota</translation>
 <translation id="8364673525741149932">Attiva/disattiva Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152">In uso: <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Scrivania salvata, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avanti per lettera</translation>
 <translation id="8371991222807690464">Le prestazioni delle periferiche potrebbero essere limitate in modalità Ospite</translation>

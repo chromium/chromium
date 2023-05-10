@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">작업 시트</translation>
 <translation id="3532844647053365774"><ph name="HOST" />에서 마이크를 사용하려고 합니다</translation>
 <translation id="3533328374079021623">메일박스 5</translation>
+<translation id="3536227077203206203">현재 허용됨</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">카드 이미지</translation>
 <translation id="3542768452570884558">새 창에서 링크 열기</translation>
@@ -2453,6 +2454,7 @@
 <translation id="7030436163253143341">인증서가 올바르지 않음</translation>
 <translation id="7031646650991750659">내가 설치한 Google Play 앱</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 계정 개인 정보 보호 설정을 관리하려면 Tab과 Enter를 차례로 누르세요</translation>
+<translation id="7044081119134178347">현재 카메라 허용됨</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" />에 접속하려고 했지만 서버가 제시한 인증서의 유효 기간이 너무 길어서 신뢰할 수 없습니다.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{지금은 이 카드를 저장할 수 없습니다.}other{지금은 이 카드를 저장할 수 없습니다.}}</translation>
@@ -3044,6 +3046,7 @@
 <translation id="8416694386774425977">네트워크 설정이 잘못되어 가져올 수 없습니다.
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">현재 마이크 허용됨</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500x750mm</translation>
 <translation id="8428213095426709021">설정</translation>
@@ -3099,6 +3102,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{권한 재설정}other{권한 재설정}}</translation>
 <translation id="8555010941760982128">결제 시 다음 코드를 사용하세요</translation>
 <translation id="8557066899867184262">CVC는 카드 뒷면에 있습니다.</translation>
+<translation id="8558347880669160417">현재 카메라 및 마이크 허용됨</translation>
 <translation id="8559762987265718583">기기의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="8564182942834072828">별도 문서/모으지 않은 사본</translation>
 <translation id="8564985650692024650">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
@@ -3215,6 +3219,7 @@
 <translation id="8870494189203302833">같은 순서로 인쇄면이 아래를 향하게</translation>
 <translation id="8870700989640064057">기밀 파일을 인쇄하시겠습니까?</translation>
 <translation id="8871553383647848643">브라우저 테마 맞춤설정</translation>
+<translation id="8871603420762394026">이제 Chrome에서 광고가 사용자에게 게시된 시기 등의 제한된 정보만 사이트 간에 공유되어 사이트의 광고 실적을 측정하도록 돕습니다.</translation>
 <translation id="8874824191258364635">올바른 카드 번호를 입력하세요.</translation>
 <translation id="8876033571432926051">캐주얼 게임</translation>
 <translation id="8877780815363510165">낚시</translation>
@@ -3368,6 +3373,7 @@
 <translation id="949314938206378263">이 사이트의 방문을 요청했습니다. 부모님이 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="950736567201356821">상단 3공 펀칭</translation>
 <translation id="961663415146723894">하단 바인드</translation>
+<translation id="961930410699694996">현재 위치 허용됨</translation>
 <translation id="962484866189421427">이 콘텐츠에서 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LINK" />그래도 표시하기<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">모든 사용자</translation>
 <translation id="964050462028070434">비밀번호 및 패스키 관리…</translation>

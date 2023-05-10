@@ -1032,6 +1032,7 @@
 <translation id="3531780078352352885">ਕਾਰਵਾਈ ਸ਼ੀਟਾਂ</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ਦੀ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="3533328374079021623">ਮੇਲਬਾਕਸ 5</translation>
+<translation id="3536227077203206203">ਇਸ ਸਮੇਂ ਆਗਿਆ ਹੈ</translation>
 <translation id="3537165859691846083">ਲੈਟਰ ਪਲੱਸ</translation>
 <translation id="3542628208405253498">ਕਾਰਡ ਚਿੱਤਰ</translation>
 <translation id="3542768452570884558">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
@@ -2449,6 +2450,7 @@
 <translation id="7030436163253143341">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵੈਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="7031646650991750659">ਤੁਸੀਂ ਕਿਹੜੀਆਂ Google Play ਐਪਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾ ਕੇ, ਫਿਰ ਆਪਣੀਆਂ Google ਖਾਤਾ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
+<translation id="7044081119134178347">ਇਸ ਸਮੇਂ ਕੈਮਰੇ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="7048095965575426564">ਯੂਰੋਪੀਅਨ ਫੈਨਫੋਲਡ</translation>
 <translation id="7050187094878475250">ਤੁਸੀਂ <ph name="DOMAIN" /> ਤੱਕ ਪਹੁੰਚਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ, ਪਰ ਸਰਵਰ ਨੇ ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪੇਸ਼ ਕੀਤਾ, ਜਿਸਦੀ ਪ੍ਰਮਾਣਿਕਤਾ ਮਿਆਦ ਭਰੋਸੇਯੋਗ ਹੋਣ ਲਈ ਬਹੁਤ ਜ਼ਿਆਦਾ ਲੰਮੀ ਹੈ।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ਇਸ ਕਾਰਡ ਨੂੰ ਫਿਲਹਾਲ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ}one{ਇਸ ਕਾਰਡ ਨੂੰ ਫਿਲਹਾਲ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ}other{ਇਹਨਾਂ ਕਾਰਡਾਂ ਨੂੰ ਫਿਲਹਾਲ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ}}</translation>
@@ -3041,6 +3043,7 @@
 <translation id="8416694386774425977">ਨੈੱਟਵਰਕ ਸੰਰੂਪਣ ਅਵੈਧ ਹੋਣ ਕਰਕੇ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।
 ਵਧੀਕ ਵੇਰਵੇ:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">ਇਸ ਸਮੇਂ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 ਮਿ.ਮੀ.</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
@@ -3096,6 +3099,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ਇਜਾਜ਼ਤ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ}one{ਇਜਾਜ਼ਤ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ}other{ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ}}</translation>
 <translation id="8555010941760982128">ਚੈੱਕ-ਆਊਟ 'ਤੇ ਇਸ ਕੋਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8557066899867184262">CVC ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਪਿੱਛੇ ਮੌਜੂਦ ਹੈ।</translation>
+<translation id="8558347880669160417">ਇਸ ਸਮੇਂ ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ਨਾਲ ਇੱਕ ਨਿੱਜੀ ਕਨੈਕਸ਼ਨ ਨੂੰ ਸਥਾਪਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਦੀ ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ (<ph name="DATE_AND_TIME" />) ਗ਼ਲਤ ਹੈ।</translation>
 <translation id="8564182942834072828">ਵੱਖਰੇ ਦਸਤਾਵੇਜ਼/ਅਣਇਕੱਤਰ ਕਾਪੀਆਂ</translation>
 <translation id="8564985650692024650">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣੇ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ਪਾਸਵਰਡ ਨੂੰ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਮੁੜ ਵਰਤਿਆ ਹੈ, ਤਾਂ Chromium ਵੱਲੋਂ ਇਸਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
@@ -3366,6 +3370,7 @@
 <translation id="949314938206378263">ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਕਿਹਾ ਹੈ। ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ Family Link ਵਿੱਚ ਜਵਾਬ ਦੇ ਸਕਦੇ ਹਨ।</translation>
 <translation id="950736567201356821">ਉੱਪਰ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
 <translation id="961663415146723894">ਹੇਠਾਂ ਜਿਲਦਬੰਦ</translation>
+<translation id="961930410699694996">ਇਸ ਸਮੇਂ ਟਿਕਾਣੇ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="962484866189421427">ਇਹ ਸਮੱਗਰੀ ਭਰਮਪੂਰਨ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰ ਸਕਦੀ ਹੈ, ਜੋ ਕੁਝ ਹੋਰ ਹੋਣ ਦਾ ਦਾਅਵਾ ਕਰਦੀਆਂ ਹਨ ਜਾਂ ਅਜਿਹਾ ਡਾਟਾ ਇਕੱਠਾ ਕਰਦੀਆਂ ਹਨ ਜਿਸਦੀ ਵਰਤੋਂ ਨਾਲ ਤੁਹਾਡੇ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">ਸਾਰੇ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="964050462028070434">ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ…</translation>

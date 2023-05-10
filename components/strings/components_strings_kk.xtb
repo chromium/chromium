@@ -1033,6 +1033,7 @@
 <translation id="3531780078352352885">Тапсырма парақтары</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> хосты микрофоныңызды пайдаланғысы келеді</translation>
 <translation id="3533328374079021623">5-ші пошта жәшігі</translation>
+<translation id="3536227077203206203">Бұл жолы рұқсат берілген.</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Карта суреті</translation>
 <translation id="3542768452570884558">Сілтемені жаңа терезеде ашу</translation>
@@ -2452,6 +2453,7 @@
 <translation id="7030436163253143341">Сертификат жарамсыз</translation>
 <translation id="7031646650991750659">Google Play-дің қай қолданбаларын орнатқаныңызды.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтының құпиялық параметрлерін басқару үшін Tab, сосын Enter пернесін басыңыз.</translation>
+<translation id="7044081119134178347">Бұл жолы камераға рұқсат берілген.</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімді болуы үшін жарамдылық мерзімі тым ұзақ болған сертификатты ұсынды.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Бұл карта қазір сақталмайды}other{Бұл карталар қазір сақталмайды}}</translation>
@@ -3044,6 +3046,7 @@
 <translation id="8416694386774425977">Желі конфигурациясы жарамсыз және импорттау мүмкін емес.
 Қосымша мәліметтер:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Бұл жолы микрофонға рұқсат берілген.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 мм</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
@@ -3099,6 +3102,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Рұқсатты бастапқы күйіне қайтару}other{Рұқсаттарды бастапқы күйіне қайтару}}</translation>
 <translation id="8555010941760982128">Төлеу кезінде осы коды пайдаланыңыз</translation>
 <translation id="8557066899867184262">CVC коды картаңыздың артқы жағында орналасқан.</translation>
+<translation id="8558347880669160417">Бұл жолы камера мен микрофонға рұқсат берілген.</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменімен жеке байланыс орнату мүмкін емес, себебі құрылғыңыздың күні мен уақыты (<ph name="DATE_AND_TIME" />) дұрыс емес.</translation>
 <translation id="8564182942834072828">Бөлек құжаттар/реттелмеген көшірмелер</translation>
 <translation id="8564985650692024650">Chromium басқа сайттарда пайдаланылған <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> құпия сөзін қайта орнатуды ұсынады.</translation>
@@ -3369,6 +3373,7 @@
 <translation id="949314938206378263">Осы сайтқа кіруді сұрадыңыз. Ата-анаңыз Family Link-те жауап бере алады.</translation>
 <translation id="950736567201356821">Жоғарғы жағын үш рет тесу</translation>
 <translation id="961663415146723894">Төменгі жағын байлау</translation>
+<translation id="961930410699694996">Бұл жолы локацияға рұқсат берілген.</translation>
 <translation id="962484866189421427">Бұл контент жалған қолданбалар орнатуы мүмкін, олар басқа біреудің атын жамылуы немесе сізді бақылау үшін пайдаланылатын деректерді жинауы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Барлық пайдаланушы</translation>
 <translation id="964050462028070434">Құпия сөздер мен кіру кілттерін басқару…</translation>

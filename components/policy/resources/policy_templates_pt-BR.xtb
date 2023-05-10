@@ -119,6 +119,7 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
 <translation id="1105711894873068933">Após a desativação do <ph name="LACROS_NAME" />, todos os dados do usuário vão ser removidos no próximo login.</translation>
 <translation id="1107538157073168076">Desativar extensão de insights</translation>
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111324374369583989">Não mostrar a tela de configuração do tamanho de exibição durante o login</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -683,6 +684,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       </translation>
 <translation id="1613327425322354195">Informar status de segurança do dispositivo</translation>
 <translation id="1615221548356595305">Permitir a união de conexões HTTP/2 para esses hosts mesmo quando certificados do cliente são utilizados</translation>
+<translation id="1615734278280392199">Usar a pesquisa no modo não anônimo</translation>
 <translation id="1616280227447957376">Permitir que páginas de aviso SSL em origens específicas sejam ignoradas</translation>
 <translation id="1617235075406854669">Ativar exclusão do histórico do navegador e de downloads</translation>
 <translation id="1620510694547887537">Câmera</translation>
@@ -1074,6 +1076,7 @@ Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as exten
 
       Mudanças na política são aplicadas apenas enquanto o ARC não está em execução, como durante a inicialização do ChromeOS.</translation>
 <translation id="1984934843478301531">Automação da inicialização de apps</translation>
+<translation id="1985545260037812875">Mostrar a tela de configuração do tamanho de exibição durante o login</translation>
 <translation id="1985598967415986700">A redução do user agent vai poder ser controlada por testes de campo e origem.</translation>
 <translation id="1987789058026551147">Ativar relatórios sobre sessões de quiosque do dispositivo</translation>
 <translation id="1988345404999458987">Oferece as configurações dos servidores de impressão disponíveis.
@@ -2332,6 +2335,7 @@ Essa política é temporária e vai ser removida.</translation>
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  A política só faz a correspondência com base na origem, então os caminhos no padrão do URL serão ignorados.</translation>
 <translation id="3118552207903834734">Permitir que o usuário configure o nome do host do dispositivo</translation>
+<translation id="3120434599585109871">Usar a pesquisa no modo anônimo</translation>
 <translation id="3122082892722698079">Controlar o uso de exceções de conteúdo não seguro</translation>
 <translation id="3125472566440502628">Desativar o recurso Selecionar para ouvir</translation>
 <translation id="3126748868885248792">Botão direito como principal</translation>
@@ -2927,6 +2931,9 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
 <translation id="3608206578291537084">Ativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="3608281460204780443">Mostrar o ícone da Chrome Web Store no acesso rápido do <ph name="PRODUCT_OS_NAME" /> e na página "Nova guia"</translation>
+<translation id="3616490235694929053">Esta política controla se a tela de configuração do tamanho de exibição é mostrada ao usuário durante o primeiro login.
+      Se ela for definida como falsa, a tela não será mostrada.
+      Se definida como verdadeira, a tela será mostrada.</translation>
 <translation id="3622463490728773174">Permitir nova implementação</translation>
 <translation id="3623332696371971798">Impedir acesso do app de personalização ao Google Fotos</translation>
 <translation id="3627678165642179114">Ativar ou desativar serviço da web de verificação ortográfica</translation>
@@ -4692,6 +4699,7 @@ Se a política não for definida ou se a lista não tiver referências de imagem
 <translation id="528302483493794684">Uma configuração da VM. Indica um tipo de VM que o usuário pode instalar, que vai ser persistentemente associado ao ID dessa configuração e aos controles válidos para esse tipo de VM.</translation>
 <translation id="5283457834853986457">Desativar o localizador de plug-ins (uso suspenso)</translation>
 <translation id="5286579716704722323">Permitir que os usuários ignorem páginas de aviso SSL</translation>
+<translation id="5288713554963040955">Permitir que a tela de configuração do tamanho de exibição seja mostrada durante o login</translation>
 <translation id="5288772341821359899">Se a política for configurada, o alcance da porta UDP usado por WebRTC será restrito ao intervalo de porta especificado (endpoints inclusos).
 
       Se a política não for configurada ou for definida para a string em branco ou um alcance de porta inválido, o WebRTC terá permissão para usar qualquer porta UDP local disponível.</translation>
@@ -7802,6 +7810,7 @@ também é seguro.</translation>
       Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
       Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="8050080920415773384">Impressão nativa</translation>
+<translation id="8055051642109241571">Ativar a pesquisa no modo anônimo</translation>
 <translation id="8056237304861875584">Permitir que a continuação da tarefa do recurso "Seu smartphone" seja ativada.</translation>
 <translation id="8056273037819805106">As credenciais de login do <ph name="PRODUCT_OS_NAME" /> serão usadas para a autenticação de rede para um proxy gerenciado.</translation>
 <translation id="8056800559672904373">Uma conta gerenciada precisa ser a principal e não pode ter contas secundárias. A importação de dados de navegação existentes é permitida no momento da criação do perfil</translation>
@@ -8554,6 +8563,9 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
 <translation id="8728854710675158426">Os hashes não seguros nos handshakes do TLS estão ativados</translation>
 <translation id="8734543507835977857">Iniciar atrasos no gerenciamento de energia e limites de duração da sessão no início dela</translation>
 <translation id="8736538322216687231">Aplicar o Modo restrito mínimo do YouTube</translation>
+<translation id="874149307422233209">Esta política permite que os administradores controlem como o Google processa os dados dos usuários enviados à Pesquisa pelos recursos do <ph name="PRODUCT_OS_NAME" />.
+Quando ela está ativada, o usuário pode usar a caixa de pesquisa do acesso rápido do <ph name="PRODUCT_OS_NAME" /> e a caixa de endereço do navegador <ph name="PRODUCT_NAME" /> no <ph name="PRODUCT_OS_NAME" />. Assim, o histórico de pesquisa não é vinculado à identidade da pessoa.
+Quando a política é deixada sem definição ou desativada, os dados do usuário que fez as pesquisas são vinculados à identidade dele.</translation>
 <translation id="8744844164152340112">Controla o tema usado para renderizar a IU na configuração inicial feita pelo usuário e durante a sessão (escuro/claro/automático).
       O modo automático troca automaticamente entre os temas claro e escuro ao amanhecer e ao anoitecer.
       Esta política precisa ser recomendada para dar aos usuários a possibilidade de mudar o tema nas configurações do sistema.</translation>

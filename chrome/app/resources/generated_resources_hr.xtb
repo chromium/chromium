@@ -350,6 +350,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1288300545283011870">Svojstva govora</translation>
 <translation id="1289619947962767206">Ova opcija više nije podržana. Da biste prikazali karticu, upotrijebite <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291119821938122630">Uvjeti upotrebe za uslugu <ph name="MANAGER" /></translation>
+<translation id="1291421198328146277">Poništi tipke</translation>
 <translation id="1292849930724124745">Umetnite pametnu karticu da biste ostali prijavljeni</translation>
 <translation id="1293264513303784526">USB-C uređaj (lijevi priključak)</translation>
 <translation id="1293556467332435079">Datoteke</translation>
@@ -581,6 +582,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1493892686965953381">Čeka se <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Web-lokacije mogu zatražiti korištenje fontova instaliranih na vašem uređaju</translation>
 <translation id="1494429729245089920">Virtualni uređaj <ph name="VM_NAME" /> postoji, ali se čini da nije važeći <ph name="APP_NAME" /> virtualni uređaj. Obratite se administratoru.</translation>
+<translation id="1495201326198374770">Upotreba funkcijskih tipki kao tipki na Chromebookovoj tipkovnici u najgornjem retku</translation>
 <translation id="1495677929897281669">Natrag na karticu</translation>
 <translation id="1498498210836053409">Isključi ljepljivi način prilikom uređivanja teksta (Pametni ljepljivi način)</translation>
 <translation id="1500297251995790841">Nepoznati uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1317,6 +1319,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2105809836724866556">Skriveno: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonski broj}one{# telefonski broj}few{# telefonska broja}other{# telefonskih brojeva}}</translation>
 <translation id="2110941575868943054">Dopušteno je traženje Bluetooth uređaja</translation>
+<translation id="2111238878637848860">Držite tipku pokretača da biste izmjenjivali funkcijske tipke</translation>
 <translation id="211144231511833662">Izbriši vrste</translation>
 <translation id="2111670510994270194">Nova kartica s desne strane</translation>
 <translation id="2112554630428445878">Dobro došli, <ph name="USERNAME" /></translation>
@@ -2363,11 +2366,13 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3000378525979847272">Dopustili ste sljedeće: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Monozvuk</translation>
 <translation id="3001144475369593262">Djetetovi računi</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Nijedna tipka nije prilagođena}=1{Jedna prilagođena tipka}one{{COUNT} prilagođena tipka}few{{COUNT} prilagođene tipke}other{{COUNT} prilagođenih tipki}}</translation>
 <translation id="3001835006423291524">Dodirnite senzor otiska prsta u donjem desnom kutu tipkovnice. Podaci o otisku prsta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Preferirane mreže</translation>
 <translation id="3003623123441819449">CSS predmemorija</translation>
 <translation id="3003828226041301643">Uređaj nije moguće pridružiti domeni. Na računu provjerite imate li ovlasti za dodavanje uređaja.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> izradit će privatnu Wi-Fi vezu.</translation>
+<translation id="3004385386820284928">Prilagodba tipki tipkovnice</translation>
 <translation id="3005574332301273731">Ne prikazuj</translation>
 <translation id="3006881078666935414">Nema podataka o potrošnji</translation>
 <translation id="3007410324195400631">Dodajte napomene o ovoj stranici</translation>
@@ -3383,6 +3388,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="389901847090970821">Odaberite tipkovnicu</translation>
 <translation id="3900966090527141178">Izvoz zaporki</translation>
 <translation id="3902789559055749153">Odaberite kako želite izraditi pristupni ključ za aplikaciju <ph name="APP_NAME" /></translation>
+<translation id="3903158219409898205">Upotrijebite tipku pokretača da biste promijenili ponašanje tipki na Chromebookovoj tipkovnici u najgornjem retku</translation>
 <translation id="3903187154317825986">Ugrađena tipkovnica</translation>
 <translation id="3904326018476041253">Usluge lokacije</translation>
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
@@ -3793,6 +3799,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4279129444466079448">Na ovom uređaju možete instalirati najviše <ph name="PROFILE_LIMIT" /> eSIM profila. Da biste dodali još jedan profil, trebate ukloniti jedan od postojećih.</translation>
 <translation id="4280325816108262082">Veza s uređajem prekinut će se automatski kad se uređaj isključi ili ne upotrebljava</translation>
 <translation id="4281844954008187215">Uvjeti upotrebe usluge</translation>
+<translation id="428200245206114206">F tipke odsad će se ponašati kao tipke na Chromebookovoj tipkovnici u najgornjem retku.</translation>
 <translation id="4282196459431406533">Smart Lock uključen</translation>
 <translation id="4284903252249997120">Čitač zaslona ChromeVox i odabir za govor</translation>
 <translation id="4285418559658561636">Ažuriraj zaporku</translation>
@@ -4580,6 +4587,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4991420928586866460">Smatraj tipke najvišeg retka funkcijskim tipkama</translation>
 <translation id="4992458225095111526">Potvrda Powerwasha</translation>
 <translation id="4992473555164495036">Vaš je administrator ograničio dostupne načine unosa.</translation>
+<translation id="4994426888044765950">Ako dulje pritisnete tipku, njezin će se znak ponoviti</translation>
 <translation id="4994754230098574403">Postavljanje</translation>
 <translation id="4995293419989417004">Saznajte više o temama oglasa</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nije pronađen nijedan <ph name="VM_TYPE" /> VM}=1{Pronađen je jedan <ph name="VM_TYPE" /> VM: <ph name="VM_NAME_LIST" />}one{Pronađen je {NUM_VMS} <ph name="VM_TYPE" /> VM: <ph name="VM_NAME_LIST" />}few{Pronađena su {NUM_VMS} <ph name="VM_TYPE" /> VM-a: <ph name="VM_NAME_LIST" />}other{Pronađeno je {NUM_VMS} <ph name="VM_TYPE" /> VM-ova: <ph name="VM_NAME_LIST" />}}</translation>
@@ -6128,6 +6136,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6410328738210026208">Promijeni kanal i pokreni Powerwash</translation>
 <translation id="6410390304316730527">Sigurno pregledavanje štiti vas od napadača koji vas mogu na prijevaru pokušati navesti da napravite nešto opasno kao što je instaliranje zlonamjernog softvera ili otkrivanje osobnih podataka kao što su zaporke, telefonski brojevi ili kreditne kartice. Ako ga isključite, pripazite kada pregledavate nepoznate ili nepouzdane web-lokacije.</translation>
 <translation id="6410668567036790476">Dodavanje tražilice</translation>
+<translation id="6411135999030237579">Pritisnite i zadržite za automatsko ponavljanje tipke</translation>
 <translation id="641469293210305670">Instaliranje ažuriranja i aplikacija</translation>
 <translation id="6414878884710400018">Otvori postavke sustava</translation>
 <translation id="6415816101512323589">Želite li uključiti oporavak lokalnih podataka radi zaštite svojih podataka?</translation>
@@ -8807,6 +8816,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 
         &lt;p&gt;Još uvijek možete konfigurirati putem naredbenog retka. Pogledajte &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; za više informacija o oznakama i varijablama okruženja.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Izvršavanje zadataka povezanih sa sigurnošću za vašu organizaciju, kao što je upravljanje certifikatima i ključevima pohranjenim na uređaju</translation>
+<translation id="875532100880844232">Odaberite radnju za svaki ključ za uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Veći</translation>
 <translation id="8755584192133371929">Odaberite karticu za dijeljenje</translation>
 <translation id="875604634276263540">URL slike nije važeći</translation>
@@ -9334,6 +9344,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplikacija nije podržana)</translation>
 <translation id="9219582468404818260">Pomozite nam stvoriti bolji web</translation>
+<translation id="9219741625496141320">Podaci o pregledavanju automatski su izbrisani</translation>
 <translation id="9220525904950070496">Uklanjanje računa</translation>
 <translation id="9220723036554088545">prenesite datoteku</translation>
 <translation id="9220820413868316583">Podignite, a zatim pokušajte ponovo.</translation>

@@ -1034,6 +1034,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3531780078352352885">Delovni listi</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi uporabiti vaš mikrofon</translation>
 <translation id="3533328374079021623">Nabiralnik 5</translation>
+<translation id="3536227077203206203">Tokrat dovoljeno</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Slika na kartici</translation>
 <translation id="3542768452570884558">Odpri povezavo v novem oknu</translation>
@@ -2453,6 +2454,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7030436163253143341">Potrdilo ni veljavno</translation>
 <translation id="7031646650991750659">Katere aplikacije iz Googla Play ste namestili</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati nastavitve zasebnosti v računu Google.</translation>
+<translation id="7044081119134178347">Kamera je tokrat dovoljena</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Poskusili ste odpreti <ph name="DOMAIN" />, vendar je strežnik uporabil potrdilo, ki ima predolgo obdobje veljavnosti, da bi bilo verodostojno.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Te kartice trenutno ni mogoče shraniti}one{Teh kartic trenutno ni mogoče shraniti}two{Teh kartic trenutno ni mogoče shraniti}few{Teh kartic trenutno ni mogoče shraniti}other{Teh kartic trenutno ni mogoče shraniti}}</translation>
@@ -3045,6 +3047,7 @@ Dodatne podrobnosti:
 <translation id="8416694386774425977">Omrežna konfiguracija je neveljavna in je ni mogoče uvoziti.
 Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon je tokrat dovoljen</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
@@ -3100,6 +3103,7 @@ Dodatne podrobnosti:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ponastavi dovoljenje}one{Ponastavi dovoljenja}two{Ponastavi dovoljenja}few{Ponastavi dovoljenja}other{Ponastavi dovoljenja}}</translation>
 <translation id="8555010941760982128">Na blagajni uporabite to kodo</translation>
 <translation id="8557066899867184262">CVC je na zadnji strani kartice.</translation>
+<translation id="8558347880669160417">Kamera in mikrofon sta tokrat dovoljena</translation>
 <translation id="8559762987265718583">Zasebne povezave z domeno <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ni mogoče vzpostaviti, ker sta datum in ura (<ph name="DATE_AND_TIME" />) v napravi nepravilna.</translation>
 <translation id="8564182942834072828">Ločeni dokumenti/nezbrane kopije</translation>
 <translation id="8564985650692024650">Chromium priporoča, da ponastavite geslo za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
@@ -3216,6 +3220,7 @@ Dodatne podrobnosti:
 <translation id="8870494189203302833">V istem vrstnem redu s tiskom na spodnji strani</translation>
 <translation id="8870700989640064057">Želite natisniti zaupno datoteko?</translation>
 <translation id="8871553383647848643">Prilagajanje videza brskalnika</translation>
+<translation id="8871603420762394026">Chrome zdaj deli samo zelo omejene podatke s spletnimi mesti, na primer takrat, ko vam je bil prikazan oglas, da bi spletnim mestom pomagal meriti uspešnost oglasov.</translation>
 <translation id="8874824191258364635">Vnesite veljavno številko kartice</translation>
 <translation id="8876033571432926051">Priložnostne igre</translation>
 <translation id="8877780815363510165">Ribarjenje</translation>
@@ -3369,6 +3374,7 @@ Dodatne podrobnosti:
 <translation id="949314938206378263">Prosil(-a) si za dovoljenje za obisk tega spletnega mesta. Starš lahko odgovori v storitvi Family Link.</translation>
 <translation id="950736567201356821">Trojno luknjanje zgoraj</translation>
 <translation id="961663415146723894">Vezava spodaj</translation>
+<translation id="961930410699694996">Lokacija je tokrat dovoljena</translation>
 <translation id="962484866189421427">Ta vsebina lahko poskusi namestiti zavajajoče aplikacije, ki se izdajajo za kaj drugega ali zbirajo podatke, s katerimi vas je mogoče spremljati. <ph name="BEGIN_LINK" />Vseeno pokaži<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Vsi uporabniki</translation>
 <translation id="964050462028070434">Upravljanje gesel in ključev za dostop …</translation>

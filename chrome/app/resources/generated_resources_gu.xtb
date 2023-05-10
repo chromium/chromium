@@ -349,6 +349,7 @@
 <translation id="1288300545283011870">વાણીના ઇનપુટ નિયંત્રણોનું વિવરણ</translation>
 <translation id="1289619947962767206">આ વિકલ્પને હવેથી સપોર્ટ કરવામાં આવતો નથી. કોઈ ટૅબ પ્રસ્તુત કરવા માટે, <ph name="GOOGLE_MEET" />નો ઉપયોગ કરો.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" />ની સેવાની શરતો</translation>
+<translation id="1291421198328146277">કી રીસેટ કરો</translation>
 <translation id="1292849930724124745">સાઇન ઇન થયેલા રહેવા માટે સ્માર્ટ કાર્ડ દાખલ કરો</translation>
 <translation id="1293264513303784526">USB-C ઉપકરણ (ડાબું પોર્ટ)</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -580,6 +581,7 @@
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> માટે પ્રતીક્ષારત...</translation>
 <translation id="1494349716233667318">સાઇટ તમારા ડિવાઇસમાં ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="1494429729245089920">વર્ચ્યુઅલ મશીન "<ph name="VM_NAME" />" અસ્તિત્વમાં છે, પણ એવું નથી લાગતું કે તે કોઈ માન્ય <ph name="APP_NAME" /> વર્ચ્યુઅલ મશીન છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="1495201326198374770">Chromebookની સૌથી ઉપરની પંક્તિમાં આવેલી કી તરીકે ફંક્શન કીનો ઉપયોગ કરો</translation>
 <translation id="1495677929897281669">ટૅબ પર પાછા જાઓ</translation>
 <translation id="1498498210836053409">ટેક્સ્ટમાં ફેરફાર કરતી વખતે સ્ટીકી મોડ બંધ કરો (સ્માર્ટ સ્ટીકી મોડ)</translation>
 <translation id="1500297251995790841">અજાણ્યું ઉપકરણ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1312,6 +1314,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> છુપાવેલા છે</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ફોન નંબર}one{# ફોન નંબર}other{# ફોન નંબર}}</translation>
 <translation id="2110941575868943054">બ્લૂટૂથ ડિવાઇસ શોધવા માટે મંજૂરી છે</translation>
+<translation id="2111238878637848860">ફંક્શન કીની વચ્ચે કી બદલવા માટે લૉન્ચર કીને દબાવી રાખો</translation>
 <translation id="211144231511833662">ડિવાઇસના પ્રકારો સાફ કરો</translation>
 <translation id="2111670510994270194">જમણી બાજુએ નવું ટૅબ</translation>
 <translation id="2112554630428445878">સ્વાગત છે, <ph name="USERNAME" /></translation>
@@ -1991,6 +1994,7 @@
 <translation id="2682498795777673382">તમારા માતાપિતા પાસે અપડેટ કરાવો</translation>
 <translation id="2683638487103917598">ફોલ્ડર સૉર્ટ કર્યુ</translation>
 <translation id="2684004000387153598">ચાલુ રાખવા માટે, ઓકે ક્લિક કરો, પછી તમારા ઇમેઇલ ઍડ્રેસ માટે નવી પ્રોફાઇલ બનાવવા માટે વ્યક્તિ ઉમેરો પર ક્લિક કરો.</translation>
+<translation id="2685193395980129388">મંજૂરીપ્રાપ્ત – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
 <translation id="2687407218262674387">Googleની સેવાની શરતો</translation>
 <translation id="2687621393791886981">મને થોડા સમય પછી પૂછો</translation>
@@ -2357,11 +2361,13 @@
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ને મંજૂરી આપી</translation>
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
 <translation id="3001144475369593262">બાળકના એકાઉન્ટ</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{કસ્ટમાઇઝ કરેલી કોઈ કી નથી}=1{1 કસ્ટમાઇઝ કરેલી કી}one{{COUNT} કસ્ટમાઇઝ કરેલી કી}other{{COUNT} કસ્ટમાઇઝ કરેલી કી}}</translation>
 <translation id="3001835006423291524">તમારા કીબોર્ડના સૌથી નીચેના જમણા ખૂણાના ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો. તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="3003144360685731741">પસંદગીના નેટવર્ક્સ</translation>
 <translation id="3003623123441819449">CSS કૅશ મેમરી</translation>
 <translation id="3003828226041301643">ઉપકરણ ડોમેન સાથે જોડી શકાતું નથી. તમારી પાસે ઉપકરણો ઉમેરવા માટેના વિશેષાધિકાર હોવાની ખાતરી કરવા માટે તમારું એકાઉન્ટ ચેક કરો.</translation>
 <translation id="3003967365858406397">તમારો <ph name="PHONE_NAME" /> ફોન એક ખાનગી વાઇ-ફાઇ કનેક્શન બનાવશે.</translation>
+<translation id="3004385386820284928">કીબોર્ડની કીને કસ્ટમાઇઝ કરો</translation>
 <translation id="3005574332301273731">બતાવશો નહીં</translation>
 <translation id="3006881078666935414">કોઈ વપરાશ ડેટા નથી</translation>
 <translation id="3007410324195400631">આ પેજ વિશે નોંધ ઉમેરો</translation>
@@ -3377,6 +3383,7 @@
 <translation id="389901847090970821">કીબોર્ડ પસંદ કરો</translation>
 <translation id="3900966090527141178">પાસવર્ડની નિકાસ કરો</translation>
 <translation id="3902789559055749153"><ph name="APP_NAME" /> માટે તમે પાસકી કેવી રીતે બનાવવા માગો છો, તે પસંદ કરો</translation>
+<translation id="3903158219409898205">Chromebookની સૌથી ઉપરની પંક્તિમાં આવેલી કીના વર્તનને બદલવા માટે લૉન્ચર કીનો ઉપયોગ કરો</translation>
 <translation id="3903187154317825986">બિલ્ટ-ઇન કીબોર્ડ</translation>
 <translation id="3904326018476041253">સ્થાન સેવાઓ</translation>
 <translation id="3905761538810670789">ઍપ્લિકેશન સુધારો</translation>
@@ -3787,6 +3794,7 @@
 <translation id="4279129444466079448">તમે આ ડિવાઇસ પર વધુમાં વધુ <ph name="PROFILE_LIMIT" /> ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરી શકો છો. અન્ય કોઈ પ્રોફાઇલ ઉમેરવા માટે, પહેલાં હાલની પ્રોફાઇલ કાઢી નાખો.</translation>
 <translation id="4280325816108262082">ડિવાઇસ જ્યારે બંધ કરવામાં આવે અથવા ઉપયોગમાં ન હોય, ત્યારે તે ઑટોમૅટિક રીતે ડિસ્કનેક્ટ થઈ જશે</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
+<translation id="428200245206114206">F કી હવે તમારી Chromebookની સૌથી ઉપરની પંક્તિમાં આવેલી કી જેવું વર્તન કરે છે.</translation>
 <translation id="4282196459431406533">Smart Lock ચાલુ કરેલું છે</translation>
 <translation id="4284903252249997120">ChromeVox સ્ક્રીન રીડર અને 'સાંભળવા માટે પસંદ કરો' સુવિધા</translation>
 <translation id="4285418559658561636">પાસવર્ડ અપડેટ કરો</translation>
@@ -4574,6 +4582,7 @@
 <translation id="4991420928586866460">શીર્ષ-પંક્તિની કીઝને ફંક્શન કીઝ તરીકે ધ્યાનમાં લો</translation>
 <translation id="4992458225095111526">Powerwash ની પુષ્ટિ કરો</translation>
 <translation id="4992473555164495036">તમારા વ્યવસ્થાપકે ઉપલબ્ધ ઇનપુટ પદ્ધતિઓને મર્યાદિત કરેલ છે.</translation>
+<translation id="4994426888044765950">જો તમે કોઈ કી દબાવી રાખશો, તો કીનો અક્ષર રિપીટ થશે</translation>
 <translation id="4994754230098574403">સેટ કરી રહ્યા છીએ</translation>
 <translation id="4995293419989417004">જાહેરાતના વિષયો વિશે વધુ જાણો</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{કોઈ <ph name="VM_TYPE" /> VMs મળ્યું નથી}=1{1 <ph name="VM_TYPE" /> VM મળ્યું: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VMs મળ્યું: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VMs મળ્યા: <ph name="VM_NAME_LIST" />}}</translation>
@@ -6127,6 +6136,7 @@ USB ડિવાઇસ</translation>
 <translation id="6410328738210026208">ચેનલ બદલો અને Powerwash કરો</translation>
 <translation id="6410390304316730527">Safe Browsing એવા હુમલાખોરોથી તમારું રક્ષણ કરી શકે છે જે તમને દુર્ભાવનાપૂર્ણ સૉફ્ટવેર ઇન્સ્ટૉલ કરવા અથવા પાસવર્ડ, ફોન નંબર અથવા ક્રેડિટ કાર્ડ જેવી વ્યક્તિગત માહિતી જાહેર કરવા જેવી જોખમી બાબતો કરવા ગેરમાર્ગે દોરી શકે છે. જો તમે આ બંધ કરો, તો અજાણી અથવા ભરોસાપાત્ર ન હોય એવી સાઇટ બ્રાઉઝ કરતી વખતે સાવધાન રહેજો.</translation>
 <translation id="6410668567036790476">શોધ એન્જિન ઉમેરો</translation>
+<translation id="6411135999030237579">કીને ઑટોમેટિક રીતે રિપીટ કરવા માટે દબાવી રાખો</translation>
 <translation id="641469293210305670">અપડેટ અને ઍપ ઇન્સ્ટૉલ કરો</translation>
 <translation id="6414878884710400018">સિસ્ટમની પસંદગીઓ ખોલો</translation>
 <translation id="6415816101512323589">તમારા ડેટાને સુરક્ષિત રાખવા માટે સ્થાનિક ડેટા રિકવરી ચાલુ કરીએ?</translation>
@@ -8798,6 +8808,7 @@ USB ડિવાઇસ</translation>
 
          &lt;p&gt;પણ તમે કમાન્ડ લાઇન દ્વારા હજી પણ ગોઠવી શકો છો. કૃપા કરીને ફ્લેગ અને વાતાવરણ વેરિએબલ પર વધુ માહિતી માટે &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; જુઓ.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">તમારી સંસ્થા માટે સુરક્ષા સંબંધિત કાર્યો કરો, જેમ કે ડિવાઇસ પર સ્ટોર કરેલા પ્રમાણપત્રો અને કી મેનેજ કરવા</translation>
+<translation id="875532100880844232"><ph name="DEVICE_NAME" /> માટે, દરેક કી માટે ક્રિયા પસંદ કરો</translation>
 <translation id="8755376271068075440">&amp;વધુ મોટું</translation>
 <translation id="8755584192133371929">શેર કરવા માટે, કોઈ ટૅબ પસંદ કરો</translation>
 <translation id="875604634276263540">છબીનું url અમાન્ય છે</translation>
@@ -9324,6 +9335,7 @@ USB ડિવાઇસ</translation>
 <translation id="9218430445555521422">ડિફોલ્ટ તરીકે સેટ કરો</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (સપોર્ટ ન કરવામાં આવતી ઍપ)</translation>
 <translation id="9219582468404818260">વેબને વધુ સારું બનાવવામાં અમારી સહાય કરો</translation>
+<translation id="9219741625496141320">બ્રાઉઝિંગ ડેટા ઑટોમેટિક રીતે ડિલીટ કરી નાખવામાં આવ્યો હતો</translation>
 <translation id="9220525904950070496">એકાઉન્ટ દૂર કરો</translation>
 <translation id="9220723036554088545">ફાઇલ અપલોડ કરો</translation>
 <translation id="9220820413868316583">આંગળી ઉપાડી લો પછી ફરી પ્રયાસ કરો.</translation>

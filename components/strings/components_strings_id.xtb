@@ -1033,6 +1033,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3531780078352352885">Lembar tugas</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ingin menggunakan mikrofon Anda</translation>
 <translation id="3533328374079021623">Kotak surat 5</translation>
+<translation id="3536227077203206203">Diizinkan kali ini</translation>
 <translation id="3537165859691846083">Surat Plus</translation>
 <translation id="3542628208405253498">Gambar kartu</translation>
 <translation id="3542768452570884558">Buka Link di Jendela Baru</translation>
@@ -2452,6 +2453,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7030436163253143341">Sertifikat tidak valid</translation>
 <translation id="7031646650991750659">Aplikasi Google Play yang telah diinstal</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk mengelola setelan privasi Akun Google Anda</translation>
+<translation id="7044081119134178347">Kamera diizinkan kali ini</translation>
 <translation id="7048095965575426564">Eropa Fanfold</translation>
 <translation id="7050187094878475250">Anda berusaha menjangkau <ph name="DOMAIN" />, namun server memberikan sertifikat yang masa berlakunya terlalu lama untuk dapat dipercaya.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kartu ini tidak dapat disimpan sekarang}other{Kartu-kartu ini tidak dapat disimpan sekarang}}</translation>
@@ -3040,6 +3042,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8412145213513410671">Ngadat (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Anda harus memasukkan frasa sandi yang sama dua kali.</translation>
 <translation id="8416694386774425977">Konfigurasi jaringan tidak valid dan tidak dapat diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon diizinkan kali ini</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Setelan</translation>
@@ -3095,6 +3098,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Reset izin}other{Reset izin}}</translation>
 <translation id="8555010941760982128">Gunakan kode ini saat checkout</translation>
 <translation id="8557066899867184262">CVC terletak di bagian belakang kartu Anda.</translation>
+<translation id="8558347880669160417">Kamera dan mikrofon diizinkan kali ini</translation>
 <translation id="8559762987265718583">Sambungan pribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak dapat dibuat karena tanggal dan waktu (<ph name="DATE_AND_TIME" />) perangkat tidak benar.</translation>
 <translation id="8564182942834072828">Dokumen terpisah/Salinan tidak tersusun</translation>
 <translation id="8564985650692024650">Chromium menyarankan untuk menyetel ulang sandi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika Anda juga menggunakannya di situs lain.</translation>
@@ -3211,6 +3215,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8870494189203302833">Urutan yang sama menghadap ke bawah</translation>
 <translation id="8870700989640064057">Cetak file rahasia?</translation>
 <translation id="8871553383647848643">Sesuaikan tampilan browser Anda</translation>
+<translation id="8871603420762394026">Chrome sekarang hanya membagikan informasi yang sangat terbatas antar situs, seperti kapan iklan ditampilkan kepada Anda, untuk membantu situs mengukur performa iklan.</translation>
 <translation id="8874824191258364635">Masukkan nomor kartu yang valid</translation>
 <translation id="8876033571432926051">Game kasual</translation>
 <translation id="8877780815363510165">Memancing</translation>
@@ -3364,6 +3369,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="949314938206378263">Kamu meminta untuk membuka situs ini. Orang tuamu bisa membalas di Family Link.</translation>
 <translation id="950736567201356821">Tiga lubang di atas</translation>
 <translation id="961663415146723894">Jilid bawah</translation>
+<translation id="961930410699694996">Lokasi diizinkan kali ini</translation>
 <translation id="962484866189421427">Konten ini mungkin mencoba menginstal aplikasi penipuan dengan berpura-pura menjadi sesuatu yang lain atau mengumpulkan data yang dapat digunakan untuk melacak Anda. <ph name="BEGIN_LINK" />Tampilkan saja<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Semua pengguna</translation>
 <translation id="964050462028070434">Kelola Sandi dan Passkeys…</translation>

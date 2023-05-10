@@ -1034,6 +1034,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3531780078352352885">Radni listovi</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi da koristi mikrofon</translation>
 <translation id="3533328374079021623">5. poštansko sanduče</translation>
+<translation id="3536227077203206203">Dozvoljeno ovaj put</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Slika kartice</translation>
 <translation id="3542768452570884558">Otvori link u novom prozoru</translation>
@@ -1357,6 +1358,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4287495839370498922">Poboljšana privatnost sa oglasima u Chrome-u</translation>
 <translation id="4287885627794386150">Ispunjava uslove za probu, ali nije aktivno</translation>
 <translation id="4290920330097335010">Nikada ne dozvoli</translation>
+<translation id="4296207570293932800">Sada je dostupna nova funkcija za privatnost sa oglasima</translation>
 <translation id="4297502707443874121">Sličica za <ph name="THUMBNAIL_PAGE" />. stranicu</translation>
 <translation id="4298000214066716287">Investiranje</translation>
 <translation id="42981349822642051">Proširite</translation>
@@ -1628,6 +1630,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953689047182316270">odgovara na događaje pristupačnosti</translation>
 <translation id="4958444002117714549">Proširi listu</translation>
+<translation id="4960068118612257147">Možete da unesete promene u Chrome podešavanjima privatnosti sa oglasima</translation>
 <translation id="4964505745997821360">Zdravstveno osiguranje</translation>
 <translation id="4968522289500246572">Ova aplikacija je dizajnirana za mobilne uređaje i možda neće promeniti veličinu na pravilan način. Možda će imati probleme ili se restartovati.</translation>
 <translation id="4968665849807487749">Može da traži da upravlja prozorima na svim ekranima</translation>
@@ -2450,6 +2453,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7030436163253143341">Sertifikat nije važeći</translation>
 <translation id="7031646650991750659">Google Play koje aplikacije ste instalirali</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali podešavanjima privatnosti Google naloga</translation>
+<translation id="7044081119134178347">Kamera je dozvoljena ovaj put</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Pokušali ste da posetite <ph name="DOMAIN" />, ali je server predstavio sertifikat sa periodom važenja koji je predugačak da bi bio pouzdan.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ova kartica trenutno ne može da se sačuva}one{Ove kartice trenutno ne mogu da se sačuvaju}few{Ove kartice trenutno ne mogu da se sačuvaju}other{Ove kartice trenutno ne mogu da se sačuvaju}}</translation>
@@ -3042,6 +3046,7 @@ Dodatni detalji:
 <translation id="8416694386774425977">Konfiguracija mreže je nevažeća i ne može da se uveze.
 Dodatni detalji:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500×750 mm</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
@@ -3097,6 +3102,7 @@ Dodatni detalji:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetuj dozvolu}one{Resetuj dozvole}few{Resetuj dozvole}other{Resetuj dozvole}}</translation>
 <translation id="8555010941760982128">Koristite ovaj kôd pri plaćanju</translation>
 <translation id="8557066899867184262">CVC je na poleđini kartice.</translation>
+<translation id="8558347880669160417">Kamera i mikrofon su dozvoljeni ovaj put</translation>
 <translation id="8559762987265718583">Nije moguće uspostaviti privatnu vezu sa domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer datum i vreme na uređaju (<ph name="DATE_AND_TIME" />) nisu tačni.</translation>
 <translation id="8564182942834072828">Odvojeni dokumenti/nesređene kopije</translation>
 <translation id="8564985650692024650">Chromium vam preporučuje da resetujete lozinku za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako ste je koristili na drugim sajtovima.</translation>
@@ -3214,6 +3220,7 @@ Dodatni detalji:
 <translation id="8870494189203302833">Istim redosledom sa odštampanom stranom nadole</translation>
 <translation id="8870700989640064057">Želite da štampate poverljivi fajl?</translation>
 <translation id="8871553383647848643">Prilagodite izgled pregledača</translation>
+<translation id="8871603420762394026">Chrome sada deli samo vrlo ograničene informacije između sajtova, na primer, kada vam je oglas prikazan, da bi pomogao sajtovima da mere učinak oglasa.</translation>
 <translation id="8874824191258364635">Unesite važeći broj kartice</translation>
 <translation id="8876033571432926051">Igre za opuštanje</translation>
 <translation id="8877780815363510165">Pecanje</translation>
@@ -3367,6 +3374,7 @@ Dodatni detalji:
 <translation id="949314938206378263">Zatražili ste da posetite ovaj sajt. Roditelj može da odgovori u Family Link-u.</translation>
 <translation id="950736567201356821">Trostruko bušenje na vrhu</translation>
 <translation id="961663415146723894">Povez na dnu</translation>
+<translation id="961930410699694996">Lokacija je dozvoljena ovaj put</translation>
 <translation id="962484866189421427">Ovaj sadržaj možda pokušava da instalira obmanjujuće aplikacije koje se pretvaraju da su nešto drugo ili da prikupljaju podatke koji mogu da se koriste za praćenje. <ph name="BEGIN_LINK" />Prikaži<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Svi korisnici</translation>
 <translation id="964050462028070434">Upravljajte lozinkama i pristupnim kodovima…</translation>

@@ -1034,6 +1034,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3531780078352352885">Uzdevuma lapas</translation>
 <translation id="3532844647053365774">Vietnē <ph name="HOST" /> tiek pieprasīta atļauja lietot jūsu mikrofonu.</translation>
 <translation id="3533328374079021623">5. pastkaste</translation>
+<translation id="3536227077203206203">Šoreiz atļauts</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kartes attēls</translation>
 <translation id="3542768452570884558">Atvērt saiti jaunā logā</translation>
@@ -1671,6 +1672,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5045550434625856497">Nepareiza parole</translation>
 <translation id="5051305769747448211">Komiķu uzstāšanās</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
+<translation id="5060419232449737386">Subtitru iestatījumi</translation>
 <translation id="5060483733937416656">Jūs izvēlējāties veikt verifikāciju ar Windows Hello tīmekļa vietnēs, kas izmanto <ph name="PROVIDER_ORIGIN" /> pakalpojumus. Šis pakalpojumu sniedzējs, iespējams, ir saglabājis informāciju par jūsu maksājuma veidu, un jūs varat <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Vai domājāt <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Drukāšanas vēsture</translation>
@@ -2452,6 +2454,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7030436163253143341">Sertifikāts nav derīgs</translation>
 <translation id="7031646650991750659">Kuras Google Play lietotnes esat instalējis</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu sava Google konta konfidencialitātes iestatījumus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
+<translation id="7044081119134178347">Ir atļauts šoreiz izmantot kameru</translation>
 <translation id="7048095965575426564">Fanfold (Eiropa)</translation>
 <translation id="7050187094878475250">Jūs mēģinājāt sasniegt domēnu <ph name="DOMAIN" />, bet serveris uzrādīja sertifikātu, kura derīguma periods ir pārāk ilgs, lai būtu uzticams.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Šo karti pašlaik nevar saglabāt}zero{Pašlaik nevar saglabāt šīs kartes}one{Pašlaik nevar saglabāt šīs kartes}other{Pašlaik nevar saglabāt šīs kartes}}</translation>
@@ -3044,6 +3047,7 @@ Papildu informācija:
 <translation id="8416694386774425977">Tīkla konfigurācija nav derīga, un to nevarēja importēt.
 Papildu informācija:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Ir atļauts šoreiz izmantot mikrofonu</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
@@ -3099,6 +3103,7 @@ Papildu informācija:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Atiestatīt atļauju}zero{Atiestatīt atļaujas}one{Atiestatīt atļaujas}other{Atiestatīt atļaujas}}</translation>
 <translation id="8555010941760982128">Norēķinoties izmantojiet šo kodu</translation>
 <translation id="8557066899867184262">CVC kods ir norādīts jūsu kartes aizmugurē.</translation>
+<translation id="8558347880669160417">Ir atļauts šoreiz izmantot kameru un mikrofonu</translation>
 <translation id="8559762987265718583">Nevar izveidot privātu savienojumu ar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, jo jūsu ierīces datums un laiks (<ph name="DATE_AND_TIME" />) nav pareizs.</translation>
 <translation id="8564182942834072828">Atsevišķi dokumenti/nesakārtotu lapu kopijas</translation>
 <translation id="8564985650692024650">Chromium iesaka atiestatīt jūsu <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> paroli, ja izmantojāt to citās vietnēs.</translation>
@@ -3216,6 +3221,7 @@ Papildu informācija:
 <translation id="8870494189203302833">Tāda pati secība, virspuse uz leju</translation>
 <translation id="8870700989640064057">Vai drukāt konfidenciālu failu?</translation>
 <translation id="8871553383647848643">Pielāgot pārlūka izskatu</translation>
+<translation id="8871603420762394026">Lai palīdzētu vietnēm novērtēt reklāmu veiktspēju, Chrome tagad starp dažādām vietnēm kopīgo tikai ļoti ierobežotu informāciju, piemēram, par laiku, kad jums tika parādīta noteikta reklāma.</translation>
 <translation id="8874824191258364635">Ievadiet derīgu kartes numuru</translation>
 <translation id="8876033571432926051">Vienkāršas spēles</translation>
 <translation id="8877780815363510165">Makšķerēšana</translation>
@@ -3369,6 +3375,7 @@ Papildu informācija:
 <translation id="949314938206378263">Jūs lūdzāt atļauju apmeklēt šo vietni. Kāds no jūsu vecākiem var atbildēt lietotnē Family Link.</translation>
 <translation id="950736567201356821">Trīs caurumi augšdaļā</translation>
 <translation id="961663415146723894">Iesējums apakšdaļā</translation>
+<translation id="961930410699694996">Ir atļauts šoreiz izmantot atrašanās vietas datus</translation>
 <translation id="962484866189421427">Šis saturs jūsu ierīcē var mēģināt instalēt maldinošas lietotnes, kas tiek uzdodas par cita veida saturu, vai vākt datus, kas var tikt izmantoti jūsu izsekošanai. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
 <translation id="963837307749850257">Visi lietotāji</translation>
 <translation id="964050462028070434">Pārvaldīt paroles un piekļuves atslēgas…</translation>

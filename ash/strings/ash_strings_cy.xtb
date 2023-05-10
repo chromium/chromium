@@ -460,6 +460,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="316086887565479535">Apiau heb eu cefnogi mewn templed</translation>
 <translation id="3161500364292033097">Cau desg a ffenestri</translation>
 <translation id="316356270129335934">Mae <ph name="MANAGER" /> yn rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
+<translation id="3171170659304083361">Gosodiadau dulliau mewnbynnu</translation>
 <translation id="3181441307743005334">Mae'n bosib y bydd ailgychwyn yn cymryd peth amser</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Wedi'i gysylltu â dyfais}zero{Wedi'i gysylltu â # dyfais}two{Wedi'i gysylltu â # ddyfais}few{Wedi'i gysylltu â # dyfais}many{Wedi'i gysylltu â # dyfais}other{Wedi'i gysylltu â # dyfais}}</translation>
 <translation id="320207200541803018">Gosod amserydd</translation>
@@ -1112,6 +1113,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6074087755403037157">Sianel Beta</translation>
 <translation id="6093867385179428431">Analluogwyd gan y gweinyddwr</translation>
 <translation id="6095008505822982596">Cyfradd lleferydd</translation>
+<translation id="6095425951508823973">Ychwanegu cysylltiad â <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Golygwyd yn y mis diwethaf</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Wedi lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>

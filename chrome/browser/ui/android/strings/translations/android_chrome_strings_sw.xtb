@@ -285,6 +285,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="2587052924345400782">Toleo jipya linapatikana.</translation>
 <translation id="2593272815202181319">Nafasi moja</translation>
 <translation id="2603212228005142861">Ingia katika akaunti ili udhibiti mapendeleo</translation>
+<translation id="260403163289591229">Unayofuatilia</translation>
 <translation id="2604446170045642109">Unaweza kuzima mandhari meusi ya tovuti katika mipangilio yako.</translation>
 <translation id="2612676031748830579">Nambari ya kadi</translation>
 <translation id="2625189173221582860">Nenosiri limenakiliwa</translation>
@@ -584,6 +585,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="4198423547019359126">Hakuna maeneno ya upakuaji</translation>
 <translation id="4202218894997543208">Mada ulizozuia</translation>
 <translation id="4214315110991671325">Ukiruhusu vidakuzi, huenda Chrome ikavitumia wakati wa kupakia mapema.</translation>
+<translation id="4225725533026049334">Unafuatilia</translation>
 <translation id="4225895483398857530">Njia ya mkato ya upau wa vidhibiti</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
 <translation id="4248098802131000011">Zuia manenosiri yako dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama</translation>
@@ -846,7 +848,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="562289928968387744">Dhibiti maoni</translation>
 <translation id="5626134646977739690">Jina:</translation>
 <translation id="5628604359369369630">Ambazo hujasoma - Zinapatikana nje ya mtandao</translation>
-<translation id="5635091213277904818">Chrome hufuta kiotomatiki tovuti ambazo zimekuwa katika orodha kwa zaidi ya siku 30. Tovuti unayoitembelea tena huenda ikaonekana tena kwenye orodha. Au unaweza kuzuia tovuti isikupendekezee matangazo.</translation>
+<translation id="5635091213277904818">Chrome hufuta kiotomatiki tovuti zilizohifadhiwa kwa zaidi ya siku 30. Tovuti unayoitembelea tena huenda ikaonekana tena kwenye orodha. Au unaweza kuzuia tovuti isikupendekezee matangazo.</translation>
 <translation id="5639724618331995626">Ruhusu tovuti zote</translation>
 <translation id="5641456720590409793">Huenda <ph name="BEGIN_LINK1" />Historia ya mambo uliyotafuta<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />aina nyingine za shughuli<ph name="END_LINK2" /> zikahifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="564667659802381754">Mwongozo wa Faragha <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
@@ -922,6 +924,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="6005538289190791541">Nenosiri linalopendekezwa</translation>
 <translation id="6011308810877101166">Boresha mapendekezo ya utafutaji</translation>
 <translation id="6026538407078977628">Panua ili ionyeshe skrini nzima</translation>
+<translation id="6030719887161080597">Dhibiti maelezo yanayotumiwa na tovuti kupima utendaji wa matangazo</translation>
 <translation id="6039379616847168523">Nenda kwenye kichupo kinachofuata</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="604124094241169006">Otomatiki</translation>

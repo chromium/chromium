@@ -1033,6 +1033,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3531780078352352885">Auftragsblätter</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> möchte dein Mikrofon verwenden</translation>
 <translation id="3533328374079021623">Ablage 5</translation>
+<translation id="3536227077203206203">Einmal gewährt</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Bild der Karte</translation>
 <translation id="3542768452570884558">Link in neuem Fenster öffnen</translation>
@@ -2451,6 +2452,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7030436163253143341">Zertifikat ist ungültig</translation>
 <translation id="7031646650991750659">Welche Google Play-Apps du installiert hast</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Datenschutzeinstellungen deines Google-Kontos zu verwalten</translation>
+<translation id="7044081119134178347">Kameraberechtigung einmal gewährt</translation>
 <translation id="7048095965575426564">Zickzackfaltung (Europa)</translation>
 <translation id="7050187094878475250">Du hast versucht, <ph name="DOMAIN" /> zu erreichen. Der Server hat jedoch ein Zertifikat präsentiert, dessen Gültigkeitsdauer zu lang ist, um vertrauenswürdig zu sein.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Diese Karte kann momentan nicht gespeichert werden}other{Diese Karten können momentan nicht gespeichert werden}}</translation>
@@ -3043,6 +3045,7 @@ Weitere Details:
 <translation id="8416694386774425977">Die Netzwerkkonfiguration ist ungültig und konnte nicht importiert werden.
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofonberechtigung einmal gewährt</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
@@ -3098,6 +3101,7 @@ Weitere Details:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Berechtigung zurücksetzen}other{Berechtigungen zurücksetzen}}</translation>
 <translation id="8555010941760982128">Diesen Code beim Bezahlen verwenden</translation>
 <translation id="8557066899867184262">Der CVC befindet sich auf der Rückseite deiner Karte.</translation>
+<translation id="8558347880669160417">Kamera- und Mikrofonberechtigung einmal gewährt</translation>
 <translation id="8559762987265718583">Es kann keine private Verbindung zu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hergestellt werden, weil Datum und Uhrzeit deines Geräts falsch sind (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Getrennte Dokumente/nicht sortierte Kopien</translation>
 <translation id="8564985650692024650">Chromium empfiehlt, dein Passwort für <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
@@ -3215,6 +3219,7 @@ Weitere Details:
 <translation id="8870494189203302833">Gleiche Reihenfolge Vorderseite nach unten</translation>
 <translation id="8870700989640064057">Vertrauliche Datei drucken?</translation>
 <translation id="8871553383647848643">Erscheinungsbild deines Browsers anpassen</translation>
+<translation id="8871603420762394026">Chrome gibt jetzt nur noch sehr begrenzte Informationen zwischen Websites weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit Websites die Leistung von Werbung analysieren können.</translation>
 <translation id="8874824191258364635">Gib eine gültige Kartennummer ein</translation>
 <translation id="8876033571432926051">Casual Games</translation>
 <translation id="8877780815363510165">Angeln</translation>
@@ -3369,6 +3374,7 @@ Weitere Details:
 <translation id="949314938206378263">Du möchtest diese Website besuchen. Dein Elternteil kann deine Anfrage in Family Link prüfen.</translation>
 <translation id="950736567201356821">Dreifache Lochung oben</translation>
 <translation id="961663415146723894">Bindung unten</translation>
+<translation id="961930410699694996">Berechtigung zur Standortermittlung einmal gewährt</translation>
 <translation id="962484866189421427">Dieser Inhalt könnte betrügerische Apps installieren, die scheinbar einem anderen Zweck dienen oder Daten erfassen, um dich auszuspionieren. <ph name="BEGIN_LINK" />Trotzdem zeigen<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alle Nutzer</translation>
 <translation id="964050462028070434">Passwörter und Passkeys verwalten…</translation>

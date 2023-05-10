@@ -1,4 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1356944128023012143">ছিংক কৰা ডিভাইচৰ সূচী আৰু নতুন পুনঃস্থাপন কাৰ্যপ্ৰবাহত পুনঃস্থাপন কৰিবলগীয়া সেই ডিভাইচৰ বাছনি কৰা টেবসমূহ বন্ধ কৰা হৈছে।</translation>
+<translation id="1816430105422765050">এই মেনুত থকা বস্তুটোৰ অন্তৰ্গত ছিংক কৰা আন ডিভাইচলৈ সলনি কৰক।</translation>
+<translation id="3347725959865138210">সেই ডিভাইচটো বাছনি কৰক য’ৰ পৰা আপুনি টেবসমূহ পাব বিচাৰে</translation>
+<translation id="3575801299326994724">বৰ্তমান বাছনি কৰা ডিভাইচৰ পৰা পুনঃস্থাপন কৰিবলগীয়া বাছনি কৰা টেবসমূহ পৰ্যালোচনা কৰক।</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব, অন্তিমবাৰ আপডে’ট কৰা হৈছে: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> টা টেব, অন্তিমবাৰ আপডে’ট কৰা হৈছে: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> টা টেব, অন্তিমবাৰ আপডে’ট কৰা হৈছে: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="3983305234037158273">টেব পুনঃস্থাপনৰ বাবে ছিংক কৰা ডিভাইচসমূহ স্পৰ্শ কৰিলে সলনিৰ বাবে উপলব্ধ। বৰ্তমান ডিভাইচটোৰ বাবে স্পৰ্শ কৰি বাছনি কৰা টেবসমূহ পৰ্যালোচনা অথবা পুনঃস্থাপন কৰিবলৈ নেভিগে’ট কৰক। কীব’ৰ্ড লুকুওৱা হ’ল।</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব খোলক}one{<ph name="TABS_COUNT_MANY" /> টা টেব খোলক}other{<ph name="TABS_COUNT_MANY" /> টা টেব খোলক}}</translation>
+<translation id="4811934403802581334">বৰ্তমান বাছনি কৰা ডিভাইচৰ পৰা আটাইবোৰ বাছনি কৰা টেব পুনঃস্থাপন কৰা হ’ব।</translation>
+<translation id="5336031759968328813">আটাইবোৰ টেব পৰ্যালোচনা কৰক</translation>
+<translation id="8725404154479306799">পুৰণি ডিভাইচত আপুনি এৰি অহা টেবসমূহ পাওক</translation>
 </translationbundle>

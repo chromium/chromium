@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">Առաջադրանքի թերթեր</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> կայքն ուզում է օգտագործել ձեր խոսափողը</translation>
 <translation id="3533328374079021623">Փոստարկղ 5</translation>
+<translation id="3536227077203206203">Տրվել է մեկանգամյա թույլտվություն</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Քարտի պատկեր</translation>
 <translation id="3542768452570884558">Բացել հղումը նոր պատուհանում</translation>
@@ -1673,6 +1674,7 @@
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="5051305769747448211">Կենդանի կատակերգություն</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Այս ֆայլը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}one{Այս ֆայլը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}other{Այս ֆայլերը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}}</translation>
+<translation id="5060419232449737386">Ենթագրերի կարգավորումներ</translation>
 <translation id="5060483733937416656">Դուք ընտրել եք, որ կայքերում, որոնք օգտագործում են <ph name="PROVIDER_ORIGIN" /> աղբյուրը, հաստատումը կատարվի Windows Hello-ի միջոցով։ Հնարավոր է՝ այս մատակարարը տեղեկություններ է պահել ձեր վճարման եղանակի մասին։ Դուք կարող եք այդ տեղեկությունների <ph name="LINK_TEXT" />։</translation>
 <translation id="5061227663725596739">Արդյո՞ք նկատի ունեիք «<ph name="LOOKALIKE_DOMAIN" />»</translation>
 <translation id="5066056036849835175">Տպման պատմություն</translation>
@@ -2454,6 +2456,7 @@
 <translation id="7030436163253143341">Հավաստագիրն անվավեր է</translation>
 <translation id="7031646650991750659">Ինչ Google Play հավելվածներ եք դուք տեղադրել</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Ձեր Google հաշվի գաղտնիության կարգավորումները կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="7044081119134178347">Տրվել է տեսախցիկն օգտագործելու մեկանգամյա թույլտվություն</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Դուք փորձում էիք մտնել <ph name="DOMAIN" />, սակայն սերվերի կողմից ներկայացված վկայականի վավերականության ժամկետը չափազանց երկար է, ինչը վստահություն չի ներշնչում:</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Քարտն այս պահին չի կարող պահվել}one{Քարտն այս պահին չի կարող պահվել}other{Քարտերն այս պահին չեն կարող պահվել}}</translation>
@@ -3046,6 +3049,7 @@
 <translation id="8416694386774425977">Ցանցի կազմաձևումը սխալ է և չի կարող ներմուծվել:
 Լրացուցիչ տեղեկություններ՝
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Տրվել է խոսափողն օգտագործելու մեկանգամյա թույլտվություն</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 մմ</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
@@ -3101,6 +3105,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Զրոյացնել թույլտվությունները}one{Զրոյացնել թույլտվությունները}other{Զրոյացնել թույլտվությունները}}</translation>
 <translation id="8555010941760982128">Օգտագործեք այս կոդը վճարման ժամանակ</translation>
 <translation id="8557066899867184262">CVC կոդը գրված է քարտի հակառակ կողմում։</translation>
+<translation id="8558347880669160417">Տրվել է խոսափողն ու տեսախցիկն օգտագործելու մեկանգամյա թույլտվություն</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-ի հետ կապակցում չի կարող հաստատվել, քանի որ ձեր սարքի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ է:</translation>
 <translation id="8564182942834072828">Մի քանի փաստաթուղթ/չառանձնացված պատճեններ</translation>
 <translation id="8564985650692024650">Խորհուրդ ենք տալիս վերակայել <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ի ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
@@ -3217,6 +3222,7 @@
 <translation id="8870494189203302833">Նույն հերթականությամբ՝ երեսի կողմով ներքև</translation>
 <translation id="8870700989640064057">Տպե՞լ կոնֆիդենցիալ ֆայլը</translation>
 <translation id="8871553383647848643">Կարգավորել դիտարկիչի տեսքը</translation>
+<translation id="8871603420762394026">Chrome-ն այժմ կայքերին շատ սահմանափակ տեղեկություններ է փոխանցում, օրինակ, երբ գովազդ է ցուցադրվում ձեզ՝ դրա արդյունավետությունը գնահատելու համար։</translation>
 <translation id="8874824191258364635">Մուտքագրեք քարտի վավեր համար</translation>
 <translation id="8876033571432926051">Թեթև խաղեր</translation>
 <translation id="8877780815363510165">Ձկնորսություն</translation>
@@ -3370,6 +3376,7 @@
 <translation id="949314938206378263">Դուք այս կայքն այցելելու թույլտվություն եք խնդրել։ Ձեր ծնողը կարող է պատասխանել Family Link-ում։</translation>
 <translation id="950736567201356821">Երեք անցք վերևում</translation>
 <translation id="961663415146723894">Ամրակար ներքևում</translation>
+<translation id="961930410699694996">Տրվել է տեղադրության տվյալներն օգտագործելու մեկանգամյա թույլտվություն</translation>
 <translation id="962484866189421427">Այս բովանդակությունը կարող է փորձել կեղծ հավելվածներ տեղադրել կամ տվյալներ հավաքել՝ ձեզ հետևելու համար։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Բոլոր օգտատերերը</translation>
 <translation id="964050462028070434">Կառավարել գաղտնաբառերն ու անցաբառերը…</translation>

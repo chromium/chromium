@@ -598,6 +598,7 @@
 <translation id="1506187449813838456">Збільшити висоту звуку</translation>
 <translation id="1507170440449692343">Доступ цієї сторінки до вашої камери заблоковано.</translation>
 <translation id="1507246803636407672">&amp;Відхилити</translation>
+<translation id="1508931164824684991">Сайти можуть використовувати JavaScript</translation>
 <translation id="1509163368529404530">&amp;Відновити групу</translation>
 <translation id="1509281256533087115">Отримувати доступ до будь-якого пристрою <ph name="DEVICE_NAME_AND_VENDOR" /> через USB</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
@@ -861,6 +862,7 @@
 <translation id="1708291623166985230">Точку доступу вимкнено</translation>
 <translation id="1708338024780164500">(Неактивне)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ідентифікатор: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Не показувати після завершення завантаження</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" /> (оригінальна)</translation>
 <translation id="1709217939274742847">Виберіть квиток для автентифікації. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Мережеві налаштування</translation>
@@ -1684,6 +1686,7 @@
 <translation id="2398546389094871088">Під час виконання Powerwash на пристрої профілі eSIM-карти не видаляються. Це можна зробити вручну в розділі <ph name="LINK_BEGIN" />налаштування мобільних пристроїв<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Сповіщення ввімкнено</translation>
 <translation id="2399939490305346086">Дані для входу для ключа безпеки</translation>
+<translation id="2400323785194108001">Ніколи не деактивовувати цей сайт</translation>
 <translation id="2400664245143453337">Потрібно негайно встановити оновлення</translation>
 <translation id="2402226831639195063">Тони</translation>
 <translation id="2406153734066939945">Видалити профіль і його дані?</translation>
@@ -1999,6 +2002,7 @@
 <translation id="2673135533890720193">Переглядати історію веб-перегляду</translation>
 <translation id="2674764818721168631">Вимкнено</translation>
 <translation id="2675570801872027281">Не вдалося вилучити Bruschetta. Повторіть спробу.</translation>
+<translation id="2676084251379299915">Це розширення вимкнено згідно з корпоративними правилами, оскільки воно більше не доступне у Веб-магазині Chrome.</translation>
 <translation id="267708982776801183">Червоно-зелений фільтр (слабкість сприйняття червоного, протаномалія)</translation>
 <translation id="2678063897982469759">Знову ввімкнути</translation>
 <translation id="2678100101831051676">Не вдалося транслювати.</translation>
@@ -2007,6 +2011,7 @@
 <translation id="2682498795777673382">Батьки змінили налаштування</translation>
 <translation id="2683638487103917598">Папку відсортовано</translation>
 <translation id="2684004000387153598">Натисніть OK і виберіть "Додати користувача", щоб створити новий профіль для своєї електронної адреси.</translation>
+<translation id="2685193395980129388">Дозволено (<ph name="PERMISSION_DETAILS" />)</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="2687407218262674387">Загальні положення та умови Google</translation>
 <translation id="2687621393791886981">Запитати пізніше</translation>
@@ -2095,6 +2100,7 @@
 <translation id="2755349111255270002">Скинути налаштування цього пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Керувати спеціальними можливостями</translation>
 <translation id="275662540872599901">екран вимкнено</translation>
+<translation id="2756936198272359372">Заборонено використовувати JavaScript</translation>
 <translation id="2757161511365746634">Переглянути відомості принтера</translation>
 <translation id="2757338480560142065">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> За пошуковим запитом "<ph name="SEARCH_QUERY" />" не знайдено результатів</translation>
@@ -2127,6 +2133,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">На цьому сайті дозволено розширення</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
+<translation id="2783024642731649028">1 товар у кошику (<ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Завантажено</translation>
 <translation id="2783321960289401138">Створити ярлик…</translation>
 <translation id="2783829359200813069">Виберіть тип шифрування</translation>
@@ -2909,6 +2916,7 @@
 <translation id="3496213124478423963">Зменшити</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (не вибрано)</translation>
 <translation id="3496689104192986836">Рівень заряду акумулятора – <ph name="PERCENTAGE" />%</translation>
+<translation id="3496995426334945408">Сайти використовують JavaScript для показу інтерактивних функцій, таких як відеоігри або веб-форми</translation>
 <translation id="3497501929010263034">Пристрій USB від <ph name="VENDOR_NAME" /> (продукт <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Поділитися дудлом</translation>
 <translation id="3500417806337761827">Помилка підключення спільного доступу. Підключено забагато файлообмінників SMB.</translation>
@@ -2953,6 +2961,7 @@
 <translation id="354060433403403521">Зарядний пристрій</translation>
 <translation id="354068948465830244">Може переглядати й змінювати дані сайту</translation>
 <translation id="3541823293333232175">Призначено</translation>
+<translation id="354204985370574425">Ніколи не деактивовувати цей сайт</translation>
 <translation id="3543393733900874979">Не вдалось оновити (помилка: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Алгоритм ECDSA X9.62 з підписом SHA-512</translation>
 <translation id="3544058026430919413">Компанія може визначити групу сайтів, які використовуватимуть файли cookie, щоб показувати дані про ваші дії іншим сайтам-користувачам. В анонімному режимі цю функцію вимкнено.</translation>
@@ -3847,6 +3856,7 @@
 <translation id="4324577459193912240">Файл неповний</translation>
 <translation id="4325237902968425115">Видаляється <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Найнадійніша система безпеки Chrome захищає вас від небезпечних веб-сайтів, завантажень і розширень</translation>
+<translation id="4326484226728068206">Товари у вашому кошику (<ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Крижана вода</translation>
 <translation id="4330387663455830245">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Налаштуйте батьківський контроль</translation>
@@ -4209,6 +4219,7 @@
 <translation id="4647090755847581616">&amp;Закрити вкладку</translation>
 <translation id="4647283074445570750">Крок <ph name="CURRENT_STEP" /> з <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Недостатні дозволи</translation>
+<translation id="4650037136970677721">Спогад збережено</translation>
 <translation id="4650591383426000695">Від'єднати телефон від <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не вдалося завантажити онлайн-компонент із ресурсами демо-режиму.</translation>
 <translation id="4651921906638302153">Не вдалося ввійти за допомогою цього облікового запису</translation>
@@ -4443,6 +4454,7 @@
 <translation id="4863702650881330715">Розширити сумісність</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" />x<ph name="HEIGHT" /> (за умовчанням)</translation>
 <translation id="4864805589453749318">Вибери, хто з батьків дозволяє додати обліковий запис навчального закладу.</translation>
+<translation id="486505726797718946">Спогад збережено</translation>
 <translation id="486635084936119914">Автоматично відкривати певні типи файлів після завантаження</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> може навчити Google Асистента розпізнавати свій голос</translation>
 <translation id="4868284252360267853">Це вікно не виділено. Щоб виділити його, натисніть Command + Shift + Option + A.</translation>
@@ -4535,6 +4547,7 @@
 <translation id="4940448324259979830">Цим обліковим записом керує <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Зарезервувати розмір диска</translation>
 <translation id="4941074198479265146">Сайти зазвичай підключаються до пристроїв MIDI для створення та редагування музики</translation>
+<translation id="4941243352516004658">Товари у вашому кошику (<ph name="PRODUCT_ITEM_COUNT" />, <ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Використати заявку цього пристрою під час його реєстрації для корпоративного керування:</translation>
 <translation id="4941627891654116707">Розмір шрифту</translation>
 <translation id="4941963255146903244">Переглядати фотографії, медіафайли й додатки на вашому телефоні</translation>
@@ -5488,6 +5501,7 @@
 <translation id="5832970156002835240">Дозволити на всіх сайтах</translation>
 <translation id="5833397272224757657">Використовує вміст відвіданих сайтів, активність у веб-переглядачі та взаємодії для персоналізації</translation>
 <translation id="5833726373896279253">Лише власник може змінювати ці налаштування:</translation>
+<translation id="5833899990800318936">Заборонити сайтам використовувати JavaScript</translation>
 <translation id="583431638776747">Сайт недоступний</translation>
 <translation id="5834581999798853053">Залишилося приблизно <ph name="TIME" /> хв.</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{Розширення <ph name="EXTENSION1" /> має доступ до пристроїв HID}=2{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}few{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}many{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}other{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}}</translation>
@@ -5717,6 +5731,7 @@
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – пристрій USB підключено</translation>
 <translation id="6027945736510816438">Можливо, ви мали на увазі <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Додати відбиток пальця</translation>
+<translation id="6030719887161080597">Керуйте інформацією, яку сайти використовують для вимірювання ефективності оголошень</translation>
 <translation id="6031600495088157824">Параметри введення на панелі інструментів</translation>
 <translation id="6032715498678347852">Натисніть розширення, щоб надати йому доступ до цього сайту.</translation>
 <translation id="6032912588568283682">Файлова система</translation>
@@ -5951,6 +5966,7 @@
 <translation id="623755660902014047">Режим читання</translation>
 <translation id="6238767809035845642">Текст, яким поділилися з іншого пристрою</translation>
 <translation id="6238923052227198598">Показувати останню нотатку на заблокованому екрані</translation>
+<translation id="6238982280403036866">Дозволено використовувати JavaScript</translation>
 <translation id="6239558157302047471">Перезавантажити фрейм</translation>
 <translation id="6240821072888636753">Запитувати щоразу</translation>
 <translation id="6241530762627360640">Переглядати інформацію про пристрої Bluetooth, підключені до вашої системи, і знаходити пристрої Bluetooth поблизу.</translation>
@@ -6094,6 +6110,7 @@
 <translation id="6378392501584240055">Відкрити список мереж Wi-Fi</translation>
 <translation id="6380143666419481200">Прийняти та продовжити</translation>
 <translation id="6382958439467370461">Немає неактивних комбінацій клавіш</translation>
+<translation id="6383382161803538830">Режим читання недоступний на цій сторінці</translation>
 <translation id="638418309848716977">Підтримувані посилання</translation>
 <translation id="6384275966486438344">Використовувати пошукову систему <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Група без назви – 1 вкладка}one{Група без назви – # вкладка}few{Група без назви – # вкладки}many{Група без назви – # вкладок}other{Група без назви – # вкладки}}</translation>
@@ -6496,6 +6513,7 @@
 <translation id="6729192290958770680">Введіть ім’я користувача</translation>
 <translation id="6731320427842222405">Це може тривати декілька хвилин</translation>
 <translation id="6733620523445262364">Закладку "<ph name="BOOKMARK_TITLE" />" створено.</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ідентифікатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Показати файли cookie та інші дані із сайтів...</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737393581255281855">Очистити дані показаних сайтів?</translation>

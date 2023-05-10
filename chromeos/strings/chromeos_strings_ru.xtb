@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Не удается выполнить DNS-преобразование.</translation>
 <translation id="1018656279737460067">Отменено</translation>
 <translation id="1022433422498218992">Общие настройки</translation>
+<translation id="1022628058306505708">Движения земли</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Другие действия</translation>
 <translation id="2926057806159140518">Введите имя пользователя и пароль или отсканируйте QR-код.</translation>
 <translation id="2940811910881150316">Не удается протестировать устройство. Откройте его крышку.</translation>
+<translation id="2981143481017883351">Доступны эксклюзивные анимации для Chromebook</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Окна</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
+<translation id="3386675685417744672">Только на устройствах Chromebook</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
 <translation id="3413935475507503304">Чтобы выполнить обновление, нажмите "Далее".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">Внимание!</translation>
 <translation id="4054683689023980771">Скачивание изображения…</translation>
 <translation id="4060260348856573701">Новая точка доступа</translation>
+<translation id="4079743696465895866">Выбрать эксклюзивные анимации для Chromebook</translation>
 <translation id="4093865285251893588">Изображение профиля</translation>
 <translation id="409427325554347132">Сохранить данные</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Емкость батареи со временем уменьшается</translation>
 <translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
+<translation id="6205145102504628069">Облака</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Выйти из полноэкранного режима</translation>
 <translation id="6223752125779001553">Нет доступных сканеров.</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Персонализация</translation>
 <translation id="6500818810472529210">Посмотрите результат в Google Поиске.</translation>
 <translation id="650266656685499220">Чтобы создать альбомы, перейдите в Google Фото</translation>
+<translation id="6505750420152840539">От рассвета до заката</translation>
 <translation id="6516990319416533844">Чтобы проверить скорость зарядки батареи, разрядите ее в течение короткого промежутка времени.</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6526200165918397681">Подобрать цвет под обои</translation>

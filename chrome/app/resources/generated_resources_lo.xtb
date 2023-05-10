@@ -350,6 +350,7 @@
 <translation id="1288300545283011870">ຄຸນລັກສະນະສຽງເວົ້າ</translation>
 <translation id="1289619947962767206">ບໍ່ຮອງຮັບຕົວເລືອກນີ້ອີກຕໍ່ໄປແລ້ວ. ເພື່ອນຳສະເໜີແຖບໃດໜຶ່ງ, ກະລຸນາໃຊ້ <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291119821938122630">ຂໍ້ກຳນົດການບໍລິການຂອງ <ph name="MANAGER" /></translation>
+<translation id="1291421198328146277">ປຸ່ມຣີເຊັດ</translation>
 <translation id="1292849930724124745">ສຽບບັດອັດສະລິຍະເພື່ອສືບຕໍ່ຢູ່ໃນລະບົບ</translation>
 <translation id="1293264513303784526">ອຸ​ປະ​ກອນ USB-C (​ຊ່ອງ​ຊ້າຍ)</translation>
 <translation id="1293556467332435079">ໄຟລ໌</translation>
@@ -582,6 +583,7 @@
 <translation id="1493892686965953381">ກໍາລັງລໍຖ້າ <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">ເວັບໄຊສາມາດຂໍໃຊ້ຟອນທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="1494429729245089920">ເຄື່ອງຈັກສະເໝືອນ "<ph name="VM_NAME" />" ມີຢູ່, ແຕ່ປາກົດວ່າບໍ່ແມ່ນເຄື່ອງຈັກສະເໝືອນ <ph name="APP_NAME" /> ທີ່ຖືກຕ້ອງ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
+<translation id="1495201326198374770">ໃຊ້ປຸ່ມຟັງຊັນເປັນປຸ່ມແຖວເທິງສຸດຂອງ Chromebook</translation>
 <translation id="1495677929897281669">ກັບຄືນຫາແຖບ</translation>
 <translation id="1498498210836053409">ປິດໂໝດສະຕິກກີ້ໃນເວລາແກ້ໄຂຂໍ້ຄວາມ (ໂໝດສະຕິກກີ້ອັດສະລິຍະ)</translation>
 <translation id="1500297251995790841">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1325,6 +1327,7 @@
 <translation id="2105809836724866556">ເຊື່ອງ <ph name="MODULE_TITLE" /> ໄວ້ແລ້ວ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ເບີໂທລະສັບ}other{ເບີໂທລະສັບ # ເບີ}}</translation>
 <translation id="2110941575868943054">ອະນຸຍາດໃຫ້ຊອກຫາອຸປະກອນ Bluetooth</translation>
+<translation id="2111238878637848860">ກົດປຸ່ມລັນເຊີຄ້າງໄວ້ເພື່ອປ່ຽນລະຫວ່າງປຸ່ມຟັງຊັນ</translation>
 <translation id="211144231511833662">ລຶບລ້າງປະພດ</translation>
 <translation id="2111670510994270194">ແຖບໃໝ່ຢູ່ເບື້ອງຂວາ</translation>
 <translation id="2112554630428445878">ຍິນດີຕ້ອນຮັບ, <ph name="USERNAME" /></translation>
@@ -2007,6 +2010,7 @@
 <translation id="2682498795777673382">ການອັບເດດຈາກພໍ່ແມ່ຂອງທ່ານ</translation>
 <translation id="2683638487103917598">ຮຽງລຳດັບໂຟນເດີແລ້ວ</translation>
 <translation id="2684004000387153598">ເພື່ອສືບຕໍ່, ກະລຸນາຄລິກ ຕົກລົງ, ແລ້ວຄລິກ ເພີ່ມບຸກຄົນ ເພື່ອສ້າງໂປຣໄຟລ໌ໃໝ່ສຳລັບທີ່ຢູ່ອີເມວຂອງທ່ານ.</translation>
+<translation id="2685193395980129388">ອະນຸຍາດແລ້ວ – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">ບລັອກຄຸກກີ້ທັງໝົດ (ບໍ່ແນະນຳ)</translation>
 <translation id="2687407218262674387">ຂໍ້ກຳນົດການບໍລິການຂອງ Google</translation>
 <translation id="2687621393791886981">ຖາມຂ້ອຍໃນພາຍຫຼັງ</translation>
@@ -2373,11 +2377,13 @@
 <translation id="3000378525979847272">ອະນຸຍາດ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລ້ວ</translation>
 <translation id="3000461861112256445">ສຽງໂມໂນ</translation>
 <translation id="3001144475369593262">ບັນຊີເດັກ</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{ບໍ່ມີປຸ່ມທີ່ປັບແຕ່ງ}=1{ມີປຸ່ມທີ່ປັບແຕ່ງ 1 ລາຍການ}other{ມີປຸ່ມທີ່ປັບແຕ່ງ {COUNT} ລາຍການ}}</translation>
 <translation id="3001835006423291524">ແຕະໃສ່ເຊັນເຊີລາຍນິ້ວມືຢູ່ມຸມຂວາລຸ່ມສຸດຂອງແປ້ນພິມຂອງທ່ານ. ຂໍ້ມູນລາຍນິ້ວມືຂອງທ່ານແມ່ນຖືກເກັບໄວ້ຢ່າງປອດໄພ ແລະ ຢູ່ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານສະເໝີ.</translation>
 <translation id="3003144360685731741">ເຄືອ​ຂ່າຍ​ທີ່ມັກ</translation>
 <translation id="3003623123441819449">ແຄຊ໌ CSS</translation>
 <translation id="3003828226041301643">ບໍ່ສາມາດເພີ່ມອຸປະກອນເຂົ້າຮ່ວມໂດເມນໄດ້. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າບັນຊີຂອງທ່ານມີສິດເພີ່ມອຸປະກອນ.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> ຂອງທ່ານຈະສ້າງການເຊື່ອມຕໍ່ Wi-Fi ສ່ວນບຸກຄົນ.</translation>
+<translation id="3004385386820284928">ປັບແຕ່ງປຸ່ມໃນແປ້ນພິມ</translation>
 <translation id="3005574332301273731">ບໍ່ສະແດງ</translation>
 <translation id="3006881078666935414">ບໍ່ມີຂໍ້ມູນການໃຊ້</translation>
 <translation id="3007410324195400631">ເພີ່ມບັນທຶກກ່ຽວກັບໜ້ານີ້</translation>
@@ -3393,6 +3399,7 @@
 <translation id="389901847090970821">ເລືອກແປ້ນພິມ</translation>
 <translation id="3900966090527141178">ສົ່ງລະຫັດຜ່ານອອກ</translation>
 <translation id="3902789559055749153">ເລືອກວິທີທີ່ທ່ານຕ້ອງການສ້າງກະແຈຜ່ານສຳລັບ <ph name="APP_NAME" /></translation>
+<translation id="3903158219409898205">ໃຊ້ປຸ່ມລັນເຊີເພື່ອປ່ຽນລັກສະນະການເຮັດວຽກຂອງປຸ່ມແຖວເທິງສຸດຂອງ Chromebook</translation>
 <translation id="3903187154317825986">ແປ້ນພິມໃນຕົວ</translation>
 <translation id="3904326018476041253">ການບໍລິການສະຖານທີ່</translation>
 <translation id="3905761538810670789">ສ້ອມ​ແປງແອັບ</translation>
@@ -3803,6 +3810,7 @@
 <translation id="4279129444466079448">ທ່ານສາມາດຕິດຕັ້ງໂປຣໄຟລ໌ eSIM ໄດ້ສູງສຸດ <ph name="PROFILE_LIMIT" /> ໂປຣໄຟລ໌ຢູ່ອຸປະກອນນີ້. ເພື່ອເພີ່ມໂປຣໄຟລ໌ອື່ນ, ໃຫ້ລຶບໂປຣໄຟລ໌ທີ່ມີຢູ່ກ່ອນແລ້ວອອກກ່ອນ.</translation>
 <translation id="4280325816108262082">ອຸປະກອນຈະຕັດການເຊື່ອມຕໍ່ອັດຕະໂນມັດເມື່ອມັນຖືກປິດໄວ້ ຫຼື ບໍ່ໄດ້ໃຊ້</translation>
 <translation id="4281844954008187215">ຂໍ້ກໍານົດການບໍລິການ</translation>
+<translation id="428200245206114206">ປຸ່ມ F ຈະມີລັກສະນະການເຮັດວຽກຄືກັນກັບປຸ່ມແຖວເທິງສຸດຂອງ Chromebook.</translation>
 <translation id="4282196459431406533">Smart Lock ເປີດຢູ່</translation>
 <translation id="4284903252249997120">ໂປຣແກຣມອ່ານໜ້າຈໍ ChromeVox ແລະ ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="4285418559658561636">ອັບເດດລະຫັດຜ່ານ</translation>
@@ -4591,6 +4599,7 @@
 <translation id="4991420928586866460">ເອົາປຸ່ມແຖວເທິງເປັນປຸ່ມຟັງຄ໌ຊັນ</translation>
 <translation id="4992458225095111526">ຢືນ​ຢັນ Powerwash</translation>
 <translation id="4992473555164495036">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຈຳກັດວິທີການປ້ອນຂໍ້ມູນທີ່ສາມາດໃຊ້ໄດ້ແລ້ວ.</translation>
+<translation id="4994426888044765950">ຫາກທ່ານກົດປຸ່ມຄ້າງໄວ້, ຕົວອັກສອນຂອງປຸ່ມຈະພິມຊ້ຳ</translation>
 <translation id="4994754230098574403">ກໍາລັງຕັ້ງຄ່າ</translation>
 <translation id="4995293419989417004">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຫົວຂໍ້ໂຄສະນາ</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ບໍ່ພົບ VM <ph name="VM_TYPE" />}=1{ພົບ 1 VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{ພົບ {NUM_VMS} VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
@@ -6141,6 +6150,7 @@
 <translation id="6410328738210026208">ປ່ຽນ​​ຊ່ອງ ​ແລະ Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing ປົກປ້ອງທ່ານຈາກຜູ້ໂຈມຕີທີ່ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນ: ຕິດຕັ້ງຊອບແວອັນຕະລາຍ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວ ເຊັ່ນ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ. ຖ້າທ່ານປິດມັນ, ກະລຸນາລະມັດລະວັງໃນເວລາເຂົ້າເບິ່ງເວັບໄຊທີ່ບໍ່ຄຸ້ນເຄີຍ ຫຼື ບໍ່ເປັນທີ່ຮູ້ຈັກ.</translation>
 <translation id="6410668567036790476">ເພີ່ມໂປຣແກຣມຊອກຫາ</translation>
+<translation id="6411135999030237579">ກົດຄ້າງໄວ້ເພື່ອກົດປຸ່ມຊ້ຳໂດຍອັດຕະໂນມັດ</translation>
 <translation id="641469293210305670">ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບ</translation>
 <translation id="6414878884710400018">ເປີດການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="6415816101512323589">ເປີດການກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານບໍ?</translation>
@@ -8813,6 +8823,7 @@
 
           &lt;p&gt;ແຕ່ທ່ານຍັງສາມາດກຳ​ນົດຄ່າໄດ້ຜ່ານແຖວຄໍາສັ່ງ. ກະລຸນາເບິ່ງ &lt;code&gt;ຄູ່​ມື <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; ສຳ​ລັບ​ຂໍ້​ມູນ​ເພີ່ມ​ເຕີມ​ກ່ຽວ​ກັບ​ທຸງ ແລະ​ຕົວ​ລັບ​ສະ​ພາບ​ແວດ​ລ້ອມ.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">ດຳເນີນໜ້າວຽກທີ່ກ່ຽວຂ້ອງກັບຄວາມປອດໄພສຳລັບອົງການຂອງທ່ານ ເຊັ່ນ: ຈັດການໃບຮັບຮອງ ແລະ ລະຫັດທີ່ເກັບໄວ້ໃນອຸປະກອນ</translation>
+<translation id="875532100880844232">ສຳລັບ <ph name="DEVICE_NAME" />, ໃຫ້ເລືອກຄຳສັ່ງຂອງແຕ່ລະປຸ່ມ</translation>
 <translation id="8755376271068075440">&amp;ໃຫຍ່ກວ່າ</translation>
 <translation id="8755584192133371929">ເລືອກແຖບເພື່ອແບ່ງປັນ</translation>
 <translation id="875604634276263540">URL ຮູບບໍ່ຖືກຕ້ອງ</translation>
@@ -9338,6 +9349,7 @@
 <translation id="9218430445555521422">ຕັ້ງເປັນຄ່າມາດຕະຖານ</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ແອັບທີ່ບໍ່ຮອງຮັບ)</translation>
 <translation id="9219582468404818260">ຊ່ວຍພວກເຮົາສ້າງເວັບທີ່ດີຂຶ້ນ</translation>
+<translation id="9219741625496141320">ຂໍ້ມູນການທ່ອງເວັບຖືກລຶບອອກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="9220525904950070496">ລົບບັນ​ຊີອອກ</translation>
 <translation id="9220723036554088545">ອັບໂຫຼດໄຟລ໌</translation>
 <translation id="9220820413868316583">ຍົກນິ້ວມືຂຶ້ນແລ້ວລອງອີກຄັ້ງ.</translation>

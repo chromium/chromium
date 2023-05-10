@@ -348,6 +348,7 @@
 <translation id="1288300545283011870">اسپیچ کی خصوصیات</translation>
 <translation id="1289619947962767206">یہ اختیار اب مزید تعاون یافتہ نہیں ہے۔ ٹیب کو پیش کرنے کیلئے <ph name="GOOGLE_MEET" /> کا استعمال کریں۔</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> کی سروس کی شرائط</translation>
+<translation id="1291421198328146277">کلیدوں کو ری سیٹ کریں</translation>
 <translation id="1292849930724124745">سائن ان رہنے کیلئے سمارٹ کارڈ داخل کریں</translation>
 <translation id="1293264513303784526">‏USB-C آلہ (بایاں پورٹ)</translation>
 <translation id="1293556467332435079">فائلیں</translation>
@@ -579,6 +580,7 @@
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> کیلئے منتظر…</translation>
 <translation id="1494349716233667318">سائٹس آپ کے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="1494429729245089920">ورچوئل مشین "<ph name="VM_NAME" />" موجود ہے لیکن یہ ایک درست <ph name="APP_NAME" /> ورچوئل مشین معلوم نہیں ہوتی ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="1495201326198374770">‏فنکشن کلیدوں کو Chromebook کی سرفہرست قطار کی کلیدوں کے بطور استعمال کریں</translation>
 <translation id="1495677929897281669">ٹیب پر واپس جائیں</translation>
 <translation id="1498498210836053409">ٹیکسٹ میں ترمیم کرتے وقت چپکنے والی وضع کو آف کریں (اسمارٹ چپکنے والی وضع)</translation>
 <translation id="1500297251995790841">نامعلوم آلہ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1316,6 +1318,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پوشیدہ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{فون نمبر}other{# فون نمبرز}}</translation>
 <translation id="2110941575868943054">بلوٹوتھ آلات تلاش کرنے کی اجازت ہے</translation>
+<translation id="2111238878637848860">فنکشن کیز کے درمیان تبدیل کرنے کے لیے لانچر کلید کو ہولڈ کریں</translation>
 <translation id="211144231511833662">اقسام صاف کریں</translation>
 <translation id="2111670510994270194">دائیں طرف نیا ٹیب</translation>
 <translation id="2112554630428445878">خوش آمدید، <ph name="USERNAME" /></translation>
@@ -1995,6 +1998,7 @@
 <translation id="2682498795777673382">آپ کے والدین کی جانب سے اپ ڈیٹ</translation>
 <translation id="2683638487103917598">فولڈر ترتیب شدہ ہیں</translation>
 <translation id="2684004000387153598">جاری رکھنے کے لیے،'ٹھیک ہے' پر کلک کریں، پھر اپنے ای میل پتہ کے لیے ایک نیا پروفائل تخلیق کرنے کی خاطر 'فرد شامل کریں' پر کلک کریں۔</translation>
+<translation id="2685193395980129388">اجازت ہے – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="2687407218262674387">‏Google کی سروس کی شرائط</translation>
 <translation id="2687621393791886981">مجھ سے بعد میں پوچھیں</translation>
@@ -2361,11 +2365,13 @@
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کی اجازت دی گئی</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
 <translation id="3001144475369593262">بچوں کے اکاؤنٹس</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{کوئی حسب ضرورت بنائی گئی کلید نہیں}=1{1 حسب ضرورت بنائی گئی کلید}other{{COUNT} حسب ضرورت بنائی گئی کلیدیں}}</translation>
 <translation id="3001835006423291524">اپنے کی بورڈ کے نیچے دائیں کونے موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="3003144360685731741">ترجیحی نیٹ ورکس</translation>
 <translation id="3003623123441819449">‏CSS کیش</translation>
 <translation id="3003828226041301643">ڈومین میں آلہ کو شامل نہیں کیا جا سکا۔ اس بات کو یقینی بنانے کے لیے اپنا اکاؤنٹ چیک کریں کہ آپ کے پاس آلات شامل کرنے کیلئے مراعات ہیں۔</translation>
 <translation id="3003967365858406397">‏آپ کا <ph name="PHONE_NAME" /> ایک نجی Wi-Fi کنکشن بنائے گا۔</translation>
+<translation id="3004385386820284928">کی بورڈ کی کلیدوں کو حسب ضرورت بنائیں</translation>
 <translation id="3005574332301273731">نہ دکھائیں</translation>
 <translation id="3006881078666935414">ڈیٹا کا کوئی استعمال نہیں</translation>
 <translation id="3007410324195400631">اس صفحے کے بارے میں نوٹس شامل کریں</translation>
@@ -3381,6 +3387,7 @@
 <translation id="389901847090970821">کی بورڈ منتخب کریں</translation>
 <translation id="3900966090527141178">پاس ورڈز برآمد کریں</translation>
 <translation id="3902789559055749153">منتخب کریں کہ آپ <ph name="APP_NAME" /> کے لئے کس طرح پاس کی تخلیق کرنا چاہتے ہیں</translation>
+<translation id="3903158219409898205">‏Chromebook کی سر فہرست قطار کی کلیدوں کے رویے کو تبدیل کرنے کے لیے لانچر کلید کا استعمال کریں</translation>
 <translation id="3903187154317825986">پہلے سے شامل کی بورڈ</translation>
 <translation id="3904326018476041253">مقام کی سروسز</translation>
 <translation id="3905761538810670789">ایپ کو درست کریں</translation>
@@ -3791,6 +3798,7 @@
 <translation id="4279129444466079448">‏آپ اس آلے پر <ph name="PROFILE_LIMIT" /> eSIM پروفائلز انسٹال کر سکتے ہیں۔ دوسری پروفائل شامل کرنے کے لیے، پہلے موجودہ پروفائل ہٹائیں۔</translation>
 <translation id="4280325816108262082">جب آلہ آف ہو یا استعمال نہ ہو رہا ہو تو آلہ خودکار طور پر منقطع ہو جائے گا</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
+<translation id="428200245206114206">‏F کلید کا رویہ اب آپ کی Chromebook کی سرفہرست قطار کی کلیدوں جیسا ہوگا۔</translation>
 <translation id="4282196459431406533">‏Smart Lock آن ہے</translation>
 <translation id="4284903252249997120">‏ChromeVox اسکرین قاری اور سننے کیلئے منتخب کریں</translation>
 <translation id="4285418559658561636">پاس ورڈ اپ ڈیٹ کریں</translation>
@@ -4578,6 +4586,7 @@
 <translation id="4991420928586866460">سر فہرست قطار کی کلیدوں کو فنکشن کلیدوں کے بطور خیال کریں</translation>
 <translation id="4992458225095111526">پاور واش کی توثیق کریں</translation>
 <translation id="4992473555164495036">آپ کے منتظم نے اندراج کے دستیاب طریقوں کو محدود کیا ہوا ہے۔</translation>
+<translation id="4994426888044765950">اگر آپ کسی کلید کو دبائے رکھیں گے تو اس کلید کے حرف کو دہرایا جائے گا</translation>
 <translation id="4994754230098574403">ترتیب دیا جا رہا ہے</translation>
 <translation id="4995293419989417004">اشتہار کے موضوعات کے بارے میں مزید جانیں</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏کوئی <ph name="VM_TYPE" /> VMs نہیں ملی}=1{‏1 <ph name="VM_TYPE" /> VM ملی: <ph name="VM_NAME_LIST" />}other{‏{NUM_VMS} <ph name="VM_TYPE" /> VMs مل گئیں: <ph name="VM_NAME_LIST" />}}</translation>
@@ -6128,6 +6137,7 @@
 <translation id="6410328738210026208">چینل اور پاور واش تبدیل کریں</translation>
 <translation id="6410390304316730527">محفوظ براؤزنگ ان حملہ آوروں سے آپ کی حفاظت کرتی ہے جو نقصان دہ سافٹ ویئر انسٹال کرنے یا پاس ورڈز، فون نمبرز یا کریڈٹ کارڈز جیسی ذاتی معلومات افشاء کرنے جیسے کچھ خطرناک کام انجام دینے میں آپ کو پھنسا سکتے ہیں۔ اگر آپ اسے آف کرتے ہیں تو غیر مانوس یا غیر معروف سائٹس کو براؤز کرتے وقت محتاط رہیں۔</translation>
 <translation id="6410668567036790476">سرچ انجن شامل کریں</translation>
+<translation id="6411135999030237579">کلید کو خودکار طور پر دہرانے کے لیے چھوئیں اور دبائے رکھیں</translation>
 <translation id="641469293210305670">اپ ڈیٹس اور ایپس انسٹال کریں</translation>
 <translation id="6414878884710400018">سسٹم کی ترجیحات کھولیں</translation>
 <translation id="6415816101512323589">اپنے ڈیٹا کے تحفظ کے لیے مقامی ڈیٹا کی بازیابی کو آن کریں؟</translation>
@@ -8802,6 +8812,7 @@
 
           &lt;p&gt;لیکن آپ اب بھی کمانڈ لائن کے ذریعے کنفیگر کر سکتے ہیں۔ پرچموں اور ماحول کے تغیرات پر مزید معلومات کیلئے براہ کرم &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; دیکھیں۔&lt;/p&gt;</translation>
 <translation id="8755175579224030324">اپنی تنظیم کیلئے سیکیورٹی سے متعلقہ ٹاسکس کو انجام دیں، جیسے آلہ پر اسٹور کردہ سرٹیفیکیٹس اور کلیدوں کا نظم کرنا</translation>
+<translation id="875532100880844232"><ph name="DEVICE_NAME" /> کے لیے، ہر کلید کے لیے ایک ایکشن کا انتخاب کریں</translation>
 <translation id="8755376271068075440">&amp;بڑا</translation>
 <translation id="8755584192133371929">اشتراک کرنے کیلئے ٹیب منتخب کریں</translation>
 <translation id="875604634276263540">‏تصویری URL غلط ہے</translation>
@@ -9327,6 +9338,7 @@
 <translation id="9218430445555521422">ڈیفالٹ کے بطور سیٹ کریں</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (غیر تعاون یافتہ ایپ)</translation>
 <translation id="9219582468404818260">بہتر ویب بنانے میں ہماری مدد کریں</translation>
+<translation id="9219741625496141320">براؤزنگ ڈیٹا خودکار طور پر حذف ہو گیا</translation>
 <translation id="9220525904950070496">اکاؤنٹ ہٹائیں</translation>
 <translation id="9220723036554088545">ایک فائل اپ لوڈ کریں</translation>
 <translation id="9220820413868316583">اٹھائیں پھر دوبارہ کوشش کریں۔</translation>

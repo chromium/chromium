@@ -460,6 +460,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="316086887565479535">Aplicații neacceptate în șablon</translation>
 <translation id="3161500364292033097">Închide desktopul și ferestrele</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> aduce dispozitivul <ph name="DEVICE_TYPE" /> la starea anterioară. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
+<translation id="3171170659304083361">Setări pentru metode de introducere a textului</translation>
 <translation id="3181441307743005334">Repornirea poate dura un timp</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectat la un dispozitiv}few{Conectat la # dispozitive}other{Conectat la # de dispozitive}}</translation>
 <translation id="320207200541803018">Setează temporizatorul</translation>
@@ -1112,6 +1113,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6074087755403037157">Canalul beta</translation>
 <translation id="6093867385179428431">Dezactivat de administrator</translation>
 <translation id="6095008505822982596">Ritmul vorbirii</translation>
+<translation id="6095425951508823973">Adaugă o conexiune de la <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editat în ultima lună</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>

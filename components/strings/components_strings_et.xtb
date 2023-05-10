@@ -1034,6 +1034,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3531780078352352885">Töölehed</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> soovib kasutada teie mikrofoni</translation>
 <translation id="3533328374079021623">Postkast 5</translation>
+<translation id="3536227077203206203">Seekord lubatud</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kaardi pilt</translation>
 <translation id="3542768452570884558">Ava link uues aknas</translation>
@@ -1672,6 +1673,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5045550434625856497">Vale salasõna</translation>
 <translation id="5051305769747448211">Komöödiaesitused</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Selle faili saatmiseks funktsiooni Läheduses jagamine kaudu vabastage seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}other{Nende failide saatmiseks funktsiooni Läheduses jagamine kaudu vabastage seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
+<translation id="5060419232449737386">Subtiitrite seaded</translation>
 <translation id="5060483733937416656">Valisite Windows Helloga kinnitamise veebisaitide puhul, mis kasutavad pakkujat <ph name="PROVIDER_ORIGIN" />. See pakkuja võis teie makseviisi teabe salvestada. Võite <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Kas mõtlesite domeeni <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Printimisajalugu</translation>
@@ -2453,6 +2455,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7030436163253143341">Sertifikaat ei kehti</translation>
 <translation id="7031646650991750659">Millised Google Play rakendused olete installinud</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma Google'i konto privaatsusseadete haldamiseks vajutage tabulaatorit ja siis sisestusklahvi.</translation>
+<translation id="7044081119134178347">Kaamera seekord lubatud</translation>
 <translation id="7048095965575426564">Euroopa lõõtspaber</translation>
 <translation id="7050187094878475250">Üritasite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas sertifikaadi, mille kehtivusaeg on liiga pikk, et olla usaldusväärne.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Seda kaarti ei saa praegu salvestada}other{Neid kaarte ei saa praegu salvestada}}</translation>
@@ -3045,6 +3048,7 @@ Lisateave:
 <translation id="8416694386774425977">Võrgu seadistus on sobimatu ja seda ei saa importida.
 Lisateave:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon seekord lubatud</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Seaded</translation>
@@ -3100,6 +3104,7 @@ Lisateave:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Lähtesta luba}other{Lähtesta load}}</translation>
 <translation id="8555010941760982128">Kasutage seda koodi kassas</translation>
 <translation id="8557066899867184262">CVC asub kaardi tagaküljel.</translation>
+<translation id="8558347880669160417">Kaamera ja mikrofon seekord lubatud</translation>
 <translation id="8559762987265718583">Privaatset ühendust ei saa domeeniga <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> luua, kuna seadme kuupäev ja kellaaeg (<ph name="DATE_AND_TIME" />) on valed.</translation>
 <translation id="8564182942834072828">Eraldi dokumendid / järjestamata koopiad</translation>
 <translation id="8564985650692024650">Chromium soovitab teil organisatsiooni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
@@ -3216,6 +3221,7 @@ Lisateave:
 <translation id="8870494189203302833">Sama järjestus, esikülg allapoole</translation>
 <translation id="8870700989640064057">Kas printida konfidentsiaalne fail?</translation>
 <translation id="8871553383647848643">Kohandage oma brauseri ilmet</translation>
+<translation id="8871603420762394026">Chrome jagab nüüd saitide vahel vaid väga piiratud teavet, näiteks seda, millal teile reklaami näidati, et aidata saitidel reklaamide toimivust mõõta.</translation>
 <translation id="8874824191258364635">Sisestaeg kehtiv kaardinumber</translation>
 <translation id="8876033571432926051">Lihtsad mängud</translation>
 <translation id="8877780815363510165">Kalapüük</translation>
@@ -3369,6 +3375,7 @@ Lisateave:
 <translation id="949314938206378263">Küsisid selle saidi külastamiseks luba. Sinu vanem saab Family Linkis vastata.</translation>
 <translation id="950736567201356821">Kolm auku ülal</translation>
 <translation id="961663415146723894">Köide all</translation>
+<translation id="961930410699694996">Asukoht seekord lubatud</translation>
 <translation id="962484866189421427">Sisu võib üritada installida petturlikke rakendusi, mis esinevad millegi muuna või koguvad andmeid, mida saab kasutada teie jälgimiseks. <ph name="BEGIN_LINK" />Kuva siiski<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Kõik kasutajad</translation>
 <translation id="964050462028070434">Paroolide ja pääsukoodide haldamine …</translation>

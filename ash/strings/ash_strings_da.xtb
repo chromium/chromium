@@ -56,6 +56,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="121097972571826261">Et ord frem</translation>
 <translation id="1217633719248931900">Gå til app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Butik-app</translation>
+<translation id="1219309685806246869">Gå tilbage til <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Din Chromebook er låst på grund af et kendt problem. Du kan logge ind om: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop med at vælge</translation>
 <translation id="1235458158152011030">Kendte netværk</translation>
@@ -459,6 +460,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="316086887565479535">Der er apps, som ikke understøttes, i skabelonen</translation>
 <translation id="3161500364292033097">Luk skrivebord og vinduer</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> skifter til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
+<translation id="3171170659304083361">Indstillinger for indtastningsmetoder</translation>
 <translation id="3181441307743005334">Genstarten kan tage lidt tid</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Forbundet til en enhed}one{Forbundet til # enhed}other{Forbundet til # enheder}}</translation>
 <translation id="320207200541803018">Indstil timer</translation>
@@ -1059,6 +1061,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5881540930187678962">Konfigurer Telefonstyring senere</translation>
 <translation id="5881663018261910378">Fra</translation>
 <translation id="5887954372087850114">Vinduet <ph name="WINDOW_TITLE" /> er tildelt til <ph name="DESK_TITLE" /> og er ikke tildelt nogen af alle de øvrige skriveborde</translation>
+<translation id="588817334757907802">Åbn filen i Chrome-browseren</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="589817443623831496">Elementscanning</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6074087755403037157">Betakanal</translation>
 <translation id="6093867385179428431">Deaktiveret af administratoren</translation>
 <translation id="6095008505822982596">Talehastighed</translation>
+<translation id="6095425951508823973">Tilføj forbindelse via <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Redigeret inden for den seneste måned</translation>
 <translation id="6103838137565245112">systemet</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> talefiler blev downloadet</translation>
@@ -1589,6 +1593,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8349964124165471584">Åbn link i et nyt vindue</translation>
 <translation id="8351131234907093545">Opret note</translation>
 <translation id="8364673525741149932">Slå Shelf Party til/fra. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> er i brug.</translation>
 <translation id="8369166482916924789">Gemt skrivebord, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Et bogstav frem</translation>
 <translation id="8371991222807690464">Din eksterne enheds ydeevne kan være begrænset i Gæstetilstand</translation>

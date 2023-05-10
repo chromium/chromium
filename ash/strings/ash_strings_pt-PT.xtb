@@ -462,6 +462,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="316086887565479535">Apps não suportadas no modelo</translation>
 <translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está a reverter o dispositivo <ph name="DEVICE_TYPE" />. O seu dispositivo será reposto e todos os dados serão eliminados.</translation>
+<translation id="3171170659304083361">Definições dos métodos de introdução</translation>
 <translation id="3181441307743005334">O reinício poderá demorar algum tempo</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ligado a um dispositivo}other{Ligado a # dispositivos}}</translation>
 <translation id="320207200541803018">Define um temporizador</translation>
@@ -1114,6 +1115,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6074087755403037157">Canal beta</translation>
 <translation id="6093867385179428431">Desativado pelo administrador</translation>
 <translation id="6095008505822982596">Taxa de voz</translation>
+<translation id="6095425951508823973">Adicionar ligação a <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editado no mês passado</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Ficheiros de voz em <ph name="LANGUAGE" /> transferidos</translation>

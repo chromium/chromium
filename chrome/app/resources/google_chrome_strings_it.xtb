@@ -82,6 +82,7 @@
 <translation id="2467438592969358367">Google Chrome vuole esportare le password. Per consentire l'esportazione, digita la tua password Windows.</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
 <translation id="2534507159460261402">Google Pay (copiata in Chrome)</translation>
+<translation id="2556847002339236023">La tua organizzazione chiude Chrome quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />. I dati di navigazione sono stati eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="2559253115192232574">Dopodiché, un sito che visiti può chiedere a Chrome di conoscere i tuoi interessi per personalizzare gli annunci che ti vengono mostrati. Chrome può condividere fino a 3 interessi.</translation>
 <translation id="2563121210305478421">Vuoi riavviare Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chrome. Per tenere separata la tua navigazione, Chrome può creare per te il tuo profilo personale.</translation>
@@ -266,6 +267,7 @@
 <translation id="6113794647360055231">Da oggi Chrome è ancora meglio</translation>
 <translation id="6145313976051292476">Apri PDF in Chrome</translation>
 <translation id="6155960517327665396">Il Risparmio memoria ha reso Chrome più veloce</translation>
+<translation id="6157638032135951407">La tua organizzazione elimina i dati di Chrome quando non vengono utilizzati per <ph name="TIMEOUT_DURATION" />. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Regola inbound per consentire il traffico mDNS in Google Chrome.</translation>
@@ -281,6 +283,7 @@
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
 <translation id="648319183876919572">Navigazione sicura avanzata fa di più per proteggerti da download e siti web pericolosi</translation>
 <translation id="6493527311031785448">Google Chrome sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome è stato chiuso automaticamente</translation>
 <translation id="6506909944137591434">Chrome deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
@@ -317,6 +320,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7155997830309522122">In questo caso, modifica la password salvata su Chrome in modo che corrisponda alla nuova password.</translation>
 <translation id="7161904924553537242">Benvenuto in Google Chrome</translation>
 <translation id="7177959540995930968">Puoi scoprire di più su queste funzionalità nelle impostazioni di Chrome.</translation>
+<translation id="7193885263065350793">La tua organizzazione chiude Chrome quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Google Chrome. I tuoi dati di Chrome, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. Se preferisci puoi creare un nuovo profilo per mantenere separati i dati di Chrome esistenti. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Questa lingua viene utilizzata per mostrare l'UI di Google Chrome</translation>
 <translation id="7296210096911315575">Informazioni importanti sull'utilizzo e sulla sicurezza</translation>

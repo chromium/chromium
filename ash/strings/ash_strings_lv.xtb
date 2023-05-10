@@ -56,6 +56,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="121097972571826261">Pāriet uz priekšu pa vārdam</translation>
 <translation id="1217633719248931900">Pāriet uz lietotni</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, lietotne Play veikals</translation>
+<translation id="1219309685806246869">Atgriezties lietotnē <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Jūsu Chromebook dators ir bloķēts zināmas problēmas dēļ. Jūs varēsiet pierakstīties pēc šāda laika perioda: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Apturēt atlasīšanu</translation>
 <translation id="1235458158152011030">Zināmie tīkli</translation>
@@ -350,6 +351,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2620016719323068571">Meklējiet <ph name="CATEGORY" />, failus, lietotnes un citu saturu…</translation>
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2621713457727696555">Aizsargāts</translation>
+<translation id="2624588537172718173">Ierīces audio un mikrofons</translation>
 <translation id="263399434338050016">“Select all” (Atlasīt visu)</translation>
 <translation id="2644422758626431000">Piespraust logu kreisajā malā</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
@@ -410,6 +412,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2942350706960889382">Dokota lupa</translation>
 <translation id="2942516765047364088">Plaukta pozīcija</translation>
 <translation id="2946119680249604491">Pievienot savienojumu</translation>
+<translation id="295852781144570696">Ierīces audio</translation>
 <translation id="2960314608273155470">Uzņemšanas režīms, noklusējuma iestatījums: <ph name="SOURCE" /> <ph name="TYPE" />. Lai aktivizētu tastatūras navigāciju, nospiediet tabulēšanas taustiņu.</translation>
 <translation id="2961963223658824723">Radās problēma. Pēc dažām sekundēm mēģiniet vēlreiz.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -459,6 +462,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="316086887565479535">Veidnē ir neatbalstītas lietotnes</translation>
 <translation id="3161500364292033097">Aizvērt darbvietu un logus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ierīcē <ph name="DEVICE_TYPE" /> atjauno iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
+<translation id="3171170659304083361">Ievades metožu iestatījumi</translation>
 <translation id="3181441307743005334">Restartēšana var ilgt kādu brīdi</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Savienots ar ierīci}zero{Savienots ar # ierīcēm}one{Savienots ar # ierīci}other{Savienots ar # ierīcēm}}</translation>
 <translation id="320207200541803018">Iestatīt taimeri</translation>
@@ -1059,6 +1063,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5881540930187678962">Tālruņa centrmezgla iestatīšana vēlāk</translation>
 <translation id="5881663018261910378">Izslēgts</translation>
 <translation id="5887954372087850114">Logs <ph name="WINDOW_TITLE" /> ir piešķirts darbvietai <ph name="DESK_TITLE" /> un ir atsaistīts no citām darbvietām.</translation>
+<translation id="588817334757907802">Atvērt failu pārlūkā Chrome</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="589817443623831496">Punktu pārlūkošana</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1115,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6074087755403037157">Beta versija</translation>
 <translation id="6093867385179428431">Atspējoja administrators</translation>
 <translation id="6095008505822982596">Runas ātrums</translation>
+<translation id="6095425951508823973">Pievienot savienojumu ar <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Rediģēts pagājušajā mēnesī</translation>
 <translation id="6103838137565245112">sistēma</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
@@ -1589,6 +1595,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8349964124165471584">Atvērt saiti jaunā logā</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>
 <translation id="8364673525741149932">Režīma Shelf Party pārslēgšana. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152">Šī ierīce tiek izmantota: <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Saglabāta darbvieta, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Pāriet uz priekšu pa burtam</translation>
 <translation id="8371991222807690464">Perifēro ierīču veiktspēja var būt ierobežota viesa režīmā.</translation>

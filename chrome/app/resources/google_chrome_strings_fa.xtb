@@ -83,6 +83,7 @@
 <translation id="2467438592969358367">‏Google Chrome می‌خواهد گذرواژه‌های شما را صادر کند. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
 <translation id="2534507159460261402">‏Google Pay (در Chrome کپی شد)</translation>
+<translation id="2556847002339236023">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان آن را می‌بندد. داده‌های مرور حذف شد. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="2559253115192232574">‏بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی کردن آگهی‌هایی که به شما نشان می‌دهد از Chrome بخواهد علایق شما را ببیند. Chrome می‌تواند حداکثر ۳ علاقه را هم‌رسانی کند.</translation>
 <translation id="2563121210305478421">‏Chrome راه‌اندازی مجدد شود؟</translation>
 <translation id="2574930892358684005">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chrome وارد شده است. برای جدا نگه داشتن مرور، Chrome می‌تواند نمایه مختص خودتان را برایتان ایجاد کند.</translation>
@@ -267,6 +268,7 @@
 <translation id="6113794647360055231">‏Chrome اکنون بهتر شده است</translation>
 <translation id="6145313976051292476">‏بازکردن فایل‌های PDF در Chrome</translation>
 <translation id="6155960517327665396">‏«بهینه‌سازی حافظه» سرعت Chrome را بیشتر کرده است</translation>
+<translation id="6157638032135951407">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان داده‌های آن را حذف می‌کند. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">‏قانون ورودی برای Google Chrome به منظور اجازه به ترافیک mDNS.</translation>
@@ -282,6 +284,7 @@
 <translation id="6418662306461808273">‏به نمایه Chrome موجود می‌روید؟</translation>
 <translation id="648319183876919572">«مرور ایمن پیشرفته» کارهای بیشتری برای محافظت از شما درمقابل وب‌سایت‌ها و بارگیری‌های خطرناک انجام می‌دهد</translation>
 <translation id="6493527311031785448">‏Google Chrome در تلاش است <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">‏Chrome به‌طور خودکار بسته شد</translation>
 <translation id="6506909944137591434">‏Chrome برای ایجاد نقشه سه‌بعدی از محیط اطرافتان به اجازه دوربین نیاز دارد</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">‏در «مدیر گذرواژه Google» در این دستگاه</translation>
@@ -318,6 +321,7 @@
 <translation id="7155997830309522122">‏در این صورت، لطفاً گذرواژه ذخیره‌شده در Chrome را ویرایش کنید تا با گذرواژه جدیدتان مطابقت داشته باشد.</translation>
 <translation id="7161904924553537242">‏به Google Chrome خوش آمدید</translation>
 <translation id="7177959540995930968">‏در تنظیمات Chrome می‌توانید اطلاعات بیشتری درباره این ویژگی‌ها کسب کنید.</translation>
+<translation id="7193885263065350793">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان آن را می‌بندد.</translation>
 <translation id="7242029209006116544">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Google Chrome خود را می‌دهید. داده‌های Chrome شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. در صورت تمایل برای ذخیره داده‌های Chrome موجود به صورت جداگانه می‌توانید نمایه جدیدی ایجاد کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">‏از این زبان برای نمایش واسط کاربر Google Chrome استفاده می‌شود</translation>
 <translation id="7296210096911315575">اطلاعات مهم درباره استفاده و ایمنی</translation>

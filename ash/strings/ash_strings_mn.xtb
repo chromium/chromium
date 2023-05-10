@@ -56,6 +56,7 @@
 <translation id="121097972571826261">Нэг үгээр урагшлуулах</translation>
 <translation id="1217633719248931900">Апп руу очих</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store-н апп</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> руу буцна уу.</translation>
 <translation id="1225748608451425081">Тодорхой асуудлаас болоод таны Chromebook-г түгжлээ. Та <ph name="TIME_LEFT" />-н дараа нэвтрэх боломжтой.</translation>
 <translation id="1229194443904279055">Сонголтыг зогсоох</translation>
 <translation id="1235458158152011030">Мэдэгдэж байгаа сүлжээ</translation>
@@ -220,7 +221,7 @@
 <translation id="1957958912175573503">Хэлээ тохируулах</translation>
 <translation id="1961239773406905488">Камерын урьдчилан үзэлтийг нуусан байна</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
-<translation id="1962969542251276847">Түгжигдсэн дэлгэц</translation>
+<translation id="1962969542251276847">Түгжээтэй дэлгэц</translation>
 <translation id="1962972976741217487">Таны <ph name="DEVICE_NAME" />-н сүлжээний цэгт 1 төхөөрөмж холбогдсон</translation>
 <translation id="1967970931040389207">Сүлжээний цэгийг асаах</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">Загвар дахь дэмжигдээгүй аппууд</translation>
 <translation id="3161500364292033097">Дэлгэц болон цонхнуудыг хаана уу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> таны <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцааж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
+<translation id="3171170659304083361">Оруулах аргын тохиргоо</translation>
 <translation id="3181441307743005334">Дахин эхлүүлэхэд хэдэн хором шаардлагатай байж болзошгүй</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Төхөөрөмжид холбогдсон}other{# төхөөрөмжид холбогдсон}}</translation>
 <translation id="320207200541803018">Цаг хэмжигч тохируулах</translation>
@@ -1060,6 +1062,7 @@
 <translation id="5881540930187678962">Phone Hub-г дараа тохируулах</translation>
 <translation id="5881663018261910378">Унтраалттай</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> цонхыг <ph name="DESK_TITLE" />-д оноосон бөгөөд бусад бүх дэлгэцэд оноохоо больсон</translation>
+<translation id="588817334757907802">Файлыг Chrome хөтчид нээх</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="589817443623831496">Цэгээр скан хийх</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1111,6 +1114,7 @@
 <translation id="6074087755403037157">Бета суваг</translation>
 <translation id="6093867385179428431">Админ идэвхгүй болгосон</translation>
 <translation id="6095008505822982596">Ярианы хурд</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" />-тай холболт нэмэх</translation>
 <translation id="6099678161144790572">Өнгөрсөн сард зассан</translation>
 <translation id="6103838137565245112">систем</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
@@ -1590,6 +1594,7 @@
 <translation id="8349964124165471584">Холбоосыг шинэ цонхонд нээх</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
 <translation id="8364673525741149932">Shelf Party-г асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />-г ашиглаж байна.</translation>
 <translation id="8369166482916924789">Хадгалсан дэлгэц, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Нэг үсгээр урагшлуулах</translation>
 <translation id="8371991222807690464">Зочны горимд дагалдах төхөөрөмжийн гүйцэтгэлийг хязгаарласан байж магадгүй</translation>

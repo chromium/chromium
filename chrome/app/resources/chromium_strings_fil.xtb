@@ -250,6 +250,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6475912303565314141">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium.</translation>
 <translation id="648319183876919572">Mas maraming magagawa ang Pinahusay na Ligtas na Pag-browse para protektahan ka laban sa mga mapanganib na website at download</translation>
 <translation id="6510925080656968729">I-uninstall ang Chromium</translation>
+<translation id="6539122709674868420">Isinasara ng iyong organisasyon ang Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Na-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="6542839706527980775">Ang bawat profile ay may sariling impormasyon sa Chromium tulad ng mga bookmark, history, mga password, at iba pa</translation>
 <translation id="656935081669708576">Puwede kang lumipat para makita ang mga password mula sa ibang profile sa Chromium</translation>
 <translation id="6570579332384693436">Para maayos ang mga error sa pagbabaybay, ipinapadala ng Chromium sa Google ang text na na-type mo sa mga text field</translation>
@@ -287,6 +288,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="7025789849649390912">Inihinto ang Pag-install.</translation>
 <translation id="705851970750939768">I-update ang Chromium</translation>
 <translation id="7067091210845072982">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
+<translation id="7173822816570314652">Nagde-delete ang iyong organisasyon ng data ng Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="718435575166326686">Kailangan ng Chromium ng pahintulot sa camera para sa site na ito</translation>
 <translation id="7196312274710523067">Hindi mailunsad ang Chromium. Subukang muli.</translation>
 <translation id="7197677400338048821">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit pagkalipas ng 24 na oras.</translation>
@@ -341,6 +343,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8248265253516264921">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="8266560134891435528">Hindi masusuri ng Chromium ang iyong mga password dahil hindi ka naka-sign in</translation>
 <translation id="8290862415967981663">Maaaring mapanganib ang file na ito, kaya na-block ito ng Chromium.</translation>
+<translation id="8318772038038596122">Isinasara ng iyong organisasyon ang Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Makagawa ng mas marami sa Chromium</translation>
 <translation id="8330519371938183845">Mag-sign in para i-sync at i-personalize ang Chromium sa lahat ng iyong device</translation>
 <translation id="8340674089072921962">Chromium ang dating ginagamit ng <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -376,6 +379,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9019929317751753759">Upang mas gawing ligtas ang Chromium, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="907832235989677238">Mag-sign in sa Chromium. Kung isang beses mo lang gustong i-sign in ang isang account, puwede mong <ph name="GUEST_LINK_BEGIN" />gamitin ang device bilang bisita<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Awtomatikong isinara ang Chromium</translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="9093206154853821181">{0,plural, =1{Muling ilulunsad ang Chromium sa loob ng isang oras}one{Muling ilulunsad ang Chromium sa loob ng # oras}other{Muling ilulunsad ang Chromium sa loob ng # na oras}}</translation>
 <translation id="9106612006984859720">Para makatanggap ng mga update sa Chromium sa hinaharap, mangangailangan ka ng Windows 10 o mas bago. Ang computer na ito ay gumagamit ng Windows 8.1.</translation>

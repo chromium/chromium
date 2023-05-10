@@ -83,6 +83,7 @@
 <translation id="2467438592969358367">Google Chrome želi izvesti vaše zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2534507159460261402">Google Pay (kopirano na Chrome)</translation>
+<translation id="2556847002339236023">Vaša organizacija zatvara Chrome kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />. Podaci o pregledavanju su izbrisani. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="2559253115192232574">Web-lokacija koju posjetite nakon toga može od Chromea tražiti podatke o vašim interesima kako bi prilagodila oglase koji će vam se prikazivati. Chrome može dijeliti najviše tri interesa.</translation>
 <translation id="2563121210305478421">Ponovo pokrenuti Chrome?</translation>
 <translation id="2574930892358684005">Korisnik <ph name="EXISTING_USER" /> već je prijavljen na taj profil u Chromeu. Da bi vaše pregledavanje ostalo odvojeno, Chrome vam može izraditi vlastiti profil.</translation>
@@ -267,6 +268,7 @@
 <translation id="6113794647360055231">Chrome je upravo postao bolji</translation>
 <translation id="6145313976051292476">Otvaranje PDF-ova u Chromeu</translation>
 <translation id="6155960517327665396">Štednja memorije učinila je Chrome bržim</translation>
+<translation id="6157638032135951407">Vaša organizacija briše Chromeove podatke kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Ulazno pravilo kako bi Google Chrome dopustio mDNS promet.</translation>
@@ -282,6 +284,7 @@
 <translation id="6418662306461808273">Želite li prijeći na postojeći profil u Chromeu?</translation>
 <translation id="648319183876919572">Poboljšano sigurno pregledavanje pruža vam više zaštite od opasnih web-lokacija i preuzimanja</translation>
 <translation id="6493527311031785448">Google Chrome pokušava sljedeće: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome je automatski zatvoren</translation>
 <translation id="6506909944137591434">Chrome treba dopuštenje za fotoaparat kako bi mogao izraditi 3D kartu vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">Na Google upravitelju zaporki na ovom uređaju</translation>
@@ -318,6 +321,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7155997830309522122">Ako jeste, uredite zaporku spremljenu u Chromeu kako bi odgovarala vašoj novoj zaporki.</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
 <translation id="7177959540995930968">Više informacija o tim značajkama dostupno je u postavkama Chromea.</translation>
+<translation id="7193885263065350793">Vaša organizacija zatvara Chrome kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljujete se upravljanim računom i dajete administratoru kontrolu nad svojim profilom u sustavu Google Chrome. Vaši podaci u sustavu Chrome, primjerice, aplikacije, oznake, povijest, zaporke i ostale postavke, trajno će se povezati s korisnikom <ph name="USER_NAME" />. Moći ćete izbrisati te podatke putem Nadzorne ploče Google računa, ali ih nećete moći povezati s nekim drugim računom. Ako želite, možete izraditi novi profil kako biste zadržali postojeće podatke u sustavu Chrome zasebno. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Taj se jezik koristi za prikaz korisničkog sučelja Google Chromea</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i sigurnosti</translation>

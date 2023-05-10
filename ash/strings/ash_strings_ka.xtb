@@ -56,6 +56,7 @@
 <translation id="121097972571826261">ერთი სიტყვით წინ</translation>
 <translation id="1217633719248931900">აპზე გადასვლა</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store აპი</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" />-ზე დაბრუნება.</translation>
 <translation id="1225748608451425081">თქვენი Chromebook დაბლოკილია ცნობილი პრობლემის გამო. შესვლას შეძლებთ გარკვეული დროის შემდეგ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">არჩევის შეწყვეტა</translation>
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">მხარდაუჭერელი აპები შაბლონში</translation>
 <translation id="3161500364292033097">სამუშაო მაგიდისა და ფანჯრების დახურვა</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> აბრუნებს თქვენს <ph name="DEVICE_TYPE" />-ს წინა ვერსიაზე. თქვენი მოწყობილობა გადაყენდება და ყველა მონაცემი წაიშლება.</translation>
+<translation id="3171170659304083361">შეყვანის მეთოდების პარამეტრები</translation>
 <translation id="3181441307743005334">გადატვირთვას შეიძლება გარკვეული დრო დასჭირდეს</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{დაკავშირებულია მოწყობილობასთან}other{დაკავშირებულია # მოწყობილობასთან}}</translation>
 <translation id="320207200541803018">ტაიმერის დაყენება</translation>
@@ -1111,6 +1113,7 @@
 <translation id="6074087755403037157">ბეტა არხი</translation>
 <translation id="6093867385179428431">გათიშულია ადმინისტრატორის მიერ</translation>
 <translation id="6095008505822982596">მეტყველების ტემპი</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" />-თან კავშირის დამატება</translation>
 <translation id="6099678161144790572">თვის განმავლობაში რედაქტირებული</translation>
 <translation id="6103838137565245112">სისტემა</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
@@ -1590,6 +1593,7 @@
 <translation id="8349964124165471584">ბმულის გახსნა ახალ ფანჯარაში</translation>
 <translation id="8351131234907093545">ჩანიშვნის შექმნა</translation>
 <translation id="8364673525741149932">Shelf Party-ს გადართვა. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> გამოიყენება.</translation>
 <translation id="8369166482916924789">შენახული სამუშაო მაგიდა, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ერთი ასოთი წინ</translation>
 <translation id="8371991222807690464">პერიფერიული მოწყობილობების წარმადობა, შესაძლოა, შეზღუდული იყოს სტუმრის რეჟიმში</translation>

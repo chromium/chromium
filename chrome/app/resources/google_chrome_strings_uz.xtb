@@ -84,6 +84,7 @@
 <translation id="2467438592969358367">Google Chrome parollaringizni eksport qilmoqchi. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
 <translation id="2534507159460261402">Google Pay (Chrome brauzeriga nusxalandi)</translation>
+<translation id="2556847002339236023">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan. Brauzer maʼlumotlari oʻchirib tashlandi. Jumladan, tarix, avtomatik kiritish va yuklanmalar.</translation>
 <translation id="2559253115192232574">Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromedan qiziqishlaringiz haqida soʻrashi mumkin. Chrome 3 tagacha qiziqishingizni ulasha oladi.</translation>
 <translation id="2563121210305478421">Chrome qayta ishga tushirilsinmi?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> allaqachon ushbu Chrome profiliga kirgan. Internetni alohida kezish uchun Chrome siz uchun alohida profil yaratadi.</translation>
@@ -272,6 +273,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6113794647360055231">Chrome ancha yaxshilanmoqda</translation>
 <translation id="6145313976051292476">PDF fayllarni Chrome bilan ochish</translation>
 <translation id="6155960517327665396">Xotirani tejash funksiyasi Chromeni tezlashtirdi</translation>
+<translation id="6157638032135951407">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa maʼlumotlari oʻchirilishini sozlagan. Jumladan, tarix, avtomatik kiritish va yuklanmalar.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Google Chrome mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
@@ -287,6 +289,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6418662306461808273">Mavjud Chrome profiliga almashilsinmi?</translation>
 <translation id="648319183876919572">Saytlarni kuchaytirilgan rejimda xavfsiz kezish yordamida zararli saytlar va yuklanmalardan himoyalanish mumkin</translation>
 <translation id="6493527311031785448">Google Chrome buni bajarmoqchi: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome avtomatik yopildi</translation>
 <translation id="6506909944137591434">Chrome atrofingiz 3D xxaritasini yaratishi uchun kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Bu qurilmadagi Google Parollar menejerida</translation>
@@ -323,6 +326,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7155997830309522122">Agar shunday boʻlsa, Chrome brauzeriga saqlangan parolingizni yangi parolingiz bilan bir xil boʻlishi uchun tahrirlang</translation>
 <translation id="7161904924553537242">Google Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7177959540995930968">Bu funksiyalar haqida batafsil axborotni Chrome sozlamalari orqali olish mumkin.</translation>
+<translation id="7193885263065350793">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan.</translation>
 <translation id="7242029209006116544">Boshqariladigan hisobga kirish bilan siz administratorga Google Chrome profilingiz sozlamalarini boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz (m-n, ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi) <ph name="USER_NAME" /> hisobiga butunlay bog‘lanadi. Bu ma’lumotlarni Google shaxsiy kabinetida o‘chirish mumkin, lekin boshqa hisobga bog‘lash imkoniyati yo‘q. Chrome ma’lumotlarini saqlab qolish uchun yangi profil yarating. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Google Chrome UI inteyfeysi hozir shu tilda</translation>
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>

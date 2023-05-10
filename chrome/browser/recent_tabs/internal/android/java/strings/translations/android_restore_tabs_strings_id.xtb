@@ -1,4 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1356944128023012143">Daftar perangkat yang disinkronkan dan tab yang dipilih dari perangkat tersebut yang akan dipulihkan pada alur kerja pemulihan baru ditutup.</translation>
+<translation id="1816430105422765050">Ubah ke perangkat yang disinkronkan lainnya di bagian item menu ini.</translation>
+<translation id="3347725959865138210">Pilih perangkat yang ingin Anda dapatkan tabnya</translation>
+<translation id="3575801299326994724">Tinjau tab yang dipilih untuk dipulihkan dari perangkat yang saat ini dipilih.</translation>
+<translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab, terakhir diperbarui: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> tab, terakhir diperbarui: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="3983305234037158273">Perangkat yang disinkronkan untuk pemulihan tab dapat diubah dengan gestur sentuh. Buka untuk meninjau atau memulihkan tab yang dipilih untuk perangkat saat ini dengan gestur sentuh. Keyboard disembunyikan.</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{Buka <ph name="TABS_COUNT_ONE" /> tab}other{Buka <ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="4811934403802581334">Semua tab yang dipilih dari perangkat yang saat ini dipilih akan dipulihkan.</translation>
+<translation id="5336031759968328813">Tinjau semua tab</translation>
+<translation id="8725404154479306799">Akses tab yang Anda tinggalkan di perangkat lama</translation>
 </translationbundle>

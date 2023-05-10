@@ -113,6 +113,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1657011748321897393">Jagamine ebaõnnestus võrguühenduse puudumise tõttu.</translation>
 <translation id="1657641691196698092">Blokeeritud küpsisefailid</translation>
 <translation id="165877110639533037">Avatud vahelehti ei ole</translation>
+<translation id="166310177317698233">Kinnitatud vahelehed leiate, kui puudutate nuppu Kuva vahelehed.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Mobiilisaidi taotlemine</translation>
 <translation id="168715261339224929">Järjehoidjate hankimiseks kõigisse oma seadmetesse lülitage sünkroonimine sisse.</translation>
@@ -814,6 +815,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6331180460633101391"><ph name="COUNT" /> korduvalt kasutatud parooli</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
 <translation id="633809752005859102">Midagi läks väga valesti. Töötame selle kallal.</translation>
+<translation id="6339793034470834130">Veebiinspektori kasutamiseks looge oma arvutis kaabli abil ühendus Safariga ja avage oma iPhone menüüs Develop. Arendusmenüü saate lubada oma arvuti Safari seadete jaotises Advanced.</translation>
 <translation id="6340285871011301182">Osaline tõlge pole saadaval.</translation>
 <translation id="6342069812937806050">Äsja</translation>
 <translation id="6344783595350022745">Lihttekst</translation>
@@ -821,6 +823,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6347953390226388422">{count,plural, =1{See aadress kustutatakse teie Google’i kontolt (<ph name="USER_EMAIL" />) ja sellest seadmest.}other{Need aadressid kustutatakse teie Google’i kontolt (<ph name="USER_EMAIL" />) ja sellest seadmest.}}</translation>
 <translation id="634878792104344809">Paroolide, ajaloo ja muu sünkroonimine kõigis teie seadmetes</translation>
 <translation id="6348855835728304880">Pääsete selles seadmes juurde oma Chrome'i paroolidele ja muule teabele.</translation>
+<translation id="63519665078626091">Veebiinspektori kasutamiseks looge oma arvutis kaabli abil ühendus Safariga ja avage oma iPad menüüs Develop. Arendusmenüü saate lubada oma arvuti Safari seadete jaotises Advanced.</translation>
 <translation id="6355820205320395730">Nõrku paroole on lihtne ära arvata. Veenduge, et looksite tugevad paroolid. <ph name="BEGIN_LINK" />Vaadake rohkem turvanõuandeid.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Jälgi domeeni <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Inkognito vahelehti ei ole</translation>
@@ -1081,6 +1084,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="7993619969781047893">Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="800361585186029508">Sisestatud URL-id avatakse Google Chrome'is.</translation>
 <translation id="8005666035647241369">Selle seadme Google'i paroolihaldurile</translation>
+<translation id="8011489434346330032">Veebiinspektor</translation>
 <translation id="8016714545083187120">Kasuta alati turvalisi ühendusi</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
 <translation id="8023878949384262191">Laiendab jaotist.</translation>

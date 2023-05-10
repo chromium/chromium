@@ -87,6 +87,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2467438592969358367">Google Chrome želi izvesti vaše lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2534507159460261402">Google Pay (kopirano u Chrome)</translation>
+<translation id="2556847002339236023">Vaš organizacija zatvara Chrome kada se ne koristi <ph name="TIMEOUT_DURATION" />. Podaci o pregledanju su izbrisani. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="2559253115192232574">Kasnije, web lokacija koju ste posjetili može zatražiti od Chromea da pogleda vaša interesovanja radi personalizacije oglasa koje vidite. Chrome može dijeliti do 3 ineresovanja.</translation>
 <translation id="2563121210305478421">Ponovo pokrenuti Chrome?</translation>
 <translation id="2574930892358684005">Račun <ph name="EXISTING_USER" /> je već prijavljen na ovom Chrome profilu. Da vaše pregledanje ostane odvojeno, Chrome vam može kreirati vaš lični profil.</translation>
@@ -275,6 +276,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>
 <translation id="6145313976051292476">Otvaraj PDF dokumente u Chromeu</translation>
 <translation id="6155960517327665396">Ušteda memorije ubrzava rada Chromea</translation>
+<translation id="6157638032135951407">Vaša organizacija briše podatke Chromea kada se ne koristi <ph name="TIMEOUT_DURATION" />. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Ulazno pravilo da Google Chrome dozvoli mDNS saobraćaj.</translation>
@@ -290,6 +292,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6418662306461808273">Želite li se prebaciti na postojeći Chrome profil?</translation>
 <translation id="648319183876919572">Poboljšano Sigurno pregledanje vas bolje štiti od opasnih web lokacija i preuzimanja</translation>
 <translation id="6493527311031785448">Google Chrome pokušava <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome se automatski zatvorio</translation>
 <translation id="6506909944137591434">Chromeu je potrebno odobrenje za kameru radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">U Googleovom Upravitelju lozinki na ovom uređaju</translation>
@@ -326,6 +329,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7155997830309522122">Ako jeste, uredite sačuvanu lozinku u Chromeu da se podudara s novom lozinkom.</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
 <translation id="7177959540995930968">O ovim funkcijama možete saznati više u postavkama Chromea.</translation>
+<translation id="7193885263065350793">Vaš organizacija zatvara Chrome kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljujete se na upravljani račun i administratoru dajete kontrolu nad svojim Google Chrome profilom. Vaši podaci iz Chromea, kao što su vaše aplikacije, oznake, historija, lozinke i druge postavke, trajno će se vezati za račun <ph name="USER_NAME" />. Moći ćete izbrisati ove podatke na kontrolnoj tabli Google računa, ali nećete moći povezati ove podatke s drugim računom. Imate mogućnost kreiranja novog profila kako biste odvojili postojeće podatke iz Chromea. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Ovaj jezik se koristi za prikaz korisničkog interfejsa u Google Chromeu</translation>
 <translation id="7296210096911315575">Važne informacije o korištenju i sigurnosti</translation>

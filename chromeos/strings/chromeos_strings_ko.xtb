@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS를 변환할 수 없습니다.</translation>
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1022433422498218992">일반 컨트롤</translation>
+<translation id="1022628058306505708">지구의 흐름</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">새 기능을 이용할 수 있습니다. 자세히 알아보려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="1059913517121127803">스캔을 시작할 수 없음</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">추가 작업</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
 <translation id="2940811910881150316">기기를 테스트할 수 없습니다. 테스트하려면 덮개를 다시 엽니다.</translation>
+<translation id="2981143481017883351">독점 Chromebook 애셋 사용 가능</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017079585324758401">배경</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
+<translation id="3386675685417744672">Chromebook 전용</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">경고</translation>
 <translation id="4054683689023980771">이미지 다운로드 중</translation>
 <translation id="4060260348856573701">새 APN</translation>
+<translation id="4079743696465895866">Chromebook 전용 예술작품 선택</translation>
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">배터리 용량은 사용함에 따라 감소함</translation>
 <translation id="6191293864534840972">네임서버 형식이 잘못되었습니다.</translation>
+<translation id="6205145102504628069">구름의 흐름</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">전체 종료</translation>
 <translation id="6223752125779001553">사용 가능한 스캐너 없음</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">맞춤설정</translation>
 <translation id="6500818810472529210">Google 검색에서 결과 보기</translation>
 <translation id="650266656685499220">앨범을 만들려면 Google 포토로 이동하세요.</translation>
+<translation id="6505750420152840539">새벽부터 밤까지</translation>
 <translation id="6516990319416533844">배터리 충전 속도를 테스트하려면 짧은 시간 동안 배터리를 소모하세요.</translation>
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6526200165918397681">배경화면 일치</translation>

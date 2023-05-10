@@ -1675,6 +1675,7 @@
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="5051305769747448211">లైవ్ కామెడీ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైల్‌ను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}other{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైళ్ళను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}}</translation>
+<translation id="5060419232449737386">క్యాప్షన్ సెట్టింగ్‌లు</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో Windows Helloతో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">మీరు <ph name="LOOKALIKE_DOMAIN" /> గురించి అడిగారా?</translation>
 <translation id="5066056036849835175">ప్రింటింగ్ హిస్టరీ</translation>

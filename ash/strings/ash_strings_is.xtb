@@ -56,6 +56,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="121097972571826261">Áfram um orð</translation>
 <translation id="1217633719248931900">Fara í forrit</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, forrit úr Play Store</translation>
+<translation id="1219309685806246869">Til baka í <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Chromebook er læst vegna þekkts vandamáls. Þú getur skráð þig aftur inn eftir: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Hætta að velja</translation>
 <translation id="1235458158152011030">Þekkt netkerfi</translation>
@@ -459,6 +460,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="316086887565479535">Óstudd forrit í sniðmáti</translation>
 <translation id="3161500364292033097">Loka skrifborði og gluggum</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> niðurfærir <ph name="DEVICE_TYPE" /> í eldri útgáfu. Tækið verður endurstillt og öllum gögnum verður eytt.</translation>
+<translation id="3171170659304083361">Stillingar innfærsluaðferða</translation>
 <translation id="3181441307743005334">Endurræsing gæti tekið nokkurn tíma</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Tengdist við tæki}one{Tengdist við # tæki}other{Tengdist við # tæki}}</translation>
 <translation id="320207200541803018">Stilltur teljari</translation>
@@ -1059,6 +1061,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5881540930187678962">Setja Símstöð upp seinna</translation>
 <translation id="5881663018261910378">Slökkt</translation>
 <translation id="5887954372087850114">Glugganum <ph name="WINDOW_TITLE" /> er úthlutað á <ph name="DESK_TITLE" /> og er ekki úthlutað á önnur skrifborð</translation>
+<translation id="588817334757907802">Opna skrá í Chrome-vafra</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="589817443623831496">Punktaskönnun</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6074087755403037157">Beta-rás</translation>
 <translation id="6093867385179428431">Gert óvirkt af stjórnanda</translation>
 <translation id="6095008505822982596">Talhraði</translation>
+<translation id="6095425951508823973">Bæta við tengingu við <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Breytt í liðnum mánuði</translation>
 <translation id="6103838137565245112">kerfi</translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
@@ -1589,6 +1593,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8349964124165471584">Opna tengil í nýjum glugga</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="8364673525741149932">Kveikja/slökkva á Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> í notkun.</translation>
 <translation id="8369166482916924789">Vistað skrifborð, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Áfram um staf</translation>
 <translation id="8371991222807690464">Afköst jaðartækja gætu verið takmörkuð í gestastillingu</translation>

@@ -1034,6 +1034,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3531780078352352885">Udskriftsjob</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> anmoder om at bruge din mikrofon</translation>
 <translation id="3533328374079021623">Postkasse 5</translation>
+<translation id="3536227077203206203">Der er givet adgang denne gang</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kortbillede</translation>
 <translation id="3542768452570884558">Åbn link i nyt vindue</translation>
@@ -2453,6 +2454,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7030436163253143341">Certifikatet er ikke gyldigt</translation>
 <translation id="7031646650991750659">Hvilke Google Play-apps, du har installeret</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> –tryk på Tab-tasten og derefter Enter for at administrere privatlivsindstillingerne for din Google-konto</translation>
+<translation id="7044081119134178347">Der er givet adgang til kameraet denne gang</translation>
 <translation id="7048095965575426564">Europa Fanfold</translation>
 <translation id="7050187094878475250">Du forsøgte at gå til <ph name="DOMAIN" />, men serveren præsenterede et certifikat, hvis gyldighedsperiode er for lang til at være pålidelig.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kortet kan ikke tilføjes lige nu}one{Kortet kan ikke tilføjes lige nu}other{Kortene kan ikke tilføjes lige nu}}</translation>
@@ -3045,6 +3047,7 @@ Yderligere oplysninger:
 <translation id="8416694386774425977">Netværkskonfigurationen er ugyldig og kunne ikke importeres.
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Der er givet adgang til mikrofonen denne gang</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
@@ -3100,6 +3103,7 @@ Yderligere oplysninger:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Nulstil tilladelse}one{Nulstil tilladelse}other{Nulstil tilladelser}}</translation>
 <translation id="8555010941760982128">Angiv denne kode ved betalingen</translation>
 <translation id="8557066899867184262">Kontrolkoden findes på bagsiden af kortet.</translation>
+<translation id="8558347880669160417">Der er givet adgang til mikrofonen og kameraet denne gang</translation>
 <translation id="8559762987265718583">Der kan ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da tid og dato (<ph name="DATE_AND_TIME" />) på din enhed er forkerte.</translation>
 <translation id="8564182942834072828">Individuelle dokumenter/ikke-samlede kopier</translation>
 <translation id="8564985650692024650">Chromium anbefaler, at du nulstiller din adgangskode til <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, hvis du har brugt den på andre websites.</translation>
@@ -3217,6 +3221,7 @@ Yderligere oplysninger:
 <translation id="8870494189203302833">Samme rækkefølge med forside nedad</translation>
 <translation id="8870700989640064057">Vil du udskrive den fortrolige fil?</translation>
 <translation id="8871553383647848643">Tilpas din browsers udseende</translation>
+<translation id="8871603420762394026">Chrome deler nu kun meget begrænsede oplysninger mellem websites, f.eks. hvornår du fik vist en annonce, for at hjælpe websites med at måle annonceeffektiviteten.</translation>
 <translation id="8874824191258364635">Angiv et gyldigt kortnummer</translation>
 <translation id="8876033571432926051">Hyggespil</translation>
 <translation id="8877780815363510165">Fiskeri</translation>
@@ -3370,6 +3375,7 @@ Yderligere oplysninger:
 <translation id="949314938206378263">Du har anmodet om at besøge dette website. Din forælder kan besvare anmodningen i Family Link.</translation>
 <translation id="950736567201356821">Tre huller øverst</translation>
 <translation id="961663415146723894">Bind nederst</translation>
+<translation id="961930410699694996">Der er givet adgang til lokation denne gang</translation>
 <translation id="962484866189421427">Dette indhold kan forsøge at installere vildledende apps, der foregiver at være noget andet, eller som indsamler data, der kan anvendes til at overvåge dig. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alle brugere</translation>
 <translation id="964050462028070434">Administrer adgangskoder og adgangsnøgler…</translation>

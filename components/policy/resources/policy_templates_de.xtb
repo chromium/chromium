@@ -117,6 +117,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 <translation id="1105711894873068933">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, werden beim nächsten Log-in alle Nutzerdaten entfernt.</translation>
 <translation id="1107538157073168076">Erweiterung „Insights“ deaktivieren</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche deaktivieren.</translation>
+<translation id="1111324374369583989">Bildschirm mit der Einstellung für die Anzeigegröße bei der Anmeldung nicht anzeigen</translation>
 <translation id="1117535567637097036">Die über diese Richtlinie festgelegten Protokoll-Handler werden bei der Verarbeitung von Android-Intents nicht verwendet.</translation>
 <translation id="1118093128235245168">Websites dürfen den Nutzer um Zugriff auf ein angeschlossenes USB-Gerät bitten</translation>
 <translation id="111910763555783249">Benachrichtigungseinstellungen</translation>
@@ -683,6 +684,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       </translation>
 <translation id="1613327425322354195">Sicherheitsstatus des Geräts melden</translation>
 <translation id="1615221548356595305">Zusammenführen von HTTP/2-Verbindungen für diese Hosts zulassen, auch wenn Clientzertifikate verwendet werden</translation>
+<translation id="1615734278280392199">Suche im nicht anonymen Modus verwenden.</translation>
 <translation id="1616280227447957376">Fortfahren von SSL-Warnseiten für bestimmte Quellen erlauben</translation>
 <translation id="1617235075406854669">Löschen des Browserverlaufs und des Downloadverlaufs aktivieren</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -905,6 +907,17 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="1844972978764975668">Anfragen an einen Google-Server zulassen, um einen exakten Zeitstempel abzufragen</translation>
 <translation id="1845405905602899692">Kioskeinstellungen</translation>
 <translation id="1845429996559814839">PIN-Druckmodus einschränken</translation>
+<translation id="1845567452014584154">Mit dieser Richtlinie kann festgelegt werden, ob Manifest V2-Erweiterungen im Browser verwendet werden können.
+
+Die Unterstützung für Manifest V2-Erweiterungen wird eingestellt. Alle Erweiterungen müssen dann zu V3 migriert werden. Weitere Informationen und den Zeitplan für die Migration findest du unter https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Wenn die Richtlinie auf „<ph name="DEFAULT" />“ (0) gesetzt oder nicht konfiguriert ist, werden V2-Erweiterungen abhängig vom Browser und gemäß dem obigen Zeitplan geladen.
+Ist die Richtlinie auf „<ph name="DISABLE" />“ (1) gesetzt, wird das Installieren von V2-Erweiterungen blockiert und vorhandene V2-Erweiterungen werden deaktiviert. Nachdem die V2-Unterstützung standardmäßig deaktiviert wurde, wird die Option so behandelt, als wäre die Richtlinie nicht konfiguriert.
+Ist die Richtlinie auf „<ph name="ENABLE" />“ (2) gesetzt, sind V2-Erweiterungen zulässig. Bevor die V2-Unterstützung standardmäßig deaktiviert wird, wird die Option so behandelt, als wäre die Richtlinie nicht konfiguriert.
+Wenn die Richtlinie auf „<ph name="ENABLE_FOR_FORCED_EXTENSIONS" />“ (3) gesetzt ist, sind V2-Erweiterungen mit erzwungener Installation zulässig. Dazu gehören Erweiterungen, die in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> oder <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> mit „<ph name="INSTALLATION_MODE" />“ auf „force_installed“ oder „normal_installed“ aufgeführt sind. Alle anderen V2-Erweiterungen werden deaktiviert. Die Option ist unabhängig vom Migrationsstatus immer verfügbar.
+
+
+Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien festgelegt.</translation>
 <translation id="1846545322805269573">Nutzer können den Hintergrund der „Neuer Tab“-Seite nicht anpassen</translation>
 <translation id="1847960418907100918">Gibt die Parameter für die Suche im Voraus mit POST an. Sie besteht aus durch Komma getrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie z. B. {searchTerms} im obigen Beispiel ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
@@ -1055,6 +1068,7 @@ Wenn die Richtlinie auf <ph name="DISABLE_UNPUBLISHED" /> (1) gesetzt ist, sind 
 
       Änderungen an der Richtlinie werden nur dann wirksam, wenn ARC nicht läuft, z. B. beim Start von Chrome OS.</translation>
 <translation id="1984934843478301531">App-Start-Automatisierung</translation>
+<translation id="1985545260037812875">Bildschirm mit der Einstellung für die Anzeigegröße bei der Anmeldung anzeigen</translation>
 <translation id="1985598967415986700">Die Verringerung des User-Agent kann durch Field Trials und Ursprungstests gesteuert werden.</translation>
 <translation id="1987789058026551147">Melden des Status für die Kiosksitzung auf Geräten aktivieren</translation>
 <translation id="1988345404999458987">Mit dieser Richtlinie können Konfigurationen verfügbarer Druckserver zur Verfügung gestellt werden.
@@ -2293,6 +2307,7 @@ Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="3118552207903834734">Nutzer erlauben, seinen Gerätehostnamen zu konfigurieren</translation>
+<translation id="3120434599585109871">Suche im anonymen Modus verwenden.</translation>
 <translation id="3122082892722698079">Ausnahmen bei unsicheren Inhalten verwalten</translation>
 <translation id="3125472566440502628">„Vorlesen“ deaktivieren</translation>
 <translation id="3126748868885248792">Rechte Taste als primäre Maustaste festlegen</translation>
@@ -2888,6 +2903,9 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3606571057705314194">Profil-Picker beim Start deaktiviert</translation>
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
 <translation id="3608281460204780443">Chrome Web Store-Symbol im <ph name="PRODUCT_OS_NAME" />-Launcher und auf der Seite „Neuer Tab“ anzeigen</translation>
+<translation id="3616490235694929053">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt wird.
+      Wenn die Richtlinie auf „false“ gesetzt ist, wird der Bildschirm mit der Einstellung für die Anzeigegröße nicht angezeigt.
+      Wird diese Richtlinie auf „true“ gesetzt, wird der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt.</translation>
 <translation id="3622463490728773174">Neue Implementierung zulassen</translation>
 <translation id="3623332696371971798">Google Fotos den Zugriff über die Personalisierungs-App nicht erlauben</translation>
 <translation id="3627678165642179114">Webdienst für die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
@@ -3384,6 +3402,17 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4101282687722389021">UTC-Zeitstempel für die letzte Änderung dieses Eintrags. Wird als String gesendet, da der Zeitstempel nicht als Ganzzahl angegeben werden kann.</translation>
 <translation id="4102347680024644994">Ereignisse vom Typ „Extended Detection and Response“ (XDR) melden</translation>
 <translation id="4105989332710272578">Erzwingung der Zertifikatstransparenz für eine Liste von URLs deaktivieren</translation>
+<translation id="410740968939768919">Mit dieser Richtlinie kann festgelegt werden, ob Manifest V2-Erweiterungen auf dem <ph name="PRODUCT_OS_NAME" />-Anmeldebildschirm verwendet werden können.
+
+Die Unterstützung für Manifest V2-Erweiterungen wird eingestellt. Alle Erweiterungen müssen dann zu V3 migriert werden. Weitere Informationen und den Zeitplan für die Migration findest du unter https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Wenn die Richtlinie auf „<ph name="DEFAULT" />“ (0) gesetzt oder nicht konfiguriert ist, werden V2-Erweiterungen abhängig vom Gerät und gemäß dem obigen Zeitplan geladen.
+Ist die Richtlinie auf „<ph name="DISABLE" />“ (1) gesetzt, wird das Installieren von V2-Erweiterungen blockiert und vorhandene V2-Erweiterungen werden deaktiviert. Nachdem die V2-Unterstützung standardmäßig deaktiviert wurde, wird die Option so behandelt, als wäre die Richtlinie nicht konfiguriert.
+Ist die Richtlinie auf „<ph name="ENABLE" />“ (2) gesetzt, sind V2-Erweiterungen zulässig. Bevor die V2-Unterstützung standardmäßig deaktiviert wird, wird die Option so behandelt, als wäre die Richtlinie nicht konfiguriert.
+Wenn die Richtlinie auf „<ph name="ENABLE_FOR_FORCED_EXTENSIONS" />“ (3) gesetzt ist, sind V2-Erweiterungen mit erzwungener Installation zulässig. Dazu gehören Erweiterungen, die in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> oder <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> mit „<ph name="INSTALLATION_MODE" />“ auf „force_installed“ oder „normal_installed“ aufgeführt sind. Alle anderen V2-Erweiterungen werden deaktiviert. Die Option ist unabhängig vom Migrationsstatus immer verfügbar.
+
+
+Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien festgelegt.</translation>
 <translation id="4110126170080699437">Aus Sicherheitsgründen erfordert die <ph name="GET_DISPLAY_MEDIA_API_NAME" />-Web-API die vorherige Ausführung einer Geste zur vorübergehenden Aktivierung durch den Nutzer; andernfalls tritt ein Fehler auf.
 
 Mithilfe dieser Richtlinie können Administratoren Ursprünge festlegen, von denen diese API ohne vorherige Nutzergeste aufgerufen werden kann.
@@ -3752,6 +3781,17 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass di
 <translation id="4483649828988077221">Automatische Updates deaktivieren</translation>
 <translation id="4484515651939984695">Gibt an, wie lange (in Sekunden) ein Übertragungsgerät, das mit einem Zugriffscode oder QR-Code ausgewählt wurde, im <ph name="PRODUCT_NAME" />-Menü für Übertragungsgeräte angezeigt wird.</translation>
 <translation id="4485425108474077672">URL für "Neuer Tab"-Seite konfigurieren</translation>
+<translation id="4490420545181481759">Mit X.509-Zertifikaten können Einschränkungen wie Namensbeschränkungen in Erweiterungen in das Zertifikat codiert werden. RFC 5280 gibt an, dass die Durchsetzung solcher Einschränkungen für Trust-Anchor-Zertifikate optional ist. Ab <ph name="PRODUCT_NAME" /> 112 werden solche Einschränkungen in Zertifikaten, die aus dem Shop für Plattformzertifikate geladen werden, erzwungen.
+
+Diese Richtlinie ist ein vorübergehender Deaktivierungsmechanismus für den Fall, dass Unternehmen Probleme mit den in ihre privaten Root-Zertifikate codierten Einschränkungen haben. Diese Richtlinie kann dann verwendet werden, um die Erzwingung der Einschränkungen vorübergehend zu deaktivieren und die Probleme mit dem Zertifikat zu beheben.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erzwingt <ph name="PRODUCT_NAME" /> Einschränkungen, die in aus dem vertrauenswürdigen Shop der Plattform geladenen Trust-Anchors codiert sind.
+
+Wenn diese Richtlinie deaktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> keine Einschränkungen, die in aus dem vertrauenswürdigen Shop der Plattform geladenen Trust-Anchors codiert sind.
+
+In Version 112 von <ph name="PRODUCT_NAME" /> hat diese Richtlinie keine Auswirkungen, wenn die Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> deaktiviert ist.
+
+Diese Richtlinie wird voraussichtlich in Version 118 von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="4491607814095953976">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse deaktiviert werden kann</translation>
 <translation id="4492287494009043413">Aufnahme von Screenshots deaktivieren</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
@@ -4561,6 +4601,7 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 <translation id="528302483493794684">Eine VM-Konfiguration. Gibt einen VM-Typ an, den der Nutzer installieren kann und der dauerhaft mit der ID dieser Konfiguration verknüpft wird, und Einstellungen, die für diesen VM-Typ gelten.</translation>
 <translation id="5283457834853986457">Plug-in-Suchfunktion deaktivieren (eingestellt)</translation>
 <translation id="5286579716704722323">Nutzern erlauben, SSL-Warnseiten zu schließen</translation>
+<translation id="5288713554963040955">Anzeigen des Bildschirms mit der Einstellung für die Anzeigegröße bei der Anmeldung aktivieren</translation>
 <translation id="5288772341821359899">Wenn die Richtlinie konfiguriert ist, wird der von WebRTC verwendete UDP-Port-Bereich auf den festgelegten Portintervall, einschließlich der Endpunkte, beschränkt.
 
       Wenn die Richtlinie nicht konfiguriert ist oder sie auf den leeren String oder einen ungültigen Portbereich eingestellt ist, kann von WebRTC jeder beliebige verfügbare lokale UDP-Port verwendet werden.</translation>
@@ -7558,6 +7599,7 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
       Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="8050080920415773384">Natives Drucken</translation>
+<translation id="8055051642109241571">Suche im anonymen Modus aktivieren</translation>
 <translation id="8056237304861875584">Aktivieren der Aufgabenfortsetzung für Phone Hub zulassen.</translation>
 <translation id="8056273037819805106">Die <ph name="PRODUCT_OS_NAME" />-Anmeldedaten werden für die Netzwerkauthentifizierung bei einem verwalteten Proxy verwendet.</translation>
 <translation id="8056800559672904373">Ein verwaltetes Konto muss ein primäres Konto sein und darf nicht mit sekundären Konten verknüpft sein; das Importieren bestehender Browserdaten ist bei der Profilerstellung möglich</translation>
@@ -8315,6 +8357,9 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="8728854710675158426">Nicht sichere Hashes in TLS-Handshakes aktiviert</translation>
 <translation id="8734543507835977857">Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge zu Beginn der Sitzung starten</translation>
 <translation id="8736538322216687231">Minimalen eingeschränkten Modus auf YouTube erzwingen</translation>
+<translation id="874149307422233209">Mit dieser Richtlinie können Administratoren festlegen, wie Google Nutzerdaten verarbeitet, die über <ph name="PRODUCT_OS_NAME" />-Funktionen an die Google Suche gesendet werden.
+Wenn die Richtlinie aktiviert ist, können Nutzer das Suchfeld des <ph name="PRODUCT_OS_NAME" />-Launchers und die Adressleiste von <ph name="PRODUCT_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> so verwenden, dass der Suchverlauf des Nutzers nicht mit seiner Identität verknüpft wird.
+Ist die Richtlinie nicht konfiguriert oder deaktiviert, werden die Daten des Nutzers von diesen Suchanfragen mit seiner Identität verknüpft.</translation>
 <translation id="8744844164152340112">Dadurch wird festgelegt, welches Design zum Rendern der Benutzeroberfläche während der OOBE (Out-of-Box-Experience) und während einer Sitzung verwendet wird.
       Dieser automatische Modus wechselt bei Sonnenauf- und untergang zwischen dem hellen und dunklen Design.
       Diese Richtlinie sollte Nutzern empfohlen werden, damit sie das Design in den Systemeinstellungen ändern können.</translation>

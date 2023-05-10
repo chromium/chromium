@@ -285,6 +285,7 @@
 <translation id="2587052924345400782">Доступна новая версия</translation>
 <translation id="2593272815202181319">Моноширинный</translation>
 <translation id="2603212228005142861">Войдите в аккаунт, чтобы задать настройки</translation>
+<translation id="260403163289591229">Вы подписаны</translation>
 <translation id="2604446170045642109">Вы можете отключить тёмную тему для сайтов.</translation>
 <translation id="2612676031748830579">Номер карты</translation>
 <translation id="2625189173221582860">Пароль скопирован</translation>
@@ -584,6 +585,7 @@
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
 <translation id="4202218894997543208">Заблокированные темы</translation>
 <translation id="4214315110991671325">Если вы разрешили использование файлов cookie, Chrome может применять их для предзагрузки.</translation>
+<translation id="4225725533026049334">Вы подписаны</translation>
 <translation id="4225895483398857530">Кнопка на панели инструментов</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4248098802131000011">Защитите пароли от утечки данных и других проблем с безопасностью</translation>
@@ -922,6 +924,7 @@
 <translation id="6005538289190791541">Предложенный пароль</translation>
 <translation id="6011308810877101166">Улучшать подсказки при поиске</translation>
 <translation id="6026538407078977628">Перейти в полноэкранный режим</translation>
+<translation id="6030719887161080597">Управление информацией, которая помогает оценивать эффективность рекламы на сайтах</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="604124094241169006">Автоматически</translation>
@@ -1115,7 +1118,7 @@
 <translation id="6955535239952325894">В управляемых браузерах эта настройка отключена</translation>
 <translation id="6963766334940102469">Удалить закладки</translation>
 <translation id="696447261358045621">Выйти из режима инкогнито</translation>
-<translation id="6971862865055170158">Заблокировать</translation>
+<translation id="6971862865055170158">Не разрешать</translation>
 <translation id="6978717888677691380">Заблокированные сайты</translation>
 <translation id="6979737339423435258">Все время</translation>
 <translation id="6987047470128880212">Режим инкогнито недоступен на этом устройстве.</translation>
@@ -1323,7 +1326,7 @@
 <translation id="8015452622527143194">Восстановить масштаб страницы по умолчанию</translation>
 <translation id="8026334261755873520">Очистить историю</translation>
 <translation id="8027863900915310177">Куда скачать?</translation>
-<translation id="8030852056903932865">Одобрить</translation>
+<translation id="8030852056903932865">Разрешить</translation>
 <translation id="8032569120109842252">Вы подписаны</translation>
 <translation id="8035133914807600019">Создать папку…</translation>
 <translation id="8037750541064988519">Осталось <ph name="DAYS" /> дн.</translation>

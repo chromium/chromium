@@ -1675,6 +1675,7 @@
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="5051305769747448211">لائیو کامیڈی</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{اس فائل کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}other{ان فائلز کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}}</translation>
+<translation id="5060419232449737386">کیپشن کی ترتیبات</translation>
 <translation id="5060483733937416656">‏آپ نے <ph name="PROVIDER_ORIGIN" /> کا استعمال کرنے والی ویب سائٹس پر Windows Hello سے تصدیق کرنے کا انتخاب کیا ہے۔ ممکن ہے کہ اس فراہم کنندہ کے پاس آپ کی ادائیگی کے طریقہ کے بارے میں معلومات اسٹور کردہ ہے جن کو <ph name="LINK_TEXT" />آپ کر سکتے ہیں۔</translation>
 <translation id="5061227663725596739">کیا آپ کا مطلب <ph name="LOOKALIKE_DOMAIN" /> ہے؟</translation>
 <translation id="5066056036849835175">پرنٹنگ کی سرگزشت</translation>

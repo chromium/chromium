@@ -285,6 +285,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="2587052924345400782">Nuova versione disponibile</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Accedi per gestire le tue preferenze</translation>
+<translation id="260403163289591229">Stai seguendo</translation>
 <translation id="2604446170045642109">Puoi disattivare il tema scuro per i siti nelle impostazioni.</translation>
 <translation id="2612676031748830579">Numero carta</translation>
 <translation id="2625189173221582860">Password copiata</translation>
@@ -584,6 +585,7 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
 <translation id="4202218894997543208">Argomenti che hai bloccato</translation>
 <translation id="4214315110991671325">Se consenti i cookie, Chrome potrebbe usarli per il caricamento.</translation>
+<translation id="4225725533026049334">Stai seguendo</translation>
 <translation id="4225895483398857530">Scorciatoia per la barra degli strumenti</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="4248098802131000011">Proteggi le tue password da violazioni dei dati e altri problemi di sicurezza</translation>
@@ -725,6 +727,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="492284538114688557">Prezzo in calo rilevato</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Le tue password verranno esportate e scaricate in un file di testo. Saranno visibili a qualsiasi persona e app con accesso alla cartella di destinazione.</translation>
+<translation id="4926901776383726965">Puoi salvare immagini e file per visualizzarli offline o condividerli in altre app</translation>
 <translation id="4932247056774066048">Poiché stai uscendo da un account gestito da <ph name="DOMAIN_NAME" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo. Rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
@@ -922,6 +925,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6005538289190791541">Password consigliata</translation>
 <translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
 <translation id="6026538407078977628">Espandi a schermo intero</translation>
+<translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento dell'annuncio</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="604124094241169006">Automatico</translation>
@@ -1422,6 +1426,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8503559462189395349">Password Chrome</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="8505766168025405649">Visualizza una notifica per lo stato del download</translation>
+<translation id="8506357771923193001">Qui troverai i tuoi download</translation>
 <translation id="8514477925623180633">Esporta le password memorizzate su Chrome</translation>
 <translation id="8516012719330875537">Editor immagini</translation>
 <translation id="8516431725144212809">I tuoi interessi stimati da Chrome</translation>

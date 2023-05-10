@@ -592,6 +592,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1506187449813838456">Tonhöhe erhöhen</translation>
 <translation id="1507170440449692343">Diese Seite darf nicht auf deine Kamera zugreifen.</translation>
 <translation id="1507246803636407672">&amp;Verwerfen</translation>
+<translation id="1508931164824684991">Websites dürfen JavaScript verwenden</translation>
 <translation id="1509163368529404530">Gruppe wiederherstellen</translation>
 <translation id="1509281256533087115">Auf <ph name="DEVICE_NAME_AND_VENDOR" /> per USB zugreifen</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -844,6 +845,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1708291623166985230">Hotspot deaktiviert</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Nicht anzeigen, wenn Downloads abgeschlossen sind</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
 <translation id="1709217939274742847">Wähle ein Ticket für die Authentifizierung aus. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Netzwerkeinstellungen</translation>
@@ -1663,6 +1665,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2398546389094871088">Ein Powerwash des Geräts löscht nicht deine eSIM-Profile. Öffne die <ph name="LINK_BEGIN" />Einstellungen für mobile Nutzung<ph name="LINK_END" />, um diese Profile manuell zu entfernen.</translation>
 <translation id="2399699884460174994">Benachrichtigungen aktiviert</translation>
 <translation id="2399939490305346086">Anmeldedaten auf Sicherheitsschlüssel</translation>
+<translation id="2400323785194108001">Diese Website nie deaktivieren</translation>
 <translation id="2400664245143453337">Sofortiges Update erforderlich</translation>
 <translation id="2402226831639195063">Töne</translation>
 <translation id="2406153734066939945">Dieses Profil und die zugehörigen Daten löschen?</translation>
@@ -1978,6 +1981,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2673135533890720193">Browserverlauf lesen</translation>
 <translation id="2674764818721168631">Aus</translation>
 <translation id="2675570801872027281">Fehler beim Entfernen von Bruschetta. Bitte versuch es noch einmal.</translation>
+<translation id="2676084251379299915">Diese Erweiterung wurde durch eine Unternehmensrichtlinie deaktiviert, weil sie im Chrome Web Store nicht mehr verfügbar ist.</translation>
 <translation id="267708982776801183">Rot-Grün-Filter (Rot-Sehschwäche, Protanomalie)</translation>
 <translation id="2678063897982469759">Wieder aktivieren</translation>
 <translation id="2678100101831051676">Streamen nicht möglich.</translation>
@@ -1986,6 +1990,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2682498795777673382">Deine Eltern haben etwas geändert</translation>
 <translation id="2683638487103917598">Ordner sortiert</translation>
 <translation id="2684004000387153598">Um fortzufahren, klicke auf Ok. Klicke dann auf "Person hinzufügen", um ein neues Profil für deine E-Mail-Adresse zu erstellen.</translation>
+<translation id="2685193395980129388">Zugelassen – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
 <translation id="2687407218262674387">Nutzungsbedingungen von Google</translation>
 <translation id="2687621393791886981">Später fragen</translation>
@@ -2074,6 +2079,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2755349111255270002">Dieses <ph name="DEVICE_TYPE" /> zurücksetzen</translation>
 <translation id="2755367719610958252">Bedienungshilfen verwalten</translation>
 <translation id="275662540872599901">Bildschirm aus</translation>
+<translation id="2756936198272359372">Dürfen JavaScript nicht verwenden</translation>
 <translation id="2757161511365746634">Drucker anzeigen</translation>
 <translation id="2757338480560142065">Das Passwort, das du speicherst, muss mit dem Passwort für <ph name="WEBSITE" /> übereinstimmen</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Für „<ph name="SEARCH_QUERY" />“ wurden keine Suchergebnisse zurückgegeben</translation>
@@ -2106,6 +2112,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Erweiterungen sind auf dieser Website erlaubt</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
+<translation id="2783024642731649028">1 Artikel in deinem Einkaufswagen mit <ph name="DISCOUNT_TEXT" /> von <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> angesehen</translation>
 <translation id="2783298271312924866">Heruntergeladen</translation>
 <translation id="2783321960289401138">Verknüpfung erstellen...</translation>
 <translation id="2783829359200813069">Verschlüsselungstypen auswählen</translation>
@@ -2888,6 +2895,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3496213124478423963">Verkleinern</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (nicht ausgewählt)</translation>
 <translation id="3496689104192986836">Akkustand: <ph name="PERCENTAGE" /> %</translation>
+<translation id="3496995426334945408">Websites verwenden normalerweise JavaScript zum Anzeigen von interaktiven Funktionen wie Videospielen oder Webformularen</translation>
 <translation id="3497501929010263034">USB-Gerät von <ph name="VENDOR_NAME" /> (Produkt <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle teilen</translation>
 <translation id="3500417806337761827">Fehler beim Bereitstellen der Freigabe. Es wurden schon zu viele SMB-Freigaben bereitgestellt.</translation>
@@ -2932,6 +2940,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="354060433403403521">Netzteil</translation>
 <translation id="354068948465830244">Kann Websitedaten lesen und ändern</translation>
 <translation id="3541823293333232175">Zugewiesen</translation>
+<translation id="354204985370574425">Diese Website nie deaktivieren</translation>
 <translation id="3543393733900874979">Fehler bei der Aktualisierung (Fehler: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62-ECDSA-Signatur mit SHA-512</translation>
 <translation id="3544058026430919413">Ein Unternehmen kann eine Gruppe von Websites festlegen, die deine Aktivitäten in der Gruppe mithilfe von Cookies teilen. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
@@ -3826,6 +3835,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4324577459193912240">Datei unvollständig</translation>
 <translation id="4325237902968425115">"<ph name="LINUX_APP_NAME" />" wird deinstalliert...</translation>
 <translation id="4326146840124313313">Die stärksten Sicherheitsfunktionen von Chrome, um dich besser vor gefährlichen Websites, Downloads und Erweiterungen zu schützen</translation>
+<translation id="4326484226728068206">Artikel in deinem Einkaufswagen mit <ph name="DISCOUNT_TEXT" /> von <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> angesehen</translation>
 <translation id="4330191372652740264">Wasser mit Eis</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="4332976768901252016">Jugendschutzeinstellungen einrichten</translation>
@@ -4187,6 +4197,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4647090755847581616">&amp;Tab schließen</translation>
 <translation id="4647283074445570750">Schritt <ph name="CURRENT_STEP" /> von <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Unzureichende Berechtigungen</translation>
+<translation id="4650037136970677721">Arbeitsspeicher gespart</translation>
 <translation id="4650591383426000695">Smartphone von <ph name="DEVICE_TYPE" /> trennen</translation>
 <translation id="4651484272688821107">Die Onlinekomponente konnte mit den Ressourcen des Demomodus nicht geladen werden.</translation>
 <translation id="4651921906638302153">Anmeldung mit diesem Konto nicht möglich</translation>
@@ -4421,6 +4432,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4863702650881330715">Kompatibilität erweitern</translation>
 <translation id="4863769717153320198">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Standard)</translation>
 <translation id="4864805589453749318">Es muss ein Elternteil ausgewählt werden, das seine Zustimmung gibt, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann.</translation>
+<translation id="486505726797718946">Arbeitsspeicher gespart</translation>
 <translation id="486635084936119914">Bestimmte Dateitypen nach dem Herunterladen automatisch öffnen</translation>
 <translation id="4868281708609571334">Google Assistant beibringen, die Stimme von <ph name="SUPERVISED_USER_NAME" /> zu erkennen</translation>
 <translation id="4868284252360267853">Dieses Dialogfeld ist aktuell nicht aktiv. Drücke die Befehlstaste-Umschalt-Optionstaste-A, um dieses Dialogfeld hervorzuheben.</translation>
@@ -4513,6 +4525,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4940448324259979830">Dieses Konto wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
 <translation id="4940845626435830013">Speicherplatz reservieren</translation>
 <translation id="4941074198479265146">Websites stellen normalerweise eine Verbindung mit MIDI-Geräten her, um Funktionen wie das Komponieren oder Bearbeiten von Musik umzusetzen</translation>
+<translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> Artikel in deinem Einkaufswagen mit <ph name="DISCOUNT_TEXT" /> von <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> angesehen</translation>
 <translation id="4941246025622441835">Diese Geräteanforderung beim Registrieren des Geräts für die Unternehmensverwaltung verwenden:</translation>
 <translation id="4941627891654116707">Schriftgröße</translation>
 <translation id="4941963255146903244">Fotos, Medien und Apps von deinem Smartphone abrufen</translation>
@@ -5466,6 +5479,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5832970156002835240">Auf allen Websites zulassen</translation>
 <translation id="5833397272224757657">Inhalte von besuchten Websites sowie Browseraktivitäten und -interaktionen werden zur Personalisierung verwendet</translation>
 <translation id="5833726373896279253">Diese Einstellungen können nur vom Eigentümer geändert werden:</translation>
+<translation id="5833899990800318936">Websites dürfen JavaScript nicht verwenden</translation>
 <translation id="583431638776747">Website nicht verfügbar</translation>
 <translation id="5834581999798853053">Noch etwa <ph name="TIME" /> Minuten</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> greift auf HID-Geräte zu}=2{Erweiterungen, die auf Geräte zugreifen: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Erweiterungen, die auf Geräte zugreifen: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} weitere}}</translation>
@@ -5695,6 +5709,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-Gerät verbunden</translation>
 <translation id="6027945736510816438">Meintest du <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Fingerabdruck hinzufügen</translation>
+<translation id="6030719887161080597">Informationen verwalten, die von Websites zur Messung der Anzeigenleistung verwendet werden</translation>
 <translation id="6031600495088157824">Eingabeoptionen in Symbolleiste</translation>
 <translation id="6032715498678347852">Wenn eine Erweiterung Zugriff auf diese Website haben soll, klicke sie an.</translation>
 <translation id="6032912588568283682">Dateisystem</translation>
@@ -5929,6 +5944,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="623755660902014047">Lesemodus</translation>
 <translation id="6238767809035845642">Text, der über ein anderes Gerät geteilt wurde</translation>
 <translation id="6238923052227198598">Neueste Notiz auf Sperrbildschirm anzeigen</translation>
+<translation id="6238982280403036866">Dürfen JavaScript verwenden</translation>
 <translation id="6239558157302047471">&amp;Frame neu laden</translation>
 <translation id="6240821072888636753">Jedes Mal fragen</translation>
 <translation id="6241530762627360640">Informationen zu mit deinem System gekoppelten Bluetooth-Geräten abrufen und Bluetooth-Geräte in der Nähe finden</translation>
@@ -6072,6 +6088,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6378392501584240055">In WLANs öffnen</translation>
 <translation id="6380143666419481200">Akzeptieren und fortfahren</translation>
 <translation id="6382958439467370461">Keine inaktiven Kürzel</translation>
+<translation id="6383382161803538830">Lesemodus auf dieser Seite nicht verfügbar</translation>
 <translation id="638418309848716977">Unterstützte Links</translation>
 <translation id="6384275966486438344">Sucheinstellungen in <ph name="SEARCH_HOST" /> ändern</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Unbenannte Gruppe – 1 Tab}other{Unbenannte Gruppe – # Tab}}</translation>
@@ -6468,6 +6485,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6729192290958770680">Nutzername eingeben</translation>
 <translation id="6731320427842222405">Dies kann einige Minuten dauern.</translation>
 <translation id="6733620523445262364">„<ph name="BOOKMARK_TITLE" />“ erstellt.</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Cookies und andere Websitedaten anzeigen...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737393581255281855">Daten angezeigter Websites löschen?</translation>

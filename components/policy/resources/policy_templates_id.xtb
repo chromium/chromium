@@ -119,6 +119,7 @@ kebijakan ini tidak melarang screenshot yang diambil dengan aplikasi sistem oper
 <translation id="1105711894873068933">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, semua data pengguna akan dihapus pada login berikutnya.</translation>
 <translation id="1107538157073168076">Nonaktifkan ekstensi insight</translation>
 <translation id="1110426799149444997">Nonaktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111324374369583989">Jangan tampilkan layar setelan ukuran tampilan selama login</translation>
 <translation id="1117535567637097036">Penanganan protokol yang disetel melalui kebijakan ini tidak digunakan ketika menangani maksud Android.</translation>
 <translation id="1118093128235245168">Izinkan situs meminta pengguna memberikan akses ke perangkat USB yang terhubung</translation>
 <translation id="111910763555783249">Setelan notifikasi</translation>
@@ -686,6 +687,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       </translation>
 <translation id="1613327425322354195">Melaporkan status keamanan perangkat</translation>
 <translation id="1615221548356595305">Izinkan koneksi HTTP/2 bergabung untuk host ini bahkan saat sertifikat klien digunakan</translation>
+<translation id="1615734278280392199">Gunakan penelusuran dalam mode non-anonim.</translation>
 <translation id="1616280227447957376">Mengizinkan untuk melanjutkan dari halaman peringatan SSL di asal tertentu</translation>
 <translation id="1617235075406854669">Aktifkan penghapusan histori download atau browser</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -908,6 +910,19 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="1844972978764975668">Izinkan kueri ke server Google untuk mengambil stempel waktu yang akurat</translation>
 <translation id="1845405905602899692">Setelan Kios</translation>
 <translation id="1845429996559814839">Batasi mode pencetakan PIN</translation>
+<translation id="1845567452014584154">Mengontrol apakah ekstensi Manifes v2 dapat digunakan oleh browser.
+
+Dukungan ekstensi Manifes v2 tidak akan digunakan lagi dan semua ekstensi harus
+dimigrasikan ke v3 pada masa mendatang. Informasi selengkapnya dan linimasa migrasi
+dapat ditemukan di https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Jika kebijakan disetel ke <ph name="DEFAULT" /> (0) atau tidak disetel, pemuatan ekstensi v2 akan ditentukan oleh browser, mengikuti linimasa di atas.
+Jika kebijakan disetel ke <ph name="DISABLE" /> (1), penginstalan ekstensi v2 akan diblokir dan ekstensi yang ada akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel setelah dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE" /> (2), ekstensi v2 akan diizinkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), ekstensi v2 yang diinstal otomatis akan diizinkan. Ini termasuk ekstensi yang dicantumkan oleh <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> dengan <ph name="INSTALLATION_MODE" /> "force_installed" atau "normal_installed". Semua ekstensi v2 lainnya akan dinonaktifkan. Opsi ini selalu tersedia terlepas dari status migrasi.
+
+
+Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="1846545322805269573">Pengguna tidak dapat menyesuaikan latar belakang halaman Tab Baru</translation>
 <translation id="1847960418907100918">Menentukan parameter yang digunakan saat melakukan penelusuran instan dengan POST. Berisi pasangan nama/nilai yang dipisahkan koma. Jika nilai adalah parameter template, seperti {searchTerms} dalam contoh di atas, akan diganti dengan data istilah penelusuran nyata.
 
@@ -1065,6 +1080,7 @@ Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang t
 
       Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai ChromeOS.</translation>
 <translation id="1984934843478301531">Otomatisasi Peluncuran Aplikasi</translation>
+<translation id="1985545260037812875">Tampilkan layar setelan ukuran tampilan selama login</translation>
 <translation id="1985598967415986700">Pengurangan Agen Pengguna akan dapat dikontrol melalui Uji Coba Kolom dan Uji Coba Asal.</translation>
 <translation id="1987789058026551147">Aktifkan pelaporan sesi kios perangkat</translation>
 <translation id="1988345404999458987">Memberikan konfigurasi server cetak yang tersedia.
@@ -2322,6 +2338,7 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="3118552207903834734">Mengizinkan pengguna mengonfigurasi nama host perangkatnya</translation>
+<translation id="3120434599585109871">Gunakan penelusuran dalam mode anonim.</translation>
 <translation id="3122082892722698079">Mengontrol penggunaan pengecualian konten tidak aman</translation>
 <translation id="3125472566440502628">Nonaktifkan Klik untuk Diucapkan</translation>
 <translation id="3126748868885248792">Tombol kanan menjadi tombol utama</translation>
@@ -2923,6 +2940,9 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3606571057705314194">Pemilih profil dinonaktifkan saat browser dimulai</translation>
 <translation id="3608206578291537084">Aktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="3608281460204780443">Tampilkan ikon Chrome Web Store di peluncur <ph name="PRODUCT_OS_NAME" /> dan di halaman tab baru</translation>
+<translation id="3616490235694929053">Kebijakan ini mengontrol apakah layar setelan ukuran tampilan akan ditampilkan kepada pengguna selama login pertama.
+      Jika kebijakan disetel ke salah (false), layar setelan ukuran tampilan tidak akan ditampilkan.
+      Jika disetel ke benar (true), layar setelan ukuran tampilan akan ditampilkan.</translation>
 <translation id="3622463490728773174">Izinkan implementasi baru</translation>
 <translation id="3623332696371971798">Cegah akses Google Foto dari aplikasi personalisasi</translation>
 <translation id="3627678165642179114">Mengaktifkan atau menonaktifkan layanan web memeriksa ejaan</translation>
@@ -3421,6 +3441,19 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
 <translation id="4101282687722389021">Stempel waktu UTC untuk terakhir kali entri ini diperbarui. Dikirim sebagai string karena stempel waktu tidak cocok dengan bilangan bulat</translation>
 <translation id="4102347680024644994">Melaporkan peristiwa deteksi dan respons yang diperluas (XDR)</translation>
 <translation id="4105989332710272578">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar URL</translation>
+<translation id="410740968939768919">Mengontrol apakah ekstensi Manifes v2 dapat digunakan di layar login <ph name="PRODUCT_OS_NAME" />.
+
+Dukungan ekstensi Manifes v2 tidak akan digunakan lagi dan semua ekstensi harus
+dimigrasikan ke v3 pada masa mendatang. Informasi selengkapnya dan linimasa migrasi
+dapat ditemukan di https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Jika kebijakan disetel ke <ph name="DEFAULT" /> (0) atau tidak disetel, pemuatan ekstensi v2 akan ditentukan oleh perangkat, mengikuti linimasa di atas.
+Jika kebijakan disetel ke <ph name="DISABLE" /> (1), penginstalan ekstensi v2 akan diblokir dan ekstensi yang ada akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel setelah dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE" /> (2), ekstensi v2 akan diizinkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), ekstensi v2 yang diinstal otomatis akan diizinkan. Ini termasuk ekstensi yang dicantumkan oleh <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> dengan <ph name="INSTALLATION_MODE" /> "force_installed" atau "normal_installed". Semua ekstensi v2 lainnya akan dinonaktifkan. Opsi ini selalu tersedia terlepas dari status migrasi.
+
+
+Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="4110126170080699437">Untuk alasan keamanan, <ph name="GET_DISPLAY_MEDIA_API_NAME" /> web API memerlukan
 gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil atau, jika tidak, akan
 gagal.
@@ -3814,6 +3847,33 @@ dari versi 117.</translation>
 <translation id="4483649828988077221">Nonaktifkan Update Otomatis</translation>
 <translation id="4484515651939984695">Menentukan durasi (dalam detik) perangkat transmisi yang dipilih dengan kode akses atau kode QR untuk tetap berada dalam daftar perangkat transmisi pada menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Mengonfigurasi URL halaman Tab Baru</translation>
+<translation id="4490420545181481759">Sertifikat X.509 dapat mengenkode batasan, seperti Batasan Nama,
+di ekstensi dalam sertifikat. RFC 5280 menetapkan bahwa menerapkan
+batasan tersebut pada sertifikat trust anchor bersifat opsional. Mulai
+<ph name="PRODUCT_NAME" /> 112, batasan
+dalam sertifikat tersebut yang dimuat dari penyimpanan sertifikat platform kini akan
+diterapkan.
+
+Kebijakan ini dibuat sebagai penghentian sementara jika perusahaan mengalami
+masalah dengan batasan yang dienkode di root pribadinya. Dalam hal ini,
+kebijakan ini dapat digunakan untuk menonaktifkan sementara penerapan batasan
+saat mengatasi masalah sertifikat.
+
+Jika kebijakan ini tidak disetel atau disetel ke aktif,
+<ph name="PRODUCT_NAME" /> akan menerapkan
+batasan yang dienkode ke trust anchor yang dimuat dari trust store platform.
+
+Jika kebijakan ini disetel ke nonaktif,
+<ph name="PRODUCT_NAME" /> tidak akan menerapkan
+batasan yang dienkode ke trust anchor yang dimuat dari trust store platform.
+
+Pada <ph name="PRODUCT_NAME" /> versi 112,
+kebijakan ini tidak akan berpengaruh jika
+kebijakan
+<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> dinonaktifkan.
+
+Kebijakan ini akan dihapus dari
+<ph name="PRODUCT_NAME" /> versi 118.</translation>
 <translation id="4491607814095953976">Memilih apakah setelan pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan</translation>
 <translation id="4492287494009043413">Menonaktifkan pengambilan screenshot</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
@@ -4652,6 +4712,7 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
 <translation id="528302483493794684">Konfigurasi VM. Menunjukkan jenis VM yang dapat diinstal pengguna, yang akan terus dikaitkan dengan ID konfigurasi ini, dan kontrol yang berlaku untuk jenis VM ini.</translation>
 <translation id="5283457834853986457">Nonaktifkan pencari plugin (tidak digunakan lagi)</translation>
 <translation id="5286579716704722323">Izinkan pengguna mengklik halaman peringatan SSL</translation>
+<translation id="5288713554963040955">Mengaktifkan tampilan layar setelan ukuran layar selama login</translation>
 <translation id="5288772341821359899">Jika kebijakan disetel, rentang port UDP yang digunakan oleh WebRTC dibatasi ke interval port yang ditentukan (termasuk titik akhir).
 
       Jika kebijakan tidak disetel, atau jika disetel menjadi string kosong maupun rentang port yang tidak valid, WebRTC diizinkan untuk menggunakan port UDP lokal mana pun yang tersedia.</translation>
@@ -7767,6 +7828,7 @@ juga aman.</translation>
       Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
       Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Pencetakan Asli</translation>
+<translation id="8055051642109241571">Mengaktifkan penelusuran dalam mode anonim</translation>
 <translation id="8056237304861875584">Izinkan pengaktifkan kelanjutan tugas Phone Hub.</translation>
 <translation id="8056273037819805106">Kredensial login <ph name="PRODUCT_OS_NAME" /> akan digunakan untuk autentikasi jaringan ke proxy terkelola.</translation>
 <translation id="8056800559672904373">Akun terkelola harus berupa akun utama yang tidak memiliki akun sekunder, dan pengguna dapat mengimpor data penjelajahan yang ada pada saat pembuatan profilnya</translation>
@@ -8517,6 +8579,9 @@ Jika kebijakan tidak disetel, sandi tersimpan tidak akan diimpor saat browser pe
 <translation id="8728854710675158426">Pengaktifan Hash Tidak Aman di Handshake TLS</translation>
 <translation id="8734543507835977857">Mulai penundaan pengelolaan daya dan batas durasi sesi pada awal sesi</translation>
 <translation id="8736538322216687231">Memaksa Mode Terbatas YouTube minimum</translation>
+<translation id="874149307422233209">Kebijakan ini memungkinkan admin mengontrol cara Google memproses data pengguna yang dikirim ke Penelusuran melalui fitur <ph name="PRODUCT_OS_NAME" />.
+Jika kebijakan ini diaktifkan, pengguna akan dapat menggunakan kotak penelusuran Peluncur <ph name="PRODUCT_OS_NAME" />, dan kotak URL Browser <ph name="PRODUCT_NAME" /> di <ph name="PRODUCT_OS_NAME" />, sehingga histori penelusuran pengguna tidak akan dikaitkan ke identitas mereka.
+Jika kebijakan ini disetel ke nonaktif atau tidak disetel, data pengguna dari penelusuran ini akan dikaitkan ke identitas mereka.</translation>
 <translation id="8744844164152340112">Mengontrol tema yang digunakan untuk merender UI selama OOBE dan dalam sesi (gelap/terang/otomatis).
       Mode otomatis akan mengubah tema antara gelap dan terang secara otomatis saat matahari terbit dan tenggelam.
       Kebijakan ini harus direkomendasikan, sehingga memungkinkan pengguna untuk mengubah tema di setelan sistem.</translation>

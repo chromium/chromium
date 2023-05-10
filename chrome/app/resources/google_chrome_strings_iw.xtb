@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">‏Chrome לא התעדכן, משהו השתבש. <ph name="BEGIN_LINK" />לטיפול בבעיות בעדכון של Chrome ובעדכונים שנכשלו<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chrome</translation>
 <translation id="3019382870990049182">‏צריך להפעיל מחדש כדי לעדכן את ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{‏תוספים ל-Google Chrome ניגשו למכשירי ממשק אנושי (HID)}=1{‏תוספים ל-Google Chrome ניגשים למכשירי ממשק אנושי (HID)}one{‏תוספים ל-Google Chrome ניגשים ל-# מכשירי ממשק אנושי (HID)}two{‏תוספים ל-Google Chrome ניגשים ל-# מכשירי ממשק אנושי (HID)}other{‏תוספים ל-Google Chrome ניגשים ל-# מכשירי ממשק אנושי (HID)}}</translation>
 <translation id="303514781271618814">‏אנחנו בודקים תכונות חדשות ב-Chrome שמאפשרות לאתרים להציג את אותה חוויית הגלישה תוך שימוש בפחות נתונים.</translation>
 <translation id="3037838751736561277">‏Google Chrome נמצא במצב רקע.</translation>
 <translation id="3038232873781883849">בהמתנה להתקנה…</translation>
@@ -219,6 +220,7 @@
 <translation id="4970880042055371251">‏גרסת ChromeOS</translation>
 <translation id="4970947549776831107">‏סוג הקובץ הזה מסוכן ולכן הקובץ נחסם על ידי Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{‏תוסף ל-Google Chrome ניגש למכשירי ממשק אנושי (HID)}=1{‏תוסף ל-Google Chrome ניגש למכשיר ממשק אנושי (HID) אחד}one{‏תוסף ל-Google Chrome ניגש ל-# מכשירי ממשק אנושי (HID)}two{‏תוסף ל-Google Chrome ניגש ל-# מכשירי ממשק אנושי (HID)}other{‏תוסף ל-Google Chrome ניגש ל-# מכשירי ממשק אנושי (HID)}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{‏לפי הגדרת האדמין, Chrome נסגר אוטומטית כשלא משתמשים בו במשך דקה. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}one{‏לפי הגדרת האדמין, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}two{‏לפי הגדרת האדמין, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}other{‏לפי הגדרת האדמין, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}}</translation>
 <translation id="5098668839038261629">‏כשההגדרה מופעלת, תתבצע יציאה גם מ-Chrome</translation>
 <translation id="5132929315877954718">‏מקום לגלות אפליקציות, משחקים, תוספים ועיצובים מעולים ל-Google Chrome.</translation>

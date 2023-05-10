@@ -1031,6 +1031,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3531780078352352885">Fogli di lavoro</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> vuole usare il microfono</translation>
 <translation id="3533328374079021623">Mailbox 5</translation>
+<translation id="3536227077203206203">Consentito questa volta</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Immagine della carta</translation>
 <translation id="3542768452570884558">Apri link in un'altra finestra</translation>
@@ -1669,6 +1670,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="5051305769747448211">Commedie dal vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per inviare questo file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
+<translation id="5060419232449737386">Impostazioni sottotitoli codificati</translation>
 <translation id="5060483733937416656">Hai scelto di eseguire la verifica con Windows Hello sui siti web che utilizzano <ph name="PROVIDER_ORIGIN" />. Questo fornitore potrebbe aver memorizzato informazioni sul tuo metodo di pagamento, che puoi <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Forse cercavi: <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">Cronologia di stampa</translation>
@@ -2449,6 +2451,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7030436163253143341">ll certificato non è valido</translation>
 <translation id="7031646650991750659">Le app Google Play che hai installato</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per gestire le impostazioni sulla privacy del tuo Account Google.</translation>
+<translation id="7044081119134178347">Fotocamera consentita questa volta</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Hai tentato di visitare il sito <ph name="DOMAIN" />, ma il server ha presentato un certificato con periodo di validità troppo lungo per poter essere ritenuto attendibile.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Al momento questa carta non può essere salvata}other{Al momento queste carte non possono essere salvate}}</translation>
@@ -3041,6 +3044,7 @@ Ulteriori dettagli:
 <translation id="8416694386774425977">La configurazione di rete non è valida e non può essere importata.
 Ulteriori dettagli:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Microfono consentito questa volta</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
@@ -3097,6 +3101,7 @@ Ulteriori dettagli:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Reimposta l'autorizzazione}other{Reimposta le autorizzazioni}}</translation>
 <translation id="8555010941760982128">Utilizza questo codice al momento del pagamento</translation>
 <translation id="8557066899867184262">Il codice CVC si trova sul lato posteriore della carta.</translation>
+<translation id="8558347880669160417">Fotocamera e microfono consentiti questa volta</translation>
 <translation id="8559762987265718583">Impossibile stabilire una connessione privata con il sito <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perché data e ora del dispositivo (<ph name="DATE_AND_TIME" />) sono sbagliate.</translation>
 <translation id="8564182942834072828">Documenti separati/Copie non fascicolate</translation>
 <translation id="8564985650692024650">Chromium ti consiglia di reimpostare la password di <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, se l'hai utilizzata su altri siti.</translation>
@@ -3213,6 +3218,7 @@ Ulteriori dettagli:
 <translation id="8870494189203302833">Stesso ordine a faccia in giù</translation>
 <translation id="8870700989640064057">Vuoi stampare il file riservato?</translation>
 <translation id="8871553383647848643">Personalizza l'aspetto del browser</translation>
+<translation id="8871603420762394026">Ora Chrome condivide soltanto informazioni molto limitate tra siti, ad esempio quando ti è stato mostrato un annuncio, per aiutare i siti a misurare il rendimento degli annunci.</translation>
 <translation id="8874824191258364635">Inserisci un numero di carta di credito valido</translation>
 <translation id="8876033571432926051">Casual game</translation>
 <translation id="8877780815363510165">Pesca</translation>
@@ -3366,6 +3372,7 @@ Ulteriori dettagli:
 <translation id="949314938206378263">Hai chiesto di poter visitare questo sito. Uno dei tuoi genitori può rispondere in Family Link.</translation>
 <translation id="950736567201356821">Tripla perforatura in alto</translation>
 <translation id="961663415146723894">Rilegatura in basso</translation>
+<translation id="961930410699694996">Posizione consentita questa volta</translation>
 <translation id="962484866189421427">Questi contenuti potrebbero installare app ingannevoli che si spacciano per qualcos'altro o raccolgono dati che potrebbero essere usati per monitorare la tua attività. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Tutti gli utenti</translation>
 <translation id="964050462028070434">Gestisci password e passkey…</translation>

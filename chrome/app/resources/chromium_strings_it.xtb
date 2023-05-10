@@ -248,6 +248,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6475912303565314141">Controlla anche la pagina visualizzata all'avvio di Chromium.</translation>
 <translation id="648319183876919572">Navigazione sicura avanzata fa di più per proteggerti da download e siti web pericolosi</translation>
 <translation id="6510925080656968729">Disinstalla Chromium</translation>
+<translation id="6539122709674868420">La tua organizzazione chiude Chromium quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />. I dati di navigazione sono stati eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="6542839706527980775">Ogni profilo dispone delle proprie informazioni di Chromium, come preferiti, cronologia, password e altro</translation>
 <translation id="656935081669708576">Puoi cambiare per vedere le password di un altro profilo Chromium</translation>
 <translation id="6570579332384693436">Per correggere gli errori ortografici, Chromium invia a Google il testo digitato nei campi di testo</translation>
@@ -284,6 +285,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="7025789849649390912">Installazione interrotta.</translation>
 <translation id="705851970750939768">Aggiorna Chromium</translation>
 <translation id="7067091210845072982">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
+<translation id="7173822816570314652">La tua organizzazione elimina i dati di Chromium quando non vengono utilizzati per <ph name="TIMEOUT_DURATION" />. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="718435575166326686">Chromium deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
 <translation id="7196312274710523067">Impossibile avviare Chromium. Riprova.</translation>
 <translation id="7197677400338048821">Chromium non può controllare le tue password. Riprova tra 24 ore.</translation>
@@ -338,6 +340,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8248265253516264921">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="8266560134891435528">Chromium non può controllare le tue password perché non hai effettuato l'accesso</translation>
 <translation id="8290862415967981663">Questo file potrebbe essere pericoloso, pertanto è stato bloccato da Chromium.</translation>
+<translation id="8318772038038596122">La tua organizzazione chiude Chromium quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Fai di più con Chromium</translation>
 <translation id="8330519371938183845">Accedi per sincronizzare e personalizzare Chromium sui tuoi dispositivi</translation>
 <translation id="8340674089072921962">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> utilizzava in precedenza Chromium</translation>
@@ -373,6 +376,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="9019929317751753759">Per rendere Chromium più sicuro, abbiamo disattivato la seguente estensione non presente nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> che potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>
 <translation id="907832235989677238">Accedi a Chromium. Se vuoi accedere con un account una sola volta, puoi <ph name="GUEST_LINK_BEGIN" />utilizzare il dispositivo come ospite<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Chromium è stato chiuso automaticamente</translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verrà riavviato tra un'ora}other{Chromium verrà riavviato tra # ore}}</translation>
 <translation id="9106612006984859720">Per ricevere gli aggiornamenti futuri di Chromium, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.1.</translation>

@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNSஸைத் தீர்க்க முடியவில்லை</translation>
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
 <translation id="1022433422498218992">பொதுவான கட்டுப்பாடுகள்</translation>
+<translation id="1022628058306505708">எர்த் ஃப்ளோ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> தொடரிழைகள், <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">புதிய அம்சம் உள்ளது. மேலும் அறிய, மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="1059913517121127803">ஸ்கேன் செய்ய முடியவில்லை</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">மேலும் செயல்கள்</translation>
 <translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="2940811910881150316">சாதனத்தைச் சோதிக்க முடியவில்லை. சோதிக்க ஸ்கிரீனை மீண்டும் திறக்கவும்.</translation>
+<translation id="2981143481017883351">பிரத்தியேக Chromebook அசெட்டுகள் தற்போது கிடைக்கின்றன</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3017079585324758401">பின்புலம்</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
+<translation id="3386675685417744672">Chromebookகிற்குப் பிரத்தியேகமானது</translation>
 <translation id="3404249063913988450">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
 <translation id="3413935475507503304">புதுப்பிப்பைத் தொடர, அடுத்து என்பதைக் கிளிக் செய்யவும்.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">எச்சரிக்கை</translation>
 <translation id="4054683689023980771">படத்தைப் பதிவிறக்குகிறது</translation>
 <translation id="4060260348856573701">புதிய APN</translation>
+<translation id="4079743696465895866">Chromebookகிற்குப் பிரத்தியேகமான ஆர்ட்வொர்க்கைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="4093865285251893588">சுயவிவரப் படம்</translation>
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">உபயோகத்தால் பேட்டரியின் திறன் குறைகிறது</translation>
 <translation id="6191293864534840972">பெயர் சேவையகங்கள் தவறானவை</translation>
+<translation id="6205145102504628069">கிளவுடு ஃப்ளோ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="6223752125779001553">ஸ்கேனர்கள் எதுவுமில்லை</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">பிரத்தியேகமாக்குதல்</translation>
 <translation id="6500818810472529210">Google Searchசில் முடிவுகளைப் பார்க்கவும்</translation>
 <translation id="650266656685499220">ஆல்பங்களை உருவாக்க Google Photosஸிற்குச் செல்லலாம்</translation>
+<translation id="6505750420152840539">விடியல் முதல் இரவு வரை</translation>
 <translation id="6516990319416533844">பேட்டரியின் சார்ஜிங் விகிதத்தைப் பரிசோதிக்க, சிறிது நேரத்திற்கு அதன் சார்ஜைக் காலி செய்யவும்</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">வால்பேப்பருடன் பொருத்தும்</translation>

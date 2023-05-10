@@ -56,6 +56,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="121097972571826261">Dopředu o slovo</translation>
 <translation id="1217633719248931900">Přejít na aplikaci</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikace z Obchodu Play</translation>
+<translation id="1219309685806246869">Vrátit se do aplikace <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Chromebook je zamknut kvůli známému problému. Budete se moci přihlásit po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončit výběr</translation>
 <translation id="1235458158152011030">Známé sítě</translation>
@@ -1060,6 +1061,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5881540930187678962">Nastavte Telefonní centrum později</translation>
 <translation id="5881663018261910378">Vypnuto</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> bylo přidruženo k ploše <ph name="DESK_TITLE" /> a bylo odebráno ze všech ostatních ploch</translation>
+<translation id="588817334757907802">Otevřít soubor v prohlížeči Chrome</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="589817443623831496">Zaměření místa</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1591,6 +1593,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8349964124165471584">Otevřít odkaz v novém okně</translation>
 <translation id="8351131234907093545">Vytvořit poznámku</translation>
 <translation id="8364673525741149932">Přepnout režim Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152">Je používáno toto periferní zařízení: <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Uložená plocha, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Dopředu o písmeno</translation>
 <translation id="8371991222807690464">V režimu hosta může být výkon periferních zařízení omezen</translation>

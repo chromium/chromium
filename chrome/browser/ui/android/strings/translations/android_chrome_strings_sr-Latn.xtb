@@ -285,6 +285,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="2587052924345400782">Dostupna je novija verzija</translation>
 <translation id="2593272815202181319">Fiksne širine</translation>
 <translation id="2603212228005142861">Prijavite se da biste upravljali podešavanjima</translation>
+<translation id="260403163289591229">Pratite</translation>
 <translation id="2604446170045642109">Možete da isključite tamnu temu za sajtove u podešavanjima.</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="2625189173221582860">Lozinka je kopirana</translation>
@@ -298,6 +299,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="265156376773362237">Standardno predučitavanje</translation>
 <translation id="2656405586795711023">Veb-aplikacije</translation>
 <translation id="2669454659051515572">Svako ko koristi ovaj uređaj može da vidi preuzete fajlove</translation>
+<translation id="2688382350024736268">Chrome sada deli samo vrlo ograničene informacije između sajtova i aplikacija, na primer, kada vam je oglas prikazan, da bi pomogao sajtovima da mere učinak oglasa.</translation>
 <translation id="2702516483241149200">Novo: Delite link koji skroluje do ovog teksta</translation>
 <translation id="2707726405694321444">Osveži stranicu</translation>
 <translation id="271033894570825754">Novo</translation>
@@ -583,6 +585,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanja</translation>
 <translation id="4202218894997543208">Teme koje ste blokirali</translation>
 <translation id="4214315110991671325">Ako dozvolite kolačiće, Chrome može da ih koristi za predučitavanje.</translation>
+<translation id="4225725533026049334">Pratite</translation>
 <translation id="4225895483398857530">Prečica za traku s alatkama</translation>
 <translation id="4242533952199664413">Otvori podešavanja</translation>
 <translation id="4248098802131000011">Zaštitite lozinke od upada u podatke i drugih bezbednosnih problema</translation>
@@ -921,6 +924,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6005538289190791541">Predložena lozinka</translation>
 <translation id="6011308810877101166">Poboljšajte predloge za pretragu</translation>
 <translation id="6026538407078977628">Proširite na prikaz preko celog ekrana</translation>
+<translation id="6030719887161080597">Upravljajte informacijama koje sajtovi koriste za merenje učinka oglasa</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -1170,6 +1174,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7291910923717764901">Dodati su opisi slika za ovu stranicu</translation>
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="729975465115245577">Uređaj nema aplikaciju za čuvanje datoteke sa lozinkama.</translation>
+<translation id="7304072650267745798">Android uređaj može da ima slično podešavanje. Ako je ovo podešavanje uključeno u Chrome-u i na Android uređaju, kompanija možda može da meri efikasnost oglasa na svim veb-sajtovima koje posećujete i u aplikacijama koje koristite.</translation>
 <translation id="7304873321153398381">Oflajn. Chrome ne može da vam proverava lozinke.</translation>
 <translation id="7313188324932846546">Dodirnite da biste podesili sinhronizaciju</translation>
 <translation id="7332075081379534664">Prijavljivanje je uspelo</translation>
@@ -1252,6 +1257,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7682724950699840886">Isprobajte sledeće savete: proverite da li na uređaju ima dovoljno prostora, pa probajte da ponovo izvezete lozinke.</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlažu sajtovi</translation>
 <translation id="768618399695552958">Neke od stranice koje posećujete su predučitane. Stranice mogu da budu predučitane preko Google servera kada do njih vodi link sa Google sajta.</translation>
+<translation id="7690596512217303514">Uređaj nije mogao da otvori Chrome. Da biste rešili ovaj problem, preuzmite najnovije ažuriranje Chrome-a iz prodavnice aplikacija.</translation>
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Identifikator za prevlačenje</translation>
 <translation id="7698359219371678927">Napišite imejl u aplikaciji <ph name="APP_NAME" /></translation>

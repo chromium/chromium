@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS'i həll etmək olmur</translation>
 <translation id="1018656279737460067">Ləğv edilib</translation>
 <translation id="1022433422498218992">Ümumi nizamlayıcılar</translation>
+<translation id="1022628058306505708">Aşağıya axın</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu, <ph name="CPU_MAX_CLOCK_SPEED" /> GHs)</translation>
 <translation id="1047773237499189053">Yeni funksiya əlçatandır, ətraflı məlumat üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="1059913517121127803">Skanlamanı başlatmaq mümkün olmadı</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Daha çox əməliyyatlar</translation>
 <translation id="2926057806159140518">İstifadəçi adınızı və parolunuzu daxil edin və ya QR kodunuzu skan edin</translation>
 <translation id="2940811910881150316">Cihazı test etmək mümkün deyil. Test etmək üçün qapağı yenidən açın.</translation>
+<translation id="2981143481017883351">Özəl Chromebook aktivləri əlçatandır</translation>
 <translation id="3008341117444806826">YENİLƏYİN</translation>
 <translation id="3009958530611748826">Yadda saxlamaq üçün qovluq seçin</translation>
 <translation id="3017079585324758401">Arxa fon</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
 <translation id="3369013195428705271">Bütün çap tarixçəsini silmək istədiyinizə əminsiniz? Davam edən çap işləriniz silinməyəcək.</translation>
+<translation id="3386675685417744672">Chromebook-a özəl</translation>
 <translation id="3404249063913988450">Ekran qoruyucusunu aktiv edin</translation>
 <translation id="3413935475507503304">Güncəlləməyə keçmək üçün "Növbəti" seçiminə toxunun.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">XƏBƏRDARLIQ</translation>
 <translation id="4054683689023980771">Şəkil endirilir</translation>
 <translation id="4060260348856573701">Yeni APN</translation>
+<translation id="4079743696465895866">Chromebook-a özəl illüstrasiya seçin</translation>
 <translation id="4093865285251893588">Profil şəkli</translation>
 <translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batareya istifadə edildikcə tutumu azalır</translation>
 <translation id="6191293864534840972">Yanlış ad serverləri</translation>
+<translation id="6205145102504628069">Bulud axını</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Tam ekran rejimindən çıxın</translation>
 <translation id="6223752125779001553">Əlçatan skaner yoxdur</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Fərdiləşdirmə</translation>
 <translation id="6500818810472529210">Google Axtarışda nəticəyə baxın</translation>
 <translation id="650266656685499220">Albomları yaratmaq üçün Google Fotoya keçin</translation>
+<translation id="6505750420152840539">Sübhdən axşama</translation>
 <translation id="6516990319416533844">Batareya şarj sürətini test etmək üçün batareyanın qısa müddət boşalmasına imkan verin</translation>
 <translation id="6517239166834772319">Araşdırın</translation>
 <translation id="6526200165918397681">Divar kağızını uyğunlaşdırın</translation>

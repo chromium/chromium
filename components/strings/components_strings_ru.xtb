@@ -1033,6 +1033,7 @@
 <translation id="3531780078352352885">Листы задания</translation>
 <translation id="3532844647053365774">Сайт <ph name="HOST" /> запрашивает доступ к микрофону.</translation>
 <translation id="3533328374079021623">Почтовый ящик 5</translation>
+<translation id="3536227077203206203">Дано разовое разрешение</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Изображение карты</translation>
 <translation id="3542768452570884558">Открыть ссылку в новом окне</translation>
@@ -2452,6 +2453,7 @@
 <translation id="7030436163253143341">Недействительный сертификат</translation>
 <translation id="7031646650991750659">Приложения, установленные из Google Play.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти в настройки конфиденциальности аккаунта Google.</translation>
+<translation id="7044081119134178347">Дано разовое разрешение на доступ к камере</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Вы попытались перейти на сайт <ph name="DOMAIN" />, но сервер предоставил не заслуживающий доверия сертификат со слишком долгим сроком действия.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Сейчас сохранить эту карту нельзя.}one{Сейчас сохранить эти карты нельзя.}few{Сейчас сохранить эти карты нельзя.}many{Сейчас сохранить эти карты нельзя.}other{Сейчас сохранить эти карты нельзя.}}</translation>
@@ -3044,6 +3046,7 @@
 <translation id="8416694386774425977">Импорт невозможен: недопустимая конфигурация сети.
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Дано разовое разрешение на доступ к микрофону</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 мм</translation>
 <translation id="8428213095426709021">Настройки</translation>
@@ -3099,6 +3102,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Сбросить разрешение}one{Сбросить все разрешения}few{Сбросить все разрешения}many{Сбросить все разрешения}other{Сбросить все разрешения}}</translation>
 <translation id="8555010941760982128">Укажите этот код при оформлении заказа</translation>
 <translation id="8557066899867184262">CVC-код указан на обратной стороне карты.</translation>
+<translation id="8558347880669160417">Дано разовое разрешение на доступ к микрофону и камере</translation>
 <translation id="8559762987265718583">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Несколько документов/без разбора по копиям</translation>
 <translation id="8564985650692024650">Chromium рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
@@ -3215,6 +3219,7 @@
 <translation id="8870494189203302833">В том же порядке лицевой стороной вниз</translation>
 <translation id="8870700989640064057">Распечатать конфиденциальный файл?</translation>
 <translation id="8871553383647848643">Настроить внешний вид браузера</translation>
+<translation id="8871603420762394026">Теперь для оценки эффективности рекламы сайты могут получать от Chrome только определенные данные, например сведения о времени, когда вам была показана реклама.</translation>
 <translation id="8874824191258364635">Введите действительный номер карты.</translation>
 <translation id="8876033571432926051">Казуальные игры</translation>
 <translation id="8877780815363510165">Рыбалка</translation>
@@ -3368,6 +3373,7 @@
 <translation id="949314938206378263">Чтобы смотреть этот сайт, нужно получить разрешение родителя через Family Link.</translation>
 <translation id="950736567201356821">Три отверстия сверху</translation>
 <translation id="961663415146723894">Скрепление снизу</translation>
+<translation id="961930410699694996">Дано разовое разрешение на доступ к данным о местоположении</translation>
 <translation id="962484866189421427">Переход на эту страницу может привести к установке вредоносных приложений, маскирующихся под безопасные программы или собирающих данные, по которым вас можно отследить. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Все пользователи</translation>
 <translation id="964050462028070434">Управление паролями и ключами доступа</translation>

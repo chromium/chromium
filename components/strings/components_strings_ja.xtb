@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">ジョブシート</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> から、マイクの使用許可を求められています</translation>
 <translation id="3533328374079021623">用紙受け 5</translation>
+<translation id="3536227077203206203">一時的に許可しました</translation>
 <translation id="3537165859691846083">レター プラス</translation>
 <translation id="3542628208405253498">カードの画像</translation>
 <translation id="3542768452570884558">新しいウィンドウでリンクを開く</translation>
@@ -2453,6 +2454,7 @@
 <translation id="7030436163253143341">証明書が無効です</translation>
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押して、Google アカウントのプライバシー設定を管理します</translation>
+<translation id="7044081119134178347">一時的にカメラを許可しました</translation>
 <translation id="7048095965575426564">欧州ファンフォールド</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーに提示された証明書の有効期限が長すぎて信頼性を確認できませんでした。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{現在、このカードは保存できません}other{現在、これらのカードは保存できません}}</translation>
@@ -3045,6 +3047,7 @@
 <translation id="8416694386774425977">ネットワーク設定が無効なためインポートできませんでした。
 詳細:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">一時的にマイクを許可しました</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500x750 mm</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -3100,6 +3103,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{権限をリセット}other{権限をリセット}}</translation>
 <translation id="8555010941760982128">ご購入手続き時にこのコードを使用</translation>
 <translation id="8557066899867184262">CVC はカードの裏面に記載されています。</translation>
+<translation id="8558347880669160417">一時的にカメラとマイクを許可しました</translation>
 <translation id="8559762987265718583">デバイスの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
 <translation id="8564182942834072828">個別のドキュメント（丁合いなし）</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
@@ -3217,6 +3221,7 @@
 <translation id="8870494189203302833">同じ順序（下向き）</translation>
 <translation id="8870700989640064057">機密ファイルを印刷しますか？</translation>
 <translation id="8871553383647848643">ブラウザのデザインをカスタマイズします</translation>
+<translation id="8871603420762394026">Chrome では現在、サイトによる広告の効果測定に役立てるため、広告が表示されたときに、ごく少量の限定的な情報のみがサイト間で共有されます。</translation>
 <translation id="8874824191258364635">有効なクレジット カード番号を入力してください</translation>
 <translation id="8876033571432926051">カジュアル ゲーム</translation>
 <translation id="8877780815363510165">釣り</translation>
@@ -3370,6 +3375,7 @@
 <translation id="949314938206378263">このサイトを開いてもよいかの問い合わせを送信しました。保護者の方は、ファミリー リンクで返信できます。</translation>
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
 <translation id="961663415146723894">製本（下綴じ）</translation>
+<translation id="961930410699694996">一時的に位置情報を許可しました</translation>
 <translation id="962484866189421427">このコンテンツを表示すると、詐欺的なアプリ（他のものに成りすましたり、ユーザーの追跡などに使用可能なデータを収集したりするアプリ）のインストールが試行される可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">すべてのユーザー</translation>
 <translation id="964050462028070434">パスワードとパスキーを管理...</translation>

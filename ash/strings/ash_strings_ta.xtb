@@ -56,6 +56,7 @@
 <translation id="121097972571826261">சொல் வாரியாக முன்செல்</translation>
 <translation id="1217633719248931900">ஆப்ஸுக்குச் செல்</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ஆப்ஸ்</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> ஆப்ஸுக்குச் செல்லும்.</translation>
 <translation id="1225748608451425081">உங்கள் Chromebook பூட்டப்பட்டது, இதற்கான காரணத்தை அறிவோம். <ph name="TIME_LEFT" /> கடந்ததும் உங்களால் உள்நுழைய முடியும்.</translation>
 <translation id="1229194443904279055">தேர்ந்தெடுப்பதை நிறுத்து</translation>
 <translation id="1235458158152011030">தெரிந்த நெட்வொர்க்குகள்autof</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">டெம்ப்ளேட்டில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
 <translation id="3161500364292033097">டெஸ்க் மற்றும் சாளரங்களை மூடும்</translation>
 <translation id="316356270129335934">உங்கள் <ph name="DEVICE_TYPE" /> ஐ முந்தைய பதிப்பிற்கு <ph name="MANAGER" /> மாற்றுகிறது. சாதனம் மீட்டமைக்கப்பட்டு, அனைத்துத் தரவும் நீக்கப்படும்.</translation>
+<translation id="3171170659304083361">உள்ளீட்டு முறைகளுக்கான அமைப்புகள்</translation>
 <translation id="3181441307743005334">மீண்டும் தொடங்க சிறிது நேரம் ஆகலாம்</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ஒரு சாதனத்துடன் இணைக்கப்பட்டுள்ளது}other{# சாதனங்களுடன் இணைக்கப்பட்டுள்ளது}}</translation>
 <translation id="320207200541803018">டைமரை அமை</translation>
@@ -1059,6 +1061,7 @@
 <translation id="5881540930187678962">Phone Hubபைப் பின்னர் அமைத்திடுங்கள்</translation>
 <translation id="5881663018261910378">முடக்கப்பட்டுள்ளது</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> சாளர ஒதுக்கீடு பிற டெஸ்க்குகளில் இருந்து அகற்றப்பட்டு <ph name="DESK_TITLE" />க்கு வழங்கப்பட்டுள்ளது</translation>
+<translation id="588817334757907802">ஃபைலை Chrome உலாவியில் திற</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="589817443623831496">பாயிண்ட் ஸ்கேனிங்</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@
 <translation id="6074087755403037157">பீட்டா அலைவரிசை</translation>
 <translation id="6093867385179428431">நிர்வாகியால் முடக்கப்பட்டுள்ளது</translation>
 <translation id="6095008505822982596">பேச்சு வேகம்</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> மூலம் இணைப்பைச் சேர்க்கும்</translation>
 <translation id="6099678161144790572">கடந்த மாதம் திருத்தப்பட்டது</translation>
 <translation id="6103838137565245112">சிஸ்டம்</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
@@ -1589,6 +1593,7 @@
 <translation id="8349964124165471584">புதிய சாளரத்தில் இணைப்பைத் திறக்கும்</translation>
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>
 <translation id="8364673525741149932">'ஷெல்ஃப் பார்ட்டி' பயன்முறையை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> உபயோகத்தில் உள்ளது.</translation>
 <translation id="8369166482916924789">சேமிக்கப்பட்ட டெஸ்க், <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">எழுத்து வாரியாக முன்செல்</translation>
 <translation id="8371991222807690464">கெஸ்ட் பயன்முறையில் சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>

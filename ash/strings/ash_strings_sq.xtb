@@ -56,6 +56,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="121097972571826261">Një fjalë përpara</translation>
 <translation id="1217633719248931900">Shko tek aplikacioni</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacioni "Dyqani i Play"</translation>
+<translation id="1219309685806246869">Kthehu te <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Pajisja jote Chromebook është kyçur për shkak të një problemi të njohur. Ti do të mund të identifikohesh pas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ndalo zgjedhjen</translation>
 <translation id="1235458158152011030">Rrjetet e njohura</translation>
@@ -459,6 +460,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="316086887565479535">Aplikacione të pambështetura në shabllon</translation>
 <translation id="3161500364292033097">Mbyll tavolinën e punës dhe dritaret</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> po kthen pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
+<translation id="3171170659304083361">Cilësimet e metodave të hyrjes</translation>
 <translation id="3181441307743005334">Rindezja mund të zgjasë pak</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Lidhur me një pajisje}other{Lidhur me # pajisje}}</translation>
 <translation id="320207200541803018">Cakto kohëmatësin</translation>
@@ -1059,6 +1061,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5881540930187678962">Konfiguroje Phone Hub më vonë</translation>
 <translation id="5881663018261910378">Joaktiv</translation>
 <translation id="5887954372087850114">Dritarja <ph name="WINDOW_TITLE" /> u caktua në <ph name="DESK_TITLE" /> dhe u hoq nga të gjitha tavolinat e tjera të punës</translation>
+<translation id="588817334757907802">Hape skedarin në shfletuesin Chrome</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="589817443623831496">Skanimi me pika</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6074087755403037157">Kanali "Beta"</translation>
 <translation id="6093867385179428431">Çaktivizuar nga administratori</translation>
 <translation id="6095008505822982596">Shpejtësia e të folurit</translation>
+<translation id="6095425951508823973">Shto lidhjen me <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modifikuar muajin e kaluar</translation>
 <translation id="6103838137565245112">sistemi</translation>
 <translation id="6114505516289286752">Skedarët e ligjërimit në <ph name="LANGUAGE" /> u shkarkuan</translation>
@@ -1589,6 +1593,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8349964124165471584">Hape lidhjen në një dritare të re</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="8364673525741149932">Aktivizo/çaktivizo "Grupin e rafteve". <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> në përdorim.</translation>
 <translation id="8369166482916924789">Tavolina e ruajtur e punës, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Përpara një shkronjë</translation>
 <translation id="8371991222807690464">Performanca e pajisjes periferike mund të jetë e kufizuar në modalitetin "vizitor"</translation>

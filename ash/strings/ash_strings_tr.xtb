@@ -56,6 +56,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="121097972571826261">Kelime bazında ilerle</translation>
 <translation id="1217633719248931900">Uygulamaya git</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" /> Play Store uygulaması</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> uygulamasına dön</translation>
 <translation id="1225748608451425081">Chromebook'unuz, bilinen bir sorun yüzünden kilitlendi. Tekrar oturum açabilmenize <ph name="TIME_LEFT" /> kaldı.</translation>
 <translation id="1229194443904279055">Seçmeyi durdur</translation>
 <translation id="1235458158152011030">Bilinen ağlar</translation>
@@ -459,6 +460,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="316086887565479535">Şablonda desteklenmeyen uygulamalar var</translation>
 <translation id="3161500364292033097">Masayı ve pencereleri kapatın</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekiyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>
+<translation id="3171170659304083361">Giriş yöntemi ayarları</translation>
 <translation id="3181441307743005334">Yeniden başlatmak biraz zaman alabilir</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Bir cihaza bağlı}other{# cihaza bağlı}}</translation>
 <translation id="320207200541803018">Zamanlayıcı ayarla</translation>
@@ -1059,6 +1061,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5881540930187678962">Telefon Merkezi'ni sonra kurun</translation>
 <translation id="5881663018261910378">Kapalı</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> penceresi <ph name="DESK_TITLE" /> masasına atandı ve diğer tüm masalardaki ataması kaldırıldı</translation>
+<translation id="588817334757907802">Dosyayı Chrome tarayıcıda aç</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="589817443623831496">Nokta taraması</translation>
 <translation id="5901316534475909376">Üst Karakter+Esc</translation>
@@ -1110,6 +1113,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6074087755403037157">Beta Kanalı</translation>
 <translation id="6093867385179428431">Yönetici devre dışı bıraktı</translation>
 <translation id="6095008505822982596">Konuşma hızı</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> ile bağlantı ekleyin</translation>
 <translation id="6099678161144790572">Geçen ay düzenlendi</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
@@ -1589,6 +1593,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8349964124165471584">Bağlantıyı yeni pencerede aç</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8364673525741149932">Shelf Party'yi aç/kapat. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> kullanılıyor.</translation>
 <translation id="8369166482916924789">Kayıtlı masa, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Harf bazında ilerle</translation>
 <translation id="8371991222807690464">Çevre biriminin performansı, Misafir modunda sınırlı olabilir</translation>

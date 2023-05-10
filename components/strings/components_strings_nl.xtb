@@ -1030,6 +1030,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3531780078352352885">Taakbladen</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> wil gebruikmaken van je microfoon</translation>
 <translation id="3533328374079021623">Mailbox 5</translation>
+<translation id="3536227077203206203">Deze keer toegestaan</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kaartafbeelding</translation>
 <translation id="3542768452570884558">Link openen in nieuw venster</translation>
@@ -1667,6 +1668,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="5051305769747448211">Stand-up comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
+<translation id="5060419232449737386">Ondertitelingsinstellingen</translation>
 <translation id="5060483733937416656">Je hebt ervoor gekozen om te verifiëren met Windows Hello op websites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over je betaalmethode opgeslagen. Hiervoor kun je <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Bedoelde je <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Afdrukgeschiedenis</translation>
@@ -2447,6 +2449,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7030436163253143341">Certificaat is niet geldig</translation>
 <translation id="7031646650991750659">Welke Google Play-apps je hebt geïnstalleerd</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de privacyinstellingen van je Google-account te beheren.</translation>
+<translation id="7044081119134178347">Camera deze keer toegestaan</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Je hebt geprobeerd <ph name="DOMAIN" /> te bereiken, maar de server heeft een certificaat gepresenteerd waarvan de geldigheidsperiode te lang is om betrouwbaar te zijn.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Deze pas kan nu niet worden opgeslagen}other{Deze passen kunnen nu niet worden opgeslagen}}</translation>
@@ -3039,6 +3042,7 @@ Aanvullende informatie:
 <translation id="8416694386774425977">De netwerkconfiguratie is ongeldig en kan niet worden geïmporteerd.
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Microfoon deze keer toegestaan</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Instellingen</translation>
@@ -3094,6 +3098,7 @@ Aanvullende informatie:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Recht resetten}other{Rechten resetten}}</translation>
 <translation id="8555010941760982128">Gebruik deze code bij het betalen</translation>
 <translation id="8557066899867184262">De CVC-code staat op de achterkant van je pas.</translation>
+<translation id="8558347880669160417">Camera en microfoon deze keer toegestaan</translation>
 <translation id="8559762987265718583">Er kan geen privéverbinding met <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tot stand worden gebracht, omdat de datum en tijd van je apparaat (<ph name="DATE_AND_TIME" />) onjuist zijn.</translation>
 <translation id="8564182942834072828">Afzonderlijke documenten/ongesorteerde exemplaren</translation>
 <translation id="8564985650692024650">Chromium raadt je aan het wachtwoord voor <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
@@ -3364,6 +3369,7 @@ Aanvullende informatie:
 <translation id="949314938206378263">Je hebt gevraagd of je deze site mag bezoeken. Je ouder kan reageren in Family Link.</translation>
 <translation id="950736567201356821">Drie perforaties boven</translation>
 <translation id="961663415146723894">Onder inbinden</translation>
+<translation id="961930410699694996">Locatie deze keer toegestaan</translation>
 <translation id="962484866189421427">Deze content kan mogelijk proberen misleidende apps te installeren die zich voordoen als iets anders of gegevens verzamelen die kunnen worden gebruikt om je te volgen. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alle gebruikers</translation>
 <translation id="964050462028070434">Wachtwoorden en toegangscodes beheren…</translation>

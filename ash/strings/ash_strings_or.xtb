@@ -56,6 +56,7 @@
 <translation id="121097972571826261">ଗୋଟିଏ ଶବ୍ଦ ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1217633719248931900">ଆପକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ଆପ୍‌</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" />କୁ ଫେରନ୍ତୁ।</translation>
 <translation id="1225748608451425081">ଏକ ଜଣାଶୁଣା ସମସ୍ୟା ଯୋଗୁଁ ଆପଣଙ୍କ Chromebook ଲକ୍ ହୋଇଯାଇଛି। ଆପଣ ଏତିକି ସମୟ ପରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ସକ୍ଷମ ହେବେ: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">ଚୟନ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1235458158152011030">ଜଣାଶୁଣା ନେଟ୍‌ୱାର୍କ</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">ଟେମ୍ପଲେଟରେ ଅସମର୍ଥିତ ଆପଗୁଡ଼ିକ ଅଛି</translation>
 <translation id="3161500364292033097">ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରୁଛି। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
+<translation id="3171170659304083361">ଇନପୁଟ୍ ପଦ୍ଧତି ସେଟିଂସ୍</translation>
 <translation id="3181441307743005334">ରିଷ୍ଟାର୍ଟ ହେବା ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ଏକ ଡିଭାଇସ୍‌ ସହ ସଂଯୁକ୍ତ}other{#ଟି ଡିଭାଇସ୍‌ ସହ ସଂଯୁକ୍ତ}}</translation>
 <translation id="320207200541803018">ଟାଇମର୍ ସେଟ୍ କରନ୍ତୁ</translation>
@@ -1059,6 +1061,7 @@
 <translation id="5881540930187678962">ଫୋନ୍ ହବ୍ ପରେ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="5881663018261910378">ବନ୍ଦ ଅଛି</translation>
 <translation id="5887954372087850114"><ph name="DESK_TITLE" /> ପାଇଁ Window <ph name="WINDOW_TITLE" /> ଆସାଇନ କରାଯାଇଛି ଏବଂ ଏହାକୁ ଅନ୍ୟ ସମସ୍ତ ଡେସ୍କରୁ ଅନଆସାଇନ କରାଯାଇଛି</translation>
+<translation id="588817334757907802">Chrome ବ୍ରାଉଜରରେ ଫାଇଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="589817443623831496">ପଏଣ୍ଟ ସ୍କାନ୍ କରାଯାଉଛି</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@
 <translation id="6074087755403037157">ବିଟା ଚ୍ୟାନେଲ</translation>
 <translation id="6093867385179428431">ଆଡମିନଙ୍କ ଦ୍ଵାରା ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="6095008505822982596">ସ୍ପିଚ ରେଟ</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> ସହ କନେକ୍ସନ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6099678161144790572">ଗତ ମାସରେ ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="6103838137565245112">ସିଷ୍ଟମ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
@@ -1588,6 +1592,7 @@
 <translation id="8349964124165471584">ନୂଆ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8364673525741149932">ସେଲ୍ଫ ପାର୍ଟିକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="8369166482916924789">ସେଭ କରାଯାଇଥିବା ଡେସ୍କ, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ଗୋଟିଏ ଅକ୍ଷର ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8371991222807690464">ଅତିଥି ମୋଡରେ ପେରିଫେରାଲର ପରଫରମାନ୍ସ ସୀମିତ ହୋଇପାରେ</translation>

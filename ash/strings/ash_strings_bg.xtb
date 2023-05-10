@@ -56,6 +56,7 @@
 <translation id="121097972571826261">Придвижване напред с една дума</translation>
 <translation id="1217633719248931900">Към приложението</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение Google Play Магазин</translation>
+<translation id="1219309685806246869">Назад към <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Вашият Chromebook е заключен поради известен проблем. Ще можете да влезете в профила си след <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спиране на избирането</translation>
 <translation id="1235458158152011030">Известни мрежи</translation>
@@ -350,6 +351,7 @@
 <translation id="2620016719323068571">Търсете в своите <ph name="CATEGORY" />, файлове, приложения и други…</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">защитена</translation>
+<translation id="2624588537172718173">Аудио от устройството и микрофона</translation>
 <translation id="263399434338050016">„Select all“</translation>
 <translation id="2644422758626431000">Фиксиране на прозореца отляво</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
@@ -410,6 +412,7 @@
 <translation id="2942350706960889382">Лупа в прикрепен режим</translation>
 <translation id="2942516765047364088">Позиция на лавицата</translation>
 <translation id="2946119680249604491">Добавяне на връзка</translation>
+<translation id="295852781144570696">Аудио от устройството</translation>
 <translation id="2960314608273155470">Стандартната опция за режима на заснемане е <ph name="SOURCE" /> <ph name="TYPE" />. Натиснете Tab за навигиране с клавиатурата.</translation>
 <translation id="2961963223658824723">Нещо се обърка. Опитайте отново след няколко секунди.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -1060,6 +1063,7 @@
 <translation id="5881540930187678962">Настройте Phone Hub по-късно</translation>
 <translation id="5881663018261910378">Изкл.</translation>
 <translation id="5887954372087850114">Прозорецът „<ph name="WINDOW_TITLE" />“ е прехвърлен към „<ph name="DESK_TITLE" />“ и няма да се показва в останалите работни кътове</translation>
+<translation id="588817334757907802">Отваряне на файла в браузъра Chrome</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="589817443623831496">Точково сканиране</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -1591,6 +1595,7 @@
 <translation id="8349964124165471584">Отваряне на връзката в нов прозорец</translation>
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="8364673525741149932">Превключване на режима Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> се използва.</translation>
 <translation id="8369166482916924789">Запазен работен кът – <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Придвижване напред с една буква</translation>
 <translation id="8371991222807690464">Ефективността на периферните устройства може да е ограничена в режима на гост</translation>

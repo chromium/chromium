@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS kann nicht aufgelöst werden</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1022433422498218992">Allgemeine Einstellungen</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2926057806159140518">Gib Nutzernamen und Passwort ein oder scanne deinen QR-Code</translation>
 <translation id="2940811910881150316">Gerät kann nicht getestet werden. Klappe das Gerät zum Testen wieder auf.</translation>
+<translation id="2981143481017883351">Exklusive Chromebook-Assets jetzt verfügbar</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3009958530611748826">Ordner als Speicherort auswählen</translation>
 <translation id="3017079585324758401">Hintergrund</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Fenster</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
+<translation id="3386675685417744672">Exklusiv auf Chromebook</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
 <translation id="3413935475507503304">Klicke zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">Warnung</translation>
 <translation id="4054683689023980771">Bild wird heruntergeladen</translation>
 <translation id="4060260348856573701">Neuer APN</translation>
+<translation id="4079743696465895866">Exklusives Chromebook-Video auswählen</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
+<translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Status „Vollbild“ beenden</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Anpassung</translation>
 <translation id="6500818810472529210">Ergebnis in der Google Suche anzeigen</translation>
 <translation id="650266656685499220">Gehe zu Google Fotos, um Alben zu erstellen</translation>
+<translation id="6505750420152840539">Sonnenaufgang bis Sonnenuntergang</translation>
 <translation id="6516990319416533844">Wenn du die Aufladegeschwindigkeit deines Akkus testen möchtest, warte zuerst, bis er ein wenig entladen ist</translation>
 <translation id="6517239166834772319">Entdecken</translation>
 <translation id="6526200165918397681">An Hintergrund anpassen</translation>

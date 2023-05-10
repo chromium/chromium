@@ -56,6 +56,7 @@
 <translation id="121097972571826261">Бір сөзге алға жүру</translation>
 <translation id="1217633719248931900">Қолданбаға өту</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store қолданбасы</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> қолданбасына оралыңыз.</translation>
 <translation id="1225748608451425081">Белгілі мәселеге байланысты Chromebook құлыпталды. Келесі уақыттан кейін аккаунтқа кіре аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Таңдауды тоқтату</translation>
 <translation id="1235458158152011030">Сақталған желілер</translation>
@@ -1592,6 +1593,7 @@
 <translation id="8349964124165471584">Сілтемені жаңа терезеде ашу</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
 <translation id="8364673525741149932">Shelf Party режимін қосу/өшіру. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> қолданыста.</translation>
 <translation id="8369166482916924789">Сақталған жұмыс үстелі: <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Бір әріпке алға жылжу</translation>
 <translation id="8371991222807690464">Қонақ режимінде перифериялық құрылғының өнімділігі шектеулі болуы мүмкін.</translation>

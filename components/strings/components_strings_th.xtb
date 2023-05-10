@@ -1672,6 +1672,7 @@
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5051305769747448211">การแสดงตลกแบบสด</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{หากต้องการส่งไฟล์นี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}other{หากต้องการส่งไฟล์เหล่านี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}}</translation>
+<translation id="5060419232449737386">การตั้งค่าคำบรรยาย</translation>
 <translation id="5060483733937416656">คุณเลือกยืนยันด้วย Windows Hello ในเว็บไซต์ที่ใช้ <ph name="PROVIDER_ORIGIN" /> ผู้ให้บริการนี้อาจจัดเก็บข้อมูลเกี่ยวกับวิธีการชำระเงินของคุณไว้แล้ว โดยคุณ<ph name="LINK_TEXT" />ได้</translation>
 <translation id="5061227663725596739">หรือคุณหมายถึง <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">ประวัติการพิมพ์</translation>

@@ -56,6 +56,7 @@
 <translation id="121097972571826261">한 단어 앞으로 이동</translation>
 <translation id="1217633719248931900">앱으로 이동</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play 스토어 앱</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> 앱으로 돌아갑니다.</translation>
 <translation id="1225748608451425081">알려진 문제로 인해 Chromebook이 잠겼습니다. <ph name="TIME_LEFT" /> 후에 다시 로그인할 수 있습니다.</translation>
 <translation id="1229194443904279055">선택 중지</translation>
 <translation id="1235458158152011030">알려진 네트워크</translation>
@@ -459,6 +460,7 @@
 <translation id="316086887565479535">템플릿에 지원되지 않는 앱이 있습니다</translation>
 <translation id="3161500364292033097">데스크 및 창 닫기</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백 중입니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
+<translation id="3171170659304083361">입력 방법 설정</translation>
 <translation id="3181441307743005334">다시 시작하는 데 시간이 다소 걸릴 수 있습니다</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{기기 1개에 연결됨}other{기기 #개에 연결됨}}</translation>
 <translation id="320207200541803018">타이머 설정</translation>
@@ -1059,6 +1061,7 @@
 <translation id="5881540930187678962">휴대전화 허브 나중에 설정하기</translation>
 <translation id="5881663018261910378">사용 안함</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> 창이 <ph name="DESK_TITLE" />에 할당되고 다른 모든 데스크에서 할당 취소되었습니다.</translation>
+<translation id="588817334757907802">Chrome 브라우저에서 파일 열기</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="589817443623831496">지점 스캔</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1110,6 +1113,7 @@
 <translation id="6074087755403037157">베타 채널</translation>
 <translation id="6093867385179428431">관리자가 사용 중지함</translation>
 <translation id="6095008505822982596">말하는 속도</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> 제공업체를 통해 연결 추가</translation>
 <translation id="6099678161144790572">지난달에 수정됨</translation>
 <translation id="6103838137565245112">시스템</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
@@ -1589,6 +1593,7 @@
 <translation id="8349964124165471584">새 창에서 링크 열기</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8364673525741149932">Shelf Party를 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> 앱을 사용 중입니다.</translation>
 <translation id="8369166482916924789">저장된 데스크, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">한 글자 앞으로 이동</translation>
 <translation id="8371991222807690464">게스트 모드에서 주변기기 성능이 제한될 수 있습니다.</translation>
