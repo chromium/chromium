@@ -2,7 +2,7 @@ PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','101');
+INSERT INTO meta VALUES('version','102');
 INSERT INTO meta VALUES('last_compatible_version','99');
 INSERT INTO meta VALUES('Builtin Keyword Version','127');
 CREATE TABLE token_service (service VARCHAR PRIMARY KEY NOT NULL,encrypted_token BLOB);
@@ -14,6 +14,7 @@ CREATE TABLE autofill_profile_addresses ( guid VARCHAR, street_address VARCHAR, 
 CREATE TABLE autofill_profile_names ( guid VARCHAR, first_name VARCHAR, middle_name VARCHAR, last_name VARCHAR, full_name VARCHAR, honorific_prefix VARCHAR, first_last_name VARCHAR, conjunction_last_name VARCHAR, second_last_name VARCHAR, honorific_prefix_status INTEGER DEFAULT 0, first_name_status INTEGER DEFAULT 0, middle_name_status INTEGER DEFAULT 0, last_name_status INTEGER DEFAULT 0, first_last_name_status INTEGER DEFAULT 0, conjunction_last_name_status INTEGER DEFAULT 0, second_last_name_status INTEGER DEFAULT 0, full_name_status INTEGER DEFAULT 0, full_name_with_honorific_prefix VARCHAR, full_name_with_honorific_prefix_status INTEGER DEFAULT 0);
 CREATE TABLE autofill_profile_emails ( guid VARCHAR, email VARCHAR);
 CREATE TABLE autofill_profile_phones ( guid VARCHAR, number VARCHAR);
+CREATE TABLE autofill_profile_birthdates ( guid VARCHAR, day INTEGER DEFAULT 0, month INTEGER DEFAULT 0, year INTEGER DEFAULT 0);
 CREATE TABLE masked_credit_cards (id VARCHAR,name_on_card VARCHAR,network VARCHAR,last_four VARCHAR,exp_month INTEGER DEFAULT 0,exp_year INTEGER DEFAULT 0, bank_name VARCHAR, nickname VARCHAR, card_issuer INTEGER DEFAULT 0, instrument_id INTEGER DEFAULT 0, virtual_card_enrollment_state INTEGER DEFAULT 0, card_art_url VARCHAR);
 CREATE TABLE unmasked_credit_cards (id VARCHAR,card_number_encrypted VARCHAR,unmask_date INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE server_card_metadata (id VARCHAR NOT NULL,use_count INTEGER NOT NULL DEFAULT 0, use_date INTEGER NOT NULL DEFAULT 0, billing_address_id VARCHAR);
