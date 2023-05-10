@@ -12,7 +12,6 @@ import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -46,12 +45,6 @@ class UrlBarMediator
     private UrlBarData mUrlBarData;
     private @ScrollType int mScrollType = UrlBar.ScrollType.NO_SCROLL;
     private @SelectionState int mSelectionState = UrlBarCoordinator.SelectionState.SELECT_ALL;
-
-    // The numbers for "MobileOmnibox.LongPressPasteAge", the expected time range of time is from
-    // 1ms to 1 hour, and 100 buckets.
-    private static final long MIN_TIME_MILLIS = 1;
-    private static final long MAX_TIME_MILLIS = DateUtils.HOUR_IN_MILLIS;
-    private static final int NUM_OF_BUCKETS = 100;
 
     private final List<UrlTextChangeListener> mUrlTextChangeListeners = new ArrayList<>();
     private final List<TextWatcher> mTextChangedListeners = new ArrayList<>();
