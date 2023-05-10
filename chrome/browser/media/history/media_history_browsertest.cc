@@ -111,20 +111,18 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
   }
 
   static bool SetMediaMetadata(Browser* browser) {
-    return content::ExecuteScript(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        "setMediaMetadata();");
+    return content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                           "setMediaMetadata();");
   }
 
   static bool SetMediaMetadataWithArtwork(Browser* browser) {
-    return content::ExecuteScript(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        "setMediaMetadataWithArtwork();");
+    return content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                           "setMediaMetadataWithArtwork();");
   }
 
   static bool FinishPlaying(Browser* browser) {
-    return content::ExecuteScript(
-        browser->tab_strip_model()->GetActiveWebContents(), "finishPlaying();");
+    return content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                           "finishPlaying();");
   }
 
   static bool WaitForSignificantPlayback(Browser* browser) {
@@ -616,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DISABLED_GetPlaybackSessions) {
     // Start the first page again and seek to 4 seconds in with different
     // metadata.
     EXPECT_TRUE(SetupPageAndStartPlaying(browser, GetTestURL()));
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         browser->tab_strip_model()->GetActiveWebContents(), "seekToFour()"));
 
     media_session::test::MockMediaSessionMojoObserver observer(
@@ -767,9 +765,9 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   {
     // Start a second session on a different URL.
     EXPECT_TRUE(SetupPageAndStartPlaying(browser, GetTestAltURL()));
-    EXPECT_TRUE(content::ExecuteScript(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        "setMediaMetadataWithAltArtwork();"));
+    EXPECT_TRUE(
+        content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                        "setMediaMetadataWithAltArtwork();"));
 
     media_session::test::MockMediaSessionMojoObserver observer(
         *GetMediaSession(browser));
@@ -1147,7 +1145,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordWatchtime_Muted) {
   // Setup the test page and mute the player.
   auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GetTestURL()));
-  ASSERT_TRUE(content::ExecuteScript(web_contents, "mute();"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "mute();"));
 
   // Start playing the video.
   ASSERT_EQ(true, content::EvalJs(web_contents, "attemptPlayVideo();"));
