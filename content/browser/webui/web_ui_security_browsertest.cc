@@ -873,8 +873,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MAYBE_ReuseRVHWithWebUI) {
   // window.open a new tab.  This will keep the WebUI page's process alive
   // once we navigate away from it.
   ShellAddedObserver new_shell_observer;
-  ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
-                            JsReplace("window.open($1);", webui_url)));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("window.open($1);", webui_url)));
   Shell* new_shell = new_shell_observer.GetShell();
   WebContents* new_contents = new_shell->web_contents();
   EXPECT_TRUE(WaitForLoadStop(new_contents));

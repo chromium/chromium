@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
   test_handler->AllowJavascriptForTesting();
 
   // Push onto window.history. Back should now be an in-page navigation.
-  ASSERT_TRUE(ExecuteScript(web_contents,
-                            "window.history.pushState({}, '', 'foo.html')"));
+  ASSERT_TRUE(
+      ExecJs(web_contents, "window.history.pushState({}, '', 'foo.html')"));
   shell()->GoBackOrForward(-1);
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
