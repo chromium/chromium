@@ -217,7 +217,7 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   }
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
-    SetFocusForDialog(is_modal_);
+    SetFocusForDialog();
   } else {
     SetFocusForDialogLegacy(this);
   }
@@ -308,7 +308,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   }
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
-    SetFocusForDialog(is_modal_);
+    SetFocusForDialog();
   } else {
     SetFocusForDialogLegacy(this);
   }
@@ -358,11 +358,11 @@ void HTMLDialogElement::CloseWatcherFiredClose() {
 }
 
 // https://html.spec.whatwg.org#dialog-focusing-steps
-void HTMLDialogElement::SetFocusForDialog(bool is_modal) {
+void HTMLDialogElement::SetFocusForDialog() {
   previously_focused_element_ = GetDocument().FocusedElement();
 
   Element* control = GetFocusDelegate(/*autofocus_only=*/false);
-  if (is_modal && IsAutofocusable()) {
+  if (IsAutofocusable()) {
     control = this;
   }
   if (!control)
@@ -370,7 +370,7 @@ void HTMLDialogElement::SetFocusForDialog(bool is_modal) {
 
   if (control->IsFocusable())
     control->Focus();
-  else if (is_modal) {
+  else if (is_modal_) {
     control->GetDocument().ClearFocusedElement();
   }
 

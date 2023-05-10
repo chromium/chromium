@@ -1851,7 +1851,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
 
   if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
     if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
-      dialog->SetFocusForDialog(/*is_modal=*/true);
+      dialog->SetFocusForDialog();
     } else {
       HTMLDialogElement::SetFocusForDialogLegacy(dialog);
     }
