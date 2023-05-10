@@ -42,6 +42,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -582,6 +583,8 @@ public class CompositorViewHolderUnitTest {
         int pendingFrameCount = 0;
         int framesUntilHideBackground = 1;
         boolean swappedCurrentSize = true;
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap");
 
         // Mark that a frame has swapped, and the buffer has swapped once (still waiting on one).
         mCompositorViewHolder.didSwapFrame(pendingFrameCount);
@@ -592,6 +595,11 @@ public class CompositorViewHolderUnitTest {
         framesUntilHideBackground = 0;
         mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
         verifyBackgroundRemoved();
+
+        // Verify the relevant histogram is recorded.
+        mTabModelSelector.markTabStateInitialized();
+        histogramWatcher.assertExpected(
+                "Should have recorded time to initialize tab state after buffer swap.");
     }
 
     @Test
@@ -601,6 +609,8 @@ public class CompositorViewHolderUnitTest {
         int pendingFrameCount = 0;
         int framesUntilHideBackground = 0;
         boolean swappedCurrentSize = true;
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap");
 
         // Mark a tab has restored, a frame has swapped, and the buffer has swapped enough times.
         notifyTabRestored();
@@ -611,6 +621,10 @@ public class CompositorViewHolderUnitTest {
         // Mark the tab state as initialized and verify that the temp background is now removed.
         mTabModelSelector.markTabStateInitialized();
         verifyBackgroundRemoved();
+
+        // Verify the relevant histogram is recorded.
+        histogramWatcher.assertExpected(
+                "Should have recorded time to initialize tab state after buffer swap.");
     }
 
     @Test
@@ -620,6 +634,8 @@ public class CompositorViewHolderUnitTest {
         int pendingFrameCount = 0;
         int framesUntilHideBackground = 0;
         boolean swappedCurrentSize = true;
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap");
 
         // Mark a tab has restored, a frame has swapped, and the buffer has swapped enough times.
         notifyTabRestored();
@@ -630,6 +646,11 @@ public class CompositorViewHolderUnitTest {
         // Fake the timeout and verify that the temp background is now removed.
         timeoutRunnable();
         verifyBackgroundRemoved();
+
+        // Verify the relevant histogram is recorded.
+        mTabModelSelector.markTabStateInitialized();
+        histogramWatcher.assertExpected(
+                "Should have recorded time to initialize tab state after buffer swap.");
     }
 
     @Test
@@ -639,6 +660,8 @@ public class CompositorViewHolderUnitTest {
         int pendingFrameCount = 0;
         int framesUntilHideBackground = 1;
         boolean swappedCurrentSize = true;
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.TabStrip.TimeToBufferSwapAfterInitializeTabState");
 
         // Mark the tab state as initialized and one frame has been swapped.
         notifyTabRestored();
@@ -652,6 +675,10 @@ public class CompositorViewHolderUnitTest {
         framesUntilHideBackground = 0;
         mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
         verifyBackgroundRemoved();
+
+        // Verify the relevant histogram is recorded.
+        histogramWatcher.assertExpected(
+                "Should have recorded time to buffer swap after initializing tab state.");
     }
 
     private void notifyTabRestored() {
