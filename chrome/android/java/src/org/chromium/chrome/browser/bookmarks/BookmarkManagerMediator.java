@@ -10,13 +10,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -65,6 +65,7 @@ import java.util.Stack;
 class BookmarkManagerMediator
         implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final String EMPTY_QUERY = null;
+    private static final long MICRO_CURRENCY_QUOTIENT = 1000000;
 
     private static boolean sPreventLoadingForTesting;
 
@@ -1043,9 +1044,7 @@ class BookmarkManagerMediator
                 item.isFolder() ? BookmarkUtils.getFolderDescriptionText(
                         id, mBookmarkModel, mContext.getResources())
                                 : item.getUrlForDisplay());
-        resolveIconForBookmark(item,
-                (drawableIcon)
-                        -> propertyModel.set(ImprovedBookmarkRowProperties.ICON, drawableIcon));
+        resolveIconForBookmark(item, propertyModel);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.POPUP_LISTENER, this::onBookmarkItemMenuOpened);
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
@@ -1070,10 +1069,22 @@ class BookmarkManagerMediator
 
     // ImprovedBookmarkRow methods.
 
-    private void resolveIconForBookmark(BookmarkItem item, Callback<Drawable> callback) {
+    private void resolveIconForBookmark(BookmarkItem item, PropertyModel model) {
         if (item.isFolder()) {
-            // TODO(crbug.com/1434538): Handle fancy folder drawable.
-            callback.onResult(BookmarkUtils.getFolderIcon(mContext, item.getId().getType()));
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                    && mBookmarkUiPrefs.getBookmarkRowDisplayPref()
+                            == BookmarkRowDisplayPref.VISUAL) {
+                model.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
+                        BookmarkUtils.getChildCountForDisplay(item.getId(), mBookmarkModel));
+
+                // TODO(crbug.com/1434538): Add images to folder once image service is available.
+                // TODO(crbug.com/1440863): Support reading list special placeholder case.
+                model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES, new Pair<>(null, null));
+            } else {
+                model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE,
+                        BookmarkUtils.getFolderIcon(mContext, item.getId().getType()));
+            }
+
             return;
         }
 
@@ -1082,7 +1093,7 @@ class BookmarkManagerMediator
                     Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(icon,
                             item.getUrl(), fallbackColor, mIconGenerator, mContext.getResources(),
                             mDisplayFaviconSize);
-                    callback.onResult(iconDrawable);
+                    model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, iconDrawable);
                 });
     }
 

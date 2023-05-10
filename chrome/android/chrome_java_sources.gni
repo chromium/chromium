@@ -206,6 +206,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUiState.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUndoController.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderView.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandler.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRow.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowProperties.java",

@@ -142,7 +142,7 @@ public class ImprovedBookmarkRowRenderTest {
             mModel = new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS)
                              .with(ImprovedBookmarkRowProperties.TITLE, "test title")
                              .with(ImprovedBookmarkRowProperties.DESCRIPTION, "test description")
-                             .with(ImprovedBookmarkRowProperties.ICON,
+                             .with(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE,
                                      new BitmapDrawable(
                                              mActivityTestRule.getActivity().getResources(),
                                              mBitmap))

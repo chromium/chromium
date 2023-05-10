@@ -17,11 +17,15 @@ found in the LICENSE file.
     android:paddingVertical="8dp"
     android:background="@drawable/rounded_rectangle_surface_0">
 
+    <org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderView
+        android:id="@+id/folder_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <org.chromium.components.browser_ui.widget.RoundedCornerImageView
         android:id="@+id/start_image"
         android:layout_width="@dimen/improved_bookmark_icon_size"
         android:layout_height="@dimen/improved_bookmark_icon_size"
-        android:layout_marginEnd="16dp"
         android:scaleType="center"
         android:importantForAccessibility="no"
         android:background="@drawable/oval_surface_1"
@@ -29,6 +33,10 @@ found in the LICENSE file.
         app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
         app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
         app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius" />
+
+    <View
+        android:layout_width="16dp"
+        android:layout_height="match_parent" />
 
     <!-- Common title/description shared between list item views. -->
     <include layout="@layout/title_and_description_layout" />

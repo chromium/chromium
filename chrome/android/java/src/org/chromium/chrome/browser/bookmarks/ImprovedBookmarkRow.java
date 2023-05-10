@@ -31,6 +31,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
     private ImageView mStartImageView;
+    private ImprovedBookmarkFolderView mFolderIconView;
     // Displays the title of the bookmark.
     private TextView mTitleView;
     // Displays the url of the bookmark.
@@ -78,6 +79,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mContainer = findViewById(R.id.container);
 
         mStartImageView = findViewById(R.id.start_image);
+        mFolderIconView = findViewById(R.id.folder_view);
 
         mTitleView = findViewById(R.id.title);
         mDescriptionView = findViewById(R.id.description);
@@ -98,8 +100,22 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mDescriptionView.setText(description);
     }
 
-    void setIcon(Drawable icon) {
-        mStartImageView.setImageDrawable(icon);
+    void setBookmarkDrawable(Drawable drawable) {
+        mStartImageView.setImageDrawable(drawable);
+        mStartImageView.setVisibility(View.VISIBLE);
+
+        mFolderIconView.setVisibility(View.GONE);
+    }
+
+    void setFolderDrawables(@Nullable Drawable first, @Nullable Drawable second) {
+        mFolderIconView.setVisibility(View.VISIBLE);
+        mFolderIconView.setDrawables(first, second);
+
+        mStartImageView.setVisibility(View.GONE);
+    }
+
+    void setFolderChildCount(int count) {
+        mFolderIconView.setChildCount(count);
     }
 
     void setAccessoryView(@Nullable View view) {

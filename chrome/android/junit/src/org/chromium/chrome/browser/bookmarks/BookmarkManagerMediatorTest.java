@@ -463,7 +463,7 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mBookmarkItem21.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
         assertEquals(
                 "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.ICON));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
@@ -490,7 +490,7 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mReadingListItem.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
         assertEquals(
                 "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.ICON));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
@@ -546,7 +546,7 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mFolderId2, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mFolderItem2.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
         assertEquals("1 bookmark", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.ICON));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));

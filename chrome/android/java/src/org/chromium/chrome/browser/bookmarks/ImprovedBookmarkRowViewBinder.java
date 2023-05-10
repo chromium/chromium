@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -17,8 +19,14 @@ class ImprovedBookmarkRowViewBinder {
             row.setTitle(model.get(ImprovedBookmarkRowProperties.TITLE));
         } else if (key == ImprovedBookmarkRowProperties.DESCRIPTION) {
             row.setDescription(model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        } else if (key == ImprovedBookmarkRowProperties.ICON) {
-            row.setIcon(model.get(ImprovedBookmarkRowProperties.ICON));
+        } else if (key == ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE) {
+            row.setBookmarkDrawable(model.get(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE));
+        } else if (key == ImprovedBookmarkRowProperties.FOLDER_DRAWABLES) {
+            Pair<Drawable, Drawable> drawables =
+                    model.get(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES);
+            row.setFolderDrawables(drawables.first, drawables.second);
+        } else if (key == ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT) {
+            row.setFolderChildCount(model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
         } else if (key == ImprovedBookmarkRowProperties.ACCESSORY_VIEW) {
             row.setAccessoryView(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
         } else if (key == ImprovedBookmarkRowProperties.LIST_MENU) {

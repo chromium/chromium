@@ -633,22 +633,34 @@ public class BookmarkUtils {
     }
 
     /**
+     * Gets the display count for folders.
+     * @param id The bookmark to get the description for, must be a folder.
+     * @param bookmarkModel The bookmark model to get info on the bookmark.
+     */
+    public static int getChildCountForDisplay(BookmarkId id, BookmarkModel bookmarkModel) {
+        if (id.getType() == BookmarkType.READING_LIST) {
+            return bookmarkModel.getUnreadCount(id);
+        } else {
+            return bookmarkModel.getTotalBookmarkCount(id);
+        }
+    }
+
+    /**
      * Returns the description to use for the folder in bookamrks manager.
-     * @param id The bookmark to get the description for.
+     * @param id The bookmark to get the description for, must be a folder.
      * @param bookmarkModel The bookmark model to get info on the bookmark.
      * @param resources Android resources object to get strings.
      */
     public static String getFolderDescriptionText(
             BookmarkId id, BookmarkModel bookmarkModel, Resources resources) {
+        int count = getChildCountForDisplay(id, bookmarkModel);
         if (id.getType() == BookmarkType.READING_LIST) {
-            int unreadCount = bookmarkModel.getUnreadCount(id);
-            return (unreadCount > 0) ? resources.getQuantityString(
-                           R.plurals.reading_list_unread_page_count, unreadCount, unreadCount)
-                                     : resources.getString(R.string.reading_list_no_unread_pages);
+            return (count > 0) ? resources.getQuantityString(
+                           R.plurals.reading_list_unread_page_count, count, count)
+                               : resources.getString(R.string.reading_list_no_unread_pages);
         } else {
-            int childCount = bookmarkModel.getTotalBookmarkCount(id);
-            return (childCount > 0)
-                    ? resources.getQuantityString(R.plurals.bookmarks_count, childCount, childCount)
+            return (count > 0)
+                    ? resources.getQuantityString(R.plurals.bookmarks_count, count, count)
                     : resources.getString(R.string.no_bookmarks);
         }
     }

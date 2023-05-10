@@ -412,4 +412,13 @@ found in the LICENSE file.
 
     <!-- Price Drop dimensions -->
     <dimen name="price_drop_spotted_iph_ntp_tabswitcher_y_inset">4dp</dimen>
+
+    <!-- Improved bookmark row folder dimensions. -->
+    <dimen name="improved_bookmark_row_outer_corner_radius">16dp</dimen>
+    <dimen name="improved_bookmark_row_inner_corner_radius">6dp</dimen>
+    <dimen name="improved_bookmark_row_size">80dp</dimen>
+    <dimen name="improved_bookmark_row_secondary_outer_size">41dp</dimen>
+    <dimen name="improved_bookmark_row_secondary_inner_size">39dp</dimen>
+    <dimen name="improved_bookmark_row_secondary_inner_half_size">19.5dp</dimen>
+
 </resources>

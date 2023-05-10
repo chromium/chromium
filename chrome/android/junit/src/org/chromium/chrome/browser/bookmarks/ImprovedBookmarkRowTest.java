@@ -70,7 +70,7 @@ public class ImprovedBookmarkRowTest {
         mModel = new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS)
                          .with(ImprovedBookmarkRowProperties.TITLE, TITLE)
                          .with(ImprovedBookmarkRowProperties.DESCRIPTION, DESCRIPTION)
-                         .with(ImprovedBookmarkRowProperties.ICON, mIcon)
+                         .with(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, mIcon)
                          .with(ImprovedBookmarkRowProperties.LIST_MENU, mListMenu)
                          .with(ImprovedBookmarkRowProperties.POPUP_LISTENER, mPopupListener)
                          .with(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK,
