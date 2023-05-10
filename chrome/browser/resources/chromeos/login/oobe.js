@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 
-import './test_api/test_api.js';
+
 import './components/common_styles/oobe_flex_layout_styles.css.js';
 import './components/api_keys_notice.js';
 // clang-format on
@@ -16,6 +16,7 @@ import {refreshColorCss, startColorChangeUpdater} from '//resources/cr_component
 
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.js';
+import * as OobeTestApi from './test_api/test_api.js';
 import {loadTimeData} from './i18n_setup.js';
 import { addScreensToMainContainer } from './login_ui_tools.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
@@ -72,6 +73,11 @@ function initializeOobe() {
   // Initialize the on-screen debugger if present.
   if (OobeDebugger.DebuggerUI) {
     OobeDebugger.DebuggerUI.getInstance().register(document.body);
+  }
+
+  // Add the OOBE Test API
+  if (OobeTestApi.OobeApiProvider) {
+    window.OobeAPI = new OobeTestApi.OobeApiProvider();
   }
 
   Oobe.initialize();

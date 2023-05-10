@@ -997,5 +997,3 @@ export class OobeApiProvider {
     };
   }
 }
-
-window.OobeAPI = new OobeApiProvider();
