@@ -15,22 +15,22 @@ import {css, customElement, html, query, XfBase} from './xf_base.js';
 // Different flavors of the XfBulkPinningDialog.
 const enum DialogState {
   // The dialog is not displayed.
-  CLOSED = 'CLOSED',
+  CLOSED,
 
   // Currently offline. Cannot compute space requirement for the time being.
-  OFFLINE = 'OFFLINE',
+  OFFLINE,
 
   // Listing files and computing space requirements.
-  LISTING = 'LISTING',
+  LISTING,
 
   // An error occurred while computing the space requirements.
-  ERROR = 'ERROR',
+  ERROR,
 
   // There isn't enough space to activate the bulk-pinning feature.
-  NOT_ENOUGH_SPACE = 'NOT_ENOUGH_SPACE',
+  NOT_ENOUGH_SPACE,
 
   // Computed space requirements and ready to activate the bulk-pinning feature.
-  READY = 'READY',
+  READY,
 }
 
 const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
@@ -52,13 +52,19 @@ export class XfBulkPinningDialog extends XfBase {
   @query('#ready-footer') private $readyFooter_!: HTMLElement;
 
   private store_ = getStore();
-  private state_ = DialogState.CLOSED;
   private stage_ = '';
   private requiredBytes_ = 0;
   private freeBytes_ = 0;
 
   // Called when the app has changed state.
   onStateChanged(state: AppState) {
+    // If bulk-pinning gets enabled while this dialog is open, just cancel this
+    // dialog.
+    if (state.preferences?.driveFsBulkPinningEnabled) {
+      this.onCancel();
+      return;
+    }
+
     // We're only interested in the bulk-pinning part of the app state.
     const bpp = state.bulkPinning;
     if (!bpp) {
@@ -103,15 +109,9 @@ export class XfBulkPinningDialog extends XfBase {
     }
   }
 
-  // Sets the dialog state.
+  // Shows the footer matching the given state.
+  // Enables or disables the 'Continue' button according to the given state.
   set state(s: DialogState) {
-    if (s == this.state_) {
-      return;
-    }
-
-    this.state_ = s;
-
-    // Show the footer matching the given state.
     this.$offlineFooter_.style.display =
         s === DialogState.OFFLINE ? 'flex' : 'none';
     this.$listingFooter_.style.display =
@@ -123,11 +123,11 @@ export class XfBulkPinningDialog extends XfBase {
     this.$readyFooter_.style.display =
         s === DialogState.READY ? 'flex' : 'none';
 
-    // Enable or disable the 'Continue' button according to the given state.
     this.$button_.disabled = s !== DialogState.READY;
   }
 
   async show() {
+    this.state = DialogState.LISTING;
     this.$point1_.innerHTML = str('BULK_PINNING_POINT_1');
     this.$dialog_.showModal();
     this.store_.subscribe(this);
