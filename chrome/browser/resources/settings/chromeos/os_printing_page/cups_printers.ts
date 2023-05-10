@@ -238,8 +238,17 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
     this.addPrintServerResultText_ = '';
 
-    // Nearby printers should always show when the revamp flag is disabled.
-    if (!this.isPrinterSettingsRevampEnabled_) {
+    if (this.isPrinterSettingsRevampEnabled_) {
+      // This request is made in the constructor to fetch the # of saved
+      // printers for determining whether the nearby printers section should
+      // start open or closed.
+      CupsPrintersBrowserProxyImpl.getInstance()
+          .getCupsSavedPrintersList()
+          .then(
+              savedPrinters => this.nearbyPrintersExpanded_ =
+                  savedPrinters.printerList.length === 0);
+    } else {
+      // Nearby printers should always show when the revamp flag is disabled.
       this.nearbyPrintersExpanded_ = true;
     }
   }
