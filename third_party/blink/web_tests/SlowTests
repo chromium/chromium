@@ -1543,3 +1543,6 @@ crbug.com/1423483 [ Mac10.15 Release ] external/wpt/css/css-color/parsing/color-
 crbug.com/1423483 [ Mac11 Release ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
 crbug.com/1423483 [ Mac12 ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
 crbug.com/1423483 [ Release Win ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
+
+# Slow because of too many cycles of waiting for layout and paint
+crbug.com/1310326 http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
