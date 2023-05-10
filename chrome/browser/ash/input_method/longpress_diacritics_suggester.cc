@@ -253,16 +253,17 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
       if (highlighted_index_ == absl::nullopt) {
         // We want the cursor to start at the end if you press back, and at the
         // beginning if you press next.
-        new_index = move_next ? 0 : GetCurrentShownDiacritics().size() - 1;
+        new_index = move_next ? 0 : GetCurrentShownDiacritics().size();
       } else {
         SetButtonHighlighted(*highlighted_index_, false);
+        // Size+1 since we include the highlight button add 1 to size.
         if (move_next) {
-          new_index =
-              (*highlighted_index_ + 1) % GetCurrentShownDiacritics().size();
+          new_index = (*highlighted_index_ + 1) %
+                      (GetCurrentShownDiacritics().size() + 1);
         } else {
           new_index = (*highlighted_index_ > 0)
                           ? *highlighted_index_ - 1
-                          : GetCurrentShownDiacritics().size() - 1;
+                          : GetCurrentShownDiacritics().size();
         }
       }
       SetButtonHighlighted(new_index, true);
@@ -367,10 +368,22 @@ void LongpressDiacriticsSuggester::SetButtonHighlighted(size_t index,
     return;
   }
   std::string error;
-  suggestion_handler_->SetButtonHighlighted(
-      *focused_context_id_,
-      CreateButtonFor(index, GetCurrentShownDiacritics()[index]),
-      /* highlighted=*/highlighted, &error);
+  if (index == GetCurrentShownDiacritics().size()) {
+    suggestion_handler_->SetButtonHighlighted(
+        *focused_context_id_,
+        {
+            .id = ui::ime::ButtonId::kLearnMore,
+            .window_type =
+                ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
+        },
+        highlighted, &error);
+
+  } else {
+    suggestion_handler_->SetButtonHighlighted(
+        *focused_context_id_,
+        CreateButtonFor(index, GetCurrentShownDiacritics()[index]),
+        /* highlighted=*/highlighted, &error);
+  }
 
   if (!error.empty()) {
     LOG(ERROR) << "suggest: Failed to set button highlighted. " << error;

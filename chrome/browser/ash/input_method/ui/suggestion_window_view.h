@@ -86,6 +86,7 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   gfx::Rect GetBubbleBounds() override;
   void OnThemeChanged() override;
   void LearnMoreClicked();
+  raw_ptr<views::ImageButton, ExperimentalAsh> getLearnMoreButton();
 
  private:
   SuggestionWindowView(gfx::NativeView parent,
