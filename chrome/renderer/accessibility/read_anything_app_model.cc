@@ -36,6 +36,7 @@ void ReadAnythingAppModel::Reset(
   content_node_ids_ = content_node_ids;
   display_node_ids_.clear();
   distillation_in_progress_ = false;
+  requires_post_process_selection_ = false;
   ResetSelection();
 }
 
@@ -271,7 +272,7 @@ void ReadAnythingAppModel::UnserializeUpdates(
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   DCHECK(base::Contains(trees_, tree_id));
   ui::AXSerializableTree* tree = trees_[tree_id].get();
-  DCHECK(tree);
+  CHECK(tree);
   // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
   // return true and merge_updates_out will contain the updates. Otherwise, if
   // the updates are not mergeable, merge_updates_out will be empty.
@@ -281,23 +282,27 @@ void ReadAnythingAppModel::UnserializeUpdates(
     merged_updates = &merge_updates_out;
   }
 
+  // Build an event generator prior to any unserializations.
+  ui::AXEventGenerator event_generator(tree);
+
   // Unserialize the updates.
   for (const ui::AXTreeUpdate& update : *merged_updates) {
     tree->Unserialize(update);
   }
+
+  ProcessGeneratedEvents(event_generator);
 }
 
 void ReadAnythingAppModel::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
-    ui::AXTreeObserver* tree_observer) {
+    const std::vector<ui::AXEvent>& events) {
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
   if (!ContainsTree(tree_id)) {
     std::unique_ptr<ui::AXSerializableTree> new_tree =
         std::make_unique<ui::AXSerializableTree>();
-    new_tree->AddObserver(tree_observer);
     AddTree(tree_id, std::move(new_tree));
   }
   // If a tree update on the active tree is received while distillation is in
@@ -308,14 +313,18 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   if (tree_id == active_tree_id_) {
     if (distillation_in_progress_) {
       AddPendingUpdates(tree_id, updates);
+      ProcessNonGeneratedEvents(events);
       return;
     } else {
       // We need to unserialize old updates before we can unserialize the new
-      // ones
+      // ones.
       UnserializePendingUpdates(tree_id);
     }
-  }
   UnserializeUpdates(std::move(updates), tree_id);
+  ProcessNonGeneratedEvents(events);
+  } else {
+  UnserializeUpdates(std::move(updates), tree_id);
+  }
 }
 
 void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -401,4 +410,180 @@ ReadAnythingAppModel::GetTreesForTesting() {
 
 void ReadAnythingAppModel::EraseTreeForTesting(ui::AXTreeID tree_id) {
   EraseTree(tree_id);
+}
+
+void ReadAnythingAppModel::ProcessNonGeneratedEvents(
+    const std::vector<ui::AXEvent>& events) {
+  // Note that this list of events may overlap with generated events in the
+  // model. It's up to the consumer to pick but its generally good to prefer
+  // generated. The consumer should not process the same event here and for
+  // generated events.
+  for (auto& event : events) {
+    switch (event.event_type) {
+      case ax::mojom::Event::kLoadComplete:
+        requires_distillation_ = true;
+        // TODO(accessibility): Some pages may never completely load; use a
+        // timer with a reasonable delay to force distillation -> drawing.
+        // Investigate if this is needed.
+        break;
+
+        // Audit these events e.g. to require distillation.
+      case ax::mojom::Event::kActiveDescendantChanged:
+      case ax::mojom::Event::kAriaAttributeChanged:
+      case ax::mojom::Event::kCheckedStateChanged:
+      case ax::mojom::Event::kChildrenChanged:
+      case ax::mojom::Event::kDocumentSelectionChanged:
+      case ax::mojom::Event::kDocumentTitleChanged:
+      case ax::mojom::Event::kExpandedChanged:
+      case ax::mojom::Event::kRowCollapsed:
+      case ax::mojom::Event::kRowCountChanged:
+      case ax::mojom::Event::kRowExpanded:
+      case ax::mojom::Event::kSelectedChildrenChanged:
+      case ax::mojom::Event::kNone:
+      case ax::mojom::Event::kAlert:
+      case ax::mojom::Event::kAutocorrectionOccured:
+      case ax::mojom::Event::kBlur:
+      case ax::mojom::Event::kClicked:
+      case ax::mojom::Event::kControlsChanged:
+      case ax::mojom::Event::kEndOfTest:
+      case ax::mojom::Event::kFocus:
+      case ax::mojom::Event::kFocusAfterMenuClose:
+      case ax::mojom::Event::kFocusContext:
+      case ax::mojom::Event::kHide:
+      case ax::mojom::Event::kHitTestResult:
+      case ax::mojom::Event::kHover:
+      case ax::mojom::Event::kImageFrameUpdated:
+      case ax::mojom::Event::kLayoutComplete:
+      case ax::mojom::Event::kLiveRegionCreated:
+      case ax::mojom::Event::kLiveRegionChanged:
+      case ax::mojom::Event::kLoadStart:
+      case ax::mojom::Event::kLocationChanged:
+      case ax::mojom::Event::kMediaStartedPlaying:
+      case ax::mojom::Event::kMediaStoppedPlaying:
+      case ax::mojom::Event::kMenuEnd:
+      case ax::mojom::Event::kMenuListValueChanged:
+      case ax::mojom::Event::kMenuPopupEnd:
+      case ax::mojom::Event::kMenuPopupStart:
+      case ax::mojom::Event::kMenuStart:
+      case ax::mojom::Event::kMouseCanceled:
+      case ax::mojom::Event::kMouseDragged:
+      case ax::mojom::Event::kMouseMoved:
+      case ax::mojom::Event::kMousePressed:
+      case ax::mojom::Event::kMouseReleased:
+      case ax::mojom::Event::kScrolledToAnchor:
+      case ax::mojom::Event::kScrollPositionChanged:
+      case ax::mojom::Event::kSelection:
+      case ax::mojom::Event::kSelectionAdd:
+      case ax::mojom::Event::kSelectionRemove:
+      case ax::mojom::Event::kShow:
+      case ax::mojom::Event::kStateChanged:
+      case ax::mojom::Event::kTextChanged:
+      case ax::mojom::Event::kWindowActivated:
+      case ax::mojom::Event::kWindowDeactivated:
+      case ax::mojom::Event::kWindowVisibilityChanged:
+      case ax::mojom::Event::kTextSelectionChanged:
+      case ax::mojom::Event::kTooltipClosed:
+      case ax::mojom::Event::kTooltipOpened:
+      case ax::mojom::Event::kTreeChanged:
+      case ax::mojom::Event::kValueChanged:
+        break;
+    }
+  }
+}
+
+void ReadAnythingAppModel::ProcessGeneratedEvents(
+    const ui::AXEventGenerator& event_generator) {
+  // Note that this list of events may overlap with non-generated events in the
+  // It's up to the consumer to pick but its generally good to prefer generated.
+  for (const auto& event : event_generator) {
+    switch (event.event_params.event) {
+      case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
+      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
+        requires_distillation_ = true;
+        break;
+      case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
+        if (event.event_params.event_from == ax::mojom::EventFrom::kUser) {
+          requires_post_process_selection_ = true;
+        }
+        break;
+
+      // Audit these events e.g. to trigger distillation.
+      case ui::AXEventGenerator::Event::NONE:
+      case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
+      case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
+      case ui::AXEventGenerator::Event::ALERT:
+      case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+      case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
+      case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
+      case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
+      case ui::AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
+      case ui::AXEventGenerator::Event::BUSY_CHANGED:
+      case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
+      case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
+      case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
+      case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
+      case ui::AXEventGenerator::Event::CLASS_NAME_CHANGED:
+      case ui::AXEventGenerator::Event::COLLAPSED:
+      case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
+      case ui::AXEventGenerator::Event::DETAILS_CHANGED:
+      case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
+      case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
+      case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
+      case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
+      case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
+      case ui::AXEventGenerator::Event::ENABLED_CHANGED:
+      case ui::AXEventGenerator::Event::EXPANDED:
+      case ui::AXEventGenerator::Event::FOCUS_CHANGED:
+      case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
+      case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
+      case ui::AXEventGenerator::Event::GRABBED_CHANGED:
+      case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
+      case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
+      case ui::AXEventGenerator::Event::IGNORED_CHANGED:
+      case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
+      case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
+      case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
+      case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
+      case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
+      case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
+      case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED:
+      case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
+      case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
+      case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
+      case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
+      case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
+      case ui::AXEventGenerator::Event::MENU_POPUP_END:
+      case ui::AXEventGenerator::Event::MENU_POPUP_START:
+      case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
+      case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
+      case ui::AXEventGenerator::Event::NAME_CHANGED:
+      case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
+      case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
+      case ui::AXEventGenerator::Event::PARENT_CHANGED:
+      case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
+      case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
+      case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
+      case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+      case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+      case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+      case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
+      case ui::AXEventGenerator::Event::READONLY_CHANGED:
+      case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
+      case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
+      case ui::AXEventGenerator::Event::ROLE_CHANGED:
+      case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
+      case ui::AXEventGenerator::Event::SELECTED_CHANGED:
+      case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
+      case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+      case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
+      case ui::AXEventGenerator::Event::SORT_CHANGED:
+      case ui::AXEventGenerator::Event::STATE_CHANGED:
+      case ui::AXEventGenerator::Event::SUBTREE_CREATED:
+      case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
+      case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+      case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
+      case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
+        break;
+    }
+  }
 }

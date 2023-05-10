@@ -6,7 +6,6 @@
 
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "ui/accessibility/ax_serializable_tree.h"
-#include "ui/accessibility/ax_tree_observer.h"
 
 class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  public:
@@ -93,7 +92,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void AccessibilityEventReceived(
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates) {
-    model_->AccessibilityEventReceived(tree_id, updates, ax_tree_observer);
+    model_->AccessibilityEventReceived(tree_id, updates, {});
   }
 
   void SetActiveTreeId(ui::AXTreeID tree_id) {
@@ -173,8 +172,6 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   ui::AXTreeID tree_id_;
 
  private:
-  ui::AXTreeObserver* ax_tree_observer = new ui::AXTreeObserver();
-
   // ReadAnythingAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
   ReadAnythingAppModel* model_ = nullptr;

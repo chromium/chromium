@@ -9,12 +9,12 @@
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_selection.h"
 
 namespace ui {
 class AXNode;
 class AXSerializableTree;
-class AXTreeObserver;
 }  // namespace ui
 
 // A class that holds state for the ReadAnythingAppController for the Read
@@ -25,6 +25,12 @@ class ReadAnythingAppModel {
   ~ReadAnythingAppModel();
   ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
+
+  bool requires_distillation() { return requires_distillation_; }
+  void set_requires_distillation(bool value) { requires_distillation_ = value; }
+  bool requires_post_process_selection() {
+    return requires_post_process_selection_;
+  }
 
   // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme
@@ -43,8 +49,8 @@ class ReadAnythingAppModel {
   int32_t end_offset() const { return end_offset_; }
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
-  bool loading() const { return loading_; }
   bool active_tree_selectable() const { return active_tree_selectable_; }
+
   const ukm::SourceId& active_ukm_source_id() const {
     return active_ukm_source_id_;
   }
@@ -63,13 +69,13 @@ class ReadAnythingAppModel {
   void SetDistillationInProgress(bool distillation) {
     distillation_in_progress_ = distillation;
   }
-  void SetLoading(bool loading) { loading_ = loading; }
   void SetActiveTreeSelectable(bool active_tree_selectable) {
     active_tree_selectable_ = active_tree_selectable;
   }
   void SetActiveUkmSourceId(ukm::SourceId source_id) {
     active_ukm_source_id_ = source_id;
   }
+
   void SetActiveTreeId(ui::AXTreeID tree_id) { active_tree_id_ = tree_id; }
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
@@ -106,7 +112,7 @@ class ReadAnythingAppModel {
 
   void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
                                   const std::vector<ui::AXTreeUpdate>& updates,
-                                  ui::AXTreeObserver* tree_observer);
+                                  const std::vector<ui::AXEvent>& events);
 
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
@@ -142,6 +148,9 @@ class ReadAnythingAppModel {
   const std::vector<ui::AXTreeUpdate>& GetOrCreatePendingUpdateAt(
       ui::AXTreeID tree_id);
 
+  void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);
+  void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator);
+
   // State.
   // AXTrees of web contents in the browser’s tab strip.
   std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>> trees_;
@@ -160,10 +169,6 @@ class ReadAnythingAppModel {
   // This boolean marks when distillation is in progress to avoid sending
   // new distillation requests during that time.
   bool distillation_in_progress_ = false;
-
-  // Loading should be set to true if we are in the process of distilling the
-  // active tree for the first time.
-  bool loading_ = false;
 
   // A mapping of a tree ID to a queue of pending updates on the active AXTree,
   // which will be unserialized once distillation completes.
@@ -198,6 +203,8 @@ class ReadAnythingAppModel {
   ui::AXNodeID end_node_id_ = ui::kInvalidAXNodeID;
   int32_t start_offset_ = -1;
   int32_t end_offset_ = -1;
+  bool requires_distillation_ = false;
+  bool requires_post_process_selection_ = false;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

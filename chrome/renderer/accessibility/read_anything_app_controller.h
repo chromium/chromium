@@ -20,7 +20,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 #include "url/gurl.h"
 
@@ -96,13 +95,6 @@ class ReadAnythingAppController
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady() override;
 #endif
-
-  // ui::AXTreeObserver:
-  void OnAtomicUpdateFinished(ui::AXTree* tree,
-                              bool root_changed,
-                              const std::vector<Change>& changes) override;
-  // TODO(crbug.com/1266555): Implement OnNodeWillBeDeleted to capture the
-  // deletion of child trees.
 
   // gin templates:
   ui::AXNodeID RootId() const;
@@ -184,6 +176,7 @@ class ReadAnythingAppController
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
+
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };
 

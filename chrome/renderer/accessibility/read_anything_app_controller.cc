@@ -370,17 +370,22 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
-  model_.AccessibilityEventReceived(tree_id, updates, this);
+  // This updates the model, which may require us to start distillation based on
+  // the `requires_distillation()` state below.
+  model_.AccessibilityEventReceived(tree_id, updates, events);
 
-  if (model_.loading() || tree_id != model_.active_tree_id()) {
+  if (tree_id != model_.active_tree_id()) {
     return;
   }
 
-  for (auto& event : events) {
-    if (event.event_type == ax::mojom::Event::kDocumentSelectionChanged &&
-        event.event_from == ax::mojom::EventFrom::kUser) {
-      PostProcessSelection();
-    }
+  if (model_.requires_distillation()) {
+    Distill();
+  }
+
+  // TODO(accessibility): it isn't clear this handles the pending updates path
+  // correctly within the model.
+  if (model_.requires_post_process_selection()) {
+    PostProcessSelection();
   }
 }
 
@@ -399,12 +404,12 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
   model_.ClearPendingUpdates();
+  model_.set_requires_distillation(false);
 
   // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
   std::string script = "chrome.readAnything.showLoading();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
-  model_.SetLoading(true);
 
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
@@ -419,43 +424,17 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   model_.OnAXTreeDestroyed(tree_id);
 }
 
-void ReadAnythingAppController::OnAtomicUpdateFinished(
-    ui::AXTree* tree,
-    bool root_changed,
-    const std::vector<Change>& changes) {
-  // TODO(crbug.com/1266555): This method may be called when child trees finish
-  // updating. We should re-distill if tree is a child of the active tree.
-  if (model_.active_tree_id() == ui::AXTreeIDUnknown() ||
-      tree->GetAXTreeID() != model_.active_tree_id()) {
+void ReadAnythingAppController::Distill() {
+  if (model_.distillation_in_progress()) {
+    // When distillation is in progress, the model may have queued up tree
+    // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
+    // where we re-request `Distill`.
+    model_.set_requires_distillation(true);
     return;
   }
-  bool need_to_draw = false;
-  for (Change change : changes) {
-    switch (change.type) {
-      case NODE_CREATED:
-      case SUBTREE_CREATED:
-        Distill();
-        return;
-      case NODE_REPARENTED:
-      case SUBTREE_REPARENTED:
-        if (base::Contains(model_.content_node_ids(), change.node->id())) {
-          Distill();
-          return;
-        } else if (base::Contains(model_.display_node_ids(),
-                                  change.node->id())) {
-          need_to_draw = true;
-        }
-        break;
-      case NODE_CHANGED:
-        break;
-    }
-  }
-  if (need_to_draw) {
-    Draw();
-  }
-}
 
-void ReadAnythingAppController::Distill() {
+  model_.set_requires_distillation(false);
+
   ui::AXSerializableTree* tree =
       model_.GetTreeFromId(model_.active_tree_id()).get();
   std::unique_ptr<ui::AXTreeSource<const ui::AXNode*>> tree_source(
@@ -471,6 +450,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Reset state.
+  // TODO(accessibility): this call resets selection, so it's not completely
+  // clear what `PostProcessSelection` does below.
   model_.Reset(content_node_ids);
 
   // Return early if any of the following scenarios occurred while waiting for
@@ -501,8 +482,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // loading state) instead of the JS.
 
   // Once drawing is complete, unserialize all of the pending updates on the
-  // active tree and send out a new distillation request.
+  // active tree which may require more distillations (as tracked by the model's
+  // `requires_distillation()` state below).
   model_.UnserializePendingUpdates(tree_id);
+  if (model_.requires_distillation()) {
+    Distill();
+  }
 }
 
 void ReadAnythingAppController::PostProcessSelection() {
@@ -513,14 +498,17 @@ void ReadAnythingAppController::PostProcessSelection() {
 }
 
 void ReadAnythingAppController::Draw() {
+  // This call should check that the active tree isn't in an undistilled state
+  // -- that is, it is awaiting distillation or never requested distillation.
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
   std::string script = "chrome.readAnything.updateContent();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
-  model_.SetLoading(false);
 }
 
 void ReadAnythingAppController::DrawSelection() {
+  // This call should check that the active tree isn't in an undistilled state
+  // -- that is, it is awaiting distillation or never requested distillation.
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
   std::string script = "chrome.readAnything.updateSelection();";
