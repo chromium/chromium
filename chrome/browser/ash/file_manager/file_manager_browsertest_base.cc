@@ -2117,8 +2117,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.enable_drive_bulk_pinning) {
     enabled_features.push_back(ash::features::kDriveFsBulkPinning);
+    enabled_features.push_back(
+        ash::features::kFeatureManagementDriveFsBulkPinning);
   } else {
     disabled_features.push_back(ash::features::kDriveFsBulkPinning);
+    disabled_features.push_back(
+        ash::features::kFeatureManagementDriveFsBulkPinning);
   }
 
   if (options.feature_ids.size() > 0) {

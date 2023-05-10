@@ -566,6 +566,12 @@ BASE_FEATURE(kDriveFsBulkPinning,
              "DriveFsBulkPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables DriveFS' bulk pinning functionality. This flag is to be enabled by
+// the feature management module.
+BASE_FEATURE(kFeatureManagementDriveFsBulkPinning,
+             "FeatureManagementDriveFsBulkPinning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables partial support of CSE files on ChromeOS: users will be able to see
 // the files and open in web apps, but not to open/read/write CSE files locally.
 BASE_FEATURE(kDriveFsShowCSEFiles,
@@ -2634,7 +2640,8 @@ bool IsDriveFsMirroringEnabled() {
 }
 
 bool IsDriveFsBulkPinningEnabled() {
-  return base::FeatureList::IsEnabled(kDriveFsBulkPinning);
+  return base::FeatureList::IsEnabled(kFeatureManagementDriveFsBulkPinning) &&
+         base::FeatureList::IsEnabled(kDriveFsBulkPinning);
 }
 
 bool IsInlineSyncStatusEnabled() {

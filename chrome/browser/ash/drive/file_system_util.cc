@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/user.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -107,6 +108,14 @@ bool IsDriveEnabledForProfile(Profile* profile) {
 }
 
 bool IsDriveFsBulkPinningEnabled() {
+  // TODO(b/279872186): Prior to M117 and only on canary builds the feature
+  // should be enabled by the feature management module OR a direct feature
+  // flag. After M117 these 2 flags should be required to enable the feature.
+  if (version_info::GetMajorVersionNumberAsInt() < 117) {
+    return base::FeatureList::IsEnabled(
+               ash::features::kFeatureManagementDriveFsBulkPinning) ||
+           base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
+  }
   return ash::features::IsDriveFsBulkPinningEnabled();
 }
 
