@@ -33,8 +33,10 @@
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridgeObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   SyncSetupService* _syncSetupService;
+  ChromeBrowserState* _browserState;
 }
 // Flag to ignore bookmark model changes notifications.
+// Property used in BookmarksEditorMutator
 @property(nonatomic, assign) BOOL ignoresBookmarkModelChanges;
 
 @end
@@ -50,7 +52,8 @@
                     bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
                            prefs:(PrefService*)prefs
                 syncSetupService:(SyncSetupService*)syncSetupService
-                     syncService:(syncer::SyncService*)syncService {
+                     syncService:(syncer::SyncService*)syncService
+                    browserState:(ChromeBrowserState*)browserState {
   self = [super init];
   if (self) {
     DCHECK(profileBookmarkModel);
@@ -75,6 +78,7 @@
         new BookmarkModelBridge(self, self.bookmarkModel));
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
     _syncSetupService = syncSetupService;
+    _browserState = browserState;
   }
   return self;
 }
@@ -87,6 +91,7 @@
   _prefs = nullptr;
   _bookmarkModelBridgeObserver = nullptr;
   _syncObserverModelBridge = nullptr;
+  _browserState = nullptr;
 }
 
 #pragma mark - Properties
@@ -131,7 +136,7 @@
 
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
         didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
-  if (_ignoresBookmarkModelChanges) {
+  if (self.ignoresBookmarkModelChanges) {
     return;
   }
 
@@ -142,7 +147,7 @@
 
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
     didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
-  if (_ignoresBookmarkModelChanges) {
+  if (self.ignoresBookmarkModelChanges) {
     return;
   }
 
@@ -153,7 +158,7 @@
           didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
            fromParent:(const bookmarks::BookmarkNode*)oldParent
              toParent:(const bookmarks::BookmarkNode*)newParent {
-  if (_ignoresBookmarkModelChanges) {
+  if (self.ignoresBookmarkModelChanges) {
     return;
   }
 
@@ -165,7 +170,7 @@
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
-  if (_ignoresBookmarkModelChanges) {
+  if (self.ignoresBookmarkModelChanges) {
     return;
   }
 
@@ -178,7 +183,7 @@
 }
 
 - (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
-  CHECK(!_ignoresBookmarkModelChanges);
+  CHECK(!self.ignoresBookmarkModelChanges);
   self.bookmark = nullptr;
   self.folder = nullptr;
   [self.delegate bookmarkEditorMediatorWantsDismissal:self];
@@ -186,8 +191,48 @@
 
 #pragma mark - BookmarksEditorMutator
 
-- (BOOL*)ignoresBookmarkModelChangesPointer {
-  return &_ignoresBookmarkModelChanges;
+- (void)commitBookmarkChangesWithURLString:(NSString*)URLString
+                                      name:(NSString*)name {
+  // To stop getting recursive events from committed bookmark editing changes
+  // ignore bookmark model updates notifications.
+  base::AutoReset<BOOL> autoReset(&self->_ignoresBookmarkModelChanges, YES);
+
+  GURL url = bookmark_utils_ios::ConvertUserDataToGURL(URLString);
+  // If the URL was not valid, the `save` message shouldn't have been sent.
+  DCHECK(url.is_valid());
+
+  // Tell delegate if bookmark name or title has been changed.
+  if ([self bookmark] &&
+      ([self bookmark]->GetTitle() != base::SysNSStringToUTF16(name) ||
+       [self bookmark]->url() != url)) {
+    [self.delegate bookmarkEditorWillCommitTitleOrURLChange:self];
+  }
+
+  [self.delegate showSnackbarMessage:
+                     bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
+                         [self bookmark], name, url, [self folder],
+                         [self bookmarkModel], _browserState)];
+}
+
+- (void)deleteBookmark {
+  if (!(self.bookmark && self.bookmarkModel->loaded())) {
+    return;
+  }
+  // To stop getting recursive events from committed bookmark editing changes
+  // ignore bookmark model updates notifications.
+  base::AutoReset<BOOL> autoReset(&self->_ignoresBookmarkModelChanges, YES);
+
+  // When launched from the star button, removing the current bookmark
+  // removes all matching nodes.
+  std::vector<const bookmarks::BookmarkNode*> nodesVector;
+  [self bookmarkModel]->GetNodesByURL([self bookmark]->url(), &nodesVector);
+  std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),
+                                                 nodesVector.end());
+
+  [self.delegate
+      showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+                              nodes, {[self bookmarkModel]}, _browserState)];
+  [self setBookmark:nil];
 }
 
 #pragma mark - SyncObserverModelBridge

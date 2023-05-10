@@ -34,6 +34,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_user_settings.h"
+#import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -740,6 +741,15 @@ NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
     [bookmarkPath addObject:[NSNumber numberWithLongLong:bookmark->id()]];
   }
   return [[bookmarkPath reverseObjectEnumerator] allObjects];
+}
+
+GURL ConvertUserDataToGURL(NSString* urlString) {
+  if (urlString) {
+    return url_formatter::FixupURL(base::SysNSStringToUTF8(urlString),
+                                   std::string());
+  } else {
+    return GURL();
+  }
 }
 
 }  // namespace bookmark_utils_ios

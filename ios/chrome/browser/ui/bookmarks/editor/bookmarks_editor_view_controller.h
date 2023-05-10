@@ -13,8 +13,6 @@
 
 @protocol BookmarksEditorMutator;
 class Browser;
-@protocol SnackbarCommands;
-
 // View controller for editing bookmarks. Allows editing of the title, URL and
 // the parent folder of the bookmark.
 //
@@ -25,8 +23,6 @@ class Browser;
     : ChromeTableViewController <BookmarksEditorConsumer, KeyCommandActions>
 
 @property(nonatomic, weak) id<BookmarksEditorViewControllerDelegate> delegate;
-// Snackbar commands handler.
-@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 // Cancel button item in navigation bar.
 @property(nonatomic, strong, readonly) UIBarButtonItem* cancelItem;
 // Mutator for the presented bookmark.

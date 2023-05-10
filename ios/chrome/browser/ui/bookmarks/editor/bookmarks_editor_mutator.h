@@ -16,6 +16,12 @@ class BookmarkModel;
 // model.
 @protocol BookmarksEditorMutator <NSObject>
 
+// Save the bookmark being edited.
+- (void)commitBookmarkChangesWithURLString:(NSString*)URL name:(NSString*)name;
+
+// Delete the bookmark being edited.
+- (void)deleteBookmark;
+
 // TODO(crbug.com/1404311): Remove those accessor and setters.
 // We temporarily use them to facilitate code migration.
 - (const bookmarks::BookmarkNode*)bookmark;
@@ -23,7 +29,6 @@ class BookmarkModel;
 - (bookmarks::BookmarkModel*)bookmarkModel;
 - (const bookmarks::BookmarkNode*)folder;
 - (BOOL)ignoresBookmarkModelChanges;
-- (BOOL*)ignoresBookmarkModelChangesPointer;
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder;
 
 @end

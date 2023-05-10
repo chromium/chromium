@@ -14,10 +14,6 @@
 // Called when the controller should be dismissed.
 - (void)bookmarkEditorWantsDismissal:(BookmarksEditorViewController*)controller;
 
-// Called when the controller is going to commit the title or URL change.
-- (void)bookmarkEditorWillCommitTitleOrURLChange:
-    (BookmarksEditorViewController*)controller;
-
 // Called when the user wants to select a folder to move the bookmark into.
 - (void)moveBookmark;
 

@@ -114,6 +114,7 @@ source_set("utils") {
     "//components/sync/base",
     "//components/sync/driver",
     "//components/undo",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/flags:system_flags",

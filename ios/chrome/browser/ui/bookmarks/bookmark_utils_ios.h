@@ -225,6 +225,9 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
 NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
                                        int64_t folder_id);
 
+// Converts NSString entered by the user to a GURL.
+GURL ConvertUserDataToGURL(NSString* urlString);
+
 }  // namespace bookmark_utils_ios
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_UTILS_IOS_H_

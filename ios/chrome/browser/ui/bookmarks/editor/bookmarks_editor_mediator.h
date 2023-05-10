@@ -11,6 +11,7 @@
 
 @protocol BookmarksEditorConsumer;
 @protocol BookmarksEditorMediatorDelegate;
+class ChromeBrowserState;
 class PrefService;
 class SyncSetupService;
 
@@ -50,6 +51,7 @@ class SyncService;
                            prefs:(PrefService*)prefs
                 syncSetupService:(SyncSetupService*)syncSetupService
                      syncService:(syncer::SyncService*)syncService
+                    browserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
