@@ -690,10 +690,10 @@ void CellularMetricsLogger::ConnectFailed(const std::string& service_path,
 
 void CellularMetricsLogger::DisconnectRequested(
     const std::string& service_path) {
-  const NetworkState* network =
-      network_state_handler_->GetNetworkState(service_path);
-  if (!network->Matches(NetworkTypePattern::Cellular()))
+  const NetworkState* network = GetCellularNetwork(service_path);
+  if (!network || !network->Matches(NetworkTypePattern::Cellular())) {
     return;
+  }
 
   ConnectionInfo* connection_info =
       GetConnectionInfoForCellularNetwork(network->guid());
