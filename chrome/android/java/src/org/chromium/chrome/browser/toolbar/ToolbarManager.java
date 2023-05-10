@@ -1378,6 +1378,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mTabModelSelector = mTabModelSelectorSupplier.get();
         mShowStartSurfaceSupplier = showStartSurfaceSupplier;
 
+        // Must be initialized before Toolbar attempts to use it.
+        mLocationBarModel.initializeWithNative();
+
         mToolbar.initializeWithNative(layoutManager::requestUpdate, tabSwitcherClickHandler,
                 newTabClickHandler, bookmarkClickHandler, customTabsBackClickHandler,
                 mAppMenuDelegate, layoutManager, mActivityTabProvider, mBrowserControlsSizer,
@@ -1395,8 +1398,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 refreshSelectedTab(mActivityTabProvider.get());
             }
         });
-
-        mLocationBarModel.initializeWithNative();
 
         if (layoutManager != null) {
             mLayoutManager = layoutManager;

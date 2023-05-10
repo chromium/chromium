@@ -70,7 +70,7 @@ public class UrlBarData {
     public static UrlBarData forUrlAndText(
             String url, CharSequence displayText, @Nullable String editingText) {
         int pathSearchOffset = 0;
-        String displayTextStr = displayText.toString();
+        String displayTextStr = displayText == null ? "" : displayText.toString();
         String scheme = Uri.parse(displayTextStr).getScheme();
 
         if (!TextUtils.isEmpty(scheme)) {
@@ -93,14 +93,17 @@ public class UrlBarData {
             }
         }
         int pathOffset = -1;
-        if (pathSearchOffset < displayText.length()) {
+        if (displayText != null && pathSearchOffset < displayText.length()) {
             pathOffset = displayTextStr.indexOf('/', pathSearchOffset);
         }
-        if (pathOffset == -1) return create(url, displayText, 0, displayText.length(), editingText);
+        if (pathOffset == -1) {
+            return create(url, displayText, 0, displayText == null ? 0 : displayText.length(),
+                    editingText);
+        }
 
         // If the '/' is the last character and the beginning of the path, then just drop
         // the path entirely.
-        if (pathOffset == displayText.length() - 1) {
+        if (displayText != null && pathOffset == displayText.length() - 1) {
             return create(
                     url, displayTextStr.subSequence(0, pathOffset), 0, pathOffset, editingText);
         }

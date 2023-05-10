@@ -11,12 +11,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
-import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 
@@ -28,8 +24,6 @@ import java.lang.ref.WeakReference;
  */
 public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibilityDelegate
         implements ManualFillingComponent.SoftKeyboardDelegate {
-    private static final MutableFlagWithSafeDefault sScrollOptimizationsFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
     private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
 
     /**
@@ -58,29 +52,6 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
         return super.isKeyboardShowing(context, view)
                 || (mManualFillingComponentSupplier.hasValue()
                         && mManualFillingComponentSupplier.get().isFillingViewShown(view));
-    }
-
-    @Override
-    public int calculateKeyboardHeight(View rootView) {
-        try (TraceEvent te = TraceEvent.scoped(
-                     "ChromeKeyboardVisibilityDelegate.calculateKeyboardHeight")) {
-            // TODO(https://crbug.com/1385562: remove the flag guard once this change is known to be
-            // safe).
-            if (sScrollOptimizationsFlag.isEnabled()) {
-                if (rootView == null || rootView.getRootWindowInsets() == null) return 0;
-                WindowInsetsCompat windowInsetsCompat = WindowInsetsCompat.toWindowInsetsCompat(
-                        rootView.getRootWindowInsets(), rootView);
-                int imeHeightIncludingNavigationBar =
-                        windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-                if (imeHeightIncludingNavigationBar == 0) return 0;
-                int navigationBarHeight =
-                        windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars())
-                                .bottom;
-                return imeHeightIncludingNavigationBar - navigationBarHeight;
-            }
-
-            return super.calculateKeyboardHeight(rootView);
-        }
     }
 
     /**

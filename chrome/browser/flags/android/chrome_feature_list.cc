@@ -170,7 +170,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
-    &kAndroidScrollOptimizations,
     &kAndroidSearchEngineChoiceNotification,
     &kAndroidWidgetFullscreenToast,
     &kAndroidImprovedBookmarks,
@@ -469,10 +468,6 @@ BASE_FEATURE(kFocusOmniboxInIncognitoTabIntents,
 BASE_FEATURE(kAndroidAppIntegration,
              "AndroidAppIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidScrollOptimizations,
-             "AndroidScrollOptimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidSearchEngineChoiceNotification,
              "AndroidSearchEngineChoiceNotification",

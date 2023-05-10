@@ -6,12 +6,12 @@ package org.chromium.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.view.View;
-import android.view.WindowInsets;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -141,22 +141,15 @@ public class KeyboardVisibilityDelegate {
     public int calculateKeyboardHeight(View rootView) {
         try (TraceEvent te =
                         TraceEvent.scoped("KeyboardVisibilityDelegate.calculateKeyboardHeight")) {
-            Rect appRect = new Rect();
-            rootView.getWindowVisibleDisplayFrame(appRect);
-
-            // Assume status bar is always at the top of the screen.
-            final int statusBarHeight = appRect.top;
-
-            int bottomMargin = rootView.getHeight() - (appRect.height() + statusBarHeight);
-
-            // If there is no bottom margin, the keyboard is not showing.
-            if (bottomMargin <= 0) return 0;
-            WindowInsets insets = rootView.getRootWindowInsets();
-            if (insets != null) { // Either not supported or the rootView isn't attached.
-                bottomMargin -= insets.getStableInsetBottom();
-            }
-
-            return bottomMargin; // This might include a bottom navigation.
+            if (rootView == null || rootView.getRootWindowInsets() == null) return 0;
+            WindowInsetsCompat windowInsetsCompat = WindowInsetsCompat.toWindowInsetsCompat(
+                    rootView.getRootWindowInsets(), rootView);
+            int imeHeightIncludingNavigationBar =
+                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+            if (imeHeightIncludingNavigationBar == 0) return 0;
+            int navigationBarHeight =
+                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            return imeHeightIncludingNavigationBar - navigationBarHeight;
         }
     }
 

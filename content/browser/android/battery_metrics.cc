@@ -33,14 +33,6 @@ BASE_FEATURE(kForegroundRadioStateCountWakeups,
              "ForegroundRadioStateCountWakeups",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Keeps reporting of the battery metrics on the UI thread, where it may cause
-// jank. This is used for a holdback experiment to estimate the jank reduction
-// won by moving reporting to the thread pool.
-// TODO(eseckler): Remove once holdback experiment is complete.
-BASE_FEATURE(kAndroidBatteryMetricsReportOnUIThread,
-             "AndroidBatteryMetricsReportOnUIThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace content {
 namespace {
 
@@ -225,15 +217,11 @@ void ReportAveragedDrain(int capacity_consumed,
         ->AddCount(capacity_consumed_avg, num_sampling_periods);
   }
 
-  // TODO(eseckler): Remove conditional once
-  // kAndroidBatteryMetricsReportOnUIThread is gone.
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ReportDarkModeDrains, capacity_consumed_avg,
-                           is_exclusive_measurement, num_sampling_periods));
-  }
+  GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ReportDarkModeDrains, capacity_consumed_avg,
+                         is_exclusive_measurement, num_sampling_periods));
 }
 
 }  // namespace
@@ -252,18 +240,9 @@ AndroidBatteryMetrics::AndroidBatteryMetrics()
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  // TODO(eseckler): Remove conditional once
-  // kAndroidBatteryMetricsReportOnUIThread is gone.
-  if (base::FeatureList::IsEnabled(kAndroidBatteryMetricsReportOnUIThread)) {
-    // Initializing on the current (UI) thread registers all observers on the UI
-    // thread, such that all notifications will be received on the UI thread,
-    // too.
-    InitializeOnSequence();
-  } else {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&AndroidBatteryMetrics::InitializeOnSequence,
-                                  base::Unretained(this)));
-  }
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AndroidBatteryMetrics::InitializeOnSequence,
+                                base::Unretained(this)));
 }
 
 AndroidBatteryMetrics::~AndroidBatteryMetrics() {

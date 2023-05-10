@@ -29,13 +29,11 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -44,7 +42,6 @@ import java.util.Map;
 
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)
 public class HomeButtonCoordinatorTest {
     private static final GURL NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
     private static final GURL NOT_NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -115,6 +112,9 @@ public class HomeButtonCoordinatorTest {
 
     private void verifyIphShownWithStringIds(int contentId, int accessibilityId) {
         verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
+        // Note that we aren't actually showing the IPH (unit tests) so resources aren't resolved
+        // unless we force it.
+        mIPHCommandCaptor.getValue().fetchFromResources();
         Assert.assertEquals("Wrong feature name", FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
                 mIPHCommandCaptor.getValue().featureName);
         Assert.assertEquals("Wrong text id", ID_TO_STRING_MAP.get(contentId),

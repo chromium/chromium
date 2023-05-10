@@ -122,7 +122,6 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
 
-        enableFeatureWithParams(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, null);
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, null);
 
         Resources resources = ApplicationProvider.getApplicationContext().getResources();

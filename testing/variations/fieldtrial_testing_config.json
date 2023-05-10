@@ -408,24 +408,6 @@
             ]
         }
     ],
-    "AndroidScrollOptimizations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Holdback_20221115",
-                    "enable_features": [
-                        "AndroidBatteryMetricsReportOnUIThread"
-                    ],
-                    "disable_features": [
-                        "AndroidScrollOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSystemTracing": [
         {
             "platforms": [

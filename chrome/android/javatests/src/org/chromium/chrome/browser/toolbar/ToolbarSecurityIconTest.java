@@ -14,12 +14,14 @@ import android.view.ContextThemeWrapper;
 import androidx.annotation.ColorRes;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
@@ -31,6 +33,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,7 +49,10 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -53,12 +60,10 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@Features.DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS,
-        ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
+@Features.DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
 public final class ToolbarSecurityIconTest {
     private static final boolean IS_SMALL_DEVICE = true;
     private static final boolean IS_OFFLINE_PAGE = true;
-    private static final boolean IS_PREVIEW = true;
     private static final boolean IS_PAINT_PREVIEW = true;
     private static final int[] SECURITY_LEVELS =
             new int[] {ConnectionSecurityLevel.NONE, ConnectionSecurityLevel.WARNING,
@@ -72,16 +77,25 @@ public final class ToolbarSecurityIconTest {
 
     @Mock
     private TabImpl mTab;
+
     @Mock
     SecurityStateModel.Natives mSecurityStateMocks;
 
     @Mock
     private LocationBarModel mLocationBarModel;
+
+    @Mock
+    private LocationBarModel.Natives mLocationBarModelJni;
+
     @Mock
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     @Mock
+    private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
+
+    @Mock
     private Profile mMockProfile;
+
     @Mock
     private TrustedCdn mTrustedCdn;
 
@@ -90,8 +104,24 @@ public final class ToolbarSecurityIconTest {
         MockitoAnnotations.initMocks(this);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-
         mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
+        mocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+                mChromeAutocompleteSchemeClassifierJni);
+        mocker.mock(org.chromium.chrome.browser.toolbar.LocationBarModelJni.TEST_HOOKS,
+                mLocationBarModelJni);
+
+        String exampleUrl = JUnitTestGURLs.EXAMPLE_URL;
+        GURL exampleGurl = JUnitTestGURLs.getGURL(exampleUrl);
+        doReturn(exampleGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        doReturn(exampleUrl)
+                .when(mLocationBarModelJni)
+                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
+        doReturn(exampleUrl)
+                .when(mLocationBarModelJni)
+                .getURLForDisplay(Mockito.anyLong(), Mockito.any());
+        doReturn((new Random()).nextLong()).when(mLocationBarModelJni).init(Mockito.any());
 
         Context context = new ContextThemeWrapper(
                 ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
@@ -108,6 +138,11 @@ public final class ToolbarSecurityIconTest {
             userDataHost.setUserData(TrustedCdn.USER_DATA_KEY, mTrustedCdn);
             doReturn(userDataHost).when(mTab).getUserDataHost();
         });
+    }
+
+    @After
+    public void tearDown() throws ExecutionException {
+        mLocationBarModel.destroy();
     }
 
     @Test

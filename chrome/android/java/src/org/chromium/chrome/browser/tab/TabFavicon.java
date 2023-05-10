@@ -13,7 +13,6 @@ import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -143,16 +142,9 @@ public class TabFavicon extends TabWebContentsUserData {
             mFaviconWidth = icon.getWidth();
             mFaviconHeight = icon.getHeight();
             mFaviconTabUrl = currentTabUrl;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) {
-                RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-                while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
-            }
+            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
         }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) return;
-        // TODO(yfriedman): Remove this code after ANDROID_SCROLL_OPTIMIZATIONS is fully rolled out.
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
     }
 
     @NativeMethods
