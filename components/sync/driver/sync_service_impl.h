@@ -63,6 +63,7 @@ class SyncServiceImpl : public SyncService,
  public:
   // If AUTO_START, sync will set IsFirstSetupComplete() automatically and sync
   // will begin syncing without the user needing to confirm sync settings.
+  // TODO(crbug.com/1443438): Remove StartBehavior altogether.
   enum StartBehavior {
     AUTO_START,
     MANUAL_START,
@@ -119,6 +120,7 @@ class SyncServiceImpl : public SyncService,
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
+  bool IsSyncFeatureDisabledViaDashboard() const override;
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
   bool IsSetupInProgress() const override;

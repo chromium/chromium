@@ -104,6 +104,10 @@ bool FakeSyncService::RequiresClientUpgrade() const {
   return false;
 }
 
+bool FakeSyncService::IsSyncFeatureDisabledViaDashboard() const {
+  return false;
+}
+
 void FakeSyncService::DataTypePreconditionChanged(ModelType type) {}
 
 syncer::SyncTokenStatus FakeSyncService::GetSyncTokenStatusForDebugging()

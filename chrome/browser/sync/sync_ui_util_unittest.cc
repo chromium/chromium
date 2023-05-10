@@ -200,6 +200,7 @@ SyncStatusLabels SetUpDistinctCase(
       // dashboard, and the UI treats it as such.
       service->SetDisableReasons(
           syncer::SyncService::DISABLE_REASON_USER_CHOICE);
+      service->SetSyncFeatureDisabledViaDashboard(true);
       service->SetFirstSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
       service->SetPassphraseRequired(false);

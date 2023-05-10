@@ -515,6 +515,8 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
   // being set.
   ON_CALL(*mock_sync_service_, GetDisableReasons())
       .WillByDefault(Return(syncer::SyncService::DISABLE_REASON_USER_CHOICE));
+  ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+      .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_, GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
 
@@ -525,6 +527,8 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
         // immediately starts initializing the engine.
         ON_CALL(*mock_sync_service_, GetDisableReasons())
             .WillByDefault(Return(syncer::SyncService::DisableReasonSet()));
+        ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+            .WillByDefault(Return(false));
         ON_CALL(*mock_sync_service_, GetTransportState())
             .WillByDefault(
                 Return(syncer::SyncService::TransportState::INITIALIZING));
@@ -545,6 +549,8 @@ TEST_F(PeopleHandlerTest,
   // mode.
   ON_CALL(*mock_sync_service_, GetDisableReasons())
       .WillByDefault(Return(syncer::SyncService::DISABLE_REASON_USER_CHOICE));
+  ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+      .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_, GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
 
@@ -555,6 +561,8 @@ TEST_F(PeopleHandlerTest,
         // the engine is already running, it just gets reconfigured.
         ON_CALL(*mock_sync_service_, GetDisableReasons())
             .WillByDefault(Return(syncer::SyncService::DisableReasonSet()));
+        ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+            .WillByDefault(Return(false));
         ON_CALL(*mock_sync_service_, GetTransportState())
             .WillByDefault(
                 Return(syncer::SyncService::TransportState::CONFIGURING));
@@ -1119,6 +1127,8 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
   // bits being cleared.
   ON_CALL(*mock_sync_service_, GetDisableReasons())
       .WillByDefault(Return(syncer::SyncService::DISABLE_REASON_USER_CHOICE));
+  ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+      .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(false));
   // Sync will eventually start again in transport mode.
@@ -1136,6 +1146,8 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
         // immediately starts initializing the engine.
         ON_CALL(*mock_sync_service_, GetDisableReasons())
             .WillByDefault(Return(syncer::SyncService::DisableReasonSet()));
+        ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+            .WillByDefault(Return(false));
         ON_CALL(*mock_sync_service_, GetTransportState())
             .WillByDefault(
                 Return(syncer::SyncService::TransportState::INITIALIZING));
@@ -1169,6 +1181,8 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   // bits being cleared.
   ON_CALL(*mock_sync_service_, GetDisableReasons())
       .WillByDefault(Return(syncer::SyncService::DISABLE_REASON_USER_CHOICE));
+  ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+      .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(false));
   // Sync will eventually start again in transport mode.
@@ -1199,6 +1213,8 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
         // immediately starts initializing the engine.
         ON_CALL(*mock_sync_service_, GetDisableReasons())
             .WillByDefault(Return(syncer::SyncService::DisableReasonSet()));
+        ON_CALL(*mock_sync_service_, IsSyncFeatureDisabledViaDashboard())
+            .WillByDefault(Return(false));
         ON_CALL(*mock_sync_service_, GetTransportState())
             .WillByDefault(
                 Return(syncer::SyncService::TransportState::INITIALIZING));

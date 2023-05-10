@@ -224,7 +224,9 @@ class SyncService : public KeyedService {
   // early in the Sync setup flow, after the user has pressed "turn on Sync" but
   // before they have actually confirmed the settings.
   // TODO(crbug.com/1219990): Remove this API once the internal sync-requested
-  // bit is fully removed and rollback/killswitch safe.
+  // bit is fully removed and rollback/killswitch safe. Note that it also
+  // requires finding an alternative solution to resolving
+  // IsSyncFeatureDisabledViaDashboard(), tracked in crbug.com/1443446.
   virtual void SetSyncFeatureRequested() = 0;
 
   // Returns the SyncUserSettings, which encapsulate all the user-configurable
@@ -295,6 +297,14 @@ class SyncService : public KeyedService {
   // instead.
   virtual bool RequiresClientUpgrade() const = 0;
 
+  // Returns true only on ChromeOS (Ash), if sync-the-feature is disabled
+  // because the user cleared data from the Sync dashboard. It can be re-enabled
+  // by invoking SetSyncFeatureRequested().
+  // TODO(crbug.com/1443446): Consider removing this API, for example by
+  // reporting IsFirstSetupComplete()==false which is otherwise unreachable on
+  // ChromeOS Ash.
+  virtual bool IsSyncFeatureDisabledViaDashboard() const = 0;
+
   //////////////////////////////////////////////////////////////////////////////
   // DERIVED STATE ACCESS
   //////////////////////////////////////////////////////////////////////////////
@@ -321,6 +331,8 @@ class SyncService : public KeyedService {
   // after the engine has started.
   // Note: This refers to Sync-the-feature. Sync-the-transport may be running
   // even if this is false.
+  // TODO(crbug.com/1444344): Remove this API, in favor of
+  // IsSyncFeatureEnabled().
   bool CanSyncFeatureStart() const;
 
   // Returns whether Sync-the-feature is active, which means

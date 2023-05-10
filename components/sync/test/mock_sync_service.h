@@ -47,6 +47,7 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(GoogleServiceAuthError, GetAuthError, (), (const override));
   MOCK_METHOD(base::Time, GetAuthErrorTime, (), (const override));
   MOCK_METHOD(bool, RequiresClientUpgrade, (), (const override));
+  MOCK_METHOD(bool, IsSyncFeatureDisabledViaDashboard, (), (const override));
   MOCK_METHOD(std::unique_ptr<SyncSetupInProgressHandle>,
               GetSetupInProgressHandle,
               (),

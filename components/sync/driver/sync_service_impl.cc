@@ -128,14 +128,15 @@ std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory(
       user_agent, std::move(pending_url_loader_factory));
 }
 
-// Returns whether SyncService should list DISABLE_REASON_USER_CHOICE, given
-// two alternative ways to determine it (except on Ash where both are relevant).
-bool ShouldExposeDisableReasonUserChoice(bool has_sync_consent,
-                                         const SyncPrefs& sync_prefs) {
+// Returns whether SyncService should consider the user opted into enabling
+// sync-the-feature, given two alternative ways to determine it (except on
+// Ash where both are relevant).
+bool IsSyncFeatureConsideredRequested(bool has_sync_consent,
+                                      const SyncPrefs& sync_prefs) {
   CHECK(!sync_prefs.IsLocalSyncEnabled());
 
   if (sync_prefs.IsSyncClientDisabledByPolicy()) {
-    return true;
+    return false;
   }
 
   const bool is_sync_requested = sync_prefs.IsSyncRequested();
@@ -143,22 +144,22 @@ bool ShouldExposeDisableReasonUserChoice(bool has_sync_consent,
   // In most cases, the two values are identical. In this case there is no
   // reason to evaluate the feature toggle or reconcile the two values.
   if (has_sync_consent == is_sync_requested) {
-    return !has_sync_consent;
+    return has_sync_consent;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Ash, `has_sync_consent` should always be true, and what actually matters
   // is `is_sync_requested`, which is set to false if the server reports
   // DISABLE_SYNC_ON_CLIENT (e.g. reset via dashboard).
-  return !is_sync_requested;
+  return is_sync_requested;
 #else
   // On all platforms except Chrome Ash, `has_sync_consent` is the new way to
   // determine whether DISABLE_REASON_USER_CHOICE should be reported. Use it
   // if the feature toggle is enabled and otherwise fall back to the legacy
   // `is_sync_requested`.
   return base::FeatureList::IsEnabled(kSyncIgnoreSyncRequestedPreference)
-             ? !has_sync_consent
-             : !is_sync_requested;
+             ? has_sync_consent
+             : is_sync_requested;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -292,7 +293,7 @@ void SyncServiceImpl::Initialize() {
   // will set it, we need to set it here.
   // Local Sync bypasses the IsSyncRequested() check, so no need to set it in
   // that case.
-  // TODO(crbug.com/920158): Get rid of AUTO_START and remove this workaround.
+  // TODO(crbug.com/1443438): Get rid of AUTO_START and remove this workaround.
   if (start_behavior_ == AUTO_START && !IsLocalSyncEnabled() &&
       !sync_prefs_.IsSyncRequestedSetExplicitly()) {
     SetSyncFeatureRequested();
@@ -680,7 +681,7 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
     if (!IsSignedIn()) {
       result.Put(DISABLE_REASON_NOT_SIGNED_IN);
     }
-    if (ShouldExposeDisableReasonUserChoice(HasSyncConsent(), sync_prefs_)) {
+    if (!IsSyncFeatureConsideredRequested(HasSyncConsent(), sync_prefs_)) {
       result.Put(DISABLE_REASON_USER_CHOICE);
     }
   }
@@ -1173,6 +1174,14 @@ base::Time SyncServiceImpl::GetAuthErrorTime() const {
 
 bool SyncServiceImpl::RequiresClientUpgrade() const {
   return last_actionable_error_.action == UPGRADE_CLIENT;
+}
+
+bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
+  // This can return true only on ChromeOS Ash, upon DISABLE_SYNC_ON_CLIENT.
+  // TODO(crbug.com/1443446): A simpler and more robust implementation for this
+  // state would be to use a dedicated pref.
+  return user_settings_->IsFirstSetupComplete() && !IsLocalSyncEnabled() &&
+         !IsSyncFeatureConsideredRequested(HasSyncConsent(), sync_prefs_);
 }
 
 bool SyncServiceImpl::CanConfigureDataTypes(

@@ -37,6 +37,7 @@ class TestSyncService : public SyncService {
   void SetAccountInfo(const CoreAccountInfo& account_info);
   void SetHasSyncConsent(bool has_consent);
   void SetSetupInProgress(bool in_progress);
+  void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
@@ -75,6 +76,7 @@ class TestSyncService : public SyncService {
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
+  bool IsSyncFeatureDisabledViaDashboard() const override;
 
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
@@ -130,6 +132,7 @@ class TestSyncService : public SyncService {
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;
   bool setup_in_progress_ = false;
+  bool sync_feature_disabled_via_dashboard_ = false;
 
   ModelTypeSet failed_data_types_;
 

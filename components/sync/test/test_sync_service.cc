@@ -61,6 +61,11 @@ void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
   has_sync_consent_ = has_sync_consent;
 }
 
+void TestSyncService::SetSyncFeatureDisabledViaDashboard(
+    bool disabled_via_dashboard) {
+  sync_feature_disabled_via_dashboard_ = disabled_via_dashboard;
+}
+
 void TestSyncService::SetPersistentAuthError() {
   transport_state_ = TransportState::PAUSED;
 }
@@ -138,6 +143,7 @@ void TestSyncService::FireSyncCycleCompleted() {
 
 void TestSyncService::SetSyncFeatureRequested() {
   disable_reasons_.Remove(SyncService::DISABLE_REASON_USER_CHOICE);
+  sync_feature_disabled_via_dashboard_ = false;
 }
 
 TestSyncUserSettings* TestSyncService::GetUserSettings() {
@@ -190,6 +196,10 @@ base::Time TestSyncService::GetAuthErrorTime() const {
 bool TestSyncService::RequiresClientUpgrade() const {
   return detailed_sync_status_.sync_protocol_error.action ==
          syncer::UPGRADE_CLIENT;
+}
+
+bool TestSyncService::IsSyncFeatureDisabledViaDashboard() const {
+  return sync_feature_disabled_via_dashboard_;
 }
 
 std::unique_ptr<SyncSetupInProgressHandle>

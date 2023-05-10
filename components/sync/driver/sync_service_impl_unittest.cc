@@ -1003,12 +1003,22 @@ TEST_F(SyncServiceImplTest, ResetSyncData) {
 // DISABLE_SYNC_ON_CLIENT it disables sync and signs out.
 TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   SignIn();
+
+  // To make this test more realistic, the StartBehavior is chosen depending on
+  // the platform, which influences the behavior for
+  // IsSyncFeatureDisabledViaDashboard().
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CreateService(SyncServiceImpl::AUTO_START);
+#else
   CreateService(SyncServiceImpl::MANUAL_START);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   InitializeForNthSync();
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_FALSE(service()->IsSyncFeatureDisabledViaDashboard());
 
   EXPECT_CALL(
       *trusted_vault_client(),
@@ -1031,6 +1041,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
+  EXPECT_TRUE(service()->IsSyncFeatureDisabledViaDashboard());
 #else
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
