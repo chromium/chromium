@@ -2719,9 +2719,9 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   if (browsing_context_group_swap.type() ==
       BrowsingContextGroupSwapType::kRelatedCoopSwap) {
     // We typically expect `source_instance` to be in the same BrowsingInstance
-    // as `current_instance`. However when an extension uses the
-    // chrome.tabs.update API to navigate to about:blank, `source_instance` is
-    // set to the extension's SiteInstance, which should be in a different
+    // as `current_instance`. However when extensions use the chrome.tabs.update
+    // API to navigate to about:blank, `source_instance` is set to the
+    // extension's SiteInstance, which should be in a different
     // BrowsingInstance. In that case, `source_instance` should not be in a
     // different BrowsingInstance in the same CoopRelatedGroup as
     // `current_instance`, but use its own extension's CoopRelatedGroup. Note
