@@ -146,8 +146,10 @@ class ExternalVideoEncoder::VEAClientImpl final
     // uint32_t bitrates
     const media::Bitrate bitrate = media::Bitrate::ConstantBitrate(
         base::saturated_cast<uint32_t>(start_bit_rate));
-    const media::VideoEncodeAccelerator::Config config(
+    media::VideoEncodeAccelerator::Config config(
         media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate);
+    config.content_type =
+        media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
     encoder_active_ = video_encode_accelerator_->Initialize(
         config, this, std::make_unique<media::NullMediaLog>());
     next_frame_id_ = first_frame_id;
