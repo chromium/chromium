@@ -71,6 +71,7 @@ build_webui_tests("build") {
     "os_languages_page_v2_tests.js",
     "os_paired_bluetooth_list_item_tests.js",
     "os_paired_bluetooth_list_tests.js",
+    "os_page_availability_test.ts",
     "os_people_page_test.js",
     "os_reset_page_test.js",
     "os_saved_devices_list_tests.js",

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
-import {osPageAvailability, OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createPageAvailabilityForTesting, OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -39,7 +39,7 @@ suite('<os-settings-menu>', () => {
   setup(() => {
     setupRouter();
     settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageAvailability = osPageAvailability;
+    settingsMenu.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(settingsMenu);
   });
 
@@ -115,7 +115,7 @@ suite('<os-settings-menu> reset', () => {
     setupRouter();
     Router.getInstance().navigateTo(routes.OS_RESET);
     settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageAvailability = osPageAvailability;
+    settingsMenu.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(settingsMenu);
     flush();
   });
@@ -158,10 +158,12 @@ suite('<os-settings-menu> reset', () => {
 
 suite('<os-settings-menu> page availability', () => {
   let settingsMenu: OsSettingsMenuElement;
+  const pageAvailability = createPageAvailabilityForTesting();
+  const pageNames = Object.keys(pageAvailability);
 
   setup(() => {
     settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageAvailability = osPageAvailability;
+    settingsMenu.pageAvailability = pageAvailability;
     document.body.appendChild(settingsMenu);
     flush();
   });
@@ -170,7 +172,6 @@ suite('<os-settings-menu> page availability', () => {
     settingsMenu.remove();
   });
 
-  const pageNames = Object.keys(osPageAvailability);
   for (const pageName of pageNames) {
     [true, false].forEach((available) => {
       suite(
@@ -178,7 +179,7 @@ suite('<os-settings-menu> page availability', () => {
           () => {
             setup(() => {
               settingsMenu.pageAvailability = {
-                ...osPageAvailability,
+                ...settingsMenu.pageAvailability,
                 [pageName]: available,
               };
               flush();

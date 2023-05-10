@@ -548,6 +548,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
+ ['OsPageAvailability', 'os_page_availability_test.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],

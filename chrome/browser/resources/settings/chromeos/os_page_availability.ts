@@ -40,37 +40,43 @@ export interface OsPageAvailability {
   search: boolean;
 }
 
-const isGuestMode = loadTimeData.getBoolean('isGuest');
-const isAccountManagerEnabled =
-    loadTimeData.valueExists('isAccountManagerEnabled') &&
-    loadTimeData.getBoolean('isAccountManagerEnabled');
-const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&
-    loadTimeData.getBoolean('isKerberosEnabled');
-const isPowerwashAllowed = loadTimeData.getBoolean('allowPowerwash');
+/**
+ * Used to create the pageAvailability object.
+ *
+ * Can be used to create the pageAvailability object with expected values after
+ * overriding load time data within tests.
+ */
+export function createPageAvailability(): OsPageAvailability {
+  const isGuestMode = loadTimeData.getBoolean('isGuest');
+  const isAccountManagerEnabled =
+      loadTimeData.valueExists('isAccountManagerEnabled') &&
+      loadTimeData.getBoolean('isAccountManagerEnabled');
+  const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&
+      loadTimeData.getBoolean('isKerberosEnabled');
+  const isPowerwashAllowed = loadTimeData.getBoolean('allowPowerwash');
 
-export let osPageAvailability: OsPageAvailability;
-if (isGuestMode) {
-  osPageAvailability = {
-    a11y: true,
-    apps: true,
-    bluetooth: true,
-    crostini: true,
-    dateTime: true,
-    device: true,
-    files: false,
-    internet: true,
-    kerberos: isKerberosEnabled,
-    languages: true,
-    multidevice: false,
-    people: false,
-    personalization: false,
-    printing: true,
-    privacy: true,
-    reset: isPowerwashAllowed,
-    search: true,
-  };
-} else {
-  osPageAvailability = {
+  if (isGuestMode) {
+    return {
+      a11y: true,
+      apps: true,
+      bluetooth: true,
+      crostini: true,
+      dateTime: true,
+      device: true,
+      files: false,
+      internet: true,
+      kerberos: isKerberosEnabled,
+      languages: true,
+      multidevice: false,
+      people: false,
+      personalization: false,
+      printing: true,
+      privacy: true,
+      reset: isPowerwashAllowed,
+      search: true,
+    };
+  }
+  return {
     a11y: true,
     apps: true,
     bluetooth: true,
