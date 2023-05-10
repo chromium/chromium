@@ -1,7 +1,7 @@
 {
   "android-arm32-pgo": {
     "gn_args": {
-      "android_override_version_code": "1234567890",
+      "android_override_version_code": "1234567980",
       "chrome_pgo_phase": 1,
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
@@ -18,7 +18,7 @@
   },
   "android-arm64-pgo": {
     "gn_args": {
-      "android_override_version_code": "1234567890",
+      "android_override_version_code": "1234567980",
       "chrome_pgo_phase": 1,
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,

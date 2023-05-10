@@ -173,6 +173,11 @@ template("chrome_common_apk_or_module_tmpl") {
     _version_code = chrome_version_code
   }
 
+  # Need to apply override explicitly to have it apply to library version.
+  if (android_override_version_code != "") {
+    _version_code = android_override_version_code
+  }
+
   if (defined(invoker.manifest_package)) {
     _manifest_package = invoker.manifest_package
   } else if (_is_test) {

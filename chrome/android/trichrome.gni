@@ -40,6 +40,11 @@ template("trichrome_library_apk_tmpl") {
       !defined(invoker.include_32_bit_webview) || invoker.include_32_bit_webview
   _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
 
+  # Need to apply override explicitly to have it apply to library version.
+  if (android_override_version_code != "") {
+    _version_code = android_override_version_code
+  }
+
   # Include the ABI that is shared between webview & chrome.
   _include_primary_abi = !android_64bit_target_cpu || _is_64_bit_browser
 
