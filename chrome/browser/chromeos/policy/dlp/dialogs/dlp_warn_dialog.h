@@ -27,7 +27,6 @@ class DlpWarnDialog : public PolicyDialogBase {
 
   // A structure to keep track of optional and configurable parameters of a
   // DlpWarnDialog.
-  // TODO(b/278046656): Clean this up.
   struct DlpWarnDialogOptions {
     DlpWarnDialogOptions() = delete;
     explicit DlpWarnDialogOptions(Restriction restriction);
@@ -36,11 +35,6 @@ class DlpWarnDialog : public PolicyDialogBase {
     DlpWarnDialogOptions(Restriction restriction,
                          DlpConfidentialContents confidential_contents,
                          const std::u16string& application_title);
-    DlpWarnDialogOptions(
-        Restriction restriction,
-        const std::vector<DlpConfidentialFile>& confidential_files,
-        absl::optional<DlpFileDestination> files_destination,
-        DlpFilesController::FileAction files_action);
     DlpWarnDialogOptions(const DlpWarnDialogOptions& other);
     DlpWarnDialogOptions& operator=(const DlpWarnDialogOptions& other);
     ~DlpWarnDialogOptions();
@@ -52,11 +46,7 @@ class DlpWarnDialog : public PolicyDialogBase {
                            const DlpWarnDialogOptions& b) {
       return a.restriction == b.restriction &&
              a.application_title == b.application_title &&
-             a.files_destination == b.files_destination &&
-             a.files_action == b.files_action &&
-             EqualWithTitles(a.confidential_contents,
-                             b.confidential_contents) &&
-             a.confidential_files == b.confidential_files;
+             EqualWithTitles(a.confidential_contents, b.confidential_contents);
     }
     friend bool operator!=(const DlpWarnDialogOptions& a,
                            const DlpWarnDialogOptions& b) {
@@ -69,11 +59,6 @@ class DlpWarnDialog : public PolicyDialogBase {
     // Non-empty only if the |restriction| is one of kScreenCapture,
     // kVideoCapture, or kScreenshare.
     DlpConfidentialContents confidential_contents;
-
-    // Have value only if the |restriction| is kFiles:
-    std::vector<DlpConfidentialFile> confidential_files;
-    absl::optional<DlpFileDestination> files_destination;
-    absl::optional<DlpFilesController::FileAction> files_action;
   };
 
   DlpWarnDialog() = delete;

@@ -2114,7 +2114,16 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
   files_controller_->SetWarnNotifierForTesting(std::move(wrapper));
 
-  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpFilesWarningDialog)
+      .WillOnce([&choice_result](
+                    OnDlpRestrictionCheckedCallback callback,
+                    const std::vector<DlpConfidentialFile>& confidential_files,
+                    const DlpFileDestination& destination,
+                    DlpFilesController::FileAction action,
+                    gfx::NativeWindow modal_parent) {
+        std::move(callback).Run(choice_result);
+        return nullptr;
+      });
 
   MockCheckIfDlpAllowedCallback cb;
   EXPECT_CALL(cb, Run(/*is_allowed=*/choice_result)).Times(1);
@@ -2356,21 +2365,17 @@ TEST_P(DlpFilesWarningDialogContentTest,
   AddFilesToDlpClient(std::move(files), files_urls);
 
   std::unique_ptr<MockDlpWarnNotifier> wrapper =
-      std::make_unique<MockDlpWarnNotifier>(false);
+      std::make_unique<MockDlpWarnNotifier>();
   MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
   files_controller_->SetWarnNotifierForTesting(std::move(wrapper));
-  std::vector<DlpConfidentialFile> expected_files;
 
+  std::vector<DlpConfidentialFile> expected_files;
   if (transfer_info.files_action !=
       DlpFilesControllerAsh::FileAction::kDownload) {
     for (const auto& file_path : transfer_info.file_paths) {
       expected_files.emplace_back(base::FilePath(file_path));
     }
   }
-  DlpWarnDialog::DlpWarnDialogOptions expected_dialog_options(
-      DlpWarnDialog::Restriction::kFiles, expected_files,
-      DlpFileDestination(DlpRulesManager::Component::kUsb),
-      transfer_info.files_action);
 
   EXPECT_CALL(
       *rules_manager_,
@@ -2381,8 +2386,18 @@ TEST_P(DlpFilesWarningDialogContentTest,
       .Times(::testing::AnyNumber());
 
   EXPECT_CALL(*mock_dlp_warn_notifier,
-              ShowDlpWarningDialog(_, expected_dialog_options, _))
-      .Times(1);
+              ShowDlpFilesWarningDialog(
+                  base::test::IsNotNullCallback(), expected_files,
+                  DlpFileDestination(DlpRulesManager::Component::kUsb),
+                  transfer_info.files_action, _))
+      .WillOnce([](OnDlpRestrictionCheckedCallback callback,
+                   const std::vector<DlpConfidentialFile>& confidential_files,
+                   const DlpFileDestination& destination,
+                   DlpFilesController::FileAction action,
+                   gfx::NativeWindow modal_parent) {
+        std::move(callback).Run(false);
+        return nullptr;
+      });
 
   MockIsFilesTransferRestrictedCallback cb;
   EXPECT_CALL(cb, Run(files_levels)).Times(1);

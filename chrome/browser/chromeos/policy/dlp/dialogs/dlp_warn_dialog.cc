@@ -39,18 +39,6 @@ DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
 }
 
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
-    Restriction restriction,
-    const std::vector<DlpConfidentialFile>& confidential_files,
-    absl::optional<DlpFileDestination> files_destination,
-    DlpFilesController::FileAction files_action)
-    : restriction(restriction),
-      confidential_files(confidential_files),
-      files_destination(files_destination),
-      files_action(files_action) {
-  DCHECK(restriction == Restriction::kFiles);
-}
-
-DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     const DlpWarnDialogOptions& other) = default;
 
 DlpWarnDialog::DlpWarnDialogOptions&

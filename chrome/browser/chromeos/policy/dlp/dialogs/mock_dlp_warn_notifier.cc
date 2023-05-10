@@ -21,6 +21,18 @@ MockDlpWarnNotifier::MockDlpWarnNotifier() : should_proceed_(true) {
         return this->DlpWarnNotifier::ShowDlpWarningDialog(
             std::move(callback), options, modal_parent);
       });
+
+  ON_CALL(*this, ShowDlpFilesWarningDialog)
+      .WillByDefault(
+          [this](OnDlpRestrictionCheckedCallback callback,
+                 const std::vector<DlpConfidentialFile>& confidential_files,
+                 const DlpFileDestination& destination,
+                 DlpFilesController::FileAction action,
+                 gfx::NativeWindow modal_parent) {
+            return this->DlpWarnNotifier::ShowDlpFilesWarningDialog(
+                std::move(callback), confidential_files, destination, action,
+                modal_parent);
+          });
 }
 
 MockDlpWarnNotifier::MockDlpWarnNotifier(bool should_proceed)

@@ -33,43 +33,44 @@ class DlpWarnNotifier : public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // Shows a warning dialog that informs the user that printing is not
-  // recommended. Calls |callback| and passes user's choice of whether to
+  // recommended. Calls `callback` and passes user's choice of whether to
   // proceed or not.
   void ShowDlpPrintWarningDialog(OnDlpRestrictionCheckedCallback callback);
 
   // Shows a warning dialog that informs the user that screen capture is not
-  // recommended due to |confidential_contents| visible. Calls |callback| and
+  // recommended due to `confidential_contents` visible. Calls `callback` and
   // passes user's choice of whether to proceed or not.
   void ShowDlpScreenCaptureWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
       const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that video capture is not
-  // recommended due to |confidential_contents| visible. Calls |callback| and
+  // recommended due to `confidential_contents` visible. Calls `callback` and
   // passes user's choice of whether to proceed or not.
   void ShowDlpVideoCaptureWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
       const DlpConfidentialContents& confidential_contents);
 
-  // Shows a warning dialog that informs the user that |files_action| to
-  // |files_destination| on selected |confidential_files| is not recommended.
-  // Calls |callback| and passes user's choice of whether to proceed or not.
-  // Returns a pointer to the widget that owns the created dialog.
-  base::WeakPtr<views::Widget> ShowDlpFilesWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
-      const std::vector<DlpConfidentialFile>& confidential_files,
-      const DlpFileDestination& files_destination,
-      DlpFilesController::FileAction files_action,
-      gfx::NativeWindow modal_parent);
-
   // Shows a warning dialog that informs the user that screen sharing is not
-  // recommended due to |confidential_contents| visible. Calls |callback| and
+  // recommended due to `confidential_contents` visible. Calls `callback` and
   // passes user's choice of whether to proceed or not.
   // Returns a pointer to the widget that owns the created dialog.
   base::WeakPtr<views::Widget> ShowDlpScreenShareWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
       const DlpConfidentialContents& confidential_contents,
       const std::u16string& application_title);
+
+  // Shows a warning dialog that informs the user that `action` to
+  // `destination` on selected `confidential_files` is not recommended.
+  // Calls `callback` and passes user's choice of whether to proceed or not.
+  // Returns a pointer to the widget that owns the created dialog.
+  // Virtual to allow overrides in tests.
+  virtual base::WeakPtr<views::Widget> ShowDlpFilesWarningDialog(
+      OnDlpRestrictionCheckedCallback callback,
+      const std::vector<DlpConfidentialFile>& confidential_files,
+      const DlpFileDestination& destination,
+      DlpFilesController::FileAction action,
+      gfx::NativeWindow modal_parent);
 
   // Returns the number of active widgets, which equals the number of warning
   // dialogs shown conucrrently. Useful for testing to verify that the dialogs
@@ -85,7 +86,10 @@ class DlpWarnNotifier : public views::WidgetObserver {
       DlpWarnDialog::DlpWarnDialogOptions options,
       gfx::NativeWindow modal_parent = nullptr);
 
-  // Removes the |widget| from widgets_ and stops observing it.
+  // Helper method to show the `widget`.
+  virtual void ShowWidget(views::Widget* widget);
+
+  // Removes the `widget` from widgets_ and stops observing it.
   void RemoveWidget(views::Widget* widget);
 
   // List of active widgets. Used in tests to verify that the dialog has or
