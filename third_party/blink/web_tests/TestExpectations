@@ -5561,7 +5561,6 @@ crbug.com/1295980 virtual/fenced-frame-mparch/external/wpt/fenced-frame/user-act
 crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Pass Timeout ]
 
 # WebAudio flaky timeout (crbug.com/1307741)
-crbug.com/1307741 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 
 # WebAudio internals flaky GC (crbug.com/1312164): See the bug before removing the "Skip" label.
