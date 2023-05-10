@@ -16,6 +16,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -57,7 +58,11 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
-      [&](views::View* view) { return IsViewHighlighted(); });
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<DeskButtonBase>(view);
+        CHECK(v);
+        return v->IsViewHighlighted();
+      }));
 }
 
 DeskButtonBase::~DeskButtonBase() = default;

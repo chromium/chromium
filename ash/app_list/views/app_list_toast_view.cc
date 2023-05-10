@@ -19,6 +19,7 @@
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -364,14 +365,16 @@ AppListToastView::ToastPillButton::ToastPillButton(
     Type type,
     const gfx::VectorIcon* icon)
     : PillButton(callback, text, type, icon), view_delegate_(view_delegate) {
-  views::FocusRing::Get(this)->SetHasFocusPredicate([&](View* view) -> bool {
-    // With a `view_delegate_` present, focus ring should only show when
-    // button is focused and keyboard traversal is engaged.
-    if (view_delegate_ && !view_delegate_->KeyboardTraversalEngaged())
-      return false;
-
-    return view->HasFocus();
-  });
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
+      base::BindRepeating([](const View* view) {
+        const auto* v = views::AsViewClass<ToastPillButton>(view);
+        CHECK(v);
+        // With a `view_delegate_` present, focus ring should only show when
+        // button is focused and keyboard traversal is engaged.
+        return (!v->view_delegate_ ||
+                v->view_delegate_->KeyboardTraversalEngaged()) &&
+               v->HasFocus();
+      }));
 }
 
 void AppListToastView::ToastPillButton::OnFocus() {
@@ -383,6 +386,9 @@ void AppListToastView::ToastPillButton::OnBlur() {
   PillButton::OnBlur();
   views::FocusRing::Get(this)->SchedulePaint();
 }
+
+BEGIN_METADATA(AppListToastView, ToastPillButton, PillButton)
+END_METADATA
 
 void AppListToastView::UpdateIconImage() {
   if (!icon_)

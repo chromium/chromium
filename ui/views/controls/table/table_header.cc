@@ -28,6 +28,7 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -91,9 +92,12 @@ TableHeader::TableHeader(TableView* table) : table_(table) {
   HighlightPathGenerator::Install(
       this, std::make_unique<TableHeader::HighlightPathGenerator>());
   FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate([&](View* view) {
-    return static_cast<TableHeader*>(view)->GetHeaderRowHasFocus();
-  });
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
+      base::BindRepeating([](const View* view) {
+        const auto* v = views::AsViewClass<TableHeader>(view);
+        CHECK(v);
+        return v->GetHeaderRowHasFocus();
+      }));
 }
 
 TableHeader::~TableHeader() = default;

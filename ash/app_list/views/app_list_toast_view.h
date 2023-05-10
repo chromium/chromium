@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/pill_button.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -127,6 +128,8 @@ class ASH_EXPORT AppListToastView : public views::View {
  private:
   class ToastPillButton : public PillButton {
    public:
+    METADATA_HEADER(ToastPillButton);
+
     ToastPillButton(AppListViewDelegate* view_delegate,
                     PressedCallback callback,
                     const std::u16string& text,

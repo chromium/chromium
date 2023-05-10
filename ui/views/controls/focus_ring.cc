@@ -351,7 +351,7 @@ void FocusRing::RefreshLayer() {
   // that RefreshLayer gets called somehow whenever |has_focused_predicate_|
   // returns a new value.
   const bool should_paint =
-      has_focus_predicate_.has_value() || (parent() && parent()->HasFocus());
+      has_focus_predicate_ || (parent() && parent()->HasFocus());
   SetVisible(should_paint);
   if (should_paint) {
     // A layer is necessary to paint beyond the parent's bounds.
@@ -374,8 +374,8 @@ bool FocusRing::ShouldSetOutsetFocusRing() const {
 bool FocusRing::ShouldPaint() {
   // TODO(pbos): Reevaluate if this can turn into a DCHECK, e.g. we should
   // never paint if there's no parent focus.
-  return (!has_focus_predicate_ || (*has_focus_predicate_)(parent())) &&
-         (has_focus_predicate_ || parent()->HasFocus());
+  return has_focus_predicate_ ? has_focus_predicate_.Run(parent())
+                              : parent()->HasFocus();
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRect& rect) const {

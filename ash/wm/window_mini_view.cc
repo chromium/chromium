@@ -30,6 +30,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_utils.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -214,7 +215,11 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
-      [&](views::View* view) { return is_focused_; });
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<WindowMiniView>(view);
+        CHECK(v);
+        return v->is_focused_;
+      }));
 }
 
 void WindowMiniView::UpdateIconView() {

@@ -85,7 +85,8 @@ class OmniboxEditModel {
   }
 
   void set_popup_view(OmniboxPopupView* popup_view);
-  OmniboxPopupView* get_popup_view();
+  OmniboxPopupView* get_popup_view() { return popup_view_; }
+  const OmniboxPopupView* get_popup_view() const { return popup_view_; }
 
   OmniboxEditModelDelegate* delegate() const { return edit_model_delegate_; }
 

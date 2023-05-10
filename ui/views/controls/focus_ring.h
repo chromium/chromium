@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "ui/base/class_property.h"
 #include "ui/color/color_id.h"
@@ -35,7 +36,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
 
   static constexpr float kDefaultCornerRadiusDp = 2.0f;
 
-  using ViewPredicate = std::function<bool(View* view)>;
+  using ViewPredicate = base::RepeatingCallback<bool(const View* view)>;
 
   // The default thickness and inset amount of focus ring halos. If you need
   // the thickness of a specific focus ring, call halo_thickness() instead.
@@ -145,7 +146,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   absl::optional<ui::ColorId> color_id_;
 
   // The predicate used to determine whether the parent has focus.
-  absl::optional<ViewPredicate> has_focus_predicate_;
+  ViewPredicate has_focus_predicate_;
 
   // The thickness of the focus ring halo, in DIP.
   float halo_thickness_ = kDefaultHaloThickness;

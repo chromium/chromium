@@ -289,10 +289,6 @@ void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
                                            OmniboxPopupSelection::NORMAL);
 }
 
-OmniboxPopupView* OmniboxEditModel::get_popup_view() {
-  return popup_view_;
-}
-
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModel::GetPageClassification() const {
   return delegate()->GetLocationBarModel()->GetPageClassification(

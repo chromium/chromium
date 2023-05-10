@@ -12,6 +12,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -53,7 +54,11 @@ CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
-      [&](views::View* view) { return IsViewHighlighted(); });
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<CrOSNextDeskButtonBase>(view);
+        CHECK(v);
+        return v->IsViewHighlighted();
+      }));
 }
 
 CrOSNextDeskButtonBase::~CrOSNextDeskButtonBase() = default;

@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/button.h"
 
@@ -71,6 +72,8 @@ class WmHighlightItemBorder;
 class ASH_EXPORT DeskPreviewView : public views::Button,
                                    public OverviewHighlightableView {
  public:
+  METADATA_HEADER(DeskPreviewView);
+
   DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
 
   DeskPreviewView(const DeskPreviewView&) = delete;
@@ -103,7 +106,6 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   void RecreateDeskContentsMirrorLayers();
 
   // views::View:
-  const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

@@ -36,6 +36,7 @@
 #include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
@@ -463,10 +464,6 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   Layout();
 }
 
-const char* DeskPreviewView::GetClassName() const {
-  return "DeskPreviewView";
-}
-
 void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Avoid failing accessibility checks if we don't have a name.
   views::Button::GetAccessibleNodeData(node_data);
@@ -618,5 +615,8 @@ void DeskPreviewView::OnViewHighlighted() {
 void DeskPreviewView::OnViewUnhighlighted() {
   mini_view_->UpdateFocusColor();
 }
+
+BEGIN_METADATA(DeskPreviewView, views::Button)
+END_METADATA
 
 }  // namespace ash

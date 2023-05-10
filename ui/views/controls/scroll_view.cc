@@ -34,6 +34,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -312,10 +313,12 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
   }
 
   FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {
-    auto* v = static_cast<ScrollView*>(view);
-    return v->draw_focus_indicator_;
-  });
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
+      base::BindRepeating([](const View* view) {
+        const auto* v = views::AsViewClass<ScrollView>(view);
+        CHECK(v);
+        return v->draw_focus_indicator_;
+      }));
 }
 
 ScrollView::~ScrollView() = default;

@@ -207,11 +207,13 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   remove_suggestion_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
   auto* const focus_ring = views::FocusRing::Get(remove_suggestion_button_);
-  focus_ring->SetHasFocusPredicate([&](View* view) {
-    return view->GetVisible() && GetMatchSelected() &&
-           (popup_view_->GetSelection().state ==
-            OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
-  });
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const OmniboxResultView* results, const View* view) {
+        return view->GetVisible() && results->GetMatchSelected() &&
+               (results->popup_view_->GetSelection().state ==
+                OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
+      },
+      base::Unretained(this)));
   focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
   button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(

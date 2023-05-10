@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/cros_next_desk_button_base.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 
 namespace gfx {

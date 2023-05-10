@@ -44,6 +44,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 class OmniboxSuggestionRowButton : public views::MdTextButton {
  public:
@@ -83,10 +84,12 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     ink_drop->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
 
     auto* const focus_ring = views::FocusRing::Get(this);
-    focus_ring->SetHasFocusPredicate([=](View* view) {
-      return view->GetVisible() &&
-             popup_contents_view_->GetSelection() == selection_;
-    });
+    focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
+      const auto* v = views::AsViewClass<OmniboxSuggestionRowButton>(view);
+      CHECK(v);
+      return v->GetVisible() &&
+             v->popup_contents_view_->GetSelection() == v->selection_;
+    }));
     focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
   }
 

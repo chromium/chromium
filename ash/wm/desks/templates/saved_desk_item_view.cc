@@ -55,6 +55,7 @@
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -287,9 +288,12 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
 
   views::FocusRing* focus_ring =
       StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
-  focus_ring->SetHasFocusPredicate([](views::View* view) {
-    return static_cast<SavedDeskItemView*>(view)->IsViewHighlighted();
-  });
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<SavedDeskItemView>(view);
+        CHECK(v);
+        return v->IsViewHighlighted();
+      }));
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));

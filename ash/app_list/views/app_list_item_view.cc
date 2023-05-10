@@ -73,6 +73,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -508,23 +509,26 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   focus_ring->SetColorId(is_jelly_enabled ? static_cast<ui::ColorId>(
                                                 cros_tokens::kCrosSysFocusRing)
                                           : ui::kColorAshFocusRing);
-  focus_ring->SetHasFocusPredicate([&](View* view) -> bool {
+  focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
+    const auto* v = views::AsViewClass<AppListItemView>(view);
+    CHECK(v);
+
     // With a `view_delegate_` present, focus ring should only show when
     // button is focused and keyboard traversal is engaged.
-    if (view_delegate_ && !view_delegate_->KeyboardTraversalEngaged()) {
+    if (v->view_delegate_ && !v->view_delegate_->KeyboardTraversalEngaged()) {
       return false;
     }
 
-    if (drag_state_ != DragState::kNone) {
+    if (v->drag_state_ != DragState::kNone) {
       return false;
     }
 
-    if (waiting_for_context_menu_options_ || IsShowingAppMenu()) {
+    if (v->waiting_for_context_menu_options_ || v->IsShowingAppMenu()) {
       return false;
     }
 
-    return view->HasFocus();
-  });
+    return v->HasFocus();
+  }));
 
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(1), app_list_config_->grid_focus_corner_radius());

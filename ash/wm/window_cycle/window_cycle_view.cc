@@ -185,8 +185,11 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     // Set a pill shaped (fully rounded rect) highlight path to focus ring.
     focus_ring->SetPathGenerator(
         std::make_unique<views::PillHighlightPathGenerator>());
-    focus_ring->SetHasFocusPredicate(
-        [&](views::View* view) { return IsTabSliderFocused(); });
+    focus_ring->SetHasFocusPredicate(base::BindRepeating(
+        [](const WindowCycleView* cycle_view, const views::View* view) {
+          return cycle_view->IsTabSliderFocused();
+        },
+        base::Unretained(this)));
 
     const bool per_desk =
         Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();

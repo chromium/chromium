@@ -190,9 +190,11 @@ bool SystemToastStyle::ToggleA11yFocus() {
   }
 
   auto* focus_ring = views::FocusRing::Get(button_);
-  focus_ring->SetHasFocusPredicate([&](views::View* view) -> bool {
-    return is_dismiss_button_highlighted_;
-  });
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const SystemToastStyle* style, const views::View* view) {
+        return style->is_dismiss_button_highlighted_;
+      },
+      base::Unretained(this)));
 
   is_dismiss_button_highlighted_ = !is_dismiss_button_highlighted_;
   scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(

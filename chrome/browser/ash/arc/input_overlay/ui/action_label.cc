@@ -563,9 +563,10 @@ void ActionLabel::SetToEditMode() {
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetHaloInset(kHaloInset);
   focus_ring->SetHaloThickness(kHaloThickness);
-  focus_ring->SetHasFocusPredicate([](views::View* view) {
-    return view->IsMouseHovered() || view->HasFocus();
-  });
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        return view->IsMouseHovered() || view->HasFocus();
+      }));
 
   SetEnabledTextColors(kTextColorDefault);
 

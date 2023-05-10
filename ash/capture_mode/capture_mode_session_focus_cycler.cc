@@ -280,8 +280,11 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
                                     : StyleUtil::SetUpFocusRingForView(view);
     // Use a custom focus predicate as the default one checks if |view| actually
     // has focus which won't be happening since our widgets are not activatable.
-    focus_ring_->SetHasFocusPredicate(
-        [&](views::View* view) { return view->GetVisible() && has_focus_; });
+    focus_ring_->SetHasFocusPredicate(base::BindRepeating(
+        [](const HighlightableView* highlightable, const views::View* view) {
+          return view->GetVisible() && highlightable->has_focus_;
+        },
+        base::Unretained(this)));
   }
 
   if (needs_highlight_path_) {
