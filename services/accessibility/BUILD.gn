@@ -73,6 +73,17 @@ static_library("test_support") {
   ]
 
   deps = [ ":lib" ]
+
+  if (supports_os_accessibility_service) {
+    sources += [
+      "features/mojo/test/js_test_interface.cc",
+      "features/mojo/test/js_test_interface.h",
+    ]
+    deps += [
+      "//base/test:test_support",
+      "//services/accessibility/features/mojo/test:mojom_js_api",
+    ]
+  }
 }
 
 source_set("tests") {
@@ -93,10 +104,7 @@ source_set("tests") {
       "features/v8_manager_unittest.cc",
       "os_accessibility_service_unittest.cc",
     ]
-    deps += [
-      "//base",
-      "//services/accessibility/features/mojo/test:mojom_js_api",
-    ]
+    deps += [ "//base" ]
     data_deps =
         [ "//services/accessibility/features/mojo/test:test_support_data" ]
   } else {
