@@ -35,7 +35,7 @@ mojom::blink::InterestGroupAdPtr MakeAdWithUrl(const KURL& url) {
       url, /*size_group=*/String(),
       /*buyer_reporting_id=*/String(),
       /*buyer_and_seler_reporting_id=*/String(),
-      /*metadata=*/String());
+      /*metadata=*/String(), /*ad_render_id=*/String());
 }
 
 }  // namespace
@@ -131,6 +131,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         KURL(String::FromUTF8("https://origin.test/foo?bar#baz"));
     mojo_ad1->metadata =
         String::FromUTF8("\"This field isn't actually validated\"");
+    mojo_ad1->ad_render_id =
+        String::FromUTF8("\"This field isn't actually validated\"");
     blink_interest_group->ads->push_back(std::move(mojo_ad1));
     auto mojo_ad2 = mojom::blink::InterestGroupAd::New();
     mojo_ad2->render_url =
@@ -143,6 +145,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     mojo_ad_component1->render_url =
         KURL(String::FromUTF8("https://origin.test/components?bar#baz"));
     mojo_ad_component1->metadata =
+        String::FromUTF8("\"This field isn't actually validated\"");
+    mojo_ad_component1->ad_render_id =
         String::FromUTF8("\"This field isn't actually validated\"");
     blink_interest_group->ad_components->push_back(
         std::move(mojo_ad_component1));
@@ -942,7 +946,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
         /*size_group=*/test_case.ad_size_group,
         /*buyer_reporting_id=*/String(),
         /*buyer_and_seler_reporting_id=*/String(),
-        /*metadata=*/String()));
+        /*metadata=*/String(), /*ad_render_id=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(
@@ -982,7 +986,7 @@ TEST_F(ValidateBlinkInterestGroupTest,
             /*size_group=*/test_case.ad_component_size_group,
             /*buyer_reporting_id=*/String(),
             /*buyer_and_seler_reporting_id=*/String(),
-            /*metadata=*/String()));
+            /*metadata=*/String(), /*ad_render_id=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(

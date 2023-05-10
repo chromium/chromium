@@ -145,6 +145,9 @@ base::Value::List MakeAdsValue(
     }
     if (ad.metadata)
       entry.Set("metadata", JsonToValue(*ad.metadata));
+    if (ad.ad_render_id) {
+      entry.Set("adRenderId", std::move(ad.ad_render_id.value()));
+    }
     list.Append(std::move(entry));
   }
   return list;
@@ -2803,11 +2806,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                   {{{GURL("https://example.com/render"),
                      /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
                      /*buyer_reporting_id=*/"brid1",
-                     /*buyer_and_seller_reporting_id=*/"sh1"},
+                     /*buyer_and_seller_reporting_id=*/"sh1",
+                     /*ad_render_id=*/absl::nullopt},
                     {GURL("https://example.com/render2"),
                      /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
                      /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/"sh2"}}})
+                     /*buyer_and_seller_reporting_id=*/"sh2",
+                     /*ad_render_id=*/absl::nullopt}}})
               .Build()));
 
   std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
@@ -2824,6 +2829,47 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             GURL("https://example.com/render2"));
   EXPECT_FALSE(group.ads.value()[1].buyer_reporting_id.has_value());
   EXPECT_EQ(group.ads.value()[1].buyer_and_seller_reporting_id, "sh2");
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupValidAdRenderId) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  auto origin = url::Origin::Create(url);
+  std::string origin_string = origin.Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/origin,
+                    /*name=*/"cars")
+                    .SetAds({{{GURL("https://example.com/render"),
+                               /*metadata=*/absl::nullopt,
+                               /*size_group=*/absl::nullopt,
+                               /*buyer_reporting_id=*/absl::nullopt,
+                               /*buyer_and_seller_reporting_id=*/absl::nullopt,
+                               /*ad_render_id=*/"123abc"}}})
+                    .SetAdComponents(
+                        {{{GURL("https://example.com/component"),
+                           /*metadata=*/absl::nullopt,
+                           /*size_group=*/absl::nullopt,
+                           /*buyer_reporting_id=*/absl::nullopt,
+                           /*buyer_and_seller_reporting_id=*/absl::nullopt,
+                           /*ad_render_id=*/"456def"}}})
+                    .Build()));
+
+  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups.size(), 1u);
+  const blink::InterestGroup& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url,
+            GURL("https://example.com/render"));
+  EXPECT_EQ(group.ads.value()[0].ad_render_id, "123abc");
+  ASSERT_EQ(group.ad_components->size(), 1u);
+  EXPECT_EQ(group.ad_components.value()[0].render_url,
+            GURL("https://example.com/component"));
+  EXPECT_EQ(group.ad_components.value()[0].ad_render_id, "456def");
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

@@ -295,6 +295,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
       ad.metadata = std::move(metadata);
     }
+    const std::string* maybe_ad_render_id = ads_dict->FindString("adRenderId");
+    if (maybe_ad_render_id) {
+      ad.ad_render_id = *maybe_ad_render_id;
+    }
     ads.push_back(std::move(ad));
   }
   return ads;

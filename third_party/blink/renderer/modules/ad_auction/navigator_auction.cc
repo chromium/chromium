@@ -720,6 +720,9 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
         return false;
       }
     }
+    if (ad->hasAdRenderId()) {
+      mojo_ad->ad_render_id = ad->adRenderId();
+    }
     output.ads->push_back(std::move(mojo_ad));
   }
   return true;
@@ -752,6 +755,9 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
             ErrorInvalidInterestGroupJson(input, "ad metadata"));
         return false;
       }
+    }
+    if (ad->hasAdRenderId()) {
+      mojo_ad->ad_render_id = ad->adRenderId();
     }
     output.ad_components->push_back(std::move(mojo_ad));
   }

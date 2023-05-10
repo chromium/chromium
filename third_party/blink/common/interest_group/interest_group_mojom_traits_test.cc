@@ -192,10 +192,12 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAds) {
   interest_group.ads.emplace();
   interest_group.ads->emplace_back(GURL(kUrl1),
                                    /*metadata=*/absl::nullopt,
-                                   /*size_group=*/absl::nullopt);
+                                   /*size_group=*/absl::nullopt,
+                                   /*ad_render_id=*/absl::nullopt);
   interest_group.ads->emplace_back(GURL(kUrl2),
                                    /*metadata=*/"[]",
-                                   /*size_group=*/absl::nullopt);
+                                   /*size_group=*/absl::nullopt,
+                                   /*ad_render_id=*/absl::nullopt);
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
@@ -244,14 +246,30 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithSizeGroups) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithAdRenderId) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(GURL(kUrl1),
+                                   /*metadata=*/absl::nullopt,
+                                   /*size_group=*/absl::nullopt,
+                                   /*ad_render_id=*/"foo");
+  interest_group.ads->emplace_back(GURL(kUrl2),
+                                   /*metadata=*/"[]",
+                                   /*size_group=*/absl::nullopt,
+                                   /*ad_render_id=*/"bar");
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdComponents) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_components.emplace();
   interest_group.ad_components->emplace_back(GURL(kUrl1),
                                              /*metadata=*/absl::nullopt,
-                                             /*size_group=*/absl::nullopt);
+                                             /*size_group=*/absl::nullopt,
+                                             /*ad_render_id=*/absl::nullopt);
   interest_group.ad_components->emplace_back(GURL(kUrl2), /*metadata=*/"[]",
-                                             /*size_group=*/absl::nullopt);
+                                             /*size_group=*/absl::nullopt,
+                                             /*ad_render_id=*/absl::nullopt);
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
@@ -267,10 +285,12 @@ TEST(InterestGroupMojomTraitsTest,
   interest_group.ad_components.emplace();
   interest_group.ad_components->emplace_back(GURL(kUrl1),
                                              /*metadata=*/absl::nullopt,
-                                             /*size_group=*/"group_1");
+                                             /*size_group=*/"group_1",
+                                             /*ad_render_id=*/absl::nullopt);
   interest_group.ad_components->emplace_back(GURL(kUrl2),
                                              /*metadata=*/"[]",
-                                             /*size_group=*/"group_2");
+                                             /*size_group=*/"group_2",
+                                             /*ad_render_id=*/absl::nullopt);
   interest_group.ad_sizes.emplace();
   interest_group.ad_sizes->emplace(
       "size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
@@ -282,6 +302,20 @@ TEST(InterestGroupMojomTraitsTest,
   interest_group.size_groups.emplace();
   interest_group.size_groups->emplace("group_1", size_list);
   interest_group.size_groups->emplace("group_2", size_list);
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAdComponentsWithAdRenderId) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/absl::nullopt,
+                                             /*size_group=*/absl::nullopt,
+                                             /*ad_render_id=*/"foo");
+  interest_group.ad_components->emplace_back(GURL(kUrl2), /*metadata=*/"[]",
+                                             /*size_group=*/absl::nullopt,
+                                             /*ad_render_id=*/"bar");
   SerializeAndDeserializeAndCompare(interest_group);
 }
 

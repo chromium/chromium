@@ -42,7 +42,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
        absl::optional<std::string> size_group = absl::nullopt,
        absl::optional<std::string> buyer_reporting_id = absl::nullopt,
        absl::optional<std::string> buyer_and_seller_reporting_id =
-           absl::nullopt);
+           absl::nullopt,
+       absl::optional<std::string> ad_render_id = absl::nullopt);
     ~Ad();
 
     // Returns the approximate size of the contents of this InterestGroup::Ad,
@@ -61,6 +62,9 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     // checks.
     absl::optional<std::string> buyer_reporting_id;
     absl::optional<std::string> buyer_and_seller_reporting_id;
+
+    // Optional alias to use for B&A auctions
+    absl::optional<std::string> ad_render_id;
 
     // Only used in tests, but provided as an operator instead of as
     // IsEqualForTesting() to make it easier to implement InterestGroup's
@@ -135,7 +139,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
 
-  static_assert(__LINE__ == 138, R"(
+  static_assert(__LINE__ == 142, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

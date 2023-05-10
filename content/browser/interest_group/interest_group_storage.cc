@@ -143,6 +143,9 @@ base::Value ToValue(const blink::InterestGroup::Ad& ad) {
   }
   if (ad.metadata)
     dict.Set("metadata", ad.metadata.value());
+  if (ad.ad_render_id) {
+    dict.Set("ad_render_id", ad.ad_render_id.value());
+  }
   return value;
 }
 blink::InterestGroup::Ad FromInterestGroupAdValue(
@@ -168,6 +171,10 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(
   const std::string* maybe_metadata = dict.FindString("metadata");
   if (maybe_metadata)
     result.metadata = *maybe_metadata;
+  const std::string* maybe_ad_render_id = dict.FindString("ad_render_id");
+  if (maybe_ad_render_id) {
+    result.ad_render_id = *maybe_ad_render_id;
+  }
   return result;
 }
 

@@ -117,14 +117,14 @@ class InterestGroupStorageTest : public testing::Test {
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
                                      "metadata1", "group_1", "buyer_id",
-                                     "shared_id"),
+                                     "shared_id", "ad_render_id"),
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
                                      "metadata2", "group_2", "buyer_id2")},
         /*ad_components=*/
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent1"), "metadata1c",
-                "group_1"),
+                "group_1", "ad_render_id2"),
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent2"), "metadata2c",
                 "group_2")},
@@ -173,7 +173,8 @@ class InterestGroupStorageTest : public testing::Test {
         std::vector<std::string>{"a", "b2", "c", "d"};
     update.ads = full.ads;
     update.ads->emplace_back(GURL("https://full.example.com/ad3"), "metadata3",
-                             "group_3", "new_buyer_id", "another_share_id");
+                             "group_3", "new_buyer_id", "another_share_id",
+                             "ad_render_id3");
     update.ad_components = full.ad_components;
     update.ad_components->emplace_back(
         GURL("https://full.example.com/adcomponent3"), "metadata3c", "group_3");

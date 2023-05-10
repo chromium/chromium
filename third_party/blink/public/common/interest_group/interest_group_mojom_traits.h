@@ -48,6 +48,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
     return ad.metadata;
   }
 
+  static const absl::optional<std::string>& ad_render_id(
+      const blink::InterestGroup::Ad& ad) {
+    return ad.ad_render_id;
+  }
+
   static bool Read(blink::mojom::InterestGroupAdDataView data,
                    blink::InterestGroup::Ad* out);
 };

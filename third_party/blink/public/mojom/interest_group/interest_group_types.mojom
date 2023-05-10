@@ -24,6 +24,8 @@ struct InterestGroupAd {
   string? buyer_and_seller_reporting_id;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
+  // Optional alias to use with B&A auctions
+  string? ad_render_id;
 };
 
 // The maximum size of a valid interest group in bytes.

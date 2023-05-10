@@ -1135,11 +1135,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
          "sizeGroup": "group_new",
          "metadata": {"new_a": "b"},
          "buyerReportingId": "new_brid",
-         "buyerAndSellerReportingId": "new_shrid"
+         "buyerAndSellerReportingId": "new_shrid",
+         "adRenderId": "123abc"
         }],
 "adComponents": [{"renderUrl": "https://example.com/component_url",
                   "sizeGroup": "group_new",
-                  "metadata": {"new_c": "d"}
+                  "metadata": {"new_c": "d"},
+                  "adRenderId": "456def"
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
 "sizeGroups": {"group_new": ["size_new"]}
@@ -1168,13 +1170,15 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
       /*size_group=*/"group_old",
       /*buyer_reporting_id=*/"old_brid",
-      /*buyer_and_seller_reporting_id=*/"old_shrid");
+      /*buyer_and_seller_reporting_id=*/"old_shrid",
+      /*ad_render_id=*/"123abc");
   interest_group.ads->emplace_back(std::move(ad));
   interest_group.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
-      /*size_group=*/"group_old");
+      /*size_group=*/"group_old",
+      /*ad_render_id=*/"456def");
   interest_group.ad_components->emplace_back(std::move(ad_component));
   interest_group.ad_sizes.emplace();
   interest_group.ad_sizes->emplace(

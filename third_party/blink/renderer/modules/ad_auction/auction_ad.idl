@@ -11,4 +11,5 @@ dictionary AuctionAd {
   USVString buyerReportingId;
   USVString buyerAndSellerReportingId;
   any metadata;
+  DOMString adRenderId;
 };
