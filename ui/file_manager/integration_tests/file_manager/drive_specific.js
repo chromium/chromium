@@ -1386,3 +1386,49 @@ testcase.driveFolderShouldShowOfflineTickWhenBulkPinningEnabled = async () => {
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
   await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
 };
+
+/**
+ * Tests that "Shared with me" which is outside "My drive" retains the pinned
+ * property and it is not updated when bulk pinning is enabled.
+ */
+testcase.driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled = async () => {
+  // Open Files app on Drive containing "Shared with me" file entries.
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.sharedWithMeDirectory]);
+
+  // Enable the bulk pinning preference first.
+  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForBulkPinningStage('Syncing');
+
+  // Navigate to the shared with me directory and assert that the pinned
+  // property is not set on the directory.
+  await navigateWithDirectoryTree(appId, '/Shared with me');
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="Shared Directory"]:not(.pinned)');
+
+  // Disable the bulk pinning preference.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
+  await remoteCall.waitForBulkPinningStage('Stopped');
+
+  // Pin the "Shared Directory" folder in Shared with me and wait for the pinned
+  // class to be updated.
+  await remoteCall.showContextMenuFor(appId, 'Shared Directory');
+  await remoteCall.waitAndClickElement(
+      appId,
+      '#file-context-menu:not([hidden]) ' +
+          '[command="#toggle-pinned"]:not([checked])');
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="Shared Directory"].pinned');
+
+  // Enable and disable bulk pinning and ensure the pinned attribute is not
+  // removed.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForBulkPinningStage('Syncing');
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="Shared Directory"].pinned');
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
+  await remoteCall.waitForBulkPinningStage('Stopped');
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="Shared Directory"].pinned');
+};

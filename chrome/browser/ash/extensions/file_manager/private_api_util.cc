@@ -34,9 +34,11 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_errors.h"
+#include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -47,8 +49,7 @@
 
 namespace file_manager_private = extensions::api::file_manager_private;
 
-namespace file_manager {
-namespace util {
+namespace file_manager::util {
 namespace {
 
 // The struct is used for GetSelectedFileInfo().
@@ -292,6 +293,14 @@ bool IsPinManagerAvailableAndSyncingForProfile(Profile* profile) {
   return true;
 }
 
+bool IsDirectoryUnderMyDrive(drivefs::mojom::FileMetadataPtr& metadata,
+                             const base::FilePath& relative_path) {
+  return metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
+         base::FilePath("/")
+             .Append(drive::util::kDriveMyDriveRootDirName)
+             .IsParent(relative_path);
+}
+
 }  // namespace
 
 // Creates an instance and starts the process.
@@ -339,9 +348,8 @@ void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
     CompleteGetEntryProperties(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
     return;
   }
-  base::FilePath path;
   if (!integration_service->GetRelativeDrivePath(file_system_url_.path(),
-                                                 &path)) {
+                                                 &relative_path_)) {
     CompleteGetEntryProperties(drive::FILE_ERROR_INVALID_OPERATION);
     return;
   }
@@ -389,7 +397,7 @@ void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
   }
 
   drivefs_interface->GetMetadata(
-      path,
+      relative_path_,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo,
                          weak_ptr_factory_.GetWeakPtr()),
@@ -421,10 +429,11 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   // automatically to provide a way to intercept items being added to these
   // folders. However items in the folders will be pinned, so to ensure the UI
   // shows these folders as available offline, return these items as pinned and
-  // available offline. This should not include shortcuts.
+  // available offline. This should not include shortcuts and only cover
+  // directories that are parented at "My drive" (e.g. no Shared drives).
   if (drive::util::IsDriveFsBulkPinningEnabled() &&
       IsPinManagerAvailableAndSyncingForProfile(running_profile_) &&
-      metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
+      IsDirectoryUnderMyDrive(metadata, relative_path_) &&
       !metadata->shortcut_details) {
     properties_->pinned = true;
     properties_->available_offline = true;
@@ -801,5 +810,4 @@ extensions::api::file_manager_private::BulkPinProgress BulkPinProgressToJs(
   return result;
 }
 
-}  // namespace util
-}  // namespace file_manager
+}  // namespace file_manager::util
