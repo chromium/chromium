@@ -208,12 +208,13 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
     callbacks_->did_document_done_callback.Run(result);
   }
 
-  void OnDidCancel(scoped_refptr<PrintJob> job) override {
+  void OnDidCancel(scoped_refptr<PrintJob> job,
+                   mojom::ResultCode result) override {
     DVLOG(1) << "Observed: cancel";
     // Must not use `std::move(job)`, as that could potentially cause the `job`
     // (and consequentially `this`) to be destroyed before
     // `did_cancel_callback` is run.
-    PrintJobWorkerOop::OnDidCancel(job);
+    PrintJobWorkerOop::OnDidCancel(job, result);
     callbacks_->did_cancel_callback.Run();
   }
 
