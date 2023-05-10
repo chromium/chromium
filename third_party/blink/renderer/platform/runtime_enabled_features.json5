@@ -1120,7 +1120,7 @@
     {
       // Support style() queries that evaluate in a boolean context.
       name: "CSSStyleQueriesBoolean",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Merge multiple rulesets into one, for faster matching.
