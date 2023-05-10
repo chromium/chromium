@@ -125,7 +125,7 @@ class JSTestStarter : public content::TestNavigationObserver {
           self.testNameToRun = '$1';
         }
     )";
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         navigation_handle->GetRenderFrameHost(),
         base::ReplaceStringPlaceholders(kScript, {test_name_}, nullptr)));
 
