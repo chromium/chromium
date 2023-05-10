@@ -208,7 +208,7 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.click();
+    toggleButton.click();
     let action = await personalizationStore.waitForAction(
                      AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -218,7 +218,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.click();
+    toggleButton.click();
     action = await personalizationStore.waitForAction(
                  AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -241,7 +241,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.$.toggle.click();
+    toggleButton.click();
     let action = await personalizationStore.waitForAction(
                      AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
@@ -249,7 +249,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
-    toggleRow.$.toggle.click();
+    toggleButton.click();
     action = await personalizationStore.waitForAction(
                  AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
