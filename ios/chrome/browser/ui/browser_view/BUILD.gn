@@ -304,6 +304,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:internal",
     "//ios/chrome/browser/ui/fullscreen/test",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/main:scene_state_header",
