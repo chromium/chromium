@@ -10,7 +10,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/capture_mode/capture_label_view.h"
-#include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
@@ -23,6 +22,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
+#include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
@@ -500,7 +500,7 @@ void CaptureModeSession::Initialize() {
       capture_mode_util::GetCaptureBarBounds(current_root_, active_behavior_),
       "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
-      std::make_unique<CaptureModeBarView>(active_behavior_));
+      std::make_unique<NormalCaptureBarView>(active_behavior_));
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
   capture_mode_bar_widget_->Show();

@@ -361,6 +361,8 @@ component("ash") {
     "capture_mode/key_combo_view.h",
     "capture_mode/key_item_view.cc",
     "capture_mode/key_item_view.h",
+    "capture_mode/normal_capture_bar_view.cc",
+    "capture_mode/normal_capture_bar_view.h",
     "capture_mode/pointer_highlight_layer.cc",
     "capture_mode/pointer_highlight_layer.h",
     "capture_mode/recording_overlay_controller.cc",
