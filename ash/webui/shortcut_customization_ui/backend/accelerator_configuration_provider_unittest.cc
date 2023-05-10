@@ -1360,6 +1360,28 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadSource) {
   EXPECT_EQ(mojom::AcceleratorConfigResult::kActionLocked, result->result);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, AddSameAccelerator) {
+  // Initialize default accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleMirrorMode},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorResultDataPtr result;
+  const ui::Accelerator accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kToggleMirrorMode, accelerator,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflict, result->result);
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadAccelerator) {
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
