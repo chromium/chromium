@@ -242,6 +242,9 @@ class CreditCard : public AutofillDataModel {
   //    number as `this`.
   [[nodiscard]] bool HasSameNumberAs(const CreditCard& other) const;
 
+  // Returns true if expiration date for `this` card is the same as `other`.
+  [[nodiscard]] bool HasSameExpirationDateAs(const CreditCard& other) const;
+
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.
   bool operator==(const CreditCard& credit_card) const;

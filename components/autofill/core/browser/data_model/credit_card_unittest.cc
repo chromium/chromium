@@ -605,6 +605,35 @@ TEST(CreditCardTest, HasSameNumberAs) {
   EXPECT_TRUE(masked_server_card.HasSameNumberAs(full_server_card));
 }
 
+// Test that `HasSameExpirationDateAs` returns true only if two cards have the
+// same expiration year and month.
+TEST(CreditCardTest, HasSameExpirationDateAs) {
+  CreditCard card_1;
+  test::SetCreditCardInfo(&card_1, "John Dillinger", "4111 1111 1111 1111",
+                          "09", "2017", "1");
+
+  CreditCard card_2;
+  // Set the same expiration date as `card_1`.
+  test::SetCreditCardInfo(&card_2, "John Dillinger", "4111 1111 1111 1111",
+                          "09", "2017", "1");
+  EXPECT_TRUE(card_1.HasSameExpirationDateAs(card_2));
+
+  // Set the same month and different year as `card_1`.
+  test::SetCreditCardInfo(&card_2, "John Dillinger", "4111 1111 1111 1111",
+                          "09", "2018", "1");
+  EXPECT_FALSE(card_1.HasSameExpirationDateAs(card_2));
+
+  // Set the same year and different month as `card_1`.
+  test::SetCreditCardInfo(&card_2, "John Dillinger", "4111 1111 1111 1111",
+                          "01", "2017", "1");
+  EXPECT_FALSE(card_1.HasSameExpirationDateAs(card_2));
+
+  // Set the different expiration date as `card_1`.
+  test::SetCreditCardInfo(&card_2, "John Dillinger", "4111 1111 1111 1111",
+                          "01", "2018", "1");
+  EXPECT_FALSE(card_1.HasSameExpirationDateAs(card_2));
+}
+
 struct SetExpirationYearFromStringTestCase {
   std::string expiration_year;
   int expected_year;

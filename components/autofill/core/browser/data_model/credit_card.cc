@@ -892,6 +892,11 @@ bool CreditCard::HasSameNumberAs(const CreditCard& other) const {
   return StripSeparators(number_) == StripSeparators(other.number_);
 }
 
+bool CreditCard::HasSameExpirationDateAs(const CreditCard& other) const {
+  return expiration_month() == other.expiration_month() &&
+         expiration_year() == other.expiration_year();
+}
+
 bool CreditCard::operator==(const CreditCard& credit_card) const {
   return guid() == credit_card.guid() && origin() == credit_card.origin() &&
          record_type() == credit_card.record_type() &&
