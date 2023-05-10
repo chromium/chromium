@@ -1123,4 +1123,17 @@ void LogClsidEntries(REFCLSID clsid) {
   }
 }
 
+absl::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
+  if (!IsSystemInstall(scope)) {
+    return GetInstallDirectory(scope);
+  }
+  base::FilePath install_dir;
+  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86, &install_dir)) {
+    LOG(ERROR) << "Can't retrieve directory for DIR_PROGRAM_FILESX86.";
+    return absl::nullopt;
+  }
+  return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+      .AppendASCII(PRODUCT_FULLNAME_STRING);
+}
+
 }  // namespace updater

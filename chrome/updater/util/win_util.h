@@ -419,6 +419,11 @@ template <typename T, typename I, typename... TArgs>
                                        std::forward<TArgs>(args)...);
 }
 
+// Returns the base install directory for the x86 versions of the updater.
+// Does not create the directory if it does not exist.
+[[nodiscard]] absl::optional<base::FilePath> GetInstallDirectoryX86(
+    UpdaterScope scope);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_
