@@ -22,7 +22,7 @@ struct s {
     }
   }
 
-  void fct() { BindOnce(&s::do_something, member); }
+  void fct() { BindOnce(&s::do_something, this, member); }
 
   // Expected rewrite: std::vector<raw_ptr<int>> member;
   std::vector<int*> member;

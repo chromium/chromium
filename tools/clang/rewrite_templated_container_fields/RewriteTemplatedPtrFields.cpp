@@ -214,13 +214,16 @@ class LocalVisitor
     if (const auto* ptr =
             BoundNodesView.getNodeAs<clang::FunctionDecl>("fct_decl")) {
       fct_decl_ = BoundNodesView.getNodeAs<clang::FunctionDecl>("fct_decl");
+      is_lambda_ = false;
     } else {
       const clang::LambdaExpr* lambda_expr =
           BoundNodesView.getNodeAs<clang::LambdaExpr>("lambda_expr");
       fct_decl_ = lambda_expr->getCallOperator();
+      is_lambda_ = true;
     }
   }
   const clang::FunctionDecl* fct_decl_;
+  bool is_lambda_;
 };
 
 // This is used to map arguments passed to std::make_unique to the underlying
@@ -297,12 +300,25 @@ AST_MATCHER_P2(clang::CallExpr,
       LocalVisitor l;
       arg_matches.visitMatches(&l);
       const auto* fct_decl = l.fct_decl_;
-      if (fct_decl->getNumParams() != num_args - 1) {
-        return false;
-      }
-      // i-1 because we start with second arg for Bind and first arg for
+
+      // start_index=1 when we start with second arg for Bind and first arg for
       // lambda/fct
-      const auto* param = fct_decl->getParamDecl(i - 1);
+      unsigned start_index = 1;
+      // start_index=2 when the second arg is a pointer to the object on which
+      // the function is to be invoked. This is done when the function pointer is
+      // not a static class function.
+      // isGlobal is true for free functions as well as static member functions,
+      // both of which don't need a pointer to the object on which they are
+      // invoked.
+      if (!l.is_lambda_ && !l.fct_decl_->isGlobal()) {
+        start_index = 2;
+        // Skip the second argument passed to BindOnce/BindRepeating as it is an
+        // object pointer unrelated to target function args.
+        if (i == 1) {
+          continue;
+        }
+      }
+      const auto* param = fct_decl->getParamDecl(i - start_index);
       clang::ast_matchers::internal::BoundNodesTreeBuilder
           parm_var_decl_matches(arg_matches);
       if (parm_var_decl_matcher.matches(*param, Finder,
