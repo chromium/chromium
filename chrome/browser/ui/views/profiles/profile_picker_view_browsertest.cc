@@ -1044,14 +1044,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate clicking on a link that opens in a new window.
   const GURL kURL("https://foo.google.com");
-  EXPECT_TRUE(ExecuteScript(web_contents(),
-                            "var link = document.createElement('a');"
-                            "link.href = '" +
-                                kURL.spec() +
-                                "';"
-                                "link.target = '_blank';"
-                                "document.body.appendChild(link);"
-                                "link.click();"));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     "var link = document.createElement('a');"
+                     "link.href = '" +
+                         kURL.spec() +
+                         "';"
+                         "link.target = '_blank';"
+                         "document.body.appendChild(link);"
+                         "link.click();"));
   // A new pppup browser is displayed (with the specified URL).
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
   EXPECT_EQ(new_browser->type(), Browser::TYPE_POPUP);
