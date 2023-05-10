@@ -219,9 +219,9 @@ class WebRtcVideoDisplayPerfBrowserTest
     // connection(s) are up.
     content::WebContents* webrtc_internals_tab =
         OpenWebrtcInternalsTab(browser());
-    EXPECT_TRUE(content::ExecuteScript(
-        webrtc_internals_tab,
-        "currentGetStatsMethod = OPTION_GETSTATS_LEGACY"));
+    EXPECT_TRUE(
+        content::ExecJs(webrtc_internals_tab,
+                        "currentGetStatsMethod = OPTION_GETSTATS_LEGACY"));
 
     content::WebContents* left_tab =
         OpenPageAndGetUserMediaInNewTabWithConstraints(

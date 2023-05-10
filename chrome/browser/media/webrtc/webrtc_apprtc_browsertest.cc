@@ -166,7 +166,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
       return false;
     }
 
-    if (!content::ExecuteScript(tab_contents, javascript)) {
+    if (!content::ExecJs(tab_contents, javascript)) {
       LOG(ERROR) << "Failed to execute the following javascript: " <<
           javascript;
       return false;
