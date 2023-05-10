@@ -432,7 +432,7 @@ class TestAutofillClientTemplate : public T {
     return form_origin_.SchemeIs("https");
   }
 
-  void ExecuteCommand(int id) override {}
+  void ExecuteCommand(Suggestion::FrontendId id) override {}
 
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override {}
 

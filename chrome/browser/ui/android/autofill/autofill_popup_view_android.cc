@@ -144,8 +144,8 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
         base::android::ConvertUTF16ToJavaString(env, sublabel),
         base::android::ConvertUTF16ToJavaString(env, secondary_sublabel),
         base::android::ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
-        suggestion.is_icon_at_start, suggestion.frontend_id, is_deletable,
-        is_label_multiline, /*isLabelBold*/ false,
+        suggestion.is_icon_at_start, suggestion.frontend_id.as_int(),
+        is_deletable, is_label_multiline, /*isLabelBold*/ false,
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
 

@@ -60,7 +60,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-using autofill::PopupItemId;
 using views::BubbleBorder;
 
 namespace autofill {
@@ -91,7 +90,8 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
 
   // Separators are a special case: They belong into the footer iff the next
   // item exists and is a footer item.
-  int frontend_id = suggestions[line_number].frontend_id;
+  PopupItemId frontend_id =
+      suggestions[line_number].frontend_id.as_popup_item_id();
   return frontend_id == PopupItemId::POPUP_ITEM_ID_SEPARATOR
              ? IsFooterItem(suggestions, line_number + 1)
              : IsFooterFrontendId(frontend_id);
@@ -278,8 +278,9 @@ bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
     if (index->second != PopupRowView::CellType::kContent) {
       return false;
     }
-    int frontend_id = controller_->GetSuggestionAt(index->first).frontend_id;
-    if (frontend_id <= 0 &&
+    Suggestion::FrontendId frontend_id =
+        controller_->GetSuggestionAt(index->first).frontend_id;
+    if (frontend_id.as_int() <= 0 &&
         !base::Contains(kItemsTriggeringFieldFilling, frontend_id) &&
         frontend_id != POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
       return false;
@@ -404,8 +405,9 @@ void PopupViewViews::CreateChildViews() {
     for (; current_line_number < kSuggestions.size() &&
            !IsFooterItem(kSuggestions, current_line_number);
          ++current_line_number) {
-      int frontend_id = kSuggestions[current_line_number].frontend_id;
-      switch (frontend_id) {
+      Suggestion::FrontendId frontend_id =
+          kSuggestions[current_line_number].frontend_id;
+      switch (frontend_id.as_popup_item_id()) {
         case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>()));

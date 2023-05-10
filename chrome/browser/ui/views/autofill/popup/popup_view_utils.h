@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
@@ -152,7 +153,7 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 // Returns whether the suggestion with this `frontend_id` belongs into the
 // footer section of the popup. Returns `false` for separators, which may belong
 // either to the main or the footer section.
-bool IsFooterFrontendId(int frontend_id);
+bool IsFooterFrontendId(PopupItemId frontend_id);
 
 }  // namespace autofill
 

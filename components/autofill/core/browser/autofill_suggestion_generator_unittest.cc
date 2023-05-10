@@ -784,7 +784,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndFrontendIdMappings) {
   // Test that frontend ID retrieval with an invalid backend ID works correctly.
   Suggestion::BackendId backend_id = Suggestion::BackendId();
-  EXPECT_FALSE(suggestion_generator()->MakeFrontendIdFromBackendId(backend_id));
+  EXPECT_EQ(
+      suggestion_generator()->MakeFrontendIdFromBackendId(backend_id).as_int(),
+      0);
 
   // Test that frontend ID retrieval with valid backend IDs works correctly.
   std::string valid_guid_digits = "00000000-0000-0000-0000-000000000000";
@@ -796,9 +798,9 @@ TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndFrontendIdMappings) {
     // AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(~) with a new
     // backend id creates a new entry in the backend_to_frontend_map() and
     // frontend_to_backend_map() maps.
-    const int& frontend_id =
+    Suggestion::FrontendId frontend_id =
         suggestion_generator()->MakeFrontendIdFromBackendId(backend_id);
-    EXPECT_GT(frontend_id, 0);
+    EXPECT_GT(frontend_id.as_int(), 0);
     EXPECT_EQ(static_cast<int>(suggestion_generator()
                                    ->backend_to_frontend_map_for_testing()
                                    .size()),
@@ -831,7 +833,8 @@ TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndFrontendIdMappings) {
 
   // Test that backend ID retrieval with valid frontend IDs works correctly.
   for (int i = 1; i <= 2; i++) {
-    backend_id = suggestion_generator()->GetBackendIdFromFrontendId(i);
+    backend_id = suggestion_generator()->GetBackendIdFromFrontendId(
+        Suggestion::FrontendId(i));
     EXPECT_FALSE(backend_id->empty());
     valid_guid_digits.back() = base::NumberToString(i)[0];
     EXPECT_EQ(*backend_id, valid_guid_digits);
@@ -1126,7 +1129,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id, 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
@@ -1145,7 +1148,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id, 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_TRUE(VerifyCardArtImageExpectation(real_card_suggestion, GURL(),
@@ -1187,7 +1190,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id, 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000002"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
@@ -1328,7 +1331,7 @@ TEST_P(AutofillSuggestionGeneratorTestForOffer,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/true);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id, 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
 

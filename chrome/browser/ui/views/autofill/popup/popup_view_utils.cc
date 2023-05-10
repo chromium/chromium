@@ -532,7 +532,7 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   return arrow;
 }
 
-bool IsFooterFrontendId(int frontend_id) {
+bool IsFooterFrontendId(PopupItemId frontend_id) {
   switch (frontend_id) {
     case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
     case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:

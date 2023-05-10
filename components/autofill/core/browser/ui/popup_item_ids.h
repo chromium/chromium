@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This enum defines item identifiers for Autofill popup controller.
-
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_
 
 namespace autofill {
 
+// This enum defines item identifiers for Autofill popup controller.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 // GENERATED_JAVA_PREFIX_TO_STRIP: POPUP_
 enum PopupItemId {

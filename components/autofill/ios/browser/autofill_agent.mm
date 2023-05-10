@@ -434,6 +434,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   DCHECK(completion);
   _suggestionHandledCompletion = [completion copy];
 
+  // TODO(crbug.com/1394920): Make `suggestion.identifier` a `FrontendId`.
+  autofill::Suggestion::FrontendId frontend_id(suggestion.identifier);
+
   if (suggestion.acceptanceA11yAnnouncement != nil) {
     __weak AutofillAgent* weakSelf = self;
     // The announcement is done asyncronously with certain delay to make sure
@@ -462,14 +465,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         });
   }
 
-  if (suggestion.identifier > 0) {
+  if (frontend_id.as_int() > 0) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
-      autofill_suggestion.frontend_id = suggestion.identifier;
+      autofill_suggestion.frontend_id = frontend_id;
       autofill_suggestion.payload = autofill::Suggestion::BackendId();
       _popupDelegate->DidAcceptSuggestion(autofill_suggestion, 0);
     }
@@ -491,14 +494,16 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
 
-  if (suggestion.identifier == autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+  if (frontend_id.as_popup_item_id() ==
+      autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         uniqueFieldID:uniqueFieldID
              formName:SysNSStringToUTF8(formName)
                 value:SysNSStringToUTF16(suggestion.value)
               inFrame:frame];
-  } else if (suggestion.identifier == autofill::POPUP_ITEM_ID_CLEAR_FORM) {
+  } else if (frontend_id.as_popup_item_id() ==
+             autofill::POPUP_ITEM_ID_CLEAR_FORM) {
     __weak AutofillAgent* weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -514,7 +519,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
           suggestionHandledCompletionCopy();
         }));
 
-  } else if (suggestion.identifier ==
+  } else if (frontend_id.as_popup_item_id() ==
              autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
@@ -522,7 +527,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       autofillManager->OnUserAcceptedCardsFromAccountOption();
     }
   } else {
-    NOTREACHED() << "unknown identifier " << suggestion.identifier;
+    NOTREACHED() << "unknown identifier " << frontend_id;
   }
 }
 
@@ -623,7 +628,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     // "clear form" button.
     NSString* value = nil;
     NSString* displayDescription = nil;
-    if (popup_suggestion.frontend_id >= 0) {
+    if (popup_suggestion.frontend_id.as_int() >= 0) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.frontend_id ==
               autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
@@ -662,13 +667,13 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                                      autofill::PopupType::kCreditCards
                          ? base::SysUTF8ToNSString(popup_suggestion.icon)
                          : nil;
-    FormSuggestion* suggestion =
-        [FormSuggestion suggestionWithValue:value
-                         displayDescription:displayDescription
-                                       icon:icon
-                                 identifier:popup_suggestion.frontend_id
-                             requiresReauth:NO
-                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
+    FormSuggestion* suggestion = [FormSuggestion
+               suggestionWithValue:value
+                displayDescription:displayDescription
+                              icon:icon
+                        identifier:popup_suggestion.frontend_id.as_int()
+                    requiresReauth:NO
+        acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
     if (!popup_suggestion.feature_for_iph.empty()) {
       suggestion.featureForIPH =

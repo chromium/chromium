@@ -361,7 +361,7 @@ bool AutofillClientImpl::IsContextSecure() const {
   return false;
 }
 
-void AutofillClientImpl::ExecuteCommand(int id) {
+void AutofillClientImpl::ExecuteCommand(autofill::Suggestion::FrontendId id) {
   NOTREACHED();
 }
 

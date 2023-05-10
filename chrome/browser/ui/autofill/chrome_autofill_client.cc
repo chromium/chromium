@@ -1067,9 +1067,9 @@ bool ChromeAutofillClient::IsContextSecure() const {
          security_level != security_state::DANGEROUS;
 }
 
-void ChromeAutofillClient::ExecuteCommand(int id) {
+void ChromeAutofillClient::ExecuteCommand(Suggestion::FrontendId id) {
 #if BUILDFLAG(IS_ANDROID)
-  if (id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
+  if (id.as_popup_item_id() == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
     auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
     if (window) {
       SigninBridge::LaunchSigninActivity(

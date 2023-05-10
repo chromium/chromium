@@ -108,9 +108,10 @@ class AutofillSuggestionGenerator {
 
   // Methods for packing and unpacking credit card and profile IDs for sending
   // and receiving to and from the renderer process.
-  int MakeFrontendIdFromBackendId(
+  Suggestion::FrontendId MakeFrontendIdFromBackendId(
       const Suggestion::BackendId& cc_or_address_backend_id);
-  Suggestion::BackendId GetBackendIdFromFrontendId(int frontend_id);
+  Suggestion::BackendId GetBackendIdFromFrontendId(
+      Suggestion::FrontendId frontend_id);
 
   // Helper function to decide whether to show the virtual card option for
   // `candidate_card`.

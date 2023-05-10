@@ -42,7 +42,7 @@ enum class StrategyType {
 
 struct RowStrategyTestdata {
   // The frontend ids of the suggestions to be shown.
-  std::vector<int> frontend_ids;
+  std::vector<Suggestion::FrontendId> frontend_ids;
   // The index of the suggestion to be tested.
   int line_number;
   // The type of strategy to be tested.
@@ -55,7 +55,8 @@ struct RowStrategyTestdata {
 
 const RowStrategyTestdata kTestcases[] = {
     RowStrategyTestdata{
-        .frontend_ids = {1, 2, POPUP_ITEM_ID_SEPARATOR,
+        .frontend_ids = {Suggestion::FrontendId(1), Suggestion::FrontendId(2),
+                         POPUP_ITEM_ID_SEPARATOR,
                          POPUP_ITEM_ID_AUTOFILL_OPTIONS},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
@@ -73,7 +74,8 @@ const RowStrategyTestdata kTestcases[] = {
         .set_index = 1,
     },
     RowStrategyTestdata{
-        .frontend_ids = {1, 2, POPUP_ITEM_ID_SEPARATOR,
+        .frontend_ids = {Suggestion::FrontendId(1), Suggestion::FrontendId(2),
+                         POPUP_ITEM_ID_SEPARATOR,
                          POPUP_ITEM_ID_AUTOFILL_OPTIONS},
         .line_number = 3,
         .strategy_type = StrategyType::kFooter,
@@ -97,10 +99,10 @@ const RowStrategyTestdata kTestcases[] = {
 class PopupRowStrategyTest : public ChromeViewsTestBase {
  public:
   // Sets suggestions in the mocked popup controller.
-  void SetSuggestions(const std::vector<int>& frontend_ids) {
+  void SetSuggestions(const std::vector<Suggestion::FrontendId>& frontend_ids) {
     std::vector<Suggestion> suggestions;
     suggestions.reserve(frontend_ids.size());
-    for (int frontend_id : frontend_ids) {
+    for (Suggestion::FrontendId frontend_id : frontend_ids) {
       // Create a suggestion with empty labels.
       suggestions.emplace_back("Main text", "", "", frontend_id);
     }

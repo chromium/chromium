@@ -360,7 +360,7 @@ bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-void WebViewAutofillClientIOS::ExecuteCommand(int id) {
+void WebViewAutofillClientIOS::ExecuteCommand(Suggestion::FrontendId id) {
   NOTIMPLEMENTED();
 }
 

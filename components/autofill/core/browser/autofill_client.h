@@ -20,8 +20,8 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -762,7 +762,7 @@ class AutofillClient : public RiskDataLoader {
   virtual bool IsContextSecure() const = 0;
 
   // Handles simple actions for the autofill popups.
-  virtual void ExecuteCommand(int id) = 0;
+  virtual void ExecuteCommand(Suggestion::FrontendId id) = 0;
 
   // Returns a LogManager instance. May be null for platforms that don't support
   // this.

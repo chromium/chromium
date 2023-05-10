@@ -314,8 +314,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 123));
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 321));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(123)));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
   [autofill_agent_
@@ -364,8 +366,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 123));
-  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 321));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(123)));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
   [autofill_agent_

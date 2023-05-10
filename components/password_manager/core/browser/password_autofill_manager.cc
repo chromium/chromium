@@ -203,7 +203,7 @@ void MaybeAppendManagePasswordsEntry(
     std::vector<autofill::Suggestion>* suggestions) {
   bool has_no_fillable_suggestions = base::ranges::none_of(
       *suggestions,
-      [](int id) {
+      [](autofill::Suggestion::FrontendId id) {
         return id == autofill::POPUP_ITEM_ID_USERNAME_ENTRY ||
                id == autofill::POPUP_ITEM_ID_PASSWORD_ENTRY ||
                id == autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY ||
@@ -217,7 +217,9 @@ void MaybeAppendManagePasswordsEntry(
 
   bool has_webauthn_credential = base::ranges::any_of(
       *suggestions,
-      [](int id) { return id == autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL; },
+      [](autofill::Suggestion::FrontendId id) {
+        return id == autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
+      },
       &autofill::Suggestion::frontend_id);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -386,7 +388,7 @@ void PasswordAutofillManager::OnPopupSuppressed() {}
 
 void PasswordAutofillManager::DidSelectSuggestion(
     const std::u16string& value,
-    int frontend_id,
+    autofill::Suggestion::FrontendId frontend_id,
     const autofill::Suggestion::BackendId& backend_id) {
   ClearPreviewedForm();
   if (frontend_id == autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY ||
@@ -431,7 +433,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     const autofill::Suggestion& suggestion,
     int position) {
   using metrics_util::PasswordDropdownSelectedOption;
-  switch (suggestion.frontend_id) {
+  switch (suggestion.frontend_id.as_popup_item_id()) {
     case autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY:
       password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
       metrics_util::LogPasswordDropdownItemSelected(
@@ -462,8 +464,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       break;
     case autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
     case autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
-      OnUnlockItemAccepted(
-          static_cast<autofill::PopupItemId>(suggestion.frontend_id));
+      OnUnlockItemAccepted(suggestion.frontend_id.as_popup_item_id());
       metrics_util::LogPasswordDropdownItemSelected(
           suggestion.frontend_id ==
                   autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN
@@ -545,14 +546,15 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 
 bool PasswordAutofillManager::GetDeletionConfirmationText(
     const std::u16string& value,
-    int frontend_id,
+    autofill::Suggestion::FrontendId frontend_id,
     std::u16string* title,
     std::u16string* body) {
   return false;
 }
 
-bool PasswordAutofillManager::RemoveSuggestion(const std::u16string& value,
-                                               int frontend_id) {
+bool PasswordAutofillManager::RemoveSuggestion(
+    const std::u16string& value,
+    autofill::Suggestion::FrontendId frontend_id) {
   // Password suggestions cannot be deleted this way.
   // See http://crbug.com/329038#c15
   return false;
@@ -623,8 +625,9 @@ void PasswordAutofillManager::OnNoCredentialsFound() {
   if (!autofill_client_ ||
       !HasLoadingSuggestion(
           autofill_client_->GetPopupSuggestions(),
-          autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN))
+          autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN)) {
     return;
+  }
   metrics_util::LogPasswordsCountFromAccountStoreAfterUnlock(
       /*account_store_passwords_count=*/0);
   UpdatePopup({CreateAccountStorageEmptyEntry()});
@@ -788,12 +791,14 @@ void PasswordAutofillManager::LogMetricsForSuggestions(
   metrics_util::PasswordDropdownState dropdown_state =
       metrics_util::PasswordDropdownState::kStandard;
   for (const auto& suggestion : suggestions) {
-    switch (suggestion.frontend_id) {
+    switch (suggestion.frontend_id.as_popup_item_id()) {
       case autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY:
         // TODO(crbug.com/1062709): Revisit metrics for the "opt in and
         // generate" button.
       case autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
         dropdown_state = metrics_util::PasswordDropdownState::kStandardGenerate;
+        break;
+      default:
         break;
     }
   }
@@ -833,8 +838,9 @@ void PasswordAutofillManager::UpdatePopup(
   autofill_client_->UpdatePopup(suggestions, autofill::PopupType::kPasswords);
 }
 
-bool PasswordAutofillManager::FillSuggestion(const std::u16string& username,
-                                             int item_id) {
+bool PasswordAutofillManager::FillSuggestion(
+    const std::u16string& username,
+    autofill::Suggestion::FrontendId item_id) {
   autofill::PasswordAndMetadata password_and_meta_data;
   if (fill_data_ &&
       GetPasswordAndMetadataForUsername(username, item_id, *fill_data_,
@@ -850,8 +856,9 @@ bool PasswordAutofillManager::FillSuggestion(const std::u16string& username,
   return false;
 }
 
-bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
-                                                int item_id) {
+bool PasswordAutofillManager::PreviewSuggestion(
+    const std::u16string& username,
+    autofill::Suggestion::FrontendId item_id) {
   if (item_id == autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL) {
     password_manager_driver_->PreviewSuggestion(username, /*password=*/u"");
     return true;
@@ -873,7 +880,7 @@ bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
 
 bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
     const std::u16string& current_username,
-    int item_id,
+    autofill::Suggestion::FrontendId item_id,
     const autofill::PasswordFormFillData& fill_data,
     autofill::PasswordAndMetadata* password_and_meta_data) {
   // TODO(dubroy): When password access requires some kind of authentication
@@ -950,7 +957,7 @@ void PasswordAutofillManager::OnUnlockReauthCompleted(
 
 void PasswordAutofillManager::OnBiometricReauthCompleted(
     const std::u16string& value,
-    int frontend_id,
+    autofill::Suggestion::FrontendId frontend_id,
     bool auth_succeeded) {
   authenticator_.reset();
   base::UmaHistogramBoolean(

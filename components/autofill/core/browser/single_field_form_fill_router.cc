@@ -102,7 +102,7 @@ void SingleFieldFormFillRouter::CancelPendingQueries(
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    int frontend_id) {
+    Suggestion::FrontendId frontend_id) {
   if (merchant_promo_code_manager_ &&
       frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
     merchant_promo_code_manager_->OnRemoveCurrentSingleFieldSuggestion(
@@ -118,7 +118,7 @@ void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
 
 void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    int frontend_id) {
+    Suggestion::FrontendId frontend_id) {
   if (merchant_promo_code_manager_ &&
       (frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY ||
        frontend_id == POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS)) {

@@ -102,7 +102,7 @@ void AutofillKeyboardAccessoryView::Show() {
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
         env, data_array, position++, ConvertUTF16ToJavaString(env, label),
         ConvertUTF16ToJavaString(env, sublabel), android_icon_id,
-        suggestion.frontend_id,
+        suggestion.frontend_id.as_int(),
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
         ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));

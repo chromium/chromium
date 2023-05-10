@@ -1230,7 +1230,7 @@ void AddFieldPredictionsToForm(
   }
 }
 
-Suggestion CreateAutofillSuggestion(int frontend_id,
+Suggestion CreateAutofillSuggestion(Suggestion::FrontendId frontend_id,
                                     const std::u16string& main_text_value,
                                     const Suggestion::Payload& payload) {
   Suggestion suggestion;

@@ -189,7 +189,8 @@ bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
   return false;
 }
 
-int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
+Suggestion::FrontendId TestBrowserAutofillManager::GetPackedCreditCardID(
+    int credit_card_id) {
   std::string credit_card_guid =
       base::StringPrintf("00000000-0000-0000-0000-%012d", credit_card_id);
 
@@ -282,7 +283,7 @@ void TestBrowserAutofillManager::SetExpectedObservedSubmission(bool expected) {
   expected_observed_submission_ = expected;
 }
 
-int TestBrowserAutofillManager::MakeFrontendId(
+Suggestion::FrontendId TestBrowserAutofillManager::MakeFrontendId(
     const MakeFrontendIdParams& params) {
   return suggestion_generator_for_test()->MakeFrontendIdFromBackendId(
       Suggestion::BackendId(params.credit_card_id.empty()

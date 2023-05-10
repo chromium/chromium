@@ -45,7 +45,7 @@ namespace {
 
 // Returns true if the suggestion entry is an Autofill warning message.
 // Warning messages should display on top of suggestion list.
-bool IsAutofillWarningEntry(int frontend_id) {
+bool IsAutofillWarningEntry(Suggestion::FrontendId frontend_id) {
   return frontend_id ==
              POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE ||
          frontend_id == POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
@@ -109,7 +109,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // suggestions.
   has_autofill_suggestions_ = false;
   for (auto& suggestion : suggestions) {
-    if (suggestion.frontend_id > 0) {
+    if (suggestion.frontend_id.as_int() > 0) {
       has_autofill_suggestions_ = true;
       break;
     }
@@ -209,12 +209,12 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
 
 void AutofillExternalDelegate::DidSelectSuggestion(
     const std::u16string& value,
-    int frontend_id,
+    Suggestion::FrontendId frontend_id,
     const Suggestion::BackendId& backend_id) {
   ClearPreviewedForm();
 
   // Only preview the data if it is a profile or a virtual card.
-  if (frontend_id > 0) {
+  if (frontend_id.as_int() > 0) {
     FillAutofillFormData(frontend_id, true,
                          AutofillTriggerSource::kKeyboardAccessory);
   } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY ||
@@ -231,7 +231,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
 void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
                                                    int position) {
-  switch (suggestion.frontend_id) {
+  switch (suggestion.frontend_id.as_popup_item_id()) {
     case POPUP_ITEM_ID_AUTOFILL_OPTIONS:
       // User selected 'Autofill Options'.
       autofill_metrics::LogAutofillSelectedManageEntry(popup_type_);
@@ -308,7 +308,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
           suggestion.frontend_id, query_form_, query_field_);
       break;
     default:
-      if (suggestion.frontend_id > 0) {  // Denotes an Autofill suggestion.
+      if (suggestion.frontend_id.as_int() >
+          0) {  // Denotes an Autofill suggestion.
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client()->IsOffTheRecord());
       }
@@ -334,16 +335,18 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
 
 bool AutofillExternalDelegate::GetDeletionConfirmationText(
     const std::u16string& value,
-    int frontend_id,
+    Suggestion::FrontendId frontend_id,
     std::u16string* title,
     std::u16string* body) {
   return manager_->GetDeletionConfirmationText(value, frontend_id, title, body);
 }
 
-bool AutofillExternalDelegate::RemoveSuggestion(const std::u16string& value,
-                                                int frontend_id) {
-  if (frontend_id > 0)
+bool AutofillExternalDelegate::RemoveSuggestion(
+    const std::u16string& value,
+    Suggestion::FrontendId frontend_id) {
+  if (frontend_id.as_int() > 0) {
     return manager_->RemoveAutofillProfileOrCreditCard(frontend_id);
+  }
 
   if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,
@@ -398,7 +401,7 @@ void AutofillExternalDelegate::OnCreditCardScanned(
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(
-    int unique_id,
+    Suggestion::FrontendId unique_id,
     bool is_preview,
     const AutofillTriggerSource trigger_source) {
   // If the selected element is a warning we don't want to do anything.

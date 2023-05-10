@@ -216,7 +216,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   }
 
   for (Suggestion& suggestion : suggestions) {
-    if (suggestion.frontend_id == 0) {
+    if (suggestion.frontend_id.as_int() == 0) {
       suggestion.frontend_id = MakeFrontendIdFromBackendId(
           suggestion.GetPayload<Suggestion::BackendId>());
     }
@@ -406,10 +406,10 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   return card.nickname();
 }
 
-int AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(
+Suggestion::FrontendId AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(
     const Suggestion::BackendId& cc_or_address_backend_id) {
   if (!base::Uuid::ParseCaseInsensitive(*cc_or_address_backend_id).is_valid()) {
-    return 0;
+    return Suggestion::FrontendId();
   }
 
   int& frontend_id = backend_to_frontend_map_[cc_or_address_backend_id];
@@ -419,16 +419,16 @@ int AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(
   }
   DCHECK_GT(frontend_id, 0);
   DCHECK_EQ(backend_to_frontend_map_.size(), frontend_to_backend_map_.size());
-  return frontend_id;
+  return Suggestion::FrontendId(frontend_id);
 }
 
 Suggestion::BackendId AutofillSuggestionGenerator::GetBackendIdFromFrontendId(
-    int frontend_id) {
-  if (frontend_id <= 0) {
+    Suggestion::FrontendId frontend_id) {
+  if (frontend_id.as_int() <= 0) {
     NOTREACHED();
     return Suggestion::BackendId();
   }
-  const auto it = frontend_to_backend_map_.find(frontend_id);
+  const auto it = frontend_to_backend_map_.find(frontend_id.as_int());
   if (it == frontend_to_backend_map_.end()) {
     NOTREACHED();
     return Suggestion::BackendId();

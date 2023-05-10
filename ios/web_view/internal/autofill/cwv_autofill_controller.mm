@@ -327,7 +327,7 @@ using UserDecision =
   std::vector<autofill::Suggestion> filtered_suggestions;
   base::ranges::copy_if(suggestions, std::back_inserter(filtered_suggestions),
                         [](const autofill::Suggestion& suggestion) {
-                          return suggestion.frontend_id > 0;
+                          return suggestion.frontend_id.as_int() > 0;
                         });
   [_autofillAgent showAutofillPopup:filtered_suggestions
                       popupDelegate:delegate];
