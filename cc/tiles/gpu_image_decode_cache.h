@@ -20,6 +20,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -159,8 +160,8 @@ class CC_EXPORT GpuImageDecodeCache
   // Returns the GL texture ID backing the given SkImage.
   static GrGLuint GlIdFromSkImage(const SkImage* image);
 
-  static constexpr base::TimeDelta kPurgeInterval = base::Seconds(30);
-  static constexpr base::TimeDelta kPurgeMaxAge = base::Seconds(30);
+  static base::TimeDelta get_purge_interval();
+  static base::TimeDelta get_max_purge_age();
 
   // ImageDecodeCache overrides.
 
@@ -242,13 +243,6 @@ class CC_EXPORT GpuImageDecodeCache
   bool HasPendingPurgeTaskForTesting() const {
     base::AutoLock locker(lock_);
     return has_pending_purge_task();
-  }
-
-  void SetTimerTaskRunnerForTesting(
-      scoped_refptr<base::SequencedTaskRunner> task_runner)
-      LOCKS_EXCLUDED(lock_) {
-    base::AutoLock locker(lock_);
-    timer_.SetTaskRunner(task_runner);
   }
 
   // Updating the |last_use| field of the associated |ImageData|.
@@ -905,7 +899,7 @@ class CC_EXPORT GpuImageDecodeCache
       const ImageTaskMap& task_map);
 
   bool has_pending_purge_task() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return timer_.IsRunning();
+    return has_pending_purge_task_;
   }
 
   const SkColorType color_type_;
@@ -918,12 +912,14 @@ class CC_EXPORT GpuImageDecodeCache
   SkYUVAPixmapInfo::SupportedDataTypes yuva_supported_data_types_;
   const bool enable_clipped_image_scaling_;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
+
   // All members below this point must only be accessed while holding |lock_|.
   // The exception are const members like |normal_max_cache_bytes_| that can
   // be accessed without a lock since they are thread safe.
   mutable base::Lock lock_;
 
-  base::OneShotTimer timer_ GUARDED_BY(lock_);
+  bool has_pending_purge_task_ GUARDED_BY(lock_) = false;
 
   PersistentCache persistent_cache_ GUARDED_BY(lock_);
 
@@ -976,6 +972,7 @@ class CC_EXPORT GpuImageDecodeCache
   std::vector<uint32_t> ids_pending_deletion_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::WeakPtrFactory<GpuImageDecodeCache> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

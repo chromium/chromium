@@ -10674,6 +10674,27 @@
             ]
         }
     ],
+    "PurgeOldCacheEntriesOnTimer": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_V2",
+                    "enable_features": [
+                        "PurgeOldCacheEntriesOnTimer"
+                    ]
+                }
+            ]
+        }
+    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
