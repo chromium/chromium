@@ -60325,6 +60325,7 @@ from previous Chrome versions.
   <int value="-1159154050" label="FilesSinglePartitionFormat:enabled"/>
   <int value="-1159151875" label="RecordWebAppDebugInfo:disabled"/>
   <int value="-1158993534" label="PrintScaling:enabled"/>
+  <int value="-1157991559" label="CloudApAuthAttachAsHeader:enabled"/>
   <int value="-1156950420"
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
@@ -60923,6 +60924,7 @@ from previous Chrome versions.
   <int value="-839544057" label="WebRtcCombinedNetworkAndWorkerThread:enabled"/>
   <int value="-838719204"
       label="ForceMajorVersionInMinorPositionInUserAgent:disabled"/>
+  <int value="-838419212" label="CloudApAuthAttachAsHeader:disabled"/>
   <int value="-837650216" label="DisableCryptAuthV1DeviceSync:disabled"/>
   <int value="-837473047" label="AutofillEnableStickyPaymentsBubble:disabled"/>
   <int value="-836123854" label="wallet-service-use-sandbox"/>

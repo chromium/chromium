@@ -9743,6 +9743,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"cloud-ap-auth", flag_descriptions::kCloudApAuthName,
      flag_descriptions::kCloudApAuthDescription, kOsWin,
      FEATURE_VALUE_TYPE(enterprise_auth::kCloudApAuth)},
+
+    {"cloud-ap-auth-attach-as-header",
+     flag_descriptions::kCloudApAuthAttachAsHeaderName,
+     flag_descriptions::kCloudApAuthAttachAsHeaderDescription, kOsWin,
+     FEATURE_VALUE_TYPE(enterprise_auth::kCloudApAuthAttachAsHeader)},
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

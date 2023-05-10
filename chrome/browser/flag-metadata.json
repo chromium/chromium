@@ -1108,6 +1108,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "cloud-ap-auth-attach-as-header",
+    "owners": [ "igorruvinov", "zmin" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "cmd-decoder-always-get-size-from-source-texture",
     "owners": [ "blundell" ],
     "expiry_milestone": 128

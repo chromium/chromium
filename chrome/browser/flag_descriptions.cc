@@ -4740,6 +4740,13 @@ const char kCloudApAuthDescription[] =
     "the CloudAP framework. Credentials are retrieved from accounts signed "
     "into the operating system.";
 
+const char kCloudApAuthAttachAsHeaderName[] =
+    "CloudAP authentication data headers";
+const char kCloudApAuthAttachAsHeaderDescription[] =
+    "Allows certain ambient authentication data to be added to HTTP requests "
+    "as separate headers instead of being appended to the cookie "
+    "header.";
+
 const char kEnableMediaFoundationVideoCaptureName[] =
     "MediaFoundation Video Capture";
 const char kEnableMediaFoundationVideoCaptureDescription[] =
