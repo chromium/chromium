@@ -38,8 +38,10 @@ class LocalImageSearchProvider : public SearchProvider {
   void StopQuery() override;
 
  private:
-  void OnSearchComplete(std::vector<FileSearchResult> paths);
-  std::unique_ptr<FileResult> MakeResult(const FileSearchResult& path);
+  void OnSearchComplete(
+      const std::map<base::FilePath, FileSearchResult>& file_search_results);
+  std::unique_ptr<FileResult> MakeResult(const FileSearchResult& search_result,
+                                         const base::FilePath& path);
 
   base::TimeTicks query_start_time_;
   std::u16string last_query_;

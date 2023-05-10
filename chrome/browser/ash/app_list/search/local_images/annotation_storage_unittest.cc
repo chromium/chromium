@@ -135,11 +135,13 @@ TEST_F(AnnotationStorageTest, LinearSearchAnnotations) {
   auto images =
       storage_->LinearSearchAnnotations(base::UTF8ToUTF16(std::string("test")));
 
-  EXPECT_THAT(images,
-              testing::UnorderedElementsAreArray(
-                  {FileSearchResult(bar_image.path, bar_image.last_modified, 1),
-                   FileSearchResult(foo_image.path, foo_image.last_modified,
-                                    0.909375)}));
+  EXPECT_THAT(
+      images,
+      testing::UnorderedElementsAre(
+          testing::Pair(bar_image.path,
+                        FileSearchResult(bar_image.last_modified, 1)),
+          testing::Pair(foo_image.path,
+                        FileSearchResult(foo_image.last_modified, 0.909375))));
 
   task_environment_.RunUntilIdle();
 }

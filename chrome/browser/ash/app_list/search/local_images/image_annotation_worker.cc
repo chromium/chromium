@@ -76,6 +76,7 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
       &ImageAnnotationWorker::OnFileChange, weak_ptr_factory_.GetWeakPtr());
 
   if (!use_fake_annotator_for_tests_) {
+    DVLOG(1) << "Initializing OCR DLC.";
     screen_ai_service_router_.LaunchIfNotRunning();
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -89,6 +90,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
   if (!use_fake_annotator_for_tests_ &&
       screen_ai::ScreenAIInstallState::GetInstance()->get_state() !=
           screen_ai::ScreenAIInstallState::State::kReady) {
+    DVLOG(1) << "OCR DLC is not ready. Waiting.";
     // It is expected to be ready on a first try. Also, it is not a time
     // sensitive task, so we do not need to implement a full-fledged observer.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -99,6 +101,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
     return;
   }
 
+  DVLOG(1) << "OCR DLC is ready.";
   if (!use_fake_annotator_for_tests_) {
     EnsureIcaAnnotatorIsConnected();
     EnsureOcrAnnotatorIsConnected();

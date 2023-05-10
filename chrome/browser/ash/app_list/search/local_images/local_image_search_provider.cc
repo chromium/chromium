@@ -69,15 +69,15 @@ void LocalImageSearchProvider::StopQuery() {
 }
 
 void LocalImageSearchProvider::OnSearchComplete(
-    std::vector<FileSearchResult> paths) {
+    const std::map<base::FilePath, FileSearchResult>& file_search_results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "OnSearchComplete";
 
   SearchProvider::Results results;
-  for (const auto& path : paths) {
-    DCHECK(path.relevance >= 0.0 && path.relevance <= 1.0);
-    DVLOG(1) << path.path;
-    results.push_back(MakeResult(path));
+  for (const auto& [path, search_result] : file_search_results) {
+    DCHECK(search_result.relevance >= 0.0 && search_result.relevance <= 1.0);
+    DVLOG(1) << path;
+    results.push_back(MakeResult(search_result, path));
   }
 
   SwapResults(&results);
@@ -85,22 +85,23 @@ void LocalImageSearchProvider::OnSearchComplete(
 }
 
 std::unique_ptr<FileResult> LocalImageSearchProvider::MakeResult(
-    const FileSearchResult& path) {
+    const FileSearchResult& search_result,
+    const base::FilePath& path) {
   // Use the parent directory name as details text. Take care to remove newlines
   // and handle RTL as this is displayed directly.
   std::u16string parent_dir_name = base::CollapseWhitespace(
-      path.path.DirName().BaseName().LossyDisplayName(), true);
+      path.DirName().BaseName().LossyDisplayName(), true);
   base::i18n::SanitizeUserSuppliedString(&parent_dir_name);
 
-  DVLOG(1) << "id: " << kFileSearchSchema + path.path.value() << " "
+  DVLOG(1) << "id: " << kFileSearchSchema + path.value() << " "
            << parent_dir_name << " " << last_query_
-           << " rl: " << path.relevance;
+           << " rl: " << search_result.relevance;
 
   auto result = std::make_unique<FileResult>(
-      /*id=*/kFileSearchSchema + path.path.value(), path.path, parent_dir_name,
+      /*id=*/kFileSearchSchema + path.value(), path, parent_dir_name,
       ash::AppListSearchResultType::kImageSearch,
-      ash::SearchResultDisplayType::kImage, path.relevance, last_query_,
-      FileResult::Type::kFile, profile_);
+      ash::SearchResultDisplayType::kImage, search_result.relevance,
+      last_query_, FileResult::Type::kFile, profile_);
   result->RequestThumbnail(&thumbnail_loader_);
   return result;
 }
