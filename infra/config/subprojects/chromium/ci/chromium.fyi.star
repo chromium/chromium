@@ -2492,6 +2492,7 @@ fyi_ios_builder(
             short_name = "dev",
         ),
     ],
+    xcode = xcode.x14betabots,
 )
 
 fyi_ios_builder(
