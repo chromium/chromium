@@ -91,7 +91,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // Maps a session id to an update context.
   using UpdateContexts = std::map<std::string, scoped_refptr<UpdateContext>>;
 
-  absl::optional<base::RepeatingClosure> InvokeOperation(
+  base::RepeatingClosure InvokeOperation(
       bool is_foreground,
       bool is_update_check_only,
       bool is_install,
