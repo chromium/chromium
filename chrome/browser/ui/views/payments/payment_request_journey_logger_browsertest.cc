@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoSupportedPaymentMethodTest,
   content::WebContents* web_contents = GetActiveWebContents();
   const std::string click_buy_button_js =
       "(function() { document.getElementById('buy').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_buy_button_js));
   ASSERT_TRUE(WaitForObservedEvent());
 
   histogram_tester.ExpectBucketCount(
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
   content::WebContents* web_contents = GetActiveWebContents();
   const std::string click_buy_button_js =
       "(function() { document.getElementById('showAgain').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_buy_button_js));
 
   // Complete the original Payment Request.
   ResetEventWaiterForSequence(
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
 
   // Try to show a second request.
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       web_contents,
       content::JsReplace("showSecondRequestWithMethods([{supportedMethods:$1}, "
                          "{supportedMethods:$2}]);",
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
                                DialogEvent::HAS_ENROLLED_INSTRUMENT_RETURNED});
 
   // Initiate a Payment Request without showing it.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("queryNoShowWithMethods([{supportedMethods:$1}"
                          ", {supportedMethods:$2}]);",
@@ -1072,10 +1072,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, HistoryPushState_UserAborted) {
       a_method, b_method));
 
   // PushState on the history.
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "window.history.pushState(\"\", \"\", "
-                                     "\"/favicon/"
-                                     "pushstate_with_favicon_pushed.html\");"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "window.history.pushState(\"\", \"\", "
+                              "\"/favicon/"
+                              "pushstate_with_favicon_pushed.html\");"));
 
   // Simulate that the user cancels the PR.
   ClickOnCancel();
@@ -1133,10 +1133,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, HistoryPushState_Completed) {
       a_method, b_method));
 
   // PushState on the history.
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "window.history.pushState(\"\", \"\", "
-                                     "\"/favicon/"
-                                     "pushstate_with_favicon_pushed.html\");"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "window.history.pushState(\"\", \"\", "
+                              "\"/favicon/"
+                              "pushstate_with_favicon_pushed.html\");"));
 
   // Complete the Payment Request.
   ResetEventWaiterForSequence(

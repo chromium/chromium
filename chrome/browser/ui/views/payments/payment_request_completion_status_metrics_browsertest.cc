@@ -90,8 +90,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
   // The merchant reloads the page.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "(function() { location.reload(); })();"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "(function() { location.reload(); })();"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Make sure the metrics are logged correctly.
@@ -152,10 +152,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
   // The merchant navigates away.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "(function() { window.location.href = "
-                                     "'/payment_request_email_test.html'; "
-                                     "})();"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "(function() { window.location.href = "
+                              "'/payment_request_email_test.html'; "
+                              "})();"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Make sure the metrics are logged correctly.
@@ -219,8 +219,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
       {DialogEvent::ABORT_CALLED, DialogEvent::DIALOG_CLOSED});
   const std::string click_buy_button_js =
       "(function() { document.getElementById('abort').click(); })();";
-  ASSERT_TRUE(
-      content::ExecuteScript(GetActiveWebContents(), click_buy_button_js));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), click_buy_button_js));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Make sure the metrics are logged correctly.

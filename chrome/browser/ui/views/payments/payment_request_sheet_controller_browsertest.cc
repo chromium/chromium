@@ -61,14 +61,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::CONTACT_INFO_EDITOR_OPENED});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "retry({"
-                                     "  payer: {"
-                                     "    email: 'EMAIL ERROR',"
-                                     "    name: 'NAME ERROR',"
-                                     "    phone: 'PHONE ERROR'"
-                                     "  }"
-                                     "});"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "retry({"
+                              "  payer: {"
+                              "    email: 'EMAIL ERROR',"
+                              "    name: 'NAME ERROR',"
+                              "    phone: 'PHONE ERROR'"
+                              "  }"
+                              "});"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_FALSE(dialog_view()->throbber_overlay_for_testing()->GetVisible());

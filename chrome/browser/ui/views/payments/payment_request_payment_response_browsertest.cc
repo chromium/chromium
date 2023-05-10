@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(
                                DialogEvent::SPEC_DONE_UPDATING,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "retry({});"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "retry({});"));
 
   // Select "contact2" profile
   OpenContactInfoScreen();

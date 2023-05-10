@@ -308,7 +308,8 @@ void PaymentRequestBrowserTestBase::InvokePaymentRequestUIWithJs(
   ResetEventWaiterForDialogOpened();
 
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
+  ASSERT_TRUE(content::ExecJs(web_contents, click_buy_button_js,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   ASSERT_TRUE(WaitForObservedEvent());
 
@@ -676,8 +677,8 @@ void PaymentRequestBrowserTestBase::RetryPaymentRequest(
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION});
 
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "retry(" + validation_errors + ");"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "retry(" + validation_errors + ");"));
 
   ASSERT_TRUE(WaitForObservedEvent());
 }
@@ -692,8 +693,8 @@ void PaymentRequestBrowserTestBase::RetryPaymentRequest(
        DialogEvent::PROCESSING_SPINNER_HIDDEN,
        DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION, dialog_event});
 
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "retry(" + validation_errors + ");"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "retry(" + validation_errors + ");"));
 
   ASSERT_TRUE(WaitForObservedEvent());
 }

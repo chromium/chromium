@@ -164,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
                                DialogEvent::CAN_MAKE_PAYMENT_RETURNED,
                                DialogEvent::HAS_ENROLLED_INSTRUMENT_CALLED,
                                DialogEvent::HAS_ENROLLED_INSTRUMENT_RETURNED});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "queryNoShowWithUrlMethods();"));
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "queryNoShowWithUrlMethods();"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Navigate away to trigger the log.
@@ -296,8 +296,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
       {DialogEvent::ABORT_CALLED, DialogEvent::DIALOG_CLOSED});
   const std::string click_buy_button_js =
       "(function() { document.getElementById('abort').click(); })();";
-  ASSERT_TRUE(
-      content::ExecuteScript(GetActiveWebContents(), click_buy_button_js));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), click_buy_button_js));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Make sure the correct events were logged.
@@ -450,8 +449,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
       {DialogEvent::ABORT_CALLED, DialogEvent::DIALOG_CLOSED});
   const std::string click_buy_button_js =
       "(function() { document.getElementById('abort').click(); })();";
-  ASSERT_TRUE(
-      content::ExecuteScript(GetActiveWebContents(), click_buy_button_js));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), click_buy_button_js));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Make sure the correct events were logged.
@@ -566,8 +564,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
       {DialogEvent::ABORT_CALLED, DialogEvent::DIALOG_CLOSED});
   const std::string click_buy_button_js =
       "(function() { document.getElementById('abort').click(); })();";
-  ASSERT_TRUE(
-      content::ExecuteScript(GetActiveWebContents(), click_buy_button_js));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), click_buy_button_js));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Make sure that no canMakePayment events were logged.

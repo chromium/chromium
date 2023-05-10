@@ -42,8 +42,8 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
                                  DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                  DialogEvent::DIALOG_OPENED});
     ASSERT_TRUE(
-        content::ExecuteScript(GetActiveWebContents(),
-                               content::JsReplace("buy($1)", payment_method_)));
+        content::ExecJs(GetActiveWebContents(),
+                        content::JsReplace("buy($1)", payment_method_)));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(web_modal::WebContentsModalDialogManager::FromWebContents(
                     GetActiveWebContents())
@@ -226,15 +226,15 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, SkipUI) {
   base::HistogramTester histogram_tester;
   NavigateTo("/show_promise/digital_goods.html");
   InstallEchoPaymentHandler();
-  ASSERT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(),
-      content::JsReplace("create($1)", payment_method_)));
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      content::JsReplace("create($1)", payment_method_)));
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN,
        DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::SPEC_DONE_UPDATING,
        DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
        DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "buy();"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "buy();"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   ExpectBodyContains({R"({"currency":"USD","value":"1.00"})"});

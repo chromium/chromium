@@ -28,7 +28,7 @@ class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
     ResetEventWaiterForDialogOpened();
 
     content::WebContents* web_contents = GetActiveWebContents();
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         web_contents, function_name + "('" + payment_method_name + "');"));
 
     ASSERT_TRUE(WaitForObservedEvent());
