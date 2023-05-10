@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 110 tests; 92 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 106 tests; 92 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS border-top-left-radius border-radius(px) / values
 PASS border-top-left-radius border-radius(px) / events
 PASS border-top-left-radius border-radius(px-px) / values
@@ -90,10 +90,6 @@ PASS transform transform(rotate) / values
 PASS transform transform(rotate) / events
 PASS transform-origin horizontal(keyword) / values
 PASS transform-origin horizontal(keyword) / events
-FAIL zoom number(integer) / values assert_not_equals: must not be target value after start got disallowed value "10"
-FAIL zoom number(integer) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "zoom:2s" but got ""
-FAIL zoom number(decimal) / values assert_not_equals: must not be target value after start got disallowed value "9.55"
-FAIL zoom number(decimal) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "zoom:2s" but got ""
 FAIL display display(static to absolute) / values assert_not_equals: must not be target value after start got disallowed value "block"
 FAIL display display(static to absolute) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "display:2s" but got ""
 FAIL display display(block to inline-block) / values assert_not_equals: must not be target value after start got disallowed value "inline-block"
