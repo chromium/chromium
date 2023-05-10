@@ -1133,8 +1133,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::CommitNavigationParamsPtr commit_params,
     bool was_opener_suppressed,
-    const blink::LocalFrameToken* initiator_frame_token,
-    int initiator_process_id,
     const std::string& extra_headers,
     FrameNavigationEntry* frame_entry,
     NavigationEntryImpl* entry,
@@ -1146,9 +1144,11 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     absl::optional<std::u16string> embedder_shared_storage_context) {
   return Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
-      /*browser_initiated=*/true, was_opener_suppressed, initiator_frame_token,
-      initiator_process_id, extra_headers, frame_entry, entry,
-      is_form_submission, std::move(navigation_ui_data), impression,
+      /*browser_initiated=*/true, was_opener_suppressed,
+      absl::nullopt /* initiator_frame_token */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+      extra_headers, frame_entry, entry, is_form_submission,
+      std::move(navigation_ui_data), impression,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
       is_pdf, is_embedder_initiated_fenced_frame_navigation,
@@ -1162,7 +1162,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     blink::mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
     bool was_opener_suppressed,
-    const blink::LocalFrameToken* initiator_frame_token,
+    const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
     int initiator_process_id,
     const std::string& extra_headers,
     FrameNavigationEntry* frame_entry,
@@ -1193,8 +1193,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
   }
 
   auto navigation_params = blink::mojom::BeginNavigationParams::New(
-      base::OptionalFromPtr(initiator_frame_token), extra_headers,
-      net::LOAD_NORMAL, false /* skip_service_worker */,
+      initiator_frame_token, extra_headers, net::LOAD_NORMAL,
+      false /* skip_service_worker */,
       blink::mojom::RequestContextType::LOCATION,
       blink::mojom::MixedContentContextType::kBlockable, is_form_submission,
       false /* was_initiated_by_link_click */,
