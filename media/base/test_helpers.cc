@@ -210,6 +210,10 @@ VideoDecoderConfig TestVideoConfig::NormalCodecProfile(
 }
 
 // static
+VideoDecoderConfig TestVideoConfig::NormalEncrypted(VideoCodec codec) {
+  return NormalEncrypted(codec, MinProfile(codec));
+}
+
 VideoDecoderConfig TestVideoConfig::NormalEncrypted(VideoCodec codec,
                                                     VideoCodecProfile profile) {
   return GetTestConfig(codec, profile, VideoColorSpace::JPEG(),

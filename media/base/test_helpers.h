@@ -103,8 +103,10 @@ class TestVideoConfig {
   static VideoDecoderConfig NormalCodecProfile(
       VideoCodec codec = VideoCodec::kVP8,
       VideoCodecProfile profile = VP8PROFILE_MIN);
-  static VideoDecoderConfig NormalEncrypted(VideoCodec codec = VideoCodec::kVP8,
-                                            VideoCodecProfile = VP8PROFILE_MIN);
+  static VideoDecoderConfig NormalEncrypted(
+      VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig NormalEncrypted(VideoCodec codec,
+                                            VideoCodecProfile);
   static VideoDecoderConfig NormalRotated(VideoRotation rotation);
 
   // Returns a configuration that is larger in dimensions than Normal().

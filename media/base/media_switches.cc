@@ -1072,6 +1072,14 @@ BASE_FEATURE(kUsePooledSharedImageVideoProvider,
              "UsePooledSharedImageVideoProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow the media pipeline to prioritize the software decoder provided by
+// MediaCodec, instead of the built-in software decoders. This is only enabled
+// for platforms which shows worse performance when using the built-in software
+// decoders, e.g. Cast on ATV.
+BASE_FEATURE(kAllowMediaCodecSoftwareDecoder,
+             "AllowMediaCodecSoftwareDecoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
