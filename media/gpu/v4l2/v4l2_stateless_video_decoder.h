@@ -72,6 +72,8 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
   ~V4L2StatelessVideoDecoder() override;
+
+  SEQUENCE_CHECKER(decoder_sequence_checker_);
 };
 
 }  // namespace media
