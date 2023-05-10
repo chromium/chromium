@@ -1017,8 +1017,8 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: Prohibited by browser policy';
     case WebUITrigger_Status.kNoMatchingConfigurations:
       return 'Rejected: no matching event-level configurations';
-    case WebUITrigger_Status.kExcessiveEventLevelReports:
-      return 'Failure: Excessive event-level reports';
+    case WebUITrigger_Status.kExcessiveReports:
+      return 'Failure: Excessive reports';
     default:
       assertNotReached();
   }

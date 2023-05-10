@@ -1235,7 +1235,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         *new_aggregatable_report,
         source_to_attribute->source.aggregatable_budget_consumed(),
         source_to_attribute->num_aggregatable_reports, aggregatable_dedup_key,
-        limits.aggregatable_budget_per_source);
+        limits.aggregatable_budget_per_source,
+        limits.max_aggregatable_reports_per_source);
   }
 
   if (store_event_level_status == EventLevelResult::kInternalError ||
@@ -2870,13 +2871,19 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
     int64_t aggregatable_budget_consumed,
     int num_aggregatable_reports,
     absl::optional<uint64_t> dedup_key,
-    absl::optional<int64_t>& aggregatable_budget_per_source) {
+    absl::optional<int64_t>& aggregatable_budget_per_source,
+    absl::optional<int>& max_aggregatable_reports_per_source) {
   const auto* aggregatable_attribution =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &report.data());
   DCHECK(aggregatable_attribution);
 
-  // TODO(csharrison): Fail here if reports are too high.
+  if (num_aggregatable_reports >=
+      delegate_->GetMaxAggregatableReportsPerSource()) {
+    max_aggregatable_reports_per_source =
+        delegate_->GetMaxAggregatableReportsPerSource();
+    return AggregatableResult::kExcessiveReports;
+  }
 
   switch (AggregatableAttributionAllowedForBudgetLimit(
       *aggregatable_attribution, aggregatable_budget_consumed)) {

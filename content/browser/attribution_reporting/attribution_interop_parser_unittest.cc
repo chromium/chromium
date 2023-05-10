@@ -79,7 +79,8 @@ bool operator==(AttributionConfig::AggregateLimit a,
         config.aggregatable_budget_per_source, config.min_delay,
         config.delay_span,
         config.null_reports_rate_include_source_registration_time,
-        config.null_reports_rate_exclude_source_registration_time);
+        config.null_reports_rate_exclude_source_registration_time,
+        config.max_aggregatable_reports_per_source);
   };
   return tie(a) == tie(b);
 }

@@ -152,6 +152,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // per source.
   int64_t GetAggregatableBudgetPerSource() const;
 
+  int GetMaxAggregatableReportsPerSource() const;
+
   // Sanitizes `trigger_data` according to the data limits for `source_type`.
   uint64_t SanitizeTriggerData(uint64_t trigger_data,
                                attribution_reporting::mojom::SourceType) const;

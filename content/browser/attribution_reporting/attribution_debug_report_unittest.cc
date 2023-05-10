@@ -759,6 +759,20 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-insufficient-budget"
        }])json"},
+      {AggregatableResult::kExcessiveReports,
+       /*new_aggregatable_report=*/absl::nullopt,
+       CreateReportResult::Limits{.max_aggregatable_reports_per_source = 10},
+       /*source_debug_key=*/absl::nullopt,
+       /*trigger_debug_key=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "10",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-aggregate-excessive-reports"
+       }])json"},
       {AggregatableResult::kNoMatchingSourceFilterData,
        /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),
        /*source_debug_key=*/absl::nullopt,

@@ -714,6 +714,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "deduplicated";
     case AttributionTrigger::AggregatableResult::kReportWindowPassed:
       return out << "reportWindowPassed";
+    case AttributionTrigger::AggregatableResult::kExcessiveReports:
+      return out << "excessiveReports";
   }
 }
 

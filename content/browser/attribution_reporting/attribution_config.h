@@ -108,6 +108,8 @@ struct CONTENT_EXPORT AttributionConfig {
     double null_reports_rate_include_source_registration_time = .008;
     double null_reports_rate_exclude_source_registration_time = .05;
 
+    int max_aggregatable_reports_per_source = 20;
+
     // When adding new members, the corresponding `Validate()` definition and
     // `operator==()` definition in `attribution_interop_parser_unittest.cc`
     // should also be updated.

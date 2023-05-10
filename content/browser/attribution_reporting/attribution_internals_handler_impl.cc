@@ -476,7 +476,7 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
     case EventLevelStatus::kNoMatchingConfigurations:
       return WebUITriggerStatus::kNoMatchingConfigurations;
     case EventLevelStatus::kExcessiveReports:
-      return WebUITriggerStatus::kExcessiveEventLevelReports;
+      return WebUITriggerStatus::kExcessiveReports;
     case EventLevelStatus::kReportWindowPassed:
       return WebUITriggerStatus::kReportWindowPassed;
     case EventLevelStatus::kNotRegistered:
@@ -512,6 +512,8 @@ WebUITriggerStatus GetWebUITriggerStatus(AggregatableStatus status) {
       return WebUITriggerStatus::kDeduplicated;
     case AggregatableStatus::kReportWindowPassed:
       return WebUITriggerStatus::kReportWindowPassed;
+    case AggregatableStatus::kExcessiveReports:
+      return WebUITriggerStatus::kExcessiveReports;
   }
 }
 

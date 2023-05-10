@@ -1376,7 +1376,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
       "Conversions.CreateReportStatus7",
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.CreateReportStatus3",
+      "Conversions.AggregatableReport.CreateReportStatus4",
       AttributionTrigger::AggregatableResult::kNotRegistered, 1);
 }
 
@@ -1638,7 +1638,7 @@ TEST_F(AttributionManagerImplTest,
       "Conversions.CreateReportStatus7",
       AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.CreateReportStatus3",
+      "Conversions.AggregatableReport.CreateReportStatus4",
       AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy, 1);
 }
 

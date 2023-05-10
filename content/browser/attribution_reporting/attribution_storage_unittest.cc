@@ -3583,4 +3583,16 @@ TEST_F(AttributionStorageTest, SourceRegistrationTimeConfig_RoundTrip) {
   delegate()->set_null_aggregatable_reports({});
 }
 
+TEST_F(AttributionStorageTest, MaximumAggregatableReportsPerSource) {
+  auto source = TestAggregatableSourceProvider().GetBuilder().Build();
+  storage()->StoreSource(source);
+  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build();
+  for (int i = 0; i < 20; i++) {
+    EXPECT_EQ(AttributionTrigger::AggregatableResult::kSuccess,
+              MaybeCreateAndStoreAggregatableReport(trigger));
+  }
+  EXPECT_EQ(AttributionTrigger::AggregatableResult::kExcessiveReports,
+            MaybeCreateAndStoreAggregatableReport(trigger));
+}
+
 }  // namespace content

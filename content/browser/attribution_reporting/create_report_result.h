@@ -37,6 +37,10 @@ class CONTENT_EXPORT CreateReportResult {
     // `absl::nullopt` unless `aggregatable_status_` is
     // `kNoCapacityForConversionDestination`.
     absl::optional<int> max_aggregatable_reports_per_destination;
+
+    // `absl::nullopt` unless `aggregatable_status_` is
+    // `kExcessiveReports`..
+    absl::optional<int> max_aggregatable_reports_per_source;
   };
 
   CreateReportResult(

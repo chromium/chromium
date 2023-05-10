@@ -318,7 +318,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       int64_t aggregatable_budget_consumed,
       int num_aggregatable_reports,
       absl::optional<uint64_t> dedup_key,
-      absl::optional<int64_t>& aggregatable_budget_per_source)
+      absl::optional<int64_t>& aggregatable_budget_per_source,
+      absl::optional<int>& max_aggregatable_reports_per_source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreAttributionReport(AttributionReport& report)

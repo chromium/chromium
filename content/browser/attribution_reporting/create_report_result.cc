@@ -85,6 +85,9 @@ CreateReportResult::CreateReportResult(
   DCHECK_EQ(limits.aggregatable_budget_per_source.has_value(),
             aggregatable_status_ == AggregatableResult::kInsufficientBudget);
 
+  DCHECK_EQ(limits.max_aggregatable_reports_per_source.has_value(),
+            aggregatable_status_ == AggregatableResult::kExcessiveReports);
+
   DCHECK_EQ(
       limits.rate_limits_max_attribution_reporting_origins.has_value(),
       event_level_status_ == EventLevelResult::kExcessiveReportingOrigins ||

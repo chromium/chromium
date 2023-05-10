@@ -115,6 +115,10 @@ bool AttributionConfig::AggregateLimit::Validate() const {
     return false;
   }
 
+  if (max_aggregatable_reports_per_source <= 0) {
+    return false;
+  }
+
   return true;
 }
 

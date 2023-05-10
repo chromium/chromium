@@ -143,12 +143,12 @@ struct WebUITrigger {
     kDeduplicated,
     kReportWindowPassed,
     kNotRegistered,
+    kExcessiveReports,
 
     // Event-level statuses:
     kLowPriority,
     kNoised,
     kNoMatchingConfigurations,
-    kExcessiveEventLevelReports,
 
     // Aggregatable statuses:
     kNoHistograms,

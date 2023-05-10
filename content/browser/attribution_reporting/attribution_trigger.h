@@ -64,7 +64,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kProhibitedByBrowserPolicy = 10,
     kDeduplicated = 11,
     kReportWindowPassed = 12,
-    kMaxValue = kReportWindowPassed,
+    kExcessiveReports = 13,
+    kMaxValue = kExcessiveReports,
   };
 
   AttributionTrigger(attribution_reporting::SuitableOrigin reporting_origin,
