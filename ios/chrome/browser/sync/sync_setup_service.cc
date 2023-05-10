@@ -88,11 +88,6 @@ void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
 
-bool SyncSetupService::IsSyncRequested() const {
-  return !sync_service_->HasDisableReason(
-      syncer::SyncService::DISABLE_REASON_USER_CHOICE);
-}
-
 bool SyncSetupService::CanSyncFeatureStart() const {
   return sync_service_->CanSyncFeatureStart();
 }
