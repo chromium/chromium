@@ -50,17 +50,17 @@ bool ConvertCourseWorkItemAlternateLink(base::StringPiece input, GURL* output) {
 }
 
 base::TimeDelta GetCourseWorkItemDueTime(
-    const base::Value& raw_course_work_item) {
+    const base::Value::Dict& raw_course_work_item) {
   const auto* const time =
-      raw_course_work_item.FindDictPath(kApiResponseCourseWorkItemDueTimeKey);
+      raw_course_work_item.FindDict(kApiResponseCourseWorkItemDueTimeKey);
   if (!time) {
     return base::TimeDelta();
   }
 
-  const auto hours = time->FindIntKey(kDueTimeHoursComponent);
-  const auto minutes = time->FindIntKey(kDueTimeMinutesComponent);
-  const auto seconds = time->FindIntKey(kDueTimeSecondsComponent);
-  const auto nanos = time->FindIntKey(kDueTimeNanosComponent);
+  const auto hours = time->FindInt(kDueTimeHoursComponent);
+  const auto minutes = time->FindInt(kDueTimeMinutesComponent);
+  const auto seconds = time->FindInt(kDueTimeSecondsComponent);
+  const auto nanos = time->FindInt(kDueTimeNanosComponent);
 
   return base::Hours(hours.value_or(0)) + base::Minutes(minutes.value_or(0)) +
          base::Seconds(seconds.value_or(0)) +
@@ -68,16 +68,16 @@ base::TimeDelta GetCourseWorkItemDueTime(
 }
 
 absl::optional<CourseWorkItem::DueDateTime> GetCourseWorkItemDueDateTime(
-    const base::Value& raw_course_work_item) {
+    const base::Value::Dict& raw_course_work_item) {
   const auto* const date =
-      raw_course_work_item.FindDictPath(kApiResponseCourseWorkItemDueDateKey);
+      raw_course_work_item.FindDict(kApiResponseCourseWorkItemDueDateKey);
   if (!date) {
     return absl::nullopt;
   }
 
-  const auto year = date->FindIntKey(kDueDateYearComponent);
-  const auto month = date->FindIntKey(kDueDateMonthComponent);
-  const auto day = date->FindIntKey(kDueDateDayComponent);
+  const auto year = date->FindInt(kDueDateYearComponent);
+  const auto month = date->FindInt(kDueDateMonthComponent);
+  const auto day = date->FindInt(kDueDateDayComponent);
 
   if (!year.has_value() && !month.has_value() && !day.has_value()) {
     return absl::nullopt;
@@ -116,11 +116,12 @@ void CourseWorkItem::RegisterJSONConverter(
 bool CourseWorkItem::ConvertCourseWorkItem(const base::Value* input,
                                            CourseWorkItem* output) {
   base::JSONValueConverter<CourseWorkItem> converter;
-  if (!converter.Convert(*input, output)) {
+  const base::Value::Dict* dict = input->GetIfDict();
+  if (!dict || !converter.Convert(*dict, output)) {
     return false;
   }
 
-  output->due_date_time_ = GetCourseWorkItemDueDateTime(*input);
+  output->due_date_time_ = GetCourseWorkItemDueDateTime(*dict);
   return true;
 }
 
