@@ -430,10 +430,10 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
 
  protected:
   void InjectBeforeUnloadListener(content::WebContents* web_contents) {
-    ASSERT_TRUE(content::ExecuteScript(
-        web_contents,
-        "window.addEventListener('beforeunload',"
-        "function(event) { event.returnValue = 'Foo'; });"));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents,
+                        "window.addEventListener('beforeunload',"
+                        "function(event) { event.returnValue = 'Foo'; });"));
     content::PrepContentsForBeforeUnloadTest(web_contents);
   }
 
@@ -472,7 +472,7 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::NotificationService::AllSources());
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         DevToolsWindowTesting::Get(devtools_window)->main_web_contents(),
         "window.open(\"\", \"\", \"location=0\");"));
     observer.Wait();
@@ -952,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
   DevToolsWindowTesting::Get(devtools_window)
       ->SetCloseCallback(runner->QuitClosure());
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       DevToolsWindowTesting::Get(devtools_window)->main_web_contents(),
       "window.addEventListener('beforeunload',"
       "function(event) { while (true); });"));
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   content::TestNavigationManager web_about_blank_manager(main_web_contents(),
                                                          about_blank_url);
 
-  ASSERT_TRUE(content::ExecuteScript(web_frame_rfh, about_blank_javascript));
+  ASSERT_TRUE(content::ExecJs(web_frame_rfh, about_blank_javascript));
 
   ASSERT_TRUE(web_about_blank_manager.WaitForNavigationFinished());
   // After navigation, the frame may change.
@@ -1161,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   content::TestNavigationManager renavigation_manager(main_web_contents(),
                                                       extension_simple_url);
 
-  ASSERT_TRUE(content::ExecuteScript(web_frame_rfh, renavigation_javascript));
+  ASSERT_TRUE(content::ExecJs(web_frame_rfh, renavigation_javascript));
 
   ASSERT_TRUE(renavigation_manager.WaitForNavigationFinished());
 
@@ -1562,7 +1562,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
       main_web_contents()->GetPrimaryMainFrame();
 
   content::TestNavigationManager manager(main_web_contents(), devtools_url);
-  ASSERT_TRUE(content::ExecuteScript(main_devtools_rfh, javascript));
+  ASSERT_TRUE(content::ExecJs(main_devtools_rfh, javascript));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
@@ -2036,8 +2036,8 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
                 ->popup_controller_for_testing()) {
       controller->DisableThresholdForTesting(true);
     }
-    ASSERT_TRUE(content::ExecuteScript(inspected_contents_,
-                                       "console.log('didShowSuggestions');"));
+    ASSERT_TRUE(content::ExecJs(inspected_contents_,
+                                "console.log('didShowSuggestions');"));
   }
 
   void OnTextFieldChanged() override {}
@@ -2118,9 +2118,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDevToolsExternalNavigation) {
   GURL url = embedded_test_server()->GetURL(kNavigateBackTestPage);
   ui_test_utils::UrlLoadObserver observer(
       url, content::NotificationService::AllSources());
-  ASSERT_TRUE(content::ExecuteScript(
-      main_web_contents(),
-      std::string("window.location = \"") + url.spec() + "\""));
+  ASSERT_TRUE(
+      content::ExecJs(main_web_contents(),
+                      std::string("window.location = \"") + url.spec() + "\""));
   observer.Wait();
 
   ASSERT_TRUE(main_web_contents()->GetLastCommittedURL().SchemeIs(
@@ -2255,8 +2255,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_AutoAttachToWindowOpen) {
   OpenDevToolsWindow(kWindowOpenTestPage, false);
   DevToolsWindowTesting::Get(window_)->SetOpenNewWindowForPopups(true);
   DevToolsWindowCreationObserver observer;
-  ASSERT_TRUE(content::ExecuteScript(
-      GetInspectedTab(), "window.open('window_open.html', '_blank');"));
+  ASSERT_TRUE(content::ExecJs(GetInspectedTab(),
+                              "window.open('window_open.html', '_blank');"));
   observer.WaitForLoad();
   DispatchOnTestSuite(observer.devtools_window(), "waitForDebuggerPaused");
   DevToolsWindowTesting::CloseDevToolsWindowSync(observer.devtools_window());
@@ -2935,10 +2935,10 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, BrowserCloseWithBeforeUnload) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      tab,
-      "window.addEventListener('beforeunload',"
-      "function(event) { event.returnValue = 'Foo'; });"));
+  ASSERT_TRUE(
+      content::ExecJs(tab,
+                      "window.addEventListener('beforeunload',"
+                      "function(event) { event.returnValue = 'Foo'; });"));
   content::PrepContentsForBeforeUnloadTest(tab);
   BrowserHandler handler(nullptr, std::string());
   handler.Close();
