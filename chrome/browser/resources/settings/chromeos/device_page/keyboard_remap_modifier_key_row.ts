@@ -87,6 +87,11 @@ export class KeyboardRemapModifierKeyRowElement extends
         value: '',
         computed: 'getKeyIcon(key, metaKey)',
       },
+
+      removeTopBorder: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
