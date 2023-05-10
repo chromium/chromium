@@ -20,10 +20,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   bindFileSystemFunction('loadDirectory');
 
-  // developerPrivate.enable is the same as chrome.management.setEnabled.
-  // TODO(devlin): Migrate callers off developerPrivate.enable.
-  bindingsAPI.compiledApi.enable = chrome.management.setEnabled;
-
   apiFunctions.setHandleRequest('allowFileAccess',
                                 function(id, allow, callback) {
     chrome.developerPrivate.updateExtensionConfiguration(

@@ -838,10 +838,6 @@ namespace developerPrivate {
         ExtensionSiteAccessUpdate[] updates,
         optional VoidCallback callback);
 
-    [nocompile, deprecated="Use management.setEnabled"]
-        static void enable(DOMString id,
-                           boolean enabled,
-                           optional VoidCallback callback);
     [nocompile, deprecated="Use updateExtensionConfiguration"]
         static void allowIncognito(DOMString extensionId,
                                    boolean allow,
