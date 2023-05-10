@@ -8,16 +8,20 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/platform_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/skia_util.h"
 
 @interface RedView : NSView
 @end
@@ -41,9 +45,17 @@ void CreateImageBufferReleaser(void* info, const void* data, size_t size) {
 
 }  // namespace
 
-class ClipboardMacTest : public PlatformTest {
+class ClipboardMacTest : public PlatformTest,
+                         public testing::WithParamInterface<bool> {
  public:
   ClipboardMacTest() = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kMacClipboardWriteImageWithPng, ShouldWriteImageWithPng());
+
+    PlatformTest::SetUp();
+  }
 
   base::scoped_nsobject<NSImage> CreateImage(int32_t width,
                                              int32_t height,
@@ -71,9 +83,14 @@ class ClipboardMacTest : public PlatformTest {
         initWithCGImage:image_ref.get()
                    size:NSMakeSize(width, height)]);
   }
+
+  bool ShouldWriteImageWithPng() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ClipboardMacTest, ReadImageRetina) {
+TEST_P(ClipboardMacTest, ReadImageRetina) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -91,7 +108,7 @@ TEST_F(ClipboardMacTest, ReadImageRetina) {
   EXPECT_EQ(2 * height, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, ReadImageNonRetina) {
+TEST_P(ClipboardMacTest, ReadImageNonRetina) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -109,7 +126,7 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina) {
   EXPECT_EQ(height, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, EmptyImage) {
+TEST_P(ClipboardMacTest, EmptyImage) {
   base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
   [pasteboard->get() writeObjects:@[ image.get() ]];
@@ -125,7 +142,7 @@ TEST_F(ClipboardMacTest, EmptyImage) {
   EXPECT_EQ(0, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, PDFImage) {
+TEST_P(ClipboardMacTest, PDFImage) {
   int32_t width = 99;
   int32_t height = 101;
   NSRect frame = NSMakeRect(0, 0, width, height);
@@ -149,5 +166,39 @@ TEST_F(ClipboardMacTest, PDFImage) {
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }
+
+TEST_P(ClipboardMacTest, WriteBitmapAddsPNGToClipboard) {
+  int32_t width = 99;
+  int32_t height = 101;
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorRED);
+  clipboard_mac->WriteBitmapInternal(bitmap, pasteboard->get());
+
+  NSData* data = [pasteboard->get() dataForType:NSPasteboardTypePNG];
+
+  if (!ShouldWriteImageWithPng()) {
+    ASSERT_FALSE(data);
+    return;
+  }
+
+  ASSERT_TRUE(data);
+  const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
+  std::vector<uint8_t> png_data(bytes, bytes + data.length);
+
+  SkBitmap result_bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &result_bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, result_bitmap));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardMacTest,
+                         // Is the kMacClipboardWriteImageWithPng flag enabled?
+                         ::testing::Bool());
 
 }  // namespace ui

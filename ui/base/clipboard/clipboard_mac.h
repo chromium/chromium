@@ -31,6 +31,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina);
   FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage);
   FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, WriteBitmapAddsPNGToClipboard);
   friend class Clipboard;
 
   ClipboardMac();
@@ -107,6 +108,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
 
+  void WriteBitmapInternal(const SkBitmap& bitmap, NSPasteboard* pasteboard);
   std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer,
                                        NSPasteboard* pasteboard) const;
 

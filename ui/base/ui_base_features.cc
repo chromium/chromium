@@ -505,6 +505,17 @@ BASE_FEATURE(kWebUiSystemFont,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+// When enabled, images will be written to the system clipboard as both a TIFF
+// and a PNG (as opposed to just a TIFF). This requires encoding the sanitized
+// bitmap to a PNG on the UI thread on copy, which may cause jank. This matches
+// the behavior of other platforms.
+// TODO(https://crbug.com/1443646): Remove this flag eventually.
+BASE_FEATURE(kMacClipboardWriteImageWithPng,
+             "MacClipboardWriteImageWithPng",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_APPLE)
 // Font Smoothing was enabled by default prior to introducing this feature.
 // We want to experiment with disabling it to align with CR2023 designs.

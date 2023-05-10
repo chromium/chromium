@@ -9,6 +9,7 @@
 
 #include <limits>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -32,6 +33,7 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -449,13 +451,7 @@ void ClipboardMac::WriteBitmap(const SkBitmap& bitmap) {
   // security CHECK.
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
-  NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-      bitmap, base::mac::GetSystemColorSpace());
-  if (!image) {
-    NOTREACHED() << "SkBitmapToNSImageWithColorSpace failed";
-    return;
-  }
-  [GetPasteboard() writeObjects:@[ image ]];
+  WriteBitmapInternal(bitmap, GetPasteboard());
 }
 
 void ClipboardMac::WriteData(const ClipboardFormatType& format,
@@ -494,6 +490,51 @@ std::vector<uint8_t> ClipboardMac::ReadPngInternal(
   scoped_refptr<base::RefCountedMemory> mem = gfx_image.As1xPNGBytes();
   std::vector<uint8_t> image_data(mem->data(), mem->data() + mem->size());
   return image_data;
+}
+
+void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
+                                       NSPasteboard* pasteboard) {
+  // The bitmap type is sanitized to be N32 before we get here. The conversion
+  // to an NSImage would not explode if we got this wrong, so this is not a
+  // security CHECK.
+  DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
+  if (!base::FeatureList::IsEnabled(features::kMacClipboardWriteImageWithPng)) {
+    NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
+        bitmap, base::mac::GetSystemColorSpace());
+    if (!image) {
+      NOTREACHED() << "SkBitmapToNSImageWithColorSpace failed";
+      return;
+    }
+    [pasteboard writeObjects:@[ image ]];
+    return;
+  }
+
+  NSBitmapImageRep* image_rep = skia::SkBitmapToNSBitmapImageRepWithColorSpace(
+      bitmap, base::mac::GetSystemColorSpace());
+  if (!image_rep) {
+    NOTREACHED() << "SkBitmapToNSBitmapImageRepWithColorSpace failed";
+    return;
+  }
+  // Attempt to format the image representation as a PNG, and write it directly
+  // to the clipboard if this succeeds. This will write both a PNG and a TIFF.
+  NSData* data = [image_rep representationUsingType:NSBitmapImageFileTypePNG
+                                         properties:@{}];
+  if (data) {
+    base::scoped_nsobject<NSPasteboardItem> pasteboard_item(
+        [[NSPasteboardItem alloc] init]);
+    [pasteboard_item setData:data forType:NSPasteboardTypePNG];
+    if ([pasteboard writeObjects:@[ pasteboard_item ]]) {
+      return;
+    }
+  }
+
+  // Otherwise, fall back to writing the NSImage directly to the clipboard,
+  // which will write only a TIFF.
+  base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
+  [image addRepresentation:image_rep];
+  [image setSize:NSMakeSize(bitmap.width(), bitmap.height())];
+  [pasteboard writeObjects:@[ image ]];
 }
 
 }  // namespace ui
