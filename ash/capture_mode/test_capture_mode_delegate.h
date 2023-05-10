@@ -83,6 +83,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   // currently recording audio.
   bool IsDoingAudioRecording() const;
 
+  // Returns the number of audio capturers owned by the recording service.
+  int GetNumberOfAudioCapturers() const;
+
   // CaptureModeDelegate:
   base::FilePath GetUserDefaultDownloadsFolder() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;

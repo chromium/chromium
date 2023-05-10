@@ -135,18 +135,16 @@ TEST_F(CaptureAudioMixingTest, ServiceWillRecordAudio) {
   struct {
     const char* const scope_name;
     AudioRecordingMode audio_mode;
-    bool should_service_record_audio;
+    int expected_number_of_audio_capturers;
   } kTestCases[] = {
-      {"Off", AudioRecordingMode::kOff, /*should_service_record_audio=*/false},
+      {"Off", AudioRecordingMode::kOff,
+       /*expected_number_of_audio_capturers=*/0},
       {"Microphone", AudioRecordingMode::kMicrophone,
-       /*should_service_record_audio=*/true},
-
-      // TODO(afakhry): Update the following two cases when the service actually
-      // implements recording multiple streams.
+       /*expected_number_of_audio_capturers=*/1},
       {"System audio", AudioRecordingMode::kSystem,
-       /*should_service_record_audio=*/false},
+       /*expected_number_of_audio_capturers=*/1},
       {"System and microphone audio", AudioRecordingMode::kSystemAndMicrophone,
-       /*should_service_record_audio=*/true},
+       /*expected_number_of_audio_capturers=*/2},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -160,8 +158,8 @@ TEST_F(CaptureAudioMixingTest, ServiceWillRecordAudio) {
     auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
         controller->delegate_for_testing());
     CaptureModeTestApi().FlushRecordingServiceForTesting();
-    EXPECT_EQ(test_case.should_service_record_audio,
-              test_delegate->IsDoingAudioRecording());
+    EXPECT_EQ(test_case.expected_number_of_audio_capturers,
+              test_delegate->GetNumberOfAudioCapturers());
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 
     WaitForCaptureFileToBeSaved();

@@ -62,6 +62,10 @@ class RecordingServiceTestApi {
   // Returns true if the recording service is currently recording audio.
   bool IsDoingAudioRecording() const;
 
+  // Returns the number of audio capturers currently owned by the recording
+  // service.
+  int GetNumberOfAudioCapturers() const;
+
  private:
   // The actual recording service instance.
   RecordingService recording_service_;
