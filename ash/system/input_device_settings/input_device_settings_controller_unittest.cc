@@ -454,7 +454,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
-       RecordSetKeyboardSetttingsValidMetric) {
+       RecordSetKeyboardSettingsValidMetric) {
   base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
@@ -474,7 +474,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
-       RecordSetTouchpadSetttingsValidMetric) {
+       RecordSetTouchpadSettingsValidMetric) {
   base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadInternal});
 
@@ -512,7 +512,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
-       RecordSetPointingStickSetttingsValidMetric) {
+       RecordSetPointingStickSettingsValidMetric) {
   base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetPointingStickDevices(
       {kSamplePointingStickInternal});
@@ -531,7 +531,7 @@ TEST_F(InputDeviceSettingsControllerTest,
       /*expected_count=*/1u);
 }
 
-TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSetttingsValidMetric) {
+TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSettingsValidMetric) {
   base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
   controller_->SetMouseSettings((DeviceId)kSampleMouseUsb.id,

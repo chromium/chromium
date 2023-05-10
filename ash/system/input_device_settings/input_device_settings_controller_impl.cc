@@ -153,22 +153,22 @@ bool TouchpadSettingsAreValid(const mojom::Touchpad& touchpad,
           touchpad.settings->haptic_sensitivity == settings.haptic_sensitivity);
 }
 
-void RecordSetKeyboardSetttingsValidMetric(bool is_valid) {
+void RecordSetKeyboardSettingsValidMetric(bool is_valid) {
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Keyboard.SetSettingsSucceeded", is_valid);
 }
 
-void RecordSetTouchpadSetttingsValidMetric(bool is_valid) {
+void RecordSetTouchpadSettingsValidMetric(bool is_valid) {
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", is_valid);
 }
 
-void RecordSetPointingStickSetttingsValidMetric(bool is_valid) {
+void RecordSetPointingStickSettingsValidMetric(bool is_valid) {
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.PointingStick.SetSettingsSucceeded", is_valid);
 }
 
-void RecordSetMouseSetttingsValidMetric(bool is_valid) {
+void RecordSetMouseSettingsValidMetric(bool is_valid) {
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", is_valid);
 }
@@ -590,17 +590,17 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_keyboard_iter = keyboards_.find(id);
   if (found_keyboard_iter == keyboards_.end()) {
-    RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/false);
+    RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
     return;
   }
 
   auto& found_keyboard = *found_keyboard_iter->second;
   if (!KeyboardSettingsAreValid(found_keyboard, *settings,
                                 policy_handler_->keyboard_policies())) {
-    RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/false);
+    RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
     return;
   }
-  RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/true);
+  RecordSetKeyboardSettingsValidMetric(/*is_valid=*/true);
   const auto old_settings = std::move(found_keyboard.settings);
   found_keyboard.settings = settings.Clone();
   keyboard_pref_handler_->UpdateKeyboardSettings(
@@ -629,16 +629,16 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_touchpad_iter = touchpads_.find(id);
   if (found_touchpad_iter == touchpads_.end()) {
-    RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/false);
+    RecordSetTouchpadSettingsValidMetric(/*is_valid=*/false);
     return;
   }
 
   auto& found_touchpad = *found_touchpad_iter->second;
   if (!TouchpadSettingsAreValid(found_touchpad, *settings)) {
-    RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/false);
+    RecordSetTouchpadSettingsValidMetric(/*is_valid=*/false);
     return;
   }
-  RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/true);
+  RecordSetTouchpadSettingsValidMetric(/*is_valid=*/true);
   const auto old_settings = std::move(found_touchpad.settings);
   found_touchpad.settings = settings.Clone();
   touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
@@ -666,10 +666,10 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_mouse_iter = mice_.find(id);
   if (found_mouse_iter == mice_.end()) {
-    RecordSetMouseSetttingsValidMetric(/*is_valid=*/false);
+    RecordSetMouseSettingsValidMetric(/*is_valid=*/false);
     return;
   }
-  RecordSetMouseSetttingsValidMetric(/*is_valid=*/true);
+  RecordSetMouseSettingsValidMetric(/*is_valid=*/true);
 
   auto& found_mouse = *found_mouse_iter->second;
   const auto old_settings = std::move(found_mouse.settings);
@@ -698,10 +698,10 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_pointing_stick_iter = pointing_sticks_.find(id);
   if (found_pointing_stick_iter == pointing_sticks_.end()) {
-    RecordSetPointingStickSetttingsValidMetric(/*is_valid=*/false);
+    RecordSetPointingStickSettingsValidMetric(/*is_valid=*/false);
     return;
   }
-  RecordSetPointingStickSetttingsValidMetric(/*is_valid=*/true);
+  RecordSetPointingStickSettingsValidMetric(/*is_valid=*/true);
 
   auto& found_pointing_stick = *found_pointing_stick_iter->second;
   const auto old_settings = std::move(found_pointing_stick.settings);
