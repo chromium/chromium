@@ -46,10 +46,18 @@ class ContentWebFramesManager : public WebFramesManager,
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
-  // List of pointers to all web frames.
+  // Return the WebFrame* corresponding to the given content id.
+  WebFrame* WebFrameForContentId(content::GlobalRenderFrameHostId content_id);
+
+  // Map of ids to owning pointers for all WebFrames.
   std::map<std::string, std::unique_ptr<WebFrame>> web_frames_;
+
+  // Set of RenderFrameHosts that have finished loading content.
+  std::set<content::GlobalRenderFrameHostId> available_frame_hosts_;
 
   // Map from content's id scheme to web's id scheme.
   std::map<content::GlobalRenderFrameHostId, std::string>
