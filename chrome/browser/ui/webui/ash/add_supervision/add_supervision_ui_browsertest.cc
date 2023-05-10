@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, ShowOfflineScreen) {
   EXPECT_FALSE(IsScreenActive(std::string(kGetSupervisedUserOfflineElementJS)));
 
   // Simulate going offline.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents(), "window.dispatchEvent(new CustomEvent('offline'));"));
 
   // Ensure only the offline screen is active.
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, ShowOfflineScreen) {
   EXPECT_FALSE(IsScreenActive(std::string(kGetAddSupervisionUIElementJS)));
 
   // Simulate going online.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents(), "window.dispatchEvent(new CustomEvent('online'));"));
 
   // Ensure only the online screen is active.
@@ -179,21 +179,21 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, ShowConfirmSignoutDialog) {
   EXPECT_TRUE(content::WaitForLoadStop(contents()));
 
   // Request that the dialog close before supervision has been enabled.
-  ASSERT_TRUE(content::ExecuteScript(
-      contents(), std::string(kGetAddSupervisionUIElementJS) +
-                      std::string(".server.requestClose()")));
+  ASSERT_TRUE(
+      content::ExecJs(contents(), std::string(kGetAddSupervisionUIElementJS) +
+                                      std::string(".server.requestClose()")));
   // Confirm that the signout dialog isn't showing
   ASSERT_FALSE(ConfirmSignoutDialog::IsShowing());
 
   // Simulate supervision being enabled.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       contents(), std::string(kGetAddSupervisionUIElementJS) +
                       std::string(".server.notifySupervisionEnabled()")));
 
   // Request that the dialog is closed again.
-  ASSERT_TRUE(content::ExecuteScript(
-      contents(), std::string(kGetAddSupervisionUIElementJS) +
-                      std::string(".server.requestClose()")));
+  ASSERT_TRUE(
+      content::ExecJs(contents(), std::string(kGetAddSupervisionUIElementJS) +
+                                      std::string(".server.requestClose()")));
 
   // Confirm that the dialog is showing.
   ASSERT_TRUE(ConfirmSignoutDialog::IsShowing());
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, UMATest) {
   EXPECT_TRUE(content::WaitForLoadStop(contents()));
 
   // Simulate supervision being enabled.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       contents(), std::string(kGetAddSupervisionUIElementJS) +
                       std::string(".server.notifySupervisionEnabled()")));
 
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, ShowErrorScreen) {
   EXPECT_TRUE(IsScreenActive(std::string(kGetAddSupervisionUIElementJS)));
 
   // Simulate an error event.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents(), std::string(kGetAddSupervisionAppElementJS) +
                       std::string(".dispatchEvent(new CustomEvent('show-error',"
                                   "{bubbles: true, composed: true}));")));
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, ShowErrorScreen) {
   EXPECT_FALSE(IsScreenActive(std::string(kGetAddSupervisionUIElementJS)));
 
   // Simulate an offline event.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents(), "window.dispatchEvent(new CustomEvent('offline'));"));
 
   // Ensure that the error screen remains active.
