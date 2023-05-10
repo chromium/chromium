@@ -64,7 +64,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
     content::WebContents* wc =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(wc);
-    ASSERT_TRUE(content::ExecuteScript(wc, ";"));
+    ASSERT_TRUE(content::ExecJs(wc, ";"));
   }
 
   void PerformDumpMemoryTestActions(
