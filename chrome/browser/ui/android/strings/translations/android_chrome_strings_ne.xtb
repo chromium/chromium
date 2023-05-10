@@ -237,7 +237,7 @@
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
-<translation id="234265804618409743">तपाईंको क्यामेरा खोल्न सकिएन। केही चिज गडबड भयो।</translation>
+<translation id="234265804618409743">तपाईंको क्यामेरा खोल्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
 <translation id="235789365079050412">Google को गोपनीयता नीति</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
@@ -437,7 +437,7 @@
 <translation id="3305795716056605962">"थप विकल्पहरू" बटनमा गई पेजहरू अनुवाद गर्नुहोस्</translation>
 <translation id="3319664549618064419">यो साइटको अझ राम्रो दृश्य हेर्न डेस्कटप साइट प्रयोग गर्नुहोस्</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
-<translation id="3341262203274374114">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
+<translation id="3341262203274374114">अनफलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="3359667936385849800">तपाईंको हालको सेवा प्रदायक प्रयोग गर्नुहोस्</translation>
 <translation id="3365271666488085187">Chrome ले यो रुचि याद राख्न सक्छ</translation>
 <translation id="3367813778245106622">सिंक सुरु गर्न फेरि साइन इन गर्नुहोस्</translation>
@@ -479,7 +479,7 @@
 <translation id="3563767357928833671">क्लिपबोर्डमा भएका सामग्री देखाइए</translation>
 <translation id="3566639033325271639">सेटिङ अपडेट गर्नुहोस्</translation>
 <translation id="357465026686164600">फोनलाई सुरक्षा साँचोका रूपमा प्रयोग गर्ने सुविधा</translation>
-<translation id="3577473026931028326">केही चिज गडबड भयो। फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3578874072190212775">साइटहरूलाई ठगी रोकथाम गर्न र बट तथा मान्छेहरूबिचको फरक छुट्याउन मद्दत गर्नुहोस्</translation>
 <translation id="3587482841069643663">सबै</translation>
 <translation id="3587596251841506391">वेब प्रयोग गर्ने सबै जनालाई सुरक्षित रहन मद्दत गर्नुहोस्</translation>
@@ -548,7 +548,7 @@
 <translation id="3987993985790029246">लिंक प्रतिलिपि गर्नुहोस्</translation>
 <translation id="3999683152997576765">तपाईं वेबसाइटहरूले तपाईंलाई विज्ञापन देखाउन प्रयोग गर्ने रुचिका विषयहरू हेर्न तथा हटाउन सक्नुहुन्छ। Chrome ले तपाईंको हालसालैको ब्राउजिङ इतिहासका आधारमा तपाईंलाई रुचि लाग्न सक्ने विषयहरू पत्ता लगाउँछ।</translation>
 <translation id="4000212216660919741">अफलाइन गृहपृष्ठ</translation>
-<translation id="4016425174436051808">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
+<translation id="4016425174436051808">फलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
 <translation id="4035877632587724847">अनुमति नदिनुहोस्</translation>
 <translation id="4036177530563778041">आफूले छाडेकै ठाउँबाट सजिलैसँग जारी राख्नुहोस्</translation>
@@ -786,7 +786,7 @@
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5227554086496586518">खोज परिणामहरू हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
-<translation id="5235196193381275927">साइन इन गर्ने क्रममा केही चिज गडबड भयो</translation>
+<translation id="5235196193381275927">साइन इन गर्ने क्रममा कुनै समस्या आयो</translation>
 <translation id="5246093389635966745">टुलबारको सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="5271967389191913893">यन्त्रले डाउनलोड गर्नको लागि सामग्रीलाई खोल्न सक्दैन।</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" /> कार्डसँग लिंक गरिएको छ</translation>
@@ -893,7 +893,7 @@
 <translation id="5853623416121554550">पज गरियो</translation>
 <translation id="5854512288214985237">तथ्याङ्क वा क्र्यास रिपोर्टहरू Google मा पठाइँदैन</translation>
 <translation id="5855546874025048181">यसअनुसार परिष्कृत गर्नुहोस्: <ph name="REFINE_TEXT" /></translation>
-<translation id="5857447844686706637">केही चिज गडबड भयो। ट्रयाक गरिएको मूल्य बदल्न सकिएन।</translation>
+<translation id="5857447844686706637">कुनै समस्या आयो। ट्रयाक गरिएको मूल्य बदल्न सकिएन।</translation>
 <translation id="5859968346865909126">तपाईं सेटिङमा गई यो थिम अन वा अफ गर्न सक्नुहुन्छ</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
@@ -1019,7 +1019,7 @@
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6532866250404780454">तपाईंले Chrome मार्फत हेर्नुभएका साइटहरू देखिने छैनन्। साइटका सबै टाइमरहरू मेटाइने छन्।</translation>
 <translation id="6534565668554028783">Google ले प्रतिक्रिया जनाउन निकै लामो समय लियो</translation>
-<translation id="6539092367496845964">केही चिज गडबड भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6539092367496845964">कुनै समस्या आयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{१ घन्टाअघि जाँच गरिएको}other{# घन्टाअघि जाँच गरिएको}}</translation>
 <translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
 <translation id="6546511553472444032">यो फाइल हानिकारक हुन सक्छ</translation>
@@ -1500,7 +1500,7 @@
 <translation id="8964479563882643397">तपाईं नयाँ इन्कोग्निटो ट्याब खोल्न चाहनुहुन्छ भने मेनु खोल्नुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
-<translation id="8970887620466824814">केही चिज गडबड भयो।</translation>
+<translation id="8970887620466824814">कुनै समस्या आयो।</translation>
 <translation id="8972098258593396643">डिफल्ट फोल्डरमा डाउनलोड गर्ने हो?</translation>
 <translation id="8987641763863173640">भिडियोको प्रिभ्यू हेर्ने सुविधासम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8987736167266086032">तपाईँले जहाँ छोड्नुभएको थियो त्यहाँबाट जारी राख्नुहोस्</translation>

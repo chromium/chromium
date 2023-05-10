@@ -488,7 +488,7 @@
 <translation id="4520798012560649652">इन्कोग्निटो मोडका बारेमा थप जान्नुहोस्</translation>
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
 <translation id="4536418791685807335">फेरि साइन इन गरी हेर्नुहोस्।</translation>
-<translation id="4540780316273593836">केही चिज गडबड भयो</translation>
+<translation id="4540780316273593836">कुनै समस्या आयो</translation>
 <translation id="457386861538956877">थप...</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4588014171431912783">तपाईंको पछिल्लो ब्याकअपका आधारमा तपाईंले तय गर्नुभएका सिंकसम्बन्धी सेटिङ रिस्टोर गरिने छ। <ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ भन्ने कुरा हेर्नुहोस्<ph name="END_LINK" /></translation>
@@ -1131,7 +1131,7 @@
 <translation id="9039373489628511875">व्याण्डविथ</translation>
 <translation id="9055772144595778347">साइन इन गर्न सकिदैन</translation>
 <translation id="9055960261314198756">"उन्नत सुरक्षा" अफ गरिएको छ</translation>
-<translation id="9057972802061533987">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
+<translation id="9057972802061533987">फलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9068336935206019333">Chrome को इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="9079935439869366234">नपढिएका भनी सबैलाई चिन्ह लगाउनुहोस्</translation>
@@ -1139,7 +1139,7 @@
 <translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा अन गर्नुहोस्।</translation>
 <translation id="9093271241977565440">स्क्रिनको सिरानमा रहेको "खोज्नुहोस्" आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
-<translation id="9097506547406246598">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
+<translation id="9097506547406246598">अनफलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> वटा खाताका पासवर्डहरू मेटाउने हो?</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9107664647686727385">अरूले पासवर्डहरू देखेका छन् कि छैनन् भनी जाँच्नुहोस्</translation>
