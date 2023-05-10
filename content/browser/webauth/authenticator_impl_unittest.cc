@@ -6346,6 +6346,33 @@ TEST_F(PINAuthenticatorImplTest, RemoveSecondAuthenticator) {
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
 }
 
+TEST_F(PINAuthenticatorImplTest, AppIdExcludeExtensionWithPinRequiredError) {
+  // Some alwaysUv authenticators apply the alwaysUv logic even when up=false.
+  // That causes them to return `kCtap2ErrPinRequired` to appIdExclude probes
+  // which broke makeCredential at one point. See crbug.com/1443039.
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.always_uv = true;
+  config.always_uv_for_up_false = true;
+  config.pin_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  virtual_device_factory_->SetCtap2Config(config);
+
+  test_client_.expected = {{PINReason::kSet, kTestPIN16}};
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->user_verification_requirement =
+      device::UserVerificationRequirement::kRequired;
+  options->appid_exclude = kTestOrigin1;
+  options->exclude_credentials = GetTestCredentials();
+
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+}
+
 class InternalUVAuthenticatorImplTest : public UVAuthenticatorImplTest {
  public:
   struct TestCase {

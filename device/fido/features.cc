@@ -65,4 +65,9 @@ BASE_FEATURE(kWebAuthnAndroidCredMan,
              "WebAuthenticationAndroidCredMan",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Added in M115. Remove in or after M118.
+BASE_FEATURE(kWebAuthnPinRequiredMeansNotRecognized,
+             "WebAuthenticationPinRequiredMeansNotRecognized",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
