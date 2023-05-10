@@ -82,6 +82,7 @@ source_set("browser_sources") {
     "browser_main_runner.h",
     "browser_message_filter.cc",
     "browser_message_filter.h",
+    "browser_or_resource_context.cc",
     "browser_or_resource_context.h",
     "browser_plugin_guest_delegate.cc",
     "browser_plugin_guest_delegate.h",
