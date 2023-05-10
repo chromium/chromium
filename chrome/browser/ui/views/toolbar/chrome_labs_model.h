@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_MODEL_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_MODEL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_MODEL_H_
+#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_MODEL_H_
 
 #include <string>
 #include <vector>
@@ -32,10 +32,10 @@ struct LabInfo {
   std::vector<std::u16string> translated_feature_variation_descriptions;
 };
 
-class ChromeLabsBubbleViewModel {
+class ChromeLabsModel {
  public:
-  ChromeLabsBubbleViewModel();
-  ~ChromeLabsBubbleViewModel();
+  ChromeLabsModel();
+  ~ChromeLabsModel();
 
   const std::vector<LabInfo>& GetLabInfo() const;
 
@@ -44,9 +44,9 @@ class ChromeLabsBubbleViewModel {
 };
 
 // ScopedChromeLabsModelDataForTesting is intended to be used in test settings
-// to replace the production data in ChromeLabsBubbleViewModel. Upon
-// destruction, ScopedChromeLabsModelDataForTesting will remove the test data
-// from ChromeLabsBubbleViewModel.
+// to replace the production data in ChromeLabsModel. Upon destruction,
+// ScopedChromeLabsModelDataForTesting will remove the test data from
+// ChromeLabsModel.
 
 class ScopedChromeLabsModelDataForTesting {
  public:
@@ -60,4 +60,4 @@ class ScopedChromeLabsModelDataForTesting {
   void SetModelDataForTesting(const std::vector<LabInfo>& test_feature_info);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_MODEL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_MODEL_H_

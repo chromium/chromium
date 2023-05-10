@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/flags_ui/feature_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,11 +23,10 @@ std::string CanonicalizeString(std::string original_string) {
 }
 }  // namespace
 
-class ChromeLabsBubbleViewModelTest : public ChromeViewsTestBase {};
+class ChromeLabsModelTest : public ChromeViewsTestBase {};
 
-TEST_F(ChromeLabsBubbleViewModelTest, CheckFeaturesHaveSupportedTypes) {
-  std::unique_ptr<ChromeLabsBubbleViewModel> model =
-      std::make_unique<ChromeLabsBubbleViewModel>();
+TEST_F(ChromeLabsModelTest, CheckFeaturesHaveSupportedTypes) {
+  std::unique_ptr<ChromeLabsModel> model = std::make_unique<ChromeLabsModel>();
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
 
   for (const auto& lab : all_labs) {
@@ -43,11 +42,10 @@ TEST_F(ChromeLabsBubbleViewModelTest, CheckFeaturesHaveSupportedTypes) {
 // Experiments in Chrome Labs must features of type
 // FEATURE_WITH_PARAMS_VALUE must have variation descriptions in Chrome Labs
 // match those declared in about_flags.
-TEST_F(ChromeLabsBubbleViewModelTest, CheckFeatureWithParamsVariations) {
+TEST_F(ChromeLabsModelTest, CheckFeatureWithParamsVariations) {
   base::test::ScopedRestoreICUDefaultLocale locale(std::string("en_US"));
 
-  std::unique_ptr<ChromeLabsBubbleViewModel> model =
-      std::make_unique<ChromeLabsBubbleViewModel>();
+  auto model = std::make_unique<ChromeLabsModel>();
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =

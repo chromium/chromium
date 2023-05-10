@@ -66,8 +66,8 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -342,7 +342,7 @@ void ToolbarView::Init() {
   }
 
   if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
-    chrome_labs_model_ = std::make_unique<ChromeLabsBubbleViewModel>();
+    chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),
                                   chrome_labs_model_.get());
     if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get(),

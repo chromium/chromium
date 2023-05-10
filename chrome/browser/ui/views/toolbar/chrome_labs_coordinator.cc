@@ -22,10 +22,9 @@
 #include "chrome/browser/ash/settings/about_flags.h"
 #endif
 
-ChromeLabsCoordinator::ChromeLabsCoordinator(
-    ChromeLabsButton* anchor_view,
-    Browser* browser,
-    const ChromeLabsBubbleViewModel* model)
+ChromeLabsCoordinator::ChromeLabsCoordinator(ChromeLabsButton* anchor_view,
+                                             Browser* browser,
+                                             const ChromeLabsModel* model)
     : anchor_view_(anchor_view), browser_(browser), chrome_labs_model_(model) {}
 
 ChromeLabsCoordinator::~ChromeLabsCoordinator() {

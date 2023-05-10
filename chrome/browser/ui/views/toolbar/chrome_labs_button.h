@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/dot_indicator.h"
@@ -20,7 +20,7 @@ class ChromeLabsButton : public ToolbarButton {
  public:
   METADATA_HEADER(ChromeLabsButton);
   explicit ChromeLabsButton(BrowserView* browser_view,
-                            const ChromeLabsBubbleViewModel* model);
+                            const ChromeLabsModel* model);
   ChromeLabsButton(const ChromeLabsButton&) = delete;
   ChromeLabsButton& operator=(const ChromeLabsButton&) = delete;
   ~ChromeLabsButton() override;
@@ -30,8 +30,7 @@ class ChromeLabsButton : public ToolbarButton {
 
   void HideDotIndicator();
 
-  static bool ShouldShowButton(const ChromeLabsBubbleViewModel* model,
-                               Profile* profile);
+  static bool ShouldShowButton(const ChromeLabsModel* model, Profile* profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -61,7 +60,7 @@ class ChromeLabsButton : public ToolbarButton {
   bool should_circumvent_device_check_for_testing_ = false;
 #endif
 
-  raw_ptr<const ChromeLabsBubbleViewModel, DanglingUntriaged> model_;
+  raw_ptr<const ChromeLabsModel, DanglingUntriaged> model_;
 
   raw_ptr<views::DotIndicator> new_experiments_indicator_;
 

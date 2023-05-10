@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
@@ -11,7 +12,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "components/flags_ui/feature_entry_macros.h"

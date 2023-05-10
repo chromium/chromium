@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
+
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -89,11 +90,11 @@ LabInfo::LabInfo(const LabInfo& other) = default;
 
 LabInfo::~LabInfo() = default;
 
-ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() : lab_info_(GetData()) {}
+ChromeLabsModel::ChromeLabsModel() : lab_info_(GetData()) {}
 
-ChromeLabsBubbleViewModel::~ChromeLabsBubbleViewModel() = default;
+ChromeLabsModel::~ChromeLabsModel() = default;
 
-const std::vector<LabInfo>& ChromeLabsBubbleViewModel::GetLabInfo() const {
+const std::vector<LabInfo>& ChromeLabsModel::GetLabInfo() const {
   return *lab_info_;
 }
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_UTILS_H_
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 
 class Profile;
 
@@ -15,6 +15,6 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile);
 // Adds new experiments to PrefService and cleans up preferences for
 // experiments that are no longer featured.
 void UpdateChromeLabsNewBadgePrefs(Profile* profile,
-                                   const ChromeLabsBubbleViewModel* model);
+                                   const ChromeLabsModel* model);
 
 #endif  //  CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_UTILS_H_

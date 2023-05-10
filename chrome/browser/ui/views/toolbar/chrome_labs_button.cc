@@ -33,7 +33,7 @@
 #endif
 
 ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
-                                   const ChromeLabsBubbleViewModel* model)
+                                   const ChromeLabsModel* model)
     : ToolbarButton(base::BindRepeating(&ChromeLabsButton::ButtonPressed,
                                         base::Unretained(this))),
       browser_view_(browser_view),
@@ -151,7 +151,7 @@ void ChromeLabsButton::UpdateDotIndicator() {
 }
 
 // static
-bool ChromeLabsButton::ShouldShowButton(const ChromeLabsBubbleViewModel* model,
+bool ChromeLabsButton::ShouldShowButton(const ChromeLabsModel* model,
                                         Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

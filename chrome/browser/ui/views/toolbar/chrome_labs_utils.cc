@@ -48,7 +48,7 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
 }
 
 void UpdateChromeLabsNewBadgePrefs(Profile* profile,
-                                   const ChromeLabsBubbleViewModel* model) {
+                                   const ChromeLabsModel* model) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ScopedDictPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
