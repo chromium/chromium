@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -239,6 +240,21 @@ TEST_F(UserReportingSettingsTest, MultipleSettingObservers) {
   // Update setting value and ensure both callbacks were triggered.
   profile_->GetPrefs()->SetBoolean(kSettingPath, true);
   ASSERT_THAT(callback_trigger_count, Eq(2));
+}
+
+TEST_F(UserReportingSettingsTest, OnProfileDestruction) {
+  profile_->GetTestingPrefService()->registry()->RegisterBooleanPref(
+      kSettingPath, /*default_value=*/false);
+  const auto callback_subscription =
+      user_reporting_settings_->AddSettingsObserver(kSettingPath,
+                                                    base::DoNothing());
+  ASSERT_TRUE(
+      user_reporting_settings_->IsObservingSettingsForTest(kSettingPath));
+
+  // Delete profile and ensure the setting is no longer observed.
+  profile_manager_.DeleteAllTestingProfiles();
+  EXPECT_FALSE(
+      user_reporting_settings_->IsObservingSettingsForTest(kSettingPath));
 }
 
 }  // namespace

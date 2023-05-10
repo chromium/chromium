@@ -11,10 +11,12 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/reporting/metrics/reporting_settings.h"
 
@@ -25,7 +27,7 @@ namespace reporting {
 // use to access reporting settings and subscribe to reporting setting updates.
 // Needs to be accessed from the main thread given its dependency on user
 // profiles and the user pref store.
-class UserReportingSettings : public ReportingSettings {
+class UserReportingSettings : public ReportingSettings, public ProfileObserver {
  public:
   explicit UserReportingSettings(base::WeakPtr<Profile> profile);
   UserReportingSettings(const UserReportingSettings& other) = delete;
@@ -46,19 +48,31 @@ class UserReportingSettings : public ReportingSettings {
   bool GetReportingEnabled(const std::string& path,
                            bool* out_value) const override;
 
+  // Returns whether the specified setting is being observed for testing
+  // purposes.
+  bool IsObservingSettingsForTest(const std::string& path);
+
  private:
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // Internal callback triggered when the setting value is updated.
   void OnPrefChanged(const std::string& path);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   const base::WeakPtr<Profile> profile_;
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // A map of setting names to a list of observers. Observers are triggered in
   // the order they are added.
   std::map<std::string, std::unique_ptr<base::RepeatingClosureList>>
       settings_observers_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Observer that is used to track profile lifecycle so we can perform
+  // cleanup tasks on destruction.
+  base::ScopedObservation<Profile, ProfileObserver> scoped_profile_observer_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   base::WeakPtrFactory<UserReportingSettings> weak_ptr_factory_{this};
 };
