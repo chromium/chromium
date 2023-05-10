@@ -1439,26 +1439,28 @@ body:not(.video) #settings-video-resolution {
 
 #nudge {
   align-items: center;
-  background: var(--grey-900);
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--cros-sys-base_elevated);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   gap: 8px;
-  opacity: 0.8;
-  padding: 8px 10px;
+  padding: 8px 16px;
   position: absolute;
   top: 68px;  /* 8px below |record_time| element */
   z-index: 2;
 }
 
 #nudge .warning-icon {
-  background: url(/images/circle_warning_icon.svg);
   height: 20px;
   width: 20px;
+
+  :is(svg-wrapper) {
+    color: var(--cros-sys-warning);
+  }
 }
 
 #nudge .warning-msg {
-  color: var(--grey-400);
+  color: var(--cros-sys-on_surface);
   font: 400 14px/20px Roboto;
 }
 
