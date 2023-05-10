@@ -53,7 +53,7 @@ class ApplicationControllerImplTest
         [](fidl::UnbindInfo info) { ADD_FAILURE(); });
     application_context_.Bind(std::move(application_context_endpoints->client),
                               async_get_default_dispatcher());
-    application_.emplace(&frame_, application_context_);
+    application_.emplace(&frame_, application_context_, /*trace_flow_id=*/0);
     base::RunLoop run_loop;
     wait_for_controller_callback_ = run_loop.QuitClosure();
     run_loop.Run();

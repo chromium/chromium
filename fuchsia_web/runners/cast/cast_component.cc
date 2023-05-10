@@ -6,6 +6,7 @@
 
 #include <lib/async/default.h>
 #include <lib/fidl/cpp/binding.h>
+#include <lib/trace/event.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <algorithm>
@@ -83,7 +84,11 @@ CastComponent::CastComponent(base::StringPiece debug_name,
       application_context_(std::move(params.application_context),
                            async_get_default_dispatcher()),
       media_settings_(std::move(params.media_settings.value())),
-      headless_disconnect_watch_(FROM_HERE) {
+      headless_disconnect_watch_(FROM_HERE),
+      trace_flow_id_(params.trace_flow_id) {
+  TRACE_DURATION("cast_runner", "Create CastComponent", "name", debug_name_);
+  TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
+
   base::AutoReset<bool> constructor_active_reset(&constructor_active_, true);
   component_controller_.Bind(std::move(params.controller_request));
 }
@@ -91,6 +96,9 @@ CastComponent::CastComponent(base::StringPiece debug_name,
 CastComponent::~CastComponent() = default;
 
 void CastComponent::StartComponent() {
+  TRACE_DURATION("cast_runner", "StartComponent");
+  TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
+
   if (application_config_.has_enable_remote_debugging() &&
       application_config_.enable_remote_debugging()) {
     WebComponent::EnableRemoteDebugging();
@@ -151,7 +159,7 @@ void CastComponent::StartComponent() {
   }
 
   application_controller_ = std::make_unique<ApplicationControllerImpl>(
-      frame(), application_context_);
+      frame(), application_context_, trace_flow_id_);
 
   // Apply application-specific web permissions to the fuchsia.web.Frame.
   if (application_config_.has_permissions()) {
@@ -188,6 +196,10 @@ void CastComponent::StartComponent() {
 
 void CastComponent::DestroyComponent(int64_t exit_code) {
   DCHECK(!constructor_active_);
+
+  TRACE_DURATION("cast_runner", "CastComponent::DestroyComponent", "name",
+                 debug_name_);
+  TRACE_FLOW_END("cast_runner", "CastComponent", trace_flow_id_);
 
   // If the `application_controller_` is available then use it to inform the
   // Agent of the `exit_code`. For graceful teardown (whether self-initiated by
@@ -249,6 +261,9 @@ void CastComponent::CreateViewWithViewRef(
     zx::eventpair view_token,
     fuchsia::ui::views::ViewRefControl control_ref,
     fuchsia::ui::views::ViewRef view_ref) {
+  TRACE_DURATION("cast_runner", "CastComponent::CreateViewWithViewRef");
+  TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
+
   if (is_headless_) {
     // For headless CastComponents, |view_token| does not actually connect to a
     // Scenic View. It is merely used as a conduit for propagating termination
@@ -267,6 +282,9 @@ void CastComponent::CreateViewWithViewRef(
 }
 
 void CastComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
+  TRACE_DURATION("cast_runner", "CastComponent::CreateView2");
+  TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
+
   if (is_headless_) {
     frame()->EnableHeadlessRendering();
     return;
@@ -282,6 +300,9 @@ void CastComponent::Kill() {
 }
 
 void CastComponent::Stop() {
+  TRACE_DURATION("cast_runner", "CastComponent::Stop");
+  TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
+
   // The Component Framework has requested graceful teardown, so request that
   // the `Frame` close the page. The framework typically allows components
   // several seconds to complete teardown, before forcibly `Kill()`ing them.

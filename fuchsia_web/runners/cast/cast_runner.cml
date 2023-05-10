@@ -6,6 +6,7 @@
     "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
     "inspect/client.shard.cml",
     "syslog/client.shard.cml",
+    "trace/client.shard.cml",
     "vulkan/client.shard.cml",
   ],
   program: {

@@ -117,6 +117,15 @@ group("assert_no_deps") {
   # for no reason and is easy to mess up. See the comment at the top of
   # //chrome/installer/util/BUILD.gn.
   assert_no_deps = [ "//chrome/installer/util:strings" ]
+
+  if (is_fuchsia) {
+    assert_no_deps += [
+      # Chrome should use Perfetto instead of libtrace. Vulkan depends on
+      # trace-engine, but there should be no dependencies on trace-provider.
+      "//third_party/fuchsia-sdk/sdk/pkg/trace",
+      "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
+    ]
+  }
 }
 
 if (!is_android && !is_mac) {

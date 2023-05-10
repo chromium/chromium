@@ -67,6 +67,8 @@ class PendingCastComponent {
 
   void OnApplicationContextFidlError(fidl::UnbindInfo error);
 
+  void CancelComponent();
+
   // Reference to the Delegate which manages |this|.
   Delegate* const delegate_;
 

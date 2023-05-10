@@ -76,6 +76,7 @@ source_set("cast_runner_core") {
     "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/trace",
     "//url",
   ]
 
@@ -109,6 +110,8 @@ executable("cast_runner_exe") {
     "//fuchsia_web/common",
     "//fuchsia_web/webinstance_host",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/trace-engine",
+    "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
   ]
 
   data_deps = [ ":cast_runner_core" ]
@@ -131,14 +134,9 @@ _web_instance_host_deps_files_to_exclude = [
   "vk_swiftshader_icd.json",
 ]
 
-if (!is_component_build) {
-  # This file is required for component builds.
-  _web_instance_host_deps_files_to_exclude += [ "lib/libtrace-engine.so" ]
-
-  # This file is required for both component and coverage builds.
-  if (!fuchsia_code_coverage) {
-    _web_instance_host_deps_files_to_exclude += [ "lib/libfuchsia_egl.so" ]
-  }
+# This file is required for both component and coverage builds.
+if (!is_component_build && !fuchsia_code_coverage) {
+  _web_instance_host_deps_files_to_exclude += [ "lib/libfuchsia_egl.so" ]
 }
 
 fuchsia_component("cast_runner_component") {

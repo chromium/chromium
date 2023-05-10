@@ -117,6 +117,11 @@ _disallowed_deps =
       # Ensure WebEngine is not communicating with the Finch service until it
       # is explicitly supported. See crbug.com/1155712.
       "//components/variations/service",
+
+      # WebEngine should use Perfetto instead of libtrace. Vulkan depends on
+      # trace-engine, but there should be no dependencies on trace-provider.
+      "//third_party/fuchsia-sdk/sdk/pkg/trace",
+      "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
     ]
 
 source_set("web_engine_export_from_implementation") {

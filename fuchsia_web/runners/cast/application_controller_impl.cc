@@ -6,6 +6,8 @@
 
 #include <fidl/fuchsia.media.sessions2/cpp/hlcpp_conversion.h>
 #include <lib/async/default.h>
+#include <lib/trace-engine/types.h>
+#include <lib/trace/event.h>
 
 #include <utility>
 
@@ -15,8 +17,9 @@
 
 ApplicationControllerImpl::ApplicationControllerImpl(
     fuchsia::web::Frame* frame,
-    fidl::Client<chromium_cast::ApplicationContext>& context)
-    : frame_(frame) {
+    fidl::Client<chromium_cast::ApplicationContext>& context,
+    uint64_t trace_flow_id)
+    : frame_(frame), trace_flow_id_(trace_flow_id) {
   DCHECK(context);
   DCHECK(frame_);
 
@@ -60,6 +63,11 @@ void ApplicationControllerImpl::GetMediaPlayer(
 void ApplicationControllerImpl::SetBlockMediaLoading(
     ApplicationControllerImpl::SetBlockMediaLoadingRequest& request,
     ApplicationControllerImpl::SetBlockMediaLoadingCompleter::Sync& completer) {
+  TRACE_DURATION("cast_runner",
+                 "ApplicationControllerImpl::SetBlockMediaLoading",
+                 "is_blocked", TA_INT32(request.blocked()));
+  TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
+
   frame_->SetBlockMediaLoading(request.blocked());
 }
 

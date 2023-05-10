@@ -56,6 +56,10 @@ class CastComponent final
     absl::optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
         initial_url_rewrite_rules;
     absl::optional<fuchsia::web::FrameMediaSettings> media_settings;
+
+    // ID of flow used in the with the Fuchsia Trace API to trace the
+    // application lifetime.
+    uint64_t trace_flow_id;
   };
 
   // See WebComponent documentation for details of `debug_name` and `runner`.
@@ -123,6 +127,8 @@ class CastComponent final
       component_controller_{this};
 
   base::MessagePumpForIO::ZxHandleWatchController headless_disconnect_watch_;
+
+  uint64_t trace_flow_id_;
 };
 
 #endif  // FUCHSIA_WEB_RUNNERS_CAST_CAST_COMPONENT_H_
