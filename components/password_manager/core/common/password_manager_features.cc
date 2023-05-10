@@ -5,6 +5,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 
 #include "base/feature_list.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 namespace password_manager::features {
@@ -189,10 +190,10 @@ BASE_FEATURE(kPasswordGenerationExperiment,
 // TODO(crbug.com/1359392): Remove once launched on all platforms.
 BASE_FEATURE(kPasswordsGrouping,
              "PasswordsGrouping",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
+#if BUILDFLAG(USE_BLINK)
              base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
 
