@@ -91,12 +91,12 @@ const char* ShareTarget::EnctypeToString(ShareTarget::Enctype enctype) {
 }
 
 base::Value ShareTarget::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICT);
-  root.SetStringKey("action", action.spec());
-  root.SetStringKey("method", ShareTarget::MethodToString(method));
-  root.SetStringKey("enctype", ShareTarget::EnctypeToString(enctype));
-  root.SetKey("params", params.AsDebugValue());
-  return root;
+  base::Value::Dict root;
+  root.Set("action", action.spec());
+  root.Set("method", ShareTarget::MethodToString(method));
+  root.Set("enctype", ShareTarget::EnctypeToString(enctype));
+  root.Set("params", params.AsDebugValue());
+  return base::Value(std::move(root));
 }
 
 bool operator==(const ShareTarget& share_target1,
