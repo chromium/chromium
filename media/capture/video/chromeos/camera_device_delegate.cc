@@ -900,6 +900,7 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
       case cros::mojom::CaptureIntent::DEFAULT:
         return false;
       case cros::mojom::CaptureIntent::STILL_CAPTURE:
+      case cros::mojom::CaptureIntent::PORTRAIT_CAPTURE:
         return true;
       case cros::mojom::CaptureIntent::VIDEO_RECORD:
         return ShouldUseBlobVideoSnapshot();

@@ -212,7 +212,7 @@ export class Modes {
         },
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, CaptureIntent.STILL_CAPTURE),
+            constraints, resolution, CaptureIntent.PORTRAIT_CAPTURE),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.SCAN]: {
