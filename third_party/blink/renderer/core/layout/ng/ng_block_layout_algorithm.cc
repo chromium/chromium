@@ -1595,6 +1595,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
         {child_available_inline_size, ChildAvailableSize().block_size},
         /* is_new_fc */ true, opportunity.rect.start_offset.block_offset);
 
+    recordreplay::Assert("[RUN-1855-1911] NGBlockLayoutAlgorithm::LayoutNewFormattingContext (%s)",
+      child_space.ToString().Ascii().c_str()
+    );
+
     // All formatting context roots (like this child) should start with an empty
     // exclusion space.
     DCHECK(child_space.ExclusionSpace().IsEmpty());
