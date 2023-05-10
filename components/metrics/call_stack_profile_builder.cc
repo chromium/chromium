@@ -102,8 +102,8 @@ void CallStackProfileBuilder::ApplyMetadataRetrospectively(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
     const base::MetadataRecorder::Item& item) {
-  DCHECK_LE(period_start, period_end);
-  DCHECK_LE(period_end, base::TimeTicks::Now());
+  CHECK_LE(period_start, period_end);
+  CHECK_LE(period_end, base::TimeTicks::Now());
 
   // We don't set metadata if the period extends before the start of the
   // sampling, to avoid biasing against the unobserved execution. This will
@@ -117,7 +117,7 @@ void CallStackProfileBuilder::ApplyMetadataRetrospectively(
   google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>* samples =
       call_stack_profile->mutable_stack_sample();
 
-  DCHECK_EQ(sample_timestamps_.size(), static_cast<size_t>(samples->size()));
+  CHECK_EQ(sample_timestamps_.size(), static_cast<size_t>(samples->size()));
 
   const ptrdiff_t start_offset =
       std::lower_bound(sample_timestamps_.begin(), sample_timestamps_.end(),
