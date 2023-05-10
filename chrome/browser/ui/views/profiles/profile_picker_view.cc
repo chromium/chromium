@@ -102,13 +102,6 @@ class ProfilePickerWidget : public views::Widget {
   ~ProfilePickerWidget() override = default;
 
  private:
-  // TODO(crbug.com/1380808): Remove once the cause of the bug is found.
-  void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override {
-    if (profile_picker_view_)
-      profile_picker_view_->OnNativeWidgetSizeChanged(new_size);
-    views::Widget::OnNativeWidgetSizeChanged(new_size);
-  }
-
   const raw_ptr<ProfilePickerView, DanglingUntriaged> profile_picker_view_;
 };
 

@@ -95,12 +95,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
   std::u16string GetAccessibleWindowTitle() const override;
+  gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-
-  // Gets called when the native wiget changes size.
-  // TODO(crbug.com/1380808): Remove once the cause of the bug is found.
-  virtual void OnNativeWidgetSizeChanged(const gfx::Size& new_size) {}
 
   // Exposed for testing
   enum State {
@@ -133,9 +130,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   virtual std::unique_ptr<ProfileManagementFlowController> CreateFlowController(
       Profile* picker_profile,
       ClearHostClosure clear_host_callback);
-
-  // TODO(crbug.com/1380808): Make private once the cause of the bug is found.
-  gfx::Size CalculatePreferredSize() const override;
 
  private:
   friend class ProfilePicker;
