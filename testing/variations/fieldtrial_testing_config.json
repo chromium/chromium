@@ -2083,21 +2083,6 @@
             ]
         }
     ],
-    "BrowserIOThreadADPF": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kADPFForBrowserIOThread"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowserPeriodicYieldingToNative": [
         {
             "platforms": [
@@ -7604,21 +7589,6 @@
                     "name": "Enabled_20230419",
                     "enable_features": [
                         "JourneysZeroStateFiltering"
-                    ]
-                }
-            ]
-        }
-    ],
-    "KeepAndroidTintedResources": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "KeepAndroidTintedResources"
                     ]
                 }
             ]
