@@ -134,7 +134,14 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   }
 
   // Open the url in a new tab.
-  browser->OpenURL(params);
+  content::WebContents* new_tab_web_contents = browser->OpenURL(params);
+
+  // Open companion side panel for the new tab.
+  if (new_tab_web_contents) {
+    BrowserView::GetBrowserViewForBrowser(browser)
+        ->side_panel_coordinator()
+        ->Show(SidePanelEntry::Id::kSearchCompanion);
+  }
 }
 
 }  // namespace companion
