@@ -71,7 +71,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   source_view_ = source_container->AddChildView(
-      std::make_unique<ShareThisTabSourceView>());
+      std::make_unique<ShareThisTabSourceView>(web_contents_));
 
   activation_timer_.Start(
       FROM_HERE,
@@ -133,6 +133,7 @@ bool ShareThisTabDialogView::Accept() {
   CHECK(!activation_timer_.IsRunning());
   CHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
+  source_view_->StopRefreshing();
   if (parent_ && web_contents_) {
     parent_->NotifyDialogResult(content::DesktopMediaID(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
@@ -148,6 +149,7 @@ bool ShareThisTabDialogView::Accept() {
 
 bool ShareThisTabDialogView::Cancel() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  source_view_->StopRefreshing();
   activation_timer_.Stop();
   return views::DialogDelegateView::Cancel();
 }
