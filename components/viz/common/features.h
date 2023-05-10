@@ -67,6 +67,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictSubtree);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAcks);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAllowLateAcks);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedBitmapToSharedImage);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollBoost);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kADPFBoostTimeout;
 
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];

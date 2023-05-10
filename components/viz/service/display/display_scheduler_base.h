@@ -10,6 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/viz/service/display/display_damage_tracker.h"
+#include "components/viz/service/performance_hint/hint_session.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -57,9 +58,13 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   virtual void DidSwapBuffers() = 0;
   virtual void DidReceiveSwapBuffersAck() = 0;
   virtual void OutputSurfaceLost() = 0;
+  // ReportFrameTime can use ADPF hints. If ADPF hints are used they will be run
+  // with the |boost_type| boost type.
   virtual void ReportFrameTime(
       base::TimeDelta frame_time,
-      base::flat_set<base::PlatformThreadId> thread_ids) = 0;
+      base::flat_set<base::PlatformThreadId> thread_ids,
+      base::TimeTicks draw_start,
+      HintSession::BoostType boost_type) = 0;
 
  protected:
   raw_ptr<DisplaySchedulerClient> client_ = nullptr;

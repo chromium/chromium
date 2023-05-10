@@ -232,7 +232,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
         std::unique_ptr<Surface::PresentationHelper> helper);
     void OnDraw(base::TimeTicks frame_time,
                 base::TimeTicks draw_start_timestamp,
-                base::flat_set<base::PlatformThreadId> thread_ids);
+                base::flat_set<base::PlatformThreadId> thread_ids,
+                HintSession::BoostType boost_type);
     void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
     void OnPresent(const gfx::PresentationFeedback& feedback);
@@ -248,6 +249,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     gfx::SwapTimings swap_timings_;
     std::vector<std::unique_ptr<Surface::PresentationHelper>>
         presentation_helpers_;
+    HintSession::BoostType boost_type_;
   };
 
   // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary

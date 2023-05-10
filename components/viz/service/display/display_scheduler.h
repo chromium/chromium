@@ -50,9 +50,10 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
-  void ReportFrameTime(
-      base::TimeDelta frame_time,
-      base::flat_set<base::PlatformThreadId> thread_ids) override;
+  void ReportFrameTime(base::TimeDelta frame_time,
+                       base::flat_set<base::PlatformThreadId> thread_ids,
+                       base::TimeTicks draw_start,
+                       HintSession::BoostType boost_type) override;
 
   // DisplayDamageTrackerObserver implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
