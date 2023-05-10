@@ -1864,57 +1864,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.EnterCriticalPolicySectionDelay.Total" units="ms"
-    expires_after="2023-01-15">
-  <obsolete>
-    Remove after M105. Data is static hence there is no need to keep monitoring.
-  </obsolete>
-  <owner>zmin@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    Elapsed time taken to acquire each lock to access policies in the Windows
-    registry (at user scope and then at machine scope). This metric is recorded
-    shortly after browser startup once with the combined wait time for both
-    locks regardless of success or failure.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.EnterCriticalPolicySectionDelay.{Scope}.{Result}"
-    units="ms" expires_after="2022-06-12">
-  <obsolete>
-    Remove after 2022-06. Data is static hence there is no need to keep
-    monitoring.
-  </obsolete>
-  <owner>zmin@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    Elapsed time taken to acquire the lock to access policies in the Windows
-    registry. The success or failure variant of this metric is recorded once for
-    user scope and then once for machine scope shortly after browser startup.
-  </summary>
-  <token key="Scope">
-    <variant name="Machine"/>
-    <variant name="User"/>
-  </token>
-  <token key="Result">
-    <variant name="Failed"/>
-    <variant name="Succeeded"/>
-  </token>
-</histogram>
-
-<histogram name="Enterprise.EnterCriticalPolicySectionError"
-    enum="WinGetLastError" expires_after="2022-08-14">
-  <obsolete>
-    Remove after M105. Data is static hence there is no need to keep monitoring.
-  </obsolete>
-  <owner>zmin@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    Windows error code following a failure to acquire the lock to access
-    policies in the Windows registry shortly after browser startup.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.FCMInvalidationService.CBCMPolicyInvalidations"
     enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
