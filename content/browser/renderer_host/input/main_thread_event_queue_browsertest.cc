@@ -113,7 +113,7 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
 
   void DoMouseMove() {
     // Send a click event to cause some jankiness. This is done via a click
-    // event as ExecuteScript is synchronous.
+    // event as ExecJs is synchronous.
     SimulateMouseClick(shell()->web_contents(), 0,
                        blink::WebPointerProperties::Button::kLeft);
     auto input_msg_watcher = std::make_unique<InputMsgWatcher>(
@@ -155,7 +155,7 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
     events[3].MovePoint(0, 35, 40);
 
     // Send a click event to cause some jankiness. This is done via a click
-    // event as ExecuteScript is synchronous.
+    // event as ExecJs is synchronous.
     SimulateMouseClick(shell()->web_contents(), 0,
                        blink::WebPointerProperties::Button::kLeft);
     auto input_msg_watcher = std::make_unique<InputMsgWatcher>(
