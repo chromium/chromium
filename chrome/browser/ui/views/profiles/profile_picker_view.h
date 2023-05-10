@@ -138,7 +138,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   class NavigationFinishedObserver : public content::WebContentsObserver {
    public:
-    NavigationFinishedObserver(base::OnceClosure closure,
+    NavigationFinishedObserver(const GURL& requested_url,
+                               base::OnceClosure closure,
                                content::WebContents* contents);
     NavigationFinishedObserver(const NavigationFinishedObserver&) = delete;
     NavigationFinishedObserver& operator=(const NavigationFinishedObserver&) =
@@ -150,6 +151,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
         content::NavigationHandle* navigation_handle) override;
 
    private:
+    const GURL requested_url_;
     base::OnceClosure closure_;
   };
 

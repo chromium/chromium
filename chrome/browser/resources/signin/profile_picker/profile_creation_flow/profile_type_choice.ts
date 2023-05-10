@@ -150,7 +150,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   }
 
   private handleLoadSigninFinished_(_success: boolean) {
-    // TODO(crbug.com/1126913): If failed, show some error message to inform the
+    // TODO(crbug.com/1444046): If failed, show some error message to inform the
     // user.
     this.profileCreationInProgress = false;
   }

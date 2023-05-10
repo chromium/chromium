@@ -38,7 +38,8 @@ class ProfilePickerWebContentsHost {
   // `contents` with its currently loaded url. If both
   // `navigation_finished_closure` and `url` is non-empty, the closure is called
   // when the navigation commits (if it never commits such as when the
-  // navigation is replaced by another navigation, the closure is never called).
+  // navigation is replaced by another navigation or if an internal page fails
+  // to load, the closure is never called).
   virtual void ShowScreen(
       content::WebContents* contents,
       const GURL& url,

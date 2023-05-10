@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -334,9 +336,12 @@ void ProfilePickerForceSigninDialog::DisplayErrorMessage() {
 // ProfilePickerView::NavigationFinishedObserver ------------------------------
 
 ProfilePickerView::NavigationFinishedObserver::NavigationFinishedObserver(
+    const GURL& requested_url,
     base::OnceClosure closure,
     content::WebContents* contents)
-    : content::WebContentsObserver(contents), closure_(std::move(closure)) {}
+    : content::WebContentsObserver(contents),
+      requested_url_(requested_url),
+      closure_(std::move(closure)) {}
 
 ProfilePickerView::NavigationFinishedObserver::~NavigationFinishedObserver() =
     default;
@@ -346,6 +351,28 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
   if (!closure_ || !navigation_handle->HasCommitted()) {
     return;
   }
+
+  if (navigation_handle->GetRedirectChain()[0] != requested_url_) {
+    // Don't notify if the URL for the finishing navigation does not match.
+    // The navigation may have been replaced by a new one. We are mindful to
+    // allow redirections, which are necessary for example for Gaia sign-in
+    // pages (see crbug.com/1430681).
+    return;
+  }
+
+  if (navigation_handle->IsErrorPage() &&
+      requested_url_.SchemeIs(content::kChromeUIScheme)) {
+    // We observed some cases where the navigation to the intended page fails
+    // (see crbug.com/1442159).
+    // Loading the wrong URL may lead to crashes if we are expecting a certain
+    // WebUI page to be loaded in the web contents. For these cases we will not
+    // notify of the finished navigation to avoid crashing, but this negatively
+    // affects the user experience anyway.
+    // TODO(crbug.com/1444046): Improve the user experience for this error.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   std::move(closure_).Run();
 }
 
@@ -406,6 +433,7 @@ void ProfilePickerView::ShowScreen(
   // observer gets destroyed here or later in ShowScreenFinished(). This is okay
   // as all the previous values get replaced by the new values.
   show_screen_finished_observer_ = std::make_unique<NavigationFinishedObserver>(
+      url,
       base::BindOnce(&ProfilePickerView::ShowScreenFinished,
                      base::Unretained(this), contents,
                      std::move(navigation_finished_closure)),

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include <set>
@@ -354,6 +355,46 @@ void WaitForFirstNonEmptyPaint(const GURL& url, content::WebContents* target) {
 }
 
 }  // namespace
+
+class ProfilePickerViewBrowserTest : public ProfilePickerTestBase {};
+
+// Regression test for crbug.com/1442159.
+IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
+                       ShowScreen_DoesNotFinishForErrorOnInternalNavigation) {
+  GURL bad_target_url{"chrome://unregistered-host"};
+  base::test::TestFuture<void> navigation_finished_future;
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL{"chrome://profile-picker"});
+  view()->ShowScreenInPickerContents(bad_target_url,
+                                     navigation_finished_future.GetCallback());
+
+  WaitForLoadStop(bad_target_url, web_contents());
+  EXPECT_FALSE(navigation_finished_future.IsReady());
+}
+
+// Regression test for crbug.com/1442159.
+IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
+                       ShowScreen_FinishesForErrorOnStandardNavigation) {
+  // URL intended to simulate an https navigation that fails because the host
+  // can't be found. With an internet connection it would redirect to the
+  // DNS_PROBE_FINISHED_NXDOMAIN error page. Simulate that in the picker flow
+  // using the `--gaia-url` command line parameter.
+  // During tests all external navigations fail anyway, but that's good enough
+  // for what we're trying to verify.
+  GURL bad_target_url{"https://url.madeup"};
+  base::test::TestFuture<void> navigation_finished_future;
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL{"chrome://profile-picker"});
+  view()->ShowScreenInPickerContents(bad_target_url,
+                                     navigation_finished_future.GetCallback());
+
+  WaitForLoadStop(bad_target_url, web_contents());
+  EXPECT_TRUE(navigation_finished_future.IsReady());
+}
 
 class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
