@@ -1,0 +1,323 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/system/hotspot/hotspot_feature_pod_controller.h"
+
+#include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/unified/feature_tile.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+
+namespace ash {
+
+namespace {
+
+constexpr char kToggledOnHistogram[] = "Ash.QuickSettings.FeaturePod.ToggledOn";
+constexpr char kToggledOffHistogram[] =
+    "Ash.QuickSettings.FeaturePod.ToggledOff";
+constexpr char kDiveInHistogram[] = "Ash.QuickSettings.FeaturePod.DiveIn";
+
+}  // namespace
+
+using hotspot_config::mojom::HotspotAllowStatus;
+using hotspot_config::mojom::HotspotInfo;
+using hotspot_config::mojom::HotspotState;
+
+class HotspotFeaturePodControllerTest : public AshTestBase {
+ public:
+  HotspotFeaturePodControllerTest() = default;
+  ~HotspotFeaturePodControllerTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kHotspot, features::kQsRevamp}, {});
+    cros_hotspot_config_test_helper_ =
+        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
+            /*use_fake_implementation=*/true);
+    AshTestBase::SetUp();
+
+    // Spin the runloop to have HotspotInfoCache finish querying the hotspot
+    // info.
+    base::RunLoop().RunUntilIdle();
+
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
+
+    hotspot_feature_pod_controller_ =
+        std::make_unique<HotspotFeaturePodController>(
+            GetPrimaryUnifiedSystemTray()
+                ->bubble()
+                ->unified_system_tray_controller());
+    hotspot_feature_tile_ = hotspot_feature_pod_controller_->CreateTile();
+  }
+
+  void TearDown() override {
+    hotspot_feature_tile_.reset();
+    hotspot_feature_pod_controller_.reset();
+    AshTestBase::TearDown();
+
+    cros_hotspot_config_test_helper_.reset();
+  }
+
+  void UpdateHotspotInfo(HotspotState state,
+                         HotspotAllowStatus allow_status,
+                         uint32_t client_count = 0) {
+    auto hotspot_info = HotspotInfo::New();
+    hotspot_info->state = state;
+    hotspot_info->allow_status = allow_status;
+    hotspot_info->client_count = client_count;
+    cros_hotspot_config_test_helper_->SetFakeHotspotInfo(
+        std::move(hotspot_info));
+    // Spin the runloop to observe the hotspot info change.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void EnableAndDisableHotspotOnce() {
+    UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed);
+    UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
+
+    EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  }
+
+  void PressIcon() {
+    hotspot_feature_pod_controller_->OnIconPressed();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void PressLabel() {
+    hotspot_feature_pod_controller_->OnLabelPressed();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void LockScreen() {
+    GetSessionControllerClient()->LockScreen();
+    base::RunLoop().RunUntilIdle();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
+      cros_hotspot_config_test_helper_;
+  std::unique_ptr<HotspotFeaturePodController> hotspot_feature_pod_controller_;
+  std::unique_ptr<FeatureTile> hotspot_feature_tile_;
+};
+
+TEST_F(HotspotFeaturePodControllerTest, HotspotNotUsedBefore) {
+  EXPECT_FALSE(hotspot_feature_tile_->GetVisible());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, HotspotEnabled) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"On", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is on, no device connected.",
+            hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is on.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed, 2);
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is on, 2 devices connected.",
+            hotspot_feature_tile_->GetTooltipText());
+
+  PressIcon();
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, HotspotEnabling) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kEnabling, HotspotAllowStatus::kAllowed);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Enabling…", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is enabling.",
+            hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is enabling.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  PressIcon();
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, HotspotDisabling) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kDisabling, HotspotAllowStatus::kAllowed);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Disabling…", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is disabling.",
+            hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is disabling.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  PressIcon();
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledAllowEnable) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+            hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  PressIcon();
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledNoMobileNetwork) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kDisabled,
+                    HotspotAllowStatus::kDisallowedNoMobileData);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Connect to mobile network to use hotspot.",
+            hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is off.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  PressIcon();
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest,
+       HotspotDisabledMobileNetworkNotSupported) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kDisabled,
+                    HotspotAllowStatus::kDisallowedReadinessCheckFail);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(
+      u"Show hotspot details. Your mobile network doesn't support hotspot.",
+      hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is off.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  PressIcon();
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledBlockedByPolicy) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kDisabled,
+                    HotspotAllowStatus::kDisallowedByPolicy);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is blocked by your administrator.",
+            hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is off.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  PressIcon();
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, LockScreen) {
+  EnableAndDisableHotspotOnce();
+  LockScreen();
+  UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+            hotspot_feature_tile_->GetTooltipText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+            hotspot_feature_tile_->drill_in_button()->GetTooltipText());
+  PressIcon();
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, LabelUMATracking) {
+  UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
+
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(kToggledOnHistogram,
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(kToggledOffHistogram,
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(kDiveInHistogram,
+                                     /*expected_count=*/0);
+
+  // Toggle hotspot and show hotspot detailed view when pressing on the label.
+  PressLabel();
+  histogram_tester->ExpectTotalCount(kToggledOnHistogram,
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(kToggledOnHistogram,
+                                      QsFeatureCatalogName::kHotspot,
+                                      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(kToggledOffHistogram,
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(kDiveInHistogram,
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(kDiveInHistogram,
+                                      QsFeatureCatalogName::kHotspot,
+                                      /*expected_count=*/1);
+  PressIcon();
+  histogram_tester->ExpectTotalCount(kToggledOnHistogram,
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(kToggledOnHistogram,
+                                      QsFeatureCatalogName::kHotspot,
+                                      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(kToggledOffHistogram,
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(kToggledOffHistogram,
+                                      QsFeatureCatalogName::kHotspot,
+                                      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(kDiveInHistogram,
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(kDiveInHistogram,
+                                      QsFeatureCatalogName::kHotspot,
+                                      /*expected_count=*/1);
+}
+
+}  // namespace ash

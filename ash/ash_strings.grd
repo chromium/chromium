@@ -2620,6 +2620,54 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL" desc="The label for button in network quick settings that allows user to add new cellular networks.">
         Add new cellular network
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT" desc="The title for hotspot feature pod in quick settings.">
+        Hotspot
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_STATUS_ON" desc="The sublabel for hotspot feature pod in quick settings to show hotspot is on.">
+        On
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_STATUS_OFF" desc="The sublabel for hotspot feature pod in quick settings to show hotspot is off.">
+        Off
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_STATUS_ENABLING" desc="The sublabel for hotspot feature pod in quick settings to show hotspot is enabling.">
+        Enabling...
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_STATUS_DISABLING" desc="The sublabel for hotspot feature pod in quick settings to show hotspot is disabling.">
+        Disabling...
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_DRILL_IN_TOOLTIP_STATUS_ON" desc="The tooltip for the drill in button in hotspot feature tile of quick settings when hotspot is on.">
+        Show hotspot details. Hotspot is on.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ENABLING" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is enabling.">
+        Show hotspot details. Hotspot is enabling.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_DISABLING" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is disabling.">
+        Show hotspot details. Hotspot is disabling.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_DRILL_IN_TOOLTIP_STATUS_OFF" desc="The tooltip for the drill in button in hotspot feature tile of quick settings when hotspot is off and is not allowed to turn on.">
+        Show hotspot details. Hotspot is off.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_OFF" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and is allowed to turn on.">
+        Toggle Hotspot. Hotspot is off.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_NO_DEVICE_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and no device connected.">
+        Toggle Hotspot. Hotspot is on, no device connected.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_ONE_DEVICE_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and one device connected.">
+        Toggle Hotspot. Hotspot is on, 1 device connected.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_MULTIPLE_DEVICES_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and multiple devices connected.">
+        Toggle Hotspot. Hotspot is on, <ph name="DEVICECOUNT">$1</ph> devices connected.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_NO_MOBILE_DATA" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and not allowed to turn on due to no mobile data connection.">
+        Show hotspot details. Connect to mobile network to use hotspot.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_MOBILE_DATA_NOT_SUPPORTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and not allowed to turn on due to the connected mobile data doesn't support hotspot.">
+        Show hotspot details. Your mobile network doesn't support hotspot.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_PROHIBITED_BY_POLICY" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and is not allowed to turn on due to prohibited by policy.">
+        Show hotspot details. Hotspot is blocked by your administrator.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE" desc="Toast shown when a Bluetooth adapter is discoverable.">
         "<ph name="NAME">$1<ex>Chromebook</ex></ph>" visible to Bluetooth devices.
       </message>
