@@ -1539,14 +1539,14 @@ BASE_FEATURE(kUseWebAppDBInsteadOfExternalPrefs,
 
 BASE_FEATURE(kWebAuthFlowInBrowserTab,
              "WebAuthFlowInBrowserTab",
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<WebAuthFlowInBrowserTabMode>::Option
     web_auth_flow_modes[] = {
         {WebAuthFlowInBrowserTabMode::kNewTab, "new_tab"},
         {WebAuthFlowInBrowserTabMode::kPopupWindow, "popup_window"}};
 const base::FeatureParam<WebAuthFlowInBrowserTabMode>
     kWebAuthFlowInBrowserTabMode{&kWebAuthFlowInBrowserTab, "browser_tab_mode",
-                                 WebAuthFlowInBrowserTabMode::kNewTab,
+                                 WebAuthFlowInBrowserTabMode::kPopupWindow,
                                  &web_auth_flow_modes};
 
 }  // namespace features

@@ -14324,28 +14324,6 @@
             ]
         }
     ],
-    "WebAuthFlowInBrowserTab": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithNewTab",
-                    "params": {
-                        "browser_tab_mode": "new_tab"
-                    },
-                    "enable_features": [
-                        "WebAuthFlowInBrowserTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebContentsCaptureHiDPI": [
         {
             "platforms": [

@@ -606,9 +606,6 @@ class WebAuthFlowWithBrowserTabBrowserTest : public WebAuthFlowBrowserTest {
 // creation twice.
 IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
                        InteractiveNewTabCreatedWithAuthURL_ThenCloseTab) {
-  TabStripModel* tabs = browser()->tab_strip_model();
-  int initial_tab_count = tabs->count();
-
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -622,7 +619,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 
   navigation_observer.Wait();
 
-  EXPECT_EQ(tabs->count(), initial_tab_count + 1);
+  Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
+  TabStripModel* tabs = popup_browser->tab_strip_model();
+  EXPECT_NE(browser(), popup_browser);
   EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), auth_url);
 
   // Check info bar exists and displays proper message with extension name.
@@ -645,9 +644,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowWithBrowserTabBrowserTest,
     InteractiveNewTabCreatedWithAuthURL_ThenChangeURLBeforeAuthResult) {
-  TabStripModel* tabs = browser()->tab_strip_model();
-  int initial_tab_count = tabs->count();
-
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -670,6 +666,10 @@ IN_PROC_BROWSER_TEST_F(
       web_auth_flow()->GetInfoBarDelegateForTesting();
   ASSERT_TRUE(auth_info_bar);
 
+  Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
+  TabStripModel* tabs = popup_browser->tab_strip_model();
+  EXPECT_NE(browser(), popup_browser);
+
   GURL new_url = embedded_test_server()->GetURL("a.com", "/new.html");
   EXPECT_CALL(mock(),
               OnAuthFlowFailure(WebAuthFlow::Failure::USER_NAVIGATED_AWAY));
@@ -683,7 +683,6 @@ IN_PROC_BROWSER_TEST_F(
   // New tab is not expected to be closed, it is now used for navigation and not
   // part of the flow anymore.
   EXPECT_EQ(web_contents(), nullptr);
-  EXPECT_EQ(tabs->count(), initial_tab_count + 1);
   EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), new_url);
   // Infobar should be closed on navigation.
   EXPECT_FALSE(auth_info_bar);
@@ -742,9 +741,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
                        InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault) {
-  TabStripModel* tabs = browser()->tab_strip_model();
-  int initial_tab_count = tabs->count();
-
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -755,7 +751,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 
   navigation_observer.Wait();
 
-  EXPECT_EQ(tabs->count(), initial_tab_count + 1);
+  Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
+  TabStripModel* tabs = popup_browser->tab_strip_model();
+  EXPECT_NE(browser(), popup_browser);
   EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), auth_url);
 
   // Check info bar is not created if not set via
