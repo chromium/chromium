@@ -60,7 +60,7 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   std::unique_ptr<UserEducationDelegate> delegate_;
 
   // The controller responsible for creation/management of help bubbles.
-  UserEducationHelpBubbleController help_bubble_controller_;
+  UserEducationHelpBubbleController help_bubble_controller_{delegate_.get()};
 
   // The controller responsible for creation/management of pings.
   UserEducationPingController ping_controller_;

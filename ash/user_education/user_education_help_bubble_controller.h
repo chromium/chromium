@@ -5,7 +5,11 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_HELP_BUBBLE_CONTROLLER_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_HELP_BUBBLE_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 class ElementContext;
@@ -13,18 +17,20 @@ class ElementIdentifier;
 }  // namespace ui
 
 namespace user_education {
+class HelpBubble;
 struct HelpBubbleParams;
 }  // namespace user_education
 
 namespace ash {
 
+class UserEducationDelegate;
 enum class HelpBubbleId;
 
 // The singleton controller, owned by the `UserEducationController`, responsible
 // for creation/management of help bubbles.
 class ASH_EXPORT UserEducationHelpBubbleController {
  public:
-  UserEducationHelpBubbleController();
+  explicit UserEducationHelpBubbleController(UserEducationDelegate* delegate);
   UserEducationHelpBubbleController(const UserEducationHelpBubbleController&) =
       delete;
   UserEducationHelpBubbleController& operator=(
@@ -35,15 +41,26 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationHelpBubbleController* Get();
 
-  // TODO(http://b/279040829): Implement.
   // Attempts to create a help bubble, identified by `help_bubble_id`, with the
   // specified `help_bubble_params` for the tracked element associated with the
-  // specified `element_id` in the specified `element_context`.
-  // NOTE: Currently hardcoded to no-op and return `false`.
+  // specified `element_id` in the specified `element_context`. A help bubble
+  // may not be created under certain circumstances, e.g. if there is already a
+  // help bubble showing or if there is an ongoing tutorial running.
+  // NOTE: Currently only the primary user profile is supported.
   bool CreateHelpBubble(HelpBubbleId help_bubble_id,
                         user_education::HelpBubbleParams help_bubble_params,
                         ui::ElementIdentifier element_id,
                         ui::ElementContext element_context);
+
+ private:
+  // The delegate owned by the `UserEducationController` which facilitates
+  // communication between Ash and user education services in the browser.
+  const raw_ptr<UserEducationDelegate> delegate_;
+
+  // The currently showing help bubble, if one exists, and a subscription to be
+  // notified when it closes. Once closed, help bubble related memory is freed.
+  std::unique_ptr<user_education::HelpBubble> help_bubble_;
+  base::CallbackListSubscription help_bubble_close_subscription_;
 };
 
 }  // namespace ash

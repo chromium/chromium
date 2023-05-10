@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 
 #include "ash/user_education/user_education_util.h"
+#include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -39,6 +40,18 @@ ChromeUserEducationDelegate::ChromeUserEducationDelegate() {
 }
 
 ChromeUserEducationDelegate::~ChromeUserEducationDelegate() = default;
+
+// TODO(http://b/279040829): Implement.
+std::unique_ptr<user_education::HelpBubble>
+ChromeUserEducationDelegate::CreateHelpBubble(
+    const AccountId& account_id,
+    ash::HelpBubbleId help_bubble_id,
+    user_education::HelpBubbleParams help_bubble_params,
+    ui::ElementIdentifier element_id,
+    ui::ElementContext element_context) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
 
 void ChromeUserEducationDelegate::RegisterTutorial(
     const AccountId& account_id,
