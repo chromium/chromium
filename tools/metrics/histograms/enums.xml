@@ -5158,6 +5158,11 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Bottom right"/>
 </enum>
 
+<enum name="AsmJsInstantiateResult">
+  <int value="0" label="asm.js instantiation succeeded"/>
+  <int value="1" label="asm.js instantiation failed"/>
+</enum>
+
 <enum name="AssignedLabelSource">
   <int value="0" label="Id"/>
   <int value="1" label="Name"/>
