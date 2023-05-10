@@ -1441,31 +1441,6 @@ bool ShouldUseSpareRenderProcessHostForTopChromePage(Profile* profile) {
          !IsTopChromeRendererPresent(profile);
 }
 
-bool DoesGaiaOriginRequireDedicatedProcess() {
-#if !BUILDFLAG(IS_ANDROID)
-  return true;
-#else
-  // Sign-in process isolation is not strictly needed on Android, see
-  // https://crbug.com/739418. On Android, it's more optional but it does
-  // improve security generally and specifically it allows the exposure of
-  // certain optional privileged APIs.
-
-  // Kill switch that falls back to the legacy behavior.
-  if (!base::FeatureList::IsEnabled(kAllowGaiaOriginIsolationOnAndroid)) {
-    return false;
-  }
-
-  if (site_isolation::SiteIsolationPolicy::
-          ShouldDisableSiteIsolationDueToMemoryThreshold(
-              content::SiteIsolationMode::kPartialSiteIsolation)) {
-    // Insufficient memory to isolate Gaia's origin.
-    return false;
-  }
-
-  return true;
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 
 void HandleExpandedPaths(
@@ -7758,4 +7733,30 @@ ChromeContentBrowserClient::CreateResponsivenessCalculatorDelegate() {
 #else
   return nullptr;
 #endif
+}
+
+// static
+bool ChromeContentBrowserClient::DoesGaiaOriginRequireDedicatedProcess() {
+#if !BUILDFLAG(IS_ANDROID)
+  return true;
+#else
+  // Sign-in process isolation is not strictly needed on Android, see
+  // https://crbug.com/739418. On Android, it's more optional but it does
+  // improve security generally and specifically it allows the exposure of
+  // certain optional privileged APIs.
+
+  // Kill switch that falls back to the legacy behavior.
+  if (!base::FeatureList::IsEnabled(kAllowGaiaOriginIsolationOnAndroid)) {
+    return false;
+  }
+
+  if (site_isolation::SiteIsolationPolicy::
+          ShouldDisableSiteIsolationDueToMemoryThreshold(
+              content::SiteIsolationMode::kPartialSiteIsolation)) {
+    // Insufficient memory to isolate Gaia's origin.
+    return false;
+  }
+
+  return true;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }

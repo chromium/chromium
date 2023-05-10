@@ -896,6 +896,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   friend class DisableWebRtcEncryptionFlagTest;
   friend class InProcessBrowserTest;
 
+  FRIEND_TEST_ALL_PREFIXES(ChromeSiteIsolationPolicyTest,
+                           IsolatedOriginsContainChromeOrigins);
+
   // Initializes `network_contexts_parent_directory_` and
   // `safe_browsing_service_` on the UI thread.
   void InitOnUIThread();
@@ -966,6 +969,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnKeepaliveTimerFired(
       std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
 #endif
+
+  // True if the Gaia origin should be isolated in a dedicated process.
+  static bool DoesGaiaOriginRequireDedicatedProcess();
 
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
