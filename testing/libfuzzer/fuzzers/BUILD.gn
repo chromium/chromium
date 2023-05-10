@@ -89,6 +89,7 @@ fuzzer_test("gfx_png_image_fuzzer") {
   sources = [ "gfx_png_image_fuzzer.cc" ]
   deps = [
     "//base",
+    "//ui/base",
     "//ui/gfx",
   ]
   dict = "dicts/png.dict"
