@@ -18,6 +18,10 @@ static_library("classroom") {
     "classroom_api_list_course_work_request.h",
     "classroom_api_list_courses_request.cc",
     "classroom_api_list_courses_request.h",
+    "classroom_api_list_student_submissions_request.cc",
+    "classroom_api_list_student_submissions_request.h",
+    "classroom_api_student_submissions_response_types.cc",
+    "classroom_api_student_submissions_response_types.h",
   ]
 
   deps = [
@@ -37,6 +41,8 @@ source_set("classroom_unittests") {
     "classroom_api_courses_response_types_unittest.cc",
     "classroom_api_list_course_work_request_unittest.cc",
     "classroom_api_list_courses_request_unittest.cc",
+    "classroom_api_list_student_submissions_request_unittest.cc",
+    "classroom_api_student_submissions_response_types_unittest.cc",
   ]
 
   deps = [
