@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/favicon_status.h"
@@ -245,6 +246,10 @@ void BackForwardMenuModel::MenuWillShow() {
   requested_favicons_.clear();
   cancelable_task_tracker_.TryCancelAll();
   menu_model_open_timestamp_ = base::TimeTicks::Now();
+
+  // Close the IPH popup if the user opens the menu.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHBackNavigationMenuFeature);
 }
 
 void BackForwardMenuModel::MenuWillClose() {
