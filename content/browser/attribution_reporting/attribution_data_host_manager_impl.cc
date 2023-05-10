@@ -764,7 +764,7 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  const auto attribution_header = RegistrarAndHeader::Get(headers);
+  auto attribution_header = RegistrarAndHeader::Get(headers);
   if (!attribution_header) {
     MaybeOnRegistrationsFinished(it);
     return;
@@ -775,7 +775,8 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
         rfh, blink::mojom::WebFeature::kAttributionFencedFrameReportingBeacon);
   }
 
-  ParseSource(it, std::move(*suitable_reporting_origin), *attribution_header);
+  ParseSource(it, std::move(*suitable_reporting_origin),
+              std::move(*attribution_header));
 }
 
 void AttributionDataHostManagerImpl::OnWebSourceParsed(
