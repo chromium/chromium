@@ -30,21 +30,21 @@
 }
 
 :host-context([chrome-refresh-2023]) .sp-scroller {
-  --sp-scroller-scrollbar-width_: 4px;
-  --sp-scroller-scrollbar-half-width_: 2px;
-
   display: block;
   overflow-x: hidden;
-  overflow-y: overlay;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar {
   background: transparent;
-  width: var(--sp-scroller-scrollbar-width_);
+  width: var(--sp-body-padding);
 }
 
 :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-thumb {
   background: var(--color-side-panel-scrollbar-thumb);
+  background-clip: content-box;
+  border: solid 2px transparent;
   border-radius: 100px;
 }
 
@@ -56,9 +56,7 @@
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
   box-sizing: border-box;
-  margin: 0 calc(-1 * var(--sp-scroller-scrollbar-half-width_));
-  padding: 0 var(--sp-scroller-scrollbar-half-width_);
-  padding-block-end: var(--sp-card-block-padding);
+  margin-inline-end: calc(-1 * var(--sp-body-padding));
 }
 
 :host-context([chrome-refresh-2023]) .sp-labelless-input {
