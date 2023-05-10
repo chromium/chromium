@@ -72,9 +72,6 @@ class CORE_EXPORT BindingSecurity {
   // Location
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
                                   const Location* target,
-                                  ExceptionState&);
-  static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Location* target,
                                   ErrorReportOption);
 
   // Checks if the caller (|accessing_window|) is allowed to access the JS
@@ -88,9 +85,6 @@ class CORE_EXPORT BindingSecurity {
   // it's not null.
   //
   // Node
-  static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Node* target,
-                                  ExceptionState&);
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
                                   const Node* target,
                                   ErrorReportOption);

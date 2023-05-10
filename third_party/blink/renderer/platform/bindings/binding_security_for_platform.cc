@@ -7,10 +7,6 @@
 namespace blink {
 
 BindingSecurityForPlatform::
-    ShouldAllowAccessToV8ContextWithExceptionStateFunction
-        BindingSecurityForPlatform::
-            should_allow_access_to_v8context_with_exception_state_ = nullptr;
-BindingSecurityForPlatform::
     ShouldAllowAccessToV8ContextWithErrorReportOptionFunction
         BindingSecurityForPlatform::
             should_allow_access_to_v8context_with_error_report_option_ =
@@ -20,15 +16,6 @@ BindingSecurityForPlatform::ShouldAllowWrapperCreationOrThrowExceptionFunction
         should_allow_wrapper_creation_or_throw_exception_ = nullptr;
 BindingSecurityForPlatform::RethrowWrapperCreationExceptionFunction
     BindingSecurityForPlatform::rethrow_wrapper_creation_exception_ = nullptr;
-
-// static
-bool BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
-    v8::Local<v8::Context> accessing_context,
-    v8::MaybeLocal<v8::Context> target_context,
-    ExceptionState& exception_state) {
-  return (*should_allow_access_to_v8context_with_exception_state_)(
-      accessing_context, target_context, exception_state);
-}
 
 // static
 bool BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
@@ -57,15 +44,6 @@ void BindingSecurityForPlatform::RethrowWrapperCreationException(
   (*rethrow_wrapper_creation_exception_)(accessing_context, creation_context,
                                          wrapper_type_info,
                                          cross_context_exception);
-}
-
-// static
-void BindingSecurityForPlatform::
-    SetShouldAllowAccessToV8ContextWithExceptionState(
-        ShouldAllowAccessToV8ContextWithExceptionStateFunction func) {
-  DCHECK(!should_allow_access_to_v8context_with_exception_state_);
-  DCHECK(func);
-  should_allow_access_to_v8context_with_exception_state_ = func;
 }
 
 // static
