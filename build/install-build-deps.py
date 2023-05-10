@@ -17,10 +17,10 @@ import subprocess
 import sys
 
 
-@functools.lru_cache
+@functools.lru_cache(maxsize=1)
 def build_apt_package_list():
   print("Building apt package list.", file=sys.stderr)
-  output = subprocess.check_output(["apt-cache", "dumpavail"], text=True)
+  output = subprocess.check_output(["apt-cache", "dumpavail"]).decode()
   arch_map = {"i386": ":i386"}
   package_regex = re.compile(r"^Package: (.+?)$.+?^Architecture: (.+?)$",
                              re.M | re.S)
@@ -135,10 +135,10 @@ def check_lsb_release():
     sys.exit(1)
 
 
-@functools.lru_cache
+@functools.lru_cache(maxsize=1)
 def distro_codename():
-  return subprocess.check_output(["lsb_release", "--codename", "--short"],
-                                 text=True).strip()
+  return subprocess.check_output(["lsb_release", "--codename",
+                                  "--short"]).decode().strip()
 
 
 def check_distro(options):
@@ -168,7 +168,7 @@ def check_distro(options):
 
 
 def check_architecture():
-  architecture = subprocess.check_output(["uname", "-m"], text=True).strip()
+  architecture = subprocess.check_output(["uname", "-m"]).decode().strip()
   if architecture not in ["i686", "x86_64"]:
     print("Only x86 architectures are currently supported", file=sys.stderr)
     sys.exit(1)
@@ -311,8 +311,8 @@ def dev_list():
 
   # 64-bit systems need a minimum set of 32-bit compat packages for the
   # pre-built NaCl binaries.
-  if "ELF 64-bit" in subprocess.check_output(["file", "-L", "/sbin/init"],
-                                             text=True):
+  if "ELF 64-bit" in subprocess.check_output(["file", "-L",
+                                              "/sbin/init"].decode()):
     packages.extend(["libc6-i386", "lib32stdc++6"])
 
     # lib32gcc-s1 used to be called lib32gcc1 in older distros.
@@ -455,15 +455,15 @@ def lib32_list(options):
   # When cross building for arm/Android on 64-bit systems the host binaries
   # that are part of v8 need to be compiled with -m32 which means
   # that basic multilib support is needed.
-  if "ELF 64-bit" in subprocess.check_output(["file", "-L", "/sbin/init"],
-                                             text=True):
+  if "ELF 64-bit" in subprocess.check_output(["file", "-L",
+                                              "/sbin/init"]).decode():
     # gcc-multilib conflicts with the arm cross compiler but
     # g++-X.Y-multilib gives us the 32-bit support that we need. Find out the
     # appropriate value of X and Y by seeing what version the current
     # distribution's g++-multilib package depends on.
-    lines = subprocess.check_output(
-        ["apt-cache", "depends", "g++-multilib", "--important"],
-        text=True).splitlines()
+    lines = (subprocess.check_output(
+        ["apt-cache", "depends", "g++-multilib",
+         "--important"]).decode().splitlines())
     pattern = re.compile(r"g\+\+-[0-9.]+-multilib")
     packages.extend(line.strip() for line in lines if pattern.match(line))
 
@@ -695,10 +695,10 @@ def nacl_list(options):
 # Untransitioned packages have the -dbg suffix.  And on some systems, neither
 # will be available, so exclude the ones that are missing.
 def dbg_package_name(package):
-  if package_exists(f"{package}-dbgsym"):
-    return [f"{package}-dbgsym"]
-  if package_exists(f"{package}-dbg"):
-    return [f"{package}-dbg"]
+  if package_exists(package + "-dbgsym"):
+    return [package + "-dbgsym"]
+  if package_exists(package + "-dbg"):
+    return [package + "-dbg"]
   return []
 
 
@@ -716,8 +716,8 @@ def dbg_list(options):
   # Debugging symbols packages not following common naming scheme
   if not dbg_package_name("libstdc++6"):
     for version in ["8", "7", "6", "5", "4.9", "4.8", "4.7", "4.6"]:
-      if package_exists(f"libstdc++6-{version}-dbg"):
-        packages.append(f"libstdc++6-{version}-dbg")
+      if package_exists("libstdc++6-%s-dbg" % version):
+        packages.append("libstdc++6-%s-dbg" % version)
         break
 
   if not dbg_package_name("libatk1.0-0"):
@@ -745,8 +745,7 @@ def missing_packages(packages):
         ["dpkg-query", "-W", "-f", " "] + packages,
         check=True,
         capture_output=True,
-        text=True,
-    )
+    ).decode()
     return []
   except subprocess.CalledProcessError as e:
     return [line.split(" ")[-1] for line in e.stderr.strip().splitlines()]
@@ -754,8 +753,7 @@ def missing_packages(packages):
 
 def package_is_installable(package):
   result = subprocess.run(["apt-cache", "show", package],
-                          capture_output=True,
-                          text=True)
+                          capture_output=True).decode()
   return result.returncode == 0
 
 
@@ -794,16 +792,14 @@ def find_missing_packages(options):
 
   packages = package_list(options)
   packages_str = " ".join(packages)
-  print(f"Packages required: {packages_str}", file=sys.stderr)
+  print("Packages required: " + packages_str, file=sys.stderr)
 
   query_cmd = ["apt-get", "--just-print", "install"] + packages
 
-  cmd_output = subprocess.check_output(query_cmd,
-                                       env=os.environ | {
-                                           "LANGUAGE": "en",
-                                           "LANG": "C"
-                                       },
-                                       text=True)
+  env = os.environ.copy()
+  env["LANGUAGE"] = "en"
+  env["LANG"] = "C"
+  cmd_output = subprocess.check_output(query_cmd, env=env).decode()
   lines = [line.strip() for line in cmd_output.splitlines()]
 
   install = []
@@ -832,7 +828,7 @@ def install_packages(options):
     # An apt-get exit status of 100 indicates that a real error has occurred.
     print("`apt-get --just-print install ...` failed", file=sys.stderr)
     print("It produced the following output:", file=sys.stderr)
-    print(e.output, file=sys.stderr)
+    print(e.output.decode(), file=sys.stderr)
     print(file=sys.stderr)
     print("You will have to install the above packages yourself.",
           file=sys.stderr)
@@ -857,8 +853,8 @@ def install_chromeos_fonts(options):
   except subprocess.CalledProcessError:
     print("ERROR: The installation of the Chrome OS default fonts failed.",
           file=sys.stderr)
-    if subprocess.check_output(["stat", "-f", "-c", "%T", dir],
-                               text=True).startswith("nfs"):
+    if (subprocess.check_output(
+        ["stat", "-f", "-c", "%T", dir], ).decode().startswith("nfs")):
       print(
           "The reason is that your repo is installed on a remote file system.",
           file=sys.stderr)
@@ -885,7 +881,8 @@ def install_locales():
     old_locale_gen = open(LOCALE_GEN).read()
     for locale in CHROMIUM_LOCALES:
       subprocess.check_call(
-          ["sudo", "sed", "-i", f"s/^# {locale}/{locale}/", LOCALE_GEN])
+          ["sudo", "sed", "-i",
+           "s/^# %s/%s/" % (locale, locale), LOCALE_GEN])
 
     # Regenerating locales can take a while, so only do it if we need to.
     locale_gen = open(LOCALE_GEN).read()
