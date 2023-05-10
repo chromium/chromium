@@ -14,7 +14,6 @@
 @property(nonatomic, readonly) NSMutableArray<TabSwitcherItem*>* items;
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 @property(nonatomic, readonly) UICollectionView* collectionView;
-@property(nonatomic, assign, getter=isViewAppeared) BOOL viewAppeared;
 
 @end
 
