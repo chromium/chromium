@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/record_replay.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -83,6 +84,13 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 #if DCHECK_IS_ON()
     is_available_size_set_ = true;
 #endif
+    recordreplay::Assert(
+      "[RUN-1855-1911] NGConstraintSpaceBuilder::SetAvailableSize par=%d adj=%d block=%s inline=%s",
+      int(is_in_parallel_flow_),
+      int(adjust_inline_size_if_needed_),
+      available_size.block_size.ToString().Utf8().c_str(),
+      available_size.inline_size.ToString().Utf8().c_str()
+    );
 
     if (LIKELY(is_in_parallel_flow_)) {
       space_.available_size_ = available_size;
