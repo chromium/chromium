@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/touch_selection/touch_selection_magnifier_runner.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -402,6 +403,7 @@ TouchSelectionControllerImpl::~TouchSelectionControllerImpl() {
   UMA_HISTOGRAM_BOOLEAN("Event.TouchSelection.EndedWithAction",
                         command_executed_);
   HideQuickMenu();
+  HideMagnifier();
   aura::Env::GetInstance()->RemoveEventObserver(this);
   if (client_widget_)
     client_widget_->RemoveObserver(this);
@@ -451,6 +453,7 @@ void TouchSelectionControllerImpl::SelectionChanged() {
     // should not get hidden, since it should still receive touch events.
     // Hence, we are not using |SetHandleBound()| method here.
     dragging_handle_->SetBoundInScreen(screen_bound_focus_clipped, true);
+    ShowMagnifier(screen_bound_focus);
 
     if (dragging_handle_ != cursor_handle_) {
       // The non-dragging-handle might have recently become visible.
@@ -502,6 +505,8 @@ void TouchSelectionControllerImpl::ShowQuickMenuImmediatelyForTesting() {
 void TouchSelectionControllerImpl::OnDragBegin(EditingHandleView* handle) {
   dragging_handle_ = handle;
   UpdateQuickMenu();
+  ShowMagnifier(dragging_handle_ == selection_handle_1_ ? selection_bound_1_
+                                                        : selection_bound_2_);
   if (dragging_handle_ == cursor_handle_) {
     return;
   }
@@ -545,6 +550,7 @@ void TouchSelectionControllerImpl::OnDragUpdate(const gfx::Point& drag_pos) {
 void TouchSelectionControllerImpl::OnDragEnd() {
   dragging_handle_ = nullptr;
   UpdateQuickMenu();
+  HideMagnifier();
 }
 
 void TouchSelectionControllerImpl::ConvertPointToClientView(
@@ -694,6 +700,30 @@ gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
   menu_anchor.Inset(gfx::Insets::VH(-kSelectionHandleVerticalVisualOffset, 0));
 
   return menu_anchor;
+}
+
+void TouchSelectionControllerImpl::ShowMagnifier(
+    const gfx::SelectionBound& focus_bound_in_screen) {
+  if (auto* magnifier_runner =
+          ui::TouchSelectionMagnifierRunner::GetInstance()) {
+    // Convert focus bound to client native view coordinates.
+    const aura::Window* window = client_view_->GetNativeView();
+    gfx::Point edge_start = focus_bound_in_screen.edge_start_rounded();
+    gfx::Point edge_end = focus_bound_in_screen.edge_end_rounded();
+    wm::ConvertPointFromScreen(window, &edge_start);
+    wm::ConvertPointFromScreen(window, &edge_end);
+    gfx::SelectionBound focus_bound(focus_bound_in_screen);
+    focus_bound.SetEdge(gfx::PointF(edge_start), gfx::PointF(edge_end));
+
+    magnifier_runner->ShowMagnifier(client_view_->GetNativeView(), focus_bound);
+  }
+}
+
+void TouchSelectionControllerImpl::HideMagnifier() {
+  if (auto* magnifier_runner =
+          ui::TouchSelectionMagnifierRunner::GetInstance()) {
+    magnifier_runner->CloseMagnifier();
+  }
 }
 
 gfx::NativeView TouchSelectionControllerImpl::GetCursorHandleNativeView() {

@@ -102,6 +102,12 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // coordinates.
   gfx::Rect GetQuickMenuAnchorRect() const;
 
+  // Shows the touch selection magnifier (if there is one) at the focus bound.
+  void ShowMagnifier(const gfx::SelectionBound& focus_bound_in_screen);
+
+  // Hides the touch selection magnifier.
+  void HideMagnifier();
+
   // Convenience methods for testing.
   gfx::NativeView GetCursorHandleNativeView();
   gfx::SelectionBound::Type GetSelectionHandle1Type();
