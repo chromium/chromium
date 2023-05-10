@@ -264,7 +264,7 @@ void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
       base::BindOnce(&GetLoginsOrEmptyListOnFailure)
           .Then(base::BindOnce(&PasswordStore::UnblocklistInternal, this,
                                std::move(completion))),
-      FormSupportsPSL(form_digest), {form_digest});
+      /*include_psl=*/false, {form_digest});
 }
 
 void PasswordStore::GetLogins(const PasswordFormDigest& form,
@@ -505,8 +505,7 @@ void PasswordStore::UnblocklistInternal(
 
   std::vector<PasswordForm> forms_to_remove;
   for (auto& form : forms) {
-    // Ignore PSL matches for blocked entries.
-    if (form->blocked_by_user && !form->is_public_suffix_match) {
+    if (form->blocked_by_user) {
       forms_to_remove.push_back(std::move(*form));
     }
   }
