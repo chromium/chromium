@@ -102,6 +102,7 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
       permission_delegate->SetIdpSigninStatus(idp_origin, true);
     }
   } else {
+    RecordIdpSignOutNetError(fetch_status.response_code);
     // Ensures that we only fetch accounts unconditionally once.
     permission_delegate->SetIdpSigninStatus(idp_origin, false);
   }
