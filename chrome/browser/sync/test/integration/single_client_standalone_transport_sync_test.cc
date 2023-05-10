@@ -91,14 +91,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // Both IsSyncRequested and IsFirstSetupComplete should remain false (i.e.
-  // at their default values). They only get set during the Sync setup flow,
-  // either by the Sync confirmation dialog or by the settings page if going
-  // through the advanced settings flow.
+  // IsFirstSetupComplete should remain false. It only gets set during the Sync
+  // setup flow, either by the Sync confirmation dialog or by the settings page
+  // if going through the advanced settings flow.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->IsFirstSetupComplete());
-  // TODO(crbug.com/906034,crbug.com/973770): Sort out the proper default value
-  // for IsSyncRequested().
-  // EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->IsSyncRequested());
 
   EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
