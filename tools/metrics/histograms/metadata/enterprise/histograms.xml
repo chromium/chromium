@@ -2441,6 +2441,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ReportingEventUploadFailure"
+    enum="EnterpriseReportingEventType" expires_after="2024-06-01">
+  <owner>xanth@google.com</owner>
+  <owner>alshawwa@chromium.org</owner>
+  <owner>domfc@chromium.org</owner>
+  <summary>
+    Failures to upload reporting events to the reporting server bucketed by
+    event type.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ReportingEventUploadSuccess"
+    enum="EnterpriseReportingEventType" expires_after="2024-06-01">
+  <owner>xanth@google.com</owner>
+  <owner>alshawwa@chromium.org</owner>
+  <owner>domfc@chromium.org</owner>
+  <summary>
+    Reporting events successfully uploaded to the reporting server bucketed by
+    event type.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency"
     units="ms" expires_after="2023-10-04">

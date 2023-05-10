@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -385,6 +387,7 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 
   auto upload_callback = base::BindOnce(
       [](base::Value::Dict wrapper, bool per_profile, std::string dm_token,
+         EnterpriseReportingEventType eventType,
          policy::CloudPolicyClient::Result upload_result) {
         // TODO(b/256553070): Do not crash if the client is unregistered.
         CHECK(!upload_result.IsClientNotRegisteredError());
@@ -395,8 +398,17 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
                     std::move(dm_token));
         safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
             std::move(wrapper));
+
+        if (upload_result.IsSuccess()) {
+          base::UmaHistogramEnumeration(
+              "Enterprise.ReportingEventUploadSuccess", eventType);
+        } else {
+          base::UmaHistogramEnumeration(
+              "Enterprise.ReportingEventUploadFailure", eventType);
+        }
       },
-      wrapper.Clone(), settings.per_profile, client->dm_token());
+      wrapper.Clone(), settings.per_profile, client->dm_token(),
+      GetUmaEnumFromEventName(name));
 
   base::Value::List event_list;
   event_list.Append(std::move(wrapper));

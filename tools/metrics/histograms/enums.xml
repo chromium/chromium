@@ -32968,6 +32968,21 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Failure encoding the profile id."/>
 </enum>
 
+<enum name="EnterpriseReportingEventType">
+  <int value="0" label="Unknown event"/>
+  <int value="1" label="Password reuse event"/>
+  <int value="2" label="Password changed event"/>
+  <int value="3" label="Dangerous download event"/>
+  <int value="4" label="Interstitial event"/>
+  <int value="5" label="Sensitive data event"/>
+  <int value="6" label="Unscanned file event"/>
+  <int value="7" label="Login event"/>
+  <int value="8" label="Password breach event"/>
+  <int value="9" label="URL filtering interstitial event"/>
+  <int value="10" label="Extension install event"/>
+  <int value="11" label="Browser crash event"/>
+</enum>
+
 <enum name="EnterpriseRetrievePolicyResponseType">
   <obsolete>
     Removed in M91 since the data is no longer monitored.
