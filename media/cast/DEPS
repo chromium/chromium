@@ -12,3 +12,11 @@ include_rules = [
   "+ui/base",
   "+ui/gfx",
 ]
+
+specific_include_rules = {
+  ".*unittest.cc": [
+    # TODO(https://crbug.com/1442745): there should be a test support class
+    # for this component.
+    "+components/openscreen_platform",
+  ],
+}

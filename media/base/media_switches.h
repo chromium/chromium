@@ -262,6 +262,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kShareThisTabDialog);
 MEDIA_EXPORT extern const base::FeatureParam<int>
     kShareThisTabDialogActivationDelayMs;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenCastStreamingSession);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenVideoBitrateFactorInFrameDrops);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOverlayFullscreenVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseBackgroundMutedAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformAudioEncoder);

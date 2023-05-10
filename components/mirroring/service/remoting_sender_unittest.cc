@@ -78,9 +78,8 @@ class FakeSender : public media::cast::FrameSender {
   MOCK_METHOD1(SetTargetPlayoutDelay, void(base::TimeDelta));
   MOCK_CONST_METHOD0(GetTargetPlayoutDelay, base::TimeDelta());
   MOCK_CONST_METHOD0(NeedsKeyFrame, bool());
-  MOCK_CONST_METHOD1(
-      ShouldDropNextFrame,
-      media::cast::CastStreamingFrameDropReason(base::TimeDelta));
+  MOCK_METHOD1(ShouldDropNextFrame,
+               media::cast::CastStreamingFrameDropReason(base::TimeDelta));
   MOCK_METHOD1(GetRecordedRtpTimestamp,
                media::cast::RtpTimeTicks(media::cast::FrameId));
   MOCK_CONST_METHOD0(GetUnacknowledgedFrameCount, int());

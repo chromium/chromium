@@ -98,14 +98,15 @@ class FrameSender {
       std::unique_ptr<SenderEncodedFrame> encoded_frame) = 0;
 
   // Returns the reason the frame should be dropped, or kNotDropped if it should
-  // not be dropped.
+  // not be dropped. This method should be called exactly once for each frame,
+  // as its result may be used to calculate updates to the suggested bitrate.
   //
   // Callers are recommended to compute the frame duration based on the
   // difference between the next and last frames' reference times, or the period
   // between frames of the configured max frame rate if the reference times are
   // unavailable.
   virtual CastStreamingFrameDropReason ShouldDropNextFrame(
-      base::TimeDelta frame_duration) const = 0;
+      base::TimeDelta frame_duration) = 0;
 
   // Returns the RTP timestamp on the frame associated with |frame_id|.
   // In practice this should be implemented as a ring buffer using the lower

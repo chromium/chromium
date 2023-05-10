@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/cast/common/openscreen_conversion_helpers.h"
+#include "base/strings/string_number_conversions.h"
 
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
@@ -168,6 +169,33 @@ openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address) {
   const auto version = address.IsIPv6() ? openscreen::IPAddress::Version::kV6
                                         : openscreen::IPAddress::Version::kV4;
   return openscreen::IPAddress(version, address.bytes().data());
+}
+
+std::array<uint8_t, kAesKeyLength> AesKeyToArray(std::string aes_key) {
+  std::vector<uint8_t> vec;
+  if (!base::HexStringToBytes(aes_key, &vec)) {
+    return {};
+  }
+  if (vec.size() != static_cast<unsigned long>(kAesKeyLength)) {
+    return {};
+  }
+  std::array<uint8_t, kAesKeyLength> out;
+  for (size_t i = 0; i < vec.size(); ++i) {
+    out[i] = vec[i];
+  }
+  return out;
+}
+
+openscreen::cast::SessionConfig ToOpenscreenSessionConfig(
+    const FrameSenderConfig& config,
+    bool is_pli_enabled) {
+  return openscreen::cast::SessionConfig(
+      config.sender_ssrc, config.receiver_ssrc, config.rtp_timebase,
+      config.channels,
+      std::chrono::milliseconds(config.max_playout_delay.InMilliseconds()),
+
+      AesKeyToArray(config.aes_key), AesKeyToArray(config.aes_iv_mask),
+      is_pli_enabled);
 }
 
 openscreen::cast::AudioCaptureConfig ToOpenscreenAudioConfig(

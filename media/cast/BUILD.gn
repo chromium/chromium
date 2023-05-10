@@ -212,6 +212,8 @@ source_set("sender") {
     "sender/openscreen_frame_sender.h",
     "sender/performance_metrics_overlay.cc",
     "sender/performance_metrics_overlay.h",
+    "sender/video_bitrate_suggester.cc",
+    "sender/video_bitrate_suggester.h",
     "sender/video_sender.cc",
     "sender/video_sender.h",
   ]
@@ -366,6 +368,8 @@ test("cast_unittests") {
     "net/udp_transport_unittest.cc",
     "sender/audio_sender_unittest.cc",
     "sender/congestion_control_unittest.cc",
+    "sender/openscreen_frame_sender_unittest.cc",
+    "sender/video_bitrate_suggester_unittest.cc",
     "sender/video_sender_unittest.cc",
     "test/end2end_unittest.cc",
     "test/receiver/audio_decoder_unittest.cc",

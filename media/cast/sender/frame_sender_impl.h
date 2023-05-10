@@ -40,7 +40,7 @@ class FrameSenderImpl : public FrameSender {
   CastStreamingFrameDropReason EnqueueFrame(
       std::unique_ptr<SenderEncodedFrame> encoded_frame) override;
   CastStreamingFrameDropReason ShouldDropNextFrame(
-      base::TimeDelta frame_duration) const override;
+      base::TimeDelta frame_duration) override;
   RtpTimeTicks GetRecordedRtpTimestamp(FrameId frame_id) const override;
   int GetUnacknowledgedFrameCount() const override;
   int GetSuggestedBitrate(base::TimeTicks playout_time,

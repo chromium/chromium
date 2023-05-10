@@ -73,12 +73,15 @@ OpenscreenFrameSender::OpenscreenFrameSender(
     : cast_environment_(cast_environment),
       sender_(std::move(sender)),
       client_(client),
-      get_bitrate_cb_(std::move(get_bitrate_cb)),
       max_frame_rate_(config.max_frame_rate),
       is_audio_(config.rtp_payload_type <= RtpPayloadType::AUDIO_LAST),
       min_playout_delay_(config.min_playout_delay),
       max_playout_delay_(config.max_playout_delay) {
   DCHECK_GT(sender_->config().rtp_timebase, 0);
+  if (!is_audio_) {
+    bitrate_suggester_ = std::make_unique<VideoBitrateSuggester>(
+        config, std::move(get_bitrate_cb));
+  }
 
   const std::chrono::milliseconds target_playout_delay =
       sender_->config().target_playout_delay;
@@ -141,7 +144,13 @@ void OpenscreenFrameSender::RecordLatestFrameTimestamps(
 }
 
 base::TimeDelta OpenscreenFrameSender::GetInFlightMediaDuration() const {
+  // Start by including the encoder backlog duration, defined as the
+  // difference between the timestamps of the last frame to enter the encoder
+  // and the last frame to exit the encoder.
   base::TimeDelta duration = client_->GetEncoderBacklogDuration();
+
+  // If we have sent at least one frame, then include the duration currently
+  // in flight (as recorded by the Open Screen sender).
   if (!last_enqueued_frame_id_.is_null()) {
     const RtpTimeTicks newest_timestamp =
         GetRecordedRtpTimestamp(last_enqueued_frame_id_);
@@ -168,7 +177,7 @@ int OpenscreenFrameSender::GetSuggestedBitrate(base::TimeTicks playout_time,
                                                base::TimeDelta playout_delay) {
   // Currently only used by the video sender.
   DCHECK(!is_audio_);
-  return get_bitrate_cb_.Run();
+  return bitrate_suggester_->GetSuggestedBitrate();
 }
 
 double OpenscreenFrameSender::MaxFrameRate() const {
@@ -205,7 +214,7 @@ base::TimeDelta OpenscreenFrameSender::GetAllowedInFlightMediaDuration() const {
 CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-
+  DCHECK(encoded_frame);
   VLOG_WITH_SSRC(2) << "About to send another frame. last enqueued="
                     << last_enqueued_frame_id_;
 
@@ -291,12 +300,13 @@ void OpenscreenFrameSender::OnReceivedPli() {
 }
 
 CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
-    base::TimeDelta frame_duration) const {
+    base::TimeDelta frame_duration) {
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =
       GetUnacknowledgedFrameCount() + client_->GetNumberOfFramesInEncoder();
   if (count_frames_in_flight >= kMaxUnackedFrames) {
+    RecordShouldDropNextFrame(/*should_drop=*/true);
     return CastStreamingFrameDropReason::kTooManyFramesInFlight;
   }
 
@@ -306,11 +316,14 @@ CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
   const double max_frames_in_flight =
       max_frame_rate_ * duration_in_flight.InSecondsF();
   if (count_frames_in_flight >= max_frames_in_flight + kMaxFrameBurst) {
+    RecordShouldDropNextFrame(/*should_drop=*/true);
     return CastStreamingFrameDropReason::kBurstThresholdExceeded;
   }
 
-  // Check that accepting the next frame won't exceed the allowed in-flight
-  // media duration.
+  // At this point, we know we don't have too many frames, but we still need
+  // to ensure we don't have too much duration in flight. This case should
+  // not be hit very often, unless some frames have a higher duration than
+  // expected.
   const base::TimeDelta duration_would_be_in_flight =
       duration_in_flight + frame_duration;
   const base::TimeDelta allowed_in_flight = GetAllowedInFlightMediaDuration();
@@ -330,11 +343,18 @@ CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
     }
   }
   if (duration_would_be_in_flight > allowed_in_flight) {
+    RecordShouldDropNextFrame(/*should_drop=*/true);
     return CastStreamingFrameDropReason::kInFlightDurationTooHigh;
   }
 
   // Next frame is accepted.
+  RecordShouldDropNextFrame(/*should_drop=*/false);
   return CastStreamingFrameDropReason::kNotDropped;
 }
 
+void OpenscreenFrameSender::RecordShouldDropNextFrame(bool should_drop) {
+  if (bitrate_suggester_) {
+    bitrate_suggester_->RecordShouldDropNextFrame(should_drop);
+  }
+}
 }  // namespace media::cast

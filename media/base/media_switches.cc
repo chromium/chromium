@@ -585,6 +585,12 @@ BASE_FEATURE(kOpenscreenCastStreamingSession,
              "OpenscreenCastStreamingSession",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether or not frame drops are included in the video bitrate
+// calculation for the OpenscreenFrameSender backed VideoSender implementation.
+BASE_FEATURE(kOpenscreenVideoBitrateFactorInFrameDrops,
+             "OpenscreenVideoBitrateFactorInFrameDrops",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,
