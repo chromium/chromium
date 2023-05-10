@@ -2738,7 +2738,7 @@
   {
     "name": "enable-lens-context-menu-alt-text",
     "owners": [ "apalanki", "schechter", "hujasonx" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "enable-lens-image-format-optimizations",
