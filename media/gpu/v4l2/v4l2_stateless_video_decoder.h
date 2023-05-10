@@ -17,6 +17,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/waiting.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -25,7 +26,9 @@ namespace media {
 // using a memory to memory interface.
 // https://www.kernel.org/doc/html/latest/userspace-api/media/mediactl/request-api.html
 // https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-stateless-decoder.html
-class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder : public VideoDecoderMixin {
+class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
+    : public VideoDecoderMixin,
+      public V4L2DecodeSurfaceHandler {
  public:
   static std::unique_ptr<VideoDecoderMixin> Create(
       std::unique_ptr<MediaLog> media_log,
@@ -51,6 +54,17 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder : public VideoDecoderMixin {
   // VideoDecoderMixin implementation, specific part.
   void ApplyResolutionChange() override;
   size_t GetMaxOutputFramePoolSize() const override;
+
+  // V4L2DecodeSurfaceHandler implementation.
+  scoped_refptr<V4L2DecodeSurface> CreateSurface() override;
+  bool SubmitSlice(V4L2DecodeSurface* dec_surface,
+                   const uint8_t* data,
+                   size_t size) override;
+  void DecodeSurface(scoped_refptr<V4L2DecodeSurface> dec_surface) override;
+  void SurfaceReady(scoped_refptr<V4L2DecodeSurface> dec_surface,
+                    int32_t bitstream_id,
+                    const gfx::Rect& visible_rect,
+                    const VideoColorSpace& color_space) override;
 
  private:
   V4L2StatelessVideoDecoder(

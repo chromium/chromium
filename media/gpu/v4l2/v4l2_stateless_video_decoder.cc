@@ -86,4 +86,29 @@ size_t V4L2StatelessVideoDecoder::GetMaxOutputFramePoolSize() const {
   return 0;
 }
 
+scoped_refptr<V4L2DecodeSurface> V4L2StatelessVideoDecoder::CreateSurface() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+bool V4L2StatelessVideoDecoder::SubmitSlice(V4L2DecodeSurface* dec_surface,
+                                            const uint8_t* data,
+                                            size_t size) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void V4L2StatelessVideoDecoder::DecodeSurface(
+    scoped_refptr<V4L2DecodeSurface> dec_surface) {
+  NOTIMPLEMENTED();
+}
+
+void V4L2StatelessVideoDecoder::SurfaceReady(
+    scoped_refptr<V4L2DecodeSurface> dec_surface,
+    int32_t bitstream_id,
+    const gfx::Rect& visible_rect,
+    const VideoColorSpace& color_space) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace media
