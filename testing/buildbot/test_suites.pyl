@@ -5634,7 +5634,7 @@
         },
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 36,
+          'shards': 15,
           'expiration': 18000,
           'hard_timeout': 14400,
         },
