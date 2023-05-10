@@ -49,6 +49,10 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
+namespace cc::slim {
+class SurfaceLayer;
+}
+
 namespace ui {
 class MotionEventAndroid;
 class OverscrollRefreshHandler;
@@ -398,6 +402,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   }
 
   void SetNeedsBeginFrameForFlingProgress();
+
+  const cc::slim::SurfaceLayer* GetSurfaceLayer() const;
 
  protected:
   ~RenderWidgetHostViewAndroid() override;

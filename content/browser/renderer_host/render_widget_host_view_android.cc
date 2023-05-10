@@ -3272,6 +3272,14 @@ void RenderWidgetHostViewAndroid::SetNeedsBeginFrameForFlingProgress() {
     sync_compositor_->RequestOneBeginFrame();
 }
 
+const cc::slim::SurfaceLayer* RenderWidgetHostViewAndroid::GetSurfaceLayer()
+    const {
+  if (!delegated_frame_host_) {
+    return nullptr;
+  }
+  return delegated_frame_host_->content_layer();
+}
+
 void RenderWidgetHostViewAndroid::BeginRotationBatching() {
   in_rotation_ = true;
   rotation_metrics_.emplace_back(

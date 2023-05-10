@@ -3028,6 +3028,8 @@ source_set("browser") {
       "android/select_popup.h",
       "android/selection/composited_touch_handle_drawable.cc",
       "android/selection/composited_touch_handle_drawable.h",
+      "android/selection/magnifier_surface_control.cc",
+      "android/selection/magnifier_surface_control.h",
       "android/selection/selection_popup_controller.cc",
       "android/selection/selection_popup_controller.h",
       "android/selection/smart_selection_client.cc",

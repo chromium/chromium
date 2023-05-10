@@ -97,7 +97,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   bool HasDelegatedContent() const;
 
-  cc::slim::SurfaceLayer* content_layer_for_testing() {
+  const cc::slim::SurfaceLayer* content_layer() const {
     return content_layer_.get();
   }
 

@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   EXPECT_TRUE(dfh->HasPrimarySurface());
   EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
   EXPECT_EQ(initial_local_surface_id,
-            dfh->content_layer_for_testing()->surface_id().local_surface_id());
+            dfh->content_layer()->surface_id().local_surface_id());
   EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
 #endif
 
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // embedded.
   EXPECT_FALSE(dfh->HasPrimarySurface());
   EXPECT_TRUE(dfh->IsPrimarySurfaceEvicted());
-  EXPECT_FALSE(dfh->content_layer_for_testing()->surface_id().is_valid());
+  EXPECT_FALSE(dfh->content_layer()->surface_id().is_valid());
   EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
 #endif
 
