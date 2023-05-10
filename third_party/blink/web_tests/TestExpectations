@@ -2922,7 +2922,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators-2.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=RelativeUrlForCandidate [ Timeout ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-negative-resolution-rendering-2.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-negative-resolution-rendering.html [ Failure ]
@@ -2932,7 +2931,6 @@ crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/color-mix-currentcolor-003.html [ Failure ]
-crbug.com/626703 [ Linux ] virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators-2.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-cascade/import-conditional-002.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
