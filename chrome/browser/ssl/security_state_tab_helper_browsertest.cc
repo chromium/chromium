@@ -1398,9 +1398,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, FormSecurityLevelHistogram) {
       browser(), https_server_.GetURL(replacement_path)));
   content::TestNavigationObserver navigation_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "document.getElementById('submit').click();"));
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('submit').click();"));
   navigation_observer.Wait();
   // Check that the histogram count logs the security level of the page
   // containing the form, not of the form target page.
@@ -1521,7 +1521,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSecurityStateTest,
     content::TitleWatcher title_watcher(contents, expected_title);
     // Execute the JavaScript code to trigger the followup navigation from the
     // current page.
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         contents,
         base::StringPrintf("location.href = '%s';", sxg_url.spec().c_str())));
     // The inner content of test.example.org_test.sxg has

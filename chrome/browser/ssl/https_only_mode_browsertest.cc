@@ -118,7 +118,7 @@ class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
   void ProceedThroughInterstitial(content::WebContents* tab) {
     content::TestNavigationObserver nav_observer(tab, 1);
     std::string javascript = "window.certificateErrorPageController.proceed();";
-    ASSERT_TRUE(content::ExecuteScript(tab, javascript));
+    ASSERT_TRUE(content::ExecJs(tab, javascript));
     nav_observer.Wait();
   }
 
@@ -126,7 +126,7 @@ class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
     content::TestNavigationObserver nav_observer(tab, 1);
     std::string javascript =
         "window.certificateErrorPageController.dontProceed();";
-    ASSERT_TRUE(content::ExecuteScript(tab, javascript));
+    ASSERT_TRUE(content::ExecJs(tab, javascript));
     nav_observer.Wait();
   }
 
@@ -381,8 +381,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, HttpPageHttpPost_NotUpgraded) {
 
   // Submit the form and wait for the navigation to complete.
   content::TestNavigationObserver nav_observer(contents, 1);
-  ASSERT_TRUE(content::ExecuteScript(
-      contents, "document.getElementById('submit').click();"));
+  ASSERT_TRUE(
+      content::ExecJs(contents, "document.getElementById('submit').click();"));
   nav_observer.Wait();
 
   // Check that the navigation has ended up on the HTTP target.
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, InterstitialLearnMoreLink) {
       contents));
 
   // Simulate clicking the learn more link (CMD_OPEN_HELP_CENTER).
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       contents, "window.certificateErrorPageController.openHelpCenter();"));
 
   // New tab should include the p-link "first_mode".
