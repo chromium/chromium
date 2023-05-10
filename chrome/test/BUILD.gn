@@ -10613,6 +10613,7 @@ source_set("sync_integration_test_support") {
     "//components/bookmarks/browser",
     "//components/bookmarks/browser:test_support",
     "//components/bookmarks/managed",
+    "//components/browser_sync",
     "//components/favicon/core",
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
