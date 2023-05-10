@@ -95,10 +95,10 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
       GetWebContents()->GetPrimaryMainFrame();
 
   // Delegate permission to both frames.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       main_frame,
       "document.getElementById('iframe1').allow = 'geolocation *';"));
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       main_frame,
       "document.getElementById('iframe2').allow = 'geolocation *';"));
 

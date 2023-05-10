@@ -504,7 +504,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "requestGeolocation();"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "requestGeolocation();",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   bubble_factory()->WaitForPermissionBubble();
   EXPECT_EQ(1, bubble_factory()->show_count());
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
@@ -594,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   TriggerAndExpectPromptCooldownToBeStillActiveAfterNavigationAction(
       [](content::WebContents* web_contents, const GURL& url) {
         content::TestNavigationObserver navigation_observer(web_contents);
-        EXPECT_TRUE(content::ExecuteScript(
+        EXPECT_TRUE(content::ExecJs(
             web_contents, "window.location = \"" + url.spec() + "\";"));
         navigation_observer.Wait();
       },
