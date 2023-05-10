@@ -4,7 +4,7 @@
 
 import './xf_nudge.js';
 
-import {assertEquals, assertGT, assertLT, assertThrows} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertGT, assertLT, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {NudgeDirection, XfNudge} from './xf_nudge.js';
 
@@ -107,7 +107,7 @@ export function testNudgeDotAndBubbleIsPositionedInTheRightPlace() {
 /**
  * Tests that the nudge gets repositioned appopriately if the element moves.
  */
-export async function testNudgeGetsRepositionedCorrectlyIfAnchorChanges() {
+export function testNudgeGetsRepositionedCorrectlyIfAnchorChanges() {
   const nudge = getNudge();
 
   // Insert an anchor and make it position relative to ensure we can position it
@@ -138,4 +138,48 @@ export async function testNudgeGetsRepositionedCorrectlyIfAnchorChanges() {
   nudge.reposition();
   assertEquals(nudge.dotRect.y, 412, 'dot y-ordinate');
   assertEquals(nudge.dotRect.x, 354, 'dot x-ordinate');
+}
+
+/**
+ * Tests that setting the dismissText displays the dismiss button and setting an
+ * empty text hides the button.
+ */
+export async function testDismissButtonHideAndShow() {
+  const nudge = getNudge();
+
+  // Create an anchor element and insert it before the nudge in the DOM.
+  const anchor = document.createElement('div');
+  anchor.style.width = '100px';
+  anchor.style.height = '100px';
+  anchor.innerText = 'Test anchor';
+  nudge.insertAdjacentElement('beforebegin', anchor);
+
+  // Add the dismiss text and display the nudge.
+  nudge.content = 'Nudge contents';
+  nudge.dismissText = 'Dismiss';
+  nudge.direction = NudgeDirection.BOTTOM_ENDWARD;
+  nudge.anchor = anchor;
+  nudge.show();
+
+  // Check that the button is visible.
+  const dismissButton = nudge.shadowRoot!.getElementById('dismiss')!;
+  assertEquals(
+      dismissButton.innerText, 'Dismiss',
+      'dismiss button should show the dismissText');
+  assertTrue(dismissButton.getBoundingClientRect().width > 0);
+
+  // <xf-nudge> fires its DISMISS event when user clicks on the dismiss button.
+  let clicked = false;
+  nudge.addEventListener(XfNudge.events.DISMISS, () => clicked = true);
+  dismissButton.click();
+  assertTrue(clicked, '<xf-nudge> should fire DISMISS event');
+
+  nudge.hide();
+
+  // Displaying without dismiss text, the button should be hidden.
+  nudge.dismissText = '';
+  nudge.show();
+  assertEquals(
+      dismissButton.innerText, '', 'dismiss button text should be empty');
+  assertEquals(dismissButton.getBoundingClientRect().width, 0);
 }

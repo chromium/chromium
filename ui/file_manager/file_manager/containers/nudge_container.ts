@@ -196,11 +196,24 @@ export class NudgeContainer {
     }
     window.addEventListener(
         'resize', this.throttledRepositionCallback_.bind(this), config);
-    document.addEventListener('keydown', e => this.handleKeyDown_(e), config);
-    document.addEventListener(
-        'pointerdown', e => this.handlePointerDown_(e), config);
-    anchor.addEventListener(
-        'blur', (_: Event) => this.closeNudge(this.currentNudgeType_), config);
+
+    if (info.dismissText) {
+      // Self dismissable nudge only dismisses if the user clicks on the dismiss
+      // button.
+      this.nudge_.addEventListener(
+          XfNudge.events.DISMISS, () => this.closeNudge(this.currentNudgeType_),
+          config);
+      this.nudge_.dismissText = info.dismissText;
+    } else {
+      // Otherwise the nudge dismisses when user clicks anywhere in the app.
+      document.addEventListener('keydown', e => this.handleKeyDown_(e), config);
+      document.addEventListener(
+          'pointerdown', e => this.handlePointerDown_(e), config);
+      anchor.addEventListener(
+          'blur', (_: Event) => this.closeNudge(this.currentNudgeType_),
+          config);
+      this.nudge_.dismissText = '';
+    }
 
     this.nudge_.anchor = anchor;
     this.nudge_.content = info.content();
@@ -312,6 +325,7 @@ export class NudgeContainer {
  */
 export enum NudgeType {
   TEST_NUDGE = 'test-nudge',
+  MANUAL_TEST_NUDGE = 'manual-test-nudge',
   TRASH_NUDGE = 'trash-nudge',
   ONE_DRIVE_MOVED_FILE_NUDGE = 'one-drive-moved-file-nudge',
   DRIVE_MOVED_FILE_NUDGE = 'drive-moved-file-nudge',
@@ -336,6 +350,11 @@ interface NudgeInfo {
   // The date the nudge expires, after this date even if the nudge is invoked it
   // will not appear.
   expiryDate: Date;
+
+  // When the nudge has a dismiss text, the user can dismiss by clicking the
+  // dismiss button. Otherwise the nudge is dismissed when clicking anywhere in
+  // the app/document.
+  dismissText?: string;
 }
 
 /**
@@ -358,6 +377,28 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     // Expire this after 4 releases (expires when M112 hits Stable).
     expiryDate: new Date(2023, 4, 6),
   },
+  [NudgeType['MANUAL_TEST_NUDGE']]: {
+    anchor: () => {
+      const children = Array.from(document.querySelectorAll<HTMLElement>(
+          '.tree-item[section-start="my_files"] > .tree-children > .tree-item .entry-name'));
+
+      for (const child of children) {
+        if (child.innerText !== 'Downloads') {
+          continue;
+        }
+
+        return child.parentElement?.querySelector<HTMLSpanElement>(
+                   '.item-icon') ??
+            null;
+      }
+
+      return null;
+    },
+    content: () => str('ONE_DRIVE_MOVED_FILE_NUDGE'),
+    direction: NudgeDirection.TRAILING_DOWNWARD,
+    expiryDate: new Date(2999, 1, 1),
+    dismissText: str('OK_LABEL'),
+  },
   [NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
       return document
@@ -370,6 +411,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     direction: NudgeDirection.TRAILING_DOWNWARD,
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
+    dismissText: str('OK_LABEL'),
   },
   [NudgeType['DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
@@ -383,6 +425,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     direction: NudgeDirection.TRAILING_DOWNWARD,
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
+    dismissText: str('OK_LABEL'),
   },
   [NudgeType['SEARCH_V2_EDUCATION_NUDGE']]: {
     anchor: () => document.querySelector<HTMLSpanElement>('#search-wrapper'),

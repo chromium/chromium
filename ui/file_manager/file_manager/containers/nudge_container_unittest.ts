@@ -99,7 +99,7 @@ function waitUntilRepositions(repositions: number) {
  * The repositions are setup as 0, this indicates the nudge has not been moved
  * to position, i.e. an uninitialised state.
  */
-function waitUntilRepositionsUnitialised() {
+function waitUntilRepositionsUninitialised() {
   return waitUntilRepositions(0);
 }
 
@@ -115,24 +115,28 @@ async function createAndShowTestNudge() {
 /**
  * Tests that a defined nudge without an anchor is not shown.
  */
-export async function testShowWorksOnlyWhenAProperAnchorIsAvailable() {
+export async function testShowWorksOnlyWhenAProperAnchorIsAvailable(
+    done: () => void) {
   // The first showing of nudge should not work as the <div id="test"> is not
   // visible on the DOM.
   nudgeContainer!.showNudge(NudgeType.TEST_NUDGE);
   assertFalse(await nudgeContainer!.checkSeen(NudgeType.TEST_NUDGE));
-  await waitUntilRepositionsUnitialised();
+  await waitUntilRepositionsUninitialised();
 
   // The second showing of the nudge should work as we've appended the <div
   // id="test"> to the DOM.
   await createAndAppendTestDiv();
   nudgeContainer!.showNudge(NudgeType.TEST_NUDGE);
   await waitUntilRepositions(1);
+
+  done();
 }
 
 /**
  * Tests that the enter key dismisses the nudge.
  */
-export async function testEnterKeyHidesNudge() {
+export async function testEnterKeyHidesNudge(done: () => void) {
+  nudgeInfo[NudgeType.TEST_NUDGE].dismissText = '';
   await createAndShowTestNudge();
 
   const keyDownEvent = new KeyboardEvent('keydown', {key: 'Enter'});
@@ -144,13 +148,15 @@ export async function testEnterKeyHidesNudge() {
   assertTrue(
       await nudgeContainer!.checkSeen(NudgeType.TEST_NUDGE),
       'check nudge has been seen');
+
+  done();
 }
 
 /**
  * Tests that a <p> element is appended beside the anchor element with the nudge
  * content to enable screen readers to hear the content.
  */
-export async function testAriaDescribedByElementIsAdded() {
+export async function testAriaDescribedByElementIsAdded(done: () => void) {
   await createAndShowTestNudge();
 
   await waitUntil(() => getDescribedByElement() !== null);
@@ -160,13 +166,16 @@ export async function testAriaDescribedByElementIsAdded() {
   assertNotEquals(describedByElement, null);
   assertEquals(
       describedByElement!.innerText, nudgeInfo[NudgeType.TEST_NUDGE].content());
+
+  done();
 }
 
 /**
  * Tests that the nudge moves with the element if it gets moved
  * programmatically.
  */
-export async function testNudgeMovesWhenElementIsRepositioned() {
+export async function testNudgeMovesWhenElementIsRepositioned(
+    done: () => void) {
   const testDiv = await createAndAppendTestDiv();
   nudgeContainer!.showNudge(NudgeType.TEST_NUDGE);
   await waitUntilRepositions(1);
@@ -175,17 +184,19 @@ export async function testNudgeMovesWhenElementIsRepositioned() {
   testDiv.style.left = '200px';
   testDiv.style.top = '200px';
   await waitUntilRepositions(2);
+
+  done();
 }
 
 /**
  * Tests that the nudge is not shown after being shown for the first time.
  */
-export async function testNudgeIsNotShownAfterFirstTime() {
+export async function testNudgeIsNotShownAfterFirstTime(done: () => void) {
   await createAndShowTestNudge();
 
   // Close the nudge which should set the nudge to "seen".
   nudgeContainer!.closeNudge(NudgeType.TEST_NUDGE);
-  await waitUntilRepositionsUnitialised();
+  await waitUntilRepositionsUninitialised();
   assertTrue(
       await nudgeContainer!.checkSeen(NudgeType.TEST_NUDGE),
       'check nudge has been seen');
@@ -193,17 +204,47 @@ export async function testNudgeIsNotShownAfterFirstTime() {
   // Assert that showing the nudge again doesn't work as it's already been
   // "seen".
   nudgeContainer!.showNudge(NudgeType.TEST_NUDGE);
-  await waitUntilRepositionsUnitialised();
+  await waitUntilRepositionsUninitialised();
+
+  done();
 }
 
 /**
  * Tests the nudge doesn't show if the expiry period has elapsed.
  */
-export async function testNudgeIsNotShownIfExpiryPeriodElapsed() {
+export async function testNudgeIsNotShownIfExpiryPeriodElapsed(
+    done: () => void) {
   // Update the test nudge timestamp to be 60s before now.
   nudgeInfo[NudgeType.TEST_NUDGE].expiryDate =
       new Date(new Date().getTime() - (60 * 1000));
   await createAndAppendTestDiv();
   nudgeContainer!.showNudge(NudgeType.TEST_NUDGE);
-  await waitUntilRepositionsUnitialised();
+  await waitUntilRepositionsUninitialised();
+
+  done();
+}
+
+/**
+ * Tests the nudge is dismissed by the dismiss button, when it has a
+ * dismissText.
+ */
+export async function testNudgeDismissButton(done: () => void) {
+  nudgeInfo[NudgeType.TEST_NUDGE].dismissText = 'Ok';
+  await createAndShowTestNudge();
+
+  const button = nudgeElement?.shadowRoot!.getElementById('dismiss')!;
+  assertTrue(
+      button.getBoundingClientRect().width > 0,
+      'Dismiss button should be visible');
+
+  // Click and wait it to dismiss.
+  button.click();
+
+  // Reposition to hidden.
+  await waitUntilRepositionsUninitialised();
+  assertTrue(
+      await nudgeContainer!.checkSeen(NudgeType.TEST_NUDGE),
+      'check nudge has been seen');
+
+  done();
 }
