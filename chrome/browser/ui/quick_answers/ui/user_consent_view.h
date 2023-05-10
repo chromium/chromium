@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class Label;
@@ -43,6 +44,12 @@ class UserConsentView : public views::View {
 
   ~UserConsentView() override;
 
+  static views::UniqueWidgetPtr CreateWidget(
+      const gfx::Rect& anchor_view_bounds,
+      const std::u16string& intent_type,
+      const std::u16string& intent_text,
+      base::WeakPtr<QuickAnswersUiController> controller);
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
@@ -56,7 +63,6 @@ class UserConsentView : public views::View {
   void InitLayout();
   void InitContent();
   void InitButtonBar();
-  void InitWidget();
   void UpdateWidgetBounds();
 
   // QuickAnswersFocusSearch::GetFocusableViewsCallback to poll currently

@@ -314,19 +314,50 @@ QuickAnswersView::QuickAnswersView(
           base::BindRepeating(&QuickAnswersView::GetFocusableViews,
                               base::Unretained(this)))) {
   InitLayout();
-  InitWidget();
 
   // Focus.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
-
-  // Allow tooltips to be shown despite menu-controller owning capture.
-  GetWidget()->SetNativeWindowProperty(
-      views::TooltipManager::kGroupingPropertyKey,
-      reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
 }
 
 QuickAnswersView::~QuickAnswersView() = default;
+
+views::UniqueWidgetPtr QuickAnswersView::CreateWidget(
+    const gfx::Rect& anchor_view_bounds,
+    const std::string& title,
+    bool is_internal,
+    base::WeakPtr<QuickAnswersUiController> controller) {
+  views::Widget::InitParams params;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.shadow_elevation = 2;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.type = views::Widget::InitParams::TYPE_POPUP;
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+
+  // Parent the widget to the owner of the menu.
+  auto* active_menu_controller = views::MenuController::GetActiveInstance();
+  DCHECK(active_menu_controller && active_menu_controller->owner());
+
+  // This widget has to be a child of menu owner's widget to make keyboard focus
+  // work.
+  params.parent = active_menu_controller->owner()->GetNativeView();
+  params.child = true;
+  params.name = kWidgetName;
+
+  views::UniqueWidgetPtr widget =
+      std::make_unique<views::Widget>(std::move(params));
+  QuickAnswersView* quick_answers_view =
+      widget->SetContentsView(std::make_unique<QuickAnswersView>(
+          anchor_view_bounds, title, is_internal, controller));
+  quick_answers_view->UpdateBounds();
+
+  // Allow tooltips to be shown despite menu-controller owning capture.
+  widget->SetNativeWindowProperty(
+      views::TooltipManager::kGroupingPropertyKey,
+      reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
+
+  return widget;
+}
 
 void QuickAnswersView::OnFocus() {
   View* wants_focus = focus_search_->FindNextFocusableView(
@@ -478,30 +509,6 @@ void QuickAnswersView::InitLayout() {
     // Add util buttons in the top-right corner.
     AddFrameButtons();
   }
-}
-
-void QuickAnswersView::InitWidget() {
-  views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.shadow_elevation = 2;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-
-  // Parent the widget to the owner of the menu.
-  auto* active_menu_controller = views::MenuController::GetActiveInstance();
-  DCHECK(active_menu_controller && active_menu_controller->owner());
-
-  // This widget has to be a child of menu owner's widget to make keyboard focus
-  // work.
-  params.parent = active_menu_controller->owner()->GetNativeView();
-  params.child = true;
-  params.name = kWidgetName;
-
-  views::Widget* widget = new views::Widget();
-  widget->Init(std::move(params));
-  widget->SetContentsView(this);
-  UpdateBounds();
 }
 
 void QuickAnswersView::AddContentView() {

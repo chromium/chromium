@@ -16,6 +16,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class ImageButton;
@@ -45,6 +46,11 @@ class RichAnswersView : public views::View {
 
   ~RichAnswersView() override;
 
+  static views::UniqueWidgetPtr CreateWidget(
+      const gfx::Rect& anchor_view_bounds,
+      base::WeakPtr<QuickAnswersUiController> controller,
+      const quick_answers::QuickAnswer& result);
+
   // views::View:
   void OnFocus() override;
   void OnThemeChanged() override;
@@ -55,7 +61,6 @@ class RichAnswersView : public views::View {
 
  private:
   void InitLayout();
-  void InitWidget();
   void AddResultTypeIcon();
   void AddFrameButtons();
   void UpdateBounds();

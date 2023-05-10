@@ -80,7 +80,6 @@ RichAnswersView::RichAnswersView(
           base::BindRepeating(&RichAnswersView::GetFocusableViews,
                               base::Unretained(this)))) {
   InitLayout();
-  InitWidget();
 
   // Focus.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -88,6 +87,53 @@ RichAnswersView::RichAnswersView(
 }
 
 RichAnswersView::~RichAnswersView() = default;
+
+views::UniqueWidgetPtr RichAnswersView::CreateWidget(
+    const gfx::Rect& anchor_view_bounds,
+    base::WeakPtr<QuickAnswersUiController> controller,
+    const quick_answers::QuickAnswer& result) {
+  // Create the correct rich card child view depending on the result type.
+  std::unique_ptr<RichAnswersView> child_view = nullptr;
+  switch (result.result_type) {
+    case quick_answers::ResultType::kDefinitionResult: {
+      child_view = std::make_unique<RichAnswersDefinitionView>(
+          anchor_view_bounds, controller, result);
+      break;
+    }
+    case quick_answers::ResultType::kTranslationResult: {
+      child_view = std::make_unique<RichAnswersTranslationView>(
+          anchor_view_bounds, controller, result);
+      break;
+    }
+    case quick_answers::ResultType::kUnitConversionResult: {
+      child_view = std::make_unique<RichAnswersUnitConversionView>(
+          anchor_view_bounds, controller, result);
+      break;
+    }
+    case quick_answers::ResultType::kKnowledgePanelEntityResult:
+    case quick_answers::ResultType::kNoResult: {
+      return views::UniqueWidgetPtr();
+    }
+  }
+
+  CHECK(child_view);
+
+  views::Widget::InitParams params;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.shadow_elevation = 2;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.type = views::Widget::InitParams::TYPE_POPUP;
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.corner_radius = kBorderCornerRadius;
+  params.name = kWidgetName;
+
+  views::UniqueWidgetPtr widget =
+      std::make_unique<views::Widget>(std::move(params));
+  RichAnswersView* rich_answers_view =
+      widget->SetContentsView(std::move(child_view));
+  rich_answers_view->UpdateBounds();
+  return widget;
+}
 
 void RichAnswersView::OnFocus() {
   View* wants_focus = focus_search_->FindNextFocusableView(
@@ -149,22 +195,6 @@ void RichAnswersView::InitLayout() {
 
   // Add util buttons in the top-right corner.
   AddFrameButtons();
-}
-
-void RichAnswersView::InitWidget() {
-  views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.shadow_elevation = 2;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.corner_radius = kBorderCornerRadius;
-  params.name = kWidgetName;
-
-  views::Widget* widget = new views::Widget();
-  widget->Init(std::move(params));
-  widget->SetContentsView(this);
-  UpdateBounds();
 }
 
 void RichAnswersView::AddResultTypeIcon() {
