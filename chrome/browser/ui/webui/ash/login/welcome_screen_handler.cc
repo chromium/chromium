@@ -278,7 +278,6 @@ void WelcomeScreenHandler::GiveChromeVoxHint() {
 }
 
 void WelcomeScreenHandler::SetQuickStartEnabled() {
-  DCHECK(features::IsOobeQuickStartEnabled());
   CallExternalAPI("setQuickStartEnabled");
 }
 

@@ -141,7 +141,8 @@ class WelcomeScreen : public BaseScreen,
                           Profile* profile,
                           bool show_message) override;
 
-  void OnFeatureSupportStatusDetermined(
+  void EnableQuickStart();
+  void OnGetQuickStartFeatureSupportStatus(
       quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
 
   // Handlers for various user actions:

@@ -712,7 +712,7 @@ void LoginDisplayHostCommon::AddWizardCreatedObserverForTests(
 
 base::WeakPtr<quick_start::TargetDeviceBootstrapController>
 LoginDisplayHostCommon::GetQuickStartBootstrapController() {
-  DCHECK(features::IsOobeQuickStartEnabled());
+  CHECK(wizard_context_->quick_start_enabled);
   if (!bootstrap_controller_) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     DCHECK(profile);

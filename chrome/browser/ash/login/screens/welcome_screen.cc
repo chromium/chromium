@@ -381,12 +381,12 @@ void WelcomeScreen::ShowImpl() {
       base::DefaultTickClock::GetInstance(), this);
   if (view_)
     view_->Show();
+
+  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
+  // The shortcut method enables a simpler workflow for testers, while the
+  // feature flag will enable us to perform a first run field trial.
   if (features::IsOobeQuickStartEnabled()) {
-    bootstrap_controller_ =
-        LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-    bootstrap_controller_->GetFeatureSupportStatusAsync(
-        base::BindOnce(&WelcomeScreen::OnFeatureSupportStatusDetermined,
-                       weak_ptr_factory_.GetWeakPtr()));
+    EnableQuickStart();
   }
 
   if (LoginScreenClientImpl::HasInstance()) {
@@ -397,7 +397,7 @@ void WelcomeScreen::ShowImpl() {
 void WelcomeScreen::HideImpl() {
   CancelChromeVoxHintIdleDetection();
 
-  if (features::IsOobeQuickStartEnabled()) {
+  if (context()->quick_start_enabled) {
     bootstrap_controller_.reset();
   }
 }
@@ -405,7 +405,7 @@ void WelcomeScreen::HideImpl() {
 void WelcomeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
-    DCHECK(features::IsOobeQuickStartEnabled());
+    CHECK(context()->quick_start_enabled);
     Exit(Result::QUICK_START);
     return;
   }
@@ -547,6 +547,13 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
     if (view_)
       view_->ShowRemoraRequisitionDialog();
     return true;
+  } else if (action == LoginAcceleratorAction::kEnableQuickStart) {
+    if (context()->quick_start_enabled) {
+      return true;
+    }
+
+    EnableQuickStart();
+    return true;
   }
 
   return false;
@@ -565,12 +572,22 @@ void WelcomeScreen::InputMethodChanged(
   }
 }
 
-void WelcomeScreen::OnFeatureSupportStatusDetermined(
+void WelcomeScreen::EnableQuickStart() {
+  context()->quick_start_enabled = true;
+  bootstrap_controller_ =
+      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
+  bootstrap_controller_->GetFeatureSupportStatusAsync(
+      base::BindOnce(&WelcomeScreen::OnGetQuickStartFeatureSupportStatus,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WelcomeScreen::OnGetQuickStartFeatureSupportStatus(
     quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
   if (status != quick_start::TargetDeviceConnectionBroker::
                     FeatureSupportStatus::kSupported) {
     return;
   }
+
   if (!view_) {
     return;
   }

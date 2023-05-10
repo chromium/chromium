@@ -66,6 +66,10 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
        kLaunchDiagnostics,
        ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
        true, kScopeOobe | kScopeLogin,
+    }, {
+      kEnableQuickStart,
+      ui::VKEY_Q, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       false, kScopeOobe,
     },
 };
 // clang-format on

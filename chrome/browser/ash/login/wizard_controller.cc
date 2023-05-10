@@ -603,12 +603,10 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                             weak_factory_.GetWeakPtr())));
 
-    if (ash::features::IsOobeQuickStartEnabled()) {
-      append(std::make_unique<QuickStartScreen>(
-          oobe_ui->GetView<QuickStartScreenHandler>()->AsWeakPtr(),
-          base::BindRepeating(&WizardController::OnQuickStartScreenExit,
-                              weak_factory_.GetWeakPtr())));
-    }
+    append(std::make_unique<QuickStartScreen>(
+        oobe_ui->GetView<QuickStartScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnQuickStartScreenExit,
+                            weak_factory_.GetWeakPtr())));
   }
 
   append(std::make_unique<NetworkScreen>(
@@ -903,7 +901,7 @@ void WizardController::ShowWelcomeScreen() {
 }
 
 void WizardController::ShowQuickStartScreen() {
-  CHECK(ash::features::IsOobeQuickStartEnabled());
+  CHECK(wizard_context_->quick_start_enabled);
   SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
 }
 
