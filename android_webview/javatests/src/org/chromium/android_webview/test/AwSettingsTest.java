@@ -1992,6 +1992,50 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
+    public void testUserAgentOverrideWithDefaultUserAgentClientHints() throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        AwContents awContents = testContainerView.getAwContents();
+        AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+        final String customUserAgentString =
+                settings.getUserAgentString() + "UserAgentOverrideSuffix";
+        settings.setUserAgentString(customUserAgentString);
+
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                InstrumentationRegistry.getInstrumentation().getContext(),
+                ServerCertificate.CERT_OK);
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        try {
+            String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html")
+                    + "?url="
+                    + URLEncoder.encode(
+                            "/echoheader?Sec-CH-UA-Mobile&Sec-CH-UA-Platform&User-Agent");
+            mActivityTestRule.loadUrlSync(
+                    awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
+            // Make sure the Sec-CH-UA-Mobile, Sec-CH-UA-Platform client hint returns the correct
+            // value. If use the mobile user agent, Sec-CH-UA-Mobile should return true, otherwise
+            // false.
+            if (customUserAgentString.indexOf(" Mobile") != -1) {
+                Assert.assertEquals("?1 \"Android\" " + customUserAgentString,
+                        mActivityTestRule.getTitleOnUiThread(awContents));
+            } else {
+                Assert.assertEquals("?0 \"Android\" " + customUserAgentString,
+                        mActivityTestRule.getTitleOnUiThread(awContents));
+            }
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
     public void testDomStorageEnabledWithTwoViews() throws Throwable {
         ViewPair views = createViews();
         runPerViewSettingsTest(
