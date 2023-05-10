@@ -944,7 +944,7 @@ enum HeaderBehaviour {
   if (self.bottomPosition)
     return NO;
 
-  return YES;
+  return self.viewVisible;
 }
 
 #pragma mark - UIViewController
