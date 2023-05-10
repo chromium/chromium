@@ -52807,6 +52807,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="-1622129313" label="sr-t-i0-und"/>
   <int value="-1616253108" label="ta-t-i0-und"/>
   <int value="-1608984043" label="vkd_my_myansan"/>
+  <int value="-1607960640" label="xkb:za:gb:eng"/>
   <int value="-1595218901" label="experimental_layout-gb(extd)_lang-sv"/>
   <int value="-1530423498" label="experimental_layout-no_lang-sv"/>
   <int value="-1520893793" label="vkd_te_phone"/>
@@ -52841,6 +52842,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="-666585286" label="xkb:bg::bul"/>
   <int value="-650362029" label="xkb:ie::ga"/>
   <int value="-607101895" label="zh-t-i0-pinyin"/>
+  <int value="-554403769" label="xkb:pk::eng"/>
   <int value="-547772150" label="xkb:ro:std:rum"/>
   <int value="-545936253" label="zh-hant-t-i0-array-1992"/>
 <!-- TODO(b/274989284): Properly de-duplicate this label. -->
@@ -52851,6 +52853,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="-496003957" label="xkb:de::ger"/>
   <int value="-489436211" label="xkb:us:intl_pc:nld"/>
   <int value="-456651526" label="kn-t-i0-und"/>
+  <int value="-428164685" label="ml-t-i0-und"/>
   <int value="-383640577" label="or-t-i0-und"/>
   <int value="-366323598" label="fa-t-i0-und"/>
   <int value="-352571373" label="xkb:rs::srp"/>
@@ -52895,6 +52898,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="787164771" label="vkd_lo"/>
   <int value="789603234" label="xkb:by::bel"/>
   <int value="789867412" label="vkd_ethi"/>
+  <int value="790570407" label="a11y_dictation"/>
   <int value="822222165" label="xkb:ru:phonetic:rus"/>
   <int value="825747412" label="xkb:latam::spa"/>
   <int value="828287201" label="vkd_ta_inscript"/>
@@ -52942,6 +52946,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2031967946" label="xkb:mt::mlt"/>
   <int value="2060414855" label="braille"/>
   <int value="2077260254" label="ko-t-i0-und"/>
+  <int value="2091571148" label="xkb:in::eng"/>
   <int value="2121258069" label="xkb:us:dvorak:eng"/>
   <int value="2143389015" label="vkd_ne_inscript"/>
 </enum>
