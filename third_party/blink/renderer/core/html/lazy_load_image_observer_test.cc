@@ -447,10 +447,6 @@ class LazyLoadImagesTest : public SimTest {
     EXPECT_FALSE(GetDocument().IsUseCounted(
         WebFeature::kLazyLoadImageLoadingAttributeEager));
   }
-
- private:
-  ScopedLazyImageVisibleLoadTimeMetricsForTest
-      scoped_lazy_image_visible_load_time_metrics_for_test_ = true;
 };
 
 TEST_F(LazyLoadImagesTest, LoadAllImagesIfPrinting) {

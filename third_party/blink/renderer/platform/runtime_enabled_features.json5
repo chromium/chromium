@@ -2080,11 +2080,6 @@
       base_feature: "none",
     },
     {
-      name: "LazyImageVisibleLoadTimeMetrics",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "LazyInitializeMediaControls",
       base_feature: "none",
       public: true,

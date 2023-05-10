@@ -231,8 +231,6 @@ void LazyLoadImageObserver::LoadIfNearViewport(
 void LazyLoadImageObserver::StartMonitoringVisibility(
     Document* root_document,
     HTMLImageElement* image_element) {
-  DCHECK(RuntimeEnabledFeatures::LazyImageVisibleLoadTimeMetricsEnabled());
-
   VisibleLoadTimeMetrics& visible_load_time_metrics =
       image_element->EnsureVisibleLoadTimeMetrics();
   if (!visible_load_time_metrics.time_when_first_visible.is_null()) {
@@ -251,7 +249,6 @@ void LazyLoadImageObserver::StartMonitoringVisibility(
 }
 
 void LazyLoadImageObserver::OnLoadFinished(HTMLImageElement* image_element) {
-  DCHECK(RuntimeEnabledFeatures::LazyImageVisibleLoadTimeMetricsEnabled());
   VisibleLoadTimeMetrics& visible_load_time_metrics =
       image_element->EnsureVisibleLoadTimeMetrics();
 

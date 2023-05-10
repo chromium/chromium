@@ -87,11 +87,9 @@ bool LazyImageHelper::ShouldDeferImageLoad(LocalFrame& frame,
 // static
 void LazyImageHelper::StartMonitoringVisibilityMetrics(
     HTMLImageElement* html_image) {
-  Document* document = GetRootDocumentOrNull(html_image);
-  if (document &&
-      RuntimeEnabledFeatures::LazyImageVisibleLoadTimeMetricsEnabled()) {
-    document->EnsureLazyLoadImageObserver().StartMonitoringVisibility(
-        document, html_image);
+  if (Document* root_document = GetRootDocumentOrNull(html_image)) {
+    root_document->EnsureLazyLoadImageObserver().StartMonitoringVisibility(
+        root_document, html_image);
   }
 }
 
@@ -101,22 +99,21 @@ void LazyImageHelper::RecordMetricsOnLoadFinished(
     return;
   }
 
+  Document* root_document = GetRootDocumentOrNull(image_element);
+  if (!root_document) {
+    return;
+  }
+
   if (ImageResourceContent* content = image_element->CachedImage()) {
     int64_t response_size = content->GetResponse().EncodedDataLength();
     IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImage.Size", response_size);
-    if (Document* document = GetRootDocumentOrNull(image_element)) {
-      if (!document->LoadEventFinished()) {
-        IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImageBeforeDocumentOnLoad.Size",
-                              response_size);
-      }
+    if (!root_document->LoadEventFinished()) {
+      IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImageBeforeDocumentOnLoad.Size",
+                            response_size);
     }
   }
 
-  if (!RuntimeEnabledFeatures::LazyImageVisibleLoadTimeMetricsEnabled())
-    return;
-  if (Document* document = GetRootDocumentOrNull(image_element)) {
-    document->EnsureLazyLoadImageObserver().OnLoadFinished(image_element);
-  }
+  root_document->EnsureLazyLoadImageObserver().OnLoadFinished(image_element);
 }
 
 }  // namespace blink
