@@ -28,11 +28,12 @@
 
 namespace blink {
 
-// Tests that MixedContentChecker::isMixedContent correctly detects or ignores
-// many cases where there is or there is not mixed content, respectively.
+// Tests that `blink::MixedContentChecker::IsMixedContent` correctly detects or
+// ignores many cases where there is or there is not mixed content respectively.
 // Note: Renderer side version of
-// MixedContentNavigationThrottleTest.IsMixedContent. Must be kept in sync
-// manually!
+// `content::MixedContentCheckerTest::IsMixedContent`.
+// Must be kept in sync manually!
+// LINT.IfChange
 TEST(MixedContentCheckerTest, IsMixedContent) {
   struct TestCase {
     const char* origin;
@@ -77,6 +78,7 @@ TEST(MixedContentCheckerTest, IsMixedContent) {
                                     security_origin.get(), target_url));
   }
 }
+// LINT.ThenChange(content/browser/renderer_host/mixed_content_checker_unittest.cc)
 
 TEST(MixedContentCheckerTest, ContextTypeForInspector) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));

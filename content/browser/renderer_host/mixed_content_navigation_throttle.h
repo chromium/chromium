@@ -8,23 +8,17 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
+#include "content/browser/renderer_host/mixed_content_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 
-class FrameTreeNode;
-class RenderFrameHostImpl;
-
 // Responsible for browser-process-side mixed content security checks. It checks
 // only for frame-level resource loads (aka navigation loads). Sub-resources
-// fetches are checked in the renderer process by MixedContentChecker. Changes
-// to this class might need to be reflected on its renderer counterpart.
+// fetches are checked in the renderer process by `blink::MixedContentChecker`.
+// Changes to this class might need to be reflected on its renderer counterpart.
 //
 // This class handles frame-level resource loads that have certificate errors as
 // well as mixed content. (Resources with certificate errors can be seen as a
@@ -54,36 +48,12 @@ class MixedContentNavigationThrottle : public NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MixedContentNavigationThrottleTest, IsMixedContent);
-
-  // Checks if a navigation should be blocked or not due to mixed content.
-  bool ShouldBlockNavigation(bool for_redirect);
-
-  // Returns the parent frame where mixed content exists for the provided data
-  // or nullptr if there is no mixed content.
-  RenderFrameHostImpl* InWhichFrameIsContentMixed(FrameTreeNode* node,
-                                                  const GURL& url);
-
-  // Updates the renderer about any Blink feature usage.
-  void MaybeSendBlinkFeatureUsageReport();
-
-  // Records basic mixed content "feature" usage when any kind of mixed content
-  // is found.
-  void ReportBasicMixedContentFeatures(
-      blink::mojom::RequestContextType request_context_type,
-      blink::mojom::MixedContentContextType mixed_content_context_type);
-
   // Checks if the request has a certificate error that should adjust the page's
   // security UI, and does so if applicable.
   void MaybeHandleCertificateError();
 
-  static bool CONTENT_EXPORT IsMixedContentForTesting(const GURL& origin_url,
-                                                      const GURL& url);
-
-  // Keeps track of mixed content features encountered while running one of the
-  // navigation throttling steps. These values are reported to the respective
-  // renderer process after each mixed content check is finished.
-  std::set<blink::mojom::WebFeature> mixed_content_features_;
+  // Checks whether to block navigation loads and reports to renderer.
+  MixedContentChecker checker_;
 };
 
 }  // namespace content

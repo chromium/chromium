@@ -1799,6 +1799,8 @@ source_set("browser") {
     "renderer_host/media/video_capture_provider_switcher.h",
     "renderer_host/media/virtual_video_capture_devices_changed_observer.cc",
     "renderer_host/media/virtual_video_capture_devices_changed_observer.h",
+    "renderer_host/mixed_content_checker.cc",
+    "renderer_host/mixed_content_checker.h",
     "renderer_host/mixed_content_navigation_throttle.cc",
     "renderer_host/mixed_content_navigation_throttle.h",
     "renderer_host/native_web_keyboard_event_aura.cc",
