@@ -487,9 +487,10 @@ absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
 struct StoredSourceData {
   StoredSource source;
   int num_conversions;
+  int num_aggregatable_reports;
 };
 
-constexpr int kSourceColumnCount = 18;
+constexpr int kSourceColumnCount = 19;
 
 // Helper to deserialize source rows. See `GetActiveSources()` for the
 // expected ordering of columns used for the input to this function.
@@ -522,12 +523,14 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<uint64_t> debug_key = ColumnUint64OrNull(statement, col++);
   int num_conversions = statement.ColumnInt(col++);
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
+  int num_aggregatable_reports = statement.ColumnInt(col++);
   absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
       DeserializeAggregationKeys(statement, col++);
 
   if (!source_origin || !reporting_origin || !source_type.has_value() ||
       !attribution_logic.has_value() || num_conversions < 0 ||
-      aggregatable_budget_consumed < 0 || !aggregation_keys.has_value() ||
+      aggregatable_budget_consumed < 0 || num_aggregatable_reports < 0 ||
+      !aggregation_keys.has_value() ||
       !StoredSource::IsExpiryOrReportWindowTimeValid(expiry_time,
                                                      source_time) ||
       !StoredSource::IsExpiryOrReportWindowTimeValid(event_report_window_time,
@@ -584,7 +587,8 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
           aggregatable_report_window_time, priority, std::move(*filter_data),
           debug_key, std::move(*aggregation_keys), *attribution_logic,
           *active_state, source_id, aggregatable_budget_consumed),
-      .num_conversions = num_conversions};
+      .num_conversions = num_conversions,
+      .num_aggregatable_reports = num_aggregatable_reports};
 }
 
 absl::optional<StoredSourceData> ReadSourceToAttribute(
@@ -755,8 +759,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       "expiry_time,event_report_window_time,aggregatable_report_window_time,"
       "source_type,attribution_logic,priority,source_site,"
       "num_attributions,event_level_active,aggregatable_active,debug_key,"
-      "aggregatable_budget_consumed,aggregatable_source,filter_data)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
+      "aggregatable_budget_consumed,num_aggregatable_reports,"
+      "aggregatable_source,filter_data)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,0,?,?)";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(reg.source_event_id));
@@ -1229,7 +1234,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     store_aggregatable_status = MaybeStoreAggregatableAttributionReportData(
         *new_aggregatable_report,
         source_to_attribute->source.aggregatable_budget_consumed(),
-        aggregatable_dedup_key, limits.aggregatable_budget_per_source);
+        source_to_attribute->num_aggregatable_reports, aggregatable_dedup_key,
+        limits.aggregatable_budget_per_source);
   }
 
   if (store_event_level_status == EventLevelResult::kInternalError ||
@@ -1347,6 +1353,8 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
     int num_attributions = statement.ColumnInt(1);
     int64_t aggregatable_budget_consumed = statement.ColumnInt64(2);
 
+    // aggregatable_budget_consumed > 0 implies num_aggregatable_reports > 0 so
+    // we don't check it here.
     if (num_attributions > 0 || aggregatable_budget_consumed > 0) {
       source_ids_to_deactivate.push_back(source_id);
     } else {
@@ -2268,15 +2276,18 @@ bool AttributionStorageSql::CreateSchema() {
   // Origins usually aren't _that_ big compared to a 64 bit integer(8 bytes).
   //
   // All of the columns in this table are designed to be "const" except for
-  // |num_attributions|, |aggregatable_budget_consumed|, |event_level_active|
+  // |num_attributions|, |aggregatable_budget_consumed|,
+  // |num_aggregatable_reports|, |event_level_active|
   // and |aggregatable_active| which are updated when a new trigger is
   // received. |num_attributions| is the number of times an event-level report
   // has been created for a given source. |aggregatable_budget_consumed| is the
-  // aggregatable budget that has been consumed for a given source. |delegate_|
-  // can choose to enforce a maximum limit on them. |event_level_active| and
-  // |aggregatable_active| indicate whether a source is able to create new
-  // associated event-level and aggregatable reports. |event_level_active| and
-  // |aggregatable_active| can be unset on a number of conditions:
+  // aggregatable budget that has been consumed for a given source.
+  // |num_aggregatable_reports| is the number of times an aggregatable report
+  // has been created for a given source. |delegate_| can choose to enforce a
+  // maximum limit on them. |event_level_active| and |aggregatable_active|
+  // indicate whether a source is able to create new associated event-level and
+  // aggregatable reports. |event_level_active| and |aggregatable_active| can be
+  // unset on a number of conditions:
   //   - A source converted too many times.
   //   - A new source was stored after a source converted, making it
   //     ineligible for new sources due to the attribution model documented
@@ -2313,6 +2324,7 @@ bool AttributionStorageSql::CreateSchema() {
       "source_site TEXT NOT NULL,"
       "debug_key INTEGER,"
       "aggregatable_budget_consumed INTEGER NOT NULL,"
+      "num_aggregatable_reports INTEGER NOT NULL,"
       "aggregatable_source BLOB NOT NULL,"
       "filter_data BLOB NOT NULL)";
   if (!db_.Execute(kImpressionTableSql)) {
@@ -2715,7 +2727,8 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
 
   static constexpr char kAdjustBudgetConsumedForSourceSql[] =
       "UPDATE sources "
-      "SET aggregatable_budget_consumed=aggregatable_budget_consumed+? "
+      "SET aggregatable_budget_consumed=aggregatable_budget_consumed+?,"
+      "num_aggregatable_reports=num_aggregatable_reports+1 "
       "WHERE source_id=?";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
@@ -2855,12 +2868,15 @@ AggregatableResult
 AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
     AttributionReport& report,
     int64_t aggregatable_budget_consumed,
+    int num_aggregatable_reports,
     absl::optional<uint64_t> dedup_key,
     absl::optional<int64_t>& aggregatable_budget_per_source) {
   const auto* aggregatable_attribution =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &report.data());
   DCHECK(aggregatable_attribution);
+
+  // TODO(csharrison): Fail here if reports are too high.
 
   switch (AggregatableAttributionAllowedForBudgetLimit(
       *aggregatable_attribution, aggregatable_budget_consumed)) {

@@ -5101,6 +5101,7 @@ data/attribution_reporting/aggregatable_report_goldens/version_/report_6.json
 data/attribution_reporting/aggregatable_report_goldens/version_/report_6_cleartext_payloads.json
 data/attribution_reporting/databases/version_51.sql
 data/attribution_reporting/databases/version_52.sql
+data/attribution_reporting/databases/version_53.sql
 data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
