@@ -203,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
       ukm::builders::NavigationPredictorAnchorElementMetrics::kEntryName,
       anchor_elements_entries_size + 1u);
   // Do some interactions.
-  EXPECT_TRUE(content::ExecuteScript(web_contents(),
-                                     R"(
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              R"(
           let a = document.createElement("a");
           a.id = "link";
           a.href = "https://www.google.com";
@@ -230,8 +230,8 @@ IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
       anchor_elements_entries_size + 1u);
 
   // Do some interactions.
-  EXPECT_TRUE(content::ExecuteScript(web_contents(),
-                                     R"(
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              R"(
           let a = document.createElement("a");
           a.id = "link";
           a.href = "https://www.example.com";

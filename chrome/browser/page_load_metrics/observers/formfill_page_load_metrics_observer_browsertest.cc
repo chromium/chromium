@@ -89,8 +89,7 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
   ASSERT_TRUE(autofill_manager()->waiter().Wait(1));
 
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
+  ASSERT_TRUE(content::ExecJs(web_contents(), kEditPhoneAndEmailFieldScript));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -120,8 +119,7 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "a.com", "/autofill/autofill_test_form.html")));
 
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
+  ASSERT_TRUE(content::ExecJs(web_contents(), kEditPhoneAndEmailFieldScript));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -153,8 +151,7 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       browser(),
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
 
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
+  ASSERT_TRUE(content::ExecJs(web_contents(), kEditPhoneAndEmailFieldScript));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
