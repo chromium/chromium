@@ -500,6 +500,96 @@ TEST(ProbeServiceConverters, ProbeBusInfoPtr) {
   EXPECT_EQ(ConvertProbePtr(std::move(device_input)), expected_bus_info);
 }
 
+TEST(ProbeServiceConverters, ProbeBusResultPtr) {
+  constexpr uint8_t kInterfaceNumberInterface = 42;
+  constexpr uint8_t kClassIdInterface = 41;
+  constexpr uint8_t kSubclassIdInterface = 43;
+  constexpr uint8_t kProtocolIdInterface = 43;
+  constexpr char kDriverInterface[] = "MyDriver";
+
+  std::vector<cros_healthd::mojom::UsbBusInterfaceInfoPtr> interfaces;
+  interfaces.push_back(cros_healthd::mojom::UsbBusInterfaceInfo::New(
+      kInterfaceNumberInterface, kClassIdInterface, kSubclassIdInterface,
+      kProtocolIdInterface, kDriverInterface));
+
+  constexpr char kVersion[] = "MyVersion";
+
+  auto fwupd_version = cros_healthd::mojom::FwupdFirmwareVersionInfo::New(
+      kVersion, cros_healthd::mojom::FwupdVersionFormat::kPair);
+
+  constexpr uint8_t kClassId = 41;
+  constexpr uint8_t kSubclassId = 45;
+  constexpr uint8_t kProtocolId = 43;
+  constexpr uint16_t kVendor = 42;
+  constexpr uint16_t kProductId = 44;
+
+  auto usb_bus_info = cros_healthd::mojom::UsbBusInfo::New();
+  usb_bus_info->class_id = kClassId;
+  usb_bus_info->subclass_id = kSubclassId;
+  usb_bus_info->protocol_id = kProtocolId;
+  usb_bus_info->vendor_id = kVendor;
+  usb_bus_info->product_id = kProductId;
+  usb_bus_info->interfaces = std::move(interfaces);
+  usb_bus_info->fwupd_firmware_version_info = std::move(fwupd_version);
+  usb_bus_info->version = cros_healthd::mojom::UsbVersion::kUsb3;
+  usb_bus_info->spec_speed = cros_healthd::mojom::UsbSpecSpeed::k20Gbps;
+
+  auto bus_info =
+      cros_healthd::mojom::BusInfo::NewUsbBusInfo(std::move(usb_bus_info));
+
+  auto device_input_1 = cros_healthd::mojom::BusDevice::New();
+  device_input_1->bus_info = std::move(bus_info);
+
+  auto unconverted_thunderbolt_info =
+      cros_healthd::mojom::ThunderboltBusInfo::New();
+  auto device_input_2 = cros_healthd::mojom::BusDevice::New();
+  device_input_2->bus_info =
+      cros_healthd::mojom::BusInfo::NewThunderboltBusInfo(
+          std::move(unconverted_thunderbolt_info));
+
+  std::vector<cros_healthd::mojom::BusDevicePtr> bus_devices;
+  bus_devices.push_back(std::move(device_input_1));
+  bus_devices.push_back(std::move(device_input_2));
+
+  auto input =
+      cros_healthd::mojom::BusResult::NewBusDevices(std::move(bus_devices));
+
+  std::vector<crosapi::mojom::ProbeUsbBusInterfaceInfoPtr> expected_interfaces;
+  expected_interfaces.push_back(crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
+      crosapi::mojom::UInt8Value::New(kInterfaceNumberInterface),
+      crosapi::mojom::UInt8Value::New(kClassIdInterface),
+      crosapi::mojom::UInt8Value::New(kSubclassIdInterface),
+      crosapi::mojom::UInt8Value::New(kProtocolIdInterface), kDriverInterface));
+
+  auto expected_fwupd_version =
+      crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
+          kVersion, crosapi::mojom::ProbeFwupdVersionFormat::kPair);
+
+  auto expected_usb_bus_info = crosapi::mojom::ProbeUsbBusInfo::New(
+      crosapi::mojom::UInt8Value::New(kClassId),
+      crosapi::mojom::UInt8Value::New(kSubclassId),
+      crosapi::mojom::UInt8Value::New(kProtocolId),
+      crosapi::mojom::UInt16Value::New(kVendor),
+      crosapi::mojom::UInt16Value::New(kProductId),
+      std::move(expected_interfaces), std::move(expected_fwupd_version),
+      crosapi::mojom::ProbeUsbVersion::kUsb3,
+      crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps);
+
+  auto expected_bus_info = crosapi::mojom::ProbeBusInfo::NewUsbBusInfo(
+      std::move(expected_usb_bus_info));
+
+  auto result = ConvertProbePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_bus_devices_info());
+  auto bus_devices_result = std::move(result->get_bus_devices_info());
+
+  ASSERT_EQ(bus_devices_result.size(), 1UL);
+  ASSERT_TRUE(bus_devices_result.front()->is_usb_bus_info());
+  EXPECT_EQ(bus_devices_result.front()->get_usb_bus_info(),
+            expected_bus_info->get_usb_bus_info());
+}
+
 TEST(ProbeServiceConverters, BatteryInfoPtr) {
   constexpr int64_t kCycleCount = (1LL << 62) + 45;
   constexpr double kVoltageNow = 1000000000000.2;
