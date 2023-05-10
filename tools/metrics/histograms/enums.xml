@@ -85473,6 +85473,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="PAGEVIEW_EVENT_TOP_SITE_LOAD_START"/>
 </enum>
 
+<enum name="PrerenderPredictionResult">
+  <int value="0" label="Prerendered and navigated (True Positive)"/>
+  <int value="1" label="Prerendered but not navigated (False Positive)"/>
+  <int value="2" label="Not prerendered but navigated (False Negative)"/>
+  <int value="3" label="Not prerendered and not navigated (True Negative)"/>
+</enum>
+
 <enum name="PrerenderPredictionStatus">
   <int value="0" label="Prerender not started"/>
   <int value="1" label="Prerender cancelled"/>
