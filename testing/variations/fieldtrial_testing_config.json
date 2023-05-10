@@ -2890,6 +2890,23 @@
             ]
         }
     ],
+    "ChromeRootStoreUsed": [
+        {
+            "platforms": [
+                "linux",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeRootStoreUsed"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeStartRefactor": [
         {
             "platforms": [
