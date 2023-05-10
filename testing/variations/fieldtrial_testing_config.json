@@ -13362,6 +13362,21 @@
             ]
         }
     ],
+    "UkmReduceAddEntryIPC": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UkmReduceAddEntryIPC"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
