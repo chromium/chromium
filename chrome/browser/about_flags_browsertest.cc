@@ -61,7 +61,7 @@ const char kSanitizedInputAndCommandLine[] =
 void SimulateTextType(content::WebContents* contents,
                       const char* experiment_id,
                       const char* text) {
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents, base::StringPrintf(
                     "var parent = document.getElementById('%s');"
                     "var textarea = parent.getElementsByTagName('textarea')[0];"
@@ -74,7 +74,7 @@ void SimulateTextType(content::WebContents* contents,
 void ToggleEnableDropdown(content::WebContents* contents,
                           const char* experiment_id,
                           bool enable) {
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       contents,
       base::StringPrintf(
           "var k = document.getElementById('%s');"

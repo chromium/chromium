@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server_.GetURL("/referrer_policy/referrer-policy-iframe.html")));
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       tab,
       std::string("var frame = document.createElement('iframe');frame.src ='") +
           embedded_test_server()
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   // Reload the iframe.
   expected_title = u"reset";
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
-  EXPECT_TRUE(content::ExecuteScript(tab, "document.title = 'reset'"));
+  EXPECT_TRUE(content::ExecJs(tab, "document.title = 'reset'"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
   frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
 
   expected_title = u"loaded";
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
-  EXPECT_TRUE(content::ExecuteScript(frame, "location.reload()"));
+  EXPECT_TRUE(content::ExecJs(frame, "location.reload()"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
   frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),

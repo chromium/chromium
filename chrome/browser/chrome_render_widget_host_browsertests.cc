@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
 
   // After focusing child_frame_b, document.hasFocus() should return
   // true for child_frame_b and all its ancestor frames.
-  EXPECT_TRUE(ExecuteScript(child_frame_b, "window.focus();"));
+  EXPECT_TRUE(ExecJs(child_frame_b, "window.focus();"));
   EXPECT_EQ(child_frame_b, web_contents->GetFocusedFrame());
   EXPECT_TRUE(document_is_active_and_focused(main_frame_a));
   EXPECT_TRUE(document_is_active_and_focused(child_frame_b));
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
 
   // After focusing child_frame_c, document.hasFocus() should return
   // true for child_frame_c and all its ancestor frames.
-  EXPECT_TRUE(ExecuteScript(child_frame_c, "window.focus();"));
+  EXPECT_TRUE(ExecJs(child_frame_c, "window.focus();"));
   EXPECT_EQ(child_frame_c, web_contents->GetFocusedFrame());
   EXPECT_TRUE(document_is_active_and_focused(main_frame_a));
   EXPECT_TRUE(document_is_active_and_focused(child_frame_b));
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
 
   // After focusing child_frame_d, document.hasFocus() should return
   // true for child_frame_d and all its ancestor frames.
-  EXPECT_TRUE(ExecuteScript(child_frame_d, "window.focus();"));
+  EXPECT_TRUE(ExecJs(child_frame_d, "window.focus();"));
   EXPECT_EQ(child_frame_d, web_contents->GetFocusedFrame());
   EXPECT_TRUE(document_is_active_and_focused(main_frame_a));
   EXPECT_FALSE(document_is_active_and_focused(child_frame_b));
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
   // descendants should return false. On the renderer side, both the
   // 'active' and 'focus' states for blink::FocusController will be
   // true.
-  EXPECT_TRUE(ExecuteScript(main_frame_a, "window.focus();"));
+  EXPECT_TRUE(ExecJs(main_frame_a, "window.focus();"));
   EXPECT_EQ(main_frame_a, web_contents->GetFocusedFrame());
   EXPECT_TRUE(document_is_active_and_focused(main_frame_a));
   EXPECT_FALSE(document_is_active_and_focused(child_frame_b));

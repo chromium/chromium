@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, TestViewFrameSource) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::TestNavigationObserver observer(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       web_contents->GetPrimaryMainFrame(),
       base::StringPrintf("var iframe = document.getElementById('test');\n"
                          "iframe.setAttribute('src', '%s');\n",
@@ -198,7 +198,7 @@ class CtrlClickProcessTest : public ChromeNavigationBrowserTest {
 #endif
       std::string new_tab_click_script = base::StringPrintf(
           new_tab_click_script_template, id_of_anchor_to_click);
-      EXPECT_TRUE(ExecuteScript(main_contents, new_tab_click_script));
+      EXPECT_TRUE(ExecJs(main_contents, new_tab_click_script));
 
       // Wait for a new tab to appear (the whole point of this test).
       new_contents = new_tab_observer.GetWebContents();
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // WebContentsImpl::DidAccessInitialDocument detects that the initial, empty
   // document was accessed.
   EXPECT_EQ(pending_entry, navigation_controller.GetVisibleEntry());
-  EXPECT_TRUE(content::ExecuteScript(new_web_contents, "window.x=3"));
+  EXPECT_TRUE(content::ExecJs(new_web_contents, "window.x=3"));
   EXPECT_NE(pending_entry, navigation_controller.GetVisibleEntry());
 }
 
@@ -433,12 +433,12 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
         anchor.target = 'target_name: ' + url;
         anchor.href = url;
     )";
-    EXPECT_TRUE(ExecuteScript(
-        main_contents, content::JsReplace(kUrlSettingTemplate, kTestUrl)));
+    EXPECT_TRUE(ExecJs(main_contents,
+                       content::JsReplace(kUrlSettingTemplate, kTestUrl)));
 
     // Simulate a click on the link and wait for the new window.
     content::WebContentsAddedObserver new_tab_observer;
-    EXPECT_TRUE(ExecuteScript(main_contents, "simulateClick()"));
+    EXPECT_TRUE(ExecJs(main_contents, "simulateClick()"));
     content::WebContents* new_contents = new_tab_observer.GetWebContents();
 
     // Verify that the invalid URL was not committed.
@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                                                               kPushStateURL);
   std::string push_state =
       "history.pushState({}, \"title 1\", \"" + kPushStateURL.spec() + "\");";
-  EXPECT_TRUE(ExecuteScript(web_contents, push_state));
+  EXPECT_TRUE(ExecJs(web_contents, push_state));
   content::NavigationEntry* last_committed =
       web_contents->GetController().GetLastCommittedEntry();
   EXPECT_TRUE(last_committed);
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   // The error page should not inherit the CSP directive that blocks all
   // scripts from the parent frame, so this script should be allowed to
-  // execute.  Since ExecuteScript will execute the passed-in script regardless
+  // execute.  Since ExecJs will execute the passed-in script regardless
   // of CSP, use a javascript: URL which does go through the CSP checks.
   content::RenderFrameHost* error_host =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
@@ -563,16 +563,18 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // Try navigating to the error page URL and make sure it is canceled and the
   // old URL remains the last committed one.
   GURL error_url(content::kUnreachableWebDataURL);
-  EXPECT_TRUE(ExecuteScript(web_contents,
-                            "location.href = '" + error_url.spec() + "';"));
+  EXPECT_TRUE(
+      ExecJs(web_contents, "location.href = '" + error_url.spec() + "';"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 
   // Also ensure that a page can't embed an iframe for an error page URL.
-  EXPECT_TRUE(ExecuteScript(web_contents,
-                            "var frame = document.createElement('iframe');\n"
-                            "frame.src = '" + error_url.spec() + "';\n"
-                            "document.body.appendChild(frame);"));
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "var frame = document.createElement('iframe');\n"
+                     "frame.src = '" +
+                         error_url.spec() +
+                         "';\n"
+                         "document.body.appendChild(frame);"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   content::RenderFrameHost* subframe_host =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
@@ -585,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   GURL redirect_to_error_url(
       embedded_test_server()->GetURL("/server-redirect?" + error_url.spec()));
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       web_contents, "location.href = '" + redirect_to_error_url.spec() + "';"));
   observer.Wait();
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
@@ -609,8 +611,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // loading of the 404 error page, so check that the last committed entry was
   // indeed for the error page.
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(
-      ExecuteScript(web_contents, "location.href = '" + url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(web_contents, "location.href = '" + url.spec() + "';"));
   observer.Wait();
   EXPECT_FALSE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
@@ -689,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   url_interceptor.reset();
   {
     content::TestNavigationObserver observer(web_contents);
-    EXPECT_TRUE(ExecuteScript(web_contents, "location.reload();"));
+    EXPECT_TRUE(ExecJs(web_contents, "location.reload();"));
     observer.Wait();
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(GURL(url::kAboutBlankURL), observer.last_navigation_url());
@@ -1141,8 +1142,7 @@ IN_PROC_BROWSER_TEST_F(SignInIsolationBrowserTest, NavigateToSignInPage) {
   // Make sure that a renderer-initiated navigation to the sign-in page swaps
   // processes.
   content::TestNavigationManager manager(web_contents, signin_url);
-  EXPECT_TRUE(
-      ExecuteScript(web_contents, "location = '" + signin_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(web_contents, "location = '" + signin_url.spec() + "';"));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_NE(web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
             first_instance);
@@ -1480,8 +1480,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(main_contents);
-  ASSERT_TRUE(ExecuteScript(main_contents,
-                            "document.getElementById('title1').click();"));
+  ASSERT_TRUE(
+      ExecJs(main_contents, "document.getElementById('title1').click();"));
   observer.Wait();
 
   // Make sure popup attempt fails due to lack of transient user activation.
@@ -1523,7 +1523,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   content::WebContentsConsoleObserver console_observer(opener);
   console_observer.SetPattern(
       "Navigating a cross-origin opener to a download (*) is deprecated*");
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       popup,
       "window.opener.location ='data:html/text;base64,'+btoa('payload');"));
 
@@ -1570,7 +1570,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   content::DownloadTestObserverInProgress observer(
       browser()->profile()->GetDownloadManager(), 1 /* wait_count */);
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       popup,
       "window.opener.location ='data:html/text;base64,'+btoa('payload');"));
   observer.WaitForFinished();
@@ -1910,8 +1910,8 @@ IN_PROC_BROWSER_TEST_F(NavigationConsumingTest, TargetNavigationFocus) {
   {
     content::TestNavigationObserver new_tab_observer(nullptr, 1);
     new_tab_observer.StartWatchingNewWebContents();
-    ASSERT_TRUE(ExecuteScript(
-        opener, "document.getElementsByTagName('a')[0].click();"));
+    ASSERT_TRUE(
+        ExecJs(opener, "document.getElementsByTagName('a')[0].click();"));
     new_tab_observer.Wait();
   }
 
@@ -1924,8 +1924,8 @@ IN_PROC_BROWSER_TEST_F(NavigationConsumingTest, TargetNavigationFocus) {
   EXPECT_EQ(opener, browser()->tab_strip_model()->GetActiveWebContents());
   {
     content::TestNavigationObserver new_tab_observer(new_contents, 1);
-    ASSERT_TRUE(ExecuteScript(
-        opener, "document.getElementsByTagName('a')[0].click();"));
+    ASSERT_TRUE(
+        ExecJs(opener, "document.getElementsByTagName('a')[0].click();"));
     new_tab_observer.Wait();
   }
   EXPECT_EQ(new_contents, browser()->tab_strip_model()->GetActiveWebContents());
@@ -2011,7 +2011,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(main_contents);
-  EXPECT_TRUE(ExecuteScript(main_contents, "location = '" + url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(main_contents, "location = '" + url.spec() + "';"));
   observer.Wait();
   EXPECT_EQ(url, main_contents->GetLastCommittedURL());
 
@@ -2457,7 +2457,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest, PopupFlow) {
   content::WebContentsAddedObserver web_contents_added_observer;
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::JsReplace(
           "window.open($1, 'oauth_window', 'width=10,height=10');",

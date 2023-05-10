@@ -307,8 +307,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   GURL generic_url(https_test_server().GetURL("ntp.com", "/title1.html"));
   content::TestNavigationObserver opened_tab_observer(nullptr);
   opened_tab_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(
-      ExecuteScript(ntp_tab, "window.open('" + generic_url.spec() + "');"));
+  EXPECT_TRUE(ExecJs(ntp_tab, "window.open('" + generic_url.spec() + "');"));
   opened_tab_observer.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 

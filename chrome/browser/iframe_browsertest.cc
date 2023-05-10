@@ -72,11 +72,10 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, MAYBE_FileChooserInDestroyedSubframe) {
   EXPECT_TRUE(frame);
   EXPECT_EQ(frame->GetSiteInstance(),
             tab->GetPrimaryMainFrame()->GetSiteInstance());
-  EXPECT_TRUE(
-      ExecuteScript(frame, "document.getElementById('fileinput').click();"));
-  EXPECT_TRUE(ExecuteScript(tab->GetPrimaryMainFrame(),
-                            "document.body.removeChild("
-                            "document.querySelectorAll('iframe')[0])"));
+  EXPECT_TRUE(ExecJs(frame, "document.getElementById('fileinput').click();"));
+  EXPECT_TRUE(ExecJs(tab->GetPrimaryMainFrame(),
+                     "document.body.removeChild("
+                     "document.querySelectorAll('iframe')[0])"));
   ASSERT_EQ(nullptr, ChildFrameAt(tab->GetPrimaryMainFrame(), 0));
 
   // On ASan bots, this test should succeed without reporting use-after-free
