@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), kWebUIUrl));
 
-  EXPECT_TRUE(content::ExecuteScript(shell(), kJSCodeForAppendingFrame));
+  EXPECT_TRUE(content::ExecJs(shell(), kJSCodeForAppendingFrame));
 }
 
 // Test that creation of new RenderFrameHost objects sends the correct object
@@ -1476,7 +1476,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // present when the cross-site navigation later commits.
   // Note: the javascript function executed will not do the link click but
   // schedule it for afterwards. Since the BeforeUnload event is synchronous,
-  // clicking on the link right away would cause the ExecuteScript to never
+  // clicking on the link right away would cause the ExecJs to never
   // return.
   SetShouldProceedOnBeforeUnload(shell(), false, false);
   AppModalDialogWaiter dialog_waiter(shell());
@@ -3878,7 +3878,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
   base::ScopedClosureRunner fullscreen_block =
       web_contents->ForSecurityDropFullscreen();
 
-  EXPECT_TRUE(ExecuteScript(main_frame, "document.body.requestFullscreen();"));
+  EXPECT_TRUE(ExecJs(main_frame, "document.body.requestFullscreen();",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   std::u16string title = title_watcher.WaitAndGetTitle();
   ASSERT_EQ(title, u"onfullscreenerror");
