@@ -56,9 +56,6 @@
     ],
     "use_java_coverage": true
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
