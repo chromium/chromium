@@ -72,7 +72,7 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     ShowLoginWizard(WelcomeView::kScreenId);
-    OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+    test::WaitForWelcomeScreen();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

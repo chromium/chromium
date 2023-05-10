@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
@@ -87,7 +88,7 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
   }
 
   void AdvanceToOsInstallScreen() {
-    OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+    test::WaitForWelcomeScreen();
     test::OobeJS().TapOnPath(kWelcomeGetStarted);
 
     OobeScreenWaiter(OsTrialScreenView::kScreenId).Wait();
@@ -144,7 +145,7 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
 // If the kAllowOsInstall switch is not set, clicking `Get Started` button
 // should show the network screen.
 IN_PROC_BROWSER_TEST_F(OobeBaseTest, InstallButtonHiddenByDefault) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::WaitForWelcomeScreen();
 
   test::OobeJS().ExpectVisiblePath(kWelcomeScreen);
   test::OobeJS().TapOnPath(kWelcomeGetStarted);
@@ -154,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(OobeBaseTest, InstallButtonHiddenByDefault) {
 // If the kAllowOsInstall is set, clicking `Get Started` button show show the
 // `OS Trial` screen
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, InstallButtonVisibleWithSwitch) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::WaitForWelcomeScreen();
 
   test::OobeJS().ExpectVisiblePath(kWelcomeScreen);
   test::OobeJS().TapOnPath(kWelcomeGetStarted);
