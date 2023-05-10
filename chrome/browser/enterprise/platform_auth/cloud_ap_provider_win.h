@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
+class ProofOfPossessionCookieInfo;
 
 namespace net {
 class HttpRequestHeaders;
@@ -44,6 +45,9 @@ class CloudApProviderWin : public PlatformAuthProvider {
   FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest, Unsupported);
   FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest, NotJoined);
   FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest, Joined);
+  FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest, ParseCookieInfo);
+  FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest,
+                           ParseCookieInfo_HeaderFeatureEnabled);
 
   // Runs the stored callbacks using the provided auth headers.
   void OnGetDataCallback(net::HttpRequestHeaders auth_headers);
@@ -51,6 +55,11 @@ class CloudApProviderWin : public PlatformAuthProvider {
   // Overrides support detection with `level` if it has a value, or resets the
   // override if not.
   static void SetSupportLevelForTesting(absl::optional<SupportLevel> level);
+
+  // Allows cookie info to be parsed for testing purposes.
+  void ParseCookieInfoForTesting(const ProofOfPossessionCookieInfo* cookie_info,
+                                 const DWORD cookie_info_count,
+                                 net::HttpRequestHeaders& auth_headers);
 
   // List of callbacks to run when auth data is received.
   using GetDataCallbackList =
