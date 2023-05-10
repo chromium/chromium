@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 212 tests; 0 PASS, 212 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 216 tests; 0 PASS, 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL Bad usages: importKey(spki, {name: X448}, true, [encrypt]) assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 FAIL Bad usages: importKey(spki, {name: X448}, false, [encrypt]) assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 FAIL Bad usages: importKey(spki, {name: X448}, true, [decrypt]) assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
@@ -168,6 +168,10 @@ FAIL Bad usages: importKey(jwk (public) , {name: X448}, true, [deriveKey]) asser
 FAIL Bad usages: importKey(jwk (public) , {name: X448}, false, [deriveKey]) assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 FAIL Bad usages: importKey(jwk (public) , {name: X448}, true, [deriveBits]) assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 FAIL Bad usages: importKey(jwk (public) , {name: X448}, false, [deriveBits]) assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+FAIL Empty usages: importKey(pkcs8, {name: X448}, true, []) assert_equals: Empty usages not supported. expected "SyntaxError" but got "NotSupportedError"
+FAIL Empty usages: importKey(pkcs8, {name: X448}, false, []) assert_equals: Empty usages not supported. expected "SyntaxError" but got "NotSupportedError"
+FAIL Empty usages: importKey(jwk(private), {name: X448}, true, []) assert_equals: Empty usages not supported. expected "SyntaxError" but got "NotSupportedError"
+FAIL Empty usages: importKey(jwk(private), {name: X448}, false, []) assert_equals: Empty usages not supported. expected "SyntaxError" but got "NotSupportedError"
 FAIL Bad key length: importKey(spki, {name: X448}, true, []) assert_equals: Bad key length not supported. expected "DataError" but got "NotSupportedError"
 FAIL Bad key length: importKey(spki, {name: X448}, false, []) assert_equals: Bad key length not supported. expected "DataError" but got "NotSupportedError"
 FAIL Bad key length: importKey(pkcs8, {name: X448}, true, [deriveKey]) assert_equals: Bad key length not supported. expected "DataError" but got "NotSupportedError"
