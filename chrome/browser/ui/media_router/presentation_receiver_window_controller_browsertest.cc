@@ -255,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
 
   content::WebContentsDestroyedWatcher destroyed_watcher(
       receiver_window->web_contents());
-  ASSERT_TRUE(content::ExecuteScript(receiver_window->web_contents(),
-                                     "window.location = 'about:blank'"));
+  ASSERT_TRUE(content::ExecJs(receiver_window->web_contents(),
+                              "window.location = 'about:blank'"));
   destroyed_watcher.Wait();
 
   destroyer.AwaitTerminate(std::move(receiver_window));
