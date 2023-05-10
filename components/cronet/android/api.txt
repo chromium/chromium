@@ -127,6 +127,7 @@ public abstract class org.chromium.net.CronetEngine {
   public abstract java.net.URLConnection openConnection(java.net.URL) throws java.io.IOException;
   public abstract java.net.URLStreamHandlerFactory createURLStreamHandlerFactory();
   public abstract org.chromium.net.UrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
+  public org.chromium.net.BidirectionalStream$Builder newBidirectionalStreamBuilder(java.lang.String, org.chromium.net.BidirectionalStream$Callback, java.util.concurrent.Executor);
   public int getActiveRequestCount();
   public void addRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
   public void removeRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
@@ -265,10 +266,11 @@ public abstract class org.chromium.net.ExperimentalCronetEngine extends org.chro
   public static final int EFFECTIVE_CONNECTION_TYPE_4G;
   public static final long UNBIND_NETWORK_HANDLE;
   public org.chromium.net.ExperimentalCronetEngine();
-  public abstract org.chromium.net.ExperimentalUrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
   public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder newBidirectionalStreamBuilder(java.lang.String, org.chromium.net.BidirectionalStream$Callback, java.util.concurrent.Executor);
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
   public void bindToNetwork(long);
   public java.net.URLConnection openConnection(java.net.URL, java.net.Proxy) throws java.io.IOException;
+  public org.chromium.net.BidirectionalStream$Builder newBidirectionalStreamBuilder(java.lang.String, org.chromium.net.BidirectionalStream$Callback, java.util.concurrent.Executor);
   public org.chromium.net.UrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
 }
 public abstract class org.chromium.net.ExperimentalUrlRequest$Builder extends org.chromium.net.UrlRequest$Builder {
@@ -629,4 +631,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 6e33940b3c477daafb6804ef0a1bf987
+Stamp: c29f4b3fe59fe6ba3660d72d322adc2d

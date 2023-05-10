@@ -719,6 +719,25 @@ public abstract class CronetEngine {
             String url, UrlRequest.Callback callback, Executor executor);
 
     /**
+     * Creates a builder for {@link BidirectionalStream} objects. All callbacks for generated {@code
+     * BidirectionalStream} objects will be invoked on {@code executor}. {@code executor} must not
+     * run tasks on the current thread, otherwise the networking operations may block and exceptions
+     * may be thrown at shutdown time.
+     *
+     * @param url URL for the generated streams.
+     * @param callback the {@link BidirectionalStream.Callback} object that gets invoked upon
+     * different events occurring.
+     * @param executor the {@link Executor} on which {@code callback} methods will be invoked.
+     * @return the created builder.
+     *
+     * {@hide}
+     */
+    public BidirectionalStream.Builder newBidirectionalStreamBuilder(
+            String url, BidirectionalStream.Callback callback, Executor executor) {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    /**
      * Returns the number of in-flight requests.
      * <p>
      * A request is in-flight if its start() method has been called but it hasn't reached a final
