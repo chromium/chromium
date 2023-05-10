@@ -560,42 +560,62 @@ bool PrePaintTreeWalk::CollectMissableChildren(
   return has_missable_children;
 }
 
-void PrePaintTreeWalk::RebuildContextForMissedDescendant(
-    const LayoutObject& ancestor,
+const NGPhysicalBoxFragment*
+PrePaintTreeWalk::RebuildContextForMissedDescendant(
+    const NGPhysicalBoxFragment& ancestor,
     const LayoutObject& object,
     bool update_tree_builder_context,
     PrePaintTreeWalkContext& context) {
   // Walk up to the ancestor and, on the way down again, adjust the context with
   // info about OOF containing blocks.
-  if (&object == &ancestor)
-    return;
-  RebuildContextForMissedDescendant(ancestor, *object.Parent(),
-                                    update_tree_builder_context, context);
+  if (&object == ancestor.OwnerLayoutBox()) {
+    return &ancestor;
+  }
+  const NGPhysicalBoxFragment* search_fragment =
+      RebuildContextForMissedDescendant(ancestor, *object.Parent(),
+                                        update_tree_builder_context, context);
 
   if (object.IsLayoutFlowThread()) {
     // A flow threads doesn't create fragments. Just ignore it.
-    return;
+    return search_fragment;
   }
 
+  const NGPhysicalBoxFragment* box_fragment = nullptr;
   if (context.tree_builder_context && update_tree_builder_context) {
-    // TODO(crbug.com/1442211): Attempt to find the right physical fragment for
-    // the ancestor (rather than using nullptr), because there are cases where
-    // we'll miss a descendant, even though the ancestor is represented in the
-    // current fragmentainer.
-    //
-    // E.g.:
-    //   <div style="columns:3; column-fill:auto; height:100px;">
-    //     <div id="outer" style="height:300px; transform:rotate(10deg);">
-    //       <div id="middle">
-    //         <div id="abspos" style="position:absolute; top:250px;">
-    //
-    // #middle only exists in the first fragmentainer, whereas #outer and
-    // #abspos exist in three. We're going to miss #abspos in the second and
-    // third fragmentainer, since it's a child of #middle, which doesn't exist
-    // in those fragmentainers. Providing the correct fragment is important for
-    // transforms, and especially for clipping.
-    const NGPhysicalBoxFragment* box_fragment = nullptr;
+    PhysicalOffset paint_offset;
     wtf_size_t fragmentainer_idx = context.current_container.fragmentainer_idx;
+
+    // TODO(mstensho): We're doing a simplified version of what
+    // WalkLayoutObjectChildren() does. Consider refactoring so that we can
+    // share.
+    if (object.IsOutOfFlowPositioned()) {
+      // The fragment tree follows the structure of containing blocks closely,
+      // while here we're walking down the LayoutObject tree spine (which
+      // follows the structure of the flat DOM tree, more or less). This means
+      // that for out-of-flow positioned objects, the fragment of the parent
+      // LayoutObject might not be the right place to search.
+      const ContainingFragment& oof_containing_fragment_info =
+          object.IsFixedPositioned() ? context.fixed_positioned_container
+                                     : context.absolute_positioned_container;
+      search_fragment = oof_containing_fragment_info.fragment;
+      fragmentainer_idx = oof_containing_fragment_info.fragmentainer_idx;
+    }
+    // If we have a parent fragment to search inside, do that. If we find it, we
+    // can use its paint offset and size in the paint property builder. If we
+    // have no parent fragment, or don't find the child, we won't be passing a
+    // fragment to the property builder, and then it needs to behave
+    // accordingly, e.g. assume that the fragment is at the fragmentainer
+    // origin, and has zero block-size.
+    // See e.g. https://www.w3.org/TR/css-break-3/#transforms
+    if (search_fragment) {
+      for (NGLink link : search_fragment->Children()) {
+        if (link->GetLayoutObject() == object) {
+          box_fragment = To<NGPhysicalBoxFragment>(link.get());
+          paint_offset = link.offset;
+          break;
+        }
+      }
+    }
 
     // TODO(mstensho): Some of the bool parameters here are meaningless when
     // only used with PaintPropertyTreeBuilder (only used by
@@ -603,7 +623,7 @@ void PrePaintTreeWalk::RebuildContextForMissedDescendant(
     // NGPrePaintInfo into one walker part and one builder part, so that we
     // don't have to specify them as false here.
     NGPrePaintInfo pre_paint_info(
-        box_fragment, PhysicalOffset(), fragmentainer_idx,
+        box_fragment, paint_offset, fragmentainer_idx,
         /* is_first_for_node */ false, /* is_last_for_node */ false,
         /* is_inside_fragment_child */ false,
         context.current_container.IsInFragmentationContext());
@@ -635,14 +655,11 @@ void PrePaintTreeWalk::RebuildContextForMissedDescendant(
     builder_context.force_subtree_update_reasons = original_force_update;
   }
 
-  // We don't need to pass a fragment here, since we're not actually going to
-  // search for any descendant fragment. We've already determined which fragment
-  // that we're going to visit (the one we missed), since we're here.
-  UpdateContextForOOFContainer(object, context, /* fragment */ nullptr);
+  UpdateContextForOOFContainer(object, context, box_fragment);
 
   if (!object.CanContainAbsolutePositionObjects() ||
       !context.tree_builder_context) {
-    return;
+    return box_fragment;
   }
 
   PaintPropertyTreeBuilderContext& property_context =
@@ -657,10 +674,11 @@ void PrePaintTreeWalk::RebuildContextForMissedDescendant(
     property_context.container_for_fixed_position = &object;
     fragment_context.fixed_position = fragment_context.current;
   }
+
+  return box_fragment;
 }
 
 void PrePaintTreeWalk::WalkMissedChildren(
-    const LayoutObject& ancestor,
     const NGPhysicalBoxFragment& fragment,
     const PrePaintTreeWalkContext& context) {
   if (pending_missables_.empty())
@@ -701,7 +719,7 @@ void PrePaintTreeWalk::WalkMissedChildren(
           RuntimeEnabledFeatures::PrePaintAncestorsOfMissedOOFEnabled() &&
           NeedsTreeBuilderContextUpdate(descendant_object, descendant_context);
 
-      RebuildContextForMissedDescendant(ancestor, *descendant_object.Parent(),
+      RebuildContextForMissedDescendant(fragment, *descendant_object.Parent(),
                                         update_tree_builder_context,
                                         descendant_context);
     }
@@ -1142,8 +1160,9 @@ void PrePaintTreeWalk::WalkChildren(
     WalkLayoutObjectChildren(object, traversable_fragment, context);
   }
 
-  if (has_missable_children)
-    WalkMissedChildren(object, *fragment, context);
+  if (has_missable_children) {
+    WalkMissedChildren(*fragment, context);
+  }
 }
 
 void PrePaintTreeWalk::Walk(const LayoutObject& object,
