@@ -68,6 +68,7 @@
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_toplevel.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/platform_window.h"
@@ -4537,6 +4538,54 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
     }
   }
   VerifyAndClearExpectations();
+}
+
+// Asserts the server receives the correct region when SetShape() is called for
+// toplevel windows.
+TEST_P(WaylandWindowTest, SetShape) {
+  // SetShape() is only supported with zaura_shell.
+  if (GetParam().enable_aura_shell != wl::EnableAuraShellProtocol::kEnabled) {
+    GTEST_SKIP();
+  }
+
+  // Define a custom window shape and generate the corresponding region.
+  const PlatformWindow::ShapeRects shape_rects = {{10, 10, 40, 40},
+                                                  {20, 20, 50, 50}};
+  wl::TestRegion shape_region;
+  for (const auto& rect : shape_rects) {
+    shape_region.op(
+        SkIRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height()),
+        SkRegion::kUnion_Op);
+  }
+
+  // Set the toplevel window shape.
+  window_->SetShape(std::make_unique<PlatformWindow::ShapeRects>(shape_rects),
+                    {});
+
+  // Validate the server has received the appropriate region for the toplevel.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
+    ASSERT_TRUE(surface);
+
+    wl::TestZAuraToplevel* zaura_toplevel =
+        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
+    ASSERT_TRUE(zaura_toplevel);
+    EXPECT_EQ(shape_region, zaura_toplevel->shape());
+  });
+
+  // Unset the toplevel window shape.
+  window_->SetShape(nullptr, {});
+
+  // Validate the server has received and unset the window shape.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
+    ASSERT_TRUE(surface);
+
+    wl::TestZAuraToplevel* zaura_toplevel =
+        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
+    ASSERT_TRUE(zaura_toplevel);
+    EXPECT_FALSE(zaura_toplevel->shape().has_value());
+  });
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

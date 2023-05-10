@@ -130,6 +130,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // `SetUpShellIntegration()`.
   void SetZOrderLevel(ZOrderLevel order) override;
   ZOrderLevel GetZOrderLevel() const override;
+  void SetShape(std::unique_ptr<ShapeRects> native_shape,
+                const gfx::Transform& transform) override;
   std::string GetWindowUniqueId() const override;
   // SetUseNativeFrame and ShouldUseNativeFrame decide on
   // xdg-decoration mode for a window.

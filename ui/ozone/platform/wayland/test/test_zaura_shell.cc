@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/test/test_zaura_shell.h"
 
 #include "base/notreached.h"
+#include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
@@ -16,7 +17,7 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kZAuraShellVersion = 44;
+constexpr uint32_t kZAuraShellVersion = 53;
 constexpr uint32_t kZAuraOutputVersion = 44;
 
 void GetAuraSurface(wl_client* client,
@@ -50,9 +51,13 @@ void GetAuraToplevelForXdgToplevel(wl_client* client,
                                    wl_resource* resource,
                                    uint32_t id,
                                    wl_resource* toplevel) {
-  CreateResourceWithImpl<TestZAuraToplevel>(client, &zaura_toplevel_interface,
-                                            kZAuraShellVersion,
-                                            &kTestZAuraToplevelImpl, id);
+  wl_resource* zaura_toplevel_resource =
+      CreateResourceWithImpl<TestZAuraToplevel>(
+          client, &zaura_toplevel_interface, kZAuraShellVersion,
+          &kTestZAuraToplevelImpl, id);
+  auto* xdg_toplevel = GetUserDataAs<MockXdgTopLevel>(toplevel);
+  xdg_toplevel->set_zaura_toplevel(
+      GetUserDataAs<TestZAuraToplevel>(zaura_toplevel_resource));
 }
 
 void GetAuraPopupForXdgPopup(wl_client* client,

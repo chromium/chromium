@@ -410,6 +410,19 @@ void XDGToplevelWrapperImpl::InitializeXdgDecoration() {
   }
 }
 
+wl::Object<wl_region> XDGToplevelWrapperImpl::CreateAndAddRegion(
+    const std::vector<gfx::Rect>& shape) {
+  wl::Object<wl_region> region(
+      wl_compositor_create_region(connection_->compositor()));
+
+  for (const auto& rect : shape) {
+    wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
+                  rect.height());
+  }
+
+  return region;
+}
+
 XDGSurfaceWrapperImpl* XDGToplevelWrapperImpl::xdg_surface_wrapper() const {
   DCHECK(xdg_surface_wrapper_.get());
   return xdg_surface_wrapper_.get();
@@ -626,6 +639,15 @@ void XDGToplevelWrapperImpl::SetPersistable(bool persistable) const {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                             ZAURA_TOPLEVEL_SET_PERSISTABLE_SINCE_VERSION) {
     zaura_toplevel_set_persistable(aura_toplevel_.get(), persistable_enum);
+  }
+}
+
+void XDGToplevelWrapperImpl::SetShape(std::unique_ptr<ShapeRects> shape_rects) {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_SHAPE_SINCE_VERSION) {
+    zaura_toplevel_set_shape(
+        aura_toplevel_.get(),
+        shape_rects ? CreateAndAddRegion(*shape_rects).get() : nullptr);
   }
 }
 

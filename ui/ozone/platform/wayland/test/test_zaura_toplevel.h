@@ -7,7 +7,9 @@
 
 #include <aura-shell-server-protocol.h>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_region.h"
 
 namespace wl {
 
@@ -22,6 +24,15 @@ class TestZAuraToplevel : public ServerObject {
   TestZAuraToplevel& operator=(const TestZAuraToplevel&) = delete;
 
   ~TestZAuraToplevel() override;
+
+  // TODO(tluk): `shape_` should really not have a public setter method, the
+  // member should instead only be set by the handler that responds to
+  // aura_toplevel.set_shape events from the server.
+  const absl::optional<TestRegion>& shape() const { return shape_; }
+  void set_shape(const absl::optional<TestRegion>& shape) { shape_ = shape; }
+
+ private:
+  absl::optional<TestRegion> shape_;
 };
 
 }  // namespace wl

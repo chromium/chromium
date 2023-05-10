@@ -104,6 +104,49 @@ void SetFullscreenMode(struct wl_client* client,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
+void SetScaleFactor(wl_client* client,
+                    wl_resource* resource,
+                    uint32_t scale_factor_as_uint) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void SetSnapPrimary(wl_client* client,
+                    wl_resource* resource,
+                    uint32_t snap_ratio_as_uint) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void SetSnapSecondary(wl_client* client,
+                      wl_resource* resource,
+                      uint32_t snap_ratio_as_uint) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void IntentToSnap(wl_client* client,
+                  wl_resource* resource,
+                  uint32_t snap_direction) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void UnsetSnap(wl_client* client, wl_resource* resource) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void SetPersistable(wl_client* client,
+                    wl_resource* resource,
+                    uint32_t persistable) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void SetShape(wl_client* client,
+              wl_resource* resource,
+              wl_resource* region_resource) {
+  GetUserDataAs<TestZAuraToplevel>(resource)->set_shape(
+      region_resource ? absl::optional<TestRegion>(
+                            *GetUserDataAs<TestRegion>(region_resource))
+                      : absl::nullopt);
+}
+
 }  // namespace
 
 TestZAuraToplevel::TestZAuraToplevel(wl_resource* resource)
@@ -129,6 +172,13 @@ const struct zaura_toplevel_interface kTestZAuraToplevelImpl = {
     &Activate,
     &Dectivate,
     &SetFullscreenMode,
+    &SetScaleFactor,
+    &SetSnapPrimary,
+    &SetSnapSecondary,
+    &IntentToSnap,
+    &UnsetSnap,
+    &SetPersistable,
+    &SetShape,
 };
 
 }  // namespace wl

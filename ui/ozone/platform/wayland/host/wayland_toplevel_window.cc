@@ -319,6 +319,13 @@ ZOrderLevel WaylandToplevelWindow::GetZOrderLevel() const {
   return z_order_;
 }
 
+void WaylandToplevelWindow::SetShape(std::unique_ptr<ShapeRects> native_shape,
+                                     const gfx::Transform& transform) {
+  if (shell_toplevel_) {
+    shell_toplevel_->SetShape(std::move(native_shape));
+  }
+}
+
 std::string WaylandToplevelWindow::GetWindowUniqueId() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return window_unique_id_;
