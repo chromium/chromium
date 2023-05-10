@@ -5582,6 +5582,7 @@ test("unit_tests") {
     "../browser/enterprise/connectors/interstitials/enterprise_page_unittest.cc",
     "../browser/enterprise/identifiers/profile_id_service_factory_unittest.cc",
     "../browser/enterprise/reporting/browser_report_generator_unittest.cc",
+    "../browser/enterprise/reporting/legacy_tech/legacy_tech_url_matcher_unittest.cc",
     "../browser/enterprise/reporting/policy_info_unittest.cc",
     "../browser/enterprise/reporting/profile_report_generator_unittest.cc",
     "../browser/enterprise/reporting/report_generator_unittest.cc",

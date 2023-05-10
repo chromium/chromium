@@ -489,6 +489,8 @@ static_library("browser") {
     "enterprise/connectors/interstitials/enterprise_warn_page.h",
     "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.cc",
     "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.h",
+    "enterprise/reporting/legacy_tech/legacy_tech_url_matcher.cc",
+    "enterprise/reporting/legacy_tech/legacy_tech_url_matcher.h",
     "enterprise/reporting/prefs.cc",
     "enterprise/reporting/prefs.h",
     "enterprise/reporting/profile_report_generator_delegate_base.cc",
