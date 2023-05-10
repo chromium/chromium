@@ -4245,24 +4245,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "google-mobile-services-passwords",
-    "owners": [ "maxan@google.com", "vasilii" ],
-    "expiry_milestone": 118
-  },
-  {
-    "name": "google-mobile-services-passwords-error-messages",
-    "owners": [
-      "ioanap",
-      "izuzic@google.com"
-    ],
-    "expiry_milestone": 118
-  },
-  {
-    "name": "google-mobile-services-passwords-reenrollment",
-    "owners": [ "kazinova@google.com", "vasilii" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "google-one-offer-files-banner",
     "owners": ["yawano@google.com","assistive-eng@google.com"],
     "expiry_milestone": 116
