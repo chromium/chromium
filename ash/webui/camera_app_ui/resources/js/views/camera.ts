@@ -272,15 +272,21 @@ export class Camera extends View implements CameraViewUI {
       const modes =
           dom.getAllFrom(this.modesGroup, '.mode-item>input', HTMLInputElement);
       for (const mode of modes) {
-        mode.disabled = disabled;
+        // Use data-disabled here because:
+        // 1. `mode.disabled = true` loses focus on the element.
+        // 2. `mode.setAttribute('aria-disabled', 'true')` makes ChromeVox
+        //    always announce the element is disabled.
+        mode.dataset['disabled'] = String(disabled);
       }
     };
     state.addObserver(state.State.STREAMING, checkModesGroupDisabled);
     state.addObserver(state.State.TAKING, checkModesGroupDisabled);
+    checkModesGroupDisabled();
 
     for (const el of dom.getAll('.mode-item>input', HTMLInputElement)) {
       el.addEventListener('click', (event) => {
-        if (!this.cameraReady.isSignaled()) {
+        if (!this.cameraReady.isSignaled() ||
+            el.dataset['disabled'] === 'true') {
           event.preventDefault();
         }
       });

@@ -317,7 +317,7 @@ body:is(.taking.video, .should-handle-intent-result) #modes-group {
   transform: none;
 }
 
-#modes-group .mode-item:has(input:disabled) {
+#modes-group .mode-item:has(input[data-disabled=true]) {
   opacity: 0.38;
 }
 
