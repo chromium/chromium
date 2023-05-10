@@ -21,8 +21,8 @@
 
 namespace message_center {
 
-  // This enum is being used for histogram reporting and the elements should not
-  // be re-ordered.
+// This enum is being used for histogram reporting and the elements should not
+// be re-ordered.
 enum class NotifierType : int {
   APPLICATION = 0,
   ARC_APPLICATION = 1,
@@ -66,6 +66,9 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   bool operator<(const NotifierId& other) const;
 
   NotifierType type;
+
+  // Identifier in ARC notifications to assign notification groups.
+  absl::optional<std::string> group_key;
 
   // The identifier of the app notifier. Empty if it's WEB_PAGE.
   std::string id;

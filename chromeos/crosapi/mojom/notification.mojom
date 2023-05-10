@@ -60,6 +60,8 @@ struct NotifierId {
   // A unique identifier of the user profile associated with the
   // notification, usually an email address.
   string profile_id@4;
+  // Identifier in ARC notifications to assign notification groups.
+  [MinVersion=1] string? group_key@5;
 };
 
 // List items for NotificationType::kList.

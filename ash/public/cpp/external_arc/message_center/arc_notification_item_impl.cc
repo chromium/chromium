@@ -119,6 +119,10 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
       app_id.empty() ? kDefaultArcNotifierId : app_id);
   notifier_id.profile_id = profile_id_.GetUserEmail();
 
+  if (data->group_key) {
+    notifier_id.group_key = data->group_key;
+  }
+
   const bool render_on_chrome =
       features::IsRenderArcNotificationsByChromeEnabled() &&
       data->render_on_chrome;

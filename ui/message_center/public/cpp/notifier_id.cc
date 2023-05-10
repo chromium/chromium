@@ -63,6 +63,10 @@ bool NotifierId::operator==(const NotifierId& other) const {
   if (type == NotifierType::WEB_PAGE)
     return url == other.url;
 
+  if (type == NotifierType::ARC_APPLICATION) {
+    return (id == other.id && group_key == other.group_key);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (type == NotifierType::SYSTEM_COMPONENT &&
       catalog_name != other.catalog_name) {

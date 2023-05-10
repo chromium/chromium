@@ -193,21 +193,50 @@ Notification* MessageCenterImpl::FindParentNotification(
   // the same website for the same user. Also make sure to only group
   // notifications from web pages with valid origin urls. For system
   // notifications, currently we only group privacy indicators notification.
+  // For ARC notifications, only group them when the flag
+  // IsRenderArcNotificationsByChromeEnabled() is enabled.
   bool is_privacy_indicators_notification = false;
+  bool render_arc_notifications_by_chrome = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   is_privacy_indicators_notification =
       notification->notifier_id().id == ash::kPrivacyIndicatorsNotifierId;
+  render_arc_notifications_by_chrome =
+      ash::features::IsRenderArcNotificationsByChromeEnabled();
 #endif
 
   if (!is_privacy_indicators_notification &&
       (notification->origin_url().is_empty() ||
-       notification->notifier_id().type != NotifierType::WEB_PAGE)) {
+       notification->notifier_id().type != NotifierType::WEB_PAGE) &&
+      notification->notifier_id().type != NotifierType::ARC_APPLICATION) {
     return nullptr;
   }
 
   NotificationList::Notifications notifications =
       notification_list_->GetNotificationsByNotifierId(
           notification->notifier_id());
+
+  // Handle ARC notification grouping in Chrome
+  if (notification->notifier_id().type == NotifierType::ARC_APPLICATION) {
+    // If render_arc_notifications_by_chrome flag is not enabled,
+    // use Android grouping and do not apply grouping rules from the chrome
+    // side.
+    if (!render_arc_notifications_by_chrome) {
+      return nullptr;
+    }
+
+    // To stay consistent with Android, ARC notifications with group key
+    // are grouped using notifier_id() where id and group keys are checked.
+    // For ARC notifications without a group key,
+    // only group them when there are more than 4 notifications
+    if (!notification->notifier_id().group_key.has_value()) {
+      if (notifications.size() < 4) {
+        return nullptr;
+      }
+      for (auto* n : notifications) {
+        n->SetGroupChild();
+      }
+    }
+  }
 
   auto parent_notification_it = base::ranges::find_if(
       notifications,
