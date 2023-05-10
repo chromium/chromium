@@ -24,20 +24,16 @@ class SyncService;
 
 namespace password_manager {
 
-class PasswordStoreInterface;
-
 // A class that manages the startup and shutdown of password sync.
 class PasswordModelTypeController : public syncer::ModelTypeController,
                                     public syncer::SyncServiceObserver,
                                     public signin::IdentityManager::Observer {
  public:
-  // TODO(crbug.com/1425033): Remove account_password_store_for_cleanup param.
   PasswordModelTypeController(
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_transport_mode,
-      scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
