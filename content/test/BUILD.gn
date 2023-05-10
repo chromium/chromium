@@ -3320,6 +3320,7 @@ group("gpu_pytype") {
 
   data = [
     "//content/test/gpu/run_pytype.py",
+    "//content/test/gpu/unexpected_pass_finder.py",
     "//content/test/gpu/validate_tag_consistency.py",
 
     "//content/test/gpu/gold_inexact_matching/",
