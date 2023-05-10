@@ -117,7 +117,6 @@ void AttachBrowserAgents(Browser* browser) {
   WebStateUpdateBrowserAgent::CreateForBrowser(browser);
   ReadingListBrowserAgent::CreateForBrowser(browser);
 
-  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
   PagePlaceholderBrowserAgent::CreateForBrowser(browser);
 
   // This needs to be called last in case any downstream browser agents need to
