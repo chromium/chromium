@@ -4008,10 +4008,6 @@
       'ui_base_unittests': {},
     },
 
-    'ios_swift_interop_xcuitests': {
-      'ios_swift_interop_xcuitests_module': {},
-    },
-
     # END tests which run on the GPU bots
 
     'js_code_coverage_browser_tests' : {
@@ -6988,13 +6984,6 @@
           'SIM_IPHONE_X_16_4',
         ]
       },
-      'ios_swift_interop_xcuitests': {
-        'mixins': ['xcode_parallelization'],
-        'variants': [
-          'SIM_IPHONE_X_16_4',
-          'SIM_IPAD_PRO_3RD_GEN_16_4',
-        ],
-      },
     },
 
     'ios16_sdk_simulator_tests': {
@@ -7031,13 +7020,6 @@
           'SIM_IPHONE_SE_3RD_GEN_16_4',
           'SIM_IPAD_AIR_3RD_GEN_16_4',
           'SIM_IPAD_PRO_3RD_GEN_16_4',
-        ],
-      },
-      'ios_swift_interop_xcuitests': {
-        'mixins': ['xcode_parallelization'],
-        'variants': [
-          'SIM_IPHONE_X_16_4',
-          'SIM_IPAD_AIR_3RD_GEN_16_4',
         ],
       },
     },

@@ -1215,11 +1215,6 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "ios_swift_interop_xcuitests_module",
-    label = "//ios/chrome/test/swift_interop:ios_swift_interop_xcuitests_module",
-)
-
-targets.generated_script(
     name = "ios_testing_unittests",
     label = "//ios/testing:ios_testing_unittests",
 )
