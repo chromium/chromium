@@ -7,6 +7,10 @@
 #include "base/check.h"
 #include "base/mac/mach_logging.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace power_metrics {
 
 uint64_t MachTimeToNs(uint64_t mach_time,

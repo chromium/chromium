@@ -10,6 +10,10 @@
 #include "components/power_metrics/energy_impact_mac.h"
 #include "components/power_metrics/mach_time_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 extern "C" int coalition_info_resource_usage(
     uint64_t cid,
     struct coalition_resource_usage* cru,

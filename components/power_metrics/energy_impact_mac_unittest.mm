@@ -9,6 +9,10 @@
 #include "components/power_metrics/resource_coalition_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace power_metrics {
 
 namespace {
@@ -45,7 +49,7 @@ uint64_t NsScaleToTimebase(const mach_timebase_info_data_t& timebase,
 TEST(EnergyImpactTest, ReadCoefficientsFromPath) {
   base::FilePath test_path = GetTestDataPath();
 
-  // Validate that attempting to read from a non-exisent file fails.
+  // Validate that attempting to read from a non-existent file fails.
   auto coefficients = internal::ReadCoefficientsFromPath(
       test_path.Append(FILE_PATH_LITERAL("does-not-exist.plist")));
   EXPECT_FALSE(coefficients.has_value());

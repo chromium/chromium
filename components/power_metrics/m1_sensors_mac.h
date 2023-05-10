@@ -8,9 +8,9 @@
 #ifndef COMPONENTS_POWER_METRICS_M1_SENSORS_MAC_H_
 #define COMPONENTS_POWER_METRICS_M1_SENSORS_MAC_H_
 
-#include <memory>
-
 #include <IOKit/hidsystem/IOHIDEventSystemClient.h>
+
+#include <memory>
 
 #include "base/mac/scoped_cftyperef.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,7 +37,8 @@ class M1SensorsReader {
   virtual TemperaturesCelsius ReadTemperatures();
 
  protected:
-  M1SensorsReader(base::ScopedCFTypeRef<IOHIDEventSystemClientRef> system);
+  explicit M1SensorsReader(
+      base::ScopedCFTypeRef<IOHIDEventSystemClientRef> system);
 
  private:
   base::ScopedCFTypeRef<IOHIDEventSystemClientRef> system_;

@@ -9,6 +9,10 @@
 
 #include "base/memory/ptr_util.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace power_metrics {
 
 namespace {
@@ -113,7 +117,7 @@ bool SMCReader::SMCKey::CallSMCFunction(uint8_t function, SMCParamStruct* out) {
     connect_.reset();
   }
 
-  // Even if the close failed, report whether the actual call succeded.
+  // Even if the close failed, report whether the actual call succeeded.
   return success;
 }
 

@@ -15,20 +15,24 @@
 #include "components/power_metrics/mach_time_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace power_metrics {
 
 namespace {
 
 NSDictionary* MaybeGetDictionaryFromPath(const base::FilePath& path) {
   // The folder where the energy coefficient plist files are stored.
-  NSString* plist_path_string = base::SysUTF8ToNSString(path.value().c_str());
-  return [NSDictionary dictionaryWithContentsOfFile:plist_path_string];
+  return
+      [NSDictionary dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(path)
+                                          error:nil];
 }
 
 double GetNamedCoefficientOrZero(NSDictionary* dict, NSString* key) {
-  NSObject* value = [dict objectForKey:key];
-  NSNumber* num = base::mac::ObjCCast<NSNumber>(value);
-  return [num floatValue];
+  NSNumber* num = base::mac::ObjCCast<NSNumber>(dict[key]);
+  return num.floatValue;
 }
 
 }  // namespace
@@ -112,12 +116,14 @@ absl::optional<EnergyImpactCoefficients> ReadCoefficientsFromPath(
     const base::FilePath& plist_file) {
   @autoreleasepool {
     NSDictionary* dict = MaybeGetDictionaryFromPath(plist_file);
-    if (!dict)
+    if (!dict) {
       return absl::nullopt;
+    }
 
-    NSDictionary* energy_constants = [dict objectForKey:@"energy_constants"];
-    if (!energy_constants)
+    NSDictionary* energy_constants = dict[@"energy_constants"];
+    if (!energy_constants) {
       return absl::nullopt;
+    }
 
     EnergyImpactCoefficients coefficients{};
     coefficients.kcpu_time =
