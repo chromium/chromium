@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -38,6 +39,15 @@ constexpr base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =
 
 namespace permissions {
 namespace {
+// Reflects the maximum number of days between a permissions being revoked and
+// the time when the user regrants the permission through the unused site
+// permission module of Safete Check. The maximum number of days is determined
+// by `kRevocationCleanUpThreshold`.
+size_t kAllowAgainMetricsExclusiveMaxCount = 31;
+
+// Using a single bucket per day, following the value of
+// |kAllowAgainMetricsExclusiveMaxCount|.
+size_t kAllowAgainMetricsBuckets = 31;
 
 // Called on a background thread.
 UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
@@ -190,6 +200,16 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
   hcsm_->SetWebsiteSettingCustomScope(
       info.primary_pattern, info.secondary_pattern,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
+
+  // Record the days elapsed from auto-revocation to regrant.
+  base::Time revoked_time =
+      info.metadata.expiration -
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  base::UmaHistogramCustomCounts(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays",
+      (clock_->Now() - revoked_time).InDays(), 0,
+      kAllowAgainMetricsExclusiveMaxCount, kAllowAgainMetricsBuckets);
 }
 
 void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
