@@ -113,7 +113,7 @@ Use these custom properties to control the feature toasts, for example:
 
 .custom-toast {
   align-items: center;
-  background-color: var(--blue-300);
+  background-color: var(--cros-sys-primary);
   border-radius: 18px;
   display: flex;
   padding: 8px 16px 8px 16px;
@@ -122,35 +122,29 @@ Use these custom properties to control the feature toasts, for example:
 }
 
 .custom-toast-text {
-  color: var(--grey-900);
+  color: var(--cros-sys-on_primary);
   font: normal 400 13px/20px Roboto;
 }
 
-#new-feature-toast::before {
-  content: url(/images/new_feature_toast_icon.svg);
-  display: inline-block;
+#new-feature-toast svg-wrapper {
+  color: var(--cros-sys-on_primary);
   margin-inline: 0 8px;
-}
-
-#indicator-toast div {
-  --icon-size: 20px;
-
-  align-items: center;
-  display: flex;
-  height: var(--icon-size);
-  justify-content: center;
-  margin-inline: 0 8px;
-  width: var(--icon-size);
 }
 
 #indicator-icon {
-  display: inline-block;
+  align-items: center;
+  color: var(--cros-sys-on_primary);
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  margin-inline: 0 8px;
+  width: 20px;
 }
 
 #indicator-dot {
   --dot-size: 8px;
 
-  background-color: var(--blue-300);
+  background-color: var(--cros-sys-primary);
   border-radius: 50%;
   height: var(--dot-size);
   position: absolute;
