@@ -93,7 +93,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     snapshot.nodes[2].id = 3;
     snapshot.nodes[3].id = 4;
     SetUpdateTreeID(&snapshot);
-    root_id_ = snapshot.root_id;
 
     // Send the snapshot to the controller and set its tree ID to be the active
     // tree ID. When the accessibility event is received and unserialized, the
@@ -230,8 +229,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->OnLinkClicked(ax_node_id);
   }
 
-  void ClearSelection() { controller_->ClearSelection(); }
-
   void OnSelectionChange(ui::AXNodeID anchor_node_id,
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
@@ -251,7 +248,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   ui::AXTreeID ActiveTreeId() { return controller_->model_.active_tree_id(); }
 
   ui::AXTreeID tree_id_;
-  ui::AXNodeID root_id_;
   MockAXTreeDistiller* distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingPageHandler> page_handler_;
 
@@ -1179,15 +1175,8 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
 }
 
-TEST_F(ReadAnythingAppControllerTest, ClearSelection) {
-  EXPECT_CALL(page_handler_,
-              OnSelectionChange(tree_id_, root_id_, 0, root_id_, 0))
-      .Times(1);
-  ClearSelection();
-  page_handler_.FlushForTesting();
-}
-
-TEST_F(ReadAnythingAppControllerTest, OnSelectionChange_ClickClearsSelection) {
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_ClickDoesNotUpdateSelection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.nodes.resize(3);
@@ -1197,58 +1186,15 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange_ClickClearsSelection) {
   update.nodes[0].role = ax::mojom::Role::kStaticText;
   update.nodes[1].role = ax::mojom::Role::kStaticText;
   update.nodes[2].role = ax::mojom::Role::kStaticText;
-  AccessibilityEventReceived({update});
   ui::AXNodeID anchor_node_id = 2;
   int anchor_offset = 15;
   ui::AXNodeID focus_node_id = 2;
   int focus_offset = 15;
   EXPECT_CALL(page_handler_,
-              OnSelectionChange(tree_id_, root_id_, 0, root_id_, 0))
-      .Times(1);
-  OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
-  page_handler_.FlushForTesting();
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnSelectionChange_ClickAfterSelectionClearsSelection) {
-  ui::AXTreeUpdate selection_update;
-  SetUpdateTreeID(&selection_update);
-  selection_update.nodes.resize(3);
-  selection_update.nodes[0].id = 2;
-  selection_update.nodes[1].id = 3;
-  selection_update.nodes[2].id = 4;
-  selection_update.nodes[0].role = ax::mojom::Role::kStaticText;
-  selection_update.nodes[1].role = ax::mojom::Role::kStaticText;
-  selection_update.nodes[2].role = ax::mojom::Role::kStaticText;
-  AccessibilityEventReceived({selection_update});
-  ui::AXNodeID anchor_node_id = 2;
-  int anchor_offset = 0;
-  ui::AXNodeID focus_node_id = 3;
-  int focus_offset = 1;
-  EXPECT_CALL(page_handler_,
               OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
                                 focus_node_id, focus_offset))
-      .Times(1);
+      .Times(0);
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
-
-  ui::AXTreeUpdate click_update;
-  SetUpdateTreeID(&click_update);
-  click_update.nodes.resize(3);
-  click_update.nodes[0].id = 2;
-  click_update.nodes[1].id = 3;
-  click_update.nodes[2].id = 4;
-  click_update.nodes[0].role = ax::mojom::Role::kStaticText;
-  click_update.nodes[1].role = ax::mojom::Role::kStaticText;
-  click_update.nodes[2].role = ax::mojom::Role::kStaticText;
-  AccessibilityEventReceived({click_update});
-  anchor_node_id = 2;
-  anchor_offset = 15;
-  focus_node_id = 2;
-  focus_offset = 15;
-  EXPECT_CALL(page_handler_,
-              OnSelectionChange(tree_id_, root_id_, 0, root_id_, 0))
-      .Times(1);
-  ClearSelection();
   page_handler_.FlushForTesting();
 }
 

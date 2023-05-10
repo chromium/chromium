@@ -559,7 +559,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("isSelectable", &ReadAnythingAppController::isSelectable)
-      .SetMethod("clearSelection", &ReadAnythingAppController::ClearSelection)
       .SetMethod("onSelectionChange",
                  &ReadAnythingAppController::OnSelectionChange)
       .SetMethod("setContentForTesting",
@@ -736,17 +735,6 @@ void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
   page_handler_->OnLinkClicked(model_.active_tree_id(), ax_node_id);
 }
 
-void ReadAnythingAppController::ClearSelection() const {
-  if (model_.active_tree_id() == ui::AXTreeIDUnknown() ||
-      !model_.ContainsTree(model_.active_tree_id())) {
-    return;
-  }
-  ui::AXSerializableTree* tree =
-      model_.GetTreeFromId(model_.active_tree_id()).get();
-  page_handler_->OnSelectionChange(model_.active_tree_id(), tree->root()->id(),
-                                   0, tree->root()->id(), 0);
-}
-
 void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
                                                   int anchor_offset,
                                                   ui::AXNodeID focus_node_id,
@@ -762,7 +750,6 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 
   // Ignore the selection if it's collapsed, which is created by a simple click.
   if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
-    ClearSelection();
     return;
   }
 
