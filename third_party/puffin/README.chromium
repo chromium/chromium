@@ -56,3 +56,5 @@ This is an existing bug in the AOSP implementation, will notify the owners.
 - missed one stream close in puffdiff.cc.
 - Making sure to call FindDeflateSubBlocks in PuffDiff to prepopulate deflate
 subblocks.
+- Removing complete_static_lib = true from libpuffpatch to fix duplicate symbol
+issue in nonembedded android component_updater.

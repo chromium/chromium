@@ -42,10 +42,6 @@ class ExternalConstants;
 class PolicyService;
 class UpdaterPrefs;
 
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-inline constexpr const char* kCrxCachePath = "crx_cache";
-#endif
-
 // This class is free-threaded. Its instance is shared by multiple sequences and
 // it can't be mutated.
 class Configurator : public update_client::Configurator {

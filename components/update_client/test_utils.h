@@ -17,6 +17,12 @@ namespace update_client {
 // the file in that directory.
 [[nodiscard]] base::FilePath GetTestFilePath(const char* file_name);
 
+// Duplicates a file from path GetTestFilePath(file) into the provided
+// temp_path. This should be provided by a base::ScopedTempDir. Deletion
+// should be handled by the caller.
+[[nodiscard]] base::FilePath DuplicateTestFile(const base::FilePath& temp_path,
+                                               const char* file);
+
 }  // namespace update_client
 
 #endif  // COMPONENTS_UPDATE_CLIENT_TEST_UTILS_H_

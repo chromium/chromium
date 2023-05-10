@@ -985,6 +985,9 @@ void Component::StateCanUpdate::DoHandle() {
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
   const auto& component = Component::State::component();
   return HasDiffUpdate(component) && !component.diff_error_code_ &&
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+         component.update_context_->crx_cache_.has_value() &&
+#endif
          component.update_context_->config->EnabledDeltas();
 }
 

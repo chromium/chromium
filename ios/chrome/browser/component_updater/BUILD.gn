@@ -16,6 +16,7 @@ source_set("component_updater") {
     "//components/services/unzip:in_process",
     "//components/services/unzip/public/mojom",
     "//components/update_client",
+    "//components/update_client:buildflags",
     "//components/update_client:common_impl",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/common",

@@ -18,22 +18,13 @@
 #include "components/services/patch/in_process_file_patcher.h"
 #include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/test_installer.h"
+#include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
 #include "courgette/courgette.h"
 #include "courgette/third_party/bsdiff/bsdiff.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {
-
-namespace {
-
-base::FilePath OutTestFile(const char* file) {
-  base::FilePath path;
-  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &path);
-  return path.AppendASCII(file);
-}
-
-}  // namespace
 
 class PuffinPatcherTest : public testing::Test {
  public:
@@ -50,18 +41,21 @@ TEST_F(PuffinPatcherTest, CheckPuffPatch) {
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create();
-
-  base::FilePath out_file = OutTestFile("puffin_app_v1_to_v2.crx3");
-  EXPECT_TRUE(base::DeleteFile(out_file));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath v1_to_v2_out_file =
+      temp_dir.GetPath().AppendASCII("puffin_app_v1_to_v2.crx3");
   SEQUENCE_CHECKER(sequence_checker);
   {
-    base::File input_file(OutTestFile("puffin_app_v1.crx3"),
-                          base::File::FLAG_OPEN | base::File::FLAG_READ);
-    base::File patch_file(OutTestFile("puffin_app_v1_to_v2.puff"),
-                          base::File::FLAG_OPEN | base::File::FLAG_READ);
-    base::File output_file(out_file, base::File::FLAG_CREATE |
-                                         base::File::FLAG_WRITE |
-                                         base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+    base::File input_file(
+        GetTestFilePath("puffin_patch_test/puffin_app_v1.crx3"),
+        base::File::FLAG_OPEN | base::File::FLAG_READ);
+    base::File patch_file(
+        GetTestFilePath("puffin_patch_test/puffin_app_v1_to_v2.puff"),
+        base::File::FLAG_OPEN | base::File::FLAG_READ);
+    base::File output_file(v1_to_v2_out_file,
+                           base::File::FLAG_CREATE | base::File::FLAG_WRITE |
+                               base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     base::RunLoop loop;
     PuffinPatcher::Patch(
         std::move(input_file), std::move(patch_file), std::move(output_file),
@@ -75,18 +69,22 @@ TEST_F(PuffinPatcherTest, CheckPuffPatch) {
     loop.Run();
   }
 
-  EXPECT_TRUE(base::ContentsEqual(OutTestFile("puffin_app_v2.crx3"), out_file));
+  EXPECT_TRUE(base::ContentsEqual(
+      GetTestFilePath("puffin_patch_test/puffin_app_v2.crx3"),
+      v1_to_v2_out_file));
 
-  out_file = OutTestFile("puffin_app_v2_to_v1.crx3");
-  EXPECT_TRUE(base::DeleteFile(out_file));
+  base::FilePath v2_to_v1_out_file =
+      temp_dir.GetPath().AppendASCII("puffin_app_v2_to_v1.crx3");
   {
-    base::File input_file(OutTestFile("puffin_app_v2.crx3"),
-                          base::File::FLAG_OPEN | base::File::FLAG_READ);
-    base::File patch_file(OutTestFile("puffin_app_v2_to_v1.puff"),
-                          base::File::FLAG_OPEN | base::File::FLAG_READ);
-    base::File output_file(out_file, base::File::FLAG_CREATE |
-                                         base::File::FLAG_WRITE |
-                                         base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+    base::File input_file(
+        GetTestFilePath("puffin_patch_test/puffin_app_v2.crx3"),
+        base::File::FLAG_OPEN | base::File::FLAG_READ);
+    base::File patch_file(
+        GetTestFilePath("puffin_patch_test/puffin_app_v2_to_v1.puff"),
+        base::File::FLAG_OPEN | base::File::FLAG_READ);
+    base::File output_file(v2_to_v1_out_file,
+                           base::File::FLAG_CREATE | base::File::FLAG_WRITE |
+                               base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     base::RunLoop loop;
     PuffinPatcher::Patch(
         std::move(input_file), std::move(patch_file), std::move(output_file),
@@ -101,7 +99,10 @@ TEST_F(PuffinPatcherTest, CheckPuffPatch) {
   }
 
   DETACH_FROM_SEQUENCE(sequence_checker);
-  EXPECT_TRUE(base::ContentsEqual(OutTestFile("puffin_app_v1.crx3"), out_file));
+  EXPECT_TRUE(base::ContentsEqual(
+      GetTestFilePath("puffin_patch_test/puffin_app_v1.crx3"),
+      v2_to_v1_out_file));
+  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
 }
 
 }  // namespace update_client

@@ -225,7 +225,7 @@ absl::optional<base::FilePath> Configurator::GetCrxCachePath() const {
       updater::GetInstallDirectory(GetUpdaterScope());
   return optional_result.has_value()
              ? absl::optional<base::FilePath>(
-                   optional_result.value().AppendASCII(kCrxCachePath))
+                   optional_result.value().AppendASCII("crx_cache"))
              : absl::nullopt;
 }
 #endif

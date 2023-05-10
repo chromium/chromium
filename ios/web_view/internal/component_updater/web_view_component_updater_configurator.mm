@@ -12,12 +12,15 @@
 #import <vector>
 
 #import "base/containers/flat_map.h"
+#import "base/files/file_path.h"
+#import "base/path_service.h"
 #import "base/version.h"
 #import "components/component_updater/component_updater_command_line_config_policy.h"
 #import "components/component_updater/configurator_impl.h"
 #import "components/services/patch/in_process_file_patcher.h"
 #import "components/services/unzip/in_process_unzipper.h"
 #import "components/update_client/activity_data_service.h"
+#import "components/update_client/buildflags.h"
 #import "components/update_client/crx_downloader_factory.h"
 #import "components/update_client/net/network_chromium.h"
 #import "components/update_client/patch/patch_impl.h"
@@ -75,6 +78,9 @@ class WebViewConfigurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  absl::optional<base::FilePath> GetCrxCachePath() const override;
+#endif
 
  private:
   friend class base::RefCountedThreadSafe<WebViewConfigurator>;
@@ -228,6 +234,16 @@ update_client::UpdaterStateProvider
 WebViewConfigurator::GetUpdaterStateProvider() const {
   return configurator_impl_.GetUpdaterStateProvider();
 }
+
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+absl::optional<base::FilePath> WebViewConfigurator::GetCrxCachePath() const {
+  base::FilePath path;
+  if (!base::PathService::Get(base::DIR_CACHE, &path)) {
+    return absl::nullopt;
+  }
+  return path.Append(FILE_PATH_LITTERAL("ios_webview_crx_cache"));
+}
+#endif
 
 }  // namespace
 

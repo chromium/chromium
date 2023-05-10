@@ -351,6 +351,7 @@ ios_web_view_deps = [
   "//components/translate/ios/browser",
   "//components/unified_consent",
   "//components/update_client",
+  "//components/update_client:buildflags",
   "//components/update_client:common_impl",
   "//components/url_formatter",
   "//components/variations",
