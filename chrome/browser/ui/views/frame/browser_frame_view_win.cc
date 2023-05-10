@@ -83,7 +83,7 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserFrame* frame,
   // since it's possible for modes to flip dynamically (e.g. if the user enables
   // a high-contrast theme). Throbber icons are only used when ShowSystemIcon()
   // is true. Everything else here is only used when
-  // ShouldCustomDrawSystemTitlebar() is true.
+  // ShouldBrowserCustomDrawTitlebar() is true.
 
   if (browser_view->GetSupportsIcon()) {
     InitThrobberIcons();
@@ -123,7 +123,8 @@ bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
   // Because we don't set WS_EX_LAYOUTRTL (which would conflict with Chrome's
   // own RTL layout logic), Windows always draws the caption buttons on the
   // right, even when we want to be RTL. See crbug.com/560619.
-  return !ShouldCustomDrawSystemTitlebar() && base::i18n::IsRTL();
+  return !ShouldBrowserCustomDrawTitlebar(browser_view()) &&
+         base::i18n::IsRTL();
 }
 
 gfx::Rect BrowserFrameViewWin::GetBoundsForTabStripRegion(
@@ -172,7 +173,9 @@ int BrowserFrameViewWin::GetTopInset(bool restored) const {
   if (browser_view()->GetTabStripVisible() || IsWebUITabStrip()) {
     return TopAreaHeight(restored);
   }
-  return ShouldCustomDrawSystemTitlebar() ? TitlebarHeight(restored) : 0;
+  return ShouldBrowserCustomDrawTitlebar(browser_view())
+             ? TitlebarHeight(restored)
+             : 0;
 }
 
 int BrowserFrameViewWin::GetThemeBackgroundXInset() const {
@@ -294,7 +297,8 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
 
   // For app windows and popups without a custom titlebar we haven't customized
   // the frame at all so Windows can figure it out.
-  if (!ShouldCustomDrawSystemTitlebar() && !browser_view()->GetIsNormalType()) {
+  if (!ShouldBrowserCustomDrawTitlebar(browser_view()) &&
+      !browser_view()->GetIsNormalType()) {
     return HTNOWHERE;
   }
 
@@ -401,7 +405,7 @@ void BrowserFrameViewWin::ResetWindowControls() {
 
 void BrowserFrameViewWin::OnThemeChanged() {
   BrowserNonClientFrameView::OnThemeChanged();
-  if (!ShouldCustomDrawSystemTitlebar()) {
+  if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
     SetSystemTitlebarAttributes();
   }
 }
@@ -433,7 +437,7 @@ bool BrowserFrameViewWin::IsWebUITabStrip() const {
 
 void BrowserFrameViewWin::OnPaint(gfx::Canvas* canvas) {
   TRACE_EVENT0("views.frame", "BrowserFrameViewWin::OnPaint");
-  if (ShouldCustomDrawSystemTitlebar()) {
+  if (ShouldBrowserCustomDrawTitlebar(browser_view())) {
     PaintTitlebar(canvas);
   }
 }
@@ -497,7 +501,8 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
   // inset in order to avoid overlapping the monitor above.
   // See comments in BrowserDesktopWindowTreeHostWin::GetClientAreaInsets().
   const bool needs_no_border =
-      (ShouldCustomDrawSystemTitlebar() && frame()->IsMaximized()) ||
+      (ShouldBrowserCustomDrawTitlebar(browser_view()) &&
+       frame()->IsMaximized()) ||
       frame()->IsFullscreen();
   if (needs_no_border && !restored) {
     return 0;
@@ -588,7 +593,7 @@ int BrowserFrameViewWin::CaptionButtonsRegionWidth() const {
       width() - frame()->GetMinimizeButtonOffset();
 
   int total_width = caption_button_container_->size().width();
-  if (!ShouldCustomDrawSystemTitlebar()) {
+  if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
     total_width += system_caption_buttons_width;
   }
 
@@ -596,10 +601,12 @@ int BrowserFrameViewWin::CaptionButtonsRegionWidth() const {
 }
 
 bool BrowserFrameViewWin::ShouldShowWindowIcon(TitlebarType type) const {
-  if (type == TitlebarType::kCustom && !ShouldCustomDrawSystemTitlebar()) {
+  if (type == TitlebarType::kCustom &&
+      !ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
-  if (type == TitlebarType::kSystem && ShouldCustomDrawSystemTitlebar()) {
+  if (type == TitlebarType::kSystem &&
+      ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
   if (frame()->IsFullscreen() || browser_view()->GetIsWebAppType()) {
@@ -609,10 +616,12 @@ bool BrowserFrameViewWin::ShouldShowWindowIcon(TitlebarType type) const {
 }
 
 bool BrowserFrameViewWin::ShouldShowWindowTitle(TitlebarType type) const {
-  if (type == TitlebarType::kCustom && !ShouldCustomDrawSystemTitlebar()) {
+  if (type == TitlebarType::kCustom &&
+      !ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
-  if (type == TitlebarType::kSystem && ShouldCustomDrawSystemTitlebar()) {
+  if (type == TitlebarType::kSystem &&
+      ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
   if (frame()->IsFullscreen()) {
@@ -621,12 +630,27 @@ bool BrowserFrameViewWin::ShouldShowWindowTitle(TitlebarType type) const {
   return browser_view()->ShouldShowWindowTitle();
 }
 
+void BrowserFrameViewWin::TabletModeChanged() {
+  if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
+    SetSystemTitlebarAttributes();
+  }
+}
+
 void BrowserFrameViewWin::SetSystemTitlebarAttributes() {
   if (SystemTitlebarSupportsDarkMode()) {
     const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
     DwmSetWindowAttribute(views::HWNDForWidget(frame()),
                           DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
                           sizeof(dark_titlebar_enabled));
+  }
+
+  if (ShouldBrowserUseMicaTitlebar(browser_view())) {
+    const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
+        browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
+                                             : DWMSBT_MAINWINDOW;
+    DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+                          DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
+                          sizeof(dwm_backdrop_type));
   }
 }
 
@@ -773,7 +797,7 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
   }
 
   const int system_caption_buttons_width =
-      ShouldCustomDrawSystemTitlebar()
+      ShouldBrowserCustomDrawTitlebar(browser_view())
           ? 0
           : width() - frame()->GetMinimizeButtonOffset();
 

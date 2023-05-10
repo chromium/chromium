@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/win/scoped_gdi_object.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/window/non_client_view.h"
 
 class BrowserView;
@@ -140,6 +142,9 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // |type|.
   bool ShouldShowWindowTitle(TitlebarType type) const;
 
+  // Called when the device enters or exits tablet mode.
+  void TabletModeChanged();
+
   // Sets DWM attributes for rendering the system-drawn titlebar.
   void SetSystemTitlebarAttributes();
 
@@ -179,6 +184,11 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
 
   // The container holding the caption buttons (minimize, maximize, close, etc.)
   raw_ptr<BrowserCaptionButtonContainer> caption_button_container_;
+
+  base::CallbackListSubscription tablet_mode_subscription_ =
+      ui::TouchUiController::Get()->RegisterCallback(
+          base::BindRepeating(&BrowserFrameViewWin::TabletModeChanged,
+                              base::Unretained(this)));
 
   // Whether or not the window throbber is currently animating.
   bool throbber_running_ = false;

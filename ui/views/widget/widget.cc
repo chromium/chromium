@@ -1395,11 +1395,17 @@ void Widget::NotifyPaintAsActiveChanged() {
 }
 
 void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
+  const bool is_update = native_theme_ && (native_theme_ != native_theme);
   native_theme_ = native_theme;
   native_theme_observation_.Reset();
   if (native_theme)
     native_theme_observation_.Observe(native_theme);
-  ThemeChanged();
+
+  if (is_update) {
+    OnNativeThemeUpdated(native_theme);
+  } else {
+    ThemeChanged();
+  }
 }
 
 int Widget::GetX() const {

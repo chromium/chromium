@@ -56,6 +56,10 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/titlebar_config.h"
+#endif
+
 namespace {
 
 bool IsUsingLinuxSystemTheme(Profile* profile) {
@@ -401,6 +405,10 @@ void BrowserFrame::SetTabDragKind(TabDragKind tab_drag_kind) {
   tab_drag_kind_ = tab_drag_kind;
 }
 
+void BrowserFrame::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  UserChangedTheme(BrowserThemeChangeType::kNativeTheme);
+}
+
 ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
   auto key = Widget::GetColorProviderKey();
   key.frame_type = UseCustomFrame()
@@ -489,8 +497,11 @@ bool BrowserFrame::RegenerateFrameOnThemeChange(
   // On Windows, DWM transition does not performed for a frame regeneration in
   // fullscreen mode, so do a lighweight theme change to refresh a bookmark bar
   // on new tab. (see crbug/1002480)
+  // With Mica, toggling titlebar accent colors in the native theme needs a
+  // frame regen to switch between the system-drawn and custom-drawn titlebars.
   need_regenerate |=
-      theme_change_type == BrowserThemeChangeType::kBrowserTheme &&
+      (theme_change_type == BrowserThemeChangeType::kBrowserTheme ||
+       SystemTitlebarCanUseMicaMaterial()) &&
       !IsFullscreen();
 #else
   need_regenerate |= theme_change_type == BrowserThemeChangeType::kBrowserTheme;

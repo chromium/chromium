@@ -7,11 +7,26 @@
 
 #include "base/feature_list.h"
 
-BASE_DECLARE_FEATURE(kWindows10CustomTitlebar);
+class BrowserView;
 
-// Returns whether we should custom draw the titlebar even if we're using the
-// native frame.
-bool ShouldCustomDrawSystemTitlebar();
+// Returns whether we should custom draw the titlebar for a browser window.
+bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view);
+
+// Returns whether we should always use the system titlebar, even when a theme
+// is applied.
+bool ShouldAlwaysUseSystemTitlebar();
+
+// Returns whether we should use the Mica titlebar material for a browser
+// window.
+bool ShouldBrowserUseMicaTitlebar(BrowserView* browser_view);
+
+// Returns whether we should use the Mica titlebar in standard browser windows
+// using the default theme.
+bool ShouldDefaultThemeUseMicaTitlebar();
+
+// Returns whether the system-drawn titlebar can be drawn using the Mica
+// material.
+bool SystemTitlebarCanUseMicaMaterial();
 
 // Returns whether the system-drawn titlebar can be drawn in dark mode.
 bool SystemTitlebarSupportsDarkMode();

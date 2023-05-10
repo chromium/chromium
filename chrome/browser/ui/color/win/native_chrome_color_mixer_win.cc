@@ -105,34 +105,52 @@ void FrameColorHelper::AddNativeChromeColors(
     // decide whether they should draw in light or dark mode. Incognito colors
     // should be the same as non-incognito in all cases here.
 
-    constexpr SkColor kSystemLightFrameColor = SK_ColorWHITE;
-
-    constexpr SkColor kSystemDarkActiveFrameColor = SK_ColorBLACK;
-    constexpr SkColor kSystemDarkInactiveFrameColor =
+    constexpr SkColor kSystemSolidLightFrameColor = SK_ColorWHITE;
+    constexpr SkColor kSystemSolidDarkActiveFrameColor = SK_ColorBLACK;
+    constexpr SkColor kSystemSolidDarkInactiveFrameColor =
         SkColorSetRGB(0x2B, 0x2B, 0x2B);
+
+    constexpr SkColor kSystemMicaLightFrameColor =
+        SkColorSetRGB(0xE8, 0xE8, 0xE8);
+    constexpr SkColor kSystemMicaDarkFrameColor =
+        SkColorSetRGB(0x20, 0x20, 0x20);
 
     if (auto color = get_theme_color(TP::COLOR_FRAME_ACTIVE)) {
       mixer[ui::kColorFrameActive] = {color.value()};
     } else if (dwm_frame_color_) {
       mixer[ui::kColorFrameActive] = {dwm_frame_color_.value()};
-    } else if (!ShouldCustomDrawSystemTitlebar()) {
+    } else if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
       mixer[ui::kColorFrameActive] = {key.color_mode == ColorMode::kDark
-                                          ? kSystemDarkActiveFrameColor
-                                          : kSystemLightFrameColor};
+                                          ? kSystemMicaDarkFrameColor
+                                          : kSystemMicaLightFrameColor};
+    } else if (ShouldAlwaysUseSystemTitlebar()) {
+      mixer[ui::kColorFrameActive] = {key.color_mode == ColorMode::kDark
+                                          ? kSystemSolidDarkActiveFrameColor
+                                          : kSystemSolidLightFrameColor};
     }
 
     if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
       mixer[ui::kColorFrameInactive] = {color.value()};
     } else if (dwm_inactive_frame_color_) {
       mixer[ui::kColorFrameInactive] = {dwm_inactive_frame_color_.value()};
-    } else if (!ShouldCustomDrawSystemTitlebar()) {
+    } else if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
       mixer[ui::kColorFrameInactive] = {key.color_mode == ColorMode::kDark
-                                            ? kSystemDarkInactiveFrameColor
-                                            : kSystemLightFrameColor};
+                                            ? kSystemMicaDarkFrameColor
+                                            : kSystemMicaLightFrameColor};
+    } else if (ShouldAlwaysUseSystemTitlebar()) {
+      mixer[ui::kColorFrameInactive] = {key.color_mode == ColorMode::kDark
+                                            ? kSystemSolidDarkInactiveFrameColor
+                                            : kSystemSolidLightFrameColor};
     } else if (dwm_frame_color_) {
       mixer[ui::kColorFrameInactive] =
           ui::HSLShift({dwm_frame_color_.value()},
                        GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
+    }
+
+    if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
+      mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
+      mixer[kColorNewTabButtonInkDropFrameActive] =
+          ui::GetColorWithMaxContrast(ui::kColorFrameActive);
     }
   } else {
     if (auto color = get_theme_color(TP::COLOR_FRAME_ACTIVE))
@@ -170,7 +188,7 @@ bool FrameColorHelper::HasCustomImage(
 
 bool FrameColorHelper::DwmColorsAllowed(
     const ui::ColorProviderManager::Key& key) const {
-  return ShouldCustomDrawSystemTitlebar() ||
+  return !ShouldAlwaysUseSystemTitlebar() ||
          !HasCustomImage(IDR_THEME_FRAME, key);
 }
 
@@ -190,6 +208,7 @@ color_utils::HSL FrameColorHelper::GetTint(
 void FrameColorHelper::OnAccentColorUpdated() {
   FetchAccentColors();
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+  ui::NativeTheme::GetInstanceForDarkUI()->NotifyOnNativeThemeUpdated();
 }
 
 void FrameColorHelper::FetchAccentColors() {
