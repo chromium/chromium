@@ -1978,7 +1978,7 @@ class SpeculationNoStatePrefetchBrowserTest
     std::unique_ptr<TestPrerender> test_prerender =
         no_state_prefetch_contents_factory()->ExpectNoStatePrefetchContents(
             expected_final_status);
-    EXPECT_TRUE(ExecuteScript(GetActiveWebContents(), speculation_script));
+    EXPECT_TRUE(ExecJs(GetActiveWebContents(), speculation_script));
     if (should_navigate_away) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(
           current_browser(), src_server()->GetURL("/defaultresponse?page")));
