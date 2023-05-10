@@ -304,6 +304,8 @@ public class SuggestionsMetrics {
                 return ActionInSuggestUmaType.DIRECTIONS;
             case ActionType.WEBSITE_VALUE:
                 return ActionInSuggestUmaType.WEBSITE;
+            case ActionType.REVIEWS_VALUE:
+                return ActionInSuggestUmaType.REVIEWS;
             default:
                 return ActionInSuggestUmaType.UNKNOWN;
         }
