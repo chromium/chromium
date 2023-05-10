@@ -15,6 +15,7 @@
     "android-arm64-rel": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
+    "android_compile_dbg": "Ubuntu-22.04",
     "android_cronet": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel-compilator": "Ubuntu-22.04",
