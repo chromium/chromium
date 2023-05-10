@@ -795,7 +795,7 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
     case Color::ColorSpace::kLch:
       return "lch";
     case Color::ColorSpace::kOklch:
-      return "oklab";
+      return "oklch";
     case Color::ColorSpace::kSRGBLegacy:
       return "RGB Legacy";
     case Color::ColorSpace::kHSL:
@@ -809,7 +809,6 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
 }
 
 String Color::SerializeAsCanvasColor() const {
-  // Opaque legacy colors will serialize in a hex format.
   if (IsOpaque() && IsLegacyColor()) {
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
   }
@@ -817,145 +816,95 @@ String Color::SerializeAsCanvasColor() const {
   return SerializeAsCSSColor();
 }
 
-String Color::SerializeAsCSSColor() const {
+static String SerializeLegacyColorAsCSSColor(SkColor4f color) {
+  auto ColorChannelToInt = [](float x) {
+    // Channels that have a value of exactly 0.5 can get incorrectly rounded
+    // down to 127 when being converted to an integer. Add a small epsilon to
+    // avoid this. See crbug.com/1425856.
+    float epsilon = 1e-07;
+    return ClampTo(round((x + epsilon) * 255), 0, 255);
+  };
+
   StringBuilder result;
   result.ReserveCapacity(28);
-
-  switch (color_space_) {
-    case ColorSpace::kSRGBLegacy:
-    case ColorSpace::kHSL:
-    case ColorSpace::kHWB:
-      if (HasTransparency()) {
-        result.Append("rgba(");
-      } else {
-        result.Append("rgb(");
-      }
-
-      result.AppendNumber(Red());
-      result.Append(", ");
-      result.AppendNumber(Green());
-      result.Append(", ");
-      result.AppendNumber(Blue());
-
-      if (HasTransparency()) {
-        result.Append(", ");
-        // See <alphavalue> section in
-        // https://drafts.csswg.org/cssom/#serializing-css-values
-        float rounded = round(AlphaAsInteger() * 100 / 255.0f) / 100;
-        if (round(rounded * 255) == AlphaAsInteger()) {
-          result.AppendNumber(rounded, 2);
-        } else {
-          rounded = round(AlphaAsInteger() * 1000 / 255.0f) / 1000;
-          result.AppendNumber(rounded, 3);
-        }
-      }
-
-      result.Append(')');
-      return result.ToString();
-
-    case ColorSpace::kLab:
-    case ColorSpace::kOklab:
-    case ColorSpace::kLch:
-    case ColorSpace::kOklch:
-      if (color_space_ == ColorSpace::kLab)
-        result.Append("lab(");
-      if (color_space_ == ColorSpace::kOklab)
-        result.Append("oklab(");
-      if (color_space_ == ColorSpace::kLch)
-        result.Append("lch(");
-      if (color_space_ == ColorSpace::kOklch)
-        result.Append("oklch(");
-
-      if (param0_is_none_) {
-        result.Append("none ");
-      } else {
-        // Lightness value in Oklab and Oklch is considered as 0.0 - 1.0 while
-        // we store it internally as 0.0 - 100.0.
-        result.AppendNumber(param0_ /
-                            (color_space_ == ColorSpace::kOklab ||
-                                     color_space_ == ColorSpace::kOklch
-                                 ? 100.0f
-                                 : 1.0f));
-        result.Append(" ");
-      }
-
-      if (param1_is_none_)
-        result.Append("none");
-      else
-        result.AppendNumber(param1_);
-      result.Append(" ");
-
-      if (param2_is_none_)
-        result.Append("none");
-      else
-        result.AppendNumber(param2_);
-
-      if (alpha_ != 1.0 || alpha_is_none_) {
-        result.Append(" / ");
-        if (alpha_is_none_)
-          result.Append("none");
-        else
-          result.AppendNumber(alpha_);
-      }
-      result.Append(")");
-      return result.ToString();
-
-    case ColorSpace::kSRGB:
-    case ColorSpace::kSRGBLinear:
-    case ColorSpace::kDisplayP3:
-    case ColorSpace::kA98RGB:
-    case ColorSpace::kProPhotoRGB:
-    case ColorSpace::kRec2020:
-    case ColorSpace::kXYZD50:
-    case ColorSpace::kXYZD65:
-      result.Append("color(");
-      result.Append(ColorSpaceToString(color_space_));
-
-      result.Append(" ");
-      if (param0_is_none_)
-        result.Append("none");
-      else
-        result.AppendNumber(param0_);
-
-      result.Append(" ");
-      if (param1_is_none_)
-        result.Append("none");
-      else
-        result.AppendNumber(param1_);
-
-      result.Append(" ");
-      if (param2_is_none_)
-        result.Append("none");
-      else
-        result.AppendNumber(param2_);
-
-      if (alpha_ != 1.0 || alpha_is_none_) {
-        result.Append(" / ");
-        if (alpha_is_none_)
-          result.Append("none");
-        else
-          result.AppendNumber(alpha_);
-      }
-      result.Append(")");
-      return result.ToString();
-
-    default:
-      NOTIMPLEMENTED();
-      return "rgb(0, 0, 0)";
+  bool has_transparency = !color.isOpaque();
+  if (has_transparency) {
+    result.Append("rgba(");
+  } else {
+    result.Append("rgb(");
   }
+
+  result.AppendNumber(ColorChannelToInt(color.fR));
+  result.Append(", ");
+  result.AppendNumber(ColorChannelToInt(color.fG));
+  result.Append(", ");
+  result.AppendNumber(ColorChannelToInt(color.fB));
+
+  if (has_transparency) {
+    result.Append(", ");
+    // See <alphavalue> section in
+    // https://drafts.csswg.org/cssom/#serializing-css-values
+    int int_alpha = ColorChannelToInt(color.fA);
+    float rounded = round(int_alpha * 100 / 255.0f) / 100;
+    if (round(rounded * 255) == int_alpha) {
+      result.AppendNumber(rounded, 2);
+    } else {
+      rounded = round(int_alpha * 1000 / 255.0f) / 1000;
+      result.AppendNumber(rounded, 3);
+    }
+  }
+
+  result.Append(')');
+  return result.ToString();
+}
+
+String Color::SerializeAsCSSColor() const {
+  if (IsLegacyColor()) {
+    return SerializeLegacyColorAsCSSColor(toSkColor4f());
+  }
+
+  StringBuilder result;
+  result.ReserveCapacity(28);
+  if (color_space_ == ColorSpace::kLab || color_space_ == ColorSpace::kOklab ||
+      color_space_ == ColorSpace::kLch || color_space_ == ColorSpace::kOklch) {
+    result.Append(ColorSpaceToString(color_space_));
+    result.Append("(");
+  } else {
+    result.Append("color(");
+    result.Append(ColorSpaceToString(color_space_));
+    result.Append(" ");
+  }
+
+  float p0 = param0_;
+  if (color_space_ == ColorSpace::kOklab ||
+      color_space_ == ColorSpace::kOklch) {
+    p0 /= 100.0f;
+  }
+
+  param0_is_none_ ? result.Append("none") : result.AppendNumber(p0);
+  result.Append(" ");
+  param1_is_none_ ? result.Append("none") : result.AppendNumber(param1_);
+  result.Append(" ");
+  param2_is_none_ ? result.Append("none") : result.AppendNumber(param2_);
+
+  if (alpha_ != 1.0 || alpha_is_none_) {
+    result.Append(" / ");
+    alpha_is_none_ ? result.Append("none") : result.AppendNumber(alpha_);
+  }
+  result.Append(")");
+  return result.ToString();
 }
 
 String Color::NameForLayoutTreeAsText() const {
-  if (color_space_ != ColorSpace::kSRGBLegacy &&
-      color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB) {
-    // TODO(https://crbug.com/1333988): Determine if CSS Color Level 4 colors
-    // should use this representation here.
+  if (!IsLegacyColor()) {
     return SerializeAsCSSColor();
   }
-  if (AlphaAsInteger() < 0xFF) {
+
+  if (HasTransparency()) {
     return String::Format("#%02X%02X%02X%02X", Red(), Green(), Blue(),
                           AlphaAsInteger());
   }
+
   return String::Format("#%02X%02X%02X", Red(), Green(), Blue());
 }
 
@@ -1014,7 +963,7 @@ Color Color::Dark() const {
 
 Color Color::Blend(const Color& source) const {
   // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending.
-  if (!AlphaAsInteger() || source.IsOpaque()) {
+  if (IsFullyTransparent() || source.IsOpaque()) {
     return source;
   }
 
