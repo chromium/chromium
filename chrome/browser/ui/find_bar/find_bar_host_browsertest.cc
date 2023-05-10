@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoAudibleAlertOnFrameChange) {
   constexpr char kRemoveFrameScript[] =
       "frame = document.getElementsByTagName(\"FRAME\")[0];\n"
       "frame.parentElement.removeChild(frame);\n";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, kRemoveFrameScript));
+  ASSERT_TRUE(content::ExecJs(web_contents, kRemoveFrameScript));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetURL("specialchar.html")));

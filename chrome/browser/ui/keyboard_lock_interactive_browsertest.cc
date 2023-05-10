@@ -179,7 +179,7 @@ bool KeyboardLockInteractiveBrowserTest::RequestKeyboardLock(
 
 bool KeyboardLockInteractiveBrowserTest::CancelKeyboardLock() {
   // keyboard.unlock() is a synchronous call.
-  return ExecuteScript(GetActiveWebContents(), kKeyboardUnlockMethodCall);
+  return ExecJs(GetActiveWebContents(), kKeyboardUnlockMethodCall);
 }
 
 #if BUILDFLAG(IS_MAC)

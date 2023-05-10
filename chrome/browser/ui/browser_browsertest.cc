@@ -951,8 +951,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
   // Click a target=_blank link.
   WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ExecuteScript(
-      contents, "simulateClick(\"test-anchor-with-blank-target\", {})"));
+  ASSERT_TRUE(
+      ExecJs(contents, "simulateClick(\"test-anchor-with-blank-target\", {})"));
 
   // The new tab should have inherited the tab group from the first tab.
   EXPECT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(1));

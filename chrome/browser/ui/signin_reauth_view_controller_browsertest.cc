@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
 
   content::WebContents* target_contents =
       signin_reauth_view_controller()->GetModalDialogWebContentsForTesting();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       target_contents, "document.getElementsByTagName('a')[0].click();"));
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kSuccess);
   EXPECT_THAT(
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   TrustedVaultKeysChangedStateChecker keys_added_checker(
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
           browser()->profile()));
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       target_contents,
       "chrome.setSyncEncryptionKeys(() => {}, \"\", [new ArrayBuffer()], 0);"));
   EXPECT_TRUE(keys_added_checker.Wait());
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
       signin_reauth_view_controller()->GetModalDialogWebContentsForTesting();
   content::TestNavigationObserver new_tab_observer(nullptr);
   new_tab_observer.StartWatchingNewWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       dialog_contents, "document.getElementsByTagName('a')[0].click();"));
   new_tab_observer.Wait();
 
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
       signin_reauth_view_controller()->GetModalDialogWebContentsForTesting());
   EXPECT_EQ(target_contents->GetLastCommittedURL(), target_url);
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       target_contents, "document.getElementsByTagName('a')[0].click();"));
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kSuccess);
   EXPECT_THAT(
