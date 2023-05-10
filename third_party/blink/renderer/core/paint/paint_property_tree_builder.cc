@@ -2116,7 +2116,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateBackgroundClip() {
   }
 
   if (IsMissingActualFragment()) {
-    // TODO(crbug.com/1442211): Handle clipping correctly when the ancestor
+    // TODO(crbug.com/1418917): Handle clipping correctly when the ancestor
     // fragment is missing. For now, don't apply any clipping in such
     // situations, since we risk overclipping.
     return;
@@ -2181,7 +2181,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
 
   if (NeedsPaintPropertyUpdate()) {
     if (IsMissingActualFragment()) {
-      // TODO(crbug.com/1442211): Handle clipping correctly when the ancestor
+      // TODO(crbug.com/1418917): Handle clipping correctly when the ancestor
       // fragment is missing. For now, don't apply any clipping in such
       // situations, since we risk overclipping.
       return;
@@ -2220,7 +2220,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
 
   if (NeedsPaintPropertyUpdate()) {
     if (IsMissingActualFragment()) {
-      // TODO(crbug.com/1442211): Handle clipping correctly when the ancestor
+      // TODO(crbug.com/1418917): Handle clipping correctly when the ancestor
       // fragment is missing. For now, don't apply any clipping in such
       // situations, since we risk overclipping.
       return;
