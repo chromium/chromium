@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -90,6 +91,9 @@ class PrivacyTableViewControllerTest
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(
             static_cast<int>(GetParam().incognitoModeAvailability)));
+
+    // TODO(crbug.com/1443624): Remove when feature is enabled by default.
+    feature_list_.InitAndEnableFeature(web::kEnableBrowserLockdownMode);
   }
 
   void TearDown() override {
@@ -136,6 +140,7 @@ class PrivacyTableViewControllerTest
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   NSString* initialValueForSpdyProxyEnabled_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests PrivacyTableViewController is set up with all appropriate items
@@ -150,6 +155,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
           security_interstitials::features::kHttpsOnlyMode)) {
     expectedNumberOfSections++;
   }
+
+  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+    expectedNumberOfSections++;
+  }
+
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
@@ -166,7 +176,16 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
-      SafeBrowsingDetailText(), 1, 0);
+      SafeBrowsingDetailText(), currentSection, 0);
+
+  // Lockdown Mode section.
+  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+    currentSection++;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_LOCKDOWN_MODE_TITLE),
+        l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
+  }
 
   // HTTPS-Only Mode section.
   if (base::FeatureList::IsEnabled(
@@ -237,6 +256,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
           security_interstitials::features::kHttpsOnlyMode)) {
     expectedNumberOfSections++;
   }
+
+  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+    expectedNumberOfSections++;
+  }
+
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
@@ -262,6 +286,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
           security_interstitials::features::kHttpsOnlyMode)) {
     expectedNumberOfSections++;
   }
+
+  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+    expectedNumberOfSections++;
+  }
+
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
