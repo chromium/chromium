@@ -1183,6 +1183,14 @@ std::set<std::string> WordGroupExtensions() {
   return *extensions;
 }
 
+bool HasExplicitDefaultFileHandler(Profile* profile,
+                                   const std::string& extension) {
+  std::string lower_extension = base::ToLowerASCII(extension);
+  const base::Value::Dict& extension_task_prefs =
+      profile->GetPrefs()->GetDict(prefs::kDefaultTasksBySuffix);
+  return extension_task_prefs.contains(lower_extension);
+}
+
 void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, WordGroupExtensions(),

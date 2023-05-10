@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
 
   // Disable the setup flow for office files because we want the office
   // fallback dialog to run instead.
-  SetOfficeSetupComplete(profile(), true);
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
 
   const TaskDescriptor web_drive_office_task = CreateWebDriveOfficeTask();
   std::vector<storage::FileSystemURL> file_urls{drive_test_file_url_};
@@ -1522,7 +1522,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
 
   // Disable the setup flow for office files because we want the office
   // fallback dialog to run instead.
-  SetOfficeSetupComplete(profile(), true);
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
 
   const TaskDescriptor open_in_office_task = CreateOpenInOfficeTask();
   std::vector<storage::FileSystemURL> file_urls{odfs_test_file_url_};
@@ -1570,7 +1570,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
 
   // Disable the setup flow for office files because we want the office
   // fallback dialog to run instead.
-  SetOfficeSetupComplete(profile(), true);
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
 
   const TaskDescriptor open_in_office_task = CreateOpenInOfficeTask();
   std::vector<storage::FileSystemURL> file_urls{odfs_test_file_url_};

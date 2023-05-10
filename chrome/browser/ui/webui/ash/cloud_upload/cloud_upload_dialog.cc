@@ -215,6 +215,19 @@ bool HasPowerPointFile(const std::vector<storage::FileSystemURL>& file_urls) {
   return false;
 }
 
+// This indicates we ran Office setup and set a preference, or the user had a
+// pre-existing preference for these file types.
+bool HaveExplicitFileHandlers(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_urls) {
+  return std::all_of(
+      file_urls.begin(), file_urls.end(),
+      [profile](const storage::FileSystemURL& url) {
+        return file_manager::file_tasks::HasExplicitDefaultFileHandler(
+            profile, url.path().FinalExtension());
+      });
+}
+
 }  // namespace
 
 // static
@@ -252,8 +265,13 @@ bool CloudOpenTask::ExecuteInternal() {
     return false;
   }
 
-  // Run the setup flow if it's never been completed.
-  if (!file_manager::file_tasks::OfficeSetupComplete(profile_)) {
+  // Run the setup flow if we don't have explicit default file handlers set for
+  // these files in preferences. This indicates we haven't run setup, because
+  // setup sets default handlers at the end. If the user has a default set for
+  // another, non-office handler, then we won't get here except via the 'Open
+  // With' menu. In that case we might need to run fixup or just open/move the
+  // file, but without changing stored user file handler preferences.
+  if (!HaveExplicitFileHandlers(profile_, file_urls_)) {
     return InitAndShowDialog(mojom::DialogPage::kFileHandlerDialog);
   }
 
@@ -631,8 +649,7 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
     args->file_names.push_back(file_url.path().BaseName().value());
   }
   args->dialog_page = dialog_page;
-  args->first_time_setup =
-      !file_manager::file_tasks::OfficeSetupComplete(profile_);
+  args->first_time_setup = !HaveExplicitFileHandlers(profile_, file_urls_);
   const file_manager::io_task::OperationType operation_type =
       GetOperationTypeForUpload(profile_, file_urls_[0]);
   switch (operation_type) {

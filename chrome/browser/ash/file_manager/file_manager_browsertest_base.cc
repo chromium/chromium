@@ -3030,10 +3030,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "setOfficeSetupComplete") {
-    absl::optional<bool> complete = value.FindBool("complete");
-    ASSERT_TRUE(complete.has_value());
-    file_tasks::SetOfficeSetupComplete(profile(), complete.value());
+  if (name == "setOfficeFileHandler") {
+    file_manager::file_tasks::SetWordFileHandlerToFilesSWA(
+        profile(), file_manager::file_tasks::kActionIdWebDriveOfficeWord);
     return;
   }
 

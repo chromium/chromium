@@ -422,6 +422,11 @@ void SetWordFileHandler(Profile* profile, const TaskDescriptor& task);
 void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task);
 void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task);
 
+// Whether we have an explicit user preference stored for the file handler for
+// this extension. |extension| should contain the leading '.'.
+bool HasExplicitDefaultFileHandler(Profile* profile,
+                                   const std::string& extension);
+
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
 // Updates the default task for each of the office file types to a Files
 // SWA with |action_id|. |action_id| must be a valid action registered with the
