@@ -4048,7 +4048,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SessionStorage_WrongOrigin) {
   content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
       web_contents()->GetPrimaryMainFrame()->GetProcess());
   // Use std::ignore here, since on Android the renderer process is
-  // terminated, but ExecuteScript still returns true. It properly returns
+  // terminated, but ExecJs still returns true. It properly returns
   // false on all other platforms.
   std::ignore =
       ExecJs(web_contents()->GetPrimaryMainFrame(), "sessionStorage.length;");
@@ -4232,7 +4232,7 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   // Use std::ignore here, since on Android the renderer process is
-  // terminated, but ExecuteScript still returns true. It properly returns
+  // terminated, but ExecJs still returns true. It properly returns
   // false on all other platforms.
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        "localStorage.length;");
@@ -4273,7 +4273,7 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   // Use std::ignore here, since on Android the renderer process is
-  // terminated, but ExecuteScript still returns true. It properly returns
+  // terminated, but ExecJs still returns true. It properly returns
   // false on all other platforms.
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        "localStorage.length;");
@@ -4301,7 +4301,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   // Use std::ignore here, since on Android the renderer process is
-  // terminated, but ExecuteScript still returns true. It properly returns
+  // terminated, but ExecJs still returns true. It properly returns
   // false on all other platforms.
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        "localStorage.length;");
@@ -6480,7 +6480,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
   EXPECT_FALSE(instance2->RequiresDedicatedProcess());
 
   // Simulate a user activation in the original COOP page by running a dummy
-  // script (ExecuteScript sends user activation by default).
+  // script (ExecJs sends user activation by default).
   EXPECT_TRUE(ExecJs(coop_root, "// no-op"));
   EXPECT_TRUE(coop_root->HasTransientUserActivation());
 

@@ -478,8 +478,9 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), initial_url, 1);
 
-  EXPECT_TRUE(ExecuteScript(web_contents()->GetPrimaryMainFrame(),
-                            "screen.orientation.lock('portrait')"));
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     "screen.orientation.lock('portrait')",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Delegate did apply lock once.
   EXPECT_EQ(1, delegate.lock_count());
