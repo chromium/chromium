@@ -20,8 +20,8 @@
   await testExpression("false");
   await testExpression("42n");
   // Test V8 non-primitives.
-  await testExpression("(Symbol('foo'))"),
-    await testExpression("[1, 'foo', true, new RegExp(/foo/g), [1]]",);
+  await testExpression("(Symbol('foo'))");
+  await testExpression("[1, 'foo', true, new RegExp(/foo/g), [1]]",);
   await testExpression("({'foo': {'bar': 'baz'}, 'qux': 'quux'})",);
   await testExpression("(()=>{})");
   await testExpression("(function(){})");
@@ -41,7 +41,7 @@
   // TODO(crbug.com/1420968): re-enable after crrev.com/c/4517983 is merged.
   // await testExpression("document.body")
   await testExpression("window")
-  // TODO(crbug.com/1420968): re-enable after crrev.com/c/4517983 is merged.
+  // TODO(crbug.com/1420968): reenable test after crrev.com/c/4517983 is merged.
   // await testExpression("document.querySelector('body > div')")
   await testExpression("new URL('http://example.com')")
 
@@ -50,10 +50,30 @@
   async function testExpression(expression) {
     testRunner.log(`\nTesting '${expression}':`);
 
+    await test(expression, {
+      serialization: "deep"
+    });
+    await test(expression, {
+      serialization: "deep",
+      maxDepth: 0
+    });
+    await test(expression, {
+      serialization: "deep",
+      maxDepth: 1
+    });
+    await test(expression, {
+      serialization: "deep",
+      maxDepth: 99
+    });
+  }
+
+  async function test(expression, serializationOptions) {
+    testRunner.log(`Testing ${expression} with ${JSON.stringify(serializationOptions)}`);
+
     const evalResult = await dp.Runtime.evaluate({
-      expression: expression,
-      generateWebDriverValue: true,
+      expression,
+      serializationOptions
     })
-    testRunner.log(evalResult.result.result.webDriverValue);
+    testRunner.log(evalResult.result.result.deepSerializedValue);
   }
 })
