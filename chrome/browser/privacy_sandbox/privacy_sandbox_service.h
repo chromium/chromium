@@ -388,6 +388,8 @@ class PrivacySandboxService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceM1RestrictedNoticePromptTest,
       RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceM1RestrictedNoticePromptTest,
+                           RecordPrivacySandbox4StartupMetrics_GraduationFlow);
 
   // Should be used only for tests when mocking the service.
   PrivacySandboxService();
@@ -477,10 +479,12 @@ class PrivacySandboxService : public KeyedService {
     kRestrictedNoticePromptWaiting = 12,
     kRestrictedNoticeFlowCompleted = 13,
     kRestrictedNoticeNotShownDueToFullNoticeAcknowledged = 14,
+    kWaitingForGraduationRestrictedNoticeFlowNotCompleted = 15,
+    kWaitingForGraduationRestrictedNoticeFlowCompleted = 16,
 
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml
-    kMaxValue = kRestrictedNoticeNotShownDueToFullNoticeAcknowledged,
+    kMaxValue = kWaitingForGraduationRestrictedNoticeFlowCompleted,
   };
 
   // Helper function to log first party sets state.

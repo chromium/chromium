@@ -94469,6 +94469,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="13" label="Restricted notice flow completed"/>
   <int value="14"
       label="Restricted notice not shown due to full notice acknowledged"/>
+  <int value="15"
+      label="User is waiting for graduation and notice flow is not completed"/>
+  <int value="16"
+      label="User is waiting for graduation and notice flow is completed"/>
 </enum>
 
 <enum name="SettingsPrivacySandboxStartupStates">

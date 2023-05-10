@@ -721,6 +721,27 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     return;
   }
 
+  // Check for users waiting for graduation: If a user was ever reported as both
+  // restricted and unrestricted it means they are ready for graduation.
+  const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
+      prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
+  const bool user_reported_restricted =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);
+  const bool user_reported_unrestricted =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Unrestricted);
+
+  if (user_reported_restricted && user_reported_unrestricted) {
+    base::UmaHistogramEnumeration(
+        privacy_sandbox_prompt_startup_histogram,
+        restricted_notice_acknowledged
+            ? PromptStartupState::
+                  kWaitingForGraduationRestrictedNoticeFlowCompleted
+            : PromptStartupState::
+                  kWaitingForGraduationRestrictedNoticeFlowNotCompleted);
+
+    return;
+  }
+
   const bool row_notice_acknowledged =
       pref_service_->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged);
   const bool eaa_notice_acknowledged =
@@ -730,9 +751,6 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
   // required when the restricted prompt is shown, and both return
   // unconditionally.
   if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
-    const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
-        prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
-
     // Acknowledgement of any of the prompt types implies acknowledgement of the
     // restricted notice as well.
     if (row_notice_acknowledged || eaa_notice_acknowledged) {
