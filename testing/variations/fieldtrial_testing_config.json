@@ -8814,6 +8814,9 @@
                         "OmniboxLightBackgroundColorHovered": "0xE3E7F0"
                     },
                     "enable_features": [
+                        "Cr2023ActionChips",
+                        "OmniboxExpandedStateHeight",
+                        "OmniboxExpandedStateShape",
                         "OmniboxSteadyStateBackgroundColor",
                         "OmniboxSteadyStateTextColor",
                         "OmniboxSteadyStateTextStyle"
