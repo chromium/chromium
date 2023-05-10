@@ -65,7 +65,7 @@ void SignInFunctions::SignInFromSettings(const TestAccount& test_account,
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));
   ui_test_utils::TabAddedWaiter signin_tab_waiter(browser);
   auto* settings_tab = browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       settings_tab,
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
@@ -117,7 +117,7 @@ void SignInFunctions::TurnOffSync() {
                               account_reconcilor(browser_.Run()));
   auto* settings_tab =
       browser_.Run()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       settings_tab,
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
