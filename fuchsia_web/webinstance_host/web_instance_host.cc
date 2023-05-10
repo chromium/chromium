@@ -637,7 +637,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
       MakeWebInstanceComponentUrl(with_webui, with_service_directory);
 
   // Ensure WebInstance is registered before launching it.
-  // TODO(crbug.com/1211174): Replace with a different mechanism when available.
+  // TODO(crbug.com/1275224): Replace with a different mechanism when available.
   RegisterWebInstanceProductData(instance_component_url);
 
   // TODO(crbug.com/1395054): Replace the with_webui component with direct

@@ -40,7 +40,7 @@ class OutgoingDirectory;
 // To ensure proper product data registration, Components using the class must:
 // * Have the same version and channel as WebEngine.
 // * Instantiate the class on a thread with an async_dispatcher.
-// TODO(crbug.com/1211174): Remove these requirements.
+// TODO(crbug.com/1275224): Remove these requirements when platform supports it.
 class WebInstanceHost {
  public:
   // The host will offer capabilities to child instances via
