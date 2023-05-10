@@ -790,10 +790,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
   // Add beforeunload handler for the 2nd (title2.html) tab which haven't had it
   // yet.
-  ASSERT_TRUE(content::ExecuteScript(
-      browser2->tab_strip_model()->GetWebContentsAt(1),
-      "window.addEventListener('beforeunload', "
-      "function(event) { event.returnValue = 'Foo'; });"));
+  ASSERT_TRUE(
+      content::ExecJs(browser2->tab_strip_model()->GetWebContentsAt(1),
+                      "window.addEventListener('beforeunload', "
+                      "function(event) { event.returnValue = 'Foo'; });"));
   EXPECT_TRUE(browser2->tab_strip_model()
                   ->GetWebContentsAt(1)
                   ->NeedToFireBeforeUnloadOrUnloadEvents());
