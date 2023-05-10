@@ -10,7 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
+#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -37,8 +39,13 @@ class CachedResultProvider {
   CachedResultProvider(CachedResultProvider&) = delete;
   CachedResultProvider& operator=(CachedResultProvider&) = delete;
 
-  // Returns cached result from last session for the client.
+  // Returns cached post-processed result from last session for the client.
+  // TODO(salg): Remove this and replace with GetPredictionResultForClient.
   ClassificationResult GetCachedResultForClient(
+      const std::string& segmentation_key);
+
+  // Returns cached un-processed result from last session for the client.
+  absl::optional<proto::PredictionResult> GetPredictionResultForClient(
       const std::string& segmentation_key);
 
  private:
@@ -48,8 +55,8 @@ class CachedResultProvider {
   // The underlying pref backed store to read the pref values from.
   std::unique_ptr<ClientResultPrefs> result_prefs_;
 
-  // Map to store post processed result from last session for all clients.
-  std::map<std::string, ClassificationResult>
+  // Map to store unprocessed result from last session for all clients.
+  std::map<std::string, proto::PredictionResult>
       client_result_from_last_session_map_;
 
   base::WeakPtrFactory<CachedResultProvider> weak_ptr_factory_{this};
