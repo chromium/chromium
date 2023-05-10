@@ -190,7 +190,7 @@ void ScreenAIService::ExtractSemanticLayout(
   DCHECK(screen_ai_annotator_client_.is_bound());
 
   absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      library_->PerformOcr(image);
+      library_->ExtractLayout(image);
 
   // The original caller is always replied to, and an AXTreeIDUnknown is sent to
   // tell it that the annotation function was not successful. However the client
@@ -219,11 +219,23 @@ void ScreenAIService::ExtractSemanticLayout(
   screen_ai_annotator_client_->HandleAXTreeUpdate(update);
 }
 
+absl::optional<chrome_screen_ai::VisualAnnotation>
+ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  auto result = library_->PerformOcr(image);
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+
+  base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time", elapsed_time);
+  base::UmaHistogramCounts1M("Accessibility.ScreenAI.OCR.ImageSize",
+                             image.width() * image.height());
+  return result;
+}
+
 void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
   absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      library_->PerformOcr(image);
+      PerformOcrAndRecordMetrics(image);
 
   if (annotation_proto) {
     std::move(callback).Run(ConvertProtoToVisualAnnotation(*annotation_proto));
@@ -237,7 +249,7 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
   absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      library_->PerformOcr(image);
+      PerformOcrAndRecordMetrics(image);
   ui::AXTreeUpdate update = ConvertVisualAnnotationToTreeUpdate(
       annotation_proto, gfx::Rect(image.width(), image.height()));
   VLOG(1) << "OCR returned " << update.nodes.size() << " nodes.";

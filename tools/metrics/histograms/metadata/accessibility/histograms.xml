@@ -1848,6 +1848,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.OCR.ImageSize" units="count"
+    expires_after="2023-11-30">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of pixels in the passed image to OCR request.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.Time" units="ms"
+    expires_after="2023-11-30">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records how long an OCR request in Screen AI service takes.</summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.Screen2xDistillationTime.{Result}"
     units="ms" expires_after="2023-11-30">
   <owner>abigailbklein@google.com</owner>

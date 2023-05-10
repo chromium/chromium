@@ -94,6 +94,10 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
+  // Wrapper to call `PerformOcr` library function and record metrics.
+  absl::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
+      const SkBitmap& image);
+
   mojo::Receiver<mojom::ScreenAIService> receiver_;
 
   // The set of receivers used to receive messages from annotators.
