@@ -3145,28 +3145,28 @@ Connect your device to power.
         Cellular: <ph name="ADDRESS">$1<ex>01:23:45:67:89:AB</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_INSTALLING_PROFILE" desc="Tooltip message for disabled add cellular button, indicating cellular network profile is being installed.">
-        Adding profile. Wait a few minutes.
+        Adding profile. This may take a few minutes.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REMOVING_PROFILE" desc="Tooltip message for disabled add cellular button, indicating cellular network profile is being removed.">
-       Removing profile. Wait a few minutes.
+       Removing profile. This may take a few minutes.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RENAMING_PROFILE" desc="Tooltip message for disabled add cellular button, indicating cellular network profile is being renamed.">
-        Renaming profile. Wait a few minutes.
+        Renaming profile. This may take a few minutes.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_CONNECTING_TO_PROFILE" desc="Tooltip message for disabled add cellular button, indicating cellular network profile is being connected to.">
-        Connecting to profile. Wait a few minutes.
+        Connecting to profile. This may take a few minutes.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REFRESHING_PROFILE_LIST" desc="Tooltip message for disabled add cellular button, indicating cellular network profile list is being refreshed.">
-        Refreshing profile list. Wait a few minutes.
+        Refreshing profile list. This may take a few minutes.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RESETTING_ESIM" desc="Tooltip message for disabled add cellular button, indicating cellular eSIM is being reset.">
-        Your administrator is resetting your eSIM. Wait a few minutes.
+        Your administrator is resetting your eSIM. This may take a few minutes.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_DISABLING_PROFILE" desc="Tooltip message for disabled add cellular button, indicating cellular network profile is being disabled.">
-       Disabling profile. Wait a few minutes.
+       Disabling profile. This may take a few minutes.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REQUESTING_AVAILABLE_PROFILES" desc="Tooltip message for disabled add cellular button, indicating cellular device is requesting profiles available to install.">
-        Requesting available profiles. Wait a few minutes.
+      <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REQUESTING_AVAILABLE_PROFILES" desc="Tooltip message for disabled add cellular button, indicating cellular device is looking for profiles available to install.">
+        Looking for available profiles. This may take a few minutes.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR" desc="Message for the status area when initializing the cellular device.">
         Initializing...
