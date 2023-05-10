@@ -37,6 +37,7 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/create_unwind_table.gni")
   import("//build/config/android/extract_unwind_tables.gni")
+  import("//build/config/android/jni.gni")
   import("//build/config/android/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
 } else if (is_fuchsia) {
@@ -381,7 +382,8 @@ template("test") {
       }
 
       mixed_test(_library_target_name) {
-        target_type = "shared_library"
+        target_type = "shared_library_with_jni"
+        java_targets = [ ":$_apk_target_name" ]
 
         # Configs will always be defined since we set_defaults in
         # BUILDCONFIG.gn.
@@ -423,6 +425,7 @@ template("test") {
       unittest_apk(_apk_target_name) {
         forward_variables_from(invoker, _apk_specific_vars)
         shared_library = ":$_library_target_name"
+        srcjar_deps = [ "${shared_library}__jni_registration" ]
         apk_name = invoker.target_name
         if (defined(invoker.output_name)) {
           apk_name = invoker.output_name

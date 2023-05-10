@@ -16,6 +16,7 @@ test_dummy_module_desc = {
     "//chrome/android/modules/test_dummy/internal:native",
     "//chrome/browser/test_dummy/internal:native",
   ]
+  jni_registration = "//chrome/android/modules/test_dummy/internal:test_dummy__jni_registration($default_toolchain)"
   paks = [ "$root_gen_dir/chrome/test_dummy_resources.pak" ]
   pak_deps = [ "//chrome/browser/test_dummy/internal:resources_native" ]
   load_native_on_get_impl = true

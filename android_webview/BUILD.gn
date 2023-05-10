@@ -9,6 +9,7 @@ import("//android_webview/webview_repack_locales.gni")
 import("//build/android/resource_sizes.gni")
 import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/locales.gni")
@@ -36,6 +37,14 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
 if (enable_resource_allowlist_generation) {
   system_webview_pak_allowlist =
       "$target_gen_dir/system_webview_pak_allowlist.txt"
+}
+
+if (android_64bit_target_cpu) {
+  # We are assuming that all webview targets have the same Java - if this
+  # is no longer true, we should add more targets to this array.
+  webview_java_for_jni_targets = [ ":system_webview_64_bundle" ]
+} else {
+  webview_java_for_jni_targets = [ ":system_webview_bundle" ]
 }
 
 template("standalone_system_webview_apk_tmpl") {
@@ -93,7 +102,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   standalone_system_webview_apk_tmpl("system_webview_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
-    bundle_target = ":system_webview_bundle"
 
     if (enable_manifest_verification) {
       expected_android_manifest =
@@ -132,7 +140,6 @@ if (android_64bit_target_cpu) {
   standalone_system_webview_apk_tmpl("system_webview_64_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
-    bundle_target = ":system_webview_64_bundle"
     include_32_bit_webview = false
   }
 
@@ -154,7 +161,6 @@ if (android_64bit_target_cpu) {
       target_type = "android_app_bundle_module"
       include_64_bit_webview = false
       is_base_module = true
-      bundle_target = ":system_webview_32_bundle"
     }
 
     system_webview_bundle("system_webview_32_bundle") {
@@ -206,7 +212,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   trichrome_webview_tmpl("trichrome_webview_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
-    bundle_target = ":trichrome_webview_bundle"
     if (android_64bit_target_cpu) {
       is_64_bit_browser = false
       include_64_bit_webview = true
@@ -246,7 +251,6 @@ if (android_64bit_target_cpu) {
   trichrome_webview_tmpl("trichrome_webview_64_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
-    bundle_target = ":trichrome_webview_64_bundle"
     is_64_bit_browser = true
     include_32_bit_webview = false
     static_library_provider = "//chrome/android:trichrome_library_64_apk"
@@ -286,7 +290,6 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
   trichrome_webview_64_32_tmpl("trichrome_webview_64_32_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
-    bundle_target = ":trichrome_webview_64_32_bundle"
   }
 
   system_webview_bundle("trichrome_webview_64_32_bundle") {
@@ -319,7 +322,6 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
   trichrome_webview_32_tmpl("trichrome_webview_32_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
-    bundle_target = ":trichrome_webview_32_bundle"
   }
 
   system_webview_bundle("trichrome_webview_32_bundle") {
@@ -334,16 +336,9 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
   }
 }
 
-if (allow_jni_multiplexing && current_toolchain == default_toolchain) {
-  generate_jni_registration("webview_jni_registration") {
-    targets = [ _main_webview_bundle_target ]
-    enable_jni_multiplexing = true
-  }
-}
-
 # The shared library used by standalone WebView.
 template("libwebviewchromium_tmpl") {
-  shared_library(target_name) {
+  shared_library_with_jni(target_name) {
     forward_variables_from(invoker, "*")
     deps = [
       "//android_webview/lib",
@@ -351,14 +346,18 @@ template("libwebviewchromium_tmpl") {
       "//android_webview/nonembedded",
       "//third_party/blink/public:blink",
     ]
-    if (allow_jni_multiplexing) {
-      deps += [ ":webview_jni_registration($default_toolchain)" ]
-    }
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [
       "//build/config/android:hide_all_but_jni",
       "//build/config/compiler:chrome_orderfile_config",
     ]
+    java_targets = webview_java_for_jni_targets
+
+    # WebView's native side has more JNI present than the Java side. This is
+    # because our native dependencies don't match 1:1 to our Java dependencies,
+    # so there are some Chrome-only native dependencies that sneak into WebView.
+    # To fix, we can just remove any uncalled Java->Native methods.
+    remove_uncalled_jni = true
   }
 }
 
@@ -385,11 +384,12 @@ template("webview_alternate_library") {
       "//android_webview/lib:webview_entry_point",
       "//android_webview/nonembedded",
     ]
-    if (allow_jni_multiplexing) {
-      deps += [ ":webview_jni_registration($default_toolchain)" ]
-      enable_jni_multiplexing = true
-    }
     is_webview = true
+    java_targets = webview_java_for_jni_targets
+
+    # Webview's native side naturally will have more JNI present than the Java
+    # side. We can just remove any uncalled Java->Native methods.
+    remove_uncalled_jni = true
   }
 }
 

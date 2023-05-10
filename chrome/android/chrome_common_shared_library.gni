@@ -6,10 +6,10 @@ import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/create_unwind_table.gni")
 import("//build/config/android/extract_unwind_tables.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
-import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
@@ -72,9 +72,9 @@ template("chrome_common_shared_library") {
   }
 
   if (_generate_partitions) {
-    _target_type = "partitioned_shared_library"
+    _target_type = "partitioned_shared_library_with_jni"
   } else {
-    _target_type = "shared_library"
+    _target_type = "shared_library_with_jni"
   }
 
   target(_target_type, target_name) {
@@ -82,6 +82,10 @@ template("chrome_common_shared_library") {
         invoker,
         "*",
         TESTONLY_AND_VISIBILITY + [ "define_unwind_table_target" ])
+
+    if (!defined(deps)) {
+      deps = []
+    }
 
     if (!_is_webview) {
       deps += [ "//chrome:chrome_android_core" ]
@@ -118,9 +122,6 @@ template("chrome_common_shared_library") {
       # Custom registration of a few JNI methods found in the .so file.
       sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
     }
-
-    # We check this variable last, so sometimes it isn't used to decide which registration to use.
-    not_needed([ "enable_jni_multiplexing" ])
 
     if (_generate_partitions) {
       partitions = []

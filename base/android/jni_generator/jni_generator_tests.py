@@ -67,6 +67,8 @@ class JniRegistrationGeneratorOptions(object):
     self.header_path = None
     self.module_name = ''
     self.package_prefix = None
+    self.remove_uncalled_methods = False
+    self.add_stubs_for_missing_native = False
 
 
 class BaseTest(unittest.TestCase):
@@ -82,21 +84,31 @@ class BaseTest(unittest.TestCase):
       self.AssertGoldenTextEquals(contents, golden)
 
   def _TestEndToEndRegistration(self,
-                                input_java_src_files,
+                                input_src_files,
                                 options,
                                 name_to_goldens,
+                                src_files_for_asserts_and_stubs=None,
                                 header_golden=None):
     with tempfile.TemporaryDirectory() as tdir:
       options.srcjar_path = os.path.join(tdir, 'srcjar.jar')
       if header_golden:
         options.header_path = os.path.join(tdir, 'header.h')
 
-      input_java_paths = [
+      input_java_paths = {
           self._JoinScriptDir(os.path.join(_JAVA_SRC_DIR, f))
-          for f in input_java_src_files
-      ]
+          for f in input_src_files
+      }
 
-      jni_registration_generator._Generate(options, input_java_paths)
+      if src_files_for_asserts_and_stubs:
+        asserts_and_stubs_java_paths = {
+            self._JoinScriptDir(os.path.join(_JAVA_SRC_DIR, f))
+            for f in src_files_for_asserts_and_stubs
+        }
+      else:
+        asserts_and_stubs_java_paths = input_java_paths
+
+      jni_registration_generator._Generate(options, input_java_paths,
+                                           asserts_and_stubs_java_paths)
       with zipfile.ZipFile(options.srcjar_path, 'r') as srcjar:
         for name in srcjar.namelist():
           self.assertTrue(
@@ -241,14 +253,28 @@ class Tests(BaseTest):
     options.use_proxy_hash = True
     options.module_name = 'module'
     name_to_goldens = {
-        'org/chromium/base/natives/GEN_JNI.java':
-        'SampleForAnnotationProcessor_proxy_GenJni.java.golden',
-        'J/N.java': 'SampleForAnnotationProcessor_proxy_JN.java.golden',
         'org/chromium/base/natives/module_GEN_JNI.java':
         'SampleModuleGenJni.golden',
         'J/module_N.java': 'SampleModuleJN.golden'
     }
     self._TestEndToEndRegistration(input_java_files, options, name_to_goldens)
+
+  def testStubRegistration(self):
+    input_java_files = ['SampleForAnnotationProcessor.java']
+    stubs_java_files = input_java_files + ['TinySample.java']
+    extra_input_java_files = ['TinySample2.java']
+    options = JniRegistrationGeneratorOptions()
+    options.add_stubs_for_missing_native = True
+    options.remove_uncalled_methods = True
+    name_to_goldens = {
+        'org/chromium/base/natives/GEN_JNI.java': 'StubGenJni.golden',
+        'J/N.java': 'HashedSampleForAnnotationProcessorGenJni.golden'
+    }
+    self._TestEndToEndRegistration(
+        input_java_files + extra_input_java_files,
+        options,
+        name_to_goldens,
+        src_files_for_asserts_and_stubs=stubs_java_files)
 
   def testForTestingKept(self):
     input_java_file = 'SampleProxyEdgeCases.java'
@@ -321,7 +347,10 @@ class Tests(BaseTest):
         'SampleForAnnotationProcessor_package_prefix_manual_GenJni.java.golden',
     }
     self._TestEndToEndRegistration(
-        input_java_files, options, name_to_goldens,
+        input_java_files,
+        options,
+        name_to_goldens,
+        header_golden=
         'SampleForAnnotationProcessor_package_prefix_manual.h.golden')
 
   def testPackagePrefixWithProxyHash(self):
@@ -350,7 +379,10 @@ class Tests(BaseTest):
         'SampleForAnnotationProcessor_package_prefix_proxy_manual_JN.java.golden',
     }
     self._TestEndToEndRegistration(
-        input_java_files, options, name_to_goldens,
+        input_java_files,
+        options,
+        name_to_goldens,
+        header_golden=
         'SampleForAnnotationProcessor_package_prefix_proxy_manual.h.golden')
 
   def testMultiplexing(self):
@@ -364,8 +396,10 @@ class Tests(BaseTest):
         'J/N.java': 'SampleForAnnotationProcessor_multiplexing_JN.java.golden',
     }
     self._TestEndToEndRegistration(
-        input_java_files, options, name_to_goldens,
-        'SampleForAnnotationProcessor_multiplexing.h.golden')
+        input_java_files,
+        options,
+        name_to_goldens,
+        header_golden='SampleForAnnotationProcessor_multiplexing.h.golden')
 
 
 def TouchStamp(stamp_path):

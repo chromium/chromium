@@ -244,6 +244,28 @@ template("system_webview_apk_or_module_tmpl") {
         native_lib_placeholders = [ "libdummy.so" ]
       }
     }
+    if (defined(shared_libraries)) {
+      _jni_registrations = shared_libraries
+    } else if (defined(secondary_abi_shared_libraries)) {
+      _jni_registrations = secondary_abi_shared_libraries
+    } else if (_is_trichrome) {
+      # Here, the only native library present in trichrome is the one shared
+      # between Chrome and WebView, so we depend on it instead.
+      if (android_64bit_target_cpu) {
+        _jni_registrations = [ "//chrome/android:libmonochrome_64" ]
+      } else {
+        _jni_registrations = [ "//chrome/android:libmonochrome" ]
+      }
+    }
+    if (defined(_jni_registrations)) {
+      srcjar_deps = []
+      foreach(_lib, _jni_registrations) {
+        _label =
+            get_label_info(_lib, "label_no_toolchain") + "__jni_registration"
+        _toolchain = get_label_info(_lib, "toolchain")
+        srcjar_deps += [ "$_label($_toolchain)" ]
+      }
+    }
 
     _include_arcore =
         webview_includes_weblayer && enable_arcore && !_exclude_weblayer_java &&
