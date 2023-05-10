@@ -180,6 +180,10 @@ void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicRead(
     return;
   }
 
+  if (num_of_reads_in_progress_ == 0 || !pending_read_callback_) {
+    return;
+  }
+
   --num_of_reads_in_progress_;
   DCHECK_GE(num_of_reads_in_progress_, 0);
 
