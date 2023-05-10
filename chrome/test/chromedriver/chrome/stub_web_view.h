@@ -125,6 +125,7 @@ class StubWebView : public WebView {
                                  int yoffset) override;
   bool IsNonBlocking() const override;
   FrameTracker* GetFrameTracker() const override;
+  Status GetFedCmTracker(FedCmTracker** out_tracker) override;
   std::unique_ptr<base::Value> GetCastSinks() override;
   std::unique_ptr<base::Value> GetCastIssueMessage() override;
   void SetFrame(const std::string& new_frame_id) override;

@@ -222,7 +222,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   bool show_auto_reauthn_checkbox_{false};
 
   // Observes events on AccountSelectionBubbleView.
-  raw_ptr<Observer> observer_{nullptr};
+  // Dangling when running Chromedriver's run_py_tests.py test suite.
+  raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
 
   // Callback to create an identity registry.
   IdentityRegistryCallback identity_registry_callback_;

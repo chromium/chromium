@@ -775,6 +775,20 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   }
 }
 
+TEST(GetFedCmTracker, OK) {
+  std::unique_ptr<FakeDevToolsClient> client_uptr =
+      std::make_unique<FakeDevToolsClient>();
+  FakeDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+                   std::move(client_uptr), absl::nullopt,
+                   PageLoadStrategy::kEager);
+  FedCmTracker* tracker = nullptr;
+  Status status = view.GetFedCmTracker(&tracker);
+  EXPECT_TRUE(StatusOk(status));
+  EXPECT_NE(nullptr, tracker);
+}
+
 class CallUserSyncScriptArgs
     : public testing::TestWithParam<std::pair<std::string, bool>> {
  public:

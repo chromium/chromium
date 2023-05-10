@@ -17,6 +17,7 @@ class FilePath;
 class TimeDelta;
 }  // namespace base
 
+class FedCmTracker;
 class FrameTracker;
 struct Geoposition;
 class JavaScriptDialogManager;
@@ -272,6 +273,9 @@ class WebView {
   virtual bool IsNonBlocking() const = 0;
 
   virtual FrameTracker* GetFrameTracker() const = 0;
+
+  // On success, sets *tracker to the FedCmTracker.
+  virtual Status GetFedCmTracker(FedCmTracker** out_tracker) = 0;
 
   virtual std::unique_ptr<base::Value> GetCastSinks() = 0;
 

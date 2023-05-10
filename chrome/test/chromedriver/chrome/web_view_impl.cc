@@ -31,6 +31,7 @@
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/download_directory_override_manager.h"
+#include "chrome/test/chromedriver/chrome/fedcm_tracker.h"
 #include "chrome/test/chromedriver/chrome/frame_tracker.h"
 #include "chrome/test/chromedriver/chrome/geolocation_override_manager.h"
 #include "chrome/test/chromedriver/chrome/heap_snapshot_taker.h"
@@ -1673,6 +1674,19 @@ bool WebViewImpl::IsNonBlocking() const {
   if (navigation_tracker_)
     return navigation_tracker_->IsNonBlocking();
   return parent_->IsNonBlocking();
+}
+
+Status WebViewImpl::GetFedCmTracker(FedCmTracker** out_tracker) {
+  if (!fedcm_tracker_) {
+    fedcm_tracker_ = std::make_unique<FedCmTracker>(client_.get());
+    Status status = fedcm_tracker_->Enable(client_.get());
+    if (!status.IsOk()) {
+      fedcm_tracker_.reset();
+      return status;
+    }
+  }
+  *out_tracker = fedcm_tracker_.get();
+  return Status(kOk);
 }
 
 FrameTracker* WebViewImpl::GetFrameTracker() const {

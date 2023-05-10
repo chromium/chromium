@@ -31,6 +31,7 @@
 #include "chrome/test/chromedriver/chrome/device_manager.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/constants/version.h"
+#include "chrome/test/chromedriver/fedcm_commands.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
 #include "chrome/test/chromedriver/server/http_server.h"
 #include "chrome/test/chromedriver/session.h"
@@ -935,6 +936,37 @@ HttpHandler::HttpHandler(
           kPost, "session/:sessionId/secure-payment-confirmation/set-mode",
           WrapToCommand("SetSPCTransactionMode",
                         base::BindRepeating(&ExecuteSetSPCTransactionMode))),
+
+      // Extensions for the Federated Credential Management API:
+      // https://github.com/fedidcg/FedCM/blob/main/proposals/webdriver.md
+      CommandMapping(kPost, "session/:sessionId/fedcm/canceldialog",
+                     WrapToCommand("CancelDialog",
+                                   base::BindRepeating(&ExecuteCancelDialog))),
+
+      CommandMapping(kPost, "session/:sessionId/fedcm/selectaccount",
+                     WrapToCommand("SelectAccount",
+                                   base::BindRepeating(&ExecuteSelectAccount))),
+
+      CommandMapping(kGet, "session/:sessionId/fedcm/accountlist",
+                     WrapToCommand("GetAccounts",
+                                   base::BindRepeating(&ExecuteGetAccounts))),
+
+      CommandMapping(kGet, "session/:sessionId/fedcm/gettitle",
+                     WrapToCommand("GetFedCmTitle",
+                                   base::BindRepeating(&ExecuteGetFedCmTitle))),
+
+      CommandMapping(kGet, "session/:sessionId/fedcm/getdialogtype",
+                     WrapToCommand("GetDialogType",
+                                   base::BindRepeating(&ExecuteGetDialogType))),
+
+      CommandMapping(
+          kPost, "session/:sessionId/fedcm/setdelayenabled",
+          WrapToCommand("SetDelayEnabled",
+                        base::BindRepeating(&ExecuteSetDelayEnabled))),
+
+      CommandMapping(kPost, "session/:sessionId/fedcm/resetcooldown",
+                     WrapToCommand("ResetCooldown",
+                                   base::BindRepeating(&ExecuteResetCooldown))),
 
       // Extensions for Custom Handlers API:
       // https://html.spec.whatwg.org/multipage/system-state.html#rph-automation

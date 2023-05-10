@@ -221,6 +221,27 @@ class Command(object):
   GET_CAST_SINKS = (
       _Method.GET,
       '/session/:sessionId/:vendorId/cast/get_sinks')
+  CANCEL_FEDCM_DIALOG = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/canceldialog')
+  SELECT_ACCOUNT = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/selectaccount')
+  GET_ACCOUNTS = (
+      _Method.GET,
+      '/session/:sessionId/fedcm/accountlist')
+  GET_FEDCM_TITLE = (
+      _Method.GET,
+      '/session/:sessionId/fedcm/gettitle')
+  GET_DIALOG_TYPE = (
+      _Method.GET,
+      '/session/:sessionId/fedcm/getdialogtype')
+  SET_DELAY_ENABLED = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/setdelayenabled')
+  RESET_COOLDOWN = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/resetcooldown')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')

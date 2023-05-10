@@ -3619,6 +3619,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         chrome_switches=['host-resolver-rules=MAP * 127.0.0.1',
             'enable-experimental-web-platform-features'])
 
+
   def testAddVirtualAuthenticator(self):
     def addAuthenticatorAndRegister(javascriptFragment, addArgs):
       script = """
@@ -6347,6 +6348,93 @@ class VendorSpecificTest(ChromeDriverBaseTestWithWebServer):
     # Regression test for chromedriver:4176
     # This command crashed ChromeDriver on Android
     self._driver.GetCastSinks(self._vendor_id)
+
+class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
+
+  def setUp(self):
+    port = self._https_server._server.server_port
+    self._url_prefix = (self._https_server.GetUrl("localhost") +
+        "/chromedriver/fedcm")
+
+    def respondWithWellKnownFile(request):
+      return {'Content-Type': 'application/json'}, bytes("""
+      {
+        "provider_urls": ["%s/fedcm.json"]
+      }
+      """ % self._url_prefix, 'utf-8')
+    self._https_server.SetCallbackForPath('/.well-known/web-identity',
+                                          respondWithWellKnownFile)
+
+    script_content = bytes("""
+      <script>
+      let promise = null;
+      function callFedCm() {
+        promise = navigator.credentials.get({
+          identity: {
+            providers: [{
+              configURL: '%s/fedcm.json',
+              clientId: '123',
+            }]
+          }
+        });
+      }
+      async function getResult() {
+        try {
+          return (await promise).token;
+        } catch (e) {
+          return "Error: " + e;
+        }
+      }
+      </script>
+      """ % self._url_prefix, 'utf-8')
+    self._https_server.SetDataForPath('/fedcm.html', script_content)
+
+    self._driver = self.CreateDriver(
+        accept_insecure_certs=True,
+        chrome_switches=['host-resolver-rules=MAP *:443 127.0.0.1:%s' % port,
+            'enable-experimental-web-platform-features'])
+
+  def FedCmDialogCondition(self):
+    try:
+        self._driver.GetFedCmTitle()
+        return True
+    except:
+        return False
+
+  def testGetAccounts(self):
+    self._driver.Load(self._https_server.GetUrl() + '/fedcm.html')
+
+    self._driver.SetDelayEnabled(False)
+    self._driver.ResetCooldown()
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript('callFedCm()')
+    self.WaitForCondition(self.FedCmDialogCondition)
+    accounts = self._driver.GetAccounts()
+    self.assertEqual(2, len(accounts))
+    self.assertEqual({'title': 'Sign in to 127.0.0.1 with localhost'},
+                     self._driver.GetFedCmTitle())
+    self.assertEqual('AccountChooser', self._driver.GetDialogType())
+
+    self._driver.SelectAccount(0)
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    token = self._driver.ExecuteScript('return getResult()')
+    self.assertEqual('token', token)
+
+  def testDismissDialog(self):
+    self._driver.Load(self._https_server.GetUrl() + '/fedcm.html')
+
+    self._driver.ResetCooldown()
+    self._driver.SetDelayEnabled(False)
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript('callFedCm()')
+    self.WaitForCondition(self.FedCmDialogCondition)
+
+    self._driver.CancelFedCmDialog()
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    token = self._driver.ExecuteScript('return getResult()')
+    self.assertEqual('Error: NetworkError: Error retrieving a token.', token)
 
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):

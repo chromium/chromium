@@ -17,6 +17,7 @@
 struct BrowserInfo;
 class DevToolsClient;
 class DownloadDirectoryOverrideManager;
+class FedCmTracker;
 class FrameTracker;
 class GeolocationOverrideManager;
 class MobileEmulationOverrideManager;
@@ -166,6 +167,7 @@ class WebViewImpl : public WebView {
                                    const base::Value& element,
                                    int* backend_node_id) override;
   bool IsNonBlocking() const override;
+  Status GetFedCmTracker(FedCmTracker** out_tracker) override;
   FrameTracker* GetFrameTracker() const override;
   std::unique_ptr<base::Value> GetCastSinks() override;
   std::unique_ptr<base::Value> GetCastIssueMessage() override;
@@ -247,6 +249,7 @@ class WebViewImpl : public WebView {
       download_directory_override_manager_;
   std::unique_ptr<HeapSnapshotTaker> heap_snapshot_taker_;
   std::unique_ptr<CastTracker> cast_tracker_;
+  std::unique_ptr<FedCmTracker> fedcm_tracker_;
   bool is_service_worker_;
 };
 

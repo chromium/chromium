@@ -62,6 +62,7 @@ ChromeDriver has the following event listeners:
 * [`DevToolsEventsLogger`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/devtools_events_logger.h?q=DevToolsEventsLogger)
 * [`DomTracker`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/dom_tracker.h?q=DomTracker)
 * [`DownloadDirectoryOverrideManager`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/download_directory_override_manager.h?q=DownloadDirectoryOverrideManager)
+* [`FedCmTracker`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/fedcm_tracker.h?q=FedCmTracker)
 * [`FrameTracker`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/frame_tracker.h?q=FrameTracker)
 * [`GeolocationOverrideManager`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/geolocation_override_manager.h?q=GeolocationOverrideManager)
 * [`HeapSnapshotTaker`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/heap_snapshot_taker.h?q=HeapSnapshotTaker)
@@ -97,3 +98,12 @@ and can be one of three values: `kUnknown`, `kLoading`, and `kNotLoading`.
 events it receives from Chrome DevTools.
 Most ChromeDriver commands wait for the loading state to become `kNotLoading`
 before returning.
+
+### FedCM Tracker
+
+The [`FedCmTracker`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/fedcm_tracker.h?q=FedCmTracker)
+listens to FedCM dialog events and stores the parameters for later use.
+
+Since the WebDriver protocol does not support events, we instead provide
+accessors that the client can periodically check to detect when a dialog has
+been shown.

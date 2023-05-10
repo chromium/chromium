@@ -262,6 +262,10 @@ bool StubWebView::IsNonBlocking() const {
   return false;
 }
 
+Status StubWebView::GetFedCmTracker(FedCmTracker** out_tracker) {
+  return Status(kUnknownCommand);
+}
+
 FrameTracker* StubWebView::GetFrameTracker() const {
   return nullptr;
 }
