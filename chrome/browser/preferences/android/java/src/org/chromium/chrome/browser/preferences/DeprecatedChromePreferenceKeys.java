@@ -42,6 +42,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledShowMessage",
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",
                 "Chrome.SigninPromo.NTPImpressions",
+                "Chrome.VideoTutorials.ShareUrls",
                 "PersistedNotificationId",
                 "PhysicalWeb.ActivityReferral",
                 "PhysicalWeb.HasDeferredMetrics",

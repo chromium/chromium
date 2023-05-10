@@ -7334,9 +7334,6 @@ HSPLorg/chromium/chrome/browser/util/ChromeAccessibilityUtil$ActivityStateListen
 HSPLorg/chromium/chrome/browser/util/ChromeAccessibilityUtil$ActivityStateListenerImpl;->onActivityStateChange(Landroid/app/Activity;I)V
 Lorg/chromium/chrome/browser/util/ChromeFileProvider;
 HSPLorg/chromium/chrome/browser/util/ChromeFileProvider;-><init>()V
-Lorg/chromium/chrome/browser/video_tutorials/VideoTutorialServiceFactory$LazyHolder;
-Lorg/chromium/chrome/browser/video_tutorials/iph/TryNowTrackerImpl;
-HSPLorg/chromium/chrome/browser/video_tutorials/iph/TryNowTrackerImpl;-><init>()V
 Lorg/chromium/chrome/browser/vr/VrDelegate;
 HSPLorg/chromium/chrome/browser/vr/VrDelegate;-><init>()V
 Lorg/chromium/chrome/browser/vr/VrDelegateFallback;

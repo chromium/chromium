@@ -29,7 +29,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/app/tab_activity_glue/TabReparentingControllerTest.java",
   "junit/src/org/chromium/chrome/browser/app/tabmodel/TabPersistentStoreIntegrationTest.java",
   "junit/src/org/chromium/chrome/browser/app/tabmodel/TabbedModeTabModelOrchestratorUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/app/video_tutorials/NewTabPageVideoIPHManagerTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/AutofillSuggestionTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/AutofillUiUtilsTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptTest.java",

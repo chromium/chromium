@@ -2,3 +2,9 @@ include_rules = [
   '+third_party/libaddressinput/chromium/chrome_metadata_source.h',
   '+third_party/libaddressinput/chromium/chrome_storage_impl.h',
 ]
+
+specific_include_rules = {
+  "PersonalDataManagerTest\.java": [
+    '+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/test/TestImageFetcher.java',
+  ]
+}

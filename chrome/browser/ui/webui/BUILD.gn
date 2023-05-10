@@ -24,13 +24,6 @@ source_set("configs") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (is_android) {
-    sources += [
-      "chrome_untrusted_web_ui_configs_android.cc",
-      "chrome_untrusted_web_ui_configs_android.h",
-    ]
-  }
-
   if (is_mac || is_win || is_linux || is_chromeos || is_fuchsia) {
     sources += [
       "chrome_untrusted_web_ui_configs_desktop.cc",

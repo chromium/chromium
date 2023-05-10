@@ -161,6 +161,7 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
+    <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="ntp_logo_margin_bottom">23dp</dimen>
@@ -380,9 +381,6 @@ found in the LICENSE file.
     <dimen name="long_screenshots_button_size">40dp</dimen>
     <dimen name="long_screenshots_button_padding">8dp</dimen>
     <dimen name="long_screenshots_button_margin">17dp</dimen>
-
-    <!-- Video tutorials dimensions -->
-    <dimen name="video_tutorial_try_now_iph_ntp_searchbox_y_inset">6dp</dimen>
 
     <!-- IPH shared highlighting builder padding top -->
     <dimen name="iph_shared_highlighting_padding_top">120dp</dimen>

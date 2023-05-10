@@ -31,7 +31,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.video_tutorials.NewTabPageVideoIPHManager;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
@@ -55,9 +54,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
-import org.chromium.chrome.browser.video_tutorials.FeatureType;
-import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
-import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -88,7 +84,6 @@ public class NewTabPageLayout extends LinearLayout {
     private LogoCoordinator mLogoCoordinator;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private QueryTileSection mQueryTileSection;
-    private NewTabPageVideoIPHManager mVideoIPHManager;
     private ImageView mCryptidHolder;
     private ViewGroup mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
@@ -153,8 +148,6 @@ public class NewTabPageLayout extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
-        mVideoIPHManager = new NewTabPageVideoIPHManager(
-                findViewById(R.id.video_iph_stub), Profile.getLastUsedRegularProfile());
         insertSiteSectionView();
     }
 
@@ -722,7 +715,6 @@ public class NewTabPageLayout extends LinearLayout {
 
         if (visibility == VISIBLE) {
             updateActionButtonVisibility();
-            maybeShowVideoTutorialTryNowIPH();
         }
     }
 
@@ -790,29 +782,6 @@ public class NewTabPageLayout extends LinearLayout {
         }
     }
 
-    private void maybeShowVideoTutorialTryNowIPH() {
-        if (getToolbarTransitionPercentage() > 0f) return;
-        VideoTutorialTryNowTracker tryNowTracker = VideoTutorialServiceFactory.getTryNowTracker();
-        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
-        if (tryNowTracker.didClickTryNowButton(FeatureType.SEARCH)) {
-            IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
-                    R.string.video_tutorials_iph_tap_here_to_start,
-                    R.string.video_tutorials_iph_tap_here_to_start, mSearchBoxCoordinator.getView(),
-                    false);
-            userEducationHelper.requestShowIPH(iphCommandBuilder.build());
-            tryNowTracker.tryNowUIShown(FeatureType.SEARCH);
-        }
-
-        if (tryNowTracker.didClickTryNowButton(FeatureType.VOICE_SEARCH)) {
-            IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
-                    R.string.video_tutorials_iph_tap_voice_icon_to_start,
-                    R.string.video_tutorials_iph_tap_voice_icon_to_start,
-                    mSearchBoxCoordinator.getVoiceSearchButton(), true);
-            userEducationHelper.requestShowIPH(iphCommandBuilder.build());
-            tryNowTracker.tryNowUIShown(FeatureType.VOICE_SEARCH);
-        }
-    }
-
     @VisibleForTesting
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
         return mMostVisitedTilesCoordinator;
@@ -840,8 +809,7 @@ public class NewTabPageLayout extends LinearLayout {
                 FeatureConstants.FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE,
                 stringId, accessibilityStringId);
         iphCommandBuilder.setAnchorView(anchorView);
-        int yInsetPx = resources.getDimensionPixelOffset(
-                R.dimen.video_tutorial_try_now_iph_ntp_searchbox_y_inset);
+        int yInsetPx = resources.getDimensionPixelOffset(R.dimen.ntp_iph_searchbox_y_inset);
         iphCommandBuilder.setInsetRect(new Rect(0, 0, 0, -yInsetPx));
         if (showHighlight) {
             iphCommandBuilder.setOnShowCallback(

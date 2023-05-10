@@ -162,7 +162,6 @@ after discussions on the right group.
       <annotation id="password_requirements_spec_fetch"/>
       <annotation id="payment_manifest_downloader"/>
       <annotation id="proxy_config_settings"/>
-      <annotation id="video_tutorial_fetcher"/>
       <annotation id="qr_code_save"/>
       <annotation id="desktop_screenshot_save"/>
       <annotation id="safe_browsing_cache_collector"/>

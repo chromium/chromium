@@ -152,19 +152,6 @@
         android:taskAffinity=""
         android:theme="@style/Theme.BrowserUI.Translucent">
     </activity>  # DIFF-ANCHOR: 50c7105b
-    <activity  # DIFF-ANCHOR: aeab60ac
-        android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:screenOrientation="portrait"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
-    </activity>  # DIFF-ANCHOR: aeab60ac
-    <activity  # DIFF-ANCHOR: 170e9f21
-        android:name="org.chromium.chrome.browser.app.video_tutorials.VideoTutorialListActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
-    </activity>  # DIFF-ANCHOR: 170e9f21
     <activity  # DIFF-ANCHOR: be2dce69
         android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy"
         android:excludeFromRecents="true"

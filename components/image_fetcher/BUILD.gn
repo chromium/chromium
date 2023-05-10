@@ -50,6 +50,17 @@ source_set("android") {
   ]
 }
 
+android_library("test_support_java") {
+  sources = [ "android/java/src/org/chromium/components/image_fetcher/test/TestImageFetcher.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/gif_player:gif_player_java",
+  ]
+}
+
 robolectric_library("junit") {
   sources = [
     "android/junit/src/org/chromium/components/image_fetcher/CachedImageFetcherTest.java",

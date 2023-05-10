@@ -1814,8 +1814,6 @@ static_library("browser") {
     "usb/web_usb_histograms.h",
     "user_bypass/user_bypass_web_contents_observer.cc",
     "user_bypass/user_bypass_web_contents_observer.h",
-    "video_tutorials/video_tutorial_service_factory.cc",
-    "video_tutorials/video_tutorial_service_factory.h",
     "visibility_timer_tab_helper.cc",
     "visibility_timer_tab_helper.h",
     "vr/ui_suppressed_element.h",
@@ -2011,7 +2009,6 @@ static_library("browser") {
     "//chrome/browser/ui/webui/suggest_internals:mojo_bindings",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
     "//chrome/browser/updates/announcement_notification",
-    "//chrome/browser/video_tutorials",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_share_target",
     "//chrome/common:channel_info",
@@ -3234,7 +3231,6 @@ static_library("browser") {
       "usb/android/usb_bridge.cc",
       "usb/android/web_usb_chooser_android.cc",
       "usb/android/web_usb_chooser_android.h",
-      "video_tutorials/internal/android/video_tutorial_service_bridge_factory.cc",
       "webapps/web_app_offline_android.cc",
       "webauthn/android/cable_module_android.cc",
       "webauthn/android/chrome_webauthn_client_android.cc",
@@ -3312,8 +3308,6 @@ static_library("browser") {
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//chrome/browser/usb/android:jni_headers",
-      "//chrome/browser/video_tutorials/internal",
-      "//chrome/browser/video_tutorials/internal:jni_headers",
       "//chrome/common:non_code_constants",
       "//chrome/services/media_gallery_util/public/cpp",
       "//components/background_sync",
@@ -7822,10 +7816,7 @@ grit("resources") {
   }
 
   if (is_android) {
-    deps += [
-      "//chrome/browser/resources/offline_pages:build_ts",
-      "//chrome/browser/resources/video_tutorials:build_ts",
-    ]
+    deps += [ "//chrome/browser/resources/offline_pages:build_ts" ]
   }
   if (!is_android) {
     deps += [ "//chrome/browser/resources/media_router/internals:build_ts" ]

@@ -77,16 +77,6 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/search_resumption_module_margin_top"
         android:layout="@layout/search_resumption_module_layout" />
 
-    <!-- Video tutorial IPH card -->
-    <ViewStub
-        android:id="@+id/video_iph_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:layout="@layout/video_tutorial_iph_card"
-        android:inflatedId="@+id/video_iph_card"/>
-
     <!-- Spacer for when there is no search provider logo. -->
     <View
         android:id="@+id/no_search_logo_spacer"

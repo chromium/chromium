@@ -6104,7 +6104,6 @@ test("unit_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/commander:fuzzy_finder",
     "//chrome/browser/updates/announcement_notification:unit_tests",
-    "//chrome/browser/video_tutorials:unit_tests",
     "//chrome/browser/web_share_target:unit_tests",
     "//chrome/common:test_support",
     "//chrome/common:version_header",

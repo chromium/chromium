@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
-#include "chrome/browser/video_tutorials/switches.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -4908,9 +4907,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQueryTilesSwapTrendingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          query_tiles::features::kQueryTilesRemoveTrendingTilesAfterInactivity)},
-    {"video-tutorials", flag_descriptions::kVideoTutorialsName,
-     flag_descriptions::kVideoTutorialsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(video_tutorials::features::kVideoTutorials)},
     {"reengagement-notification",
      flag_descriptions::kReengagementNotificationName,
      flag_descriptions::kReengagementNotificationDescription, kOsAndroid,

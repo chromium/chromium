@@ -170,7 +170,6 @@ missing_new_fields,chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc
 missing_new_fields,chrome/browser/ui/webui/sanitized_image_source.cc
 missing_new_fields,chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc
 missing_new_fields,chrome/browser/ui/webui/whats_new/whats_new_util.cc
-missing_new_fields,chrome/browser/video_tutorials/internal/tutorial_fetcher.cc
 missing_new_fields,chrome/services/sharing/nearby/platform/webrtc.cc
 missing_new_fields,chrome/services/sharing/nearby/platform/wifi_lan_medium.cc
 missing_new_fields,chromeos/ash/components/device_activity/device_activity_client.cc

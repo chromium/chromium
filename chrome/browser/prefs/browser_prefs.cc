@@ -246,7 +246,6 @@
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
-#include "chrome/browser/video_tutorials/prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #include "components/content_creation/notes/core/note_prefs.h"
 #include "components/ntp_snippets/register_prefs.h"
@@ -808,6 +807,14 @@ const char kLastChromadMigrationAttemptTime[] =
 const char kSmartLockSigninAllowed[] = "smart_lock_signin.allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 05/2023
+#if BUILDFLAG(IS_ANDROID)
+const char kVideoTutorialsPreferredLocaleKey[] =
+    "video_tutorials.perferred_locale";
+const char kVideoTutorialsLastUpdatedTimeKey[] =
+    "video_tutorials.last_updated_time";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1108,6 +1115,13 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kSmartLockSigninAllowed, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterStringPref(kVideoTutorialsPreferredLocaleKey,
+                               std::string());
+  registry->RegisterTimePref(kVideoTutorialsLastUpdatedTimeKey, base::Time());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -1508,7 +1522,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
-  video_tutorials::RegisterPrefs(registry);
   webapps::InstallPromptPrefs::RegisterLocalPrefs(registry);
 #else  // BUILDFLAG(IS_ANDROID)
   bookmarks_webui::RegisterProfilePrefs(registry);
@@ -2144,6 +2157,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kSmartLockSigninAllowed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kVideoTutorialsPreferredLocaleKey);
+  profile_prefs->ClearPref(kVideoTutorialsLastUpdatedTimeKey);
+#endif  // BUILDFLAG(IS_ANDROID
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

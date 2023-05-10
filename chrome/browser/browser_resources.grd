@@ -252,9 +252,6 @@
         <include name="IDR_OFFLINE_INTERNALS_CSS" file="resources\offline_pages\offline_internals.css" type="BINDATA" />
         <include name="IDR_OFFLINE_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_OFFLINE_INTERNALS_BROWSER_PROXY_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals_browser_proxy.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_VIDEO_PLAYER_HTML" file="resources\video_tutorials\video_player.html" type="BINDATA" />
-        <include name="IDR_VIDEO_PLAYER_CSS" file="resources\video_tutorials\video_player.css" type="BINDATA" />
-        <include name="IDR_VIDEO_PLAYER_JS" file="${root_gen_dir}\chrome\browser\resources\video_tutorials\tsc\video_player.js" use_base_dir="false" type="BINDATA" />
       </if>
 
       <if expr="enable_hangout_services_extension">

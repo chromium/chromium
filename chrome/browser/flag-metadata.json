@@ -7504,11 +7504,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "video-tutorials",
-    "owners": [ "shaktisahu"],
-    "expiry_milestone": 102
-  },
-  {
     "name": "view-transition",
     "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
     "expiry_milestone" : 118

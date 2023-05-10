@@ -42,8 +42,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
-import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -205,7 +203,6 @@ public class ToolbarButtonInProductHelpController
         // (e.g. tab switch or in overview mode).
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) return;
         mScreenshotMonitor.startMonitoring();
-        mHandler.post(this::showVideoTutorialTryNowUIForDownload);
     }
 
     @Override
@@ -308,30 +305,6 @@ public class ToolbarButtonInProductHelpController
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mMenuButtonAnchorView)
                         .build());
-    }
-
-    /** Show the Try Now UI for video tutorial download feature. */
-    private void showVideoTutorialTryNowUIForDownload() {
-        VideoTutorialTryNowTracker tryNowTracker = VideoTutorialServiceFactory.getTryNowTracker();
-        if (!tryNowTracker.didClickTryNowButton(
-                    org.chromium.chrome.browser.video_tutorials.FeatureType.DOWNLOAD)) {
-            return;
-        }
-
-        Integer menuItemId = DownloadUtils.isAllowedToDownloadPage(mCurrentTabSupplier.get())
-                ? R.id.offline_page_id
-                : R.id.downloads_menu_id;
-
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(), null,
-                        R.string.video_tutorials_iph_tap_here_to_start,
-                        R.string.video_tutorials_iph_tap_here_to_start)
-                        .setAnchorView(mMenuButtonAnchorView)
-                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(menuItemId))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
-        tryNowTracker.tryNowUIShown(
-                org.chromium.chrome.browser.video_tutorials.FeatureType.DOWNLOAD);
     }
 
     private void turnOnHighlightForMenuItem(Integer highlightMenuItemId) {
