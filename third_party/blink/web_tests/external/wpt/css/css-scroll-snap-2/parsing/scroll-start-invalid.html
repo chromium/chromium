@@ -10,6 +10,20 @@
 </head>
 <body>
   <script>
+    test_invalid_value("scroll-start", "-100px");
+    test_invalid_value("scroll-start", "-50%");
+    test_invalid_value("scroll-start", "invalid_keyword");
+    test_invalid_value("scroll-start", "-100px -50%");
+    test_invalid_value("scroll-start", "-50% invalid_keyword");
+    test_invalid_value("scroll-start", "invalid_keyword invalid_keyword");
+    test_invalid_value("scroll-start", "-100px - 100px");
+    test_invalid_value("scroll-start", "-50% -100px");
+    test_invalid_value("scroll-start", "invalid_keyword -50%");
+    test_invalid_value("scroll-start", "-100px invalid_keyword");
+    test_invalid_value("scroll-start", "-50% -50%");
+    test_invalid_value("scroll-start", "invalid_keyword -100px");
+    test_invalid_value("scroll-start", "100px 200px 300px");
+
     test_invalid_value("scroll-start-block", "-100px");
     test_invalid_value("scroll-start-block", "-50%");
     test_invalid_value("scroll-start-block", "invalid_keyword");

@@ -389,6 +389,7 @@ scrollPaddingTop
 scrollSnapAlign
 scrollSnapStop
 scrollSnapType
+scrollStart
 scrollStartBlock
 scrollStartInline
 scrollStartX

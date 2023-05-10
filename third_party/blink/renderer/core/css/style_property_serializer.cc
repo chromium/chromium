@@ -695,6 +695,8 @@ String StylePropertySerializer::SerializeShorthand(
       // Temporary exceptions to the NOTREACHED() below.
       // TODO(crbug.com/1316689): Write something real here.
       return String();
+    case CSSPropertyID::kScrollStart:
+      return ScrollStartValue();
     default:
       NOTREACHED()
           << "Shorthand property "
@@ -2231,6 +2233,33 @@ String StylePropertySerializer::WhiteSpaceValue() const {
   // `IsValidWhiteSpace()` above.
   DCHECK(!result.empty());
   return result.ToString();
+}
+
+String StylePropertySerializer::ScrollStartValue() const {
+  CHECK_EQ(scrollStartShorthand().length(), 2u);
+  CHECK_EQ(scrollStartShorthand().properties()[0],
+           &GetCSSPropertyScrollStartBlock());
+  CHECK_EQ(scrollStartShorthand().properties()[1],
+           &GetCSSPropertyScrollStartInline());
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  const CSSValue* block_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyScrollStartBlock());
+  const CSSValue* inline_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyScrollStartInline());
+
+  DCHECK(block_value);
+  DCHECK(inline_value);
+
+  list->Append(*block_value);
+
+  if (!(IsA<CSSIdentifierValue>(inline_value) &&
+        To<CSSIdentifierValue>(*inline_value).GetValueID() ==
+            CSSValueID::kStart)) {
+    list->Append(*inline_value);
+  }
+
+  return list->CssText();
 }
 
 }  // namespace blink

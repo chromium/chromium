@@ -13,6 +13,24 @@
 <body>
   <div id="target"></div>
   <script>
+    test_computed_value("scroll-start", "start");
+    test_computed_value("scroll-start", "start start", "start");
+    test_computed_value("scroll-start", "100px");
+    test_computed_value("scroll-start", "50%");
+    test_computed_value("scroll-start", "center");
+    test_computed_value("scroll-start", "100px 200px");
+    test_computed_value("scroll-start", "50% 100px");
+    test_computed_value("scroll-start", "start 50%");
+    test_computed_value("scroll-start", "center start", "center");
+    test_computed_value("scroll-start", "end center");
+    test_computed_value("scroll-start", "top end");
+    test_computed_value("scroll-start", "bottom top");
+    test_computed_value("scroll-start", "left bottom");
+    test_computed_value("scroll-start", "right left");
+    test_computed_value("scroll-start", "auto right");
+    test_computed_value("scroll-start", "calc(1px)", "1px")
+    test_computed_value("scroll-start", "calc(1px) start", "1px")
+
     test_computed_value("scroll-start-block", "100px");
     test_computed_value("scroll-start-block", "50%");
     test_computed_value("scroll-start-block", "start");

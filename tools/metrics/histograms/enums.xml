@@ -68018,6 +68018,7 @@ Called by update_use_counter_css.py.-->
   <int value="753" label="scroll-start-inline"/>
   <int value="754" label="scroll-start-x"/>
   <int value="755" label="scroll-start-y"/>
+  <int value="756" label="scroll-start"/>
 </enum>
 
 <enum name="MappedEditingCommands">
