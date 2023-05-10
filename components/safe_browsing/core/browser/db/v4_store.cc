@@ -953,19 +953,24 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
       },
       new_filename, store_path_, base::Unretained(file_format)));
 
-  if (!hash_prefix_map_->WriteToDisk(file_format))
-    return UNEXPECTED_WRITE_FAILURE;
-
-  file_format->set_magic_number(kFileMagic);
-  file_format->set_version_number(kFileVersion);
   int64_t written = 0;
-  {
-    BaseFileOutputStream output_stream(new_filename);
-    if (!file_format->SerializeToZeroCopyStream(&output_stream) ||
-        !output_stream.Flush()) {
-      return UNEXPECTED_BYTES_WRITTEN_FAILURE;
+  // `write_session` must remain alive until `file_format` is committed to disk.
+  // Additionally, note that `hash_prefix_map_` is unusable throughout the
+  // lifetime of `write_session`.
+  if (auto write_session = hash_prefix_map_->WriteToDisk(file_format);
+      write_session) {
+    file_format->set_magic_number(kFileMagic);
+    file_format->set_version_number(kFileVersion);
+    {
+      BaseFileOutputStream output_stream(new_filename);
+      if (!file_format->SerializeToZeroCopyStream(&output_stream) ||
+          !output_stream.Flush()) {
+        return UNEXPECTED_BYTES_WRITTEN_FAILURE;
+      }
+      written = output_stream.ByteCount();
     }
-    written = output_stream.ByteCount();
+  } else {
+    return UNEXPECTED_WRITE_FAILURE;
   }
 
   if (!base::Move(new_filename, store_path_))
