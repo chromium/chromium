@@ -177,7 +177,7 @@ void DXGISwapChainImageBacking::Update(
   DCHECK(!in_fence);
 }
 
-void DXGISwapChainImageBacking::DidBeginWriteAccess(
+bool DXGISwapChainImageBacking::DidBeginWriteAccess(
     const gfx::Rect& swap_rect) {
   if (pending_swap_rect_.has_value()) {
     // Force a Present if there's already a pending swap rect. For normal usage
@@ -187,23 +187,56 @@ void DXGISwapChainImageBacking::DidBeginWriteAccess(
     // debugging.
     LOG(WARNING) << "Multiple skia write accesses per overlay access, flushing "
                     "pending swap.";
-    Present(false);
+    if (!Present(false)) {
+      return false;
+    }
   }
 
-  pending_swap_rect_ = swap_rect;
+  gfx::Rect pending_swap_rect = swap_rect;
 
-  // To clear only uninitialized buffers, this must happen after |Present|s of
-  // outstanding draws, including the one above.
+  absl::optional<SkColor4f> initialize_color;
+
+  // SharedImage allows an incomplete first draw so long as we only read from
+  // the part that we've previously drawn to. However, IDXGISwapChain requires a
+  // full draw on the first |Present1|. To make an incomplete first draw valid,
+  // we'll initialize all the pixels and expand the swap rect.
+  const gfx::Rect full_swap_rect = gfx::Rect(size());
+  if (!IsCleared() && swap_rect != full_swap_rect) {
+    LOG(WARNING) << "First draw to surface should draw to everything";
+
+    initialize_color = SkColors::kTransparent;
+
+    // Ensure that the next swap contains the entire swap chain since we just
+    // cleared it.
+    pending_swap_rect = full_swap_rect;
+  }
+
+  // See comment in |DXGISwapChainImageBacking::Create| for why we need this.
   if (buffers_need_alpha_initialization_count_ > 0) {
     // We only need to write the alpha channel, but we clear since it's simpler
     // and are guaranteed to not have pixels we need to preserve before the
     // first write to each buffer.
-    if (!D3DImageBackingFactory::ClearBackBufferToOpaque(dxgi_swap_chain_,
-                                                         d3d11_device_)) {
-      LOG(ERROR) << "Could not initialize back buffer alpha";
-    }
-    buffers_need_alpha_initialization_count_--;
+    initialize_color = SkColors::kBlack;
   }
+
+  if (initialize_color.has_value()) {
+    // To clear only uninitialized buffers, this must happen after |Present|s of
+    // outstanding draws, including the one above.
+    if (!D3DImageBackingFactory::ClearBackBufferToColor(
+            d3d11_device_.Get(), dxgi_swap_chain_.Get(),
+            initialize_color.value())) {
+      LOG(ERROR) << "Could not initialize back buffer alpha";
+      return false;
+    }
+
+    if (buffers_need_alpha_initialization_count_ > 0) {
+      buffers_need_alpha_initialization_count_--;
+    }
+  }
+
+  pending_swap_rect_ = {pending_swap_rect};
+
+  return true;
 }
 
 bool DXGISwapChainImageBacking::Present(

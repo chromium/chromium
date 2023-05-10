@@ -176,19 +176,13 @@ bool D3DImageBackingFactory::IsSwapChainSupported() {
 }
 
 // static
-bool D3DImageBackingFactory::ClearBackBufferToOpaque(
-    Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
-    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  HRESULT hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&d3d11_texture));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "GetBuffer failed: " << logging::SystemErrorCodeToString(hr);
-    return false;
-  }
-  DCHECK(d3d11_texture);
+bool D3DImageBackingFactory::ClearTextureToColor(ID3D11Device* d3d11_device,
+                                                 ID3D11Texture2D* d3d11_texture,
+                                                 const SkColor4f& color) {
+  HRESULT hr = S_OK;
 
   Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target;
-  hr = d3d11_device->CreateRenderTargetView(d3d11_texture.Get(), nullptr,
+  hr = d3d11_device->CreateRenderTargetView(d3d11_texture, nullptr,
                                             &render_target);
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateRenderTargetView failed: "
@@ -201,9 +195,24 @@ bool D3DImageBackingFactory::ClearBackBufferToOpaque(
   d3d11_device->GetImmediateContext(&d3d11_device_context);
   DCHECK(d3d11_device_context);
 
-  d3d11_device_context->ClearRenderTargetView(render_target.Get(),
-                                              SkColors::kBlack.vec());
+  d3d11_device_context->ClearRenderTargetView(render_target.Get(), color.vec());
+
   return true;
+}
+
+// static
+bool D3DImageBackingFactory::ClearBackBufferToColor(ID3D11Device* d3d11_device,
+                                                    IDXGISwapChain1* swap_chain,
+                                                    const SkColor4f& color) {
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  HRESULT hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&d3d11_texture));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "GetBuffer failed: " << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  DCHECK(d3d11_texture);
+
+  return ClearTextureToColor(d3d11_device, d3d11_texture.Get(), color);
 }
 
 D3DImageBackingFactory::SwapChainBackings
@@ -282,7 +291,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
 
   // Explicitly clear front and back buffers to ensure that there are no
   // uninitialized pixels.
-  if (!ClearBackBufferToOpaque(swap_chain, d3d11_device_)) {
+  if (!ClearBackBufferToColor(d3d11_device_.Get(), swap_chain.Get(),
+                              SkColors::kBlack)) {
     return {nullptr, nullptr};
   }
 
@@ -295,7 +305,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   }
 
-  if (!ClearBackBufferToOpaque(swap_chain, d3d11_device_)) {
+  if (!ClearBackBufferToColor(d3d11_device_.Get(), swap_chain.Get(),
+                              SkColors::kBlack)) {
     return {nullptr, nullptr};
   }
 

@@ -81,7 +81,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
 
   friend class SkiaGLImageRepresentationDXGISwapChain;
   // Called by the Skia representation to indicate where it intends to draw.
-  void DidBeginWriteAccess(const gfx::Rect& swap_rect);
+  bool DidBeginWriteAccess(const gfx::Rect& swap_rect);
   absl::optional<gfx::Rect> pending_swap_rect_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;

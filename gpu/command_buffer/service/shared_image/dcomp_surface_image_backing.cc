@@ -9,6 +9,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -21,12 +22,48 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/egl_util.h"
+#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
 
 namespace gpu {
+
+namespace {
+
+bool ClearDCompSurface(IDCompositionSurface* surface,
+                       const gfx::Size& surface_size) {
+  HRESULT hr = S_OK;
+
+  RECT rect = gfx::Rect(surface_size).ToRECT();
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> draw_texture;
+  POINT update_offset = {};
+  hr = surface->BeginDraw(&rect, IID_PPV_ARGS(&draw_texture), &update_offset);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "BeginDraw failed: " << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  // DX11 protects the DComp surface atlas so this clear only affects pixels in
+  // the update rect.
+  if (!D3DImageBackingFactory::ClearTextureToColor(
+          d3d11_device.Get(), draw_texture.Get(), SkColors::kTransparent)) {
+    return false;
+  }
+
+  hr = surface->EndDraw();
+  if (FAILED(hr)) {
+    LOG(ERROR) << "EndDraw failed: " << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
 
 // An EGL surface that can temporarily encapsulate a D3D texture (and ANGLE
 // draw offset). This is used so Skia can draw into the draw texture returned
@@ -240,9 +277,16 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
     return nullptr;
   }
 
+  // SharedImage allows an incomplete first draw so long as we only read from
+  // the part that we've previously drawn to. However, IDCompositionSurface
+  // requires a full draw on the first |BeginDraw|. To make an incomplete first
+  // draw valid, we'll initialize all the pixels and expand the swap rect.
   if (!IsCleared() && gfx::Rect(size()) != update_rect) {
-    LOG(ERROR) << "First draw to surface must draw to everything";
-    return nullptr;
+    LOG(WARNING) << "First draw to surface should draw to everything";
+    if (!ClearDCompSurface(dcomp_surface_.Get(), size())) {
+      LOG(ERROR) << "Could not initialize DComp surface";
+      return nullptr;
+    }
   }
 
   TRACE_EVENT0("gpu", "DCompSurfaceImageBacking::BeginDraw");
