@@ -104,6 +104,9 @@ void WebAudioMediaStreamAudioSink::OnData(
 
   if (fifo_->frames() + audio_bus.frames() <= fifo_->max_frames()) {
     fifo_->Push(&audio_bus);
+    TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
+                      "WebAudioMediaStreamAudioSink fifo space", this,
+                      fifo_->max_frames() - fifo_->frames());
   } else {
     // This can happen if the data in FIFO is too slowly consumed or
     // WebAudio stops consuming data.
@@ -163,6 +166,9 @@ double WebAudioMediaStreamAudioSink::ProvideInput(
   lock_.AssertAcquired();
   if (fifo_->frames() >= audio_bus->frames()) {
     fifo_->Consume(audio_bus, 0, audio_bus->frames());
+    TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
+                      "WebAudioMediaStreamAudioSink fifo space", this,
+                      fifo_->max_frames() - fifo_->frames());
   } else {
     audio_bus->Zero();
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
