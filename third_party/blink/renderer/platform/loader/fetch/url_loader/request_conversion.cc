@@ -408,6 +408,9 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->attribution_reporting_eligibility =
       src.GetAttributionReportingEligibility();
+
+  dest->attribution_reporting_runtime_features =
+      src.GetAttributionReportingRuntimeFeatures();
 }
 
 }  // namespace blink

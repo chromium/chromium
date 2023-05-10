@@ -15,6 +15,9 @@ specific_include_rules = {
     "resource_load_observer_for_worker.cc": [
         "+services/network/public/cpp/ip_address_space_util.h",
     ],
+    "frame_fetch_context.cc": [
+        "+services/network/public/cpp/attribution_reporting_runtime_features.h",
+    ],
 }
 include_rules = [
   "+base/containers/flat_map.h",

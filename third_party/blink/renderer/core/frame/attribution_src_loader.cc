@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_verification.h"
@@ -137,11 +138,14 @@ struct AttributionSrcLoader::AttributionHeaders {
   AtomicString os_trigger;
   uint64_t request_id;
 
-  AttributionHeaders(const HTTPHeaderMap& map, uint64_t request_id)
+  AttributionHeaders(const HTTPHeaderMap& map,
+                     uint64_t request_id,
+                     bool cross_app_web_runtime_enabled)
       : web_source(map.Get(http_names::kAttributionReportingRegisterSource)),
         web_trigger(map.Get(http_names::kAttributionReportingRegisterTrigger)),
         request_id(request_id) {
-    if (base::FeatureList::IsEnabled(
+    if (cross_app_web_runtime_enabled &&
+        base::FeatureList::IsEnabled(
             network::features::kAttributionReportingCrossAppWeb)) {
       os_source = map.Get(http_names::kAttributionReportingRegisterOSSource);
       os_trigger = map.Get(http_names::kAttributionReportingRegisterOSTrigger);
@@ -530,6 +534,15 @@ network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
   return Platform::Current()->GetAttributionReportingSupport();
 }
 
+network::AttributionReportingRuntimeFeatures
+AttributionSrcLoader::GetRuntimeFeatures() const {
+  return network::AttributionReportingRuntimeFeatures{
+      .cross_app_web_enabled =
+          RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
+              local_frame_->DomWindow()),
+  };
+}
+
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     const ResourceRequest& request,
     const ResourceResponse& response,
@@ -548,7 +561,10 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   }
 
   const uint64_t request_id = request.InspectorId();
-  AttributionHeaders headers(response.HttpHeaderFields(), request_id);
+  AttributionHeaders headers(
+      response.HttpHeaderFields(), request_id,
+      RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
+          local_frame_->DomWindow()));
 
   // Only handle requests which are attempting to invoke the API.
   if (headers.count() == 0) {
@@ -676,7 +692,10 @@ void AttributionSrcLoader::ResourceClient::Finish() {
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     const ResourceResponse& response,
     uint64_t request_id) {
-  AttributionHeaders headers(response.HttpHeaderFields(), request_id);
+  AttributionHeaders headers(
+      response.HttpHeaderFields(), request_id,
+      RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
+          loader_->local_frame_->DomWindow()));
   if (headers.count() == 0) {
     return;
   }

@@ -4,6 +4,7 @@ specific_include_rules = {
   ],
   "attribution_src_loader(\.cc|\.h|_test\.cc)": [
     "+components/attribution_reporting",
+    "+services/network/public/cpp/attribution_reporting_runtime_features.h",
     "+services/network/public/cpp/attribution_utils.h",
     "+services/network/public/cpp/trigger_verification.h",
   ],

@@ -25,6 +25,7 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -570,10 +571,45 @@ TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
   }
 }
 
+class AttributionSrcLoaderCrossAppWebRuntimeDisabledTest
+    : public AttributionSrcLoaderTest {
+ public:
+  AttributionSrcLoaderCrossAppWebRuntimeDisabledTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      network::features::kAttributionReportingCrossAppWeb};
+
+ protected:
+  ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform_;
+};
+
+TEST_F(AttributionSrcLoaderCrossAppWebRuntimeDisabledTest,
+       OsTriggerNotRegistered) {
+  platform_->attribution_support =
+      network::mojom::AttributionSupport::kWebAndOs;
+
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterOSTrigger,
+      R"("https://r.test/x")");
+
+  EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+}
+
 class AttributionSrcLoaderCrossAppWebEnabledTest
     : public AttributionSrcLoaderTest {
  public:
-  AttributionSrcLoaderCrossAppWebEnabledTest() = default;
+  AttributionSrcLoaderCrossAppWebEnabledTest() {
+    WebRuntimeFeatures::EnableFeatureFromString(
+        /*name=*/"AttributionReportingCrossAppWeb", /*enable=*/true);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

@@ -378,6 +378,16 @@ bool FencedFrameReporter::SendReportInternal(
             : network::mojom::AttributionReportingEligibility::kEventSource;
 
     request->attribution_reporting_support = AttributionManager::GetSupport();
+
+    // TODO(crbug.com/1442871): Populate whether cross app web runtime feature
+    // is enabled. The runtime feature can only be fully accessed from the
+    // renderer and therefore needs to be plumbed to the browser process.
+    // Currently this is set to true so that Attribution-Reporting-Support
+    // header is set whenever the base::Feature
+    // `network::features::kAttributionReportingCrossAppWeb` is enabled.
+    request->attribution_reporting_runtime_features = {
+        .cross_app_web_enabled = true,
+    };
   }
 
   // Create and configure `SimpleURLLoader` instance.

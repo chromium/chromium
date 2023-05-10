@@ -85,6 +85,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -333,6 +334,16 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info.begin_params->impression.has_value()
           ? network::mojom::AttributionReportingEligibility::kNavigationSource
           : network::mojom::AttributionReportingEligibility::kUnset;
+
+  // TODO(crbug.com/1442871): Populate whether cross app web runtime feature is
+  // enabled. The runtime feature can only be fully accessed from the renderer
+  // and therefore needs to be plumbed to the browser process. Currently this is
+  // set to true so that Attribution-Reporting-Support header is set whenever
+  // the base::Feature `network::features::kAttributionReportingCrossAppWeb` is
+  // enabled.
+  new_request->attribution_reporting_runtime_features = {
+      .cross_app_web_enabled = true,
+  };
 
   return new_request;
 }

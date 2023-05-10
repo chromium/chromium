@@ -26,6 +26,7 @@
 #include "services/network/attribution/attribution_verification_mediator.h"
 #include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "services/network/attribution/boringssl_verification_cryptographer.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -308,7 +309,12 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
                                           eligibility_header,
                                           /*overwrite=*/true);
 
-  if (base::FeatureList::IsEnabled(
+  // Note that it's important that the network process check both the
+  // base::Feature (which is set from the browser, so trustworthy) and the
+  // runtime feature (which can be spoofed in a compromised renderer, so is
+  // best-effort).
+  if (request.attribution_reporting_runtime_features.cross_app_web_enabled &&
+      base::FeatureList::IsEnabled(
           features::kAttributionReportingCrossAppWeb)) {
     url_request.SetExtraRequestHeaderByName(
         "Attribution-Reporting-Support",

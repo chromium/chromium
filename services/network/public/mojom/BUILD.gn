@@ -378,11 +378,14 @@ mojom("mojom_attribution") {
           cpp = "::network::TriggerVerification"
           move_only = true
         },
+        {
+          mojom = "network.mojom.AttributionReportingRuntimeFeatures"
+          cpp = "::network::AttributionReportingRuntimeFeatures"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/attribution_mojom_traits.h" ]
-      traits_deps =
-          [ "//services/network/public/cpp:trigger_verification_traits" ]
+      traits_deps = [ "//services/network/public/cpp:attribution_traits" ]
     },
   ]
 

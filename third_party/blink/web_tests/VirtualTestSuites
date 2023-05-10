@@ -169,7 +169,7 @@
     "bases": ["wpt_internal/attribution-reporting"],
     "exclusive_tests": "ALL",
     "args": ["--attribution-reporting-debug-mode",
-             "--enable-features=AttributionReportingCrossAppWeb,AttributionReportingReportVerification",
+             "--enable-features=AttributionReportingCrossAppWeb,AttributionReportingReportVerification,PrivacySandboxAdsAPIsOverride",
              "--additional-private-state-token-key-commitments={\"https://web-platform.test:8444\":{\"PrivateStateTokenV3VOPRF\":{\"protocol_version\":\"PrivateStateTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}"],
     "expires": "Jul 1, 2023"
   },
@@ -178,7 +178,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting/os"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=AttributionReportingCrossAppWeb"],
+    "args": ["--enable-features=AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride"],
     "expires": "Jul 1, 2023"
   },
   {

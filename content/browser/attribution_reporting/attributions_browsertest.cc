@@ -1186,14 +1186,91 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
   }
 }
 
+// Tests to verify that cross app web is not enabled when base::Feature is
+// enabled but runtime feature is disabled (without
+// `features::kPrivacySandboxAdsAPIsOverride` override).
+class AttributionsCrossAppWebRuntimeDisabledBrowserTest
+    : public AttributionsBrowserTest {
+ public:
+  AttributionsCrossAppWebRuntimeDisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::
+                                  kAttributionReportingCrossAppWeb},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/1442871): Update this test to ensure that
+// Attribution-Reporting-Support header is not set when runtime feature status
+// is plumbed to the browser process.
+IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
+                       AttributionEligibleNavigation_SupportHeaderSet) {
+  auto register_response1 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect");
+  auto register_response2 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect2");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_source_url =
+      https_server()->GetURL("d.test", "/register_source_redirect");
+
+  // Don't use `CreateAndClickSource()` as we need to observe navigation
+  // redirects prior to the navigation finishing.
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: '',
+                        target: $2});)",
+                                               register_source_url, "_top")));
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  // Verify the navigation redirects contain the eligibility header.
+  register_response1->WaitForRequest();
+  ASSERT_EQ(register_response1->http_request()->headers.at(
+                "Attribution-Reporting-Eligible"),
+            "navigation-source");
+  ASSERT_EQ(register_response1->http_request()->headers.at(
+                "Attribution-Reporting-Support"),
+            "web");
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader("Location", "/register_source_redirect2");
+  register_response1->Send(http_response->ToResponseString());
+  register_response1->Done();
+
+  // Ensure that redirect requests also contain the header.
+  register_response2->WaitForRequest();
+  EXPECT_EQ(register_response2->http_request()->headers.at(
+                "Attribution-Reporting-Eligible"),
+            "navigation-source");
+  EXPECT_EQ(register_response2->http_request()->headers.at(
+                "Attribution-Reporting-Support"),
+            "web");
+}
+
 class AttributionsCrossAppWebEnabledBrowserTest
     : public AttributionsBrowserTest {
  public:
-  AttributionsCrossAppWebEnabledBrowserTest() = default;
+  AttributionsCrossAppWebEnabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::
+                                  kAttributionReportingCrossAppWeb,
+                              features::kPrivacySandboxAdsAPIsOverride},
+        /*disabled_features=*/{});
+  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      network::features::kAttributionReportingCrossAppWeb};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebEnabledBrowserTest,

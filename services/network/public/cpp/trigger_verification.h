@@ -13,7 +13,7 @@
 
 namespace network {
 
-class COMPONENT_EXPORT(NETWORK_CPP_TRIGGER_VERIFICATION) TriggerVerification {
+class COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION) TriggerVerification {
  public:
   // Creates a TriggerVerification instance if the `aggregatable_report_id` is a
   // valid id and `token` is not empty.

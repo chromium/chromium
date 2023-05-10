@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace network {
+struct AttributionReportingRuntimeFeatures;
 class TriggerVerification;
 }  // namespace network
 
@@ -99,6 +100,8 @@ class CORE_EXPORT AttributionSrcLoader
   void Trace(Visitor* visitor) const;
 
   network::mojom::AttributionSupport GetSupport() const;
+
+  network::AttributionReportingRuntimeFeatures GetRuntimeFeatures() const;
 
  private:
   class ResourceClient;

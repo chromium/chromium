@@ -509,6 +509,13 @@ struct URLRequest {
   // the request is made.
   AttributionReportingEligibility attribution_reporting_eligibility =
     AttributionReportingEligibility.kUnset;
+
+  // Indicates whether Attribution Reporting API related runtime features are
+  // enabled.
+  //
+  // TODO(https://crbug.com/1443602): Get rid of this with proper OT
+  // infrastructure support in the network service.
+  AttributionReportingRuntimeFeatures attribution_reporting_runtime_features;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

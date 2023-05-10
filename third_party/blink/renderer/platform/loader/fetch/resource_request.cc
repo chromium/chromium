@@ -227,6 +227,8 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetAttributionReportingSupport(GetAttributionReportingSupport());
   request->SetAttributionReportingEligibility(
       GetAttributionReportingEligibility());
+  request->SetAttributionReportingRuntimeFeatures(
+      GetAttributionReportingRuntimeFeatures());
 
   return request;
 }
