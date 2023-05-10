@@ -83,13 +83,16 @@ class AddressField : public FormField {
                   const LanguageCode& page_language,
                   PatternSource pattern_source);
 
+  bool ParseLandmark(AutofillScanner* scanner,
+                     const LanguageCode& page_language,
+                     PatternSource pattern_source);
+
   // Parses the current field pointed to by |scanner|, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
-  // dependent locality, city, state, country, zip, or none of those.
-  bool ParseDependentLocalityCityStateCountryZipCode(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+  // dependent locality, city, state, country, zip, landmark or none of those.
+  bool ParseAddressField(AutofillScanner* scanner,
+                         const LanguageCode& page_language,
+                         PatternSource pattern_source);
 
   // Like ParseFieldSpecifics(), but applies |pattern| against the name and
   // label of the current field separately. If the return value is
@@ -123,6 +126,11 @@ class AddressField : public FormField {
       PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForCountry(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language,
+      PatternSource pattern_source);
+
+  ParseNameLabelResult ParseNameAndLabelForLandmark(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
       PatternSource pattern_source);
@@ -176,6 +184,9 @@ class AddressField : public FormField {
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION AutofillField* country_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* landmark_ = nullptr;
 };
 
 }  // namespace autofill
