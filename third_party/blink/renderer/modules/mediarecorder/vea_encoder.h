@@ -41,7 +41,8 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
              media::VideoCodecProfile codec,
              absl::optional<uint8_t> level,
              const gfx::Size& size,
-             bool use_native_input);
+             bool use_native_input,
+             bool is_screencast);
   ~VEAEncoder() override;
 
   // media::VideoEncodeAccelerator::Client implementation.
@@ -88,6 +89,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
   // Attributes for initialization.
   const gfx::Size size_;
   const bool use_native_input_;
+  const bool is_screencast_;
 
   // The underlying VEA to perform encoding on.
   std::unique_ptr<media::VideoEncodeAccelerator> video_encoder_;

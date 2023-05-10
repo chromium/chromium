@@ -52,7 +52,8 @@ VEAEncoder::VEAEncoder(
     media::VideoCodecProfile codec,
     absl::optional<uint8_t> level,
     const gfx::Size& size,
-    bool use_native_input)
+    bool use_native_input,
+    bool is_screencast)
     : Encoder(std::move(encoding_task_runner),
               on_encoded_video_cb,
               bits_per_second > 0
@@ -64,6 +65,7 @@ VEAEncoder::VEAEncoder(
       bitrate_mode_(bitrate_mode),
       size_(size),
       use_native_input_(use_native_input),
+      is_screencast_(is_screencast),
       error_notified_(false),
       num_frames_after_keyframe_(0),
       force_next_frame_to_be_keyframe_(false),
@@ -309,7 +311,9 @@ void VEAEncoder::ConfigureEncoder(const gfx::Size& size,
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, codec_, bitrate, absl::nullopt,
       absl::nullopt, level_, false, storage_type,
-      media::VideoEncodeAccelerator::Config::ContentType::kCamera);
+      is_screencast_
+          ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
+          : media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ ||
       !video_encoder_->Initialize(config, this,
                                   std::make_unique<media::NullMediaLog>())) {

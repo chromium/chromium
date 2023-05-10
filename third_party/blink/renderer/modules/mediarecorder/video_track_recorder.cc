@@ -797,6 +797,9 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
 
   DisconnectFromTrack();
 
+  const bool is_screencast =
+      static_cast<const MediaStreamVideoTrack*>(track_->GetPlatformTrack())
+          ->is_screencast();
   std::unique_ptr<Encoder> encoder;
   base::WeakPtr<Encoder> weak_encoder;
   scoped_refptr<base::SequencedTaskRunner> encoding_task_runner;
@@ -828,7 +831,7 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
             WTF::BindRepeating(&VideoTrackRecorderImpl::OnHardwareEncoderError,
                                weak_factory_.GetWeakPtr())),
         bitrate_mode, bits_per_second, vea_profile, codec_profile.level,
-        input_size, use_import_mode);
+        input_size, use_import_mode, is_screencast);
     weak_encoder = vea_encoder->GetWeakPtr();
     encoder = std::move(vea_encoder);
   } else {
