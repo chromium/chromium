@@ -38,12 +38,9 @@ TEST_F(RealTimeReportGeneratorTest, ExtensionRequest) {
   TestingProfile* profile = profile_manager()->CreateTestingProfile("profile");
 
   profile->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
-      std::make_unique<base::Value>(true));
+      prefs::kCloudExtensionRequestEnabled, base::Value(true));
 
-  std::unique_ptr<base::Value> requests =
-      std::make_unique<base::Value>(base::Value::Type::DICT);
-  requests->SetKey(extension_id, base::Value());
+  auto requests = base::Value::Dict().Set(extension_id, base::Value::Dict());
   profile->GetTestingPrefService()->SetUserPref(
       prefs::kCloudExtensionRequestIds, std::move(requests));
 
