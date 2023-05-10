@@ -14,6 +14,7 @@
 #include "ash/shutdown_reason.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -394,12 +395,16 @@ PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
   set_context_menu_controller(context_menu_.get());
 
   // Installs the customized focus ring path generator for the button.
-  views::FocusRing::Install(button_content_);
-  views::FocusRing::Get(button_content_)
-      ->SetPathGenerator(
-          std::make_unique<HighlightPathGenerator>(/*power_button=*/this));
+  views::HighlightPathGenerator::Install(
+      button_content_,
+      std::make_unique<HighlightPathGenerator>(/*power_button=*/this));
   views::FocusRing::Get(button_content_)
       ->SetColorId(cros_tokens::kCrosSysPrimary);
+
+  // Ripple.
+  StyleUtil::SetUpInkDropForButton(button_content_, gfx::Insets(),
+                                   /*highlight_on_hover=*/false,
+                                   /*highlight_on_focus=*/false);
 }
 
 PowerButton::~PowerButton() = default;
