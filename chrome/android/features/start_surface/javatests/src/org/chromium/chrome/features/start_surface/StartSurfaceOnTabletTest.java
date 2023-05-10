@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.test.filters.MediumTest;
 
@@ -27,6 +28,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -314,6 +316,60 @@ public class StartSurfaceOnTabletTest {
         // Verifies there isn't additional margin added for the fake search box in bot landscape and
         // portrait mode when multiple Column Feeds is disabled.
         verifyFakeSearchBoxWidth(expectedMargin, expectedMargin, ntp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    // clang-format off
+    public void testLogoSizeShrink() {
+        // clang-format on
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
+
+        Resources res = cta.getResources();
+        int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
+        int expectedVerticalMargin =
+                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_margin_tablet);
+
+        // Verifies the logo size is decreased, and top bottom margins are updated.
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
+        Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
+        Assert.assertEquals(expectedVerticalMargin, marginLayoutParams.topMargin);
+        Assert.assertEquals(expectedVerticalMargin, marginLayoutParams.bottomMargin);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    // clang-format off
+    public void testDefaultLogoSize() {
+        // clang-format on
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
+
+        Resources res = cta.getResources();
+        int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
+        int expectedMarginTop = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int expectedMarginBottom = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+
+        // Verifies logo has its original size and margins.
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
+        Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
+        Assert.assertEquals(expectedMarginTop, marginLayoutParams.topMargin);
+        Assert.assertEquals(expectedMarginBottom, marginLayoutParams.bottomMargin);
     }
 
     private void verifyTabCountAndActiveTabUrl(

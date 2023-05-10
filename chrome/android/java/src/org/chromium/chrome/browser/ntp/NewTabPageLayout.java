@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
+import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -323,9 +324,15 @@ public class NewTabPageLayout extends LinearLayout {
         // If pull up Feed position is enabled, doodle is not supported since there is not enough
         // room, we don't need to fetch logo image.
         boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
-        mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback,
-                findViewById(R.id.search_provider_logo), shouldFetchDoodle, onLogoAvailableCallback,
-                onCachedLogoRevalidatedRunnable, /*isParentSurfaceShown=*/true,
+        LogoView logoView = findViewById(R.id.search_provider_logo);
+        if (mIsNtpAsHomeSurfaceEnabled) {
+            logoView.getLayoutParams().height =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
+        }
+
+        mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback, logoView,
+                shouldFetchDoodle, onLogoAvailableCallback, onCachedLogoRevalidatedRunnable,
+                /*isParentSurfaceShown=*/true,
                 /*visibilityObserver=*/null);
         mLogoCoordinator.initWithNative();
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);

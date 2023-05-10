@@ -165,6 +165,8 @@ found in the LICENSE file.
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="ntp_logo_margin_bottom">23dp</dimen>
+    <dimen name="ntp_logo_height_shrink">85dp</dimen>
+    <dimen name="ntp_logo_vertical_margin_tablet">24dp</dimen>
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
     <dimen name="ntp_search_box_start_margin">44dp</dimen>

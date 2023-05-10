@@ -170,6 +170,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final Activity mActivity;
     @Nullable
     private final HomeSurfaceTracker mHomeSurfaceTracker;
+    private final boolean mIsNtpAsHomeSurfaceEnabled;
 
     @Nullable
     private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
@@ -386,6 +387,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mIsTablet = isTablet;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);
+        mIsNtpAsHomeSurfaceEnabled = StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(mIsTablet);
 
         mTabObserver = new EmptyTabObserver() {
             @Override
@@ -486,8 +488,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid,
-                StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(mIsTablet),
-                FeedFeatures.isMultiColumnFeedEnabled(mContext));
+                mIsNtpAsHomeSurfaceEnabled, FeedFeatures.isMultiColumnFeedEnabled(mContext));
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
         // previously tracked Tab.
@@ -1045,6 +1046,10 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     // cleaned up.
     private int getLogoMargin(boolean isTopMargin) {
         if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
+        if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
+            return mNewTabPageLayout.getResources().getDimensionPixelSize(
+                    R.dimen.ntp_logo_vertical_margin_tablet);
+        }
         return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
                        R.dimen.ntp_logo_margin_top)
                            : mNewTabPageLayout.getResources().getDimensionPixelSize(
