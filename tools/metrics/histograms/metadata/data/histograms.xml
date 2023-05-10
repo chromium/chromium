@@ -145,8 +145,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataUse.AppTabState" units="bytes" expires_after="2023-05-07">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Records the data use of Chrome user traffic by the foregound vs. background
     state of the app and tab.
@@ -155,6 +156,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.BackgroundToDataRecievedPerByte" units="ms"
     expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -166,6 +170,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.BackgroundToFirstDownstream" units="ms"
     expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -194,6 +201,7 @@ chromium-metrics-reviews@google.com.
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Count of total bytes received by the Chrome on the network, as reported by
     the network delegate. This is recorded when requests complete.
@@ -204,8 +212,9 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Obsoleted.
   </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Count of total bytes sent by the Chrome on the network. With network
     servicification this is recorded when requests complete.
@@ -217,6 +226,7 @@ chromium-metrics-reviews@google.com.
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Count of total bytes sent by the Chrome on the network, as reported by the
     network delegate. With network servicification this is recorded when
@@ -226,8 +236,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.ContentType.UserTrafficKB" enum="DataUseContentType"
     expires_after="2023-03-05">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Data use of user traffic by different content types. Recorded in KB when
     network bytes are received by Chrome.
@@ -236,6 +247,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.FavIcon.Downstream" units="bytes"
     expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -247,6 +261,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.FavIcon.Downstream.Non200Response" units="bytes"
     expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -257,6 +274,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataUse.PageTransition.UserTrafficKB"
     enum="DataUsePageTransition" expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -266,9 +286,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataUse.TrafficSize.User" units="bytes"
-    expires_after="2023-05-07">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
+    expires_after="2024-05-07">
+  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     The total amount of data use of Chrome for user traffic. This traffic has
     content::ResourceRequestInfo attached to its request. If the OS is not
