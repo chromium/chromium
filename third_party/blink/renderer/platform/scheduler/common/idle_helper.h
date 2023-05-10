@@ -88,14 +88,14 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // The maximum length of an idle period.
   static constexpr base::TimeDelta kMaximumIdlePeriod = base::Milliseconds(50);
 
-  // |helper| and |delegate| are not owned by IdleHelper object and must
-  // outlive it.
+  // |helper|, |delegate|, and |idle_queue| are not owned by IdleHelper object
+  // and must outlive it.
   IdleHelper(
       SchedulerHelper* helper,
       Delegate* delegate,
       const char* idle_period_tracing_name,
       base::TimeDelta required_quiescence_duration_before_long_idle_period,
-      scoped_refptr<base::sequence_manager::TaskQueue> idle_queue);
+      base::sequence_manager::TaskQueue* idle_queue);
   IdleHelper(const IdleHelper&) = delete;
   IdleHelper& operator=(const IdleHelper&) = delete;
   ~IdleHelper() override;
@@ -157,10 +157,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
  private:
   friend class idle_helper_unittest::BaseIdleHelperTest;
   friend class idle_helper_unittest::IdleHelperTest;
-
-  const scoped_refptr<base::sequence_manager::TaskQueue>& idle_queue() const {
-    return idle_queue_;
-  }
 
   class State {
    public:
@@ -227,9 +223,9 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // Returns true if |state| represents being within a long idle period state.
   static bool IsInLongIdlePeriod(IdlePeriodState state);
 
-  SchedulerHelper* helper_;  // NOT OWNED
-  Delegate* delegate_;       // NOT OWNED
-  scoped_refptr<base::sequence_manager::TaskQueue> idle_queue_;
+  SchedulerHelper* helper_;                        // NOT OWNED
+  Delegate* delegate_;                             // NOT OWNED
+  base::sequence_manager::TaskQueue* idle_queue_;  // NOT OWNED
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 
   CancelableClosureHolder enable_next_long_idle_period_closure_;

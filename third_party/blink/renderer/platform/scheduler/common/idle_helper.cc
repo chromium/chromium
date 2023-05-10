@@ -32,10 +32,10 @@ IdleHelper::IdleHelper(
     Delegate* delegate,
     const char* idle_period_tracing_name,
     base::TimeDelta required_quiescence_duration_before_long_idle_period,
-    scoped_refptr<TaskQueue> idle_queue)
+    TaskQueue* idle_queue)
     : helper_(helper),
       delegate_(delegate),
-      idle_queue_(std::move(idle_queue)),
+      idle_queue_(idle_queue),
       state_(helper, delegate, idle_period_tracing_name),
       required_quiescence_duration_before_long_idle_period_(
           required_quiescence_duration_before_long_idle_period),
@@ -72,8 +72,6 @@ void IdleHelper::Shutdown() {
   EndIdlePeriod();
   is_shutdown_ = true;
   weak_factory_.InvalidateWeakPtrs();
-  // Belt & braces, might not be needed.
-  idle_queue_->ShutdownTaskQueue();
 }
 
 IdleHelper::Delegate::Delegate() = default;
