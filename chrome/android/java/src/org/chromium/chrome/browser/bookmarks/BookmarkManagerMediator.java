@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -17,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -51,6 +54,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -328,6 +332,7 @@ class BookmarkManagerMediator
     private final int mFetchFaviconSize;
     private final int mDisplayFaviconSize;
     private final Runnable mHideKeyboardRunnable;
+    private final ImageFetcher mImageFetcher;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -351,7 +356,8 @@ class BookmarkManagerMediator
             LargeIconBridge largeIconBridge, boolean isDialogUi, boolean isIncognito,
             ObservableSupplierImpl<Boolean> backPressStateSupplier, Profile profile,
             BookmarkUndoController bookmarkUndoController, ModelList modelList,
-            BookmarkUiPrefs bookmarkUiPrefs, Runnable hideKeyboardRunnable) {
+            BookmarkUiPrefs bookmarkUiPrefs, Runnable hideKeyboardRunnable,
+            ImageFetcher imageFetcher) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -384,6 +390,7 @@ class BookmarkManagerMediator
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mHideKeyboardRunnable = hideKeyboardRunnable;
+        mImageFetcher = imageFetcher;
 
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
@@ -1076,24 +1083,85 @@ class BookmarkManagerMediator
     // ImprovedBookmarkRow methods.
 
     private void resolveIconForBookmark(BookmarkItem item, PropertyModel model) {
+        boolean useImages = BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && mBookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL;
         if (item.isFolder()) {
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                    && mBookmarkUiPrefs.getBookmarkRowDisplayPref()
-                            == BookmarkRowDisplayPref.VISUAL) {
+            if (useImages) {
                 model.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
                         BookmarkUtils.getChildCountForDisplay(item.getId(), mBookmarkModel));
 
-                // TODO(crbug.com/1434538): Add images to folder once image service is available.
                 // TODO(crbug.com/1440863): Support reading list special placeholder case.
                 model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES, new Pair<>(null, null));
+                // TODO(crbug.com/1444251): Extract fetching logic to standalone class.
+                resolveFolderDrawables(model, /*primaryDrawable=*/null, /*secondaryDrawable=*/null,
+                        mBookmarkModel.getChildIds(item.getId()), /*index=*/0);
+
             } else {
                 model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE,
                         BookmarkUtils.getFolderIcon(mContext, item.getId().getType()));
             }
+        } else {
+            if (useImages) {
+                // TODO(crbug.com/1444251): Extract fetching logic to standalone class.
+                getBookmarkDrawable(item.getId(), (drawable) -> {
+                    if (drawable == null) {
+                        resolveFaviconForBookmark(item, model);
+                    } else {
+                        model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, drawable);
+                    }
+                });
+            } else {
+                resolveFaviconForBookmark(item, model);
+            }
+        }
+    }
 
+    private void resolveFolderDrawables(PropertyModel model, Drawable primaryDrawable,
+            Drawable secondaryDrawable, List<BookmarkId> childIds, int index) {
+        if (index == childIds.size() || (primaryDrawable != null && secondaryDrawable != null)) {
+            model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES,
+                    new Pair<>(primaryDrawable, secondaryDrawable));
             return;
         }
 
+        BookmarkItem item = mBookmarkModel.getBookmarkById(childIds.get(index));
+        getBookmarkDrawable(childIds.get(index), (drawable) -> {
+            Drawable newPrimaryDrawable = primaryDrawable;
+            Drawable newSecondaryDrawable = secondaryDrawable;
+            if (newPrimaryDrawable == null) {
+                newPrimaryDrawable = drawable;
+            } else {
+                newSecondaryDrawable = drawable;
+            }
+            resolveFolderDrawables(
+                    model, newPrimaryDrawable, newSecondaryDrawable, childIds, index + 1);
+        });
+    }
+
+    private void getBookmarkDrawable(BookmarkId id, Callback<BitmapDrawable> callback) {
+        BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        mBookmarkModel.getImageUrlForBookmark(item.getUrl(), (imageUrl) -> {
+            if (imageUrl == null) {
+                callback.onResult(null);
+                return;
+            }
+
+            Resources res = mContext.getResources();
+            int size = BookmarkUtils.getDisplayIconSize(
+                    res, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+            mImageFetcher.fetchImage(ImageFetcher.Params.create(imageUrl,
+                                             ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME, size, size),
+                    (image) -> {
+                        if (image == null) {
+                            callback.onResult(null);
+                        } else {
+                            callback.onResult(new BitmapDrawable(res, image));
+                        }
+                    });
+        });
+    }
+
+    private void resolveFaviconForBookmark(BookmarkItem item, PropertyModel model) {
         mLargeIconBridge.getLargeIconForUrl(item.getUrl(), mFetchFaviconSize,
                 (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) -> {
                     Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(icon,
