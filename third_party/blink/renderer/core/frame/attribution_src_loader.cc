@@ -328,7 +328,9 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
   const Impression impression{
       .nav_type = element
                       ? mojom::blink::AttributionNavigationType::kAnchor
-                      : mojom::blink::AttributionNavigationType::kWindowOpen};
+                      : mojom::blink::AttributionNavigationType::kWindowOpen,
+      .runtime_features = GetRuntimeFeatures(),
+  };
 
   if (CreateAndSendRequests(std::move(attribution_src_urls), element,
                             impression.attribution_src_token)) {

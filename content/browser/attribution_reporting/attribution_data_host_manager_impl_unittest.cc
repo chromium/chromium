@@ -54,6 +54,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -868,6 +869,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporting_origin, source_origin,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
 
   // 3 - The background attribution request completes
@@ -1083,6 +1085,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1091,7 +1094,38 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, /*headers=*/nullptr, reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       CrossAppWebRuntimeDisabled_OsSourceNotRegistered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kAttributionReportingCrossAppWeb);
+
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
+
+  const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
+  const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
+
+  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                     R"("https://r.test/x")");
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRegistrationData(
+      attribution_src_token, headers.get(), reporter, source_site,
+      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      // The cross to web runtime feature defaults to false.
+      network::AttributionReportingRuntimeFeatures(),
+      /*is_final_response=*/false);
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
 }
 
 TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
@@ -1120,6 +1154,9 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures{
+          .cross_app_web_enabled = true,
+      },
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1147,6 +1184,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures{
+          .cross_app_web_enabled = true,
+      },
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1189,6 +1229,9 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
         attribution_src_token, headers.get(), reporter, source_site,
         AttributionInputEvent(), AttributionNavigationType::kAnchor,
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+        network::AttributionReportingRuntimeFeatures{
+            .cross_app_web_enabled = true,
+        },
         /*is_final_response=*/false);
   }
 
@@ -1201,6 +1244,9 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
         attribution_src_token, headers.get(), reporter, source_site,
         AttributionInputEvent(), AttributionNavigationType::kAnchor,
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+        network::AttributionReportingRuntimeFeatures{
+            .cross_app_web_enabled = true,
+        },
         /*is_final_response=*/false);
   }
 
@@ -1231,6 +1277,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures{
+          .cross_app_web_enabled = true,
+      },
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1252,6 +1301,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
 
   // Wait for parsing to finish.
@@ -1289,6 +1339,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
         attribution_src_token, headers.get(), reporter, source_site,
         AttributionInputEvent(), AttributionNavigationType::kAnchor,
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+        network::AttributionReportingRuntimeFeatures(),
         /*is_final_response=*/false);
   }
 
@@ -1302,6 +1353,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
         attribution_src_token, headers.get(), reporter, source_site,
         AttributionInputEvent(), AttributionNavigationType::kAnchor,
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+        network::AttributionReportingRuntimeFeatures(),
         /*is_final_response=*/false);
   }
 
@@ -1333,6 +1385,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1341,6 +1394,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
@@ -1375,6 +1429,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1385,6 +1440,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
@@ -1423,7 +1479,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
-      /*navigation_id=*/kNavigationId, /*is_final_response=*/false);
+      /*navigation_id=*/kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
+      /*is_final_response=*/false);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1438,7 +1496,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, /*headers=*/nullptr, reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
-      /*navigation_id=*/kNavigationId, /*is_final_response=*/true);
+      /*navigation_id=*/kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
+      /*is_final_response=*/true);
   // The redirection source is still being processed by the data decoder. The
   // registration is also linked to the trigger registration last navigation as
   // such, the trigger should be delayed until the source is done processing.
@@ -1478,11 +1538,13 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
 
   // Wait for parsing.
@@ -1529,11 +1591,13 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
 
   // Wait for parsing.
@@ -1621,6 +1685,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       source_origin, AttributionInputEvent(),
       AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
 
   trigger_data_host_remote->TriggerDataAvailable(
@@ -1928,6 +1993,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*source_origin=*/*SuitableOrigin::Deserialize("https://source.test"),
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/true, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1949,14 +2015,16 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, std::move(reporting_origin), headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      std::move(reporting_origin), headers.get(),
       /*is_final_response=*/true);
 
   data_host_manager_.NotifyNavigationRegistrationData(
@@ -1964,6 +2032,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       *SuitableOrigin::Deserialize("https://reporter.example"), source_origin,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
 
   // Wait for parsing to finish.
@@ -1986,7 +2055,8 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
@@ -1997,10 +2067,12 @@ TEST_F(AttributionDataHostManagerImplTest,
       *SuitableOrigin::Create(reporting_origin), source_origin,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, std::move(reporting_origin), headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      std::move(reporting_origin), headers.get(),
       /*is_final_response=*/true);
 
   // Wait for parsing to finish.
@@ -2027,14 +2099,16 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, std::move(reporting_origin), headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      std::move(reporting_origin), headers.get(),
       /*is_final_response=*/true);
 
   // This is irrelevant to beacon source registrations.
@@ -2076,14 +2150,22 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*is_within_fenced_frame=*/false, AttributionInputEvent(), kFrameId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId,
+      network::AttributionReportingRuntimeFeatures{
+          .cross_app_web_enabled = true,
+      },
+      reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId,
+      network::AttributionReportingRuntimeFeatures{
+          .cross_app_web_enabled = true,
+      },
+      reporting_origin, headers.get(),
       /*is_final_response=*/true);
 
   // This is irrelevant to beacon source registrations.
@@ -2092,7 +2174,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       source_origin, AttributionInputEvent(),
       AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
-      /*navigation_id=*/kNavigationId, /*is_final_response=*/true);
+      /*navigation_id=*/kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
+      /*is_final_response=*/true);
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -2121,14 +2205,16 @@ TEST_F(AttributionDataHostManagerImplTest,
                      "!!!invalid json");
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/true);
 
   // This is irrelevant to beacon source registrations.
@@ -2160,7 +2246,8 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
   // Wait for parsing to finish.
@@ -2174,7 +2261,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*navigation_id=*/kNavigationId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, std::move(reporting_origin), headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      std::move(reporting_origin), headers.get(),
       /*is_final_response=*/true);
 
   // Wait for parsing to finish.
@@ -2196,7 +2284,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId,
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/url::Origin::Create(GURL("http://insecure.test")),
       headers.get(),
       /*is_final_response=*/true);
@@ -2250,7 +2338,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::Seconds(2));
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/kBeaconId,
+      /*beacon_id=*/kBeaconId, network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2308,7 +2396,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(1);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/kBeaconId,
+      /*beacon_id=*/kBeaconId, network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2317,12 +2405,12 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(2);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/BeaconId(2),
+      /*beacon_id=*/BeaconId(2), network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/BeaconId(3),
+      /*beacon_id=*/BeaconId(3), network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2383,6 +2471,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporting_origin, source_origin,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
 
   // 3 - Sources can be registered via a Fenced Frame beacon
@@ -2401,7 +2490,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // 6 - Beacon registrations complete, the trigger can now be registered.
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId,
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2452,14 +2541,14 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(1);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/kBeaconId,
+      /*beacon_id=*/kBeaconId, network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
   task_environment_.FastForwardBy(base::TimeDelta());
   // BeaconId(2) never gets called
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/BeaconId(3),
+      /*beacon_id=*/BeaconId(3), network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2504,11 +2593,13 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, reporting_origin, headers.get(),
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      reporting_origin, headers.get(),
       /*is_final_response=*/true);
 
   // Wait for parsing.
@@ -2543,7 +2634,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*is_within_fenced_frame=*/false, AttributionInputEvent(), kFrameId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, /*reporting_origin=*/url::Origin(), /*headers=*/nullptr,
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      /*reporting_origin=*/url::Origin(), /*headers=*/nullptr,
       /*is_final_response=*/true);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
@@ -2576,7 +2668,7 @@ TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId,
+      kBeaconId, network::AttributionReportingRuntimeFeatures(),
       /*reporting_origin=*/url::Origin::Create(GURL("https://report.test")),
       headers.get(),
       /*is_final_response=*/true);
@@ -2650,6 +2742,7 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
         attribution_src_token, headers.get(), reporter, source_site,
         AttributionInputEvent(), AttributionNavigationType::kAnchor,
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+        network::AttributionReportingRuntimeFeatures(),
         /*is_final_response=*/false);
     // Wait for parsing to finish.
     task_environment_.FastForwardBy(base::TimeDelta());

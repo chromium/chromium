@@ -923,7 +923,9 @@ FrameTreeNode::GetFencedFramePropertiesForEditing() {
 
 void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features) {
   absl::optional<FencedFrameProperties>& properties =
       GetFencedFramePropertiesForEditing();
   // `properties` will exist for both fenced frames as well as iframes loaded
@@ -945,7 +947,8 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
         "origin to the mapped url from the fenced frame config.");
     return;
   }
-  properties->UpdateAutomaticBeaconData(event_data, destinations);
+  properties->UpdateAutomaticBeaconData(event_data, destinations,
+                                        attribution_reporting_runtime_features);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(

@@ -49,6 +49,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_verification.h"
@@ -352,7 +353,8 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
   std::string header;
 
   [[nodiscard]] static absl::optional<RegistrarAndHeader> Get(
-      const net::HttpResponseHeaders* headers) {
+      const net::HttpResponseHeaders* headers,
+      bool cross_app_web_runtime_enabled) {
     if (!headers) {
       return absl::nullopt;
     }
@@ -362,7 +364,12 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
         kAttributionReportingRegisterSourceHeader, &web_source);
 
     std::string os_source;
+    // Note that it's important that the browser process check both the
+    // base::Feature (which is set from the browser, so trustworthy) and the
+    // runtime feature (which can be spoofed in a compromised renderer, so is
+    // best-effort).
     const bool has_os =
+        cross_app_web_runtime_enabled &&
         base::FeatureList::IsEnabled(
             network::features::kAttributionReportingCrossAppWeb) &&
         headers->GetNormalizedHeader(
@@ -568,8 +575,10 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id,
     int64_t navigation_id,
+    network::AttributionReportingRuntimeFeatures runtime_features,
     bool is_final_response) {
-  if (auto header = RegistrarAndHeader::Get(headers)) {
+  if (auto header = RegistrarAndHeader::Get(
+          headers, runtime_features.cross_app_web_enabled)) {
     auto [it, inserted] = registrations_.emplace(
         source_origin, is_within_fenced_frame, std::move(input_event),
         render_frame_id,
@@ -741,6 +750,7 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
 
 void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     BeaconId beacon_id,
+    network::AttributionReportingRuntimeFeatures runtime_features,
     url::Origin reporting_origin,
     const net::HttpResponseHeaders* headers,
     bool is_final_response) {
@@ -764,7 +774,8 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  auto attribution_header = RegistrarAndHeader::Get(headers);
+  auto attribution_header =
+      RegistrarAndHeader::Get(headers, runtime_features.cross_app_web_enabled);
   if (!attribution_header) {
     MaybeOnRegistrationsFinished(it);
     return;

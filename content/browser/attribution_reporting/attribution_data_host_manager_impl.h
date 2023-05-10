@@ -94,6 +94,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id,
+      network::AttributionReportingRuntimeFeatures,
       bool is_final_response) override;
 
   void NotifyFencedFrameReportingBeaconStarted(
@@ -105,6 +106,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       GlobalRenderFrameHostId render_frame_id) override;
   void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
+      network::AttributionReportingRuntimeFeatures,
       url::Origin reporting_origin,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) override;

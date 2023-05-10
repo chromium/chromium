@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -145,6 +146,8 @@ class CONTENT_EXPORT FencedFrameReporter
       const std::string& event_data,
       blink::FencedFrame::ReportingDestination reporting_destination,
       RenderFrameHostImpl* request_initiator_frame,
+      network::AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features,
       std::string& error_message,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
@@ -193,6 +196,8 @@ class CONTENT_EXPORT FencedFrameReporter
   struct AttributionReportingData {
     BeaconId beacon_id;
     bool is_automatic_beacon;
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features;
   };
 
   struct PendingEvent {

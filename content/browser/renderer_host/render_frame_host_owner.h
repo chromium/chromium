@@ -25,6 +25,10 @@ namespace net {
 class IsolationInfo;
 }  // namespace net
 
+namespace network {
+struct AttributionReportingRuntimeFeatures;
+}  // namespace network
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -124,10 +128,14 @@ class RenderFrameHostOwner {
 
   // Stores the payload that will be sent as part of an automatic beacon. Right
   // now only the "reserved.top_navigation" beacon is supported.
+  // `attribution_reporting_runtime_features` indicates whether Attribution
+  // Reporting API related runtime features are enabled and is needed for
+  // integration with Attribution Reporting API.
   virtual void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>&
-          destinations) = 0;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+      network::AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   virtual void GetVirtualAuthenticatorManager(

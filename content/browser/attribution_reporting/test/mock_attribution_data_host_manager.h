@@ -14,6 +14,7 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -71,6 +72,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
                bool is_within_fenced_frame,
                GlobalRenderFrameHostId,
                int64_t navigation_id,
+               network::AttributionReportingRuntimeFeatures,
                bool is_final_response),
               (override));
 
@@ -87,6 +89,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
   MOCK_METHOD(void,
               NotifyFencedFrameReportingBeaconData,
               (BeaconId beacon_id,
+               network::AttributionReportingRuntimeFeatures,
                url::Origin reporting_origin,
                const net::HttpResponseHeaders* headers,
                bool is_final_response),

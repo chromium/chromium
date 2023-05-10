@@ -17,6 +17,7 @@ import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
@@ -606,18 +607,37 @@ interface LocalFrameHost {
   // For the list of available reporting destinations, see enum
   // ReportingDestination defined in:
   // third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom
-  SendFencedFrameReportingBeacon(string event_data,
-                                 string event_type,
-                                 array<ReportingDestination> destinations);
+  // `attribution_reporting_runtime_features` indicates whether Attribution
+  // Reporting API related runtime features are enabled and is needed for
+  // integration with Attribution Reporting API.
+  //
+  // TODO(crbug.com/1443561): Get rid of
+  // `attribution_reporting_runtime_features` when Runtime Feature State fully
+  // supports runtime feature access from the browser process.
+  SendFencedFrameReportingBeacon(
+      string event_data,
+      string event_type,
+      array<ReportingDestination> destinations,
+      network.mojom.AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features);
 
   // Fenced frames can send beacons automatically when an event happens.
   //
   // For now, only "reserved.top_navigation" is supported. The `event_data` is
   // installed in the RenderFrameHost and will be sent toward `destinations` on
   // the next cross-document top-frame navigation.
+  // `attribution_reporting_runtime_features` indicates whether Attribution
+  // Reporting API related runtime features are enabled and is needed for
+  // integration with Attribution Reporting API.
+  //
+  // TODO(crbug.com/1443561): Get rid of
+  // `attribution_reporting_runtime_features` when Runtime Feature State fully
+  // supports runtime feature access from the browser process.
   SetFencedFrameAutomaticBeaconReportEventData(
       string event_data,
-      array<ReportingDestination> destinations);
+      array<ReportingDestination> destinations,
+      network.mojom.AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features);
 
   // See:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md

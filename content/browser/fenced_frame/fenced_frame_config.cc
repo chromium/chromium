@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 
 namespace content {
@@ -303,10 +304,13 @@ void FencedFrameProperties::UpdateMappedURL(GURL url) {
 
 void FencedFrameProperties::UpdateAutomaticBeaconData(
     const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features) {
   // For an ad component, the event data from its automatic beacon is ignored.
   automatic_beacon_info_.emplace(is_ad_component_ ? std::string{} : event_data,
-                                 destinations);
+                                 destinations,
+                                 attribution_reporting_runtime_features);
 }
 
 }  // namespace content

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -253,13 +254,15 @@ void FakeLocalFrameHost::ReceivedDelegatedCapability(
 void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
     const WTF::String& event_data,
     const WTF::String& event_type,
-    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations) {
-}
+    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
+    const network::AttributionReportingRuntimeFeatures&
+        attribution_reporting_runtime_features) {}
 
 void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     const WTF::String& event_data,
-    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations) {
-}
+    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
+    const network::AttributionReportingRuntimeFeatures&
+        attribution_reporting_runtime_features) {}
 
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
     const WTF::String& event_type) {}

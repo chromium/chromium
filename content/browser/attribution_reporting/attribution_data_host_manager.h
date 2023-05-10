@@ -24,6 +24,10 @@ namespace net {
 class HttpResponseHeaders;
 }  // namespace net
 
+namespace network {
+struct AttributionReportingRuntimeFeatures;
+}  // namespace network
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -91,6 +95,7 @@ class AttributionDataHostManager
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id,
+      network::AttributionReportingRuntimeFeatures,
       bool is_final_response) = 0;
 
   // Notifies the manager that a fenced frame reporting beacon was initiated
@@ -118,6 +123,7 @@ class AttributionDataHostManager
   // be sent.
   virtual void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
+      network::AttributionReportingRuntimeFeatures,
       url::Origin reporting_origin,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) = 0;

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_IMPRESSION_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -24,6 +25,10 @@ struct BLINK_COMMON_EXPORT
   static blink::mojom::AttributionNavigationType nav_type(
       const blink::Impression& r) {
     return r.nav_type;
+  }
+  static const network::AttributionReportingRuntimeFeatures& runtime_features(
+      const blink::Impression& r) {
+    return r.runtime_features;
   }
 
   static bool Read(blink::mojom::ImpressionDataView r, blink::Impression* out);

@@ -1203,11 +1203,10 @@ class AttributionsCrossAppWebRuntimeDisabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1442871): Update this test to ensure that
-// Attribution-Reporting-Support header is not set when runtime feature status
-// is plumbed to the browser process.
+// Verify that the Attribution-Reporting-Support header setting is gated by the
+// runtime feature.
 IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
-                       AttributionEligibleNavigation_SupportHeaderSet) {
+                       AttributionEligibleNavigation_SupportHeaderNotSet) {
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           https_server(), "/register_source_redirect");
@@ -1238,9 +1237,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
   ASSERT_EQ(register_response1->http_request()->headers.at(
                 "Attribution-Reporting-Eligible"),
             "navigation-source");
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Support"),
-            "web");
+  ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
+                              "Attribution-Reporting-Support"));
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -1248,14 +1246,14 @@ IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
   register_response1->Send(http_response->ToResponseString());
   register_response1->Done();
 
-  // Ensure that redirect requests also contain the header.
+  // Ensure that redirect requests also don't contain the
+  // Attribution-Reporting-Support header.
   register_response2->WaitForRequest();
   EXPECT_EQ(register_response2->http_request()->headers.at(
                 "Attribution-Reporting-Eligible"),
             "navigation-source");
-  EXPECT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Support"),
-            "web");
+  EXPECT_FALSE(base::Contains(register_response2->http_request()->headers,
+                              "Attribution-Reporting-Support"));
 }
 
 class AttributionsCrossAppWebEnabledBrowserTest

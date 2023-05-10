@@ -19,4 +19,7 @@ specific_include_rules = {
     'internals\.cc' : [
         "+third_party/blink/renderer/core/exported/web_view_impl.h",
     ],
+    "fake_local_frame_host\.cc": [
+        "+services/network/public/cpp/attribution_reporting_runtime_features.h",
+    ]
 }

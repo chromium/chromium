@@ -75,6 +75,7 @@
 #include "base/memory/ref_counted.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/common/content_export.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
@@ -97,8 +98,9 @@ using SharedStorageBudgetMetadata =
 struct CONTENT_EXPORT AutomaticBeaconInfo {
   AutomaticBeaconInfo(
       const std::string& data,
-      const std::vector<blink::FencedFrame::ReportingDestination>&
-          destinations);
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+      network::AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features);
 
   AutomaticBeaconInfo(const AutomaticBeaconInfo&);
   AutomaticBeaconInfo(AutomaticBeaconInfo&&);
@@ -110,6 +112,10 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
 
   std::string data;
   std::vector<blink::FencedFrame::ReportingDestination> destinations;
+  // Indicates whether Attribution Reporting API related runtime features are
+  // enabled and is needed for integration with Attribution Reporting API.
+  network::AttributionReportingRuntimeFeatures
+      attribution_reporting_runtime_features;
 };
 
 // Different kinds of entities (renderers) that should receive different
@@ -360,8 +366,9 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // `reserved.top_navigation` automatic beacon.
   void UpdateAutomaticBeaconData(
       const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>&
-          destinations);
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+      network::AttributionReportingRuntimeFeatures
+          attribution_reporting_runtime_features);
 
   const absl::optional<AutomaticBeaconInfo>& automatic_beacon_info() const {
     return automatic_beacon_info_;

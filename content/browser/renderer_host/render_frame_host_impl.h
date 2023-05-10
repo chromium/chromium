@@ -213,6 +213,7 @@ class MessageFilter;
 }
 
 namespace network {
+struct AttributionReportingRuntimeFeatures;
 class ResourceRequestBody;
 }  // namespace network
 
@@ -2403,12 +2404,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendFencedFrameReportingBeacon(
       const std::string& event_data,
       const std::string& event_type,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
-      override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+      const network::AttributionReportingRuntimeFeatures&
+          attribution_reporting_runtime_features) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
-      override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+      const network::AttributionReportingRuntimeFeatures&
+          attribution_reporting_runtime_features) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;
   void CreatePortal(
@@ -3953,11 +3956,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // "reserved.top_navigation" beacon) will originate from the browser. All
   // other fenced frame beacon calls happen through a `fence.sendBeacon()`
   // JavaScript call which will originate from the renderer.
+  // `attribution_reporting_runtime_features` indicates whether Attribution
+  // Reporting API related runtime features are enabled and is needed for
+  // integration with Attribution Reporting API.
   void SendFencedFrameReportingBeaconInternal(
       const std::string& event_data,
       const std::string& event_type,
       blink::FencedFrame::ReportingDestination destination,
       bool from_renderer,
+      network::AttributionReportingRuntimeFeatures
+          attribution_reporting_features,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
   // Indicates whether this frame has third-party storage

@@ -210,6 +210,7 @@
 #include "render_frame_host_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -8203,11 +8204,14 @@ void RenderFrameHostImpl::CreateFencedFrame(
 void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
     const std::string& event_type,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+    const network::AttributionReportingRuntimeFeatures&
+        attribution_reporting_runtime_features) {
   for (const blink::FencedFrame::ReportingDestination& destination :
        destinations) {
-    SendFencedFrameReportingBeaconInternal(event_data, event_type, destination,
-                                           /*from_renderer=*/true);
+    SendFencedFrameReportingBeaconInternal(
+        event_data, event_type, destination,
+        /*from_renderer=*/true, attribution_reporting_runtime_features);
   }
 }
 
@@ -8269,7 +8273,8 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
        info->destinations) {
     initiator_rfh->SendFencedFrameReportingBeaconInternal(
         info->data, blink::kFencedFrameTopNavigationBeaconType, destination,
-        /*from_renderer=*/false, navigation_request.GetNavigationId());
+        /*from_renderer=*/false, info->attribution_reporting_runtime_features,
+        navigation_request.GetNavigationId());
   }
 }
 
@@ -8278,6 +8283,8 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     const std::string& event_type,
     blink::FencedFrame::ReportingDestination destination,
     bool from_renderer,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features,
     absl::optional<int64_t> navigation_id) {
   if (!IsActive()) {
     // reportEvent is not allowed when this RenderFrameHost or one of its
@@ -8335,7 +8342,9 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   std::string error_message;
   if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
           event_type, event_data, destination,
-          /*request_initiator_frame=*/this, error_message, navigation_id)) {
+          /*request_initiator_frame=*/this,
+          attribution_reporting_runtime_features, error_message,
+          navigation_id)) {
     AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
                         error_message);
   }
@@ -8343,7 +8352,9 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
 
 void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+    const network::AttributionReportingRuntimeFeatures&
+        attribution_reporting_runtime_features) {
   if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
     mojo::ReportBadMessage(
         "The data provided to SetFencedFrameAutomaticBeaconReportEventData() "
@@ -8363,8 +8374,8 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
   }
   CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
 
-  owner_->SetFencedFrameAutomaticBeaconReportEventData(event_data,
-                                                       destinations);
+  owner_->SetFencedFrameAutomaticBeaconReportEventData(
+      event_data, destinations, attribution_reporting_runtime_features);
 }
 
 void RenderFrameHostImpl::OnViewTransitionOptInChanged(
