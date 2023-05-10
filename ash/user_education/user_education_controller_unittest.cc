@@ -14,6 +14,7 @@
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_feature_controller.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/bind.h"
@@ -99,6 +100,13 @@ TEST_P(UserEducationControllerTest, CaptureModeTourControllerExists) {
 // enabled.
 TEST_P(UserEducationControllerTest, HoldingSpaceTourControllerExists) {
   EXPECT_EQ(!!HoldingSpaceTourController::Get(), IsHoldingSpaceTourEnabled());
+}
+
+// Verifies that the user education help bubble controller exists iff user
+// education features are enabled.
+TEST_P(UserEducationControllerTest, UserEducationHelpBubbleControllerExists) {
+  EXPECT_EQ(!!UserEducationHelpBubbleController::Get(),
+            !!UserEducationController::Get());
 }
 
 // Verifies that the user education ping controller exists iff user education
