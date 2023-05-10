@@ -24,20 +24,14 @@
 // Calculate the required padding so that the last element of a page-aligned
 // array lands on a page boundary. In other words, calculate that padding so
 // that (count-1) elements are a multiple of page size.
-// The offset parameter additionally skips bytes in the object, e.g.
-// object+offset will be page aligned.
-#define PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(Type, count, offset) \
-  PA_THREAD_ISOLATED_FILL_PAGE_SZ(sizeof(Type) * (count - 1) + offset)
-
 #define PA_THREAD_ISOLATED_ARRAY_PAD_SZ(Type, count) \
-  PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(Type, count, 0)
+  PA_THREAD_ISOLATED_FILL_PAGE_SZ(sizeof(Type) * (count - 1))
 
 #else  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #define PA_THREAD_ISOLATED_ALIGN
 #define PA_THREAD_ISOLATED_FILL_PAGE_SZ(size) 0
 #define PA_THREAD_ISOLATED_ARRAY_PAD_SZ(Type, size) 0
-#define PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(Type, size, offset) 0
 
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
