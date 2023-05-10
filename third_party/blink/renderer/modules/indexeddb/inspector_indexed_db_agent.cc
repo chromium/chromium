@@ -127,8 +127,7 @@ base::expected<LocalFrame*, protocol::Response> ResolveFrame(
         inspected_frames->FrameWithSecurityOrigin(security_origin.fromJust());
   }
   if (!frame) {
-    return base::unexpected(
-        protocol::Response::InvalidParams("specified storage not found"));
+    return base::unexpected(protocol::Response::ServerError(kNoDocumentError));
   }
   return frame;
 }
