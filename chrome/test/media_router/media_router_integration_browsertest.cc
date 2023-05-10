@@ -328,7 +328,7 @@ base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
 void MediaRouterIntegrationBrowserTest::ExecuteScript(
     const content::ToRenderFrameHost& adapter,
     const std::string& script) {
-  ASSERT_TRUE(content::ExecuteScript(adapter, script));
+  ASSERT_TRUE(content::ExecJs(adapter, script));
 }
 
 bool MediaRouterIntegrationBrowserTest::IsRouteCreatedOnUI() {
