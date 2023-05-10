@@ -119,9 +119,10 @@ def ParseArgs() -> argparse.Namespace:
 
   args = parser.parse_args()
   argument_parsing.PerformCommonPostParseSetup(args)
+  suite_class = name_mapping[args.suite]
 
   if not (args.tests or args.expectation_file):
-    expectation_files = name_mapping[args.suite].ExpectationsFiles()
+    expectation_files = suite_class.ExpectationsFiles()
     if not expectation_files:
       raise RuntimeError(
           'Suite %s does not specify an expectation file and is thus not '
@@ -135,6 +136,12 @@ def ParseArgs() -> argparse.Namespace:
   if args.remove_stale_expectations and not args.expectation_file:
     parser.error(
         '--remove-stale-expectations can only be used with expectation files')
+
+  # Change to whatever repo the test suite claims the expectation file lives in.
+  # This allows the script to work for most suites if run from outside of
+  # chromium/src. Similarly, it allows suites such as WebGPU CTS that have
+  # expectation files in a different repo to be work when run from chromium/src.
+  os.chdir(suite_class.GetExpectationsFilesRepoPath())
 
   return args
 

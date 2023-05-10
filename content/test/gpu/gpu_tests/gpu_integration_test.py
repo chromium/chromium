@@ -19,6 +19,8 @@ from telemetry.util import minidump_utils
 from telemetry.util import screenshot
 from typ import json_results
 
+import gpu_path_util
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
@@ -940,6 +942,15 @@ class GpuIntegrationTest(
         'unknown-gpu-0x8c',
         'unknown-gpu-',
     ]
+
+  @classmethod
+  def GetExpectationsFilesRepoPath(cls) -> str:
+    """Gets the path to the repo that the expectation files live in.
+
+    In most cases, this will be Chromium src/, but it's possible that an
+    expectation file lives in a third party repo.
+    """
+    return gpu_path_util.CHROMIUM_SRC_DIR
 
 
 def _ConsolidateBrowserArgs(browser_args: List[str]):

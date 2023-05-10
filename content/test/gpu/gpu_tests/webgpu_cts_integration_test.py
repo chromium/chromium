@@ -536,6 +536,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def ExpectationsFiles(cls) -> List[str]:
     return [EXPECTATIONS_FILE]
 
+  @classmethod
+  def GetExpectationsFilesRepoPath(cls) -> str:
+    return os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party', 'dawn')
+
 
 class WebGpuMessageProtocolError(RuntimeError):
   pass
