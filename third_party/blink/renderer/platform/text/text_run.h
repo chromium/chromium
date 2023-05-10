@@ -212,7 +212,6 @@ class PLATFORM_EXPORT TextRun final {
   unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
-  unsigned text_justify_ : 2;
   unsigned normalize_space_ : 1;
 };
 
