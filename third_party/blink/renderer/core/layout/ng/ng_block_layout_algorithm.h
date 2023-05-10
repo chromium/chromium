@@ -70,7 +70,9 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGLayoutResult*);
 
   NOINLINE const NGLayoutResult* LayoutWithInlineChildLayoutContext(
-      const NGLayoutInputNode& first_child);
+      const NGInlineNode& child);
+  NOINLINE const NGLayoutResult* LayoutWithLineInfoList(
+      const NGInlineNode& child);
 
   NOINLINE const NGLayoutResult* RelayoutIgnoringLineClamp();
 

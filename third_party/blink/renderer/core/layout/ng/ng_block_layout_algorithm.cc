@@ -220,6 +220,17 @@ LogicalOffset LogicalFromBfcOffsets(const NGBfcOffset& child_bfc_offset,
           child_bfc_offset.block_offset - parent_bfc_offset.block_offset};
 }
 
+// Whether the `node` reuqires `NGLineInfoList` or not.
+inline bool NeedsLineInfoList(const NGInlineNode& node) {
+  const TextWrap wrap = node.Style().GetTextWrap();
+  if (UNLIKELY(wrap == TextWrap::kPretty)) {
+    // TODO(crbug.com/1432798): Needs more conditions not to needed it.
+    DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
@@ -457,10 +468,16 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
   // passed between siblings. We want to stack-allocate that one, but
   // only on demand, as it's quite big.
   NGLayoutInputNode first_child(nullptr);
-  if (Node().IsInlineFormattingContextRoot(&first_child))
-    result = LayoutWithInlineChildLayoutContext(first_child);
-  else
+  if (Node().IsInlineFormattingContextRoot(&first_child)) {
+    NGInlineNode inline_child = To<NGInlineNode>(first_child);
+    if (UNLIKELY(NeedsLineInfoList(inline_child))) {
+      result = LayoutWithLineInfoList(inline_child);
+    } else {
+      result = LayoutWithInlineChildLayoutContext(inline_child);
+    }
+  } else {
     result = Layout(nullptr);
+  }
 
   if (result->Status() == NGLayoutResult::kSuccess) {
     return result;
@@ -501,9 +518,15 @@ NGBlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithInlineChildLayoutContext(
-    const NGLayoutInputNode& first_child) {
-  NGInlineChildLayoutContext context(To<NGInlineNode>(first_child),
-                                     &container_builder_);
+    const NGInlineNode& child) {
+  NGSimpleInlineChildLayoutContext context(child, &container_builder_);
+  const NGLayoutResult* result = Layout(&context);
+  return result;
+}
+
+NOINLINE const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutWithLineInfoList(
+    const NGInlineNode& child) {
+  NGOptimalInlineChildLayoutContext context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }

@@ -1279,7 +1279,6 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   bool is_line_created = false;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
-  NGLineInfo line_info;
   const auto* opportunities_it = opportunities.begin();
   while (opportunities_it != opportunities.end()) {
     const NGLayoutOpportunity& opportunity = *opportunities_it;
@@ -1321,19 +1320,29 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
           NGParagraphLineBreaker::AttemptParagraphBalancing(
               Node(), ConstraintSpace(), line_opportunity));
     }
-    absl::optional<NGLineLayoutOpportunity> saved_line_opportunity;
-    if (const absl::optional<LayoutUnit>& balanced_available_width =
-            context_->BalancedAvailableWidth()) {
-      saved_line_opportunity = line_opportunity;
-      NGParagraphLineBreaker::PrepareForNextLine(*balanced_available_width,
-                                                 &line_opportunity);
-    }
 
-    NGLineBreaker line_breaker(
-        Node(), NGLineBreakerMode::kContent, ConstraintSpace(),
-        line_opportunity, leading_floats, handled_leading_floats_index,
-        break_token, column_spanner_path_, &ExclusionSpace());
-    line_breaker.NextLine(&line_info);
+    absl::optional<NGLineLayoutOpportunity> saved_line_opportunity;
+    bool is_line_info_cached = false;
+    NGLineInfo& line_info =
+        context_->GetLineInfo(break_token, is_line_info_cached);
+    if (UNLIKELY(is_line_info_cached)) {
+      // Update the BFC block offset because it was not known when the
+      // `line_info` was cached.
+      line_info.SetBfcBlockOffset(line_opportunity.bfc_block_offset);
+    } else {
+      if (const absl::optional<LayoutUnit>& balanced_available_width =
+              context_->BalancedAvailableWidth()) {
+        saved_line_opportunity = line_opportunity;
+        NGParagraphLineBreaker::PrepareForNextLine(*balanced_available_width,
+                                                   &line_opportunity);
+      }
+
+      NGLineBreaker line_breaker(
+          Node(), NGLineBreakerMode::kContent, ConstraintSpace(),
+          line_opportunity, leading_floats, handled_leading_floats_index,
+          break_token, column_spanner_path_, &ExclusionSpace());
+      line_breaker.NextLine(&line_info);
+    }
 
     if (UNLIKELY(Node().IsInitialLetterBox())) {
       // Because `NGLineBreaker` doesn't calculate the inline size of initial
