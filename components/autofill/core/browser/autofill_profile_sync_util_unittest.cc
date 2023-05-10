@@ -9,7 +9,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -31,7 +30,6 @@ using syncer::EntityData;
 const char kGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kGuidInvalid[] = "EDC609ED";
 
-const char kLocaleString[] = "en-US";
 const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
 
 // Returns a profile with all fields set.  Contains identical data to the data
@@ -281,7 +279,6 @@ class AutofillProfileSyncUtilTest : public testing::Test {
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
-    CountryNames::SetLocaleString(kLocaleString);
     features_.InitAndEnableFeature(
         features::kAutofillEnableSupportForExtraSettingsVisibleFields);
   }
@@ -375,7 +372,6 @@ TEST_F(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics) {
   // Fix a time for implicitly constructed use_dates in AutofillProfile.
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
-  CountryNames::SetLocaleString(kLocaleString);
 
   AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
   AutofillProfile profile = ConstructCompleteProfile();
@@ -431,8 +427,6 @@ TEST_F(AutofillProfileSyncUtilTest,
 // into country code.
 TEST_F(AutofillProfileSyncUtilTest,
        CreateAutofillProfileFromSpecifics_CountryNameParsed) {
-  CountryNames::SetLocaleString(kLocaleString);
-
   AutofillProfileSpecifics specifics;
   specifics.set_guid(kGuid);
 

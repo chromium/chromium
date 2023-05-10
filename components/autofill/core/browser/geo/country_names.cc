@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
-#include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -18,11 +18,6 @@
 
 namespace autofill {
 namespace {
-
-// A copy of the application locale string, which should be ready for
-// CountryName's construction.
-static base::LazyInstance<std::string>::DestructorAtExit g_application_locale =
-    LAZY_INSTANCE_INITIALIZER;
 
 // Computes the value for CountryNames::common_names_.
 std::map<std::string, std::string> GetCommonNames() {
@@ -61,33 +56,18 @@ std::map<std::string, std::string> GetCommonNames() {
 
 // static
 CountryNames* CountryNames::GetInstance() {
-  return base::Singleton<CountryNames>::get();
-}
-
-// static
-void CountryNames::SetLocaleString(const std::string& locale) {
-  DCHECK(!locale.empty());
-  // Application locale should never be empty. The empty value of
-  // |g_application_locale| means that it has not been initialized yet.
-  std::string* storage = g_application_locale.Pointer();
-  if (storage->empty()) {
-    *storage = locale;
-  }
-  // TODO(crbug.com/579971) CountryNames currently cannot adapt to changed
-  // locale without Chrome's restart.
+  static base::NoDestructor<CountryNames> instance(
+      base::i18n::GetConfiguredLocale());
+  return instance.get();
 }
 
 CountryNames::CountryNames(const std::string& locale_name)
     : application_locale_name_(locale_name),
-      default_locale_name_(std::string("en_US")),
+      default_locale_name_(std::string("en-US")),
       country_names_for_default_locale_(default_locale_name_),
       country_names_for_application_locale_(application_locale_name_),
       common_names_(GetCommonNames()),
       localized_country_names_cache_(10) {}
-
-CountryNames::CountryNames() : CountryNames(g_application_locale.Get()) {
-  DCHECK(!g_application_locale.Get().empty());
-}
 
 CountryNames::~CountryNames() = default;
 

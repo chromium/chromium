@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -53,7 +52,6 @@ using syncer::MockModelTypeChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
-const char kLocaleString[] = "en-US";
 const char kDefaultCacheGuid[] = "CacheGuid";
 
 void ExtractAutofillOfferSpecificsFromDataBatch(
@@ -134,7 +132,6 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
       const AutofillWalletOfferSyncBridgeTest&) = delete;
 
   void SetUp() override {
-    CountryNames::SetLocaleString(kLocaleString);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));

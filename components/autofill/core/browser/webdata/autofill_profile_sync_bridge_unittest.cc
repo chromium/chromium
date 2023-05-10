@@ -24,7 +24,6 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -268,7 +267,6 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
-    CountryNames::SetLocaleString(kLocaleString);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));

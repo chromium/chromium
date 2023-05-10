@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,9 +90,7 @@ class AutofillProfileComparatorTest : public testing::Test {
     using Super::SAME_TOKENS;
   };
 
-  AutofillProfileComparatorTest() {
-    autofill::CountryNames::SetLocaleString(kLocale);
-  }
+  AutofillProfileComparatorTest() = default;
 
   AutofillProfileComparatorTest(const AutofillProfileComparatorTest&) = delete;
   AutofillProfileComparatorTest& operator=(

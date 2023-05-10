@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -121,13 +120,6 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       std::make_unique<payments::WebAppManifestSectionTable>());
 #endif
   profile_database_->LoadDatabase();
-
-  // Ensure the CountryNames instance has the locale set. It is used in
-  // the autofill profile bridge, but putting it into the bridge directly
-  // creates a data race with PDM, where the locale is set as well. This is
-  // a tmp solution until the bug below is resolved.
-  // TODO(1430250): Find a unified place for setting the locale
-  autofill::CountryNames::SetLocaleString(application_locale);
 
   profile_autofill_web_data_ =
       base::MakeRefCounted<autofill::AutofillWebDataService>(

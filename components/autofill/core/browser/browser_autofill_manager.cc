@@ -65,7 +65,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -542,8 +541,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver, client, client->GetPersonalDataManager(),
       credit_card_form_event_logger_.get());
-
-  CountryNames::SetLocaleString(app_locale_);
 }
 
 BrowserAutofillManager::~BrowserAutofillManager() {

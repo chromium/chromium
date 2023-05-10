@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -207,7 +206,6 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 
 AutofillMergeTest::AutofillMergeTest()
     : testing::DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName) {
-  CountryNames::SetLocaleString("en-US");
   for (size_t i = NO_SERVER_DATA; i < MAX_VALID_FIELD_TYPE; ++i) {
     ServerFieldType field_type = ToSafeServerFieldType(i, MAX_VALID_FIELD_TYPE);
     if (field_type == MAX_VALID_FIELD_TYPE)

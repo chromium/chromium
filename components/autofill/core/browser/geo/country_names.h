@@ -11,13 +11,9 @@
 #include <utility>
 
 #include "base/containers/lru_cache.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}  // namespace base
 
 namespace autofill {
 
@@ -31,11 +27,6 @@ class CountryNames {
 
   CountryNames(const CountryNames&) = delete;
   CountryNames& operator=(const CountryNames&) = delete;
-
-  // Tells CountryNames, what is the application locale. Only the first supplied
-  // value is used, further calls result in no changes.  Call this on the UI
-  // thread, before first using CountryNames. `locale` must not be empty.
-  static void SetLocaleString(const std::string& locale);
 
   // Returns the country code corresponding to the `country_name` queried for
   // the application and default locale.
@@ -69,7 +60,7 @@ class CountryNames {
   // Create CountryNames for the default locale.
   CountryNames();
 
-  friend struct base::DefaultSingletonTraits<CountryNames>;
+  friend base::NoDestructor<CountryNames>;
 
   // Caches localized country name for a locale that is neither the application
   // or default locale. The Cache is keyed by the locale_name and contains

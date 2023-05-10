@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
@@ -82,7 +81,6 @@ const char kCard1ClientTag[] = "Y2FyZDHvv74=";
 const char kCustomerDataClientTag[] = "deadbeef";
 const char kCloudTokenDataClientTag[] = "token";
 
-const char kLocaleString[] = "en-US";
 const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
 
 const char kDefaultCacheGuid[] = "CacheGuid";
@@ -223,7 +221,6 @@ class AutofillWalletSyncBridgeTest : public testing::Test {
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
-    CountryNames::SetLocaleString(kLocaleString);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));

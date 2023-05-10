@@ -42,7 +42,6 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -319,7 +318,6 @@ void PersonalDataManager::Init(
     StrikeDatabaseBase* strike_database,
     AutofillImageFetcher* image_fetcher,
     bool is_off_the_record) {
-  CountryNames::SetLocaleString(app_locale_);
   database_helper_->Init(profile_database, account_database);
 
   SetPrefService(pref_service);

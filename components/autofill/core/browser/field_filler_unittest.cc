@@ -29,7 +29,6 @@
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -136,9 +135,7 @@ class AutofillFieldFillerTest : public testing::Test {
 
  protected:
   AutofillFieldFillerTest()
-      : credit_card_(test::GetCreditCard()), address_(test::GetFullProfile()) {
-    CountryNames::SetLocaleString("en-US");
-  }
+      : credit_card_(test::GetCreditCard()), address_(test::GetFullProfile()) {}
 
   CreditCard* credit_card() { return &credit_card_; }
   AutofillProfile* address() { return &address_; }
@@ -535,10 +532,7 @@ struct AutofillPhoneFieldFillerTestCase : public AutofillFieldFillerTestCase {
 
 class PhoneNumberTest
     : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<AutofillPhoneFieldFillerTestCase> {
- public:
-  PhoneNumberTest() { CountryNames::SetLocaleString("en-US"); }
-};
+      public testing::WithParamInterface<AutofillPhoneFieldFillerTestCase> {};
 
 TEST_P(PhoneNumberTest, FillPhoneNumber) {
   auto test_case = GetParam();
@@ -596,10 +590,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class ExpirationYearTest
     : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<AutofillFieldFillerTestCase> {
- public:
-  ExpirationYearTest() { CountryNames::SetLocaleString("en-US"); }
-};
+      public testing::WithParamInterface<AutofillFieldFillerTestCase> {};
 
 TEST_P(ExpirationYearTest, FillExpirationYearInput) {
   auto test_case = GetParam();
@@ -662,10 +653,7 @@ struct FillUtilExpirationDateTestCase {
 
 class ExpirationDateTest
     : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<FillUtilExpirationDateTestCase> {
- public:
-  ExpirationDateTest() { CountryNames::SetLocaleString("en-US"); }
-};
+      public testing::WithParamInterface<FillUtilExpirationDateTestCase> {};
 
 TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   auto test_case = GetParam();
@@ -858,8 +846,6 @@ class AutofillSelectWithStatesTest
       public testing::WithParamInterface<FillSelectTestCase> {
  public:
   AutofillSelectWithStatesTest() {
-    CountryNames::SetLocaleString("en-US");
-
     base::FilePath file_path;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
     file_path = file_path.Append(FILE_PATH_LITERAL("third_party"))
@@ -1017,12 +1003,7 @@ struct FillWithExpirationMonthTestCase {
 
 class AutofillSelectWithExpirationMonthTest
     : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<FillWithExpirationMonthTestCase> {
- public:
-  AutofillSelectWithExpirationMonthTest() {
-    CountryNames::SetLocaleString("en-US");
-  }
-};
+      public testing::WithParamInterface<FillWithExpirationMonthTestCase> {};
 
 TEST_P(AutofillSelectWithExpirationMonthTest,
        FillSelectControlWithExpirationMonth) {
@@ -1639,10 +1620,7 @@ struct FillStateTextTestCase {
 
 class AutofillStateTextTest
     : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<FillStateTextTestCase> {
- public:
-  AutofillStateTextTest() { CountryNames::SetLocaleString("en-US"); }
-};
+      public testing::WithParamInterface<FillStateTextTestCase> {};
 
 TEST_P(AutofillStateTextTest, FillStateText) {
   auto test_case = GetParam();

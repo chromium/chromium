@@ -8,12 +8,10 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
-  autofill::CountryNames::SetLocaleString("en-US");
   JNIEnv* env = base::android::AttachCurrentThread();
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
 
@@ -55,7 +53,6 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
 }
 
 TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutCreditCard) {
-  autofill::CountryNames::SetLocaleString("en-US");
   JNIEnv* env = base::android::AttachCurrentThread();
   const autofill::CreditCard credit_cards[] = {
       autofill::test::GetCreditCard(), autofill::test::GetFullServerCard(),
