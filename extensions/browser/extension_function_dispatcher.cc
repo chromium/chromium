@@ -19,8 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
 #include "base/scoped_observation.h"
-#include "base/trace_event/typed_macros.h"
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
@@ -49,14 +47,12 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/trace_util.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
-using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace extensions {
 namespace {
@@ -398,17 +394,12 @@ void ExtensionFunctionDispatcher::Dispatch(
     mojom::RequestParamsPtr params,
     content::RenderFrameHost& frame,
     mojom::LocalFrameHost::RequestCallback callback) {
-  content::RenderProcessHost& process = *frame.GetProcess();
-  TRACE_EVENT("extensions", "ExtensionFunctionDispatcher::Dispatch",
-              ChromeTrackEvent::kRenderProcessHost, process,
-              ChromeTrackEvent::kChromeExtensionId,
-              ExtensionIdForTracing(params->extension_id));
-
   ScopedRequestParamsCrashKeys request_params_crash_keys(*params);
   SCOPED_CRASH_KEY_STRING256(
       "extensions", "frame.GetSiteInstance()",
       frame.GetSiteInstance()->GetSiteURL().possibly_invalid_spec());
 
+  content::RenderProcessHost& process = *frame.GetProcess();
   if (auto bad_message_code = ValidateRequest(*params, &frame, process)) {
     // Kill the renderer if it's an invalid request.
     bad_message::ReceivedBadMessage(&process, *bad_message_code);
@@ -448,11 +439,6 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   if (!rph)
     return;
 
-  TRACE_EVENT("extensions",
-              "ExtensionFunctionDispatcher::DispatchForServiceWorker",
-              ChromeTrackEvent::kRenderProcessHost, *rph,
-              ChromeTrackEvent::kChromeExtensionId,
-              ExtensionIdForTracing(params->extension_id));
   if (auto bad_message_code = ValidateRequest(*params, nullptr, *rph)) {
     // Kill the renderer if it's an invalid request.
     bad_message::ReceivedBadMessage(render_process_id, *bad_message_code);
