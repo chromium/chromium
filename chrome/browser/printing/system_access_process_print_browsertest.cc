@@ -453,7 +453,7 @@ class SystemAccessProcessPrintBrowserTestBase
                        .shadowRoot.querySelector('print-preview-button-strip')
                        .shadowRoot.querySelector('.action-button');
       button.click();)";
-    ASSERT_TRUE(content::ExecuteScript(preview_dialog, kScript));
+    ASSERT_TRUE(content::ExecJs(preview_dialog, kScript));
     WaitUntilCallbackReceived();
   }
 
