@@ -176,6 +176,14 @@ BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables different experiments that modify content and behavior of the
+// existing generated password suggestion dropdown.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kPasswordGenerationExperiment,
+             "PasswordGenerationExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables requesting and saving passwords grouping information from the
 // affiliation service.
 // TODO(crbug.com/1359392): Remove once launched on all platforms.

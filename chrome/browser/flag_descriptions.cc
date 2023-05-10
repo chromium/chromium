@@ -2600,6 +2600,12 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
+const char kPasswordGenerationExperimentName[] =
+    "Password generation experiment";
+const char kPasswordGenerationExperimentDescription[] =
+    "Enables different experiments that modify content and behavior of the "
+    "existing generated password suggestion dropdown.";
+
 const char kPasswordsImportM2Name[] = "Passwords Import M2";
 const char kPasswordsImportM2Description[] =
     "Extends passwords import flow in password settings with conflict "

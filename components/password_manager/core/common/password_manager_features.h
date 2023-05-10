@@ -64,6 +64,9 @@ BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 BASE_DECLARE_FEATURE(kPasswordManagerRedesign);
 #endif
 BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
+#endif
 BASE_DECLARE_FEATURE(kPasswordsGrouping);
 BASE_DECLARE_FEATURE(kPasswordsImportM2);
 BASE_DECLARE_FEATURE(kPasswordStrengthIndicator);

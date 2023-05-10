@@ -59648,6 +59648,7 @@ from previous Chrome versions.
   <int value="-1490298774" label="enable-captive-portal-bypass-proxy-option"/>
   <int value="-1490048536"
       label="PageVisibilityPageContentAnnotations:disabled"/>
+  <int value="-1489518120" label="PasswordGenerationExperiment:disabled"/>
   <int value="-1488867232" label="PageInfoAboutThisSiteNonEn:disabled"/>
   <int value="-1488744539" label="QuickUnlockFingerprint:enabled"/>
   <int value="-1488329159" label="ScreenAI:enabled"/>
@@ -64760,6 +64761,7 @@ from previous Chrome versions.
   <int value="1246486472"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1247293682" label="topchrome-md"/>
+  <int value="1247309454" label="PasswordGenerationExperiment:enabled"/>
   <int value="1248222772" label="ZeroCopyTabCapture:disabled"/>
   <int value="1248486441" label="LauncherOmniboxPublishLogicLog:disabled"/>
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>

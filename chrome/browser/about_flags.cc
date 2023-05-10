@@ -8702,6 +8702,14 @@ const FeatureEntry kFeatureEntries[] = {
          kPasswordStrengthIndicatorVariations,
          "PasswordStrengthIndicator")},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"password-generation-experiment",
+     flag_descriptions::kPasswordGenerationExperimentName,
+     flag_descriptions::kPasswordGenerationExperimentDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordGenerationExperiment)},
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"privacy-guide-android", flag_descriptions::kPrivacyGuideAndroidName,
      flag_descriptions::kPrivacyGuideAndroidDescription, kOsAndroid,

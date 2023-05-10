@@ -5995,6 +5995,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "password-generation-experiment",
+    "owners": ["rgod@google.com", "chrome-password-manager-team@google.com"],
+    "expiry_milestone": 117
+  },
+  {
     "name": "password-manager-redesign",
     "owners": ["vsemeniuk@google.com", "vasilii", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 117
