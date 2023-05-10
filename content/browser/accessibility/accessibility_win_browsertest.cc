@@ -50,6 +50,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "third_party/isimpledom/ISimpleDOMNode.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -4704,14 +4705,26 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestScrollTo) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestPageIsAccessibleAfterCancellingReload) {
-  LoadInitialAccessibilityTreeFromHtml(
-      "data:text/html,"
-      "<script>"
-      "window.onbeforeunload = function () {"
-      "  return '';"
-      "};"
-      "</script>"
-      "<input value='Test'>");
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBeforeunloadEventCancelByPreventDefault)) {
+    LoadInitialAccessibilityTreeFromHtml(
+        "data:text/html,"
+        "<script>"
+        "window.onbeforeunload = function (e) {"
+        "  e.preventDefault()"
+        "};"
+        "</script>"
+        "<input value='Test'>");
+  } else {
+    LoadInitialAccessibilityTreeFromHtml(
+        "data:text/html,"
+        "<script>"
+        "window.onbeforeunload = function () {"
+        "  return 'Not empty string';"
+        "};"
+        "</script>"
+        "<input value='Test'>");
+  }
 
   // When the before unload dialog shows, simulate the user clicking
   // cancel on that dialog.
@@ -4973,7 +4986,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   EXPECT_NE(nullptr, accessibility_com_win);
 
   base::win::ScopedVariant result;
-  
+
   accessibility_com_win->GetPropertyValue(UIA_IsOffscreenPropertyId,
                                           result.Receive());
 
