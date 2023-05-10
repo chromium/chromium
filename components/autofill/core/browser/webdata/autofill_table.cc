@@ -1074,6 +1074,7 @@ std::vector<ServerFieldType> GetStoredContactInfoTypes() {
           ADDRESS_HOME_COUNTRY,
           ADDRESS_HOME_APT_NUM,
           ADDRESS_HOME_FLOOR,
+          ADDRESS_HOME_LANDMARK,
           EMAIL_ADDRESS,
           PHONE_HOME_WHOLE_NUMBER,
           BIRTHDATE_DAY,
@@ -1112,6 +1113,11 @@ bool AddAutofillProfileToContactInfoTable(sql::Database* db,
   if (!s.Run())
     return false;
   for (ServerFieldType type : GetStoredContactInfoTypes()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForExtraSettingsVisibleFields) &&
+        type == ADDRESS_HOME_LANDMARK) {
+      continue;
+    }
     InsertBuilder(db, s, kContactInfoTypeTokensTable,
                   {kGuid, kType, kValue, kVerificationStatus});
     s.BindString(0, profile.guid());
