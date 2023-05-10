@@ -1,0 +1,143 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "beto-core is used by Nearby Share which is CrOS only")
+
+import("//build/rust/cargo_crate.gni")
+import("//build/rust/rust_static_library.gni")
+import("//testing/test.gni")
+
+executable("ldt_c_sample") {
+  sources = [ "src/nearby/presence/ldt_np_c_sample/main.c" ]
+  include_dirs = [ "src/nearby/presence/ldt_np_adv_ffi/include" ]
+  deps = [ ":ldt_np_adv_ffi" ]
+}
+
+test("ldt_ffi_tests") {
+  sources = [ "src/nearby/presence/ldt_np_c_sample/tests/np_ffi_tests.cc" ]
+  include_dirs = [ "src/nearby/presence/ldt_np_adv_ffi/include" ]
+  defines = [ "LDT_TEST_VECTORS=\"third_party/beto-core/src/nearby/presence/ldt_np_adv/resources/test/np_adv_test_vectors.json\"" ]
+  deps = [
+    ":ldt_np_adv_ffi",
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
+    "//third_party/jsoncpp:jsoncpp",
+  ]
+}
+
+rust_static_library("ldt_np_adv_ffi") {
+  crate_root = "src/nearby/presence/ldt_np_adv_ffi/src/lib.rs"
+  sources = [ "src/nearby/presence/ldt_np_adv_ffi/src/lib.rs" ]
+  allow_unsafe = true
+  features = [ "boringssl" ]
+  public = [ "src/nearby/presence/ldt_np_adv_ffi/include/np_ldt.h" ]
+
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_boringssl",
+    ":ldt",
+    ":ldt_np_adv",
+    ":np_hkdf",
+    "//third_party/rust/cfg_if/v1:lib",
+    "//third_party/rust/lazy_static/v1:lib",
+  ]
+}
+
+cargo_crate("crypto_provider_boringssl") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs"
+  sources = [ "src/nearby/presence/ldt_tbc/src/lib.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_stubs",
+    "//third_party/boringssl:bssl_crypto",
+  ]
+}
+
+cargo_crate("crypto_provider") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/crypto/crypto_provider/src/lib.rs"
+  sources = [
+    "src/nearby/crypto/crypto_provider/src/aes/cbc.rs",
+    "src/nearby/crypto/crypto_provider/src/aes/mod.rs",
+    "src/nearby/crypto/crypto_provider/src/lib.rs",
+  ]
+  features = [
+    "alloc",
+    "std",
+    "gcm_siv",
+  ]
+}
+
+cargo_crate("crypto_provider_stubs") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/crypto/crypto_provider_stubs/src/lib.rs"
+  sources = [ "src/nearby/crypto/crypto_provider_stubs/src/lib.rs" ]
+  deps = [ ":crypto_provider" ]
+}
+
+cargo_crate("ldt_np_adv") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/ldt_np_adv/src/lib.rs"
+  sources = [ "src/nearby/presence/ldt_np_adv/src/lib.rs" ]
+  deps = [
+    ":array_view",
+    ":crypto_provider",
+    ":ldt",
+    ":ldt_tbc",
+    ":np_hkdf",
+    ":xts_aes",
+  ]
+}
+
+cargo_crate("ldt") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/ldt/src/lib.rs"
+  sources = [ "src/nearby/presence/ldt/src/lib.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":ldt_tbc",
+  ]
+}
+
+cargo_crate("ldt_tbc") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/ldt_tbc/src/lib.rs"
+  sources = [ "src/nearby/presence/ldt_tbc/src/lib.rs" ]
+  deps = [ ":crypto_provider" ]
+}
+
+cargo_crate("array_view") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/array_view/src/lib.rs"
+  sources = [ "src/nearby/presence/array_view/src/lib.rs" ]
+}
+
+cargo_crate("array_ref") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/array_ref/src/lib.rs"
+  sources = [ "src/nearby/presence/array_ref/src/lib.rs" ]
+}
+
+cargo_crate("np_hkdf") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/np_hkdf/src/lib.rs"
+  sources = [ "src/nearby/presence/np_hkdf/src/lib.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":ldt",
+    ":xts_aes",
+  ]
+}
+
+cargo_crate("xts_aes") {
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/xts_aes/src/lib.rs"
+  sources = [ "src/nearby/presence/xts_aes/src/lib.rs" ]
+  deps = [
+    ":array_ref",
+    ":crypto_provider",
+    ":ldt_tbc",
+  ]
+}

@@ -51,6 +51,7 @@
 /arcore-android-sdk/test-apks/arcore/*.apk
 /asan
 /barhopper
+/beto-core/src
 /bison
 /boringssl/src
 /bouncycastle/lib/

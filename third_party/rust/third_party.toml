@@ -43,9 +43,11 @@ members = [
 ]
 
 [dependencies]
-cxx = "1"
 bitflags = "1"
+cfg-if = "1"
+cxx = "1"
 cxxbridge-cmd = "1"
+lazy_static = "1"
 memoffset = { version = "0.6", features = [ "unstable_const" ] }
 proc-macro2 = "1"
 quote = "1"

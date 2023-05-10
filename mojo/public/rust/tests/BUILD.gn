@@ -18,7 +18,7 @@ rust_static_library("mojo_rust_system_tests") {
     ":test_util",
     "//mojo/public/rust:mojo_rust",
     "//testing/rust_gtest_interop",
-    "//third_party/rust/lazy_static/v1:test_support",
+    "//third_party/rust/lazy_static/v1:lib",
   ]
 }
 

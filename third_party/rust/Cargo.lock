@@ -67,6 +67,7 @@ dependencies = [
  "bitflags",
  "cargo-platform",
  "cargo_metadata",
+ "cfg-if",
  "clap",
  "cxx",
  "cxxbridge-cmd",
