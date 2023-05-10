@@ -5,46 +5,27 @@
     display: block;
   }
 
-  #header-container {
-    height: 244px;
+  .main-container {
+    height: calc(100vh - (var(--action-container-padding) +
+        var(--cr-button-height)));
+    width: 100vw;
+  }
+
+  .content-container {
+    left: 50%;
     position: relative;
-    width: 100%;
-  }
-
-  .tangible-sync-style #header-container {
-    height: unset;
-    position: unset;
-    width: unset;
-  }
-
-  #banner {
-    background-image: url(images/lacros_intro_banner.svg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: auto;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   #avatar-container {
-    --avatar-size: 100px;
-    bottom: calc(var(--avatar-size)/-2);
-    height: var(--avatar-size);
+    height: var(--tangible-sync-style-avatar-size);
     left: 0;
     margin: auto;
-    position: absolute;
-    right: 0;
-    width: var(--avatar-size);
-    z-index: 1;
-  }
-
-  .tangible-sync-style #avatar-container {
-    --avatar-size: var(--tangible-sync-style-avatar-size);
-    bottom: unset;
     position: relative;
+    right: 0;
+    width: var(--tangible-sync-style-avatar-size);
+    z-index: 1;
   }
 
   #avatar {
@@ -55,60 +36,20 @@
   }
 
   .work-badge {
-    --badge-width: 30px;
     --badge-offset: -6px;
-    border: 3px solid white;
-    border-radius: 50%;
     bottom: var(--badge-offset);
-    height: var(--badge-width);
-    inset-inline-end: var(--badge-offset);
     position: absolute;
-    width: var(--badge-width);
-  }
-
-  .work-badge>iron-icon {
-    --work-icon-size: 20px;
-    background-color: var(--md-background-color);
-    border-radius: 50%;
-    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
-    color: var(--google-grey-700);
-    height: var(--work-icon-size);
-    padding: calc((var(--badge-width) - var(--work-icon-size)) / 2);
-    width: var(--work-icon-size);
   }
 
   #text-container {
     --footer-margin: 40px;
-    font-size: 14px;
-    line-height: 20px;
-    margin-bottom: calc(48px + var(--footer-margin));
     margin-inline: auto;
-    margin-top: 72px;
     text-align: center;
-    width: 382px;
-  }
-
-  .tangible-sync-style #text-container {
-    font-size: unset;
-    line-height: unset;
-    margin: unset;
-    width: unset;
-  }
-
-  .title {
-    font-size: 24px;
-    font-weight: 500;
-    line-height: 32px;
-    margin-bottom: 8px;
-  }
-
-  .secondary {
-    color: var(--cr-secondary-text-color);
   }
 
   #info-box {
     align-items: center;
-    border: none;
+    border: 1px solid var(--google-grey-200);
     bottom: 0;
     color: var(--google-grey-700);
     display: flex;
@@ -118,16 +59,12 @@
     margin-inline: auto;
     margin-top: 32px;
     max-width: calc(100% - var(--buttons-container-max-width));
-    padding: 24px 8px;
+    padding-bottom: 12px;
     padding-inline-end: 18px;
-    position: absolute;
-    width: 530px;
-  }
-
-  .tangible-sync-style #info-box {
-    border: 1px solid var(--google-grey-200);
-    padding: 12px 0;
+    padding-inline-start: 0;
+    padding-top: 12px;
     position: relative;
+    width: 530px;
   }
 
   /* info-box is displayed as a flex-box. Because of that, the hidden property
@@ -163,23 +100,12 @@
     align-items: flex-end;
     bottom: 0;
     box-sizing: border-box;
-    column-gap: 8px;
     display: flex;
     flex-wrap: wrap-reverse;
     justify-content: flex-end;
     padding: 24px;
     position: absolute;
     width: 100%;
-  }
-
-  cr-button {
-    font-size: 1.16em;
-    margin: 5px 0;
-    min-width: 111px;
-  }
-
-  .tangible-sync-style cr-button {
-    margin: unset;
   }
 
   .tangible-sync-style-left-banner {
@@ -190,27 +116,11 @@
     content: url(images/right_illustration.svg);
   }
 
-  .main-container.tangible-sync-style {
-    height: calc(100vh - (var(--action-container-padding) +
-        var(--cr-button-height)));
-    width: 100vw;
-  }
-
-  .tangible-sync-style .content-container {
-    left: 50%;
-    position: relative;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-
   @media (prefers-color-scheme: dark) {
-    .work-badge {
+    .tangible-sync-style .work-badge {
+      /* ".tangible-sync-style" is explicitly added to the selector to take
+         precedence over the one set in the shared CSS file. */
       border-color: var(--md-background-color);
-    }
-
-    .work-badge>iron-icon {
-      box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
-      color: white;
     }
 
     #info-box {
@@ -235,27 +145,21 @@
   }
 </style>
 
-<div class$="main-container
-    [[getTangibleSyncStyleClass_(isTangibleSyncEnabled_)]]">
-  <img class="tangible-sync-style-left-banner" alt=""
-      hidden="[[!isTangibleSyncEnabled_]]">
-  <img class="tangible-sync-style-right-banner" alt=""
-      hidden="[[!isTangibleSyncEnabled_]]">
+<div class="main-container tangible-sync-style">
+  <img class="tangible-sync-style-left-banner" alt="">
+  <img class="tangible-sync-style-right-banner" alt="">
   <div class="content-container">
-    <div id="header-container">
-      <div id="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
-      <div id="avatar-container">
-        <img id="avatar" alt="" src="[[pictureUrl_]]">
-        <div class="work-badge" hidden="[[!managementDisclaimer_]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
-        </div>
+    <div id="avatar-container">
+      <img id="avatar" alt="" src="[[pictureUrl_]]">
+      <div class="work-badge" hidden="[[!managementDisclaimer_]]">
+        <iron-icon class="icon" icon="cr:domain"></iron-icon>
       </div>
-      </div>
+    </div>
     <div id="text-container">
       <h2 class="title">
         [[title_]]
       </h2>
-      <p class="subtitle" class="secondary">
+      <p class="subtitle">
         [[subtitle_]]
       </p>
     </div>
@@ -268,9 +172,8 @@
       </p>
     </div>
   </div>
-  </div>
-  <div class$="action-container
-      [[getTangibleSyncStyleClass_(isTangibleSyncEnabled_)]]">
+</div>
+<div class="action-container tangible-sync-style">
   <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
     disabled="[[disableProceedButton_]]">
     $i18n{proceedLabel}

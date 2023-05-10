@@ -118,11 +118,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #endif
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  source->AddBoolean("isTangibleSyncEnabled",
-                     base::FeatureList::IsEnabled(switches::kTangibleSync));
-#endif
-
   webui::SetupChromeRefresh2023(source);
 
   // Unretained ok: `this` owns the handler.
