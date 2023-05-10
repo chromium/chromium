@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
@@ -452,11 +453,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 
   // Test the presence of the omnibox offline chip.
+  UIImage* symbol =
+      DefaultSymbolTemplateWithPointSize(kDownloadPromptFillSymbol, 10);
+
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(chrome_test_util::PageSecurityInfoIndicator(),
-                            chrome_test_util::ImageViewWithImageNamed(
-                                @"location_bar_connection_offline"),
-                            nil)]
+                            chrome_test_util::ImageViewWithImage(symbol), nil)]
       assertWithMatcher:online ? grey_nil() : grey_notNil()];
 }
 

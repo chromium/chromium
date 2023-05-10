@@ -23,7 +23,6 @@ source_set("location_bar") {
   deps = [
     ":constants",
     ":location_bar_model_delegate",
-    "resources:location_bar_connection_offline",
     "//base",
     "//components/feature_engagement/public",
     "//components/omnibox/browser",
