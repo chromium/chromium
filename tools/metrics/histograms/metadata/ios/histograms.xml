@@ -2025,6 +2025,76 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SandboxMetrics.AvailableCapacity" units="MB"
+    expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of available storage capacity on the device. Logged once
+    per application cold launch, on startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.AvailableCapacityPercentage" units="%"
+    expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The percentage of the device storage which is available. Logged once per
+    application cold launch, on startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.CapacityForImportantUsage" units="MB"
+    expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of device storage which is available for important storage.
+    Logged once per application cold launch, on startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.CapacityForImportantUsagePercentage"
+    units="%" expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The percentage of the device storage which is available for important
+    storage. Logged once per application cold launch, on startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.CapacityForOpportunisticUsage" units="MB"
+    expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of device storage which is available for opportunistic storage.
+    Logged once per application cold launch, on startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.CapacityForOpportunisticUsagePercentage"
+    units="%" expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The percentage of the device storage which is available for opportunistic
+    storage. Logged once per application cold launch, on startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.TotalCapacity" enum="IOSStorageCapacity"
+    expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of storage capacity on the device. Logged once per
+    application cold launch, on startup.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SearchExtension.Action" enum="IOSSearchExtensionAction"
     expires_after="2023-09-24">
   <owner>olivierrobin@chromium.org</owner>
