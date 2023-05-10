@@ -57,7 +57,7 @@ animation-composition: replace
 animation-delay-end: 0s
 animation-delay-start: 0s
 animation-direction: normal
-animation-duration: 0s
+animation-duration: auto
 animation-fill-mode: none
 animation-iteration-count: 1
 animation-name: none

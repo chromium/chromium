@@ -2230,11 +2230,21 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDuration(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
-    const CSSTimingData* timing_data) {
+    const CSSAnimationData* animation_data) {
   return CreateAnimationValueList(
-      timing_data
-          ? timing_data->DurationList()
-          : Vector<absl::optional<double>>{CSSTimingData::InitialDuration()},
+      animation_data
+          ? animation_data->DurationList()
+          : Vector<absl::optional<double>>{CSSAnimationData::InitialDuration()},
+      &ValueForAnimationDuration);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
+    const CSSTransitionData* transition_data) {
+  return CreateAnimationValueList(
+      transition_data
+          ? transition_data->DurationList()
+          : Vector<
+                absl::optional<double>>{CSSTransitionData::InitialDuration()},
       &ValueForAnimationDuration);
 }
 

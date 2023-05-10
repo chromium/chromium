@@ -6073,6 +6073,64 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
                RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
 }
 
+TEST_F(StyleEngineTest, AnimationDurationInitialValueWithScrollTimeline) {
+  ScopedScrollTimelineForTest scroll_timeline_enabled(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #target1 { /* Implicitly initial */ }
+      #target2 { animation-duration: initial; }
+      #target3 { animation: foo; }
+    </style>
+    <div id=target1></div>
+    <div id=target2></div>
+    <div id=target3></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target1 = GetDocument().getElementById("target1");
+  Element* target2 = GetDocument().getElementById("target2");
+  Element* target3 = GetDocument().getElementById("target3");
+
+  ASSERT_TRUE(target1);
+  ASSERT_TRUE(target2);
+  ASSERT_TRUE(target3);
+
+  EXPECT_EQ("auto", ComputedValue(target1, "animation-duration")->CssText());
+  EXPECT_EQ("auto", ComputedValue(target2, "animation-duration")->CssText());
+  EXPECT_EQ("auto", ComputedValue(target3, "animation-duration")->CssText());
+}
+
+TEST_F(StyleEngineTest, AnimationDurationInitialValueWithoutScrollTimeline) {
+  ScopedScrollTimelineForTest scroll_timeline_enabled(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #target1 { /* Implicitly initial */ }
+      #target2 { animation-duration: initial; }
+      #target3 { animation: foo; }
+    </style>
+    <div id=target1></div>
+    <div id=target2></div>
+    <div id=target3></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target1 = GetDocument().getElementById("target1");
+  Element* target2 = GetDocument().getElementById("target2");
+  Element* target3 = GetDocument().getElementById("target3");
+
+  ASSERT_TRUE(target1);
+  ASSERT_TRUE(target2);
+  ASSERT_TRUE(target3);
+
+  EXPECT_EQ("0s", ComputedValue(target1, "animation-duration")->CssText());
+  EXPECT_EQ("0s", ComputedValue(target2, "animation-duration")->CssText());
+  EXPECT_EQ("0s", ComputedValue(target3, "animation-duration")->CssText());
+}
+
 TEST_F(StyleEngineTest, InitialStyle_Recalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

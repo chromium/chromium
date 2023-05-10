@@ -6,10 +6,10 @@
 
 namespace blink {
 
-CSSTimingData::CSSTimingData() {
+CSSTimingData::CSSTimingData(absl::optional<double> initial_duration) {
   delay_start_list_.push_back(InitialDelayStart());
   delay_end_list_.push_back(InitialDelayEnd());
-  duration_list_.push_back(InitialDuration());
+  duration_list_.push_back(initial_duration);
   timing_function_list_.push_back(InitialTimingFunction());
 }
 

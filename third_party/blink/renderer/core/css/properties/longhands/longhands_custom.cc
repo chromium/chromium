@@ -361,11 +361,8 @@ const CSSValue* AnimationDuration::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationDuration::InitialValue() const {
-  DEFINE_STATIC_LOCAL(
-      const Persistent<CSSValue>, value,
-      (CSSNumericLiteralValue::Create(CSSTimingData::InitialDuration().value(),
-                                      CSSPrimitiveValue::UnitType::kSeconds)));
-  return value;
+  return ComputedStyleUtils::ValueForAnimationDuration(
+      CSSAnimationData::InitialDuration());
 }
 
 const CSSValue* AnimationFillMode::ParseSingleValue(
@@ -8414,10 +8411,10 @@ const CSSValue* TransitionDuration::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* TransitionDuration::InitialValue() const {
-  DEFINE_STATIC_LOCAL(
-      const Persistent<CSSValue>, value,
-      (CSSNumericLiteralValue::Create(CSSTimingData::InitialDuration().value(),
-                                      CSSPrimitiveValue::UnitType::kSeconds)));
+  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
+                      (CSSNumericLiteralValue::Create(
+                          CSSTransitionData::InitialDuration().value(),
+                          CSSPrimitiveValue::UnitType::kSeconds)));
   return value;
 }
 

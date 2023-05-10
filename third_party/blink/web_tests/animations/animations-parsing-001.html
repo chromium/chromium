@@ -98,8 +98,8 @@ test(() => {
 
 test(() => {
   // Test initial value.
-  assert_equals(computedStyle.animationDuration, '0s');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 
   style.animationDuration = "0s";
   assert_not_equals(Object.keys(style).indexOf('animationDuration'), -1);
@@ -134,45 +134,45 @@ test(() => {
   // Negative values are invalid.
   style.animationDuration = "-10ms";
   assert_equals(style.animationDuration, '');
-  assert_equals(computedStyle.animationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
   assert_equals(style.webkitAnimationDuration, '');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 
   style.animationDuration = "'5ms'";
   assert_equals(style.animationDuration, '');
-  assert_equals(computedStyle.animationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
   assert_equals(style.webkitAnimationDuration, '');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 
   style.animationDuration = "30px";
   assert_equals(style.animationDuration, '');
-  assert_equals(computedStyle.animationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
   assert_equals(style.webkitAnimationDuration, '');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 
   style.animationDuration = "solid";
   assert_equals(style.animationDuration, '');
-  assert_equals(computedStyle.animationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
   assert_equals(style.webkitAnimationDuration, '');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 
   style.animationDuration = "20";
   assert_equals(style.animationDuration, '');
-  assert_equals(computedStyle.animationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
   assert_equals(style.webkitAnimationDuration, '');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 
   style.animationDuration = "20%";
   assert_equals(style.animationDuration, '');
-  assert_equals(computedStyle.animationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
   assert_equals(style.webkitAnimationDuration, '');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 
   style.animationDuration = "0s, 20px";
   assert_equals(style.animationDuration, '');
-  assert_equals(computedStyle.animationDuration, '0s');
+  assert_equals(computedStyle.animationDuration, 'auto');
   assert_equals(style.webkitAnimationDuration, '');
-  assert_equals(computedStyle.webkitAnimationDuration, '0s');
+  assert_equals(computedStyle.webkitAnimationDuration, 'auto');
 }, "Invalid animation-duration values.");
 </script>
 </body>
