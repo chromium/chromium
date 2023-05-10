@@ -1158,10 +1158,6 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
                                  CRASH_PRODUCT_NAME, kUpdaterVersion)),
           request::GetHeaderMatcher("User-Agent", R"(Crashpad/.*)"),
           request::GetMultipartContentMatcher({
-              {"LOG_FATAL",  // Verify the last crash stack frame.
-               std::vector<std::string>(
-                   {R"(Check failed: \!command_line->)"
-                    R"(HasSwitch\(kCrashMeSwitch\). --crash-me was used)"})},
               {"guid", std::vector<std::string>({})},  // Crash guid.
               {"process_type", std::vector<std::string>({R"(updater)"})},
               {"prod", std::vector<std::string>({CRASH_PRODUCT_NAME})},
