@@ -599,15 +599,6 @@ class Manager(object):
             failing_results_path,
             callback='ADD_RESULTS')
 
-        # Write out the JSON files suitable for other tools to process.
-        # As the output can be quite large (as there are 60k+ tests) we also
-        # support only outputting the failing results.
-        if self._options.json_failing_test_results:
-            # FIXME(tansell): Make sure this includes an *unexpected* results
-            # (IE Passing when expected to be failing.)
-            json_results_generator.write_json(
-                self._filesystem, summarized_failing_results,
-                self._options.json_failing_test_results)
         if self._options.json_test_results:
             json_results_generator.write_json(self._filesystem,
                                               summarized_full_results,

@@ -243,12 +243,6 @@ def parse_args(args):
             optparse.make_option(
                 '--write-run-histories-to',
                 help='Path to write the JSON test run histories.'),
-            # FIXME(tansell): Remove this option if nobody is found who needs it.
-            optparse.make_option(
-                '--json-failing-test-results',
-                help=
-                'Path to write the JSON test results for only *failing* tests.'
-            ),
             optparse.make_option(
                 '--no-show-results',
                 dest='show_results',

@@ -174,10 +174,6 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
 
     def test_basic(self):
         options, args = parse_args(
-            extra_args=[
-                '--json-failing-test-results',
-                '/tmp/json_failing_test_results.json'
-            ],
             tests_included=True)
         logging_stream = StringIO()
         host = MockHost()
@@ -2333,20 +2329,6 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             ['--isolated-script-test-output', '/tmp/json_results.json'],
             host=host)
         self._check_json_test_results(host, details)
-
-    def test_json_failing_test_results(self):
-        host = MockHost()
-        details, _, _ = logging_run(
-            ['--json-failing-test-results', '/tmp/json_failing_results.json'],
-            host=host)
-        self.assertEqual(details.exit_code, 0)
-        self.assertTrue(
-            host.filesystem.exists('/tmp/json_failing_results.json'))
-        json_failing_test_results = host.filesystem.read_text_file(
-            '/tmp/json_failing_results.json')
-        self.assertEqual(
-            json.loads(json_failing_test_results),
-            details.summarized_failing_results)
 
     def test_no_default_expectations(self):
         self.assertFalse(
