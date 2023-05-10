@@ -697,6 +697,27 @@ class AffectedPtrExprRewriter : public MatchFinder::MatchCallback {
       lhs.replacement = getReplacementDirective(
           replacement_text, replacement_range, source_manager, ast_context);
       lhs.include_directive = lhs.replacement;
+    } else if (const clang::ParmVarDecl* var_decl =
+                   result.Nodes.getNodeAs<clang::ParmVarDecl>(
+                       "lambda_parmVarDecl")) {
+      auto* type_loc =
+          result.Nodes.getNodeAs<clang::TypeLoc>("template_type_param_loc");
+
+      auto* md = result.Nodes.getNodeAs<clang::CXXMethodDecl>("md");
+
+      clang::SourceRange replacement_range(var_decl->getBeginLoc(),
+                                           type_loc->getEndLoc());
+
+      std::string replacement_text =
+          (md->getParamDecl(var_decl->getFunctionScopeIndex()))
+              ->getType()
+              ->getPointeeType()
+              .getAsString();
+
+      replacement_text = RemovePrefix(replacement_text);
+      lhs.replacement = getReplacementDirective(
+          replacement_text, replacement_range, source_manager, ast_context);
+      lhs.include_directive = lhs.replacement;
     }
 
     Node rhs;
@@ -1052,6 +1073,33 @@ class VectorRawPtrRewriter {
                        has(cxxOperatorCallExpr(has(expr(rhs_expr_variations)))
                                .bind("affectedOpCall"))))));
       match_finder_.addMatcher(affected_op_call, &affected_ptr_expr_rewriter_);
+
+      // handles expressions of the form:
+      // base::ranges::any_of(view->children(), [](const auto* v) {
+      //     ...
+      //   });
+      // where auto* needs to be rewritten into type_name*.
+      auto range_exprs = callExpr(
+          callee(functionDecl(anyOf(
+              matchesName("find"), matchesName("any_of"), matchesName("all_of"),
+              matchesName("transform"), matchesName("copy"),
+              matchesName("accumulate"), matchesName("count")))),
+          hasArgument(0, traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                                  expr(anyOf(rhs_expr_variations, reversed_expr,
+                                             ctn_like_type)))),
+          hasAnyArgument(expr(allOf(
+              traverse(
+                  clang::TK_IgnoreUnlessSpelledInSource,
+                  lambdaExpr(
+                      has(parmVarDecl(
+                              hasTypeLoc(loc(qualType(anything()))
+                                             .bind("template_type_param_loc")),
+                              hasType(pointsTo(templateTypeParmType())))
+                              .bind("lambda_parmVarDecl")))
+                      .bind("lambda_expr")),
+              lambdaExpr(has(cxxRecordDecl(has(functionTemplateDecl(has(
+                  cxxMethodDecl(isTemplateInstantiation()).bind("md")))))))))));
+      match_finder_.addMatcher(range_exprs, &affected_ptr_expr_rewriter_);
     }
 
     // needed for ternary operator expr: (cond) ? true_expr : false_expr;

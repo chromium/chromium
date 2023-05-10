@@ -1,8 +1,10 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <algorithm>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <vector>
 
 #define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
@@ -547,7 +549,9 @@ void fctttttt() {
 
 namespace {
 namespace A {
-struct SA {};
+struct SA {
+  int count;
+};
 }  // namespace A
 
 namespace B {
@@ -555,13 +559,64 @@ struct S {
   // Expected rewrite: std::vector<raw_ptr<const A::SA>> member;
   std::vector<const A::SA*> member;
 
-  void fct() {
+  bool fct() {
     // This tests whether we properly trim (anonymous namespace):: from the type
     // while conserving constness.
     // Expected rewrite: for(const A::SA* i : member)
     for (auto* i : member) {
       (void)i;
     }
+
+    return std::any_of(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](auto* item) { return item != nullptr; });
+  }
+
+  std::vector<const A::SA*>::iterator fct2() {
+    return std::find_if(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item == nullptr; });
+        [](const auto* item) { return item == nullptr; });
+  }
+
+  bool fct3() {
+    return std::all_of(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](auto* item) { return item != nullptr; });
+  }
+
+  int fct4() {
+    return std::accumulate(member.begin(), member.end(), 1,
+                           // Expected rewrite: [](int num, const A::SA* item) {
+                           [](int num, const auto* item) {
+                             return (item != nullptr) ? 1 + num : 0;
+                           });
+  }
+
+  int fct5() {
+    return std::count_if(
+        member.begin(), member.end(),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](const auto* item) { return item != nullptr; });
+  }
+
+  void fct6() {
+    std::vector<int> copy;
+    std::transform(
+        member.begin(), member.end(), std::back_inserter(copy),
+        // Expected rewrite: [](const A::SA* item) { return item->count; });
+        [](const auto* item) { return item->count; });
+  }
+
+  std::vector<const A::SA*> fct7() {
+    std::vector<const A::SA*> copy;
+    std::copy_if(
+        member.begin(), member.end(), std::back_inserter(copy),
+        // Expected rewrite: [](const A::SA* item) { return item != nullptr; });
+        [](const auto* item) { return item != nullptr; });
+    return copy;
   }
 };
 }  // namespace B
