@@ -1026,11 +1026,6 @@ TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
   histograms.ExpectTotalCount("Quota.QuotaDatabaseReset", 1);
   histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
                                DatabaseResetReason::kCreateSchema, 1);
-
-  EXPECT_GE(histograms.GetTotalSum("Quota.QuotaDatabaseError"), 1);
-  EXPECT_GE(histograms.GetBucketCount("Quota.QuotaDatabaseError",
-                                      sql::SqliteLoggedResultCode::kCorrupt),
-            1);
 }
 
 TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
@@ -1132,10 +1127,15 @@ TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
   BucketInitParams params(
       StorageKey::CreateFromStringForTesting("http://google/"),
       "google_bucket");
+  int sqlite_error_code = 0;
+  db.SetDbErrorCallback(base::BindRepeating(
+      [](int* error_code_out, int error_code) { *error_code_out = error_code; },
+      &sqlite_error_code));
 
   {
     ASSERT_TRUE(db.UpdateOrCreateBucket(params, 0).has_value())
         << "Failed to create bucket to be used in test";
+    EXPECT_EQ(sqlite_error_code, static_cast<int>(sql::SqliteResultCode::kOk));
   }
 
   // Bucket lookup uses the `buckets_by_storage_key` index.
@@ -1148,13 +1148,10 @@ TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
       << "Failed to corrupt the database";
 
   {
-    base::HistogramTester histograms;
-
     EXPECT_FALSE(db.UpdateOrCreateBucket(params, 0).has_value());
 
-    histograms.ExpectTotalCount("Quota.QuotaDatabaseError", 1);
-    histograms.ExpectBucketCount("Quota.QuotaDatabaseError",
-                                 sql::SqliteLoggedResultCode::kCorrupt, 1);
+    EXPECT_EQ(sqlite_error_code,
+              static_cast<int>(sql::SqliteResultCode::kCorrupt));
   }
 }
 

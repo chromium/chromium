@@ -219,20 +219,21 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Flushes previously scheduled commits.
   void CommitNow();
 
-  // The given callback will be invoked whenever the database encounters a full
-  // disk error.
-  void SetOnFullDiskErrorCallback(const base::RepeatingClosure& callback);
+  // The given callback will be invoked whenever the database encounters an
+  // error.
+  void SetDbErrorCallback(
+      const base::RepeatingCallback<void(int)>& db_error_callback);
 
   // Testing support for database corruption handling.
   //
   // Runs `corrupter` on the same sequence used to do database I/O,
   // guaranteeing that no other database operation is performed at the same
-  // time. `corrupter` receives the path to the underlying SQLite database as an
-  // argument. The underlying SQLite database is closed while `corrupter` runs,
-  // and reopened afterwards.
+  // time. `corrupter` receives the path to the underlying SQLite database
+  // as an argument. The underlying SQLite database is closed while
+  // `corrupter` runs, and reopened afterwards.
 
-  // Returns QuotaError::kNone if the database was successfully reopened after
-  // `corrupter` was run, or QuotaError::kDatabaseError otherwise.
+  // Returns QuotaError::kNone if the database was successfully reopened
+  // after `corrupter` was run, or QuotaError::kDatabaseError otherwise.
   QuotaError CorruptForTesting(
       base::OnceCallback<void(const base::FilePath&)> corrupter);
 
@@ -313,7 +314,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
 
-  base::RepeatingClosure full_disk_error_callback_;
+  base::RepeatingCallback<void(int)> db_error_callback_;
 };
 
 }  // namespace storage

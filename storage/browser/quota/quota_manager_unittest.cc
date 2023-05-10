@@ -772,18 +772,14 @@ TEST_F(QuotaManagerImplTest, CorruptionRecovery) {
       }));
   ASSERT_EQ(QuotaError::kNone, corruption_error);
 
-  // Try to lookup a bucket, this should fail until the error threshold is
-  // reached.
-  for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToDisableDatabase;
-       ++i) {
-    EXPECT_FALSE(quota_manager_impl_->is_db_disabled_for_testing());
-    EXPECT_FALSE(is_db_bootstrapping());
+  // Try to lookup a bucket, this should report a failure.
+  EXPECT_FALSE(quota_manager_impl_->is_db_disabled_for_testing());
+  EXPECT_FALSE(is_db_bootstrapping());
 
-    auto bucket =
-        GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
-    ASSERT_FALSE(bucket.has_value());
-    EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
-  }
+  auto bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_FALSE(bucket.has_value());
+  EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
 
   // The last lookup attempt should have started another bootstrap attempt.
   EXPECT_TRUE(is_db_bootstrapping());
@@ -820,29 +816,6 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
                            UsageInfo("foo.com", kTemp, 10 + 15 + 30 + 35),
                            UsageInfo("bar.com", kTemp, 20),
                            UsageInfo("bar.com", kSync, 50)));
-}
-
-TEST_F(QuotaManagerImplTest, DatabaseDisabledAfterThreshold) {
-  disable_database_bootstrap(true);
-  OpenDatabase();
-
-  // Disable quota database for database error behavior.
-  DisableQuotaDatabase();
-
-  ASSERT_FALSE(is_db_disabled());
-
-  StorageKey storage_key = ToStorageKey("http://a.com/");
-  std::string bucket_name = "bucket_a";
-
-  ASSERT_FALSE(UpdateOrCreateBucket({storage_key, bucket_name}).has_value());
-  ASSERT_FALSE(is_db_disabled());
-
-  ASSERT_FALSE(UpdateOrCreateBucket({storage_key, bucket_name}).has_value());
-  ASSERT_FALSE(is_db_disabled());
-
-  // Disables access to QuotaDatabase after error counts passes threshold.
-  ASSERT_FALSE(GetBucket(storage_key, bucket_name, kTemp).has_value());
-  ASSERT_TRUE(is_db_disabled());
 }
 
 TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket) {
@@ -1062,8 +1035,8 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp)
           .has_value());
 
-  histograms.ExpectBucketCount("Quota.QuotaDatabaseResultSuccess",
-                               /*sample=*/true, /*expected_count=*/1);
+  histograms.ExpectTotalCount("Quota.QuotaDatabaseError",
+                              /*expected_count=*/0);
 
   // Corrupt QuotaDatabase so any future request returns a QuotaError.
   QuotaError corruption_error = CorruptDatabaseForTesting(
@@ -1079,8 +1052,8 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
   ASSERT_FALSE(bucket.has_value());
   EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
 
-  histograms.ExpectBucketCount("Quota.QuotaDatabaseResultSuccess",
-                               /*sample=*/false, /*expected_count=*/1);
+  histograms.ExpectTotalCount("Quota.QuotaDatabaseError",
+                              /*expected_count=*/1);
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsForType) {

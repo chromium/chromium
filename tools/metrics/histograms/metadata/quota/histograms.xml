@@ -224,6 +224,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Quota.QuotaDatabaseResultSuccess" enum="BooleanSuccess"
     expires_after="2023-10-22">
+  <obsolete>
+    Code for recording this histogram was removed in May 2023 after a refactor.
+    The error rate at the time was less than 0.005%.
+  </obsolete>
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

@@ -23,7 +23,6 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
-#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "storage/browser/quota/quota_database_migrations.h"
@@ -205,6 +204,7 @@ QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path)
 QuotaDatabase::~QuotaDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_) {
+    db_->reset_error_callback();
     db_->CommitTransaction();
   }
 }
@@ -917,21 +917,16 @@ QuotaError QuotaDatabase::EnsureOpened() {
   db_->set_histogram_tag("Quota");
 
   db_->set_error_callback(base::BindRepeating(
-      [](base::RepeatingClosure full_disk_error_callback,
+      [](base::RepeatingCallback<void(int)> db_error_callback,
          int* sqlite_error_code_out, int sqlite_error_code,
          sql::Statement* statement) {
         *sqlite_error_code_out = sqlite_error_code;
 
-        sql::UmaHistogramSqliteResult("Quota.QuotaDatabaseError",
-                                      sqlite_error_code);
-
-        if (!full_disk_error_callback.is_null() &&
-            static_cast<sql::SqliteErrorCode>(sqlite_error_code) ==
-                sql::SqliteErrorCode::kFullDisk) {
-          full_disk_error_callback.Run();
+        if (db_error_callback) {
+          db_error_callback.Run(sqlite_error_code);
         }
       },
-      full_disk_error_callback_, &sqlite_error_code_));
+      db_error_callback_, &sqlite_error_code_));
 
   // Migrate an existing database from the old path.
   if (!db_file_path_.empty() && !MoveLegacyDatabase()) {
@@ -1244,9 +1239,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   return result;
 }
 
-void QuotaDatabase::SetOnFullDiskErrorCallback(
-    const base::RepeatingClosure& callback) {
-  full_disk_error_callback_ = callback;
+void QuotaDatabase::SetDbErrorCallback(
+    const base::RepeatingCallback<void(int)>& db_error_callback) {
+  db_error_callback_ = db_error_callback;
 }
 
 }  // namespace storage
