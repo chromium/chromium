@@ -98,6 +98,10 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
   // Also, this has to be called after falling back to SwiftShader decision is
   // finalized because this function depends on GL is ANGLE's GLES or not.
   gl::DirectCompositionOverlayWorkarounds workarounds = {
+      .disable_sw_video_overlays = gpu_feature_info.IsWorkaroundEnabled(
+          DISABLE_DIRECT_COMPOSITION_SW_VIDEO_OVERLAYS),
+      .disable_decode_swap_chain =
+          gpu_feature_info.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN),
       .enable_bgra8_overlays_with_yuv_overlay_support =
           gpu_feature_info.IsWorkaroundEnabled(
               gpu::ENABLE_BGRA8_OVERLAYS_WITH_YUV_OVERLAY_SUPPORT),
@@ -773,15 +777,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (!watchdog_thread_)
     watchdog_init.SetGpuWatchdogPtr(nullptr);
 
-#if BUILDFLAG(IS_WIN)
-  if (gpu_feature_info_.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN))
-    gl::DisableDirectCompositionDecodeSwapChain();
-  if (gpu_feature_info_.IsWorkaroundEnabled(
-          DISABLE_DIRECT_COMPOSITION_SW_VIDEO_OVERLAYS)) {
-    gl::DisableDirectCompositionSoftwareOverlays();
-  }
-#endif
-
 #if defined(USE_EGL) && !BUILDFLAG(IS_MAC)
   if (gpu_feature_info_.IsWorkaroundEnabled(CHECK_EGL_FENCE_BEFORE_WAIT))
     gl::GLFenceEGL::CheckEGLFenceBeforeWait();
@@ -982,11 +977,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 #endif
 
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
-
-#if BUILDFLAG(IS_WIN)
-  if (gpu_feature_info_.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN))
-    gl::DisableDirectCompositionDecodeSwapChain();
-#endif
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
 }
