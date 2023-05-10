@@ -94,9 +94,8 @@ std::unique_ptr<FeatureTile> IMEFeaturePodController::CreateTile(bool compact) {
   tile_ = tile.get();
   tile_->SetVectorIcon(kUnifiedMenuKeyboardIcon);
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_SHORT));
-  std::u16string tooltip = GetTooltipString();
-  tile_->SetTooltipText(tooltip);
-  tile_->CreateDecorativeDrillInButton(tooltip);
+  tile_->SetTooltipText(GetTooltipString());
+  tile_->CreateDecorativeDrillInArrow();
   // `Update` will update the visibility.
   tile_->SetVisible(false);
   Update();
@@ -126,7 +125,6 @@ void IMEFeaturePodController::Update() {
   if (features::IsQsRevampEnabled()) {
     tile_->SetSubLabel(GetLabelString());
     tile_->SetTooltipText(tooltip);
-    tile_->SetDrillInButtonTooltipText(tooltip);
     // If the tile's visibility changes from invisible to visible, log its
     // visibility.
     if (!tile_->GetVisible() && is_button_visible) {

@@ -118,9 +118,8 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
   }
   tile->SetVisible(target_visibility);
 
-  const std::u16string tooltip =
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_TOOLTIP);
-  tile->SetTooltipText(tooltip);
+  tile->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_TOOLTIP));
 
   auto* cast_config = CastConfigController::Get();
   if (cast_config) {
@@ -135,7 +134,7 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
     return tile;
   }
 
-  tile->CreateDecorativeDrillInButton(tooltip);
+  tile->CreateDecorativeDrillInArrow();
   return tile;
 }
 

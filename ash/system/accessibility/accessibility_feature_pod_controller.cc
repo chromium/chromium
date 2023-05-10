@@ -62,10 +62,9 @@ std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
   feature_tile->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));
   feature_tile->SetSubLabelVisibility(false);
-  const std::u16string tooltip_text =
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP);
-  feature_tile->SetTooltipText(tooltip_text);
-  feature_tile->CreateDecorativeDrillInButton(tooltip_text);
+  feature_tile->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP));
+  feature_tile->CreateDecorativeDrillInArrow();
 
   AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
   LoginStatus login_status = Shell::Get()->session_controller()->login_status();

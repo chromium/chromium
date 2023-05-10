@@ -16,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace ash {
@@ -38,12 +40,15 @@ class MockFeaturePodController : public FeaturePodControllerBase {
 
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override {
     auto tile = std::make_unique<FeatureTile>(
-        base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+        base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                             weak_ptr_factory_.GetWeakPtr()),
         togglable_,
         compact ? FeatureTile::TileType::kCompact
                 : FeatureTile::TileType::kPrimary);
     tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+    tile->SetIconClickCallback(
+        base::BindRepeating(&MockFeaturePodController::OnIconPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
     tile_ = tile.get();
     return tile;
   }
@@ -55,34 +60,25 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   void OnIconPressed() override {
     was_icon_pressed_ = true;
     // FeaturePodController elements in production know if they are togglable,
-    // but in this mock we need to check before changing the toggled state.
-    if (togglable_) {
+    // but in this mock we need to check before changing the toggled state. This
+    // attempts to match UX specs: tiles with clickable icons should toggle when
+    // their icon is clicked rather than their label.
+    if (togglable_ && tile_->is_icon_clickable()) {
       toggled_ = !toggled_;
       tile_->SetToggled(toggled_);
     }
   }
 
   void OnLabelPressed() override {
-    // If button is not of type: Toggle + Drill-in, `OnLabelPressed` resolves to
-    // `OnIconPressed`.
-    if (!togglable_) {
-      was_icon_pressed_ = true;
-      return;
-    }
     was_label_pressed_ = true;
-  }
-
-  // FeaturePodController elements in production know if they need to create a
-  // drill-in button, but here we create it after creating the base button.
-  void CreateDrillInButton() {
-    tile_->CreateDrillInButton(
-        base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                            weak_ptr_factory_.GetWeakPtr()),
-        u"Tooltip text");
-  }
-
-  void CreateDecorativeDrillInButton() {
-    tile_->CreateDecorativeDrillInButton(u"Tooltip text");
+    // FeaturePodController elements in production know if they are togglable,
+    // but in this mock we need to check before changing the toggled state. This
+    // attempts to match UX specs: tiles with clickable icons should toggle when
+    // their icon is clicked rather than their label.
+    if (togglable_ && !tile_->is_icon_clickable()) {
+      toggled_ = !toggled_;
+      tile_->SetToggled(toggled_);
+    }
   }
 
   bool WasIconPressed() { return was_icon_pressed_; }
@@ -136,16 +132,17 @@ TEST_F(FeatureTileTest, PrimaryTile_LaunchSurface) {
       std::make_unique<MockFeaturePodController>(/*togglable=*/false);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  EXPECT_FALSE(tile->drill_in_button());
+  EXPECT_FALSE(tile->is_icon_clickable());
+  EXPECT_FALSE(tile->drill_in_arrow());
 
-  // Ensure icon hasn't been pressed.
+  // Ensure label hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
-  EXPECT_FALSE(mock_controller->WasIconPressed());
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
 
   LeftClickOn(tile);
 
-  // Ensure icon was pressed and button does not toggle after clicking it.
-  EXPECT_TRUE(mock_controller->WasIconPressed());
+  // Ensure label was pressed and button does not toggle after clicking it.
+  EXPECT_TRUE(mock_controller->WasLabelPressed());
   EXPECT_FALSE(tile->IsToggled());
 }
 
@@ -154,16 +151,17 @@ TEST_F(FeatureTileTest, PrimaryTile_Toggle) {
       std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  EXPECT_FALSE(tile->drill_in_button());
+  EXPECT_FALSE(tile->is_icon_clickable());
+  EXPECT_FALSE(tile->drill_in_arrow());
 
-  // Ensure icon hasn't been pressed.
+  // Ensure label hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
-  EXPECT_FALSE(mock_controller->WasIconPressed());
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
 
   LeftClickOn(tile);
 
-  // Ensure icon was pressed and button toggles after clicking it.
-  EXPECT_TRUE(mock_controller->WasIconPressed());
+  // Ensure label was pressed and button toggles after clicking it.
+  EXPECT_TRUE(mock_controller->WasLabelPressed());
   EXPECT_TRUE(tile->IsToggled());
 
   LeftClickOn(tile);
@@ -172,24 +170,87 @@ TEST_F(FeatureTileTest, PrimaryTile_Toggle) {
   EXPECT_FALSE(tile->IsToggled());
 }
 
+TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/true);
+  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
+
+  tile->SetIconClickable(true);
+  views::test::RunScheduledLayout(tile);
+  EXPECT_TRUE(tile->is_icon_clickable());
+  ASSERT_TRUE(tile->icon_button());
+  EXPECT_TRUE(tile->icon_button()->GetEnabled());
+
+  // Ensure tile is not toggled and icon is not pressed.
+  EXPECT_FALSE(tile->IsToggled());
+  EXPECT_FALSE(mock_controller->WasIconPressed());
+
+  LeftClickOn(tile);
+
+  // Clicking the tile does not press the icon.
+  EXPECT_FALSE(mock_controller->WasIconPressed());
+  EXPECT_TRUE(mock_controller->WasLabelPressed());
+  EXPECT_FALSE(tile->IsToggled());
+
+  LeftClickOn(tile->icon_button());
+
+  // Clicking the icon presses it and toggles the tile.
+  EXPECT_TRUE(mock_controller->WasIconPressed());
+  EXPECT_TRUE(tile->IsToggled());
+}
+
+TEST_F(FeatureTileTest, PrimaryTile_SetIconClickable) {
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/true);
+  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
+
+  // Ensure clickable state is correct.
+  tile->SetIconClickable(true);
+  EXPECT_TRUE(tile->is_icon_clickable());
+  EXPECT_TRUE(tile->icon_button()->GetEnabled());
+  auto* ink_drop = views::InkDrop::Get(tile->icon_button());
+  ASSERT_TRUE(ink_drop);
+  EXPECT_EQ(ink_drop->GetMode(), views::InkDropHost::InkDropMode::ON);
+
+  // Ensure icon button can take focus.
+  auto* focus_manager = widget_->GetFocusManager();
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
+  PressTab();
+  EXPECT_EQ(tile->icon_button(), focus_manager->GetFocusedView());
+
+  // Ensure button state changes when set to not clickable.
+  tile->SetIconClickable(false);
+  EXPECT_FALSE(tile->is_icon_clickable());
+  EXPECT_FALSE(tile->icon_button()->GetEnabled());
+  EXPECT_EQ(ink_drop->GetMode(), views::InkDropHost::InkDropMode::OFF);
+
+  // Ensure icon button doesn't focus.
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
+}
+
 TEST_F(FeatureTileTest, PrimaryTile_DecorativeDrillIn) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/false);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  mock_controller->CreateDecorativeDrillInButton();
+  tile->CreateDecorativeDrillInArrow();
   views::test::RunScheduledLayout(tile);
-  ASSERT_TRUE(tile->drill_in_button());
-  EXPECT_TRUE(tile->drill_in_button()->GetVisible());
+  EXPECT_FALSE(tile->is_icon_clickable());
+  ASSERT_TRUE(tile->drill_in_arrow());
+  EXPECT_TRUE(tile->drill_in_arrow()->GetVisible());
 
-  // Ensure icon hasn't been pressed.
+  // Ensure label hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
-  EXPECT_FALSE(mock_controller->WasIconPressed());
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
 
-  LeftClickOn(tile->drill_in_button());
+  LeftClickOn(tile->drill_in_arrow());
 
-  // Ensure icon was pressed and button does not toggle after clicking it.
-  EXPECT_TRUE(mock_controller->WasIconPressed());
+  // Ensure label was pressed and button does not toggle after clicking it.
+  EXPECT_TRUE(mock_controller->WasLabelPressed());
   EXPECT_FALSE(tile->IsToggled());
 
   // Ensure drill-in button doesn't focus.
@@ -198,41 +259,6 @@ TEST_F(FeatureTileTest, PrimaryTile_DecorativeDrillIn) {
   EXPECT_EQ(tile, focus_manager->GetFocusedView());
   PressTab();
   EXPECT_EQ(tile, focus_manager->GetFocusedView());
-}
-
-TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
-  auto mock_controller =
-      std::make_unique<MockFeaturePodController>(/*togglable=*/true);
-  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
-
-  mock_controller->CreateDrillInButton();
-  views::test::RunScheduledLayout(tile);
-  ASSERT_TRUE(tile->drill_in_button());
-  EXPECT_TRUE(tile->drill_in_button()->GetVisible());
-
-  // Ensure icon is not pressed or toggled.
-  EXPECT_FALSE(tile->IsToggled());
-  EXPECT_FALSE(mock_controller->WasIconPressed());
-
-  LeftClickOn(tile);
-
-  // Ensure icon was pressed and button toggles after clicking it.
-  EXPECT_TRUE(mock_controller->WasIconPressed());
-  EXPECT_TRUE(tile->IsToggled());
-
-  EXPECT_FALSE(mock_controller->WasLabelPressed());
-
-  LeftClickOn(tile->drill_in_button());
-
-  // Ensure `WasLabelPressed` after clicking drill-in button.
-  EXPECT_TRUE(mock_controller->WasLabelPressed());
-
-  // Ensure drill-in button has focus.
-  auto* focus_manager = widget_->GetFocusManager();
-  PressTab();
-  EXPECT_EQ(tile, focus_manager->GetFocusedView());
-  PressTab();
-  EXPECT_EQ(tile->drill_in_arrow(), focus_manager->GetFocusedView());
 }
 
 // Togglable tiles with a decorative drill-in button do not toggle when
@@ -245,24 +271,25 @@ TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDecorativeDrillIn) {
       std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  mock_controller->CreateDecorativeDrillInButton();
+  tile->CreateDecorativeDrillInArrow();
   views::test::RunScheduledLayout(tile);
-  ASSERT_TRUE(tile->drill_in_button());
-  EXPECT_TRUE(tile->drill_in_button()->GetVisible());
+  EXPECT_FALSE(tile->is_icon_clickable());
+  ASSERT_TRUE(tile->drill_in_arrow());
+  EXPECT_TRUE(tile->drill_in_arrow()->GetVisible());
 
-  // Ensure icon is not pressed.
-  EXPECT_FALSE(mock_controller->WasIconPressed());
+  // Ensure label is not pressed.
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
 
   LeftClickOn(tile);
 
-  // Ensure icon was pressed after clicking it.
-  EXPECT_TRUE(mock_controller->WasIconPressed());
-  EXPECT_FALSE(mock_controller->WasLabelPressed());
+  // Ensure label was pressed after clicking it.
+  EXPECT_FALSE(mock_controller->WasIconPressed());
+  EXPECT_TRUE(mock_controller->WasLabelPressed());
 
-  LeftClickOn(tile->drill_in_button());
+  LeftClickOn(tile->drill_in_arrow());
 
-  // Ensure `WasLabelPressed` not pressed after clicking drill-in button.
-  EXPECT_FALSE(mock_controller->WasLabelPressed());
+  // Ensure `WasIconPressed` not pressed after clicking drill-in button.
+  EXPECT_FALSE(mock_controller->WasIconPressed());
 
   // Ensure drill-in button doesn't focus.
   auto* focus_manager = widget_->GetFocusManager();
@@ -277,15 +304,16 @@ TEST_F(FeatureTileTest, CompactTile_LaunchSurface) {
       /*togglable=*/false);
   auto* tile =
       widget_->SetContentsView(mock_controller->CreateTile(/*compact=*/true));
+  EXPECT_FALSE(tile->is_icon_clickable());
 
-  // Ensure icon hasn't been pressed.
+  // Ensure label hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
-  EXPECT_FALSE(mock_controller->WasIconPressed());
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
 
   LeftClickOn(tile);
 
-  // Ensure icon was pressed and button does not toggle after clicking it.
-  EXPECT_TRUE(mock_controller->WasIconPressed());
+  // Ensure label was pressed and button does not toggle after clicking it.
+  EXPECT_TRUE(mock_controller->WasLabelPressed());
   EXPECT_FALSE(tile->IsToggled());
 }
 
@@ -294,15 +322,16 @@ TEST_F(FeatureTileTest, CompactTile_Toggle) {
       /*togglable=*/true);
   auto* tile =
       widget_->SetContentsView(mock_controller->CreateTile(/*compact=*/true));
+  EXPECT_FALSE(tile->is_icon_clickable());
 
-  // Ensure icon hasn't been pressed.
+  // Ensure label hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
-  EXPECT_FALSE(mock_controller->WasIconPressed());
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
 
   LeftClickOn(tile);
 
-  // Ensure icon was pressed and button toggles after clicking it.
-  EXPECT_TRUE(mock_controller->WasIconPressed());
+  // Ensure label was pressed and button toggles after clicking it.
+  EXPECT_TRUE(mock_controller->WasLabelPressed());
   EXPECT_TRUE(tile->IsToggled());
 
   // Ensure button toggles after clicking it again.

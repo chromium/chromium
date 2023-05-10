@@ -71,10 +71,9 @@ std::unique_ptr<FeatureTile> LocaleFeaturePodController::CreateTile(
   if (visible) {
     TrackVisibilityUMA();
     tile->SetVectorIcon(kUnifiedMenuLocaleIcon);
-    std::u16string tooltip =
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE_TOOLTIP);
-    tile->SetTooltipText(tooltip);
-    tile->CreateDecorativeDrillInButton(tooltip);
+    tile->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE_TOOLTIP));
+    tile->CreateDecorativeDrillInArrow();
     tile->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE));
     tile->SetSubLabel(GetSubLabelText());
   }

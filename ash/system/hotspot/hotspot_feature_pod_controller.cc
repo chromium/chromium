@@ -44,13 +44,13 @@ FeaturePodButton* HotspotFeaturePodController::CreateButton() {
 std::unique_ptr<FeatureTile> HotspotFeaturePodController::CreateTile(
     bool compact) {
   auto tile = std::make_unique<FeatureTile>(
-      base::BindRepeating(&HotspotFeaturePodController::OnIconPressed,
+      base::BindRepeating(&HotspotFeaturePodController::OnLabelPressed,
                           weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
-  tile_->CreateDrillInButton(
-      base::BindRepeating(&HotspotFeaturePodController::OnLabelPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_HOTSPOT));
+  tile_->SetIconClickable(true);
+  tile_->SetIconClickCallback(
+      base::BindRepeating(&HotspotFeaturePodController::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()));
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_HOTSPOT));
 
   // Default the visibility to false and update it in `UpdateTileState()` since
@@ -119,8 +119,8 @@ void HotspotFeaturePodController::UpdateTileState() {
   tile_->SetToggled(hotspot_info_->state != HotspotState::kDisabled);
   tile_->SetVectorIcon(ComputeIcon());
   tile_->SetSubLabel(ComputeSublabel());
-  tile_->SetTooltipText(ComputeTooltip());
-  tile_->SetDrillInButtonTooltipText(ComputeDrillInTooltip());
+  tile_->SetIconButtonTooltipText(ComputeIconTooltip());
+  tile_->SetTooltipText(ComputeTileTooltip());
 }
 
 void HotspotFeaturePodController::EnableHotspotIfAllowedAndDiveIn() {
@@ -161,7 +161,7 @@ std::u16string HotspotFeaturePodController::ComputeSublabel() const {
   }
 }
 
-std::u16string HotspotFeaturePodController::ComputeTooltip() const {
+std::u16string HotspotFeaturePodController::ComputeIconTooltip() const {
   switch (hotspot_info_->state) {
     case HotspotState::kEnabled: {
       // Toggle hotspot. Hotspot is on, # devices connected.
@@ -211,7 +211,7 @@ std::u16string HotspotFeaturePodController::ComputeTooltip() const {
   }
 }
 
-std::u16string HotspotFeaturePodController::ComputeDrillInTooltip() const {
+std::u16string HotspotFeaturePodController::ComputeTileTooltip() const {
   switch (hotspot_info_->state) {
     case HotspotState::kEnabled:
       // Show hotspot details. Hotspot is on.

@@ -58,8 +58,8 @@ class ASH_EXPORT HotspotFeaturePodController
       hotspot_config::mojom::HotspotControlResult operation_result);
   const gfx::VectorIcon& ComputeIcon() const;
   std::u16string ComputeSublabel() const;
-  std::u16string ComputeTooltip() const;
-  std::u16string ComputeDrillInTooltip() const;
+  std::u16string ComputeIconTooltip() const;
+  std::u16string ComputeTileTooltip() const;
 
   mojo::Remote<hotspot_config::mojom::CrosHotspotConfig>
       remote_cros_hotspot_config_;

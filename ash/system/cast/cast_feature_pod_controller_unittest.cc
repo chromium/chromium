@@ -50,8 +50,9 @@ TEST_F(CastFeaturePodControllerTest, CreateTile) {
   EXPECT_FALSE(tile->IsToggled());
   EXPECT_EQ(tile->label()->GetText(), u"Cast screen");
   EXPECT_EQ(tile->GetTooltipText(), u"Show cast devices");
-  EXPECT_TRUE(tile->drill_in_button()->GetVisible());
-  EXPECT_EQ(tile->drill_in_button()->GetTooltipText(), u"Show cast devices");
+  ASSERT_TRUE(tile->drill_in_arrow());
+  EXPECT_TRUE(tile->drill_in_arrow()->GetVisible());
+  ASSERT_TRUE(tile->sub_label());
   EXPECT_FALSE(tile->sub_label()->GetVisible());
 }
 

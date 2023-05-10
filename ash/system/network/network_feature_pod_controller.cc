@@ -188,14 +188,14 @@ std::unique_ptr<FeatureTile> NetworkFeaturePodController::CreateTile(
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<NetworkFeatureTile>(
       /*delegate=*/this,
-      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                           weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
-  tile_->CreateDrillInButton(
-      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP,
-                                 std::u16string()));
+  tile_->SetIconClickable(true);
+  tile_->SetIconClickCallback(
+      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()));
+  tile_->CreateDecorativeDrillInArrow();
   UpdateButtonStateIfExists();
   TrackVisibilityUMA();
   return tile;
@@ -329,7 +329,7 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
     tile_->SetSubLabel(ComputeButtonSubLabel(default_network));
     if (!tile_->GetEnabled()) {
       tile_->SetTooltipText(tooltip);
-      tile_->SetDrillInButtonTooltipText(tooltip);
+      tile_->SetIconButtonTooltipText(tooltip);
       return;
     }
   } else {
@@ -348,7 +348,7 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
       const std::u16string tooltip_text = l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP, tooltip);
       tile_->SetTooltipText(tooltip_text);
-      tile_->SetDrillInButtonTooltipText(tooltip_text);
+      tile_->SetIconButtonTooltipText(tooltip_text);
     } else {
       button_->SetIconAndLabelTooltips(l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP, tooltip));
@@ -357,7 +357,7 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
   }
 
   if (is_qs_revamp_enabled) {
-    tile_->SetTooltipText(l10n_util::GetStringFUTF16(
+    tile_->SetIconButtonTooltipText(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP, tooltip));
   } else {
     button_->SetIconTooltip(l10n_util::GetStringFUTF16(
@@ -367,7 +367,7 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
   // Make sure the tooltip indicates the network type will be toggled by
   // pressing the label if the network type is disabled.
   if (is_qs_revamp_enabled) {
-    tile_->SetDrillInButtonTooltipText(l10n_util::GetStringFUTF16(
+    tile_->SetTooltipText(l10n_util::GetStringFUTF16(
         toggled ? IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP
                 : IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP,
         tooltip));

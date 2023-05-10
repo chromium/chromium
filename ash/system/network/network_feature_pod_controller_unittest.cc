@@ -304,8 +304,9 @@ class NetworkFeaturePodControllerTest
   }
 
   bool IsDiveInButtonEnabled() {
+    // QsRevamp doesn't have a separate "dive-in" button, just the tile itself.
     return IsQsRevampEnabled()
-               ? feature_tile_->drill_in_button()->GetEnabled()
+               ? feature_tile_->GetEnabled()
                : feature_pod_button_->label_button()->GetEnabled();
   }
 
@@ -333,14 +334,14 @@ class NetworkFeaturePodControllerTest
   }
 
   const std::u16string GetIconTooltipText() {
-    return IsQsRevampEnabled() ? feature_tile_->GetTooltipText()
+    return IsQsRevampEnabled() ? feature_tile_->icon_button()->GetTooltipText()
                                : feature_pod_icon_button()->GetTooltipText();
   }
 
   const std::u16string GetLabelTooltipText() {
-    return IsQsRevampEnabled()
-               ? feature_tile_->drill_in_button()->GetTooltipText()
-               : feature_pod_label_button()->GetTooltipText();
+    // QsRevamp doesn't have a separate label button, just the tile itself.
+    return IsQsRevampEnabled() ? feature_tile_->GetTooltipText()
+                               : feature_pod_label_button()->GetTooltipText();
   }
 
   NetworkStateTestHelper* network_state_helper() {
@@ -842,10 +843,11 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
   ActiveNetworkIcon* active_network_icon =
       Shell::Get()->system_tray_model()->active_network_icon();
 
-  gfx::Image image;
-  image = IsQsRevampEnabled() ? gfx::Image(feature_tile()->icon()->GetImage())
-                              : gfx::Image(feature_pod_icon_button()->GetImage(
-                                    views::Button::STATE_NORMAL));
+  views::ImageButton* icon_button = IsQsRevampEnabled()
+                                        ? feature_tile()->icon_button()
+                                        : feature_pod_icon_button();
+  gfx::Image image =
+      gfx::Image(icon_button->GetImage(views::Button::STATE_NORMAL));
 
   ui::ColorProvider* color_provider =
       IsQsRevampEnabled() ? quick_settings_view()->GetColorProvider()
@@ -860,9 +862,7 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
 
   // Lock screen to get the button's disabled state.
   LockScreen();
-  image = IsQsRevampEnabled() ? gfx::Image(feature_tile()->icon()->GetImage())
-                              : gfx::Image(feature_pod_icon_button()->GetImage(
-                                    views::Button::STATE_DISABLED));
+  image = gfx::Image(icon_button->GetImage(views::Button::STATE_DISABLED));
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(active_network_icon->GetImage(
@@ -880,9 +880,7 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
 
-  image = IsQsRevampEnabled() ? gfx::Image(feature_tile()->icon()->GetImage())
-                              : gfx::Image(feature_pod_icon_button()->GetImage(
-                                    views::Button::STATE_NORMAL));
+  image = gfx::Image(icon_button->GetImage(views::Button::STATE_NORMAL));
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(active_network_icon->GetImage(

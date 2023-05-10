@@ -74,13 +74,14 @@ std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile(
     bool compact) {
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
-      base::BindRepeating(&BluetoothFeaturePodController::OnIconPressed,
+      base::BindRepeating(&BluetoothFeaturePodController::OnLabelPressed,
                           weak_factory_.GetWeakPtr()));
   tile_ = tile.get();
-  tile_->CreateDrillInButton(
-      base::BindRepeating(&BluetoothFeaturePodController::OnLabelPressed,
-                          weak_factory_.GetWeakPtr()),
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
+  tile_->SetIconClickable(true);
+  tile_->SetIconClickCallback(
+      base::BindRepeating(&BluetoothFeaturePodController::OnIconPressed,
+                          weak_factory_.GetWeakPtr()));
+  tile_->CreateDecorativeDrillInArrow();
   // UpdateTileStateIfExists() will update visibility.
   tile_->SetVisible(false);
   UpdateTileStateIfExists();
@@ -316,14 +317,14 @@ void BluetoothFeaturePodController::UpdateTileStateIfExists() {
         IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP));
+    tile_->SetIconButtonTooltipText(tooltip);
     tile_->SetTooltipText(tooltip);
-    tile_->SetDrillInButtonTooltipText(tooltip);
     return;
   }
   std::u16string tooltip_core = ComputeTooltip();
-  tile_->SetTooltipText(l10n_util::GetStringFUTF16(
+  tile_->SetIconButtonTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_core));
-  tile_->SetDrillInButtonTooltipText(l10n_util::GetStringFUTF16(
+  tile_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS_TOOLTIP, tooltip_core));
 }
 
