@@ -250,7 +250,8 @@ bool VulkanDeviceQueue::Initialize(
 
   if (allow_protected_memory) {
     if (!physical_device_info.feature_protected_memory) {
-      DLOG(ERROR) << "Protected memory is not supported";
+      LOG(DFATAL)
+          << "Protected memory is not supported. Vulkan is unavailable.";
       return false;
     }
     protected_memory_features_ = {
