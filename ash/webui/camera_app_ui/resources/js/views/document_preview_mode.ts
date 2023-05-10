@@ -80,7 +80,7 @@ export class DocumentPreviewMode {
         {
           render: (el: HTMLElement) => {
             const {icon, label, container} = makeMenuItemElements();
-            icon.setAttribute('name', 'document_review_share.svg');
+            icon.setAttribute('name', 'review_share.svg');
             label.textContent = getI18nMessage(I18nString.LABEL_SHARE);
             container.append(icon, label);
             el.append(container);

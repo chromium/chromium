@@ -795,12 +795,14 @@ export class Camera extends View implements CameraViewUI {
       const positive = new review.OptionGroup<boolean>({
         template: review.ButtonGroupTemplate.POSITIVE,
         options: [
-          new review.Option({text: I18nString.LABEL_SHARE}, {
-            callback: async () => {
-              sendEvent(metrics.GifResultType.SHARE);
-              await util.share(new File([blob], name, {type: MimeType.GIF}));
-            },
-          }),
+          new review.Option(
+              {text: I18nString.LABEL_SHARE, icon: 'review_share.svg'}, {
+                callback: async () => {
+                  sendEvent(metrics.GifResultType.SHARE);
+                  await util.share(
+                      new File([blob], name, {type: MimeType.GIF}));
+                },
+              }),
           new review.Option(
               {text: I18nString.LABEL_SAVE, primary: true}, {exitValue: true}),
         ],

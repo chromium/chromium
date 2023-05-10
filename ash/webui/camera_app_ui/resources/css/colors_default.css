@@ -184,3 +184,7 @@ button.shutter {
     color: var(--grey-900);
   }
 }
+
+.review-views .button-group button[i18n-text=label_share] svg-wrapper {
+  color: var(--blue-300);
+}

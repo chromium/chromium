@@ -17,6 +17,7 @@ import {View} from './view.js';
 interface UIArgs {
   text?: I18nString;
   label?: I18nString;
+  icon?: string;
   templateId?: string;
   primary?: boolean;
 }
@@ -162,7 +163,7 @@ export class Review extends View {
     }
     for (const btnGroup of btnGroups) {
       const addButton = ({
-        uiArgs: {text, label, templateId, primary},
+        uiArgs: {text, label, icon, templateId, primary},
         exitValue,
         callback,
         hasPopup,
@@ -176,6 +177,11 @@ export class Review extends View {
         }
         if (label !== undefined) {
           btn.setAttribute('i18n-label', label);
+        }
+        if (icon !== undefined) {
+          const iconEl = document.createElement('svg-wrapper');
+          iconEl.name = icon;
+          btn.prepend(iconEl);
         }
         if (this.primaryBtn === null && primary === true) {
           btn.classList.add('primary');

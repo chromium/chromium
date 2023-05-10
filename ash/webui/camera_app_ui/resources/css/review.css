@@ -42,8 +42,8 @@
   left: calc(var(--left-line) * 2);
 }
 
-.review-views .button-group button[i18n-text=label_share]::before {
-  content: url(/images/review_share.svg);
+.review-views .button-group button[i18n-text=label_share] svg-wrapper {
+  color: var(--cros-sys-on_primary_container);
   display: inline-block;
   line-height: normal;
   margin-inline-end: 5px;
