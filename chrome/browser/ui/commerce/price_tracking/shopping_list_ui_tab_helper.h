@@ -112,6 +112,12 @@ class ShoppingListUiTabHelper
 
   void TriggerUpdateForIconView();
 
+  bool IsInitialNavigationCommitted(
+      const content::LoadCommittedDetails& load_details);
+
+  bool IsSameDocumentWithSameCommittedUrl(
+      const content::LoadCommittedDetails& load_details);
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
