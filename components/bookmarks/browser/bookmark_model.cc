@@ -304,8 +304,15 @@ void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   // `MoveToOtherModelWithNewNodeIdsAndUuids` can only be triggered by a user
   // action at the moment. `AddNode` will take care of scheduling a save for
   // `dest_model`.
-  dest_model->AddNode(AsMutable(dest_parent), dest_parent->children().size(),
-                      std::move(subtree_copy), /*added_by_user=*/true);
+  const BookmarkNode* added_node = dest_model->AddNode(
+      AsMutable(dest_parent), dest_parent->children().size(),
+      std::move(subtree_copy), /*added_by_user=*/true);
+
+  // Current implementation requires that `BookmarkNodeAdded` is sent for all
+  // descendants (see `BookmarkNodeAdded` documentation).
+  // TODO(crbug.com/1440384): Revise the `BookmarkModelObserver` API.
+  dest_model->NotifyNodeAddedForAllDescendants(added_node,
+                                               /*added_by_user=*/true);
 
   // TODO(crbug.com/1441911): Make sure this flow can never cause data loss.
   if (store_) {
@@ -1042,17 +1049,18 @@ void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
 
   // We might be restoring a folder node that have already contained a set of
   // child nodes. We need to notify all of them.
-  NotifyNodeAddedForAllDescendants(node_ptr);
+  NotifyNodeAddedForAllDescendants(node_ptr, /*added_by_user=*/false);
 }
 
-void BookmarkModel::NotifyNodeAddedForAllDescendants(const BookmarkNode* node) {
+void BookmarkModel::NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
+                                                     bool added_by_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (size_t i = 0; i < node->children().size(); ++i) {
     for (BookmarkModelObserver& observer : observers_) {
-      observer.BookmarkNodeAdded(this, node, i, false);
+      observer.BookmarkNodeAdded(this, node, i, added_by_user);
     }
-    NotifyNodeAddedForAllDescendants(node->children()[i].get());
+    NotifyNodeAddedForAllDescendants(node->children()[i].get(), added_by_user);
   }
 }
 

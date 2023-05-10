@@ -390,7 +390,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
                           std::unique_ptr<BookmarkNode> node) override;
 
   // Notifies the observers for adding every descendant of |node|.
-  void NotifyNodeAddedForAllDescendants(const BookmarkNode* node);
+  void NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
+                                        bool added_by_user);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.
