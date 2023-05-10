@@ -78,7 +78,7 @@ class WebViewMediaAccessAPITest : public WebViewAPITest {
   void RunTest(const std::string& test_name) {
     ExtensionTestMessageListener test_run_listener("TEST_PASSED");
     test_run_listener.set_failure_message("TEST_FAILED");
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s');", test_name.c_str())));
     ASSERT_TRUE(test_run_listener.WaitUntilSatisfied());
