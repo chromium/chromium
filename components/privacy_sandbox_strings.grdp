@@ -223,7 +223,7 @@
     When on, a list of topics appears here based on your recent browsing history
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" desc="A description that appear beneath the 'Your topics' title. This setting could be on but no topics appear in the list. This text explains why." formatter_data="android_java">
-    It can take up to a week for a list of topics to appear here based on your recent browsing history
+    No topics to show right now
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" desc="A button associated with each of the user's topics. If the user clicks 'Block', that topic will get moved to the 'Topics you blocked' page.">
     Block
