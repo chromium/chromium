@@ -476,10 +476,9 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     // Prepare to load a pdf plugin inside.
     TestMimeHandlerViewGuest::RegisterTestGuestViewType(
         test_guest_view_manager_);
-    ASSERT_TRUE(
-        content::ExecuteScript(web_contents,
-                               "var l = document.getElementById('link1');"
-                               "l.click();"));
+    ASSERT_TRUE(content::ExecJs(web_contents,
+                                "var l = document.getElementById('link1');"
+                                "l.click();"));
 
     // Wait for the guest view of the PDF plugin to be created.
     auto* guest_view =
