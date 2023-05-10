@@ -891,7 +891,7 @@ startxref
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
 
   WaitForBrowserCount(2);
-  EXPECT_EQ(true, ExecuteScript(app, kOpenPdfInViewer));
+  EXPECT_EQ(true, ExecJs(app, kOpenPdfInViewer));
 
   WaitForBrowserCount(3);
   Browser* popup_browser = chrome::FindBrowserWithActiveWindow();
@@ -974,10 +974,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, HandleRawFiles) {
     })();
   )";
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
-  EXPECT_EQ(true, ExecuteScript(app, kAdd270DegreeRotation));
+  EXPECT_EQ(true, ExecJs(app, kAdd270DegreeRotation));
 
   // Navigate to the next file in the directory.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
 
   // Width and height should be swapped now.
   EXPECT_EQ("272x378", WaitForImageAlt(web_ui, kRaw378x272));
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   // and captured in the error message correctly.
   constexpr char kConsoleError[] =
       "console.error('YIKES', {data: 'something'}, new Error('deep error'));";
-  EXPECT_EQ(true, ExecuteScript(web_ui, kConsoleError));
+  EXPECT_EQ(true, ExecJs(web_ui, kConsoleError));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find(
@@ -1053,7 +1053,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   content::WebContents* web_ui = LaunchWithNoFiles();
 
-  EXPECT_EQ(true, ExecuteScript(web_ui, kDomExceptionScript));
+  EXPECT_EQ(true, ExecJs(web_ui, kDomExceptionScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find("error_message=Unhandled%20rejection%3A"
@@ -1085,7 +1085,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   content::WebContents* web_ui = LaunchWithNoFiles();
 
-  EXPECT_EQ(true, ExecuteScript(web_ui, kUnhandledRejectionScript));
+  EXPECT_EQ(true, ExecJs(web_ui, kUnhandledRejectionScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find("error_message=Unhandled%20rejection%3A%20%5B"
@@ -1116,7 +1116,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   content::WebContents* web_ui = LaunchWithNoFiles();
 
-  EXPECT_EQ(true, ExecuteScript(web_ui, kTypeErrorScript));
+  EXPECT_EQ(true, ExecJs(web_ui, kTypeErrorScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find(
@@ -1372,22 +1372,22 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   WaitForNavigable(web_ui);
 
   // Navigate to the next file in the directory.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
   EXPECT_EQ("800x600", WaitForImageAlt(web_ui, kFilePng800x600));
 
   // Navigating again should wraparound.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
   // Navigate backwards.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(-1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(-1)"));
   EXPECT_EQ("800x600", WaitForImageAlt(web_ui, kFilePng800x600));
 
   // Update the Jpeg, which invalidates open DOM File objects.
   TouchFileSync(copied_jpeg_640x480, base::Time::Now());
 
   // We should still be able to open the updated file.
-  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
+  EXPECT_EQ(true, ExecJs(web_ui, "advance(1)"));
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
   // TODO(tapted): Test mixed file types. We used to test here with a file of a
