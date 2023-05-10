@@ -242,7 +242,7 @@ export class PowerBookmarksService {
     }
     if (searchQuery || labels.find((label) => label.active)) {
       shownBookmarks =
-          this.applySearchQueryAndLabels_(labels, searchQuery, shownBookmarks);
+          this.applySearchQueryAndLabels(labels, searchQuery, shownBookmarks);
     }
     const sortChangedPosition =
         this.sortBookmarks(shownBookmarks, activeSortIndex);
@@ -332,6 +332,35 @@ export class PowerBookmarksService {
       }
     }
     return folder.children!.findIndex(b => b.url === url) === -1;
+  }
+
+  applySearchQueryAndLabels(
+      labels: Label[], searchQuery: string|undefined,
+      shownBookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+    let searchSpace: chrome.bookmarks.BookmarkTreeNode[] = [];
+    // Search space should include all descendants of the shown bookmarks, in
+    // addition to the shown bookmarks themselves.
+    shownBookmarks.forEach((bookmark: chrome.bookmarks.BookmarkTreeNode) => {
+      searchSpace = searchSpace.concat(getFolderDescendants(bookmark));
+    });
+    return searchSpace.filter(
+        (bookmark: chrome.bookmarks.BookmarkTreeNode) =>
+            this.nodeMatchesContentFilters_(bookmark, labels) &&
+            (!searchQuery ||
+             (bookmark.title &&
+              bookmark.title.toLocaleLowerCase().includes(searchQuery!)) ||
+             (bookmark.url &&
+              bookmark.url.toLocaleLowerCase().includes(searchQuery!))));
+  }
+
+  private nodeMatchesContentFilters_(
+      bookmark: chrome.bookmarks.BookmarkTreeNode, labels: Label[]): boolean {
+    // Price tracking label
+    if (labels[0] && labels[0]!.active &&
+        !this.delegate_.isPriceTracked(bookmark)) {
+      return false;
+    }
+    return true;
   }
 
   private addListener_(eventName: string, callback: Function): void {
@@ -509,34 +538,5 @@ export class PowerBookmarksService {
     }
 
     return emptyUrl;
-  }
-
-  private applySearchQueryAndLabels_(
-      labels: Label[], searchQuery: string|undefined,
-      shownBookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
-    let searchSpace: chrome.bookmarks.BookmarkTreeNode[] = [];
-    // Search space should include all descendants of the shown bookmarks, in
-    // addition to the shown bookmarks themselves.
-    shownBookmarks.forEach((bookmark: chrome.bookmarks.BookmarkTreeNode) => {
-      searchSpace = searchSpace.concat(getFolderDescendants(bookmark));
-    });
-    return searchSpace.filter(
-        (bookmark: chrome.bookmarks.BookmarkTreeNode) =>
-            this.nodeMatchesContentFilters_(bookmark, labels) &&
-            (!searchQuery ||
-             (bookmark.title &&
-              bookmark.title.toLocaleLowerCase().includes(searchQuery!)) ||
-             (bookmark.url &&
-              bookmark.url.toLocaleLowerCase().includes(searchQuery!))));
-  }
-
-  private nodeMatchesContentFilters_(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, labels: Label[]): boolean {
-    // Price tracking label
-    if (labels[0] && labels[0]!.active &&
-        !this.delegate_.isPriceTracked(bookmark)) {
-      return false;
-    }
-    return true;
   }
 }

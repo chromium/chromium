@@ -322,12 +322,13 @@ export class PowerBookmarksListElement extends PolymerElement {
   onBookmarkCreated(
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode) {
-    if (this.visibleParent_(parent)) {
-      this.shownBookmarks_.unshift(bookmark);
+    const bookmarksToShow = this.getBookmarksToShow_(bookmark, parent);
+    if (bookmarksToShow.length > 0) {
+      this.shownBookmarks_.unshift(...bookmarksToShow);
       this.bookmarksService_.sortBookmarks(
           this.shownBookmarks_, this.activeSortIndex_);
       this.shownBookmarks_ = this.shownBookmarks_.slice();
-      const bookmarkIndex = this.shownBookmarks_.indexOf(bookmark);
+      const bookmarkIndex = this.shownBookmarks_.indexOf(bookmarksToShow[0]);
       this.$.shownBookmarksIronList.scrollToIndex(bookmarkIndex);
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkCreated', getBookmarkName(bookmark)));
@@ -339,7 +340,8 @@ export class PowerBookmarksListElement extends PolymerElement {
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       oldParent: chrome.bookmarks.BookmarkTreeNode,
       newParent: chrome.bookmarks.BookmarkTreeNode) {
-    const shouldUpdateUIAdded = this.visibleParent_(newParent);
+    const bookmarksToShow = this.getBookmarksToShow_(bookmark, newParent);
+    const shouldUpdateUIAdded = bookmarksToShow.length > 0;
     const shouldUpdateUIRemoved = this.visibleParent_(oldParent);
     const shouldUpdateUIReordered =
         shouldUpdateUIAdded && shouldUpdateUIRemoved;
@@ -348,7 +350,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkReordered', getBookmarkName(bookmark)));
     } else if (shouldUpdateUIAdded) {
-      this.shownBookmarks_.unshift(bookmark);
+      this.shownBookmarks_.unshift(...bookmarksToShow);
       this.bookmarksService_.sortBookmarks(
           this.shownBookmarks_, this.activeSortIndex_);
       this.shownBookmarks_ = this.shownBookmarks_.slice();
@@ -466,6 +468,17 @@ export class PowerBookmarksListElement extends PolymerElement {
     return (!activeFolder && parent.parentId === '0' &&
             this.visibleIndex_(parent.id) === -1) ||
         parent === activeFolder;
+  }
+
+  private getBookmarksToShow_(
+      bookmark: chrome.bookmarks.BookmarkTreeNode,
+      parent: chrome.bookmarks.BookmarkTreeNode):
+      chrome.bookmarks.BookmarkTreeNode[] {
+    if (!this.visibleParent_(parent)) {
+      return [];
+    }
+    return this.bookmarksService_.applySearchQueryAndLabels(
+        this.labels_, this.searchQuery_, [bookmark]);
   }
 
   private getActiveFolder_(): chrome.bookmarks.BookmarkTreeNode|undefined {
