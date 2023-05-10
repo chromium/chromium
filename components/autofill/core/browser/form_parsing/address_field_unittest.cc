@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_parsing/address_field.h"
-#include "components/autofill/core/browser/field_types.h"
 
 #include <memory>
 
@@ -134,17 +133,6 @@ TEST_P(AddressFieldTest, ParseDependentLocality) {
   ClassifyAndVerify();
 }
 
-// Tests that the landmark is correctly classified.
-TEST_P(AddressFieldTest, ParseLandmark) {
-  // TODO(crbug.com/1441904): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableSupportForExtraSettingsVisibleFields);
-
-  AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
-  ClassifyAndVerify();
-}
-
 TEST_P(AddressFieldTest, ParseCity) {
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);
   ClassifyAndVerify();
@@ -190,10 +178,8 @@ TEST_P(AddressFieldTest,
        ParseDependentLocalityCityStateCountryZipcodeTogether) {
   // TODO(crbug.com/1157405): Remove once launched.
   base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {features::kAutofillEnableDependentLocalityParsing,
-       features::kAutofillEnableSupportForExtraSettingsVisibleFields},
-      {});
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableDependentLocalityParsing);
 
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
@@ -201,7 +187,6 @@ TEST_P(AddressFieldTest,
   AddTextFormFieldData("state", "State", ADDRESS_HOME_STATE);
   AddTextFormFieldData("country", "Country", ADDRESS_HOME_COUNTRY);
   AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
-  AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
   ClassifyAndVerify();
 }
 

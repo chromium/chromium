@@ -1224,35 +1224,6 @@
       }
     ]
   },
-  "LANDMARK": {
-    "en": [
-      {
-        "positive_pattern": "landmark",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
-      }
-    ],
-    "pt": [
-      {
-        "positive_pattern": "(?:ponto|complemento).*referência",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
-      }
-    ],
-    "es": [
-      {
-        "positive_pattern": "punto.*referencia",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
-      }
-    ]
-  },
   "SEARCH_TERM": {
     "en": [
       {
