@@ -778,19 +778,21 @@ bool CommerceHintAgent::IsAddToCartButton(blink::WebElement& element) {
   // Find the first non-null, non-empty element and terminates anytime an
   // element with wrong size is found.
   std::string button_text;
+  std::u16string button_text_utf16;
   while (!element.IsNull()) {
     gfx::Size client_size = element.GetClientSize();
     if (!commerce_heuristics::IsAddToCartButtonSpec(client_size.height(),
                                                     client_size.width())) {
       return false;
     }
-    base::TrimWhitespaceASCII(element.TextContent().Ascii(), base::TRIM_ALL,
-                              &button_text);
+    base::TrimWhitespace(element.TextContent().Utf16(), base::TRIM_ALL,
+                         &button_text_utf16);
+    button_text = base::UTF16ToUTF8(button_text_utf16);
     if (button_text.empty() && element.TagName().Ascii() == kInputType &&
         !element.GetAttribute(kValueAttributeName).IsEmpty()) {
-      base::TrimWhitespaceASCII(
-          element.GetAttribute(kValueAttributeName).Ascii(), base::TRIM_ALL,
-          &button_text);
+      base::TrimWhitespace(element.GetAttribute(kValueAttributeName).Utf16(),
+                           base::TRIM_ALL, &button_text_utf16);
+      button_text = base::UTF16ToUTF8(button_text_utf16);
     }
     if (!button_text.empty())
       break;
