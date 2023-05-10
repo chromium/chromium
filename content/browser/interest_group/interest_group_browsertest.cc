@@ -30,7 +30,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -6613,27 +6612,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                                                  .height());
   RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  // Wait for 2 requestAnimationFrame calls to make things deterministic.
-  // Without this, the fenced frame may end up with its default size 300px *
-  // 150px. (Width * Height)
-  ASSERT_TRUE(WaitForFencedFrameSizeFreeze(ad_frame));
   // Force layout.
   EXPECT_TRUE(
       ExecJs(ad_frame, "getComputedStyle(document.documentElement).width;"));
-  EXPECT_EQ(EvalJs(ad_frame, "innerWidth").ExtractInt(), screen_width);
-  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), screen_height);
+
+  EXPECT_TRUE(
+      PollUntilEvalToTrue(JsReplace("innerWidth == $1 && innerHeight == $2",
+                                    screen_width, screen_height),
+                          ad_frame));
 }
 
-// TODO(crbug.com/1439980): Fix flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_RunAdAuctionWithAdComponentWithSize \
-  DISABLED_RunAdAuctionWithAdComponentWithSize
-#else
-#define MAYBE_RunAdAuctionWithAdComponentWithSize \
-  RunAdAuctionWithAdComponentWithSize
-#endif
 IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
-                       MAYBE_RunAdAuctionWithAdComponentWithSize) {
+                       RunAdAuctionWithAdComponentWithSize) {
   GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   GURL ad_component_url = https_server_->GetURL(
@@ -6687,15 +6677,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                                                  .GetSizeInPixel()
                                                  .height());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  // Wait for 2 requestAnimationFrame calls to make things deterministic.
-  // Without this, the fenced frame may end up with its default size 300px *
-  // 150px. (Width * Height)
-  ASSERT_TRUE(WaitForFencedFrameSizeFreeze(ad_frame));
   // Force layout.
   EXPECT_TRUE(
       ExecJs(ad_frame, "getComputedStyle(document.documentElement).width;"));
-  EXPECT_EQ(EvalJs(ad_frame, "innerWidth").ExtractInt(), screen_width);
-  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), screen_height);
+  EXPECT_TRUE(
+      PollUntilEvalToTrue(JsReplace("innerWidth == $1 && innerHeight == $2",
+                                    screen_width, screen_height),
+                          ad_frame));
 
   // Get the first component config from the fenced frame. Load it in the
   // nested fenced frame. The load should succeed.
@@ -6712,15 +6700,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   // bid.
   RenderFrameHost* ad_component_frame = GetFencedFrameRenderFrameHost(ad_frame);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  // Wait for 2 requestAnimationFrame calls to make things deterministic.
-  // Without this, the fenced frame may end up with its default size 300px *
-  // 150px. (Width * Height)
-  ASSERT_TRUE(WaitForFencedFrameSizeFreeze(ad_component_frame));
   // Force layout.
   EXPECT_TRUE(ExecJs(ad_component_frame,
                      "getComputedStyle(document.documentElement).width;"));
-  EXPECT_EQ(EvalJs(ad_component_frame, "innerWidth").ExtractInt(), 50);
-  EXPECT_EQ(EvalJs(ad_component_frame, "innerHeight").ExtractInt(), 25);
+  EXPECT_TRUE(PollUntilEvalToTrue(
+      JsReplace("innerWidth == $1 && innerHeight == $2", 50, 25),
+      ad_component_frame));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,

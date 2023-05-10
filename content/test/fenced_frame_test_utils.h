@@ -121,9 +121,11 @@ class FencedFrameURLMappingTestPeer {
 
 // TODO(xiaochenzh): Once fenced frame size freezing has no time gap, remove
 // this.
-// This function is needed because the freezing only takes effect after layout
-// has happened.
-bool WaitForFencedFrameSizeFreeze(RenderFrameHost* rfh);
+// This function keeps polling the evaluation result of the given script until
+// it returns true or times out.
+// Currently this is only used to check the fenced frame size freezing behavior.
+// The size freezing only takes effect after layout has happened.
+bool PollUntilEvalToTrue(const std::string& script, RenderFrameHost* rfh);
 
 }  // namespace content
 
