@@ -132,6 +132,16 @@ input[type='checkbox']:checked::before {
   width: 100%;
 }
 
+@media (forced-colors: active) {
+  input[type='checkbox'] {
+    appearance: auto;
+  }
+
+  input[type='checkbox']:checked::before {
+    display: none;
+  }
+}
+
 input[type='radio']:checked::before {
   background-color: #666;
   border-radius: 100%;
