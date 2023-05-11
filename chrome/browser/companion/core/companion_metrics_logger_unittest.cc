@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -72,13 +73,14 @@ class CompanionMetricsLoggerTest : public testing::Test {
 
 TEST_F(CompanionMetricsLoggerTest, RecordOpenTrigger) {
   base::HistogramTester histogram_tester;
-  logger_->RecordOpenTrigger(OpenTrigger::kContextMenuTextSearch);
+  logger_->RecordOpenTrigger(SidePanelOpenTrigger::kContextMenuSearchOption);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
 
-  ExpectUkmEntry(ukm::builders::Companion_PageView::kOpenTriggerName,
-                 static_cast<int>(OpenTrigger::kContextMenuTextSearch));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(SidePanelOpenTrigger::kContextMenuSearchOption));
 }
 
 TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {

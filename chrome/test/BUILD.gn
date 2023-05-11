@@ -1378,6 +1378,7 @@ if (!is_android) {
       "//chrome/browser/sharing/proto",
       "//chrome/browser/storage_access_api:permissions",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/side_panel:side_panel_enums",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/web_applications:browser_tests",
       "//chrome/browser/web_applications:browser_tests",

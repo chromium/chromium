@@ -18164,13 +18164,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Header set by client code"/>
 </enum>
 
-<enum name="Companion.OpenTrigger">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Context menu image search"/>
-  <int value="2" label="Context menu text search"/>
-  <int value="3" label="Other"/>
-</enum>
-
 <enum name="Companion.PhFeedback">
   <int value="1" label="Thumbs up"/>
   <int value="2" label="Thumbs down"/>

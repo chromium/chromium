@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_OPEN_TRIGGER_H_
-#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_OPEN_TRIGGER_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. SidePanelOpenTrigger in
@@ -27,4 +27,4 @@ enum class SidePanelOpenTrigger {
   kMaxValue = kAppMenu,
 };
 
-#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_OPEN_TRIGGER_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_

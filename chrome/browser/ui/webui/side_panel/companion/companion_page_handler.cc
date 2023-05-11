@@ -80,10 +80,11 @@ void CompanionPageHandler::ShowUI() {
     auto* helper =
         companion::CompanionTabHelper::FromWebContents(active_web_contents);
     helper->SetCompanionPageHandler(weak_ptr_factory_.GetWeakPtr());
+    metrics_logger_->RecordOpenTrigger(
+        helper->GetAndResetMostRecentSidePanelOpenTrigger());
+
     std::string initial_text_query = helper->GetTextQuery();
     if (!initial_text_query.empty()) {
-      metrics_logger_->RecordOpenTrigger(
-          companion::OpenTrigger::kContextMenuTextSearch);
       OnSearchTextQuery(initial_text_query);
       return;
     }
@@ -91,13 +92,10 @@ void CompanionPageHandler::ShowUI() {
     std::unique_ptr<side_panel::mojom::ImageQuery> image_query =
         helper->GetImageQuery();
     if (image_query) {
-      metrics_logger_->RecordOpenTrigger(
-          companion::OpenTrigger::kContextMenuImageSearch);
       OnImageQuery(*image_query);
       return;
     }
 
-    metrics_logger_->RecordOpenTrigger(companion::OpenTrigger::kOther);
     NotifyURLChanged(/*is_full_reload=*/true);
   }
 }

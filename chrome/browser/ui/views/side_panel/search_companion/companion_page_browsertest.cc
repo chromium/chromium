@@ -18,6 +18,7 @@
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -615,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   side_panel_coordinator()->Close();
   ExpectUkmEntry(
       &ukm_recorder, ukm::builders::Companion_PageView::kOpenTriggerName,
-      static_cast<int>(companion::OpenTrigger::kContextMenuTextSearch));
+      static_cast<int>(SidePanelOpenTrigger::kContextMenuSearchOption));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -648,9 +649,9 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   // Close side panel and verify UKM.
   side_panel_coordinator()->Close();
-  ExpectUkmEntry(
-      &ukm_recorder, ukm::builders::Companion_PageView::kOpenTriggerName,
-      static_cast<int>(companion::OpenTrigger::kContextMenuImageSearch));
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kOpenTriggerName,
+                 static_cast<int>(SidePanelOpenTrigger::kLensContextMenu));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
@@ -661,8 +662,9 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
-  // Open companion from entry point.
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  // Open companion from entry point via dropdown.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 SidePanelOpenTrigger::kComboboxSelected);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
   WaitForCompanionToBeLoaded();
@@ -673,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
   side_panel_coordinator()->Close();
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kOpenTriggerName,
-                 static_cast<int>(companion::OpenTrigger::kOther));
+                 static_cast<int>(SidePanelOpenTrigger::kComboboxSelected));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -684,8 +686,10 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
-  // Open companion from entry point.
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  // Open companion from pinned entry point.
+  side_panel_coordinator()->Show(
+      SidePanelEntry::Id::kSearchCompanion,
+      SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
   WaitForCompanionToBeLoaded();
@@ -703,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   // Close side panel and verify UKM.
   side_panel_coordinator()->Close();
-  ExpectUkmEntry(&ukm_recorder,
-                 ukm::builders::Companion_PageView::kOpenTriggerName,
-                 static_cast<int>(companion::OpenTrigger::kOther));
+  ExpectUkmEntry(
+      &ukm_recorder, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
 }

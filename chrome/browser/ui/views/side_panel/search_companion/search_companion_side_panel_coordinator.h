@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_user_data.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -36,7 +37,7 @@ class SearchCompanionSidePanelCoordinator
 
   static bool IsSupported(Profile* profile, bool include_dsp_check = true);
 
-  bool Show();
+  bool Show(SidePanelOpenTrigger side_panel_open_trigger);
   BrowserView* GetBrowserView();
   std::u16string GetTooltipForToolbarButton();
 
@@ -48,6 +49,10 @@ class SearchCompanionSidePanelCoordinator
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
+  // For metrics only. Notifies the companion of the side panel open trigger.
+  void NotifyCompanionOfSidePanelOpenTrigger(
+      absl::optional<SidePanelOpenTrigger> side_panel_open_trigger);
 
  private:
   friend class BrowserUserData<SearchCompanionSidePanelCoordinator>;

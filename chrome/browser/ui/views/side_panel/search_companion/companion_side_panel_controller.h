@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -32,7 +33,8 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
   // CompanionTabHelper::Delegate:
   void CreateAndRegisterEntry() override;
   void DeregisterEntry() override;
-  void ShowCompanionSidePanel() override;
+  void ShowCompanionSidePanel(
+      SidePanelOpenTrigger side_panel_open_trigger) override;
   void UpdateNewTabButton(GURL url_to_open) override;
   content::WebContents* GetCompanionWebContentsForTesting() override;
 

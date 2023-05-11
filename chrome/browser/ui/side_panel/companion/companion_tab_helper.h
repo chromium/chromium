@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SIDE_PANEL_COMPANION_COMPANION_TAB_HELPER_H_
 
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -37,7 +38,8 @@ class CompanionTabHelper
     // Deregisters the companion SidePanelEntry.
     virtual void DeregisterEntry() = 0;
     // Shows the companion side panel.
-    virtual void ShowCompanionSidePanel() = 0;
+    virtual void ShowCompanionSidePanel(
+        SidePanelOpenTrigger side_panel_open_trigger) = 0;
     // Triggers an update of the 'open in new tab' button.
     virtual void UpdateNewTabButton(GURL url_to_open) = 0;
     // Retrieves the web contents for testing purposes.
@@ -92,6 +94,15 @@ class CompanionTabHelper
   // Returns the companion web contents for testing purposes.
   content::WebContents* GetCompanionWebContentsForTesting();
 
+  // For caching entry point metrics.
+  // Called to cache the trigger which is later recorded as metrics as soon as
+  // the companion page opens up.
+  void SetMostRecentSidePanelOpenTrigger(
+      absl::optional<SidePanelOpenTrigger> side_panel_open_trigger);
+  // Called to get the most recent value of trigger and immediately reset it.
+  absl::optional<SidePanelOpenTrigger>
+  GetAndResetMostRecentSidePanelOpenTrigger();
+
  private:
   explicit CompanionTabHelper(content::WebContents* web_contents);
 
@@ -108,6 +119,10 @@ class CompanionTabHelper
   std::unique_ptr<side_panel::mojom::ImageQuery> image_query_;
   std::unique_ptr<Delegate> delegate_;
   std::string text_query_;
+
+  // Caches the trigger source for an in-progress companion page open action in
+  // the current tab. Should be cleared after the open action is complete.
+  absl::optional<SidePanelOpenTrigger> side_panel_open_trigger_;
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;

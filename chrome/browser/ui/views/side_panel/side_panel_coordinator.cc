@@ -440,8 +440,8 @@ void SidePanelCoordinator::Show(
     return;
   }
 
-  SidePanelUtil::RecordEntryShowTriggeredMetrics(entry->key().id(),
-                                                 open_trigger);
+  SidePanelUtil::RecordEntryShowTriggeredMetrics(
+      browser_view_->browser(), entry->key().id(), open_trigger);
 
   content_wrapper->RequestEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,

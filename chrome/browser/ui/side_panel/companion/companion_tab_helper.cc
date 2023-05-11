@@ -36,7 +36,8 @@ void CompanionTabHelper::ShowCompanionSidePanelForSearchURL(
     const GURL& search_url) {
   CHECK(delegate_);
   SetTextQuery(GetTextQueryFromSearchUrl(search_url));
-  delegate_->ShowCompanionSidePanel();
+  delegate_->ShowCompanionSidePanel(
+      SidePanelOpenTrigger::kContextMenuSearchOption);
 }
 
 void CompanionTabHelper::ShowCompanionSidePanelForImage(
@@ -76,7 +77,7 @@ void CompanionTabHelper::ShowCompanionSidePanelForImage(
   }
 
   // Show the side panel.
-  delegate_->ShowCompanionSidePanel();
+  delegate_->ShowCompanionSidePanel(SidePanelOpenTrigger::kLensContextMenu);
 }
 
 GURL CompanionTabHelper::SetImageTranslateQueryParams(GURL upload_url) {
@@ -174,6 +175,18 @@ void CompanionTabHelper::StartRegionSearch(content::WebContents* web_contents,
                                         /*is_google_default_search_provider=*/
                                         true);
 #endif
+}
+
+void CompanionTabHelper::SetMostRecentSidePanelOpenTrigger(
+    absl::optional<SidePanelOpenTrigger> side_panel_open_trigger) {
+  side_panel_open_trigger_ = side_panel_open_trigger;
+}
+
+absl::optional<SidePanelOpenTrigger>
+CompanionTabHelper::GetAndResetMostRecentSidePanelOpenTrigger() {
+  auto copy = side_panel_open_trigger_;
+  side_panel_open_trigger_ = absl::nullopt;
+  return copy;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CompanionTabHelper);

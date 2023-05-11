@@ -58,11 +58,12 @@ void CompanionSidePanelController::DeregisterEntry() {
       SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
 }
 
-void CompanionSidePanelController::ShowCompanionSidePanel() {
+void CompanionSidePanelController::ShowCompanionSidePanel(
+    SidePanelOpenTrigger side_panel_open_trigger) {
   if (Browser* browser = chrome::FindBrowserWithWebContents(web_contents_)) {
     auto* coordinator =
         SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
-    coordinator->Show();
+    coordinator->Show(side_panel_open_trigger);
   }
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -34,24 +35,6 @@ enum class UiEvent {
 
   // User clicked on the UI surface.
   kClicked = 3,
-};
-
-// Various UI locations from which the companion page can be launched. Keep in
-// sync with Companion.OpenTrigger in enums.xml. These values are persisted to
-// logs. Entries should not be renumbered and numeric values should never be
-// reused.
-enum class OpenTrigger {
-  // Launch location is unknown.
-  kUnknown = 0,
-
-  // The companion page was opened via a context menu image search.
-  kContextMenuImageSearch = 1,
-
-  // The companion page was opened via a context menu text search.
-  kContextMenuTextSearch = 2,
-
-  // Other types of launches. Includes the toolbar button entry point.
-  kOther = 3,
 };
 
 // Tracks events happening on a single UI surface.
@@ -111,7 +94,7 @@ class CompanionMetricsLogger {
   CompanionMetricsLogger& operator=(const CompanionMetricsLogger&) = delete;
   ~CompanionMetricsLogger();
 
-  void RecordOpenTrigger(OpenTrigger open_trigger);
+  void RecordOpenTrigger(absl::optional<SidePanelOpenTrigger> open_trigger);
 
   // For the following methods, please refer CompanionPageHandler in
   // companion.mojom for detailed documentation.
@@ -148,9 +131,9 @@ class CompanionMetricsLogger {
   // Last event on the promo surfaces.
   absl::optional<PhFeedback> last_ph_feedback_;
 
-  // Indicates how the companion page was opened. Non-empty for the first
+  // Indicates how the companion side panel was opened. Non-empty for the first
   // navigation.
-  absl::optional<OpenTrigger> open_trigger_;
+  absl::optional<SidePanelOpenTrigger> open_trigger_;
 };
 
 }  // namespace companion

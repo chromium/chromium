@@ -10,6 +10,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -52,14 +53,16 @@ bool SearchCompanionSidePanelCoordinator::IsSupported(Profile* profile,
          (!include_dsp_check || search::DefaultSearchProviderIsGoogle(profile));
 }
 
-bool SearchCompanionSidePanelCoordinator::Show() {
+bool SearchCompanionSidePanelCoordinator::Show(
+    SidePanelOpenTrigger side_panel_open_trigger) {
   auto* browser_view = GetBrowserView();
   if (!browser_view) {
     return false;
   }
 
   if (auto* side_panel_coordinator = browser_view->side_panel_coordinator()) {
-    side_panel_coordinator->Show(SidePanelEntry::Id::kSearchCompanion);
+    side_panel_coordinator->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 side_panel_open_trigger);
   }
 
   return true;
@@ -72,6 +75,14 @@ BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() {
 std::u16string
 SearchCompanionSidePanelCoordinator::GetTooltipForToolbarButton() {
   return l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP);
+}
+
+void SearchCompanionSidePanelCoordinator::NotifyCompanionOfSidePanelOpenTrigger(
+    absl::optional<SidePanelOpenTrigger> side_panel_open_trigger) {
+  auto* companion_tab_helper = companion::CompanionTabHelper::FromWebContents(
+      browser_->tab_strip_model()->GetActiveWebContents());
+  companion_tab_helper->SetMostRecentSidePanelOpenTrigger(
+      side_panel_open_trigger);
 }
 
 void SearchCompanionSidePanelCoordinator::OnTabStripModelChanged(

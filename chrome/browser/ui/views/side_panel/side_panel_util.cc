@@ -188,6 +188,7 @@ void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
+    Browser* browser,
     SidePanelEntry::Id id,
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
@@ -195,5 +196,12 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
         base::StrCat(
             {"SidePanel.", GetHistogramNameForId(id), ".ShowTriggered"}),
         trigger.value());
+  }
+
+  if (id == SidePanelEntry::Id::kSearchCompanion) {
+    auto* search_companion_coordinator =
+        SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
+    search_companion_coordinator->NotifyCompanionOfSidePanelOpenTrigger(
+        trigger);
   }
 }

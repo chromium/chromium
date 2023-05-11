@@ -119,7 +119,8 @@ CompanionMetricsLogger::~CompanionMetricsLogger() {
   FlushStats();
 }
 
-void CompanionMetricsLogger::RecordOpenTrigger(OpenTrigger open_trigger) {
+void CompanionMetricsLogger::RecordOpenTrigger(
+    absl::optional<SidePanelOpenTrigger> open_trigger) {
   open_trigger_ = open_trigger;
 }
 

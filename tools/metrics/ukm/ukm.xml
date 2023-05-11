@@ -6746,7 +6746,7 @@ be describing additional metrics about the same event.
       eligibility check through text finder API. Clamped to a max value of 10.
     </summary>
   </metric>
-  <metric name="OpenTrigger" enum="Companion.OpenTrigger">
+  <metric name="OpenTrigger" enum="SidePanelOpenTrigger">
     <summary>
       The UI location from which the companion page was opened.
     </summary>
