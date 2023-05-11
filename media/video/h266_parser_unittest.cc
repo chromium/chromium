@@ -87,6 +87,13 @@ TEST_F(H266ParserTest, RawVvcStreamFileParsingShouldSucceed) {
           res = parser_.ParsePPS(nalu, &pps_id);
           EXPECT_TRUE(!!parser_.GetPPS(pps_id));
           break;
+        case H266NALU::kPrefixAPS:
+        case H266NALU::kSuffixAPS:
+          H266APS::ParamType aps_type;
+          int aps_id;
+          res = parser_.ParseAPS(nalu, &aps_id, &aps_type);
+          EXPECT_TRUE(!!parser_.GetAPS(aps_type, aps_id));
+          break;
         // TODO(crbugs.com/1417910): add more NALU types.
         default:
           break;
@@ -747,6 +754,440 @@ TEST_F(H266ParserTest, ParsePPSShouldReturnCorrectChromaQPOffsetLists) {
   EXPECT_EQ(pps->pps_cb_qp_offset_list[3], 9);
   EXPECT_EQ(pps->pps_cr_qp_offset_list[3], 7);
   EXPECT_EQ(pps->pps_joint_cbcr_qp_offset_list[3], 0);
+}
+
+// Verify scaling list parsing in APS.
+TEST_F(H266ParserTest, ParseAPSShouldConstructCorrectScalingLists) {
+  LoadParserFile("bbb_scaling_lists.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+  int aps_id;
+  H266APS::ParamType aps_type;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* aps = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!aps);
+
+  EXPECT_EQ(aps->aps_params_type, 2);
+  EXPECT_EQ(aps->aps_adaptation_parameter_set_id, 0);
+  EXPECT_TRUE(aps->aps_chroma_present_flag);
+
+  const H266ScalingListData* scaling_list_data =
+      &(std::get<H266ScalingListData>(aps->data));
+  EXPECT_TRUE(!!scaling_list_data);
+
+  // Verify the reconstructed quantization matrices
+  // INTER2x2_CHRAMAU/INTER2x2_CHROMAV
+  int inter2x2_scaling_list_expected[2][2] = {{11, 30}, {30, 50}};
+
+  for (int i = 0; i < 2; i++) {
+    for (int m = 0; m < 2; m++) {
+      for (int n = 0; n < 2; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_2x2[i][m][n],
+                  inter2x2_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTRA4x4_LUMA/INTRA4x4_CHROMAU/INTRA4x4_CHOMRAV
+  int intra4x4_scaling_list_expected[4][4] = {
+      {7, 12, 19, 26}, {12, 16, 24, 40}, {19, 24, 41, 50}, {26, 40, 50, 56}};
+
+  for (int i = 0; i <= 2; i++) {
+    for (int m = 0; m < 4; m++) {
+      for (int n = 0; n < 4; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_4x4[i][m][n],
+                  intra4x4_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTER4x4_LUMA/INTER4x4_CHROMAU/INTER4x4_CHROMAV
+  int inter4x4_scaling_list_expected[4][4] = {
+      {11, 18, 30, 43}, {18, 22, 40, 50}, {30, 40, 50, 52}, {43, 50, 52, 55}};
+
+  for (int i = 3; i < 6; i++) {
+    for (int m = 0; m < 4; m++) {
+      for (int n = 0; n < 4; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_4x4[i][m][n],
+                  inter4x4_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTRA8x8_LUMA/INTRA8x8_CHROMAU/INTRA8x8_CHROMAV
+  int intra8x8_scaling_list_expected[8][8] = {
+      {6, 9, 13, 18, 25, 35, 36, 37},   {9, 10, 15, 21, 32, 35, 37, 41},
+      {13, 15, 18, 23, 35, 55, 58, 59}, {18, 21, 23, 26, 65, 58, 64, 66},
+      {25, 32, 35, 65, 66, 66, 67, 70}, {35, 35, 55, 58, 66, 68, 70, 73},
+      {36, 37, 58, 64, 67, 70, 76, 80}, {37, 41, 59, 66, 70, 73, 80, 85}};
+
+  for (int i = 0; i <= 2; i++) {
+    for (int m = 0; m < 8; m++) {
+      for (int n = 0; n < 8; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[i][m][n],
+                  intra8x8_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTER8x8_LUMA/INTER8x8_CHROMAU/INTER8x8_CHROMAV
+  int inter8x8_scaling_list_expected[8][8] = {
+      {9, 15, 20, 29, 36, 38, 42, 43},  {15, 17, 22, 29, 39, 43, 45, 46},
+      {20, 22, 32, 34, 47, 48, 49, 50}, {29, 29, 34, 44, 50, 51, 52, 53},
+      {36, 39, 47, 50, 51, 52, 55, 55}, {38, 43, 48, 51, 52, 53, 56, 58},
+      {42, 45, 49, 52, 55, 56, 55, 60}, {43, 46, 50, 53, 55, 58, 60, 63}};
+
+  for (int i = 3; i < 6; i++) {
+    for (int m = 0; m < 8; m++) {
+      for (int n = 0; n < 8; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[i][m][n],
+                  inter8x8_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTRA16x16_LUMA
+  for (int m = 0; m < 8; m++) {
+    for (int n = 0; n < 8; n++) {
+      EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[6][m][n],
+                intra8x8_scaling_list_expected[m][n]);
+    }
+  }
+
+  // INTRA16x16_CHROMAU/INTRA16x16_CHROMAV
+  int intra16x16_scaling_list_expected[8][8] = {
+      {7, 9, 13, 18, 25, 35, 36, 37},   {9, 10, 15, 21, 32, 35, 37, 41},
+      {13, 15, 18, 23, 35, 55, 58, 59}, {18, 21, 23, 26, 65, 58, 64, 66},
+      {25, 32, 35, 65, 66, 66, 67, 70}, {35, 35, 55, 58, 66, 68, 70, 73},
+      {36, 37, 58, 64, 67, 70, 76, 80}, {37, 41, 59, 66, 70, 73, 80, 85}};
+
+  for (int i = 7; i < 9; i++) {
+    for (int m = 0; m < 8; m++) {
+      for (int n = 0; n < 8; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[i][m][n],
+                  intra16x16_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTER16x16_LUMA/INTER16x16_CHROMAU/INTER16x16_CHROMAV
+  int inter16x16_scaling_list_expected[8][8] = {
+      {11, 15, 20, 29, 36, 38, 42, 43}, {15, 17, 22, 29, 39, 43, 45, 46},
+      {20, 22, 32, 34, 47, 48, 49, 50}, {29, 29, 34, 44, 50, 51, 52, 53},
+      {36, 39, 47, 50, 51, 52, 55, 55}, {38, 43, 48, 51, 52, 53, 56, 58},
+      {42, 45, 49, 52, 55, 56, 55, 60}, {43, 46, 50, 53, 55, 58, 60, 63}};
+
+  for (int i = 9; i < 12; i++) {
+    for (int m = 0; m < 8; m++) {
+      for (int n = 0; n < 8; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[i][m][n],
+                  inter16x16_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTRA32x32_LUMA/INTRA32x32_CHROMAU/INTRA32x32_CHROMAV
+  // The test clip reuses 8x8 list.
+  for (int i = 12; i < 15; i++) {
+    for (int m = 0; m < 8; m++) {
+      for (int n = 0; n < 8; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[i][m][n],
+                  intra16x16_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTER32x32_LUMA/INTER32x32_CHROMAU/INTER32x32_CHROMAV
+  // The test clip reuses 8x8 list.
+  for (int i = 15; i < 18; i++) {
+    for (int m = 0; m < 8; m++) {
+      for (int n = 0; n < 8; n++) {
+        EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[i][m][n],
+                  inter16x16_scaling_list_expected[m][n]);
+      }
+    }
+  }
+
+  // INTRA64x64_LUMA
+  int intra64x64_scaling_list_expected[8][8] = {
+      {8, 9, 13, 18, 25, 35, 36, 37},   {9, 12, 15, 20, 32, 35, 37, 41},
+      {13, 15, 18, 23, 35, 55, 58, 59}, {18, 21, 23, 26, 65, 58, 64, 66},
+      {25, 32, 35, 65, 66, 66, 67, 70}, {35, 35, 55, 58, 66, 68, 70, 73},
+      {36, 37, 58, 64, 67, 70, 76, 80}, {37, 41, 59, 66, 70, 73, 80, 85}};
+
+  for (int m = 0; m < 8; m++) {
+    for (int n = 0; n < 8; n++) {
+      EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[18][m][n],
+                intra64x64_scaling_list_expected[m][n]);
+    }
+  }
+
+  // INTER64x64_LUMA
+  int inter64x64_scaling_list_expected[8][8] = {
+      {11, 15, 20, 29, 36, 38, 42, 43}, {14, 17, 23, 29, 38, 43, 45, 46},
+      {20, 22, 32, 34, 47, 48, 49, 50}, {29, 29, 34, 44, 50, 51, 52, 53},
+      {36, 39, 47, 50, 51, 52, 55, 55}, {38, 43, 48, 51, 52, 53, 56, 58},
+      {42, 45, 49, 52, 55, 56, 55, 60}, {43, 46, 50, 53, 55, 58, 60, 63}};
+
+  for (int m = 0; m < 8; m++) {
+    for (int n = 0; n < 8; n++) {
+      EXPECT_EQ(scaling_list_data->scaling_matrix_rec_8x8[19][m][n],
+                inter64x64_scaling_list_expected[m][n]);
+    }
+  }
+
+  // Verify the reconstructed DC array
+  int quantization_matrix_dc_expected[14] = {6, 6, 6, 9, 9, 9, 6,
+                                             6, 6, 9, 9, 9, 6, 9};
+
+  for (int i = 0; i < 14; i++) {
+    EXPECT_EQ(scaling_list_data->scaling_matrix_dc_rec[i],
+              quantization_matrix_dc_expected[i]);
+  }
+}
+
+// Verify adaptive loop filter syntax parsing in APS.
+TEST_F(H266ParserTest, ParseAPSShouldConstructCorrectAlfData) {
+  LoadParserFile("bear_180p.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+  int aps_id;
+  H266APS::ParamType aps_type;
+
+  // Parse the first ALF APS with id = 7.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* aps = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!aps);
+
+  const H266AlfData* alf = &(std::get<H266AlfData>(aps->data));
+  EXPECT_TRUE(!!alf);
+
+  EXPECT_EQ(aps->aps_params_type, 0);
+  EXPECT_EQ(aps->aps_adaptation_parameter_set_id, 7);
+  EXPECT_TRUE(aps->aps_chroma_present_flag);
+  EXPECT_TRUE(alf->alf_luma_filter_signal_flag);
+  EXPECT_FALSE(alf->alf_cc_cb_filter_signal_flag);
+  EXPECT_FALSE(alf->alf_cc_cr_filter_signal_flag);
+  EXPECT_FALSE(alf->alf_luma_clip_flag);
+  EXPECT_EQ(alf->alf_luma_num_filters_signalled_minus1, 9);
+
+  // Verify the luma coeff delta index.
+  int luma_coeff_delta_idx_expected[25] = {0, 1, 2, 3, 4, 0, 0, 2, 5,
+                                           6, 0, 0, 0, 0, 0, 0, 1, 7,
+                                           4, 5, 0, 6, 8, 2, 9};
+
+  for (int i = 0; i < 25; i++) {
+    EXPECT_EQ(alf->alf_luma_coeff_delta_idx[i],
+              luma_coeff_delta_idx_expected[i]);
+  }
+
+  // Verify the luma coeff absolute values. Verify only the first group.
+  int luma_coeff_abs_expected[12] = {1, 5, 1, 1, 4, 2, 18, 7, 8, 3, 7, 21};
+
+  for (int i = 0; i < 12; i++) {
+    EXPECT_EQ(alf->alf_luma_coeff_abs[0][i], luma_coeff_abs_expected[i]);
+  }
+
+  EXPECT_FALSE(alf->alf_chroma_clip_flag);
+  EXPECT_EQ(alf->alf_chroma_num_alt_filters_minus1, 3);
+
+  // Verify the chroma coeff absolute values. Verify only the last group.
+  int chroma_coeff_abs_expected[6] = {0, 3, 4, 3, 7, 11};
+  for (int i = 0; i < 3; i++) {
+    EXPECT_EQ(alf->alf_chroma_coeff_abs[3][i], chroma_coeff_abs_expected[i]);
+  }
+
+  // Parse the second ALF APS with same id = 7. This should override previously
+  // parsed APS with same id.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* aps_updated = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!aps_updated);
+
+  const H266AlfData* alf_updated = &(std::get<H266AlfData>(aps_updated->data));
+  EXPECT_TRUE(!!alf_updated);
+
+  EXPECT_EQ(aps_updated->aps_params_type, 0);
+  EXPECT_EQ(aps_updated->aps_adaptation_parameter_set_id, 7);
+  EXPECT_TRUE(aps_updated->aps_chroma_present_flag);
+  EXPECT_TRUE(alf_updated->alf_luma_filter_signal_flag);
+  EXPECT_FALSE(alf_updated->alf_cc_cb_filter_signal_flag);
+  EXPECT_FALSE(alf_updated->alf_cc_cr_filter_signal_flag);
+  EXPECT_FALSE(alf_updated->alf_luma_clip_flag);
+  EXPECT_EQ(alf_updated->alf_luma_num_filters_signalled_minus1, 9);
+
+  // Verify the luma coeff delta index.
+  int luma_coeff_delta_idx_expected_updated[25] = {0, 1, 2, 3, 3, 4, 1, 5, 3,
+                                                   6, 0, 0, 0, 0, 0, 0, 4, 5,
+                                                   7, 7, 1, 1, 8, 9, 3};
+
+  for (int i = 0; i < 25; i++) {
+    EXPECT_EQ(alf_updated->alf_luma_coeff_delta_idx[i],
+              luma_coeff_delta_idx_expected_updated[i]);
+  }
+
+  // Verify the luma coeff absolute values. Verify only the first group.
+  int luma_coeff_abs_expected_updated[12] = {1,  5, 7, 8, 8, 8,
+                                             21, 7, 6, 2, 7, 25};
+
+  for (int i = 0; i < 12; i++) {
+    EXPECT_EQ(alf_updated->alf_luma_coeff_abs[0][i],
+              luma_coeff_abs_expected_updated[i]);
+  }
+
+  EXPECT_FALSE(alf_updated->alf_chroma_clip_flag);
+  EXPECT_EQ(alf_updated->alf_chroma_num_alt_filters_minus1, 1);
+
+  // Verify the chroma coeff absolute values. Verify only the last group.
+  int chroma_coeff_abs_expected_updated[6] = {10, 5, 27, 0, 8, 33};
+  for (int i = 0; i < 3; i++) {
+    EXPECT_EQ(alf_updated->alf_chroma_coeff_abs[1][i],
+              chroma_coeff_abs_expected_updated[i]);
+  }
+
+  // Parse the next ALF APS with id = 6.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* aps3 = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!aps3);
+
+  const H266AlfData* alf3 = &(std::get<H266AlfData>(aps3->data));
+  EXPECT_TRUE(!!alf3);
+
+  EXPECT_EQ(aps3->aps_params_type, 0);
+  EXPECT_EQ(aps3->aps_adaptation_parameter_set_id, 6);
+  EXPECT_TRUE(aps3->aps_chroma_present_flag);
+  EXPECT_TRUE(alf3->alf_luma_filter_signal_flag);
+  EXPECT_FALSE(alf3->alf_chroma_filter_signal_flag);
+  EXPECT_FALSE(alf3->alf_cc_cb_filter_signal_flag);
+  EXPECT_FALSE(alf3->alf_cc_cr_filter_signal_flag);
+  EXPECT_FALSE(alf3->alf_luma_clip_flag);
+  EXPECT_EQ(alf3->alf_luma_num_filters_signalled_minus1, 3);
+
+  // Current ALF APS contains only luma coeff delta index and absolute values.
+  int luma_coeff_delta_idx_expected3[25] = {0, 0, 1, 2, 2, 3, 0, 3, 2,
+                                            2, 0, 0, 0, 0, 0, 0, 0, 3,
+                                            2, 2, 2, 3, 3, 3, 3};
+  for (int i = 0; i < 25; i++) {
+    EXPECT_EQ(alf3->alf_luma_coeff_delta_idx[i],
+              luma_coeff_delta_idx_expected3[i]);
+  }
+
+  // Parse the entire bitstream till no APS NUT is found, and check number
+  // of APSes stored by parser.
+  while (ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS)) {
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  }
+  int stored_ids_of_apses[5] = {3, 4, 5, 6, 7};
+  for (int i = 0; i < 5; i++) {
+    const H266APS* current_aps =
+        parser_.GetAPS(aps_type, stored_ids_of_apses[i]);
+    EXPECT_TRUE(!!current_aps);
+  }
+}
+
+// Verify luma mapping & chroma scaling data syntax parsing in APS.
+TEST_F(H266ParserTest, ParseAPSShouldConstructCorrectLmcsData) {
+  LoadParserFile("basketball_2_layers.vvc");
+  H266NALU target_nalu;
+  int vps_id;
+
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kVPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseVPS(&vps_id));
+  const H266VPS* vps = parser_.GetVPS(vps_id);
+  EXPECT_TRUE(!!vps);
+
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  int aps_id;
+  H266APS::ParamType aps_type;
+
+  // Parse the first LMCS APS with id = 0.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* aps1 = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!aps1);
+
+  const H266LmcsData* lmcs1 = &(std::get<H266LmcsData>(aps1->data));
+  EXPECT_TRUE(!!lmcs1);
+
+  EXPECT_EQ(aps1->aps_params_type, 1);
+  EXPECT_EQ(aps1->aps_adaptation_parameter_set_id, 0);
+  EXPECT_TRUE(aps1->aps_chroma_present_flag);
+  EXPECT_EQ(lmcs1->lmcs_min_bin_idx, 0);
+  EXPECT_EQ(lmcs1->lmcs_delta_max_bin_idx, 1);
+  EXPECT_EQ(lmcs1->lmcs_delta_cw_prec_minus1, 1);
+
+  // LmcsMaxBinIdx of the test stream is 14.
+  int lmcs_delta_abs_cw_expected1[15] = {2, 0, 0, 0, 0, 0, 1, 2,
+                                         1, 0, 0, 0, 0, 0, 2};
+  for (int i = 0; i < 15; i++) {
+    EXPECT_EQ(lmcs1->lmcs_delta_abs_cw[i], lmcs_delta_abs_cw_expected1[i]);
+  }
+  EXPECT_EQ(lmcs1->lmcs_delta_abs_crs, 1);
+  EXPECT_FALSE(lmcs1->lmcs_delta_sign_crs_flag);
+
+  // Parse till the end of the stream and check all stored LMCS APSes
+  while (ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS)) {
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  }
+
+  int stored_ids_of_apses[4] = {0, 1, 7, 6};
+  for (int i = 0; i < 2; i++) {
+    aps_type = H266APS::ParamType::kLmcs;
+    const H266APS* current_aps =
+        parser_.GetAPS(aps_type, stored_ids_of_apses[i]);
+    EXPECT_TRUE(!!current_aps);
+  }
+
+  for (int i = 2; i < 4; i++) {
+    aps_type = H266APS::ParamType::kAlf;
+    const H266APS* current_aps =
+        parser_.GetAPS(aps_type, stored_ids_of_apses[i]);
+    EXPECT_TRUE(!!current_aps);
+  }
+
+  aps_type = H266APS::ParamType::kLmcs;
+  const H266APS* nonexisting_aps = parser_.GetAPS(aps_type, 2);
+  EXPECT_TRUE(!nonexisting_aps);
 }
 
 }  // namespace media

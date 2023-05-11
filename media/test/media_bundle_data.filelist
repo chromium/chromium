@@ -41,6 +41,7 @@ data/bbb_360p.vvc
 data/bbb_9tiles.vvc
 data/bbb_9tiles_18slices.vvc
 data/bbb_chroma_qp_offset_lists.vvc
+data/bbb_scaling_lists.vvc
 data/bear-1280x720-a_frag-cenc-key_rotation.mp4
 data/bear-1280x720-a_frag-cenc.mp4
 data/bear-1280x720-a_frag-cenc_clear-all.mp4

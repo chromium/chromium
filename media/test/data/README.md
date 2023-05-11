@@ -183,6 +183,19 @@ EncoderApp --CTUSize=128 --CbQpOffsetList=3,3,8,9 --CrQpOffsetList=2,4,1,7 \
   --BitstreamFile=bbb_chroma_qp_offset_lists.vvc
 ```
 
+#### bbb_scaling_lists.vvc
+VVC stream generated with VTM that is used to verify scaling list parsing.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp --CTUSize=128 -c sample_scaling_list.cfg -f 8 \
+  --InputFile=bbb_1920x1080.yuv \
+  --BitstreamFile=bbb_scaling_lists.vvc
+```
+Please be noted sample_scaling_list.cfg is the file with the same name from VTM
+sample configure.
+
 ### AV1
 
 Unless noted otherwise, the codec string is `av01.0.04M.08` for 8-bit files,

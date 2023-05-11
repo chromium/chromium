@@ -22,6 +22,27 @@
 
 namespace media {
 
+namespace {
+// Equation 24. kDiagScanOrderMxM[i][0] is the horizontal component, and
+// kDiagScanOrderMxM[i][1] is the vertical component.
+constexpr uint8_t kDiagScanOrder8x8[64][2] = {
+    {0, 0}, {0, 1}, {1, 0}, {0, 2}, {1, 1}, {2, 0}, {0, 3}, {1, 2},
+    {2, 1}, {3, 0}, {0, 4}, {1, 3}, {2, 2}, {3, 1}, {4, 0}, {0, 5},
+    {1, 4}, {2, 3}, {3, 2}, {4, 1}, {5, 0}, {0, 6}, {1, 5}, {2, 4},
+    {3, 3}, {4, 2}, {5, 1}, {6, 0}, {0, 7}, {1, 6}, {2, 5}, {3, 4},
+    {4, 3}, {5, 2}, {6, 1}, {7, 0}, {1, 7}, {2, 6}, {3, 5}, {4, 4},
+    {5, 3}, {6, 2}, {7, 1}, {2, 7}, {3, 6}, {4, 5}, {5, 4}, {6, 3},
+    {7, 2}, {3, 7}, {4, 6}, {5, 5}, {6, 4}, {7, 3}, {4, 7}, {5, 6},
+    {6, 5}, {7, 4}, {5, 7}, {6, 6}, {7, 5}, {6, 7}, {7, 6}, {7, 7}};
+
+constexpr uint8_t kDiagScanOrder4x4[16][2] = {
+    {0, 0}, {0, 1}, {1, 0}, {0, 2}, {1, 1}, {2, 0}, {0, 3}, {1, 2},
+    {2, 1}, {3, 0}, {1, 3}, {2, 2}, {3, 1}, {2, 3}, {3, 2}, {3, 3}};
+
+constexpr uint8_t kDiagScanOrder2x2[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+
+}  // namespace
+
 H266ProfileTierLevel::H266ProfileTierLevel() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
@@ -55,6 +76,35 @@ H266OlsTimingHrdParameters::H266OlsTimingHrdParameters() {
 }
 
 H266PPS::H266PPS() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+H266APS::H266APS(int aps_type) : aps_params_type(aps_type) {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+  switch (aps_type) {
+    case 0:
+      data.emplace<H266AlfData>();
+      break;
+    case 1:
+      data.emplace<H266LmcsData>();
+      break;
+    case 2:
+      data.emplace<H266ScalingListData>();
+      break;
+  }
+}
+
+H266APS::~H266APS() = default;
+
+H266ScalingListData::H266ScalingListData() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+H266AlfData::H266AlfData() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+H266LmcsData::H266LmcsData() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
@@ -2443,6 +2493,400 @@ H266Parser::Result H266Parser::ParsePPS(const H266NALU& nalu, int* pps_id) {
   return kOk;
 }
 
+// 7.3.2.6 Adaptation parameter set
+// APS conveys slice level information which may be shared by
+// multiple slices of a picture or slices of different pictures.
+// There might be many APSs for a bitstream, and would be typically
+// updated very frequently.
+H266Parser::Result H266Parser::ParseAPS(const H266NALU& nalu,
+                                        int* aps_id,
+                                        H266APS::ParamType* type) {
+  DCHECK(aps_id);
+
+  int aps_type;
+  READ_BITS_OR_RETURN(3, &aps_type);
+  IN_RANGE_OR_RETURN(aps_type, 0, 2);
+  std::unique_ptr<H266APS> aps = std::make_unique<H266APS>(aps_type);
+
+  aps->nal_unit_type = nalu.nal_unit_type;
+  aps->nuh_layer_id = nalu.nuh_layer_id;
+  aps->aps_params_type = aps_type;
+
+  READ_BITS_OR_RETURN(5, &aps->aps_adaptation_parameter_set_id);
+  if (aps->aps_params_type == H266APS::kAlf ||
+      aps->aps_params_type == H266APS::kScalingList) {
+    IN_RANGE_OR_RETURN(aps->aps_adaptation_parameter_set_id, 0, 7);
+  } else if (aps->aps_params_type == H266APS::kLmcs) {
+    IN_RANGE_OR_RETURN(aps->aps_adaptation_parameter_set_id, 0, 3);
+  }
+  READ_BOOL_OR_RETURN(&aps->aps_chroma_present_flag);
+
+  if (aps->aps_params_type == H266APS::kAlf) {
+    // 7.3.2.18: Adaptive loop filter
+    H266AlfData* alf_data = &std::get<H266AlfData>(aps->data);
+    READ_BOOL_OR_RETURN(&alf_data->alf_luma_filter_signal_flag);
+    if (aps->aps_chroma_present_flag) {
+      READ_BOOL_OR_RETURN(&alf_data->alf_chroma_filter_signal_flag);
+      READ_BOOL_OR_RETURN(&alf_data->alf_cc_cb_filter_signal_flag);
+      READ_BOOL_OR_RETURN(&alf_data->alf_cc_cr_filter_signal_flag);
+    } else {
+      alf_data->alf_chroma_filter_signal_flag = 0;
+      alf_data->alf_cc_cb_filter_signal_flag = 0;
+      alf_data->alf_cc_cr_filter_signal_flag = 0;
+    }
+    // 7.4.3.18: at least one of above signal flag should be 1.
+    TRUE_OR_RETURN(alf_data->alf_luma_filter_signal_flag ||
+                   alf_data->alf_chroma_filter_signal_flag ||
+                   alf_data->alf_cc_cb_filter_signal_flag ||
+                   alf_data->alf_cc_cr_filter_signal_flag);
+
+    if (alf_data->alf_luma_filter_signal_flag) {
+      READ_BOOL_OR_RETURN(&alf_data->alf_luma_clip_flag);
+      READ_UE_OR_RETURN(&alf_data->alf_luma_num_filters_signalled_minus1);
+      IN_RANGE_OR_RETURN(alf_data->alf_luma_num_filters_signalled_minus1, 0,
+                         kNumAlfFilters - 1);
+
+      if (alf_data->alf_luma_num_filters_signalled_minus1 > 0) {
+        int signaled_filters_len = base::bits::Log2Ceiling(
+            alf_data->alf_luma_num_filters_signalled_minus1 + 1);
+        for (int filter_idx = 0; filter_idx < kNumAlfFilters; filter_idx++) {
+          READ_BITS_OR_RETURN(signaled_filters_len,
+                              &std::get<H266AlfData>(aps->data)
+                                   .alf_luma_coeff_delta_idx[filter_idx]);
+          IN_RANGE_OR_RETURN(alf_data->alf_luma_coeff_delta_idx[filter_idx], 0,
+                             alf_data->alf_luma_num_filters_signalled_minus1);
+        }
+      }
+
+      for (int sf_idx = 0;
+           sf_idx <= alf_data->alf_luma_num_filters_signalled_minus1;
+           sf_idx++) {
+        for (int j = 0; j < 12; j++) {
+          READ_UE_OR_RETURN(
+              &std::get<H266AlfData>(aps->data).alf_luma_coeff_abs[sf_idx][j]);
+          IN_RANGE_OR_RETURN(alf_data->alf_luma_coeff_abs[sf_idx][j], 0, 128);
+          if (alf_data->alf_luma_coeff_abs[sf_idx][j]) {
+            // alf_luma_coeff_sign[sf_idx][j] equals to 0 indicates a positive
+            // value and otherwise a negative value.
+            READ_BOOL_OR_RETURN(&std::get<H266AlfData>(aps->data)
+                                     .alf_luma_coeff_sign[sf_idx][j]);
+          } else {
+            alf_data->alf_luma_coeff_sign[sf_idx][j] = 0;
+          }
+        }
+      }
+
+      if (alf_data->alf_luma_clip_flag) {
+        for (int sf_idx = 0;
+             sf_idx <= alf_data->alf_luma_num_filters_signalled_minus1;
+             sf_idx++) {
+          for (int j = 0; j < 12; j++) {
+            READ_BITS_OR_RETURN(
+                2,
+                &std::get<H266AlfData>(aps->data).alf_luma_clip_idx[sf_idx][j]);
+          }
+        }
+      }
+    }
+
+    if (alf_data->alf_chroma_filter_signal_flag) {
+      READ_BOOL_OR_RETURN(
+          &std::get<H266AlfData>(aps->data).alf_chroma_clip_flag);
+      READ_UE_OR_RETURN(
+          &std::get<H266AlfData>(aps->data).alf_chroma_num_alt_filters_minus1);
+      IN_RANGE_OR_RETURN(alf_data->alf_chroma_num_alt_filters_minus1, 0, 7);
+
+      for (int alt_idx = 0;
+           alt_idx <= alf_data->alf_chroma_num_alt_filters_minus1; alt_idx++) {
+        for (int j = 0; j < 6; j++) {
+          READ_UE_OR_RETURN(&std::get<H266AlfData>(aps->data)
+                                 .alf_chroma_coeff_abs[alt_idx][j]);
+          IN_RANGE_OR_RETURN(alf_data->alf_chroma_coeff_abs[alt_idx][j], 0,
+                             128);
+          if (alf_data->alf_chroma_coeff_abs[alt_idx][j] > 0) {
+            READ_BOOL_OR_RETURN(&std::get<H266AlfData>(aps->data)
+                                     .alf_chroma_coeff_sign[alt_idx][j]);
+          } else {
+            alf_data->alf_chroma_coeff_sign[alt_idx][j] = 0;
+          }
+        }
+
+        if (alf_data->alf_chroma_clip_flag) {
+          for (int j = 0; j < 6; j++) {
+            READ_BITS_OR_RETURN(2, &alf_data->alf_chroma_clip_idx[alt_idx][j]);
+          }
+        }
+      }
+    } else {
+      alf_data->alf_chroma_clip_flag = 0;
+    }
+
+    if (alf_data->alf_cc_cb_filter_signal_flag) {
+      READ_UE_OR_RETURN(&alf_data->alf_cc_cb_filters_signalled_minus1);
+      IN_RANGE_OR_RETURN(alf_data->alf_cc_cb_filters_signalled_minus1, 0, 3);
+
+      for (int k = 0; k < alf_data->alf_cc_cb_filters_signalled_minus1 + 1;
+           k++) {
+        for (int j = 0; j < 7; j++) {
+          READ_BITS_OR_RETURN(3, &alf_data->alf_cc_cb_mapped_coeff_abs[k][j]);
+          if (alf_data->alf_cc_cb_mapped_coeff_abs[k][j]) {
+            READ_BOOL_OR_RETURN(&alf_data->alf_cc_cb_coeff_sign[k][j]);
+          } else {
+            alf_data->alf_cc_cb_coeff_sign[k][j] = 0;
+          }
+        }
+      }
+    }
+
+    if (alf_data->alf_cc_cr_filter_signal_flag) {
+      READ_UE_OR_RETURN(&alf_data->alf_cc_cr_filters_signalled_minus1);
+      IN_RANGE_OR_RETURN(alf_data->alf_cc_cr_filters_signalled_minus1, 0, 3);
+
+      for (int k = 0; k < alf_data->alf_cc_cr_filters_signalled_minus1 + 1;
+           k++) {
+        for (int j = 0; j < 7; j++) {
+          READ_BITS_OR_RETURN(3, &alf_data->alf_cc_cr_mapped_coeff_abs[k][j]);
+          if (alf_data->alf_cc_cr_mapped_coeff_abs[k][j]) {
+            READ_BOOL_OR_RETURN(&alf_data->alf_cc_cr_coeff_sign[k][j]);
+          } else {
+            alf_data->alf_cc_cr_coeff_sign[k][j] = 0;
+          }
+        }
+      }
+    }
+  } else if (aps->aps_params_type == H266APS::kLmcs) {
+    H266LmcsData* lmcs_data = &std::get<H266LmcsData>(aps->data);
+    READ_UE_OR_RETURN(&lmcs_data->lmcs_min_bin_idx);
+    IN_RANGE_OR_RETURN(lmcs_data->lmcs_min_bin_idx, 0, 15);
+    READ_UE_OR_RETURN(&lmcs_data->lmcs_delta_max_bin_idx);
+    IN_RANGE_OR_RETURN(lmcs_data->lmcs_delta_max_bin_idx, 0, 15);
+    READ_UE_OR_RETURN(&lmcs_data->lmcs_delta_cw_prec_minus1);
+    IN_RANGE_OR_RETURN(lmcs_data->lmcs_delta_cw_prec_minus1, 0, 14);
+
+    int lmcs_max_bin_idx = 15 - lmcs_data->lmcs_delta_max_bin_idx;
+    TRUE_OR_RETURN(lmcs_max_bin_idx >= lmcs_data->lmcs_min_bin_idx);
+
+    for (int i = lmcs_data->lmcs_min_bin_idx; i <= lmcs_max_bin_idx; i++) {
+      READ_BITS_OR_RETURN(lmcs_data->lmcs_delta_cw_prec_minus1 + 1,
+                          &lmcs_data->lmcs_delta_abs_cw[i]);
+      if (lmcs_data->lmcs_delta_abs_cw[i] > 0) {
+        READ_BOOL_OR_RETURN(&lmcs_data->lmcs_delta_sign_cw_flag[i]);
+      } else {
+        lmcs_data->lmcs_delta_sign_cw_flag[i] = 0;
+      }
+    }
+
+    if (aps->aps_chroma_present_flag) {
+      READ_BITS_OR_RETURN(3, &lmcs_data->lmcs_delta_abs_crs);
+      if (lmcs_data->lmcs_delta_abs_crs > 0) {
+        READ_BOOL_OR_RETURN(&lmcs_data->lmcs_delta_sign_crs_flag);
+      } else {
+        lmcs_data->lmcs_delta_sign_crs_flag = 0;
+      }
+    } else {
+      lmcs_data->lmcs_delta_abs_crs = 0;
+      lmcs_data->lmcs_delta_sign_crs_flag = 0;
+    }
+  } else if (aps->aps_params_type == H266APS::kScalingList) {
+    // VVC defines default quantization matrices(QM) for INTER_2x2,
+    // INTER_4x4, INTRA_8x8 & INTER_8x8 with flat value of 16 in them.
+    // Other sizes, including 16x16, 32x32, 64x64 are upsampled from the 8x8
+    // quantization matrix.
+    // If explicit scaling list is signaled in SPS/PH/SH/APS, VVC allows encoder
+    // customize up to 28 quantization matrices. For QM of 16x16, 32x32 and
+    // 64x64, the DC values are coded explicitly, while only 64(8x8) AC values
+    // for every such matrix may be coded explicitly, with the entire matrix
+    // upsampled to desired size.
+
+    H266ScalingListData* scaling_list_data =
+        &(std::get<H266ScalingListData>(aps->data));
+
+    int max_id_delta = 0, matrix_size = 0, ref_id = 0;
+    int scaling_matrix_pred2x2[2][2][2], scaling_matrix_pred4x4[6][4][4],
+        scaling_matrix_pred8x8[20][8][8];
+    int scaling_matrix_dc_pred[28];
+
+    // id: [0, 1]:   2x2,   INTRA2x2 & INTER2x2
+    //     [2, 7]:   4x4,   INTRA4x4_Y|U|V & INTER4x4_Y|U|V
+    //     [8, 13]:  8x8,   INTRA8x8_Y|U|V & INTER8x8_Y|U|V
+    //     [14, 19]: 16x16, INTRA16x16_Y|U|V & INTER16x16_Y|U|V
+    //     [20, 25]: 32x32, INTRA32x32_Y|U|V & INTER32x32_Y|U|V
+    //     [26, 27]: 64x64, INTRA64x64_Y & INTER64x64_Y
+
+    for (int id = 0; id < 28; id++) {
+      // Equation 101
+      max_id_delta = (id < 2) ? id : ((id < 8) ? (id - 2) : (id - 8));
+      // Equation 103
+      matrix_size = (id < 2) ? 2 : ((id < 8) ? 4 : 8);
+
+      scaling_list_data->scaling_list_copy_mode_flag[id] = 1;
+      if (aps->aps_chroma_present_flag || id % 3 == 2 || id == 27) {
+        READ_BOOL_OR_RETURN(
+            &scaling_list_data->scaling_list_copy_mode_flag[id]);
+        if (!scaling_list_data->scaling_list_copy_mode_flag[id]) {
+          READ_BOOL_OR_RETURN(
+              &scaling_list_data->scaling_list_pred_mode_flag[id]);
+        }
+
+        // id 0/2/8 are for 2x2/4x4/8x8 initial lists so they don't have
+        // the scaling_list_pred_id_delta syntax signaled.
+        if ((scaling_list_data->scaling_list_copy_mode_flag[id] ||
+             scaling_list_data->scaling_list_pred_mode_flag[id]) &&
+            id != 0 && id != 2 && id != 8) {
+          READ_UE_OR_RETURN(&scaling_list_data->scaling_list_pred_id_delta[id]);
+          IN_RANGE_OR_RETURN(scaling_list_data->scaling_list_pred_id_delta[id],
+                             0, max_id_delta);
+        }
+
+        if (!scaling_list_data->scaling_list_copy_mode_flag[id]) {
+          int next_coef = 0;
+          if (id > 13) {
+            READ_SE_OR_RETURN(
+                &scaling_list_data->scaling_list_dc_coef[id - 14]);
+            IN_RANGE_OR_RETURN(scaling_list_data->scaling_list_dc_coef[id - 14],
+                               -128, 127);
+
+            next_coef += scaling_list_data->scaling_matrix_dc_rec[id - 14];
+          }
+
+          for (int i = 0; i < matrix_size * matrix_size; i++) {
+            int x = kDiagScanOrder8x8[i][0], y = kDiagScanOrder8x8[i][1];
+            if (!(id > 25 && x >= 4 && y >= 4)) {
+              READ_SE_OR_RETURN(
+                  &scaling_list_data->scaling_list_delta_coef[id][i]);
+              IN_RANGE_OR_RETURN(
+                  scaling_list_data->scaling_list_delta_coef[id][i], -128, 127);
+
+              next_coef += scaling_list_data->scaling_list_delta_coef[id][i];
+            }
+            if (id < 2) {
+              scaling_list_data->scaling_list_2x2[id][i] = next_coef;
+            } else if (id < 8) {
+              scaling_list_data->scaling_list_4x4[id - 2][i] = next_coef;
+            } else {
+              scaling_list_data->scaling_list_8x8[id - 8][i] = next_coef;
+            }
+          }
+        }
+
+        // Equation 102
+        ref_id = id - scaling_list_data->scaling_list_pred_id_delta[id];
+
+        if (!scaling_list_data->scaling_list_copy_mode_flag[id] &&
+            !scaling_list_data->scaling_list_pred_mode_flag[id]) {
+          scaling_matrix_dc_pred[id] = 8;
+          if (id < 2) {
+            std::fill_n(scaling_matrix_pred2x2[id][0],
+                        matrix_size * matrix_size, 8);
+          } else if (id < 8) {
+            std::fill_n(scaling_matrix_pred4x4[id - 2][0],
+                        matrix_size * matrix_size, 8);
+          } else {
+            std::fill_n(scaling_matrix_pred8x8[id - 8][0],
+                        matrix_size * matrix_size, 8);
+          }
+        } else if (scaling_list_data->scaling_list_pred_id_delta[id] == 0) {
+          scaling_matrix_dc_pred[id] = 16;
+          if (id < 2) {
+            std::fill_n(scaling_matrix_pred2x2[id][0],
+                        matrix_size * matrix_size, 16);
+          } else if (id < 8) {
+            std::fill_n(scaling_matrix_pred4x4[id - 2][0],
+                        matrix_size * matrix_size, 16);
+          } else {
+            std::fill_n(scaling_matrix_pred8x8[id - 8][0],
+                        matrix_size * matrix_size, 16);
+          }
+        } else {
+          if (id < 2 && id > 0 & ref_id >= 0) {
+            memcpy(&scaling_matrix_pred2x2[id][0],
+                   &scaling_list_data->scaling_matrix_rec_2x2[ref_id][0][0],
+                   4 * sizeof(int));
+          } else if (id < 8 && id > 2 && ref_id >= 2) {
+            memcpy(&scaling_matrix_pred4x4[id - 2][0][0],
+                   &scaling_list_data->scaling_matrix_rec_4x4[ref_id - 2][0][0],
+                   16 * sizeof(int));
+          } else if (ref_id >= 8) {
+            memcpy(&scaling_matrix_pred8x8[id - 8][0][0],
+                   &scaling_list_data->scaling_matrix_rec_8x8[ref_id - 8][0][0],
+                   64 * sizeof(int));
+          }
+          if (ref_id > 13) {
+            scaling_matrix_dc_pred[id] =
+                scaling_list_data->scaling_matrix_dc_rec[ref_id - 14];
+          } else {
+            if (id < 2) {
+              scaling_matrix_dc_pred[id] = scaling_matrix_pred2x2[id][0][0];
+            } else if (id < 8) {
+              scaling_matrix_dc_pred[id] = scaling_matrix_pred4x4[id - 2][0][0];
+            } else {
+              scaling_matrix_dc_pred[id] = scaling_matrix_pred8x8[id - 8][0][0];
+            }
+          }
+        }
+
+        // Equation 104
+        if (id > 13) {
+          scaling_list_data->scaling_matrix_dc_rec[id - 14] =
+              (scaling_matrix_dc_pred[id] +
+               scaling_list_data->scaling_list_dc_coef[id - 14]) &
+              255;
+        }
+      }
+
+      // Equation 105
+      int rec_x = 0, rec_y = 0, k = 0;
+      if (id < 2) {
+        for (k = 0; k <= 3; k++) {
+          rec_x = kDiagScanOrder2x2[k][0];
+          rec_y = kDiagScanOrder2x2[k][1];
+          scaling_list_data->scaling_matrix_rec_2x2[id][rec_x][rec_y] =
+              (scaling_matrix_pred2x2[id][rec_x][rec_y] +
+               scaling_list_data->scaling_list_2x2[id][k]) &
+              255;
+        }
+      } else if (id < 8) {
+        for (k = 0; k <= 15; k++) {
+          rec_x = kDiagScanOrder4x4[k][0];
+          rec_y = kDiagScanOrder4x4[k][1];
+          scaling_list_data->scaling_matrix_rec_4x4[id - 2][rec_x][rec_y] =
+              (scaling_matrix_pred4x4[id - 2][rec_x][rec_y] +
+               scaling_list_data->scaling_list_4x4[id - 2][k]) &
+              255;
+        }
+      } else {
+        for (k = 0; k <= 63; k++) {
+          rec_x = kDiagScanOrder8x8[k][0];
+          rec_y = kDiagScanOrder8x8[k][1];
+          scaling_list_data->scaling_matrix_rec_8x8[id - 8][rec_x][rec_y] =
+              (scaling_matrix_pred8x8[id - 8][rec_x][rec_y] +
+               scaling_list_data->scaling_list_8x8[id - 8][k]) &
+              255;
+        }
+      }
+    }
+  }
+
+  // If an APS with the same id already exists, replace it.
+  *aps_id = aps->aps_adaptation_parameter_set_id;
+  switch (aps->aps_params_type) {
+    case 0:
+      *type = H266APS::ParamType::kAlf;
+      active_alf_aps_[*aps_id] = std::move(aps);
+      break;
+    case 1:
+      *type = H266APS::ParamType::kLmcs;
+      active_lmcs_aps_[*aps_id] = std::move(aps);
+      break;
+    case 2:
+      *type = H266APS::ParamType::kScalingList;
+      active_scaling_list_aps_[*aps_id] = std::move(aps);
+      break;
+  }
+
+  return kOk;
+}
+
 const H266VPS* H266Parser::GetVPS(int vps_id) const {
   auto it = active_vps_.find(vps_id);
   if (it == active_vps_.end()) {
@@ -2470,6 +2914,36 @@ const H266PPS* H266Parser::GetPPS(int pps_id) const {
   }
 
   return it->second.get();
+}
+
+const H266APS* H266Parser::GetAPS(const H266APS::ParamType& type,
+                                  int aps_id) const {
+  switch (type) {
+    case H266APS::ParamType::kAlf: {
+      auto it = active_alf_aps_.find(aps_id);
+      if (it == active_alf_aps_.end()) {
+        DVLOG(1) << "Requested a nonexistent ALF APS id " << aps_id;
+        return nullptr;
+      }
+      return it->second.get();
+    }
+    case H266APS::ParamType::kLmcs: {
+      auto it = active_lmcs_aps_.find(aps_id);
+      if (it == active_lmcs_aps_.end()) {
+        DVLOG(1) << "Requested a nonexistent LMCS APS id " << aps_id;
+        return nullptr;
+      }
+      return it->second.get();
+    }
+    case H266APS::ParamType::kScalingList: {
+      auto it = active_scaling_list_aps_.find(aps_id);
+      if (it == active_scaling_list_aps_.end()) {
+        DVLOG(1) << "Requested a nonexistent ScalingData APS id " << aps_id;
+        return nullptr;
+      }
+      return it->second.get();
+    }
+  }
 }
 
 }  // namespace media

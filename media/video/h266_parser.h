@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -51,6 +52,7 @@ enum {
   kMaxTiles = 990,       // A.4.1 Table A.1
   kMaxTileRows = 990,    // 990 tile rows and 1 column.
   kMaxTileColumns = 30,  // A.4.1  Table A.1
+  kNumAlfFilters = 25,   // 7.3.18 Adaptive loop filter semantics
 };
 
 // Section 7.4.4.2
@@ -622,6 +624,96 @@ struct MEDIA_EXPORT H266PPS {
   int num_slices_in_subpic[kMaxSlices];
 };
 
+// 7.3.2.18
+struct MEDIA_EXPORT H266AlfData {
+  H266AlfData();
+
+  // Syntax element
+  bool alf_luma_filter_signal_flag;
+  bool alf_chroma_filter_signal_flag;
+  bool alf_cc_cb_filter_signal_flag;
+  bool alf_cc_cr_filter_signal_flag;
+  bool alf_luma_clip_flag;
+  int alf_luma_num_filters_signalled_minus1;
+  int alf_luma_coeff_delta_idx[25];
+  int alf_luma_coeff_abs[25][12];
+  bool alf_luma_coeff_sign[25][12];
+  int alf_luma_clip_idx[25][12];
+  bool alf_chroma_clip_flag;
+  int alf_chroma_num_alt_filters_minus1;
+  int alf_chroma_coeff_abs[8][6];
+  bool alf_chroma_coeff_sign[8][6];
+  int alf_chroma_clip_idx[8][6];
+  int alf_cc_cb_filters_signalled_minus1;
+  int alf_cc_cb_mapped_coeff_abs[4][7];
+  bool alf_cc_cb_coeff_sign[4][7];
+  int alf_cc_cr_filters_signalled_minus1;
+  int alf_cc_cr_mapped_coeff_abs[4][7];
+  bool alf_cc_cr_coeff_sign[4][7];
+};
+
+// 7.3.2.19
+struct MEDIA_EXPORT H266LmcsData {
+  H266LmcsData();
+
+  // Syntax elements.
+  int lmcs_min_bin_idx;
+  int lmcs_delta_max_bin_idx;
+  int lmcs_delta_cw_prec_minus1;
+  int lmcs_delta_abs_cw[16];
+  bool lmcs_delta_sign_cw_flag[16];
+  int lmcs_delta_abs_crs;
+  bool lmcs_delta_sign_crs_flag;
+};
+
+// 7.3.2.20
+struct MEDIA_EXPORT H266ScalingListData {
+  H266ScalingListData();
+
+  // Syntax elements.
+  bool scaling_list_copy_mode_flag[28];
+  bool scaling_list_pred_mode_flag[28];
+  int scaling_list_pred_id_delta[28];
+  // dc coef for id in [14, 27]
+  int scaling_list_dc_coef[14];
+  int scaling_list_delta_coef[28][64];
+
+  // Calculated values.
+  int scaling_matrix_dc_rec[14];
+  int scaling_list_2x2[2][4];
+  int scaling_list_4x4[6][16];
+  int scaling_list_8x8[20][64];
+  int scaling_matrix_rec_2x2[2][2][2];
+  int scaling_matrix_rec_4x4[6][4][4];
+  int scaling_matrix_rec_8x8[20][8][8];
+};
+
+// 7.3.2.6 Adaptation parameter set
+struct MEDIA_EXPORT H266APS {
+  H266APS(int aps_type);
+  ~H266APS();
+
+  // Table 6.
+  enum ParamType {
+    kAlf = 0,
+    kLmcs = 1,
+    kScalingList = 2,
+  };
+
+  // Use to track if current APS is from PREFIX_APS or SUFFIX_APS,
+  // and the layer id this APS is supposed to apply to.
+  int nal_unit_type;
+  int nuh_layer_id;
+
+  // Syntax elements
+  int aps_params_type;
+  int aps_adaptation_parameter_set_id;
+  bool aps_chroma_present_flag;
+  bool aps_extension_flag;
+
+  std::variant<H266AlfData, H266LmcsData, H266ScalingListData> data;
+};
+
 // Class to parse an Annex-B H.266 stream.
 class MEDIA_EXPORT H266Parser : public H266NaluParser {
  public:
@@ -654,17 +746,25 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   // the returned |*pps_id| as parameter.
   Result ParsePPS(const H266NALU& nalu, int* pps_id);
 
-  // Return a pointer to VPS with given |*vps_id| or
+  // Parse an APS NALU and save its data in the parser, returning id
+  // of the parsed structure in |*aps_id| and APS type in |*type|. To get a
+  // pointer to a given APS structure, use GetAPS(), passing the returned
+  // |*aps_id| and |*type| as parameter.
+  Result ParseAPS(const H266NALU& nalu, int* pps_id, H266APS::ParamType* type);
+
+  // Return a pointer to VPS with given |vps_id| or
   // null if not present.
   const H266VPS* GetVPS(int vps_id) const;
 
-  // Return a pointer to SPS with given |*sps_id| or
-  // null if not present.
+  // Return a pointer to SPS with given |sps_id| or null if not present.
   const H266SPS* GetSPS(int sps_id) const;
 
-  // Return a pointer to PPS with given |*pps_id| or
-  // null if not present.
+  // Return a pointer to PPS with given |pps_id| or null if not present.
   const H266PPS* GetPPS(int pps_id) const;
+
+  // Return a pointer to APS with given |aps_id| and |type| or null if not
+  // present.
+  const H266APS* GetAPS(const H266APS::ParamType& type, int aps_id) const;
 
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
@@ -704,6 +804,11 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   base::flat_map<int, std::unique_ptr<H266VPS>> active_vps_;
   base::flat_map<int, std::unique_ptr<H266SPS>> active_sps_;
   base::flat_map<int, std::unique_ptr<H266PPS>> active_pps_;
+  // APS of same aps_params_type share the same value space of APS ID regardless
+  // of their NALU type or nuh_layer_id.
+  base::flat_map<int, std::unique_ptr<H266APS>> active_alf_aps_;
+  base::flat_map<int, std::unique_ptr<H266APS>> active_lmcs_aps_;
+  base::flat_map<int, std::unique_ptr<H266APS>> active_scaling_list_aps_;
 };
 
 }  // namespace media
