@@ -2900,7 +2900,7 @@
     },
     {
       name: "ResourceTimingInterimResponseTimes",
-      status: "test",
+      status: "stable",
       base_feature: "none",
     },
     {

@@ -967,6 +967,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter domainLookupStart
 [Worker]     getter encodedBodySize
 [Worker]     getter fetchStart
+[Worker]     getter firstInterimResponseStart
 [Worker]     getter initiatorType
 [Worker]     getter nextHopProtocol
 [Worker]     getter redirectEnd
