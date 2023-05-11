@@ -172,10 +172,10 @@ class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
   }
 
   void SetFocusOnElement(const std::string& element_id) {
-    ExecuteScript(
-        GetWebContents(),
-        base::StringPrintf(R"(document.getElementById('%s').focus();)",
-                           element_id.c_str()));
+    EXPECT_TRUE(
+        ExecJs(GetWebContents(),
+               base::StringPrintf(R"(document.getElementById('%s').focus();)",
+                                  element_id.c_str())));
   }
 
   std::unique_ptr<ui::test::EventGenerator> generator_;
