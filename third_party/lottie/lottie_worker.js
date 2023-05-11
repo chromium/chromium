@@ -7,7 +7,7 @@ const lottiejs = (function(window) {
   const initialDefaultFrame = -999999;
 
   const subframeEnabled = true;
-  let expressionsPlugin;
+  let expressionsPlugin = undefined;
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   const cachedColors = {};
   const bm_rounder = Math.round;
@@ -123,16 +123,11 @@ const lottiejs = (function(window) {
     let r;
     let g;
     let b;
-    let i;
-    let f;
-    let p;
-    let q;
-    let t;
-    i = Math.floor(h * 6);
-    f = h * 6 - i;
-    p = v * (1 - s);
-    q = v * (1 - f * s);
-    t = v * (1 - (1 - f) * s);
+    const i = Math.floor(h * 6);
+    const f = h * 6 - i;
+    const p = v * (1 - s);
+    const q = v * (1 - f * s);
+    const t = v * (1 - (1 - f) * s);
     switch (i % 6) {
       case 0:
         r = v;
@@ -898,16 +893,15 @@ const lottiejs = (function(window) {
               };
             }
 
-            // If called as a method of Math (Math.seedrandom()), mutate
-            // Math.random because that is how seedrandom.js has worked since v1.0.
             if (is_math_call) {
+              // If called as a method of Math (Math.seedrandom()), mutate
+              // Math.random because that is how seedrandom.js has worked since
+              // v1.0.
               math[rngname] = prng;
               return seed;
-            }
-
-            // Otherwise, it is a newer calling convention, so return the
-            // prng directly.
-            else {
+            } else {
+              // Otherwise, it is a newer calling convention, so return the prng
+              // directly.
               return prng;
             }
           })(
@@ -1328,7 +1322,6 @@ const lottiejs = (function(window) {
         const curveSegments = defaultCurveSegments;
         let k;
         let i;
-        let len;
         let ptCoord;
         let perc;
         let addedLength = 0;
@@ -1336,7 +1329,7 @@ const lottiejs = (function(window) {
         const point = [];
         const lastPoint = [];
         const lengthData = bezier_length_pool.newElement();
-        len = pt3.length;
+        const len = pt3.length;
         for (k = 0; k < curveSegments; k += 1) {
           perc = k / (curveSegments - 1);
           ptDistance = 0;
@@ -1408,7 +1401,6 @@ const lottiejs = (function(window) {
           let curveSegments = defaultCurveSegments;
           let k;
           let i;
-          let len;
           let ptCoord;
           let perc;
           let addedLength = 0;
@@ -1425,7 +1417,7 @@ const lottiejs = (function(window) {
             curveSegments = 2;
           }
           const bezierData = new BezierData(curveSegments);
-          len = pt3.length;
+          const len = pt3.length;
           for (k = 0; k < curveSegments; k += 1) {
             point = createSizedArray(len);
             perc = k / (curveSegments - 1);
@@ -1585,7 +1577,7 @@ const lottiejs = (function(window) {
 
   const bez = bezFunction();
   function dataFunctionManager() {
-    //var tCanvasHelper = createTag('canvas').getContext('2d');
+    // let tCanvasHelper = createTag('canvas').getContext('2d');
 
     function completeLayers(layers, comps, fontManager){
       let layerData;
@@ -1596,7 +1588,6 @@ const lottiejs = (function(window) {
       let j;
       let jLen;
       let k;
-      let kLen;
       for (i = 0; i < len; i += 1) {
         layerData = layers[i];
         if (!('ks' in layerData) || layerData.completed) {
@@ -1615,7 +1606,7 @@ const lottiejs = (function(window) {
             if (maskProps[j].pt.k.i) {
               convertPathsToAbsoluteValues(maskProps[j].pt.k);
             } else {
-              kLen = maskProps[j].pt.k.length;
+              const kLen = maskProps[j].pt.k.length;
               for (k = 0; k < kLen; k += 1) {
                 if (maskProps[j].pt.k[k].s) {
                   convertPathsToAbsoluteValues(maskProps[j].pt.k[k].s[0]);
@@ -1775,7 +1766,6 @@ const lottiejs = (function(window) {
               let j;
               let jLen;
               let k;
-              let kLen;
               let pathData;
               let paths;
               for (i = 0; i < len; i += 1) {
@@ -1901,7 +1891,6 @@ const lottiejs = (function(window) {
         let j;
         let jLen;
         let k;
-        let kLen;
         for (i = 0; i < len; i += 1) {
           layerData = layers[i];
           if (layerData.hasMask) {
@@ -1911,7 +1900,7 @@ const lottiejs = (function(window) {
               if (maskProps[j].pt.k.i) {
                 maskProps[j].pt.k.c = maskProps[j].cl;
               } else {
-                kLen = maskProps[j].pt.k.length;
+                const kLen = maskProps[j].pt.k.length;
                 for (k = 0; k < kLen; k += 1) {
                   if (maskProps[j].pt.k[k].s) {
                     maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
@@ -2112,8 +2101,6 @@ const lottiejs = (function(window) {
       let _pendingFonts = len;
       for (i = 0; i < len; i += 1) {
         let shouldLoadFont = true;
-        var loadedSelector;
-        var j;
         fontArr[i].loaded = false;
         fontArr[i].monoCase = setUpNode(fontArr[i].fFamily, 'monospace');
         fontArr[i].sansCase = setUpNode(fontArr[i].fFamily, 'sans-serif');
@@ -2121,7 +2108,7 @@ const lottiejs = (function(window) {
           fontArr[i].loaded = true;
           _pendingFonts -= 1;
         } else if (fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3) {
-          loadedSelector = document.querySelectorAll(
+          const loadedSelector = document.querySelectorAll(
               'style[f-forigin="p"][f-family="' + fontArr[i].fFamily +
               '"], style[f-origin="3"][f-family="' + fontArr[i].fFamily + '"]');
 
@@ -2142,10 +2129,10 @@ const lottiejs = (function(window) {
             defs.appendChild(s);
           }
         } else if (fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1) {
-          loadedSelector = document.querySelectorAll(
+          const loadedSelector = document.querySelectorAll(
               'link[f-forigin="g"], link[f-origin="1"]');
 
-          for (j = 0; j < loadedSelector.length; j++) {
+          for (let j = 0; j < loadedSelector.length; j++) {
             if (loadedSelector[j].href.indexOf(fontArr[i].fPath) !== -1) {
               // Font is already loaded
               shouldLoadFont = false;
@@ -2162,10 +2149,10 @@ const lottiejs = (function(window) {
             document.body.appendChild(l);
           }
         } else if (fontArr[i].fOrigin === 't' || fontArr[i].origin === 2) {
-          loadedSelector = document.querySelectorAll(
+          const loadedSelector = document.querySelectorAll(
               'script[f-forigin="t"], script[f-origin="2"]');
 
-          for (j = 0; j < loadedSelector.length; j++) {
+          for (let j = 0; j < loadedSelector.length; j++) {
             if (fontArr[i].fPath === loadedSelector[j].src) {
               // Font is already loaded
               shouldLoadFont = false;
@@ -2358,7 +2345,6 @@ const lottiejs = (function(window) {
               }
 
               let k;
-              let kLen;
               let perc;
               let jLen;
               let j;
@@ -2377,7 +2363,7 @@ const lottiejs = (function(window) {
                   const ind = frameNum >= nextKeyTime ?
                       bezierData.points.length - 1 :
                       0;
-                  kLen = bezierData.points[ind].point.length;
+                  const kLen = bezierData.points[ind].point.length;
                   for (k = 0; k < kLen; k += 1) {
                     newValue[k] = bezierData.points[ind].point[k];
                   }
@@ -2406,7 +2392,7 @@ const lottiejs = (function(window) {
                   while (flag) {
                     addedLength += bezierData.points[j].partialLength;
                     if (distanceInLine === 0 || perc === 0 || j === bezierData.points.length - 1) {
-                      kLen = bezierData.points[j].point.length;
+                      const kLen = bezierData.points[j].point.length;
                       for (k = 0; k < kLen; k += 1) {
                         newValue[k] = bezierData.points[j].point[k];
                       }
@@ -2414,7 +2400,7 @@ const lottiejs = (function(window) {
                     } else if (distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j + 1].partialLength) {
                       segmentPerc = (distanceInLine - addedLength) /
                           bezierData.points[j + 1].partialLength;
-                      kLen = bezierData.points[j].point.length;
+                      const kLen = bezierData.points[j].point.length;
                       for (k = 0; k < kLen; k += 1) {
                         newValue[k] = bezierData.points[j].point[k] +
                             (bezierData.points[j + 1].point[k] -
@@ -2911,7 +2897,9 @@ const lottiejs = (function(window) {
                   .rotateX(this.or.v[0]);
             }
             if (this.autoOriented) {
-              var v1, v2, frameRate = this.elem.globalData.frameRate;
+              let v1;
+              let v2;
+              const frameRate = this.elem.globalData.frameRate;
               if (this.p && this.p.keyframes && this.p.getValueAtTime) {
                 if (this.p._caching.lastFrame + this.p.offsetTime <=
                     this.p.keyframes[0].t) {
@@ -2942,7 +2930,8 @@ const lottiejs = (function(window) {
                   this.px.getValueAtTime && this.py.getValueAtTime) {
                 v1 = [];
                 v2 = [];
-                var px = this.px, py = this.py, frameRate;
+                const px = this.px;
+                const py = this.py;
                 if (px._caching.lastFrame + px.offsetTime <=
                     px.keyframes[0].t) {
                   v1[0] = px.getValueAtTime(
@@ -3033,7 +3022,7 @@ const lottiejs = (function(window) {
 
         function autoOrient() {
           //
-          // var prevP = this.getValueAtTime();
+          // let prevP = this.getValueAtTime();
         }
 
         function addDynamicProperty(prop) {
@@ -3220,8 +3209,6 @@ const lottiejs = (function(window) {
           let isHold;
           let j;
           let k;
-          let jLen;
-          let kLen;
           let perc;
           let vertexValue;
           const kf = this.keyframes;
@@ -3283,8 +3270,8 @@ const lottiejs = (function(window) {
             }
             keyPropS = keyData.s[0];
           }
-          jLen = previousValue._length;
-          kLen = keyPropS.i[0].length;
+          const jLen = previousValue._length;
+          const kLen = keyPropS.i[0].length;
           caching.lastIndex = iterationIndex;
 
           for (j = 0; j < jLen; j += 1) {
@@ -3909,7 +3896,8 @@ const lottiejs = (function(window) {
       if (segmentOb.e * totalModifierLength < addedLength ||
           segmentOb.s * totalModifierLength > addedLength + shapeLength) {
       } else {
-        var shapeS, shapeE;
+        let shapeS;
+        let shapeE;
         if (segmentOb.s * totalModifierLength <= addedLength) {
           shapeS = 0;
         } else {
@@ -4819,7 +4807,7 @@ const lottiejs = (function(window) {
 
     return ob;
   }());
-  var assetLoader = (function() {
+  let assetLoader = (function() {
     function formatResponse(xhr) {
       if (xhr.response && typeof xhr.response === 'object') {
         return xhr.response;
@@ -4864,7 +4852,7 @@ const lottiejs = (function(window) {
     };
   }());
 
-  var assetLoader = null;
+  assetLoader = null;
 
   function TextAnimatorProperty(textData, renderType, elem) {
     this._isFirstFrame = true;
@@ -5020,10 +5008,9 @@ const lottiejs = (function(window) {
     let animatorProps;
     let animatorSelector;
     let j;
-    let jLen;
     let letterValue;
 
-    jLen = animators.length;
+    const jLen = animators.length;
     let lastLetter;
 
     let mult;
@@ -5837,7 +5824,6 @@ const lottiejs = (function(window) {
     let lineWidth = 0;
     let maxLineWidth = 0;
     let j;
-    let jLen;
     const fontData = fontManager.getFontByName(documentData.f);
     let charData;
     let cLength = 0;
@@ -5972,7 +5958,7 @@ const lottiejs = (function(window) {
             fontManager.getFontByName(documentData.f).fFamily);
         cLength = newLineFlag ? 0 : charData.w * documentData.finalSize / 100;
       } else {
-        // var charWidth = fontManager.measureText(val, documentData.f,
+        // let charWidth = fontManager.measureText(val, documentData.f,
         // documentData.finalSize); tCanvasHelper.font = documentData.finalSize
         // + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
         cLength = fontManager.measureText(
@@ -6056,7 +6042,7 @@ const lottiejs = (function(window) {
     const animators = data.a;
     let animatorData;
     let letterData;
-    jLen = animators.length;
+    const jLen = animators.length;
     let based;
     let ind;
     const indexes = [];
@@ -6090,7 +6076,8 @@ const lottiejs = (function(window) {
         }
       }
       data.a[j].s.totalChars = ind;
-      var currentInd = -1, newInd;
+      let currentInd = -1;
+      let newInd;
       if (animatorData.s.rn === 1) {
         for (i = 0; i < len; i += 1) {
           letterData = letters[i];
@@ -6137,7 +6124,7 @@ const lottiejs = (function(window) {
     this.elem.addDynamicProperty(this);
   };
 
-  var TextSelectorProp = (function() {
+  const TextSelectorProp = (function() {
     const max = Math.max;
     const min = Math.min;
     const floor = Math.floor;
@@ -6172,7 +6159,7 @@ const lottiejs = (function(window) {
             this.elem.textProperty.currentData.l.length) {
           this.getValue();
         }
-        // var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
+        // let easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
         const easer =
             BezierFactory
                 .getBezierEasing(this.ne.v / 100, 0, 1 - this.xe.v / 100, 1)
@@ -6322,7 +6309,7 @@ const lottiejs = (function(window) {
     };
   }());
 
-  var pooling = (function() {
+  const pooling = (function() {
     function double(arr) {
       return arr.concat(createSizedArray(arr.length));
     }
@@ -6331,13 +6318,13 @@ const lottiejs = (function(window) {
       double: double,
     };
   }());
-  var point_pool = (function() {
+  const point_pool = (function() {
     function create() {
       return createTypedArray('float32', 2);
     }
     return pool_factory(8, create);
   }());
-  var shape_pool = (function() {
+  const shape_pool = (function() {
     function create() {
       return new ShapePath();
     }
@@ -6373,12 +6360,12 @@ const lottiejs = (function(window) {
       return cloned;
     }
 
-    var factory = pool_factory(4, create, release);
+    const factory = pool_factory(4, create, release);
     factory.clone = clone;
 
     return factory;
   }());
-  var shapeCollection_pool = (function() {
+  const shapeCollection_pool = (function() {
     const ob = {
       newShapeCollection: newShapeCollection,
       release: release,
@@ -6417,7 +6404,7 @@ const lottiejs = (function(window) {
 
     return ob;
   }());
-  var segments_length_pool = (function() {
+  const segments_length_pool = (function() {
     function create() {
       return {
         lengths: [],
@@ -6436,7 +6423,7 @@ const lottiejs = (function(window) {
 
     return pool_factory(8, create, release);
   }());
-  var bezier_length_pool = (function() {
+  const bezier_length_pool = (function() {
     function create() {
       return {
         addedLength: 0,
@@ -7117,7 +7104,7 @@ const lottiejs = (function(window) {
       this.transformCanvas.ty = 0;
     }
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
-    /*var i, len = this.elements.length;
+    /*let i, len = this.elements.length;
     for(i=0;i<len;i+=1){
         if(this.elements[i] && this.elements[i].data.ty === 0){
             this.elements[i].resize(this.globalData.transformCanvas);
@@ -7331,7 +7318,7 @@ const lottiejs = (function(window) {
       path.setAttribute(
           'fill', properties[i].mode === 's' ? '#000000' : '#ffffff');
       path.setAttribute('clip-rule', 'nonzero');
-      var filterID;
+      let filterID;
 
       if (properties[i].x.k !== 0) {
         maskType = 'mask';
@@ -7482,8 +7469,7 @@ const lottiejs = (function(window) {
   MaskElement.prototype.drawPath = function(pathData, pathNodes, viewData) {
     let pathString = ' M' + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
     let i;
-    let len;
-    len = pathNodes._length;
+    const len = pathNodes._length;
     for(i=1;i<len;i+=1){
       // pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + "
       // "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + "
@@ -8131,7 +8117,7 @@ const lottiejs = (function(window) {
 
               // This solution doesn't work on Android when meta tag with
               // viewport attribute is set
-              /*var feColorMatrix = createNS('feColorMatrix');
+              /*let feColorMatrix = createNS('feColorMatrix');
               feColorMatrix.setAttribute('type', 'matrix');
               feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
               feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0
@@ -8352,7 +8338,6 @@ const lottiejs = (function(window) {
     let j;
     const jLen = shapes.length;
     let k;
-    let kLen;
     let pathNodes;
     let shapeStr = '';
     for(j=0;j<jLen;j+=1){
@@ -8440,7 +8425,7 @@ const lottiejs = (function(window) {
   /*ICompElement.prototype.hide = function(){
       if(!this.hidden){
           this.hideElement();
-          var i,len = this.elements.length;
+          let i,len = this.elements.length;
           for( i = 0; i < len; i+=1 ){
               if(this.elements[i]){
                   this.elements[i].hide();
@@ -9096,7 +9081,8 @@ const lottiejs = (function(window) {
         data = this.viewData[i].v;
         pt = transform.applyToPointArray(data.v[0][0], data.v[0][1], 0);
         ctx.moveTo(pt[0], pt[1]);
-        var j, jLen = data._length;
+        let j;
+        const jLen = data._length;
         for (j = 1; j < jLen; j++) {
           pts = transform.applyToTriplePoints(
               data.o[j - 1], data.i[j], data.v[j]);
@@ -9275,7 +9261,6 @@ const lottiejs = (function(window) {
     let i;
     const len = styles.length;
     let j;
-    let jLen;
     for (i = 0; i < len; i += 1) {
       styles[i].closed = true;
     }
@@ -9286,7 +9271,6 @@ const lottiejs = (function(window) {
     let i;
     let len = arr.length - 1;
     let j;
-    let jLen;
     const ownStyles = [];
     const ownModifiers = [];
     let processedPos;
@@ -9313,7 +9297,7 @@ const lottiejs = (function(window) {
         if (!processedPos) {
           itemsData[i] = this.createGroupElement(arr[i]);
         } else {
-          jLen = itemsData[i].it.length;
+          const jLen = itemsData[i].it.length;
           for (j = 0; j < jLen; j += 1) {
             itemsData[i].prevViewData[j] = itemsData[i].it[j];
           }
@@ -9392,9 +9376,7 @@ const lottiejs = (function(window) {
     let i;
     const len = this.stylesList.length;
     let j;
-    let jLen;
     let k;
-    let kLen;
     let elems;
     let nodes;
     const renderer = this.globalData.renderer;
@@ -9431,7 +9413,7 @@ const lottiejs = (function(window) {
         ctx.beginPath();
       }
       renderer.ctxTransform(currentStyle.preTransforms.finalTransform.props);
-      jLen = elems.length;
+      const jLen = elems.length;
       for (j = 0; j < jLen; j += 1) {
         if (type === 'st' || type === 'gs') {
           ctx.beginPath();
@@ -9441,7 +9423,7 @@ const lottiejs = (function(window) {
           }
         }
         nodes = elems[j].trNodes;
-        kLen = nodes.length;
+        const kLen = nodes.length;
 
         for (k = 0; k < kLen; k += 1) {
           if (nodes[k].t == 'm') {
@@ -9578,7 +9560,7 @@ const lottiejs = (function(window) {
     const styleElem = itemData.style;
     if(!styleElem.grd || itemData.g._mdf || itemData.s._mdf || itemData.e._mdf || (styleData.t !== 1 && (itemData.h._mdf || itemData.a._mdf))) {
       const ctx = this.globalData.canvasContext;
-      var grd;
+      let grd;
       const pt1 = itemData.s.v;
       const pt2 = itemData.e.v;
       if (styleData.t === 1) {
@@ -9594,7 +9576,7 @@ const lottiejs = (function(window) {
         const dist = rad * percent;
         const x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
         const y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
-        var grd = ctx.createRadialGradient(x, y, 0, pt1[0], pt1[1], rad);
+        grd = ctx.createRadialGradient(x, y, 0, pt1[0], pt1[1], rad);
       }
 
       let i;
@@ -9871,7 +9853,7 @@ const lottiejs = (function(window) {
         return moduleOb;
       }());
 
-  var AnimationItem = function() {
+  const AnimationItem = function() {
     this._cbs = [];
     this.name = '';
     this.path = '';
@@ -11142,14 +11124,14 @@ const lottiejs = (function(window) {
             i = 0;
             j = 0;
             while(i<iterations){
-              // var rnd = BMMath.random();
+              // let rnd = BMMath.random();
               for (j = 0; j < len; j += 1) {
                 addedAmps[j] += -amp + amp * 2 * BMMath.random();
                 // addedAmps[j] += -amp + amp*2*rnd;
               }
               i += 1;
             }
-            //var rnd2 = BMMath.random();
+            // let rnd2 = BMMath.random();
             const periods = time * freq;
             const perc = periods - Math.floor(periods);
             const arr = createTypedArray('float32', len);
@@ -11289,14 +11271,12 @@ const lottiejs = (function(window) {
           }
 
           function key(ind) {
-            let ob;
             let i;
-            let len;
             if(!data.k.length || typeof(data.k[0]) === 'number'){
               throw new Error('The property has no keyframe at index ' + ind);
             }
             ind -= 1;
-            ob = {
+            const ob = {
               time: data.k[ind].t / elem.comp.globalData.frameRate,
               value: [],
             };
@@ -11307,7 +11287,7 @@ const lottiejs = (function(window) {
             }else{
               arr = data.k[ind].s;
             }
-            len = arr.length;
+            const len = arr.length;
             for(i=0;i<len;i+=1){
               ob[i] = arr[i];
               ob.value[i] = arr[i];
@@ -11370,7 +11350,7 @@ const lottiejs = (function(window) {
           const index = elem.data.ind;
           let hasParent = !!(elem.hierarchy && elem.hierarchy.length);
           let parent;
-          var randSeed = Math.floor(Math.random() * 1000000);
+          const randSeed = Math.floor(Math.random() * 1000000);
           const globalData = elem.globalData;
           function executeExpression(_value) {
             // globalData.pushExpression();
@@ -11992,7 +11972,7 @@ const lottiejs = (function(window) {
 
     TextProperty.prototype.searchExpressions = searchExpressions;
   }());
-  var ShapeExpressionInterface = (function() {
+  const ShapeExpressionInterface = (function() {
     function iterateElements(shapes,view, propertyGroup){
       const arr = [];
       let i;
@@ -12026,7 +12006,7 @@ const lottiejs = (function(window) {
     }
 
     function contentsInterfaceFactory(shape,view, propertyGroup){
-      let interfaces;
+      let interfaces = undefined;
       const interfaceFunction = function _interfaceFunction(value) {
         let i = 0;
         const len = interfaces.length;
@@ -12145,7 +12125,7 @@ const lottiejs = (function(window) {
       }
       let i;
       const len = shape.d ? shape.d.length : 0;
-      var dashOb = {};
+      const dashOb = {};
       for (i = 0; i < len; i += 1) {
         addPropertyToDashOb(i);
         view.d.dataProps[i].p.setGroupProperty(_dashPropertyGroup);
@@ -12555,7 +12535,7 @@ const lottiejs = (function(window) {
     }
 
     return function(shapes, view, propertyGroup) {
-      let interfaces;
+      let interfaces = undefined;
       function _interfaceFunction(value) {
         if (typeof value === 'number') {
           return interfaces[value - 1];
@@ -12577,7 +12557,7 @@ const lottiejs = (function(window) {
     };
   }());
 
-  var TextExpressionInterface = (function() {
+  const TextExpressionInterface = (function() {
     return function(elem) {
       let _prevValue;
       let _sourceText;
@@ -12588,10 +12568,12 @@ const lottiejs = (function(window) {
           const stringValue = elem.textProperty.currentData.t;
           if (stringValue !== _prevValue) {
             elem.textProperty.currentData.t = _prevValue;
+            // eslint-disable-next-line no-new-wrappers
             _sourceText = new String(stringValue);
             // If stringValue is an empty string, eval returns undefined, so it
             // has to be returned as a String primitive
             _sourceText.value =
+                // eslint-disable-next-line no-new-wrappers
                 stringValue ? stringValue : new String(stringValue);
           }
           return _sourceText;
@@ -12600,7 +12582,7 @@ const lottiejs = (function(window) {
       return _thisLayerFunction;
     };
   }());
-  var LayerExpressionInterface = (function() {
+  const LayerExpressionInterface = (function() {
     function toWorld(arr, time){
       const toWorldMat = new Matrix();
       toWorldMat.reset();
@@ -12669,7 +12651,7 @@ const lottiejs = (function(window) {
 
 
     return function(elem) {
-      let transformInterface;
+      let transformInterface = undefined;
 
       function _registerMaskInterface(maskManager) {
         _thisLayerFunction.mask = new MaskManagerInterface(maskManager, elem);
@@ -12754,7 +12736,7 @@ const lottiejs = (function(window) {
     };
   }());
 
-  var CompExpressionInterface = (function() {
+  const CompExpressionInterface = (function() {
     return function(comp){
         function _thisLayerFunction(name){
           let i = 0;
@@ -12781,7 +12763,7 @@ const lottiejs = (function(window) {
         return _thisLayerFunction;
     };
   }());
-  var TransformExpressionInterface = (function() {
+  const TransformExpressionInterface = (function() {
     return function(transform){
         function _thisFunction(name){
             switch(name){
@@ -12843,9 +12825,8 @@ const lottiejs = (function(window) {
           get: ExpressionPropertyInterface(transform.s),
         });
 
-        if(transform.p) {
-            var _transformFactory = ExpressionPropertyInterface(transform.p);
-        }
+        const _transformFactory =
+            transform.p ? ExpressionPropertyInterface(transform.p) : undefined;
         Object.defineProperty(_thisFunction, 'position', {
           get: function() {
             if (transform.p) {
@@ -12895,7 +12876,7 @@ const lottiejs = (function(window) {
         return _thisFunction;
     };
   }());
-  var ProjectInterface = (function() {
+  ProjectInterface = (function() {
     function registerComposition(comp){
       this.compositions.push(comp);
     }
@@ -12927,7 +12908,7 @@ const lottiejs = (function(window) {
         return _thisProjectFunction;
     };
   }());
-  var EffectsExpressionInterface = (function() {
+  const EffectsExpressionInterface = (function() {
     const ob = {
       createEffectsInterface: createEffectsInterface,
     };
@@ -12982,7 +12963,7 @@ const lottiejs = (function(window) {
         }
       }
 
-      var groupInterface = function(name) {
+      const groupInterface = function(name) {
         const effects = data.ef;
         let i = 0;
         const len = effects.length;
@@ -13036,7 +13017,7 @@ const lottiejs = (function(window) {
 
     return ob;
   }());
-  var MaskManagerInterface = (function() {
+  const MaskManagerInterface = (function() {
     function MaskInterface(mask, data) {
       this._mask = mask;
       this._data = data;
@@ -13075,7 +13056,7 @@ const lottiejs = (function(window) {
     return MaskManager;
   }());
 
-  var ExpressionPropertyInterface = (function() {
+  const ExpressionPropertyInterface = (function() {
     const defaultUnidimensionalValue = {pv: 0, v: 0, mult: 1};
     const defaultMultidimensionalValue = {pv: [0, 0, 0], v: [0, 0, 0], mult: 1};
 
@@ -13100,7 +13081,7 @@ const lottiejs = (function(window) {
             value = property.keyframes[pos - 2].s;
           }
           const valueProp = type === 'unidimensional' ?
-              new Number(value) :
+              new Number(value) :  // eslint-disable-line no-new-wrappers
               Object.assign({}, value);
           valueProp.time = property.keyframes[pos - 1].t /
               property.elem.comp.globalData.frameRate;
@@ -13119,6 +13100,7 @@ const lottiejs = (function(window) {
       }
       const mult = 1 / property.mult;
       let val = property.pv * mult;
+      // eslint-disable-next-line no-new-wrappers
       let expressionValue = new Number(val);
       expressionValue.value = val;
       completeProperty(expressionValue, property, 'unidimensional');
@@ -13129,6 +13111,7 @@ const lottiejs = (function(window) {
         }
         val = property.v * mult;
         if (expressionValue.value !== val) {
+          // eslint-disable-next-line no-new-wrappers
           expressionValue = new Number(val);
           expressionValue.value = val;
           completeProperty(expressionValue, property, 'unidimensional');
