@@ -292,7 +292,7 @@ class WPTGitHub(object):
                     WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL,
                     escaped_provisional_pr_label,
                     min(MAX_PER_PAGE, self._pr_history_window))
-        return self.fetch_pull_requests_from_path(path)
+        return self.fetch_pull_requests_from_path(path, min_expected_prs=200)
 
     @memoized
     def all_pull_requests(self):
@@ -310,7 +310,7 @@ class WPTGitHub(object):
                     min(MAX_PER_PAGE, self._pr_history_window))
         return self.fetch_pull_requests_from_path(path)
 
-    def fetch_pull_requests_from_path(self, path):
+    def fetch_pull_requests_from_path(self, path, min_expected_prs=1000):
         """Fetches PRs from url path.
 
         The maximum number of PRs is pr_history_window. Search endpoint is used
@@ -341,12 +341,12 @@ class WPTGitHub(object):
                                   'fetch all pull requests', path)
             path = self.extract_link_next(response.getheader('Link'))
 
-        # There are way more than 1000 exported PRs on GitHub, so we should
-        # always get at least pr_history_window PRs. This assertion is added to
-        # mitigate transient GitHub API issues (crbug.com/814617).
-        if len(all_prs) < self._pr_history_window:
-            raise GitHubError('at least %d commits' % self._pr_history_window,
-                              len(all_prs), 'fetch all pull requests')
+        # Doing this check to mitigate Github API issues (crbug.com/814617).
+        # Use a minimum based on which path it comes from
+        min_prs = min(self._pr_history_window, min_expected_prs)
+        if len(all_prs) < min_prs:
+            raise GitHubError('at least %d commits' % min_prs, len(all_prs),
+                              'fetch all pull requests')
 
         _log.info('Fetched %d PRs from GitHub.', len(all_prs))
         return all_prs
