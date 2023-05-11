@@ -693,8 +693,8 @@ crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-002-uni
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-002.html [ Failure ]
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-003.html [ Failure ]
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-004.html [ Failure ]
-crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-interpolation-001.html [ Failure ]
-crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-interpolation-002.html [ Failure ]
+crbug.com/1308431 external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-001.html [ Failure ]
+crbug.com/1308431 external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-002.html [ Failure ]
 
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
