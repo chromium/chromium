@@ -487,6 +487,8 @@ static_library("browser") {
     "enterprise/connectors/interstitials/enterprise_warn_controller_client.h",
     "enterprise/connectors/interstitials/enterprise_warn_page.cc",
     "enterprise/connectors/interstitials/enterprise_warn_page.h",
+    "enterprise/profile_management/saml_response_parser.cc",
+    "enterprise/profile_management/saml_response_parser.h",
     "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.cc",
     "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.h",
     "enterprise/reporting/legacy_tech/legacy_tech_url_matcher.cc",
