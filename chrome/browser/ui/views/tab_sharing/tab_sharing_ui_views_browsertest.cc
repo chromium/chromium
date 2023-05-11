@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
@@ -142,6 +143,7 @@ void ActivateTab(Browser* browser, int tab) {
   browser->tab_strip_model()->ActivateTabAt(
       tab, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
 }
 
 constexpr int kNullTabIndex = -1;
@@ -208,6 +210,8 @@ class TabSharingUIViewsBrowserTest
         base::BindRepeating(&TabSharingUIViewsBrowserTest::OnStartSharing,
                             base::Unretained(this)),
         std::vector<content::DesktopMediaID>{});
+
+    base::RunLoop().RunUntilIdle();
   }
 
   struct UiExpectations {
@@ -296,6 +300,8 @@ class TabSharingUIViewsBrowserTest
       CreateUniqueFaviconFor(
           browser->tab_strip_model()->GetWebContentsAt(next_index));
     }
+
+    base::RunLoop().RunUntilIdle();
   }
 
   void CreateUniqueFaviconFor(content::WebContents* web_contents) {
@@ -584,6 +590,143 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .infobar_count = 0,
                           .has_border = false});
 }
+
+// TODO(crbug.com/1444732): Enable on CrOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_P(
+    TabSharingUIViewsBrowserTest,
+    NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedBeforeCapture) {
+  // Create a guest-mode browser.
+  Browser* const guest_browser = CreateGuestBrowser();
+  AddTabs(guest_browser, 1);
+  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+
+  // Create a normal-mode browser.
+  Browser* const main_browser = CreateBrowser(browser()->profile());
+  AddTabs(main_browser, 1);
+  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+
+  // Start a capture in the normal-mode capture.
+  CreateUiAndStartSharing(main_browser, /*capturing_tab=*/0,
+                          /*captured_tab=*/1);
+
+  // Expectation #1: The capture infobar is created in the profile
+  // where capture is happening.
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 1u);
+
+  // Expectation #2: The capture infobar is NOT created in the profile
+  // where capture is NOT happening.
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    TabSharingUIViewsBrowserTest,
+    NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedAfterCapture) {
+  // Create a normal-mode browser.
+  Browser* const main_browser = CreateBrowser(browser()->profile());
+  AddTabs(main_browser, 1);
+  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+
+  // Start a capture in the normal-mode capture.
+  CreateUiAndStartSharing(main_browser, /*capturing_tab=*/0,
+                          /*captured_tab=*/1);
+
+  // Create a guest-mode browser.
+  Browser* const guest_browser = CreateGuestBrowser();
+  AddTabs(guest_browser, 1);
+  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+
+  // Expectation #1: The capture infobar is created in the profile
+  // where capture is happening.
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 1u);
+
+  // Expectation #2: The capture infobar is NOT created in the profile
+  // where capture is NOT happening.
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    TabSharingUIViewsBrowserTest,
+    GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedBeforeCapture) {
+  // Create a normal-mode browser.
+  Browser* const main_browser = CreateBrowser(browser()->profile());
+  AddTabs(main_browser, 1);
+  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+
+  // Create a guest-mode browser.
+  Browser* const guest_browser = CreateGuestBrowser();
+  AddTabs(guest_browser, 1);
+  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+
+  // Start a capture in the guest-mode browser.
+  CreateUiAndStartSharing(guest_browser, /*capturing_tab=*/0,
+                          /*captured_tab=*/1);
+
+  // Expectation #1: The capture infobar is created in the profile
+  // where capture is happening.
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 1u);
+
+  // Expectation #2: The capture infobar is NOT created in the profile
+  // where capture is NOT happening.
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    TabSharingUIViewsBrowserTest,
+    GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedAfterCapture) {
+  // Create a guest-mode browser.
+  Browser* const guest_browser = CreateGuestBrowser();
+  AddTabs(guest_browser, 1);
+  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+
+  // Start a capture in the guest-mode browser.
+  CreateUiAndStartSharing(guest_browser, /*capturing_tab=*/0,
+                          /*captured_tab=*/1);
+
+  // Create a normal-mode browser.
+  Browser* const main_browser = CreateBrowser(browser()->profile());
+  AddTabs(main_browser, 1);
+  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+
+  // Expectation #1: The capture infobar is created in the profile
+  // where capture is happening.
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 1u);
+
+  // Expectation #2: The capture infobar is NOT created in the profile
+  // where capture is NOT happening.
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
+                       TabsAddedInGuestModeHaveInfobarIfGuestModeCapture) {
+  // Create a guest-mode browser.
+  Browser* const guest_browser = CreateGuestBrowser();
+  AddTabs(guest_browser, 1);
+  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+
+  // Start a capture in the guest-mode browser.
+  CreateUiAndStartSharing(guest_browser, /*capturing_tab=*/0,
+                          /*captured_tab=*/1);
+
+  // Sanity - existing tabs have an infobar.
+  ASSERT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 1u);
+  ASSERT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 1u);
+
+  // Test focus - when adding a tab in guest mode, that tab has an infobar.
+  AddTabs(guest_browser, 1);
+  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 3);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/2)->infobar_count(), 1u);
+}
+#endif
 
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
   AddTabs(browser(), 2);
