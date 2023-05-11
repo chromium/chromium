@@ -275,7 +275,7 @@ void CounterStyleMap::MarkDirtyCounterStyles(
 // static
 void CounterStyleMap::MarkAllDirtyCounterStyles(
     Document& document,
-    const HeapHashSet<Member<TreeScope>>& active_tree_scopes) {
+    const HeapHashSet<Member<TreeScope>, WTF::MemberHashRecordReplayId<TreeScope>>& active_tree_scopes) {
   // Traverse all CounterStyle objects in the document to mark dirtiness.
   // We assume that there are not too many CounterStyle objects, so this won't
   // be a performance bottleneck.
@@ -298,7 +298,7 @@ void CounterStyleMap::MarkAllDirtyCounterStyles(
 // static
 void CounterStyleMap::ResolveAllReferences(
     Document& document,
-    const HeapHashSet<Member<TreeScope>>& active_tree_scopes) {
+    const HeapHashSet<Member<TreeScope>, WTF::MemberHashRecordReplayId<TreeScope>>& active_tree_scopes) {
   // Traverse all counter style maps to find and update CounterStyles that are
   // dirty or have unresolved references. We assume there are not too many
   // CounterStyles, so that this won't be a performance bottleneck.

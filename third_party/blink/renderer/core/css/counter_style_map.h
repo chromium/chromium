@@ -34,11 +34,11 @@ class CORE_EXPORT CounterStyleMap : public GarbageCollected<CounterStyleMap> {
 
   void ResolveReferences(HeapHashSet<Member<CounterStyleMap>>& resolved_maps);
   static void ResolveAllReferences(Document&,
-                                   const HeapHashSet<Member<TreeScope>>&);
+                                   const HeapHashSet<Member<TreeScope>, WTF::MemberHashRecordReplayId<TreeScope>>&);
 
   void MarkDirtyCounterStyles(HeapHashSet<Member<CounterStyle>>& visited);
   static void MarkAllDirtyCounterStyles(Document&,
-                                        const HeapHashSet<Member<TreeScope>>&);
+                                        const HeapHashSet<Member<TreeScope>, WTF::MemberHashRecordReplayId<TreeScope>>&);
 
   void Dispose();
 

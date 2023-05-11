@@ -153,6 +153,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   void SetAdoptedStyleSheetsForTesting(HeapVector<Member<CSSStyleSheet>>&);
   void ClearAdoptedStyleSheets();
 
+  int RecordReplayId() const;
+
  protected:
   explicit TreeScope(ContainerNode&,
                      Document&,

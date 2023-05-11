@@ -647,7 +647,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   Document& GetDocument() const { return *document_; }
 
-  typedef HeapHashSet<Member<TreeScope>> UnorderedTreeScopeSet;
+  typedef HeapHashSet<Member<TreeScope>, WTF::MemberHashRecordReplayId<TreeScope>> UnorderedTreeScopeSet;
 
   bool MediaQueryAffectingValueChanged(const ActiveStyleSheetVector&,
                                        MediaValueChange);
