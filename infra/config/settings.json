@@ -5,33 +5,21 @@
     "chrome_project": "chrome-m112",
     "is_main": false,
     "platforms": {
-        "android": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
+      "android": {
+          "description": "webview stable",
+          "sheriff_rotation": "chrome_browser_release"
         },
-        "cros": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "fuchsia": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "ios": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "mac": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        }
-    }
+      "fuchsia": {
+          "description": "fuchsia F11",
+          "sheriff_rotation": "fuchsia"
+      },
+      "mac": {
+          "description": "extended stable",
+          "sheriff_rotation": "chrome_browser_release"
+      },
+      "windows": {
+          "description": "extended stable",
+          "sheriff_rotation": "chrome_browser_release"
+      }
+  }
 }
