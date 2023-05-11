@@ -177,8 +177,9 @@ bool SpellingServiceClient::IsAvailable(content::BrowserContext* context,
   std::string locale;
   const auto& dicts_list =
       pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-  if (0u < dicts_list.size() && dicts_list[0].is_string())
+  if (!dicts_list.empty() && dicts_list[0].is_string()) {
     locale = dicts_list[0].GetString();
+  }
 
   if (locale.empty())
     return false;
@@ -245,52 +246,58 @@ bool SpellingServiceClient::ParseResponse(
   //    }
   //  }
 
-  absl::optional<base::Value> value(
-      base::JSONReader::Read(data, base::JSON_ALLOW_TRAILING_COMMAS));
-  if (!value || !value->is_dict())
+    absl::optional<base::Value::Dict> value =
+        base::JSONReader::ReadDict(data, base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!value) {
     return false;
+    }
 
   // Check for errors from spelling service.
-  const base::Value* error = value->GetDict().Find(kErrorPath);
-  if (error)
+    const base::Value* error = value->Find(kErrorPath);
+    if (error) {
     return false;
+    }
 
   // Retrieve the array of Misspelling objects. When the input text does not
   // have misspelled words, it returns an empty JSON. (In this case, its HTTP
   // status is 200.) We just return true for this case.
-  const base::Value* misspellings = value->FindListPath(kMisspellingsRestPath);
+    const base::Value::List* misspellings =
+        value->FindListByDottedPath(kMisspellingsRestPath);
 
-  if (!misspellings)
+    if (!misspellings) {
     return true;
+    }
 
-  for (const base::Value& misspelling : misspellings->GetList()) {
+    for (const base::Value& misspelling : *misspellings) {
     // Retrieve the i-th misspelling region and put it to the given vector. When
     // the Spelling service sends two or more suggestions, we read only the
     // first one because SpellCheckResult can store only one suggestion.
-    if (!misspelling.is_dict())
+    auto* misspelling_dict = misspelling.GetIfDict();
+    if (!misspelling_dict) {
       return false;
+    }
 
-    absl::optional<int> start = misspelling.GetDict().FindInt("charStart");
-    absl::optional<int> length = misspelling.GetDict().FindInt("charLength");
+    absl::optional<int> start = misspelling_dict->FindInt("charStart");
+    absl::optional<int> length = misspelling_dict->FindInt("charLength");
     const base::Value::List* suggestions =
-        misspelling.GetDict().FindList("suggestions");
+        misspelling_dict->FindList("suggestions");
     if (!start || !length || !suggestions) {
       return false;
     }
 
-    const base::Value& suggestion = (*suggestions)[0];
-    if (!suggestion.is_dict())
+    const auto* suggestion = suggestions->front().GetIfDict();
+    if (!suggestion) {
       return false;
+    }
 
-    const std::string* replacement =
-        suggestion.GetDict().FindString("suggestion");
+    const std::string* replacement = suggestion->FindString("suggestion");
     if (!replacement) {
       return false;
     }
     SpellCheckResult result(SpellCheckResult::SPELLING, *start, *length,
                             base::UTF8ToUTF16(*replacement));
     results->push_back(result);
-  }
+    }
   return true;
 }
 
