@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 from collections import OrderedDict
-from distutils.spawn import find_executable
+from shutil import which
 from datetime import timedelta
 
 from . import config
@@ -507,7 +507,7 @@ def exe_path(name):
     if name is None:
         return
 
-    path = find_executable(name)
+    path = which(name)
     if path and os.access(path, os.X_OK):
         return path
     else:
