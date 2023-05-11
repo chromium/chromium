@@ -259,9 +259,17 @@ void CallStackProfileBuilder::OnProfileCompleted(
     module_id->set_name_md5_prefix(
         HashModuleFilename(module->GetDebugBasename()));
   }
+  // sampled_profile_ cannot be reused after it is cleared by this function.
+  // Check we still have the information from the constructor.
+  CHECK(sampled_profile_.has_process());
+  CHECK(sampled_profile_.has_thread());
+  CHECK(sampled_profile_.has_trigger_event());
 
   PassProfilesToMetricsProvider(profile_start_time_,
                                 std::move(sampled_profile_));
+  // Protobuffers are in an uncertain state after moving from; clear to get
+  // back to known state.
+  sampled_profile_.Clear();
 
   // Run the completed callback if there is one.
   if (!completed_callback_.is_null())
@@ -271,6 +279,7 @@ void CallStackProfileBuilder::OnProfileCompleted(
   stack_index_.clear();
   module_index_.clear();
   modules_.clear();
+  sample_timestamps_.clear();
 }
 
 // static
