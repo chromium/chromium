@@ -294,6 +294,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
