@@ -366,6 +366,10 @@ void FeatureTile::UpdateIconButtonRippleColors() {
                                : cros_tokens::kCrosSysRippleNeutralOnSubtle);
   // The ripple base color includes opacity.
   ink_drop->SetVisibleOpacity(1.0f);
+
+  // Ensure the new color applies even if the hover highlight or ripple is
+  // already showing.
+  ink_drop->GetInkDrop()->HostViewThemeChanged();
 }
 
 void FeatureTile::UpdateIconButtonFocusRingColor() {
