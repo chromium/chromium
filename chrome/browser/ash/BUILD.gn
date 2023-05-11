@@ -1590,8 +1590,6 @@ source_set("ash") {
     "login/easy_unlock/easy_unlock_service_factory.h",
     "login/easy_unlock/smartlock_feature_usage_metrics.cc",
     "login/easy_unlock/smartlock_feature_usage_metrics.h",
-    "login/easy_unlock/smartlock_state_handler.cc",
-    "login/easy_unlock/smartlock_state_handler.h",
     "login/enrollment/auto_enrollment_check_screen.cc",
     "login/enrollment/auto_enrollment_check_screen.h",
     "login/enrollment/auto_enrollment_check_screen_view.h",

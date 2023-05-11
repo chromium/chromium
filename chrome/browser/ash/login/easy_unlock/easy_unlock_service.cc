@@ -251,8 +251,9 @@ AccountId EasyUnlockService::GetAccountId() const {
 }
 
 SmartLockState EasyUnlockService::GetInitialSmartLockState() const {
-  if (IsAllowed() && IsEnabled() && proximity_auth_system_ != nullptr)
+  if (IsAllowed() && IsEnabled() && proximity_auth_system_ != nullptr) {
     return SmartLockState::kConnectingToPhone;
+  }
 
   return SmartLockState::kDisabled;
 }
@@ -279,18 +280,7 @@ EasyUnlockService::GetRemoteDevicesForTesting() const {
 }
 
 void EasyUnlockService::HandleAuthFailure(const AccountId& account_id) {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    NotifySmartLockAuthResult(/*success=*/false);
-    return;
-  }
-
-  if (account_id != GetAccountId()) {
-    return;
-  }
-
-  if (!smartlock_state_handler_.get()) {
-    return;
-  }
+  NotifySmartLockAuthResult(/*success=*/false);
 }
 
 void EasyUnlockService::Initialize() {
@@ -352,64 +342,48 @@ bool EasyUnlockService::IsEnabled() const {
 }
 
 void EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    if (smart_lock_state_ && state == smart_lock_state_.value())
-      return;
-
-    smart_lock_state_ = state;
-
-    if (proximity_auth::ScreenlockBridge::Get()->IsLocked()) {
-      auto* lock_handler =
-          proximity_auth::ScreenlockBridge::Get()->lock_handler();
-      DCHECK(lock_handler);
-
-      lock_handler->SetSmartLockState(GetAccountId(), state);
-
-      // TODO(https://crbug.com/1233614): Eventually we would like to remove
-      // auth_type.mojom where AuthType lives, but this will require further
-      // investigation. This logic was copied from
-      // SmartLockStateHandler::UpdateScreenlockAuthType.
-      // Do not override online signin.
-      if (lock_handler->GetAuthType(GetAccountId()) !=
-          proximity_auth::mojom::AuthType::ONLINE_SIGN_IN) {
-        if (smart_lock_state_ == SmartLockState::kPhoneAuthenticated) {
-          SetAuthTypeIfChanged(
-              lock_handler, GetAccountId(),
-              proximity_auth::mojom::AuthType::USER_CLICK,
-              l10n_util::GetStringUTF16(
-                  IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE));
-        } else {
-          SetAuthTypeIfChanged(
-              lock_handler, GetAccountId(),
-              proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
-              std::u16string());
-        }
-      }
-    }
-
-    if (state != SmartLockState::kPhoneAuthenticated && auth_attempt_) {
-      // Clean up existing auth attempt if we can no longer authenticate the
-      // remote device.
-      auth_attempt_.reset();
-
-      if (!IsSmartLockStateValidOnRemoteAuthFailure())
-        HandleAuthFailure(GetAccountId());
-    }
-
+  if (smart_lock_state_ && state == smart_lock_state_.value()) {
     return;
   }
 
-  SmartLockStateHandler* handler = GetSmartLockStateHandler();
-  if (!handler)
-    return;
+  smart_lock_state_ = state;
 
-  handler->ChangeState(state);
+  if (proximity_auth::ScreenlockBridge::Get()->IsLocked()) {
+    auto* lock_handler =
+        proximity_auth::ScreenlockBridge::Get()->lock_handler();
+    DCHECK(lock_handler);
+
+    lock_handler->SetSmartLockState(GetAccountId(), state);
+
+    // TODO(https://crbug.com/1233614): Eventually we would like to remove
+    // auth_type.mojom where AuthType lives, but this will require further
+    // investigation. This logic was copied from legacy
+    // SmartLockStateHandler::UpdateScreenlockAuthType.
+    // Do not override online signin.
+    if (lock_handler->GetAuthType(GetAccountId()) !=
+        proximity_auth::mojom::AuthType::ONLINE_SIGN_IN) {
+      if (smart_lock_state_ == SmartLockState::kPhoneAuthenticated) {
+        SetAuthTypeIfChanged(
+            lock_handler, GetAccountId(),
+            proximity_auth::mojom::AuthType::USER_CLICK,
+            l10n_util::GetStringUTF16(
+                IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE));
+      } else {
+        SetAuthTypeIfChanged(lock_handler, GetAccountId(),
+                             proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
+                             std::u16string());
+      }
+    }
+  }
 
   if (state != SmartLockState::kPhoneAuthenticated && auth_attempt_) {
+    // Clean up existing auth attempt if we can no longer authenticate the
+    // remote device.
     auth_attempt_.reset();
 
-    if (!handler->InStateValidOnRemoteAuthFailure())
+    if (!IsSmartLockStateValidOnRemoteAuthFailure()) {
       HandleAuthFailure(GetAccountId());
+    }
   }
 }
 
@@ -556,121 +530,92 @@ void EasyUnlockService::OnFeatureStatesChanged(
 EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
   DCHECK(IsEnabled());
 
-  if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
-      !smartlock_state_handler()) {
+  if (!smart_lock_state_) {
     return PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER;
-  } else if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
-             !smart_lock_state_) {
-    return PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER;
-  } else {
-    SmartLockState state =
-        (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
-            ? smart_lock_state_.value()
-            : smartlock_state_handler()->state();
+  }
 
-    switch (state) {
-      case SmartLockState::kInactive:
-      case SmartLockState::kDisabled:
-        return PASSWORD_ENTRY_SERVICE_NOT_ACTIVE;
-      case SmartLockState::kBluetoothDisabled:
-        return PASSWORD_ENTRY_NO_BLUETOOTH;
-      case SmartLockState::kConnectingToPhone:
-        return PASSWORD_ENTRY_BLUETOOTH_CONNECTING;
-      case SmartLockState::kPhoneNotFound:
-        return PASSWORD_ENTRY_NO_PHONE;
-      case SmartLockState::kPhoneNotAuthenticated:
-        return PASSWORD_ENTRY_PHONE_NOT_AUTHENTICATED;
-      case SmartLockState::kPhoneFoundLockedAndProximate:
-        return PASSWORD_ENTRY_PHONE_LOCKED;
-      case SmartLockState::kPhoneNotLockable:
-        return PASSWORD_ENTRY_PHONE_NOT_LOCKABLE;
-      case SmartLockState::kPhoneFoundUnlockedAndDistant:
-        return PASSWORD_ENTRY_RSSI_TOO_LOW;
-      case SmartLockState::kPhoneFoundLockedAndDistant:
-        return PASSWORD_ENTRY_PHONE_LOCKED_AND_RSSI_TOO_LOW;
-      case SmartLockState::kPhoneAuthenticated:
-        return PASSWORD_ENTRY_WITH_AUTHENTICATED_PHONE;
-      case SmartLockState::kPrimaryUserAbsent:
-        return PASSWORD_ENTRY_PRIMARY_USER_ABSENT;
-    }
+  SmartLockState state = smart_lock_state_.value();
+
+  switch (state) {
+    case SmartLockState::kInactive:
+    case SmartLockState::kDisabled:
+      return PASSWORD_ENTRY_SERVICE_NOT_ACTIVE;
+    case SmartLockState::kBluetoothDisabled:
+      return PASSWORD_ENTRY_NO_BLUETOOTH;
+    case SmartLockState::kConnectingToPhone:
+      return PASSWORD_ENTRY_BLUETOOTH_CONNECTING;
+    case SmartLockState::kPhoneNotFound:
+      return PASSWORD_ENTRY_NO_PHONE;
+    case SmartLockState::kPhoneNotAuthenticated:
+      return PASSWORD_ENTRY_PHONE_NOT_AUTHENTICATED;
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      return PASSWORD_ENTRY_PHONE_LOCKED;
+    case SmartLockState::kPhoneNotLockable:
+      return PASSWORD_ENTRY_PHONE_NOT_LOCKABLE;
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      return PASSWORD_ENTRY_RSSI_TOO_LOW;
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      return PASSWORD_ENTRY_PHONE_LOCKED_AND_RSSI_TOO_LOW;
+    case SmartLockState::kPhoneAuthenticated:
+      return PASSWORD_ENTRY_WITH_AUTHENTICATED_PHONE;
+    case SmartLockState::kPrimaryUserAbsent:
+      return PASSWORD_ENTRY_PRIMARY_USER_ABSENT;
   }
 
   NOTREACHED();
   return EASY_UNLOCK_AUTH_EVENT_COUNT;
 }
 
-SmartLockStateHandler* EasyUnlockService::GetSmartLockStateHandler() {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    return nullptr;
-  }
-
-  if (!IsAllowed()) {
-    return nullptr;
-  }
-  if (!smartlock_state_handler_) {
-    smartlock_state_handler_ = std::make_unique<SmartLockStateHandler>(
-        GetAccountId(), proximity_auth::ScreenlockBridge::Get());
-  }
-  return smartlock_state_handler_.get();
-}
-
 SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
 EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
   DCHECK(IsEnabled());
 
-  if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
-      !smartlock_state_handler()) {
+  if (!smart_lock_state_) {
     return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
         kUnknownState;
-  } else if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
-             !smart_lock_state_) {
-    return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-        kUnknownState;
-  } else {
-    SmartLockState state =
-        (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
-            ? smart_lock_state_.value()
-            : smartlock_state_handler()->state();
-    switch (state) {
-      case SmartLockState::kInactive:
-      case SmartLockState::kDisabled:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kServiceNotActive;
-      case SmartLockState::kBluetoothDisabled:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kNoBluetooth;
-      case SmartLockState::kConnectingToPhone:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kBluetoothConnecting;
-      case SmartLockState::kPhoneNotFound:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kCouldNotConnectToPhone;
-      case SmartLockState::kPhoneNotAuthenticated:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kNotAuthenticated;
-      case SmartLockState::kPhoneFoundLockedAndProximate:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kPhoneLocked;
-      case SmartLockState::kPhoneFoundUnlockedAndDistant:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kRssiTooLow;
-      case SmartLockState::kPhoneFoundLockedAndDistant:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kPhoneLockedAndRssiTooLow;
-      case SmartLockState::kPhoneAuthenticated:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kAuthenticatedPhone;
-      case SmartLockState::kPhoneNotLockable:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kPhoneNotLockable;
-      case SmartLockState::kPrimaryUserAbsent:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kPrimaryUserAbsent;
-      default:
-        NOTREACHED();
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kUnknownState;
-    }
+  }
+
+  SmartLockState state = smart_lock_state_.value();
+
+  switch (state) {
+    case SmartLockState::kInactive:
+    case SmartLockState::kDisabled:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kServiceNotActive;
+    case SmartLockState::kBluetoothDisabled:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kNoBluetooth;
+    case SmartLockState::kConnectingToPhone:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kBluetoothConnecting;
+    case SmartLockState::kPhoneNotFound:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kCouldNotConnectToPhone;
+    case SmartLockState::kPhoneNotAuthenticated:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kNotAuthenticated;
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kPhoneLocked;
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kRssiTooLow;
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kPhoneLockedAndRssiTooLow;
+    case SmartLockState::kPhoneAuthenticated:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kAuthenticatedPhone;
+    case SmartLockState::kPhoneNotLockable:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kPhoneNotLockable;
+    case SmartLockState::kPrimaryUserAbsent:
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kPrimaryUserAbsent;
+    default:
+      NOTREACHED();
+      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+          kUnknownState;
   }
 
   NOTREACHED();
@@ -784,14 +729,8 @@ void EasyUnlockService::OnUserEnteredPassword() {
 }
 
 void EasyUnlockService::PrepareForSuspend() {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    if (smart_lock_state_ && *smart_lock_state_ != SmartLockState::kInactive) {
-      ShowInitialSmartLockState();
-    }
-  } else {
-    if (smartlock_state_handler_ && smartlock_state_handler_->IsActive()) {
-      UpdateSmartLockState(SmartLockState::kConnectingToPhone);
-    }
+  if (smart_lock_state_ && *smart_lock_state_ != SmartLockState::kInactive) {
+    ShowInitialSmartLockState();
   }
 
   if (proximity_auth_system_) {
@@ -800,12 +739,7 @@ void EasyUnlockService::PrepareForSuspend() {
 }
 
 void EasyUnlockService::ResetSmartLockState() {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    smart_lock_state_.reset();
-  } else {
-    smartlock_state_handler_.reset();
-  }
-
+  smart_lock_state_.reset();
   auth_attempt_.reset();
 }
 

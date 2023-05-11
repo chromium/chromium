@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_auth_attempt.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
-#include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
@@ -174,14 +173,6 @@ class EasyUnlockService
   // according to the current state of the service.
   EasyUnlockAuthEvent GetPasswordAuthEvent() const;
 
-  // Gets `smartlock_state_handler_`. Returns NULL if Easy Unlock is not
-  // allowed. Otherwise, if `smartlock_state_handler_` is not set, an instance
-  // is created. Do not cache the returned value, as it may go away if Easy
-  // Unlock gets disabled.
-  // TODO(b/281542383): This method and the SmartLockStateHandler class can be
-  // deleted since it is no longer used with the launched UI revamp.
-  SmartLockStateHandler* GetSmartLockStateHandler();
-
   // Returns the authentication event for a recent password unlock,
   // according to the current state of the service.
   SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
@@ -236,10 +227,6 @@ class EasyUnlockService
       const std::set<std::string>& public_keys_before_sync,
       const std::set<std::string>& public_keys_after_sync);
 
-  const SmartLockStateHandler* smartlock_state_handler() const {
-    return smartlock_state_handler_.get();
-  }
-
   // Called when ready to begin recording Smart Lock feature usage
   // within Standard Feature Usage Logging (SFUL) framework.
   void StartFeatureUsageMetrics();
@@ -268,9 +255,6 @@ class EasyUnlockService
       secure_channel_client_;
 
   ChromeProximityAuthClient proximity_auth_client_;
-
-  // Created lazily in `GetSmartLockStateHandler`.
-  std::unique_ptr<SmartLockStateHandler> smartlock_state_handler_;
 
   absl::optional<SmartLockState> smart_lock_state_;
 
