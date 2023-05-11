@@ -3552,6 +3552,9 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
   }
 
   CSSPrimitiveValue* resolution = ConsumeResolution(range, context);
+  if (resolution && resolution->GetDoubleValue() < 0.0) {
+    return nullptr;
+  }
 
   if (!type) {
     type = ConsumeImageSetType(range);
