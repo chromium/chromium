@@ -1107,6 +1107,9 @@ Style notes:
       <message name="IDS_ASH_AUTOCLICK_SCROLL_CLOSE" desc="The tooltip text for the automatic clicks menu option that results in the scrolling menu being closed.">
         Close
       </message>
+      <message name="IDS_ASH_AUTOCLICK_SCROLL_BUBBLE" desc="The name of a window showing autoclick scroll controls." is_accessibility_with_no_ui="true">
+        Scroll controls
+      </message>
       <message name="IDS_ASH_AUTOCLICK_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables automatic clicks, to confirm they meant to disable the feature.">
         Are you sure you want to turn off automatic clicks?
       </message>

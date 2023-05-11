@@ -359,35 +359,26 @@ const char* AutoclickScrollBubbleView::GetClassName() const {
 
 // ------ AutoclickScrollView  ------ //
 
-AutoclickScrollView::AutoclickScrollView()
-    : scroll_up_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollUp,
-          kAutoclickScrollUpIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_UP,
-          ButtonId::kScrollUp)),
-      scroll_down_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollDown,
-          kAutoclickScrollDownIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_DOWN,
-          ButtonId::kScrollDown)),
-      scroll_left_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollLeft,
-          kAutoclickScrollLeftIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_LEFT,
-          ButtonId::kScrollLeft)),
-      scroll_right_button_(new AutoclickScrollButton(
-          AutoclickController::ScrollPadAction::kScrollRight,
-          kAutoclickScrollRightIcon,
-          IDS_ASH_AUTOCLICK_SCROLL_RIGHT,
-          ButtonId::kScrollRight)),
-      close_scroll_button_(new AutoclickScrollCloseButton()) {
+AutoclickScrollView::AutoclickScrollView() {
   SetPreferredSize(gfx::Size(kScrollPadButtonHypotenuseDips,
                              kScrollPadButtonHypotenuseDips));
-  AddChildView(close_scroll_button_.get());
-  AddChildView(scroll_up_button_.get());
-  AddChildView(scroll_down_button_.get());
-  AddChildView(scroll_left_button_.get());
-  AddChildView(scroll_right_button_.get());
+  close_scroll_button_ =
+      AddChildView(std::make_unique<AutoclickScrollCloseButton>());
+  scroll_up_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollUp, kAutoclickScrollUpIcon,
+      IDS_ASH_AUTOCLICK_SCROLL_UP, ButtonId::kScrollUp));
+  scroll_down_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollDown,
+      kAutoclickScrollDownIcon, IDS_ASH_AUTOCLICK_SCROLL_DOWN,
+      ButtonId::kScrollDown));
+  scroll_left_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollLeft,
+      kAutoclickScrollLeftIcon, IDS_ASH_AUTOCLICK_SCROLL_LEFT,
+      ButtonId::kScrollLeft));
+  scroll_right_button_ = AddChildView(std::make_unique<AutoclickScrollButton>(
+      AutoclickController::ScrollPadAction::kScrollRight,
+      kAutoclickScrollRightIcon, IDS_ASH_AUTOCLICK_SCROLL_RIGHT,
+      ButtonId::kScrollRight));
 }
 
 void AutoclickScrollView::Layout() {

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
@@ -16,6 +17,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event_utils.h"
@@ -45,6 +47,10 @@ AutoclickScrollBubbleController::AutoclickScrollBubbleController() = default;
 AutoclickScrollBubbleController::~AutoclickScrollBubbleController() {
   if (bubble_widget_ && !bubble_widget_->IsClosed())
     bubble_widget_->CloseNow();
+
+  bubble_view_ = nullptr;
+  scroll_view_ = nullptr;
+  bubble_widget_ = nullptr;
 }
 
 void AutoclickScrollBubbleController::UpdateAnchorRect(
@@ -268,6 +274,10 @@ void AutoclickScrollBubbleController::BubbleViewDestroyed() {
   bubble_view_ = nullptr;
   bubble_widget_ = nullptr;
   scroll_view_ = nullptr;
+}
+
+std::u16string AutoclickScrollBubbleController::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(IDS_ASH_AUTOCLICK_SCROLL_BUBBLE);
 }
 
 }  // namespace ash

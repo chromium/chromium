@@ -77,12 +77,11 @@ class AutoclickScrollView : public views::View {
   void Layout() override;
 
   // Unowned. Owned by views hierarchy.
-  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_up_button_;
-  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_down_button_;
-  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_left_button_;
-  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_right_button_;
-  const raw_ptr<AutoclickScrollCloseButton, ExperimentalAsh>
-      close_scroll_button_;
+  raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_up_button_;
+  raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_down_button_;
+  raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_left_button_;
+  raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_right_button_;
+  raw_ptr<AutoclickScrollCloseButton, ExperimentalAsh> close_scroll_button_;
 };
 
 }  // namespace ash
