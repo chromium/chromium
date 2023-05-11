@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -792,7 +793,8 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeZero) {
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitBeforeOnEntry) {
-  shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
+  base::ScopedClosureRunner size_limit_resetter =
+      shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
 
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
@@ -841,7 +843,8 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitBeforeOnEntry) {
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitAfterOnEntry) {
-  shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
+  base::ScopedClosureRunner size_limit_resetter =
+      shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
 
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);

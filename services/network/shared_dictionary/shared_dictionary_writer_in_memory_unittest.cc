@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "crypto/secure_hash.h"
 #include "net/base/hash_value.h"
@@ -127,7 +128,8 @@ TEST(SharedDictionaryWriterInMemory, ErrorSizeZero) {
 }
 
 TEST(SharedDictionaryWriterInMemory, ErrorSizeExceedsLimit) {
-  shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
+  base::ScopedClosureRunner size_limit_resetter =
+      shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
 
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterInMemory> writer = base::MakeRefCounted<
