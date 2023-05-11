@@ -411,7 +411,6 @@ void ClientControlledShellSurface::SetBoundsOrigin(int64_t display_id,
                                                    const gfx::Point& origin) {
   TRACE_EVENT2("exo", "ClientControlledShellSurface::SetBoundsOrigin",
                "display_id", display_id, "origin", origin.ToString());
-
   SetDisplay(display_id);
   EnsurePendingScale(/*commit_immediately=*/true);
   const gfx::Point origin_dp =
@@ -526,6 +525,7 @@ void ClientControlledShellSurface::CommitPendingScale() {
   transform.Scale(1.0 / pending_scale_, 1.0 / pending_scale_);
   host_window()->SetTransform(transform);
   scale_ = pending_scale_;
+  set_bounds_is_dirty(true);
   UpdateCornerRadius();
 }
 
@@ -999,6 +999,7 @@ void ClientControlledShellSurface::SetSystemModal(bool system_modal) {
 
 void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
                                                    bool adjusted_by_server) {
+  set_bounds_is_dirty(true);
   const auto* screen = display::Screen::GetScreen();
   aura::Window* window = widget_->GetNativeWindow();
   display::Display current_display = screen->GetDisplayNearestWindow(window);

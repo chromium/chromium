@@ -166,6 +166,12 @@ class SurfaceTreeHost : public SurfaceDelegate,
     return client_submits_surfaces_in_pixel_coordinates_;
   }
 
+  bool bounds_is_dirty() const { return bounds_is_dirty_; }
+
+  void set_bounds_is_dirty(bool bounds_is_dirty) {
+    bounds_is_dirty_ = bounds_is_dirty;
+  }
+
  private:
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
 
@@ -221,6 +227,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   raw_ptr<SecurityDelegate, ExperimentalAsh> security_delegate_ = nullptr;
 
   std::set<gpu::SyncToken> prev_frame_verified_tokens_;
+
+  bool bounds_is_dirty_ = true;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
 };

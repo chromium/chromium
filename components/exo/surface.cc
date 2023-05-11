@@ -1076,6 +1076,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
 
   surface_hierarchy_content_bounds_ =
       gfx::Rect(gfx::ToCeiledSize(content_size_));
+
   if (state_.basic_state.input_region) {
     hit_test_region_ = *state_.basic_state.input_region;
     hit_test_region_.Intersect(surface_hierarchy_content_bounds_);

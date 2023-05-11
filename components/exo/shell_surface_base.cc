@@ -928,6 +928,7 @@ void ShellSurfaceBase::AddOverlay(OverlayParams&& overlay_params) {
         aura::client::kSkipImeProcessing, false);
   }
 
+  set_bounds_is_dirty(true);
   UpdateWidgetBounds();
   UpdateResizability();
 }
@@ -1016,6 +1017,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
   widget_->GetRootView()->Layout();
   // TODO(oshima): We probably should wait applying these if the
   // window is animating.
+  set_bounds_is_dirty(true);
   UpdateWidgetBounds();
   UpdateSurfaceBounds();
 }
@@ -1652,11 +1654,24 @@ gfx::Rect ShellSurfaceBase::ComputeAdjustedBounds(
 
 void ShellSurfaceBase::UpdateWidgetBounds() {
   DCHECK(widget_);
-
   absl::optional<gfx::Rect> bounds = GetWidgetBounds();
-  if (!bounds)
+  if (!bounds) {
     return;
+  }
+
+  ash::WindowState* window_state =
+      ash::WindowState::Get(widget_->GetNativeWindow());
   gfx::Rect adjusted_bounds = ComputeAdjustedBounds(*bounds);
+
+  bool should_update_widget_bounds = bounds_is_dirty() ||
+                                     adjusted_bounds != *bounds ||
+                                     (window_state && window_state->IsPip());
+
+  set_bounds_is_dirty(false);
+
+  if (!should_update_widget_bounds) {
+    return;
+  }
 
   if (overlay_widget_) {
     gfx::Rect content_bounds(adjusted_bounds.size());
@@ -1672,7 +1687,6 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
   }
 
   aura::Window* window = widget_->GetNativeWindow();
-  ash::WindowState* window_state = ash::WindowState::Get(window);
   // Return early if the shell is currently managing the bounds of the widget.
   if (window_state && !window_state->allow_set_bounds_direct()) {
     // 1) When a window is either maximized/fullscreen/pinned.
@@ -1702,6 +1716,8 @@ void ShellSurfaceBase::UpdateSurfaceBounds() {
   gfx::Rect surface_bounds(origin, host_window()->bounds().size());
   if (host_window()->bounds() == surface_bounds)
     return;
+  // This may not be necessary
+  set_bounds_is_dirty(true);
   host_window()->SetBounds(surface_bounds);
 }
 
@@ -1910,14 +1926,19 @@ bool ShellSurfaceBase::CalculateCanResize() const {
 }
 
 void ShellSurfaceBase::CommitWidget() {
+  bool size_constraint_changed = minimum_size_ != pending_minimum_size_ ||
+                                 maximum_size_ != pending_maximum_size_;
+  set_bounds_is_dirty(
+      bounds_is_dirty() || origin_ != pending_geometry_.origin() ||
+      geometry_ != pending_geometry_ || display_id_ != pending_display_id_ ||
+      size_constraint_changed);
+
   // Apply new window geometry.
   geometry_ = pending_geometry_;
   display_id_ = pending_display_id_;
   shape_rects_dp_ = pending_shape_rects_dp_;
 
   // Apply new minimum/maximium size.
-  bool size_constraint_changed = minimum_size_ != pending_minimum_size_ ||
-                                 maximum_size_ != pending_maximum_size_;
   minimum_size_ = pending_minimum_size_;
   maximum_size_ = pending_maximum_size_;
   UpdateResizability();

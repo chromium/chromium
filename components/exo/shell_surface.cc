@@ -572,6 +572,8 @@ void ShellSurface::OnPostWindowStateTypeChange(
   Configure();
 
   if (widget_) {
+    // This may not be necessary.
+    set_bounds_is_dirty(true);
     UpdateWidgetBounds();
     UpdateShadow();
   }

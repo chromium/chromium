@@ -161,6 +161,7 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
     UpdateHostWindowBounds();
     root_surface_->window()->Show();
   }
+  set_bounds_is_dirty(true);
 }
 
 bool SurfaceTreeHost::HasHitTestRegion() const {
@@ -385,8 +386,9 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
-  if (bounds != host_window_->bounds())
+  if (bounds != host_window_->bounds()) {
     host_window_->SetBounds({host_window_->bounds().origin(), bounds.size()});
+  }
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
   // scale factor the buffer is created for to set the transform for
