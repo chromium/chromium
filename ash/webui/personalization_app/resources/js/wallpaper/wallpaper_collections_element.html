@@ -93,6 +93,14 @@
     --personalization-app-grid-item-background-color: var(--google-grey-200);
   }
 
+  :host-context(body.jelly-enabled) wallpaper-grid-item[is-local-no-images]::part(item) {
+    background: linear-gradient(var(--cros-sys-primary), var(--cros-sys-primary_container));
+  }
+
+  :host-context(body.jelly-enabled) wallpaper-grid-item[is-local-no-images]::part(image) {
+    display: none;
+  }
+
   wallpaper-grid-item[data-is-time-of-day-collection] {
     --personalization-app-grid-item-border-radius: 80px;
   }
@@ -144,6 +152,7 @@
               collage
               disabled="[[!isSelectableTile_(item)]]"
               index="[[index]]"
+              is-local-no-images$="[[isLocalNoImagesTile_(item)]]"
               on-wallpaper-grid-item-selected="onCollectionSelected_"
               primary-text="[[item.name]]"
               role="option"

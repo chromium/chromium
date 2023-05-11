@@ -151,6 +151,7 @@ function getLocalTile(
   }
 
   if (!localImages || localImages.length === 0) {
+    // TODO(b/282050032): After Jelly is launched, remove the preview image.
     return {
       count: getCountText(0),
       disabled: true,
@@ -483,6 +484,10 @@ export class WallpaperCollections extends WithPersonalizationStore {
   private isSelectableTile_(item: Tile|null): item is GooglePhotosTile|LocalTile
       |OnlineTile {
     return !!item && !this.isLoadingTile_(item) && !item.disabled;
+  }
+
+  private isLocalNoImagesTile_(item: Tile): boolean {
+    return !!item && this.isLocalTile_(item) && item.count === getCountText(0);
   }
 
   private isTimeOfDayCollection_(item: Tile|null): boolean {
