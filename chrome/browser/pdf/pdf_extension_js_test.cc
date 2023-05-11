@@ -93,7 +93,7 @@ class PDFExtensionJSTest : public PDFExtensionTestBase {
            };
            document.body.appendChild(s);)";
 
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         guest->GetGuestMainFrame(),
         base::StringPrintf(kModuleLoaderTemplate,
                            chrome::kChromeUIWebUITestHost, filename.c_str())));

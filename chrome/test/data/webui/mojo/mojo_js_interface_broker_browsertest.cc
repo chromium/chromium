@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
   // Refresh to trigger a RenderFrame reuse.
   content::TestNavigationObserver observer(web_contents, 1);
   // TODO(https://crbug.com/1157718): migrate to ExecJs.
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "location.reload()"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "location.reload()"));
   observer.Wait();
 
   // Verify a new broker is created, and Foo still works.
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, IframeBarWorks) {
 
   // Reload Bar iframe, Bar interface should still work.
   content::TestNavigationObserver observer(web_contents, 1);
-  EXPECT_TRUE(content::ExecuteScript(bar_frame, "location.reload()"));
+  EXPECT_TRUE(content::ExecJs(bar_frame, "location.reload()"));
   observer.Wait();
   bar_frame = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 

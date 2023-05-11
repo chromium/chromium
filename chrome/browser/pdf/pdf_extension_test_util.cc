@@ -103,7 +103,7 @@ gfx::Point ConvertPageCoordToScreenCoord(
     ADD_FAILURE() << "The guest main frame needs to be non-null";
     return point;
   }
-  if (!content::ExecuteScript(
+  if (!content::ExecJs(
           guest_main_frame,
           "var visiblePage = viewer.viewport.getMostVisiblePage();"
           "var visiblePageDimensions ="

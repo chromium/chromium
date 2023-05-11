@@ -62,12 +62,12 @@ IN_PROC_BROWSER_TEST_F(ChainedBackNavigationTrackerBrowserTest,
   ASSERT_EQ(1u, tracker->chained_back_navigation_count_);
 
   // Create a subframe and append it to the document.
-  ASSERT_TRUE(ExecuteScript(
-      web_contents(),
-      content::JsReplace("let frame = document.createElement('iframe');"
-                         "frame.src = $1;"
-                         "document.body.appendChild(frame);",
-                         url_b)));
+  ASSERT_TRUE(
+      ExecJs(web_contents(),
+             content::JsReplace("let frame = document.createElement('iframe');"
+                                "frame.src = $1;"
+                                "document.body.appendChild(frame);",
+                                url_b)));
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   content::RenderFrameHost* subframe_host =
       ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);

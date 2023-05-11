@@ -206,13 +206,14 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, BadgeShown) {
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 
-  ASSERT_TRUE(content::ExecuteScript(web_contents, "navigator.setAppBadge();"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "navigator.setAppBadge();",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_id, static_cast<uint32_t>(ShelfItemState::kActive) |
                   static_cast<uint32_t>(ShelfItemState::kNotification)));
 
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents, "navigator.clearAppBadge();"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "navigator.clearAppBadge();",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 

@@ -80,10 +80,7 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
                    owner_->scripts_.end());
 
     for (const auto& script : scripts) {
-      // Use ExecuteScript(), not ExecJs(), because of Content Security Policy
-      // directive: "script-src chrome://resources 'self'"
-      ASSERT_TRUE(
-          content::ExecuteScript(guest_frame, LoadJsTestLibrary(script)));
+      ASSERT_TRUE(content::ExecJs(guest_frame, LoadJsTestLibrary(script)));
     }
     if (!owner_->test_module_.empty()) {
       constexpr char kScript[] = R"(
@@ -94,7 +91,7 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
             document.body.appendChild(s);
           })();
       )";
-      ASSERT_TRUE(content::ExecuteScript(
+      ASSERT_TRUE(content::ExecJs(
           guest_frame, base::ReplaceStringPlaceholders(
                            kScript, {owner_->test_module_}, nullptr)));
     }

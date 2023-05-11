@@ -86,7 +86,7 @@ JSChecker::JSChecker(content::RenderFrameHost* frame_host) {
 
 void JSChecker::Evaluate(const std::string& expression) {
   CHECK(web_contents_);
-  ASSERT_TRUE(content::ExecuteScript(web_contents_.get(), expression));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), expression));
 }
 
 void JSChecker::ExecuteAsync(const std::string& expression) {
@@ -544,7 +544,7 @@ JSChecker OobeJS() {
 }
 
 void ExecuteOobeJS(const std::string& script) {
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       LoginDisplayHost::default_host()->GetOobeWebContents(), script));
 }
 

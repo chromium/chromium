@@ -241,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, PrintButton) {
         .shadowRoot.querySelector('#print')
         .click();
   )";
-  EXPECT_TRUE(
-      ExecuteScript(guest->GetGuestMainFrame(), kClickPrintButtonScript));
+  EXPECT_TRUE(ExecJs(guest->GetGuestMainFrame(), kClickPrintButtonScript));
   print_observer.WaitForPrintPreview();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)

@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
   // Changing background color should update the toolbar color.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeSystemWebAppBrowserTest,
   // colors.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
@@ -1795,7 +1795,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PermissionBubble) {
       app_browser->tab_strip_model()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame();
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       render_frame_host,
       "navigator.geolocation.getCurrentPosition(function(){});"));
 }

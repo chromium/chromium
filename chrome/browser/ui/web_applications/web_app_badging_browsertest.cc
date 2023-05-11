@@ -24,6 +24,7 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 using content::RenderFrameHost;
 
@@ -194,7 +195,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     awaiter_ = std::make_unique<base::RunLoop>();
     delegate_->ResetBadges();
 
-    ASSERT_TRUE(content::ExecuteScript(on, script));
+    ASSERT_TRUE(content::ExecJs(on, script));
 
     if (badge_change_map_.size() >= expected_badge_change_count_)
       return;
@@ -490,10 +491,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingBrowserTest,
                                          ->GetActiveWebContents()
                                          ->GetPrimaryMainFrame();
 
-  ASSERT_TRUE(
-      content::ExecuteScript(incognito_frame, "navigator.setAppBadge()"));
-  ASSERT_TRUE(
-      content::ExecuteScript(incognito_frame, "navigator.clearAppBadge()"));
+  ASSERT_TRUE(content::ExecJs(incognito_frame, "navigator.setAppBadge()",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  ASSERT_TRUE(content::ExecJs(incognito_frame, "navigator.clearAppBadge()",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Updating badges through a ServiceWorkerGlobalScope must not crash.
   const std::string register_app_service_worker_script = content::JsReplace(

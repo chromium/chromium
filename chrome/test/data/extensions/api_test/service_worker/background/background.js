@@ -17,7 +17,7 @@ var test = {
 };
 
 // Registers a service worker and stores it in registeredServiceWorker.
-// Intended to be called from content::ExecuteScript.
+// Intended to be called from content::ExecJs.
 test.registerServiceWorker = function(path) {
   return navigator.serviceWorker.register(path).then(function() {
     // Wait until the service worker is active.

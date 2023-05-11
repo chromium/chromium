@@ -1018,7 +1018,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AudibilityStatePropagates) {
       "document.body.appendChild(ae);"
       "ae.play();",
       audio_url.spec().c_str());
-  EXPECT_TRUE(content::ExecJs(guest, setup_audio_script));
+  EXPECT_TRUE(content::ExecJs(guest, setup_audio_script,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Wait for audio to start.
   embedder_obs.WaitForCurrentlyAudible(true);
@@ -5606,8 +5607,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PreserveNameAcrossNavigationsAndCrashes) {
   GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
 
   content::WebContents* embedder = GetEmbedderWebContents();
-  EXPECT_TRUE(ExecuteScript(embedder,
-                            "document.querySelector('webview').name = 'foo';"));
+  EXPECT_TRUE(
+      ExecJs(embedder, "document.querySelector('webview').name = 'foo';"));
   extensions::WebViewGuest* guest =
       extensions::WebViewGuest::FromGuestViewBase(GetGuestView());
   EXPECT_EQ("foo", guest->name());
@@ -5636,8 +5637,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PreserveNameAcrossNavigationsAndCrashes) {
 
   // Reload guest and make sure its window.name is preserved.
   content::TestFrameNavigationObserver load_observer(GetGuestRenderFrameHost());
-  EXPECT_TRUE(
-      ExecuteScript(embedder, "document.querySelector('webview').reload()"));
+  EXPECT_TRUE(ExecJs(embedder, "document.querySelector('webview').reload()"));
   load_observer.Wait();
   EXPECT_EQ("foo", content::EvalJs(GetGuestRenderFrameHost(), "window.name"));
 }

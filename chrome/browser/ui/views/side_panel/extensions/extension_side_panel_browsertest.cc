@@ -240,7 +240,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
 
     std::string script =
         base::StringPrintf(R"(document.sidePanelTemp = "%s";)", value.c_str());
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         extension_coordinator->GetHostWebContentsForTesting(), script.c_str()));
   }
 
@@ -535,9 +535,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, WindowCloseCalled) {
   {
     content::WebContentsDestroyedWatcher destroyed_watcher(
         extension_coordinator->GetHostWebContentsForTesting());
-    ASSERT_TRUE(content::ExecuteScript(
-        extension_coordinator->GetHostWebContentsForTesting(),
-        "window.close();"));
+    ASSERT_TRUE(
+        content::ExecJs(extension_coordinator->GetHostWebContentsForTesting(),
+                        "window.close();"));
     destroyed_watcher.Wait();
   }
 
@@ -558,9 +558,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, WindowCloseCalled) {
   // view when the extension panel is not shown.
   content::WebContentsDestroyedWatcher destroyed_watcher(
       extension_coordinator->GetHostWebContentsForTesting());
-  ASSERT_TRUE(content::ExecuteScript(
-      extension_coordinator->GetHostWebContentsForTesting(),
-      "window.close();"));
+  ASSERT_TRUE(
+      content::ExecJs(extension_coordinator->GetHostWebContentsForTesting(),
+                      "window.close();"));
   destroyed_watcher.Wait();
 
   // The side panel should be open because the reading list entry is still
@@ -603,9 +603,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
           ->GetExtensionCoordinatorForTesting(extension->id());
   content::WebContentsDestroyedWatcher destroyed_watcher(
       extension_coordinator->GetHostWebContentsForTesting());
-  ASSERT_TRUE(content::ExecuteScript(
-      extension_coordinator->GetHostWebContentsForTesting(),
-      "window.close();"));
+  ASSERT_TRUE(
+      content::ExecJs(extension_coordinator->GetHostWebContentsForTesting(),
+                      "window.close();"));
   destroyed_watcher.Wait();
 }
 
@@ -641,9 +641,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 
     content::WebContentsDestroyedWatcher destroyed_watcher(
         extension_coordinator->GetHostWebContentsForTesting());
-    ASSERT_TRUE(content::ExecuteScript(
-        extension_coordinator->GetHostWebContentsForTesting(),
-        "window.close();"));
+    ASSERT_TRUE(
+        content::ExecJs(extension_coordinator->GetHostWebContentsForTesting(),
+                        "window.close();"));
     destroyed_watcher.Wait();
   }
 

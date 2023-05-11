@@ -13,7 +13,7 @@ namespace ash {
 
 void ExecuteScript(content::WebContents* web_contents,
                    const std::string& script) {
-  ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
 }
 
 gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,

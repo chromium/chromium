@@ -167,7 +167,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
  protected:
   bool ExecuteJavascript(const string& javascript) {
-    return ExecuteScript(shell(), javascript);
+    return ExecJs(shell(), javascript);
   }
 
   void ExpectTitle(const std::string& expected_title) const {

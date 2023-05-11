@@ -266,10 +266,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(guest);
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      contents,
-      "document.getElementsByTagName('embed')[0].postMessage("
-      "{type: 'selectAll'});"));
+  ASSERT_TRUE(
+      content::ExecJs(contents,
+                      "document.getElementsByTagName('embed')[0].postMessage("
+                      "{type: 'selectAll'});"));
 
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   WaitForAccessibilityTreeToContainNodeWithName(contents,
@@ -326,10 +326,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(guest);
 
   WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      contents,
-      "document.getElementsByTagName('embed')[0].postMessage("
-      "{type: 'selectAll'});"));
+  ASSERT_TRUE(
+      content::ExecJs(contents,
+                      "document.getElementsByTagName('embed')[0].postMessage("
+                      "{type: 'selectAll'});"));
 
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   WaitForAccessibilityTreeToContainNodeWithName(contents,
