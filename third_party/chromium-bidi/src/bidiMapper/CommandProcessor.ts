@@ -248,11 +248,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         return this.#contextProcessor.process_cdp_getSession(
           this.#parser.parseGetSessionParams(commandData.params)
         );
-
-      default:
-        throw new Message.UnknownCommandException(
-          `Unknown command '${commandData.method}'.`
-        );
     }
   }
 

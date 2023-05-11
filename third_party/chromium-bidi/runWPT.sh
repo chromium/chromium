@@ -68,30 +68,35 @@ declare -a WPT_RUN_ARGS=(
   --log-wptreport "$WPT_REPORT"
   --manifest "$MANIFEST"
   --metadata "$WPT_METADATA"
+  --skip-implementation-status=backlog
   --timeout-multiplier "$TIMEOUT_MULTIPLIER"
 )
 
 if [[ "$CHROMEDRIVER" == "true" ]]; then
-  log "Using Chromedriver with mapper..."
+  log "Using chromedriver with mapper..."
   WPT_RUN_ARGS+=(
     --binary-arg="--headless=new"
     --install-webdriver
     --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
     --webdriver-arg="--log-path=out/chromedriver.log"
     --webdriver-arg="--verbose"
-    --channel=dev
     --yes
   )
 else
   log "Using pure mapper..."
 fi
 
+echo "Using browser \"$BROWSER_BIN\"..."
+
 WPT_RUN_ARGS+=(
+  # All arguments except the first one (the command) and the last one (the test) are the flags.
+  "${@: 1:$#-1}"
   "$PRODUCT"
-  "$@"
+  # The last argument is the test.
+  "${@: -1}"
 )
 
-(cd "$(dirname "$0")/" && ./wpt/wpt run --skip-implementation-status=backlog "${WPT_RUN_ARGS[@]}")
+(cd "$(dirname "$0")/" && ./wpt/wpt run "${WPT_RUN_ARGS[@]}")
 status="$?"
 
 if [[ "$UPDATE_EXPECTATIONS" == "true" ]]; then

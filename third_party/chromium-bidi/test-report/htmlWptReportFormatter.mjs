@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export function escapeHtml(str) {
   return str
     .replace(/&/g, '&amp;')
@@ -35,14 +34,13 @@ export function flattenSingleTest(test) {
         message: test.message ?? null,
       },
     ];
-  } else {
-    return test.subtests.map((sub) => ({
-      path: test.test + '/' + sub.name,
-      name: sub.name,
-      status: sub.status,
-      message: sub.message ?? null,
-    }));
   }
+  return test.subtests.map((sub) => ({
+    path: `${test.test}/${sub.name}`,
+    name: sub.name,
+    status: sub.status,
+    message: sub.message ?? null,
+  }));
 }
 
 export function flattenTests(report) {
@@ -68,7 +66,7 @@ export function groupTests(tests) {
 
     let curPath = '';
     for (let part of parts) {
-      curPath = curPath + '/' + part;
+      curPath = `${curPath}/${part}`;
       if (!currentPathMap.children.has(part)) {
         currentPathMap.children.set(part, {
           group: curPath,
@@ -175,7 +173,7 @@ function generateSubtestReport(subtest) {
         }">
           ${escapeHtml(subtest.name ?? subtest.path)} ${
             subtest.message
-              ? '<br /><small>' + escapeHtml(subtest.message) + '</small>'
+              ? `<br /><small>${escapeHtml(subtest.message)}</small>`
               : ''
           }
           <span class="stat"><b>${escapeHtml(subtest.status)}</b></span>

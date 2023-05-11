@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 import {expect} from 'chai';
 
 import {
@@ -29,7 +28,7 @@ describe('HTML WPT reporter', () => {
   it('should escapeHtml', () => {
     expect(escapeHtml('&<>\'"/')).to.equal('&amp;&lt;&gt;&#39;&quot;&#47;');
   });
-  describe('flattenSingleTest', function () {
+  describe('flattenSingleTest', () => {
     it('should flatten half passed test', () => {
       expect(
         flattenSingleTest({
@@ -80,7 +79,7 @@ describe('HTML WPT reporter', () => {
       ]);
     });
   });
-  describe('flattenTests', function () {
+  describe('flattenTests', () => {
     it('should flatten tests', () => {
       expect(
         flattenTests({
@@ -130,7 +129,7 @@ describe('HTML WPT reporter', () => {
       ]);
     });
   });
-  describe('groupTests', function () {
+  describe('groupTests', () => {
     it('should group tests', () => {
       let tests = groupTests([
         {

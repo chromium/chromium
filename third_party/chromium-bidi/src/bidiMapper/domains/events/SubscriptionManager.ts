@@ -35,7 +35,7 @@ import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
  */
 export function cartesianProduct(...a: any[][]) {
   return a.reduce((a: unknown[], b: unknown[]) =>
-    a.flatMap((d: unknown) => b.map((e: unknown) => [d, e].flat()))
+    a.flatMap((d) => b.map((e) => [d, e].flat()))
   );
 }
 

@@ -18,7 +18,6 @@
 import * as chai from 'chai';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {Protocol} from 'devtools-protocol';
 import chaiAsPromised from 'chai-as-promised';
 
 import {StubTransport} from '../utils/transportStub.spec.js';
@@ -82,10 +81,10 @@ describe('CdpClient', () => {
 
     const expectedResult1 = {
       someResult: 1,
-    } as any as Protocol.Target.AttachToTargetResponse;
+    };
     const expectedResult2 = {
       anotherResult: 2,
-    } as any as Protocol.Target.AttachToTargetResponse;
+    };
     const commandResult1 = {id: 0, result: expectedResult1};
     const commandResult2 = {id: 1, result: expectedResult2};
 
@@ -190,6 +189,7 @@ describe('CdpClient', () => {
       const cdpClient = cdpConnection.browserClient();
 
       const expectedError = {
+        name: 'Error',
         code: 'some error',
         message: 'something happened',
       };
@@ -209,9 +209,7 @@ describe('CdpClient', () => {
       });
 
       // Assert sendCommand rejects with error.
-      await expect(commandPromise).to.be.eventually.rejectedWith(
-        expectedError as any
-      );
+      await expect(commandPromise).to.be.eventually.rejectedWith(expectedError);
     });
   });
 });

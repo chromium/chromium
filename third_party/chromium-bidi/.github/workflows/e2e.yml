@@ -39,7 +39,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
       - name: Run E2E tests
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' }}
+        if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
         timeout-minutes: 20
         run: >
           xvfb-run --auto-servernum
@@ -48,15 +48,14 @@ jobs:
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
       - name: Run E2E tests
-        if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
+        if: matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
       - name: Upload artifacts
-        # Force run task even if the previous tasks failed.
-        if: ${{ always() }}
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}-${{ matrix.head }}-artifacts

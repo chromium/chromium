@@ -1,7 +1,7 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
-name: Generate WPT report
+name: WPT report
 
 on:
   push:
@@ -56,33 +56,31 @@ jobs:
           CHROMEDRIVER: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
-        # Force run task even if the previous tasks failed.
-        if: ${{ always() }}
+        if: success() || failure()
         run: >
           node test-report/htmlWptReport.mjs
           out/wptreport.json
           out/wptreport.html
       - name: Upload artifacts
-        # Force run task even if the previous tasks failed.
-        if: ${{ always() }}
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: wpt-chromedriver-artifacts
           path: out
       # The following steps should be done only for merges in `main`.
       - name: Prepare Pages
-        if: ${{ always() }}
+        if: success() || failure()
         run: mkdir -p out/site; cp out/wptreport.html out/site/index.html
       - name: Setup Pages
-        if: ${{ always() }}
+        if: success() || failure()
         uses: actions/configure-pages@v3
       - name: Upload Pages artifact
-        if: ${{ always() }}
+        if: success() || failure()
         uses: actions/upload-pages-artifact@v1
         with:
           path: out/site
       - name: Deploy to GitHub Pages
-        if: ${{ always() }}
+        if: success() || failure()
         id: deployment
         uses: actions/deploy-pages@v2
 

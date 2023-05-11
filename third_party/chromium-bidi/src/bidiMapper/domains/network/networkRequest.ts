@@ -325,7 +325,7 @@ export class NetworkRequest {
             size: -1,
           },
         },
-      } as any as Network.ResponseCompletedParams,
+      } as Network.ResponseCompletedParams,
     };
   }
 

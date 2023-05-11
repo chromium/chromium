@@ -9,7 +9,6 @@
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
     "e2e": "npm run e2e-headless --",
-    "e2e-only": "python3 -m pytest",
     "eslint": "wireit",
     "flake8": "flake8 examples/ tests/",
     "format": "wireit",
@@ -32,19 +31,24 @@
       ]
     },
     "e2e-headful": {
-      "command": "npm run e2e-only --",
+      "command": "python3 -m pytest",
       "dependencies": [
         "server-headful"
       ]
     },
     "e2e-headless": {
-      "command": "npm run e2e-only --",
+      "command": "python3 -m pytest",
       "dependencies": [
         "server-headless"
       ]
     },
     "eslint": {
-      "command": "eslint --cache --ext .js,.ts --fix ."
+      "command": "eslint --cache --ext .js,.ts --fix .",
+      "files": [
+        ".eslintignore",
+        ".eslintrc.js",
+        "src/**/*.ts"
+      ]
     },
     "format": {
       "dependencies": [
