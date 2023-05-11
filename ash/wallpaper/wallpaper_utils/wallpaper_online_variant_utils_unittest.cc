@@ -33,6 +33,11 @@ TEST(WallpaperOnlineVariantUtilsTest, FirstValidVariant) {
       light_variant, dark_variant, morning_variant, late_afternoon_variant};
   EXPECT_EQ(morning_variant,
             *FirstValidVariant(variants, ScheduleCheckpoint::kMorning));
+  // For time of day wallpapers, morning variant is used for light mode.
+  EXPECT_EQ(morning_variant,
+            *FirstValidVariant(variants, ScheduleCheckpoint::kDisabled));
+  EXPECT_EQ(dark_variant,
+            *FirstValidVariant(variants, ScheduleCheckpoint::kEnabled));
 }
 
 TEST(WallpaperOnlineVariantUtilsTest, IsSuitableOnlineWallpaperVariant) {

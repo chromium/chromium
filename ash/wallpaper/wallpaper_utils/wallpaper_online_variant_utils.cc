@@ -25,9 +25,9 @@ bool IsSuitableOnlineWallpaperVariantInternal(
   }
   switch (checkpoint) {
     case ScheduleCheckpoint::kSunrise:
+      return variant.type == backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE;
     // `kDisabled` is equivalent to Light mode.
     case ScheduleCheckpoint::kDisabled:
-      return variant.type == backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE;
     case ScheduleCheckpoint::kMorning:
       return variant.type ==
                  backdrop::Image_ImageType_IMAGE_TYPE_MORNING_MODE ||
