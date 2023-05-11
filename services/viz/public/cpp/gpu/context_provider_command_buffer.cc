@@ -128,6 +128,7 @@ void ContextProviderCommandBuffer::Release() const {
 gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   // This is called on the thread the context will be used.
   DCHECK(context_sequence_checker_.CalledOnValidSequence());
+  CHECK(channel_);
 
   if (bind_tried_)
     return bind_result_;
