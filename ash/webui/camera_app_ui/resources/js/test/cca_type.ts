@@ -75,6 +75,7 @@ export const SELECTOR_MAP = {
   panRightButton: '#pan-right',
   photoAspectRatioSettingButton: '#settings-photo-aspect-ratio',
   photoResolutionSettingButton: '#settings-photo-resolution',
+  previewExposureTime: '#preview-exposure-time',
   previewVideo: '#preview-video',
   previewViewport: '#preview-viewport',
   ptzResetAllButton: '#ptz-reset-all',

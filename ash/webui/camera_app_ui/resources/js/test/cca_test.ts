@@ -13,8 +13,8 @@ import {
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
-import {Facing, Resolution} from '../type.js';
-import {sleep} from '../util.js';
+import {Facing, Mode, Resolution} from '../type.js';
+import {assertEnumVariant, sleep} from '../util.js';
 import {windowController} from '../window_controller.js';
 
 import {
@@ -477,6 +477,17 @@ export class CCATest {
     const element = getRangeInputComponent(component);
     element.value = value.toString();
     element.dispatchEvent(new Event('change'));
+  }
+
+  /**
+   * Switches to the specified camera mode.
+   */
+  static switchMode(mode: Mode): void {
+    assertEnumVariant(Mode, mode);
+    const modeSelector =
+        dom.get(`.mode-item>input[data-mode="${mode}"]`, HTMLInputElement);
+    assert(isVisibleElement(modeSelector), 'Mode selector is not visible');
+    modeSelector.click();
   }
 
   /**
