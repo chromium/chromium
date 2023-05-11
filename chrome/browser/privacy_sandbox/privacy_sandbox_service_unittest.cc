@@ -4505,6 +4505,23 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
   }
 }
 
+TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
+       RestrictedNoticeAcknowledged) {
+  // Ensure that Ad measurement pref is not re-enabled if user disabled it
+  // after acknowledging the restricted notice.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kM1RestrictedNoticeAcknowledged, true},
+                {StateKey::kM1AdMeasurementEnabledUserPrefValue, false}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType,
+                  static_cast<int>(PrivacySandboxService::PromptType::kNone)},
+                 {OutputKey::kM1AdMeasurementEnabled, false},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
 class PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest
     : public PrivacySandboxServiceM1PromptTest {
  public:
@@ -4530,6 +4547,7 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest,
        NotSubjectToNoticeButIsRestricted) {
   // Ensure that kNoticeShownToGuardian, with no prompt, is returned in the
   // event that the user is not subject to the m1 notice restricted prompt.
+  // Ensure measurements API is enabled for these users.
   RunTestCase(
       TestState{{StateKey::kM1PromptSuppressedReason,
                  static_cast<int>(PromptSuppressedReason::kNone)},
@@ -4537,6 +4555,25 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest,
       TestInput{{InputKey::kForceChromeBuild, true}},
       TestOutput{
           {OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+          {OutputKey::kM1PromptSuppressedReason,
+           static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian)},
+          {OutputKey::kM1AdMeasurementEnabled, true}});
+}
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest,
+       NotSubjectToNoticeButIsRestrictedWithAdMeasurementDisabled) {
+  // Ensure that Ad measurement pref is not re-enabled if user disabled it
+  // after the notice was suppressed due to kNoticeShownToGuardian.
+  RunTestCase(
+      TestState{
+          {StateKey::kM1PromptSuppressedReason,
+           static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian)},
+          {StateKey::kM1AdMeasurementEnabledUserPrefValue, false}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{
+          {OutputKey::kPromptType,
+           static_cast<int>(PrivacySandboxService::PromptType::kNone)},
+          {OutputKey::kM1AdMeasurementEnabled, false},
           {OutputKey::kM1PromptSuppressedReason,
            static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian)}});
 }

@@ -1429,6 +1429,8 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
         pref_service->SetInteger(
             prefs::kPrivacySandboxM1PromptSuppressed,
             static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
+        pref_service->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                                 true);
         return PromptType::kNone;
       }
     }
