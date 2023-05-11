@@ -307,6 +307,13 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
 
   const CSSValue* value = property_class.CSSValueFromComputedStyle(
       *style, StyledLayoutObject(), allow_visited_style_);
+
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert(
+        "[RUN-1918-1921] CSSComputedStyleDeclaration::GetPropertyCSSValue B %s",
+        value ? value->CssText().Ascii().c_str() : "");
+  }
+
   if (value)
     return value;
 
