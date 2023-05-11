@@ -1107,8 +1107,10 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
 
   // Only allow unsafe APIs if the allow_unsafe_apis toggle is explicitly
   // enabled.
+  // TODO(dawn:1685) Remove disallow case once it is fully deprecated.
   allow_unsafe_apis_ =
-      base::Contains(require_enabled_toggles_, "allow_unsafe_apis");
+      base::Contains(require_enabled_toggles_, "allow_unsafe_apis") ||
+      base::Contains(require_disabled_toggles_, "disallow_unsafe_apis");
 
   // Force adapters to report their limits in predetermined tiers unless the
   // adapter_limit_tiers toggle is explicitly disabled.
