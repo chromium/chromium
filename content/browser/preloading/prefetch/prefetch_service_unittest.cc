@@ -2591,12 +2591,26 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example1.com"),
+                           /*use_prefetch_proxy=*/true);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
   MakePrefetchOnMainFrame(
       GURL("https://example2.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example2.com"),
+                           /*use_prefetch_proxy=*/true);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
   MakePrefetchOnMainFrame(
       GURL("https://example3.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
@@ -2604,16 +2618,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
                    blink::mojom::SpeculationEagerness::kEager));
   base::RunLoop().RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example1.com"),
-                           /*use_prefetch_proxy=*/true);
-  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
-                      /*use_prefetch_proxy=*/true,
-                      {{"X-Testing", "Hello World"}}, kHTMLBody);
-  VerifyCommonRequestState(GURL("https://example2.com"),
-                           /*use_prefetch_proxy=*/true);
-  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
-                      /*use_prefetch_proxy=*/true,
-                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  EXPECT_EQ(RequestCount(), 0);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 3);

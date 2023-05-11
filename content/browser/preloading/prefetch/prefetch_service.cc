@@ -641,12 +641,7 @@ void PrefetchService::OnGotEligibilityResult(
 
   if (!is_decoy) {
     prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
-  }
-  prefetch_queue_.push_back(prefetch_container);
 
-  Prefetch();
-
-  if (!is_decoy) {
     // Registers a cookie listener for this prefetch if it is using an isolated
     // network context. If the cookies in the default partition associated with
     // this URL change after this point, then the prefetched resources should
@@ -658,6 +653,11 @@ void PrefetchService::OnGotEligibilityResult(
                    ->GetCookieManagerForBrowserProcess());
     }
   }
+  prefetch_queue_.push_back(prefetch_container);
+
+  // Calling |Prefetch| could result in a prefetch being deleted, so
+  // |prefetch_cotnainer| should not be used after this call.
+  Prefetch();
 }
 
 void PrefetchService::OnGotEligibilityResultForRedirect(
