@@ -65,6 +65,9 @@
 // set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacingAfterImage;
 
+// Sets the custom size for the favicon.
+@property(nonatomic, assign) CGFloat customFaviconSideLength;
+
 // Sets the custom spacing of the stackview. Values for
 // `customSpacingBeforeImageIfNoNavigationBar` and `customSpacingAfterImage` are
 // honored around the image, so this applies to all the other items of the
@@ -85,6 +88,10 @@
 // Set to YES to enclose the image in a frame with a shadow and a corner badge
 // with a green checkmark. Must be set before the view is loaded. Default is NO.
 @property(nonatomic) BOOL imageEnclosedWithShadowAndBadge;
+
+// Set to YES to enclose the image in a frame with a shadow without a corner
+// green checkmark badge. Must be set before the view is loaded. Default is NO.
+@property(nonatomic, assign) BOOL imageEnclosedWithShadowWithoutBadge;
 
 // Set to NO to prevent the scroll view from showing a vertical scrollbar
 // indicator. Must be set before the view is loaded. Default is YES.
