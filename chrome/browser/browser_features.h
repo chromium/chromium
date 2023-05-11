@@ -64,8 +64,6 @@ BASE_DECLARE_FEATURE(kCertificateTransparencyAndroid);
 BASE_DECLARE_FEATURE(kLargeFaviconFromGoogle);
 extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
 
-BASE_DECLARE_FEATURE(kObserverBasedPostProfileInit);
-
 BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
 
 BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);

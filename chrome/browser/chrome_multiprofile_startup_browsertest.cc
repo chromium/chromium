@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -64,9 +63,6 @@ Matcher<Profile*> HasBaseName(const char* basename) {
 }
 
 struct MultiProfileStartupTestParam {
-  // Whether features::kObserverBasedPostProfileInit should be enabled.
-  const bool should_enable_profile_observer;
-
   // Whether the profile picker should be shown on startup.
   const bool should_show_profile_picker;
 
@@ -88,21 +84,11 @@ struct MultiProfileStartupTestParam {
 };
 
 const MultiProfileStartupTestParam kTestParams[] = {
-    {.should_enable_profile_observer = false,
-     .should_show_profile_picker = false,
-     .expected_post_profile_init_call_args =
-         {{HasBaseName(chrome::kInitialProfile), true}}},
-    {.should_enable_profile_observer = false,
-     .should_show_profile_picker = true,
-     .expected_post_profile_init_call_args =
-         {{Property(&Profile::IsGuestSession, true), true}}},
-    {.should_enable_profile_observer = true,
-     .should_show_profile_picker = false,
+    {.should_show_profile_picker = false,
      .expected_post_profile_init_call_args =
          {{HasBaseName(chrome::kInitialProfile), true},
           {HasBaseName(kOtherProfileDirPath), false}}},
-    {.should_enable_profile_observer = true,
-     .should_show_profile_picker = true,
+    {.should_show_profile_picker = true,
      .expected_post_profile_init_call_args = {
          {HasBaseName(chrome::kInitialProfile), true},
          {HasBaseName(kOtherProfileDirPath), false}}}};
@@ -140,14 +126,6 @@ class ChromeMultiProfileStartupBrowserTestBase
     // Avoid providing a URL for the browser to open, allows the profile picker
     // to be displayed on startup when it is enabled.
     set_open_about_blank_on_browser_launch(false);
-
-    if (GetParam().should_enable_profile_observer) {
-      feature_list_.InitAndEnableFeature(
-          features::kObserverBasedPostProfileInit);
-    } else {
-      feature_list_.InitWithFeatures({},
-                                     {features::kObserverBasedPostProfileInit});
-    }
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
@@ -182,9 +160,6 @@ class ChromeMultiProfileStartupBrowserTestBase
   }
 
   raw_ptr<MockMainExtraParts, DanglingUntriaged> mock_part_;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeMultiProfileStartupBrowserTestBase,

@@ -86,14 +86,13 @@ enum class StartupProfileModeReason {
   kMaxValue = kUserOptedOut,
 };
 
-// Bundles the startup profile path together with a StartupProfileMode.
+// Bundles the startup profile path together with a `StartupProfileMode`.
 // Depending on `StartupProfileModeFromReason(reason)`, `path` is either:
-// - regular profile path for kBrowserWindow; if the guest mode is requested,
+// - regular profile path for `kBrowserWindow`; if the guest mode is requested,
 //   may contain either the default profile path or the guest profile path
-// - guest profile path for kProfilePicker,
-// - empty path for kError
+// - empty profile path for `kProfilePicker` and `kError`
 // TODO(https://crbug.com/1150326): return a guest profile path for the Guest
-// mode and an empty path for kProfilePicker mode
+// mode.
 struct StartupProfilePathInfo {
   base::FilePath path;
   StartupProfileModeReason reason = StartupProfileModeReason::kError;
@@ -101,12 +100,10 @@ struct StartupProfilePathInfo {
 
 // Bundles the startup profile together with a StartupProfileMode.
 // Depending on the `mode` value, `profile` is either:
-// - regular profile for kBrowserWindow; if the Guest mode is requested,
+// - regular profile for `kBrowserWindow`; if the Guest mode is requested,
 //   may contain either the default profile path or the guest profile path
-// - guest profile for kProfilePicker,
-// - nullptr for kError
-// TODO(https://crbug.com/1150326): return a guest profile for the Guest mode
-// and return nullptr for kProfilePicker.
+// - nullptr for `kProfilePicker` and `kError`
+// TODO(https://crbug.com/1150326): return a guest profile for the Guest mode.
 struct StartupProfileInfo {
   raw_ptr<Profile, DanglingUntriaged> profile;
   StartupProfileMode mode;

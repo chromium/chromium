@@ -98,10 +98,12 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
   // Additional stages for ChromeBrowserMainExtraParts. These stages are called
   // in order from PreMainMessageLoopRun(). See implementation for details.
-  // TODO(crbug.com/1150326): Update the comment once the feature launches.
-  // `PostProfileInit()` might not be called in order, it is planned to be
-  // called for each new profile as part of that launch. See bug for context.
   virtual void PreProfileInit();
+  // `PostProfileInit()` is called for each regular profile that is created. The
+  // first call has `is_initial_profile`=true, and subsequent calls have
+  // `is_initial_profile`=false.
+  // It may be called during startup if a profile is loaded immediately, or
+  // later if the profile picker is shown.
   virtual void PostProfileInit(Profile* profile, bool is_initial_profile);
   virtual void PreBrowserStart();
   virtual void PostBrowserStart();

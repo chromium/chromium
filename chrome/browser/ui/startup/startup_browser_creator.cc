@@ -439,14 +439,6 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-base::FilePath GetProfilePickerStartupProfilePath() {
-  return base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)
-             ? base::FilePath()
-             : ProfileManager::GetGuestProfilePath();
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 StartupProfileInfo GetProfilePickerStartupProfileInfo() {
   // We can only show the profile picker if the system profile (where the
   // profile picker lives) also exists (or is creatable).
@@ -454,18 +446,6 @@ StartupProfileInfo GetProfilePickerStartupProfileInfo() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (!profile_manager->GetProfile(ProfileManager::GetSystemProfilePath()))
     return {.profile = nullptr, .mode = StartupProfileMode::kError};
-
-  if (!base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)) {
-    DCHECK_EQ(GetProfilePickerStartupProfilePath(),
-              ProfileManager::GetGuestProfilePath());
-    Profile* guest_profile =
-        profile_manager->GetProfile(ProfileManager::GetGuestProfilePath());
-    if (!guest_profile)
-      return {.profile = nullptr, .mode = StartupProfileMode::kError};
-    DCHECK(guest_profile->IsGuestSession());
-    return {.profile = guest_profile,
-            .mode = StartupProfileMode::kProfilePicker};
-  }
 
   return {.profile = nullptr, .mode = StartupProfileMode::kProfilePicker};
 }
@@ -1458,9 +1438,7 @@ void StartupBrowserCreator::ProcessCommandLineWithProfile(
     StartupProfileMode mode,
     Profile* profile) {
   DCHECK_NE(mode, StartupProfileMode::kError);
-  if ((!base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit) ||
-       mode == StartupProfileMode::kBrowserWindow) &&
-      !profile) {
+  if (mode == StartupProfileMode::kBrowserWindow && !profile) {
     LOG(ERROR) << "Failed to load the profile.";
     return;
   }
@@ -1493,9 +1471,7 @@ void StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
   Profile* profile = nullptr;
   StartupProfileMode mode =
       StartupProfileModeFromReason(profile_path_info.reason);
-  bool need_profile =
-      !base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit) ||
-      mode == StartupProfileMode::kBrowserWindow;
+  bool need_profile = mode == StartupProfileMode::kBrowserWindow;
   if (need_profile) {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     profile = profile_manager->GetProfileByPath(profile_path_info.path);
@@ -1652,8 +1628,7 @@ StartupProfilePathInfo GetStartupProfilePath(
 
   if (StartupProfileModeFromReason(show_picker_reason) ==
       StartupProfileMode::kProfilePicker) {
-    return {.path = GetProfilePickerStartupProfilePath(),
-            .reason = show_picker_reason};
+    return {.path = base::FilePath(), .reason = show_picker_reason};
   }
 
   return {.path = profile_manager->GetLastUsedProfileDir(),

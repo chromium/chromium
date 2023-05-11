@@ -179,14 +179,6 @@ BASE_FEATURE(kLargeFaviconFromGoogle,
 const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
     &kLargeFaviconFromGoogle, "favicon_size_in_dip", 128};
 
-// Enables the use of a `ProfileManagerObserver` to trigger the post profile
-// init step of the browser startup. This affects the initialization order of
-// some features with the goal to improve startup performance in some cases.
-// See https://bit.ly/chromium-startup-no-guest-profile.
-BASE_FEATURE(kObserverBasedPostProfileInit,
-             "ObserverBasedPostProfileInit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the static key pinning list can be updated via component
 // updater.
 BASE_FEATURE(kKeyPinningComponentUpdater,
