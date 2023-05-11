@@ -27,8 +27,6 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/features.h"
-#include "ui/ozone/platform/wayland/common/wayland_object.h"
-#include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
@@ -131,8 +129,6 @@ WaylandConnection::~WaylandConnection() = default;
 bool WaylandConnection::Initialize() {
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
   // Keep alphabetical order for convenience.
-  RegisterGlobalObjectFactory(FractionalScaleManager::kInterfaceName,
-                              &FractionalScaleManager::Instantiate);
   RegisterGlobalObjectFactory(GtkPrimarySelectionDeviceManager::kInterfaceName,
                               &GtkPrimarySelectionDeviceManager::Instantiate);
   RegisterGlobalObjectFactory(GtkShell1::kInterfaceName,
