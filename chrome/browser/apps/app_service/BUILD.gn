@@ -238,7 +238,7 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/image_decoder",
-      "//chrome/browser/metrics/structured",
+      "//chrome/browser/metrics/structured:features",
       "//chrome/browser/resources",
       "//chromeos/ash/components/login/login_state",
       "//components/app_restore",
