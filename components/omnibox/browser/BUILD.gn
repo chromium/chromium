@@ -519,6 +519,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionInSuggest.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
+      "android/java/src/org/chromium/components/omnibox/suggestions/OmniboxSuggestionUiType.java",
     ]
 
     resources_package = "org.chromium.components.omnibox"

@@ -14,6 +14,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.EntityInfoProto.ActionInfo.ActionType;
 import org.chromium.components.omnibox.action.ActionInSuggestUmaType;
 import org.chromium.components.omnibox.action.OmniboxPedalType;
+import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
