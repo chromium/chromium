@@ -49,6 +49,7 @@ export enum HistoryClusterElementType {
   VISIT = 0,
   SUGGEST = 1,
   SHOW_ALL = 2,
+  CART = 3,
 }
 
 /**
@@ -163,6 +164,10 @@ export class HistoryClustersModuleElement extends I18nMixin
   private onSuggestTileClick_(e: Event) {
     this.recordTileClickIndex_(e.target as HTMLElement, 'Suggest');
     this.recordClick_(HistoryClusterElementType.SUGGEST);
+  }
+
+  private onCartTileClick_() {
+    this.recordClick_(HistoryClusterElementType.CART);
   }
 
   private recordClick_(type: HistoryClusterElementType) {
