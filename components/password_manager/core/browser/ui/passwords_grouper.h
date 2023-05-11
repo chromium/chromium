@@ -89,11 +89,11 @@ class PasswordsGrouper {
 
   // Structure used to keep track of the mapping between the credential's
   // sign-on realm and the group id.
-  std::map<SignonRealm, GroupId> map_signon_realm_to_group_id;
+  std::map<SignonRealm, GroupId> map_signon_realm_to_group_id_;
 
   // Structure used to keep track of the mapping between the group id and the
   // grouped facet's branding information.
-  std::map<GroupId, FacetBrandingInfo> map_group_id_to_branding_info;
+  std::map<GroupId, FacetBrandingInfo> map_group_id_to_branding_info_;
 
   // Structure used to keep track of the mapping between a group id and the
   // passwords and passkeys.
@@ -101,7 +101,7 @@ class PasswordsGrouper {
 
   // Structure to keep track of the blocked sites by user. They are not grouped
   // into affiliated groups.
-  std::vector<PasswordForm> blocked_sites;
+  std::vector<PasswordForm> blocked_sites_;
 
   // The set of domains that the server uses as an extension to the PSL.
   base::flat_set<std::string> psl_extensions_;

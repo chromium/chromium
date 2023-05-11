@@ -288,8 +288,8 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
 
     // Add branding information to the affiliated group.
     FacetBrandingInfo brandingInfo;
-    auto branding_iterator = map_group_id_to_branding_info.find(group_id);
-    if (branding_iterator != map_group_id_to_branding_info.end()) {
+    auto branding_iterator = map_group_id_to_branding_info_.find(group_id);
+    if (branding_iterator != map_group_id_to_branding_info_.end()) {
       brandingInfo = branding_iterator->second;
     }
     // If the branding information is missing, create a default one with the
@@ -341,8 +341,8 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
 
 std::vector<CredentialUIEntry> PasswordsGrouper::GetBlockedSites() const {
   std::vector<CredentialUIEntry> results;
-  results.reserve(blocked_sites.size());
-  base::ranges::transform(blocked_sites, std::back_inserter(results),
+  results.reserve(blocked_sites_.size());
+  base::ranges::transform(blocked_sites_, std::back_inserter(results),
                           [](const PasswordForm& password_form) {
                             return CredentialUIEntry(password_form);
                           });
@@ -357,7 +357,7 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
 
   // Verify if the credential is in blocked sites first.
   if (credential.blocked_by_user) {
-    for (const auto& blocked_site : blocked_sites) {
+    for (const auto& blocked_site : blocked_sites_) {
       if (credential.GetFirstSignonRealm() == blocked_site.signon_realm) {
         forms.push_back(blocked_site);
       }
@@ -366,9 +366,9 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
   }
 
   // Get group id based on signon_realm.
-  auto group_id_iterator = map_signon_realm_to_group_id.find(
+  auto group_id_iterator = map_signon_realm_to_group_id_.find(
       SignonRealm(credential.GetFirstSignonRealm()));
-  if (group_id_iterator == map_signon_realm_to_group_id.end()) {
+  if (group_id_iterator == map_signon_realm_to_group_id_.end()) {
     return {};
   }
 
@@ -392,10 +392,10 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
 }
 
 void PasswordsGrouper::ClearCache() {
-  map_signon_realm_to_group_id.clear();
-  map_group_id_to_branding_info.clear();
+  map_signon_realm_to_group_id_.clear();
+  map_group_id_to_branding_info_.clear();
   map_group_id_to_credentials_.clear();
-  blocked_sites.clear();
+  blocked_sites_.clear();
 }
 
 void PasswordsGrouper::GroupPasswordsImpl(
@@ -412,7 +412,7 @@ void PasswordsGrouper::GroupPasswordsImpl(
   for (auto& form : forms) {
     // Do not group blocked by user password forms.
     if (form.blocked_by_user) {
-      blocked_sites.push_back(std::move(form));
+      blocked_sites_.push_back(std::move(form));
       continue;
     }
     std::string facet_uri = GetFacetRepresentation(form);
@@ -421,7 +421,7 @@ void PasswordsGrouper::GroupPasswordsImpl(
     GroupId group_id = map_facet_to_group_id[facet_uri];
 
     // Store group id for sign-on realm.
-    map_signon_realm_to_group_id[SignonRealm(form.signon_realm)] = group_id;
+    map_signon_realm_to_group_id_[SignonRealm(form.signon_realm)] = group_id;
 
     // Store form for username/password key.
     UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
@@ -433,7 +433,7 @@ void PasswordsGrouper::GroupPasswordsImpl(
     // Group passkeys.
     std::string facet_uri = GetFacetRepresentation(passkey);
     GroupId group_id = map_facet_to_group_id[facet_uri];
-    map_signon_realm_to_group_id[SignonRealm(facet_uri)] = group_id;
+    map_signon_realm_to_group_id_[SignonRealm(facet_uri)] = group_id;
     map_group_id_to_credentials_[group_id].passkeys.push_back(
         std::move(passkey));
   }
@@ -456,7 +456,7 @@ PasswordsGrouper::MapFacetsToGroupId(const std::vector<GroupedFacets>& groups) {
     }
 
     // Store branding information for the affiliated group.
-    map_group_id_to_branding_info[unique_group_id] =
+    map_group_id_to_branding_info_[unique_group_id] =
         grouped_facets.branding_info;
 
     // Increment so it is a new id for the next group.
