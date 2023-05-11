@@ -6247,7 +6247,7 @@
   {
     "name": "private-state-tokens",
     "owners": [ "svaldez", "aykutb@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 120
   },
   {    "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
