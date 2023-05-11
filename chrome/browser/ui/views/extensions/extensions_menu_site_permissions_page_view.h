@@ -31,7 +31,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   explicit ExtensionsMenuSitePermissionsPageView(
       Browser* browser,
       extensions::ExtensionId extension_id,
-      ExtensionsMenuHandler* navigation_handler);
+      ExtensionsMenuHandler* menu_handler);
   ExtensionsMenuSitePermissionsPageView(
       const ExtensionsMenuSitePermissionsPageView&) = delete;
   const ExtensionsMenuSitePermissionsPageView& operator=(

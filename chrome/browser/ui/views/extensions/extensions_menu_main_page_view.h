@@ -32,9 +32,8 @@ class ExtensionsMenuMainPageView : public views::View {
  public:
   METADATA_HEADER(ExtensionsMenuMainPageView);
 
-  explicit ExtensionsMenuMainPageView(
-      Browser* browser,
-      ExtensionsMenuHandler* navigation_handler);
+  explicit ExtensionsMenuMainPageView(Browser* browser,
+                                      ExtensionsMenuHandler* menu_handler);
   ~ExtensionsMenuMainPageView() override = default;
   ExtensionsMenuMainPageView(const ExtensionsMenuMainPageView&) = delete;
   const ExtensionsMenuMainPageView& operator=(
@@ -76,7 +75,7 @@ class ExtensionsMenuMainPageView : public views::View {
   content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<ExtensionsMenuHandler> navigation_handler_;
+  const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
   // Subheader section.
   raw_ptr<views::Label> subheader_subtitle_;

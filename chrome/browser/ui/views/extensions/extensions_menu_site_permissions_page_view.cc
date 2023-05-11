@@ -132,7 +132,7 @@ int GetSiteAccessButtonIndex(PermissionsManager::UserSiteAccess site_access) {
 ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
     Browser* browser,
     extensions::ExtensionId extension_id,
-    ExtensionsMenuHandler* navigation_handler)
+    ExtensionsMenuHandler* menu_handler)
     : browser_(browser), extension_id_(extension_id) {
   // TODO(crbug.com/1390952): Same stretch specification as
   // ExtensionsMenuMainPageView. Move to a shared file.
@@ -159,7 +159,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                     .SetImageLabelSpacing(icon_label_spacing)
                     .SetCallback(base::BindRepeating(
                         &ExtensionsMenuHandler::OnSiteAccessSelected,
-                        base::Unretained(navigation_handler), extension_id,
+                        base::Unretained(menu_handler), extension_id,
                         site_access)),
                 views::Builder<views::Label>()
                     .SetText(GetSiteAccessRadioButtonDescription(site_access))
@@ -186,7 +186,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                       views::CreateVectorImageButtonWithNativeTheme(
                           base::BindRepeating(
                               &ExtensionsMenuHandler::OpenMainPage,
-                              base::Unretained(navigation_handler)),
+                              base::Unretained(menu_handler)),
                           vector_icons::kArrowBackIcon))
                       .SetTooltipText(
                           l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
@@ -213,7 +213,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                       views::BubbleFrameView::CreateCloseButton(
                           base::BindRepeating(
                               &ExtensionsMenuHandler::CloseBubble,
-                              base::Unretained(navigation_handler))))),
+                              base::Unretained(menu_handler))))),
           // Content.
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
