@@ -2589,6 +2589,15 @@
 
     # GPU gtests that test only Dawn
     'gpu_dawn_gtests': {
+      'dawn_end2end_implicit_device_sync_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'args': [
+          '--enable-implicit-device-sync',
+        ],
+        'linux_args': [ '--no-xvfb' ],
+        'test': 'dawn_end2end_tests',
+        'ci_only': True, # https://crbug.com/dawn/1749
+      },
       'dawn_end2end_skip_validation_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [

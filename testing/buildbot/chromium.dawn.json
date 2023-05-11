@@ -49,6 +49,56 @@
         },
         "test": "dawn_end2end_tests",
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dawn_end2end_implicit_device_sync_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "R",
+              "device_os_type": "userdebug",
+              "device_type": "flame",
+              "os": "Android",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       }
     ],
     "isolated_scripts": []
@@ -101,6 +151,56 @@
         },
         "test": "dawn_end2end_tests",
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dawn_end2end_implicit_device_sync_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "R",
+              "device_os_type": "userdebug",
+              "device_type": "flame",
+              "os": "Android",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       }
     ],
     "isolated_scripts": []
@@ -117,6 +217,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--no-xvfb",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -199,6 +326,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--no-xvfb",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -704,6 +858,33 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--no-xvfb",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
@@ -1175,6 +1356,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--no-xvfb",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1680,6 +1888,33 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--no-xvfb",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
@@ -2152,6 +2387,35 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "display_attached": "1",
+              "gpu": "1002:67ef",
+              "hidpi": "1",
+              "os": "Mac-13.2.1",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2681,6 +2945,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "display_attached": "1",
+              "gpu": "8086:3e9b",
+              "os": "Mac-12.5"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3230,6 +3521,34 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "display_attached": "1",
+              "gpu": "8086:3e9b",
+              "os": "Mac-13.3.1"
+            }
+          ],
+          "expiration": 21600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -3721,6 +4040,35 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "display_attached": "1",
+              "gpu": "1002:67ef",
+              "hidpi": "1",
+              "os": "Mac-13.2.1",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4267,6 +4615,33 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "display_attached": "1",
+              "gpu": "8086:3e9b",
+              "os": "Mac-12.5"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -4766,6 +5141,39 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            },
+            {
+              "display_attached": "1",
+              "gpu": "8086:9bc5-31.0.101.2111",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -5182,6 +5590,33 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "8086:9bc5-31.0.101.2111",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -5546,6 +5981,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6092,6 +6554,33 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "8086:9bc5-31.0.101.2111",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -6456,6 +6945,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -6968,6 +7484,33 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "8086:9bc5-31.0.101.2111",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -7360,6 +7903,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -7902,6 +8472,33 @@
       },
       {
         "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "8086:9bc5-31.0.101.2111",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -8294,6 +8891,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "display_attached": "1",
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
+          "--enable-implicit-device-sync",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
