@@ -13,6 +13,14 @@
 #include "base/functional/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace ash {
 
 // Contains the cached capture mode configurations that will be used for
@@ -81,8 +89,17 @@ class CaptureModeBehavior {
   // indicate the histogram is for a projector-initiated capture mode session.
   virtual const char* GetClientMetricComponent() const;
 
+  // Gets the bounds in screen coordinates of the capture bar in the given
+  // `root` window. The returned bounds of the bar will vary depending on the
+  // actual type of the behavior.
+  gfx::Rect GetCaptureBarBounds(aura::Window* root) const;
+
  protected:
   explicit CaptureModeBehavior(const CaptureModeSessionConfigs& configs);
+
+  // Called by `GetCaptureBarBounds` to adjust the width of the bar on different
+  // types of behavior.
+  virtual int GetCaptureBarWidth() const;
 
   // Capture mode session configs to be used for the current capture mode
   // session.

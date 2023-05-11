@@ -42,7 +42,6 @@ class BoxLayout;
 
 namespace ash {
 
-class CaptureModeBehavior;
 class StopRecordingButtonTray;
 
 namespace capture_mode_util {
@@ -211,11 +210,6 @@ ASH_EXPORT gfx::Rect CalculateHighlightLayerBounds(
 void SetHighlightBorder(views::View* view,
                         int corner_radius,
                         views::HighlightBorder::Type type);
-
-// Gets the bounds in screen coordinates of the capture bar in the given `root`
-// window. Its width will be adjusted based on the `active_behavior`.
-gfx::Rect GetCaptureBarBounds(aura::Window* root,
-                              CaptureModeBehavior* active_behavior);
 
 }  // namespace capture_mode_util
 

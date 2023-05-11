@@ -8,11 +8,14 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -22,6 +25,15 @@
 namespace ash {
 
 namespace {
+
+// Full size of capture mode bar view, the width of which will be
+// adjusted based on the current active behavior.
+constexpr gfx::Size kFullBarSize{376, 64};
+
+// Distance from the bottom of the capture bar to the bottom of the display, top
+// of the hotseat or top of the shelf depending on the shelf alignment or
+// hotseat visibility.
+constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 
 // Returns the current configs before been overwritten by the client-initiated
 // capture mode session
@@ -121,6 +133,12 @@ class ProjectorBehavior : public CaptureModeBehavior {
     return std::vector<RecordingType>{RecordingType::kWebM};
   }
   const char* GetClientMetricComponent() const override { return "Projector."; }
+
+ protected:
+  int GetCaptureBarWidth() const override {
+    return kFullBarSize.width() - capture_mode::kButtonSize.width() -
+           capture_mode::kSpaceBetweenCaptureModeTypeButtons;
+  }
 
  private:
   // Called when the Projector controller creates the DriveFS folder that will
@@ -283,6 +301,36 @@ std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
 
 const char* CaptureModeBehavior::GetClientMetricComponent() const {
   return "";
+}
+
+gfx::Rect CaptureModeBehavior::GetCaptureBarBounds(aura::Window* root) const {
+  DCHECK(root);
+
+  auto bounds = root->GetBoundsInScreen();
+  int bar_y = bounds.bottom();
+  Shelf* shelf = Shelf::ForWindow(root);
+  if (shelf->IsHorizontalAlignment()) {
+    // Get the widget which has the shelf icons. This is the hotseat widget if
+    // the hotseat is extended, shelf widget otherwise.
+    const bool hotseat_extended =
+        shelf->shelf_layout_manager()->hotseat_state() ==
+        HotseatState::kExtended;
+    views::Widget* shelf_widget =
+        hotseat_extended ? static_cast<views::Widget*>(shelf->hotseat_widget())
+                         : static_cast<views::Widget*>(shelf->shelf_widget());
+    bar_y = shelf_widget->GetWindowBoundsInScreen().y();
+  }
+
+  gfx::Size bar_size = kFullBarSize;
+  bar_size.set_width(GetCaptureBarWidth());
+  bar_y -= (kDistanceFromShelfOrHotseatTopDp + bar_size.height());
+  bounds.ClampToCenteredSize(bar_size);
+  bounds.set_y(bar_y);
+  return bounds;
+}
+
+int CaptureModeBehavior::GetCaptureBarWidth() const {
+  return kFullBarSize.width();
 }
 
 }  // namespace ash

@@ -16,8 +16,6 @@
 #include "ash/public/cpp/window_finder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -50,15 +48,6 @@ namespace {
 constexpr int kBannerViewTopRadius = 0;
 constexpr int kBannerViewBottomRadius = 8;
 constexpr float kScaleUpFactor = 0.8f;
-
-// Full size of capture mode bar view, the width of which will be
-// adjusted according to the provided active behavior.
-constexpr gfx::Size kFullBarSize{376, 64};
-
-// Distance from the bottom of the capture bar to the bottom of the display, top
-// of the hotseat or top of the shelf depending on the shelf alignment or
-// hotseat visibility.
-constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 
 // The app ID used for the capture mode privacy indicators.
 constexpr char kCaptureModePrivacyIndicatorsId[] = "system-capture-mode";
@@ -564,38 +553,6 @@ void SetHighlightBorder(views::View* view,
                         views::HighlightBorder::Type type) {
   view->SetBorder(
       std::make_unique<views::HighlightBorder>(corner_radius, type));
-}
-
-gfx::Rect GetCaptureBarBounds(aura::Window* root,
-                              CaptureModeBehavior* active_behavior) {
-  DCHECK(root);
-
-  auto bounds = root->GetBoundsInScreen();
-  int bar_y = bounds.bottom();
-  Shelf* shelf = Shelf::ForWindow(root);
-  if (shelf->IsHorizontalAlignment()) {
-    // Get the widget which has the shelf icons. This is the hotseat widget if
-    // the hotseat is extended, shelf widget otherwise.
-    const bool hotseat_extended =
-        shelf->shelf_layout_manager()->hotseat_state() ==
-        HotseatState::kExtended;
-    views::Widget* shelf_widget =
-        hotseat_extended ? static_cast<views::Widget*>(shelf->hotseat_widget())
-                         : static_cast<views::Widget*>(shelf->shelf_widget());
-    bar_y = shelf_widget->GetWindowBoundsInScreen().y();
-  }
-
-  gfx::Size bar_size = kFullBarSize;
-  CHECK(active_behavior);
-  if (!active_behavior->ShouldImageCaptureTypeBeAllowed()) {
-    bar_size.set_width(kFullBarSize.width() -
-                       capture_mode::kButtonSize.width() -
-                       capture_mode::kSpaceBetweenCaptureModeTypeButtons);
-  }
-  bar_y -= (kDistanceFromShelfOrHotseatTopDp + bar_size.height());
-  bounds.ClampToCenteredSize(bar_size);
-  bounds.set_y(bar_y);
-  return bounds;
 }
 
 }  // namespace ash::capture_mode_util
