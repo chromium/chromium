@@ -112,10 +112,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   // if PartitionAlloc is wholly unused in this process.)
   bool GetStats(AddressSpaceStats* stats);
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-  static void AssertThreadIsolatedLayout();
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
-
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
   class Pool {
    public:
@@ -140,12 +136,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
     void GetStats(PoolStats* stats);
 
    private:
-    // The lock needs to be the first field in this class.
-    // We write-protect the pool in the ThreadIsolated case, except that the
-    // lock can be used without acquiring write-permission first (via
-    // DumpStats()). So instead of protecting the whole variable, we only
-    // protect the memory after the lock.
-    // See the alignment of `aligned_pools_` below.
     Lock lock_;
 
     // The bitset stores the allocation state of the address pool. 1 bit per
@@ -163,10 +153,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     uintptr_t address_end_ = 0;
 #endif
-
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-    friend void AddressPoolManager::AssertThreadIsolatedLayout();
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
   };
 
   PA_ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
@@ -181,15 +167,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   // If thread isolation support is enabled, we need to write-protect the
   // isolated pool (which needs to be last). For this, we need to add padding in
   // front of the pools so that the isolated one starts on a page boundary.
-  // We also skip the Lock at the beginning of the pool since it needs to be
-  // used in contexts where we didn't enable write access to the pool memory.
-  struct AlignedPools {
-    char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(Pool,
-                                                          kNumPools,
-                                                          sizeof(Lock))] = {};
+  struct {
+    char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ(Pool, kNumPools)] = {};
     Pool pools_[kNumPools];
-    char pad_after_[PA_THREAD_ISOLATED_FILL_PAGE_SZ(sizeof(Pool) -
-                                                    sizeof(Lock))] = {};
+    char pad_after_[PA_THREAD_ISOLATED_FILL_PAGE_SZ(sizeof(Pool))] = {};
   } aligned_pools_ PA_THREAD_ISOLATED_ALIGN;
 
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)

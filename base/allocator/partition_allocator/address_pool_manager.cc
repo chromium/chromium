@@ -18,7 +18,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/thread_isolation/alignment.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -548,18 +547,5 @@ void AddressPoolManager::DumpStats(AddressSpaceStatsDumper* dumper) {
     dumper->DumpStats(&stats);
   }
 }
-
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-// This function just exists to static_assert the layout of the private fields
-// in Pool.
-void AddressPoolManager::AssertThreadIsolatedLayout() {
-  constexpr size_t last_pool_offset =
-      offsetof(AlignedPools, pools_) + sizeof(Pool) * (kNumPools - 1);
-  constexpr size_t alloc_bitset_offset =
-      last_pool_offset + offsetof(Pool, alloc_bitset_);
-  static_assert(alloc_bitset_offset % PA_THREAD_ISOLATED_ALIGN_SZ == 0);
-  static_assert(sizeof(AlignedPools) % PA_THREAD_ISOLATED_ALIGN_SZ == 0);
-}
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 }  // namespace partition_alloc::internal

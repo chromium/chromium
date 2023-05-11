@@ -38,10 +38,8 @@ void WriteProtectThreadIsolatedMemory(ThreadIsolationOption thread_isolation,
 
 template <typename T>
 void WriteProtectThreadIsolatedVariable(ThreadIsolationOption thread_isolation,
-                                        T& var,
-                                        size_t offset = 0) {
-  WriteProtectThreadIsolatedMemory(thread_isolation, (char*)&var + offset,
-                                   sizeof(T) - offset);
+                                        T& var) {
+  WriteProtectThreadIsolatedMemory(thread_isolation, &var, sizeof(T));
 }
 
 int MprotectWithThreadIsolation(void* addr,
@@ -59,7 +57,7 @@ void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation) {
 
   AddressPoolManager::Pool* pool =
       AddressPoolManager::GetInstance().GetPool(kThreadIsolatedPoolHandle);
-  WriteProtectThreadIsolatedVariable(thread_isolation, *pool, sizeof(Lock));
+  WriteProtectThreadIsolatedVariable(thread_isolation, *pool);
 
   uint16_t* pkey_reservation_offset_table =
       GetReservationOffsetTable(kThreadIsolatedPoolHandle);

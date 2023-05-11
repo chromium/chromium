@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 
@@ -12,7 +11,6 @@
 #include <sys/mman.h>
 #include <sys/syscall.h>
 
-#include "base/allocator/partition_allocator/address_space_stats.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -25,7 +23,6 @@
 constexpr size_t kIsolatedThreadStackSize = 64 * 1024;
 constexpr int kNumPkey = 16;
 constexpr size_t kTestReturnValue = 0x8765432187654321llu;
-constexpr uint32_t kPKRUAllowAccessNoWrite = 0b10101010101010101010101010101000;
 
 namespace partition_alloc::internal {
 
@@ -78,7 +75,7 @@ int ProtectROSegments(struct dl_phdr_info* info, size_t info_size, void* data) {
 
 class PkeyTest : public testing::Test {
  protected:
-  static void PkeyProtectMemory() {
+  void PkeyProtectMemory() {
     PA_PCHECK(dl_iterate_phdr(ProtectROSegments, nullptr) == 0);
 
     PA_PCHECK(PkeyMprotect(&isolatedGlobals, sizeof(isolatedGlobals),
@@ -89,7 +86,7 @@ class PkeyTest : public testing::Test {
                            isolatedGlobals.pkey) == 0);
   }
 
-  static void InitializeIsolatedThread() {
+  void InitializeIsolatedThread() {
     isolatedGlobals.isolatedStack =
         mmap(nullptr, kIsolatedThreadStackSize, PROT_READ | PROT_WRITE,
              MAP_ANONYMOUS | MAP_PRIVATE | MAP_STACK, -1, 0);
@@ -99,12 +96,6 @@ class PkeyTest : public testing::Test {
   }
 
   void SetUp() override {
-    // SetUp only once, but we can't do it in SetUpTestSuite since that runs
-    // before other PartitionAlloc initialization happened.
-    if (isolatedGlobals.pkey != kInvalidPkey) {
-      return;
-    }
-
     int pkey = PkeyAlloc(0);
     if (pkey == -1) {
       return;
@@ -125,11 +116,9 @@ class PkeyTest : public testing::Test {
     isolatedGlobals.allocatorRoot = isolatedGlobals.allocator->root();
 
     InitializeIsolatedThread();
-
-    Wrpkru(kPKRUAllowAccessNoWrite);
   }
 
-  static void TearDownTestSuite() {
+  void TearDown() override {
     if (isolatedGlobals.pkey == kInvalidPkey) {
       return;
     }
@@ -258,22 +247,6 @@ TEST_F(PkeyTest, AllocWithoutDefaultPkey) {
         "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)");
 
   ASSERT_EQ(ret, kTestReturnValue);
-}
-
-class MockAddressSpaceStatsDumper : public AddressSpaceStatsDumper {
- public:
-  MockAddressSpaceStatsDumper() = default;
-  void DumpStats(const AddressSpaceStats* address_space_stats) override {}
-};
-
-TEST_F(PkeyTest, DumpPkeyPoolStats) {
-  if (isolatedGlobals.pkey == kInvalidPkey) {
-    return;
-  }
-
-  MockAddressSpaceStatsDumper mock_stats_dumper;
-  partition_alloc::internal::AddressPoolManager::GetInstance().DumpStats(
-      &mock_stats_dumper);
 }
 
 }  // namespace partition_alloc::internal
