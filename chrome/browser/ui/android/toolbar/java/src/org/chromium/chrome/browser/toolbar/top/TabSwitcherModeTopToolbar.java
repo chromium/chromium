@@ -419,7 +419,12 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
      *         incognito status and form-factor.
      */
     private boolean shouldShowIncognitoToggle() {
-        return mIsGridTabSwitcherEnabled && mIsIncognitoModeEnabledSupplier.getAsBoolean()
+        boolean accessibilityEnabled = DeviceClassManager.enableAccessibilityLayout(getContext());
+
+        // TODO(crbug.com/1434937): Remove top toggle (and update "New Tab" button logic,
+        //  accordingly) for the a11y swicher, since that variant has the bottom toggle showing.
+        return (mIsGridTabSwitcherEnabled || accessibilityEnabled)
+                && mIsIncognitoModeEnabledSupplier.getAsBoolean()
                 && (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                         || mIsFullscreenToolbar);
     }
