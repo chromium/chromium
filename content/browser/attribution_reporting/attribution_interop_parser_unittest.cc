@@ -46,9 +46,9 @@ std::ostream& operator<<(std::ostream& out,
   return out << ",debug_permission=" << e.debug_permission << "}";
 }
 
-bool operator==(AttributionConfig::RateLimitConfig a,
-                AttributionConfig::RateLimitConfig b) {
-  const auto tie = [](AttributionConfig::RateLimitConfig config) {
+bool operator==(const AttributionConfig::RateLimitConfig& a,
+                const AttributionConfig::RateLimitConfig& b) {
+  const auto tie = [](const AttributionConfig::RateLimitConfig& config) {
     return std::make_tuple(
         config.time_window, config.max_source_registration_reporting_origins,
         config.max_attribution_reporting_origins, config.max_attributions);
@@ -56,9 +56,9 @@ bool operator==(AttributionConfig::RateLimitConfig a,
   return tie(a) == tie(b);
 }
 
-bool operator==(AttributionConfig::EventLevelLimit a,
-                AttributionConfig::EventLevelLimit b) {
-  const auto tie = [](AttributionConfig::EventLevelLimit config) {
+bool operator==(const AttributionConfig::EventLevelLimit& a,
+                const AttributionConfig::EventLevelLimit& b) {
+  const auto tie = [](const AttributionConfig::EventLevelLimit& config) {
     return std::make_tuple(config.navigation_source_trigger_data_cardinality,
                            config.event_source_trigger_data_cardinality,
                            config.randomized_response_epsilon,
@@ -71,9 +71,9 @@ bool operator==(AttributionConfig::EventLevelLimit a,
   return tie(a) == tie(b);
 }
 
-bool operator==(AttributionConfig::AggregateLimit a,
-                AttributionConfig::AggregateLimit b) {
-  const auto tie = [](AttributionConfig::AggregateLimit config) {
+bool operator==(const AttributionConfig::AggregateLimit& a,
+                const AttributionConfig::AggregateLimit& b) {
+  const auto tie = [](const AttributionConfig::AggregateLimit& config) {
     return std::make_tuple(
         config.max_reports_per_destination,
         config.aggregatable_budget_per_source, config.min_delay,
@@ -85,8 +85,8 @@ bool operator==(AttributionConfig::AggregateLimit a,
   return tie(a) == tie(b);
 }
 
-bool operator==(AttributionConfig a, AttributionConfig b) {
-  const auto tie = [](AttributionConfig config) {
+bool operator==(const AttributionConfig& a, const AttributionConfig& b) {
+  const auto tie = [](const AttributionConfig& config) {
     return std::make_tuple(config.max_sources_per_origin, config.rate_limit,
                            config.event_level_limit, config.aggregate_limit);
   };
