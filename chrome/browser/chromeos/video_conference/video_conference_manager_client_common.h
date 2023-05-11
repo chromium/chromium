@@ -11,7 +11,7 @@
 namespace video_conference {
 
 // AppIds that we want to skip tracking.
-extern const char* kSkipAppIds[2];
+extern const char* kSkipAppIds[3];
 
 // Returns whether we should skip the contents for tracking.
 bool ShouldSkipId(const std::string& id);
