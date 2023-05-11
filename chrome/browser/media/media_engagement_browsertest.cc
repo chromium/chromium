@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreloadBrowserTest,
   EXPECT_TRUE(MediaEngagementPreloadedList::GetInstance()->loaded());
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1222896
 #define MAYBE_SessionNewTabNavigateSameURLWithOpener_Typed \
   DISABLED_SessionNewTabNavigateSameURLWithOpener_Typed
