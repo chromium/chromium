@@ -5,7 +5,8 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUComputePassDescriptor : GPUObjectDescriptorBase {
-    GPUComputePassTimestampWrites timestampWrites = [];
+    GPUComputePassTimestampWritesCompat timestampWrites;
 };
 
-typedef sequence<GPUComputePassTimestampWrite> GPUComputePassTimestampWrites;
+// TODO(dawn:1800): Remove after a deprecation period;
+typedef (GPUComputePassTimestampWrites or sequence<GPUComputePassTimestampWrite>) GPUComputePassTimestampWritesCompat;

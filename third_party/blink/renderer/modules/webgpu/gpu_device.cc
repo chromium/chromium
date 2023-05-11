@@ -231,6 +231,12 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
             "has no effect. It is likely that \"depthOrArrayLayers\" was "
             "intended instead.";
         break;
+      case GPUSingletonWarning::kTimestampArray:
+        // TODO(dawn:1800): Remove after a deprecation period;
+        message =
+            "Specifying timestampWrites as an array is deprecated and will "
+            "soon be removed.";
+        break;
       case GPUSingletonWarning::kCount:
         NOTREACHED();
     }
