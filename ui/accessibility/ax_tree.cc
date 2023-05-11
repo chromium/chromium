@@ -1085,16 +1085,8 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         }
 
         if (pair.second->DoesNodeExpectSubtreeWillBeDestroyed()) {
-          // Don't fire redundant remove notification in the case where the
-          // parent will become ignored at the same time.
-          if (update_state.IsReparentedNode(node)) {
-            observer.OnSubtreeWillBeReparented(this, node);
-          } else if (node->parent() ||
-                     base::Contains(update_state.ignored_state_changed_ids,
-                                    node->parent()->id()) ||
-                     !node->parent()->IsIgnored()) {
-            observer.OnSubtreeWillBeDeleted(this, node);
-          }
+          NotifySubtreeWillBeReparentedOrDeletedExperimental(
+              node, &update_state, observer);
         }
         if (pair.second->DoesNodeExpectNodeWillBeDestroyed()) {
           table_info_map_.erase(node->id());
@@ -1998,6 +1990,29 @@ void AXTree::NotifySubtreeWillBeReparentedOrDeleted(
       observer.OnSubtreeWillBeReparented(this, node);
     if (notify_removed)
       observer.OnSubtreeWillBeDeleted(this, node);
+  }
+}
+
+void AXTree::NotifySubtreeWillBeReparentedOrDeletedExperimental(
+    AXNode* node,
+    const AXTreeUpdateState* update_state,
+    AXTreeObserver& observer) {
+  bool notify_reparented = update_state->IsReparentedNode(node);
+  bool notify_removed = !notify_reparented;
+  // Don't fire redundant remove notification in the case where the parent
+  // will become ignored at the same time.
+  if (notify_removed && node->parent() &&
+      base::Contains(update_state->ignored_state_changed_ids,
+                     node->parent()->id()) &&
+      !node->parent()->IsIgnored()) {
+    notify_removed = false;
+  }
+
+  if (notify_reparented) {
+    observer.OnSubtreeWillBeReparented(this, node);
+  }
+  if (notify_removed) {
+    observer.OnSubtreeWillBeDeleted(this, node);
   }
 }
 
