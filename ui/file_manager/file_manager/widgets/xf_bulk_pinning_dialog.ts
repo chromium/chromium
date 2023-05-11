@@ -118,15 +118,15 @@ export class XfBulkPinningDialog extends XfBase {
   // Enables or disables the 'Continue' button according to the given state.
   set state(s: DialogState) {
     this.$offlineFooter_.style.display =
-        s === DialogState.OFFLINE ? 'flex' : 'none';
+        s === DialogState.OFFLINE ? 'initial' : 'none';
     this.$listingFooter_.style.display =
         s === DialogState.LISTING ? 'flex' : 'none';
     this.$errorFooter_.style.display =
-        s === DialogState.ERROR ? 'flex' : 'none';
+        s === DialogState.ERROR ? 'initial' : 'none';
     this.$notEnoughSpaceFooter_.style.display =
-        s === DialogState.NOT_ENOUGH_SPACE ? 'flex' : 'none';
+        s === DialogState.NOT_ENOUGH_SPACE ? 'initial' : 'none';
     this.$readyFooter_.style.display =
-        s === DialogState.READY ? 'flex' : 'none';
+        s === DialogState.READY ? 'initial' : 'none';
 
     this.$button_.disabled = s !== DialogState.READY;
   }
@@ -183,7 +183,6 @@ export class XfBulkPinningDialog extends XfBase {
         <div slot="body">
           <div class="description">
             ${str('BULK_PINNING_EXPLANATION')}
-            &ensp;
             <a href="_blank" @click="${this.onLearnMore}">
               ${str('LEARN_MORE_LABEL')}
             </a>
@@ -206,7 +205,6 @@ export class XfBulkPinningDialog extends XfBase {
           </div>
           <div id="not-enough-space-footer" class="error-footer">
             ${str('BULK_PINNING_NOT_ENOUGH_SPACE')}
-            &ensp;
             <a href="_blank" @click="${this.onViewStorage}">
               ${str('BULK_PINNING_VIEW_STORAGE')}
             </a>
@@ -294,7 +292,6 @@ export class XfBulkPinningDialog extends XfBase {
         border-radius: 0 0 12px 12px;
         border-top-style: none;
         color: var(--cros-sys-on_surface);
-        display: flex;
         padding: 16px;
       }
 
@@ -304,7 +301,6 @@ export class XfBulkPinningDialog extends XfBase {
         border-radius: 0 0 12px 12px;
         border-top-style: none;
         color: var(--cros-sys-on_error_container);
-        display: flex;
         padding: 16px;
       }
 
@@ -314,7 +310,6 @@ export class XfBulkPinningDialog extends XfBase {
         border-radius: 0 0 12px 12px;
         border-top-style: none;
         color: var(--cros-sys-on_surface_variant);
-        display: flex;
         padding: 16px;
       }
 
