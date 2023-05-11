@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_config_memory_test_util.h"
 #include "build/build_config.h"
@@ -870,6 +871,10 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest, MAYBE_RendererBuildId) {
            content::RenderProcessHost::AllHostsIterator();
        !rph_iter.IsAtEnd(); rph_iter.Advance()) {
     const base::Process& process = rph_iter.GetCurrentValue()->GetProcess();
+    // The main module's path might be a relative one, e.g. browser_tests.
+    // To match with the memory maps, need to convert it to absolute path,
+    // which may hit ScopedBlockingCall.
+    base::ScopedAllowBlockingForTesting allow_blocking;
     auto maps =
         memory_instrumentation::OSMetrics::GetProcessMemoryMaps(process.Pid());
     bool found = false;
