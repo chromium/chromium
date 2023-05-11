@@ -6398,7 +6398,6 @@ data/portals/scroll.html
 data/portals/touch-input-transfer-across-reactivation.html
 data/post_message.html
 data/post_message2.html
-data/preloading/preloading_decider.html
 data/prerender/cross_origin_prerender.html
 data/prerender/doc-with-display-none-iframe.html
 data/prerender/duplicate_prerenders.html

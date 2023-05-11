@@ -78,10 +78,6 @@ class CONTENT_EXPORT PreloadingDataImpl
   void SetIsNavigationInDomainCallback(
       PreloadingPredictor predictor,
       PredictorDomainCallback is_navigation_in_domain_callback) override;
-  bool CheckNavigationInDomainCallbackForTesting(
-      PreloadingPredictor predictor) {
-    return is_navigation_in_predictor_domain_callbacks_.count(predictor);
-  }
 
   // WebContentsObserver override.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

@@ -148,9 +148,6 @@ void PreloadingDataImpl::AddPreloadingPrediction(
 void PreloadingDataImpl::SetIsNavigationInDomainCallback(
     PreloadingPredictor predictor,
     PredictorDomainCallback is_navigation_in_domain_callback) {
-  if (is_navigation_in_predictor_domain_callbacks_.contains(predictor)) {
-    return;
-  }
   is_navigation_in_predictor_domain_callbacks_[predictor] =
       std::move(is_navigation_in_domain_callback);
 }
@@ -290,19 +287,16 @@ void PreloadingDataImpl::RecordRecallStatsToUMA(
                                   : PredictorConfusionMatrix::kFalseNegative);
 
     for (const auto& preloading_type : kPreloadingTypes) {
-      const auto uma_attemp_recall =
+      const auto uma_attempt_recall =
           base::StrCat({"Preloading.", PreloadingTypeToString(preloading_type),
                         ".Attempt.", predictor_type.name(), ".Recall"});
       base::UmaHistogramEnumeration(
-          uma_attemp_recall, preloading_attempt_recall_stats_.contains(
-                                 {predictor_type, preloading_type})
-                                 ? PredictorConfusionMatrix::kTruePositive
-                                 : PredictorConfusionMatrix::kFalseNegative);
+          uma_attempt_recall, preloading_attempt_recall_stats_.contains(
+                                  {predictor_type, preloading_type})
+                                  ? PredictorConfusionMatrix::kTruePositive
+                                  : PredictorConfusionMatrix::kFalseNegative);
     }
   }
-  // Clear registered predictor domain callbacks and get ready for the next
-  // navigation.
-  is_navigation_in_predictor_domain_callbacks_.clear();
 }
 
 void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
