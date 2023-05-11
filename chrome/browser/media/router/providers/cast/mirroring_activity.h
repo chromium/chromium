@@ -144,6 +144,10 @@ class MirroringActivity : public CastActivity,
 
   void NotifyMediaStatusObserver();
 
+  // Invoked when mirroring is paused / resumed, for metrics.
+  void OnMirroringPaused();
+  void OnMirroringResumed();
+
   // Scrubs AES related data in messages with type "OFFER".
   static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
 
@@ -203,7 +207,10 @@ class MirroringActivity : public CastActivity,
   // the session.
   mojo::Remote<mojom::MediaStatusObserver> media_status_observer_;
 
+  // Info for mirroring state transitions like pause / resume.
   mojom::MediaStatusPtr media_status_;
+  int mirroring_pause_count_ = 0;
+  absl::optional<base::Time> mirroring_pause_timestamp_;
 
   // Set before and after a mirroring session is established, for metrics.
   absl::optional<base::Time> will_start_mirroring_timestamp_;

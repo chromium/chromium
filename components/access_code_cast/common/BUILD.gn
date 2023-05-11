@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("common") {
+static_library("metrics") {
   sources = [
     "access_code_cast_metrics.cc",
     "access_code_cast_metrics.h",
@@ -15,10 +15,8 @@ source_set("unit_tests") {
   sources = [ "access_code_cast_metrics_unittest.cc" ]
   deps = [
     "//base/test:test_support",
-    "//components/access_code_cast/common",
+    "//components/access_code_cast/common:metrics",
     "//testing/gtest",
   ]
-  data = [
-    "//tools/metrics/histograms/enums.xml",
-  ]
+  data = [ "//tools/metrics/histograms/enums.xml" ]
 }

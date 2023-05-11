@@ -4529,7 +4529,7 @@ if (!is_android) {
         "//chromeos/ui/frame",
         "//chromeos/ui/frame:test_support",
         "//chromeos/ui/wm",
-        "//components/access_code_cast/common",
+        "//components/access_code_cast/common:metrics",
         "//components/app_constants",
         "//components/app_restore",
         "//components/arc:arc_test_support",

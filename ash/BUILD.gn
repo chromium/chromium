@@ -2713,7 +2713,7 @@ component("ash") {
     "//chromeos/ui/clipboard_history",
     "//chromeos/ui/frame",
     "//chromeos/ui/wm",
-    "//components/access_code_cast/common",
+    "//components/access_code_cast/common:metrics",
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",

@@ -99,7 +99,9 @@ static_library("router") {
 
       "discovery:discovery",
       "//chrome/browser:browser_process",
+      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/profiles:profile",
+      "//components/access_code_cast/common:metrics",
       "//components/embedder_support:browser_util",
       "//components/mirroring/mojom:service",
       "//components/ukm/content:content",

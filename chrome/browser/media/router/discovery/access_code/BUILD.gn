@@ -61,7 +61,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin:identity_manager_provider",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
-      "//components/access_code_cast/common",
+      "//components/access_code_cast/common:metrics",
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/keyed_service/content:content",
       "//components/leveldb_proto:leveldb_proto",

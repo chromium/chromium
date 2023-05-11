@@ -618,6 +618,47 @@ TEST_F(MirroringActivityTest, Play) {
   testing::Mock::VerifyAndClearExpectations(&media_status_observer);
 }
 
+TEST_F(MirroringActivityTest, PauseAndPlay) {
+  base::HistogramTester uma_recorder;
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId));
+  MediaSource source = MediaSource::ForTab(kTabId);
+  MakeActivity(source, kFrameTreeNodeId,
+               CastDiscoveryType::kAccessCodeManualEntry);
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+
+  activity_->DidStart();
+  activity_->Pause();
+  base::RunLoop().RunUntilIdle();
+  activity_->Play();
+  base::RunLoop().RunUntilIdle();
+  activity_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeCount", 1);
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeDuration", 1);
+}
+
+TEST_F(MirroringActivityTest, PauseAndReset) {
+  base::HistogramTester uma_recorder;
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId));
+  MediaSource source = MediaSource::ForTab(kTabId);
+  MakeActivity(source, kFrameTreeNodeId,
+               CastDiscoveryType::kAccessCodeManualEntry);
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+
+  activity_->DidStart();
+  activity_->Pause();
+  base::RunLoop().RunUntilIdle();
+  activity_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeCount", 1);
+  uma_recorder.ExpectTotalCount("AccessCodeCast.Session.FreezeDuration", 1);
+}
+
 TEST_F(MirroringActivityTest, OnRemotingStateChanged) {
   MakeActivity();
   mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;

@@ -25,10 +25,13 @@
 #include "base/values.h"
 #include "chrome/browser/media/cast_mirroring_service_host_factory.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/browser/mirroring_to_flinging_switcher.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -180,6 +183,26 @@ MirroringActivity::~MirroringActivity() {
   if (!did_start_mirroring_timestamp_) {
     return;
   }
+
+  // Record mirroring pause metrics.
+  if (mirroring_pause_timestamp_) {  // The session is ending while paused.
+    AccessCodeCastMetrics::RecordMirroringPauseDuration(
+        base::Time::Now() - mirroring_pause_timestamp_.value());
+  }
+  // We can only get a profile on the UI thread, so we must post a task to check
+  // if we should log certain metrics.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](int pause_count) {
+            // Don't record pause count if the cast session cannot be paused.
+            if (pause_count > 0 ||
+                media_router::IsAccessCodeCastFreezeUiEnabled(
+                    ProfileManager::GetLastUsedProfile())) {
+              AccessCodeCastMetrics::RecordMirroringPauseCount(pause_count);
+            }
+          },
+          mirroring_pause_count_));
 
   auto cast_duration = base::Time::Now() - *did_start_mirroring_timestamp_;
   base::UmaHistogramLongTimes(kHistogramSessionLength, cast_duration);
@@ -359,6 +382,7 @@ void MirroringActivity::OnSourceChanged() {
   // The source changed, which means that a new capturer was created that is
   // now sending frames. Ensure the state is now PLAYING.
   media_status_->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  OnMirroringResumed();
   NotifyMediaStatusObserver();
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -371,6 +395,7 @@ void MirroringActivity::OnRemotingStateChanged(bool is_remoting) {
   // Transitions to/from remoting restart the capturer. Set the state to
   // playing.
   media_status_->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  OnMirroringResumed();
   NotifyMediaStatusObserver();
 }
 
@@ -729,6 +754,11 @@ void MirroringActivity::Pause() {
 
 void MirroringActivity::SetPlayState(mojom::MediaStatus::PlayState play_state) {
   media_status_->play_state = play_state;
+  if (play_state == mojom::MediaStatus::PlayState::PLAYING) {
+    OnMirroringResumed();
+  } else if (play_state == mojom::MediaStatus::PlayState::PAUSED) {
+    OnMirroringPaused();
+  }
   NotifyMediaStatusObserver();
 }
 
@@ -736,6 +766,24 @@ void MirroringActivity::NotifyMediaStatusObserver() {
   if (media_status_observer_) {
     media_status_observer_->OnMediaStatusUpdated(media_status_.Clone());
   }
+}
+
+void MirroringActivity::OnMirroringPaused() {
+  // Do nothing if we are already paused.
+  if (mirroring_pause_timestamp_) {
+    return;
+  }
+  mirroring_pause_timestamp_ = base::Time::Now();
+  mirroring_pause_count_++;
+}
+
+void MirroringActivity::OnMirroringResumed() {
+  if (!mirroring_pause_timestamp_) {
+    return;
+  }
+  AccessCodeCastMetrics::RecordMirroringPauseDuration(
+      base::Time::Now() - mirroring_pause_timestamp_.value());
+  mirroring_pause_timestamp_.reset();
 }
 
 }  // namespace media_router

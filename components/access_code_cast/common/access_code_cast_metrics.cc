@@ -27,6 +27,10 @@ const char AccessCodeCastMetrics::kHistogramDialogLoadTime[] =
     "AccessCodeCast.Ui.DialogLoadTime";
 const char AccessCodeCastMetrics::kHistogramDialogOpenLocation[] =
     "AccessCodeCast.Ui.DialogOpenLocation";
+const char AccessCodeCastMetrics::kHistogramFreezeCount[] =
+    "AccessCodeCast.Session.FreezeCount";
+const char AccessCodeCastMetrics::kHistogramFreezeDuration[] =
+    "AccessCodeCast.Session.FreezeDuration";
 const char AccessCodeCastMetrics::kHistogramRememberedDevicesCount[] =
     "AccessCodeCast.Discovery.RememberedDevicesCount";
 const char AccessCodeCastMetrics::kHistogramRouteDiscoveryTypeAndSource[] =
@@ -141,6 +145,17 @@ void AccessCodeCastMetrics::RecordDialogLoadTime(base::TimeDelta load_time) {
 void AccessCodeCastMetrics::RecordDialogOpenLocation(
     AccessCodeCastDialogOpenLocation location) {
   base::UmaHistogramEnumeration(kHistogramDialogOpenLocation, location);
+}
+
+// static
+void AccessCodeCastMetrics::RecordMirroringPauseCount(int count) {
+  base::UmaHistogramCounts100(kHistogramFreezeCount, count);
+}
+
+// static
+void AccessCodeCastMetrics::RecordMirroringPauseDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramLongTimes(kHistogramFreezeDuration, duration);
 }
 
 // static

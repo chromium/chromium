@@ -420,7 +420,7 @@ component("cpp") {
     "//chromeos/ui/clipboard_history",
     "//chromeos/ui/frame",
     "//chromeos/ui/vector_icons",
-    "//components/access_code_cast/common",
+    "//components/access_code_cast/common:metrics",
     "//components/language/core/browser:browser",
     "//components/pref_registry",
     "//components/prefs",
@@ -570,7 +570,7 @@ source_set("test_support") {
   deps = [
     ":cpp",
     "//base",
-    "//components/access_code_cast/common",
+    "//components/access_code_cast/common:metrics",
     "//mojo/public/cpp/bindings",
     "//services/data_decoder/public/cpp:service_provider",
     "//services/data_decoder/public/mojom",
