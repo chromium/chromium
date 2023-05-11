@@ -429,12 +429,10 @@ absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (system_app()) {
-    if (chromeos::features::IsJellyEnabled()) {
-      // System Apps with dynamic color ignore the manifest and pull background
-      // color from the OS in situations where a background color can not be
-      // extracted from the web contents.
+    if (chromeos::features::IsJellyEnabled() &&
+        system_app()->UseSystemThemeColor()) {
+      // With jelly enabled, some system apps prefer system color over manifest.
       SkColor os_color = ash::GetSystemBackgroundColor();
-
       result = web_contents_color ? web_contents_color : os_color;
     } else if (system_app()->PreferManifestBackgroundColor()) {
       // Some system web apps prefer their web content background color to be

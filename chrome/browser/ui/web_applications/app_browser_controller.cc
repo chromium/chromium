@@ -57,7 +57,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/icon_standardizer.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #endif
@@ -621,13 +620,12 @@ void AppBrowserController::UpdateThemePack() {
 
   bool ignore_custom_colors = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // System web apps should never take on custom colors, hence no need to update
+  // Some system web apps use the system theme color, and should not update
   // the theme pack here. Otherwise the colorIds for the window caption bar will
   // be remapped through `BrowserThemePack::BuildFromColors`, and colors will be
   // resolved differently than the colors set in the function `AddUiColorMixer`.
-  if (chromeos::features::IsJellyrollEnabled() &&
-      ash::SystemWebAppManager::Get(browser_->profile())
-          ->IsSystemWebApp(app_id_)) {
+  if (chromeos::features::IsJellyrollEnabled() && system_app() &&
+      system_app()->UseSystemThemeColor()) {
     ignore_custom_colors = true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

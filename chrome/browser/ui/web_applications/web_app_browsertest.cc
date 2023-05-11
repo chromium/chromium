@@ -512,28 +512,21 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "WithoutUseSystemThemeColor";
                          });
 
-IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, BackgroundColor) {
-  const AppId app_id = WaitForSwaInstall();
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  auto* app_controller = app_browser->app_controller();
-
-  // Ensure app controller is pulling the color from the OS.
-  EXPECT_EQ(app_controller->GetBackgroundColor().value(),
-            ash::GetSystemBackgroundColor());
-}
-
-IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, ThemeColor) {
+IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, Colors) {
   const AppId app_id = WaitForSwaInstall();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   auto* app_controller = app_browser->app_controller();
   auto theme_color = app_controller->GetThemeColor().value();
+  auto bg_color = app_controller->GetBackgroundColor().value();
   if (UseSystemThemeColor()) {
     // Ensure app controller is pulling the color from the OS.
     EXPECT_EQ(theme_color, ash::GetSystemThemeColor());
+    EXPECT_EQ(bg_color, ash::GetSystemBackgroundColor());
   } else {
-    // If SWA has opted out, theme color should default to white or black
+    // If SWA has opted out, theme and bg color should default to white or black
     // depending on launch context.
     EXPECT_TRUE(theme_color == SK_ColorWHITE || theme_color == SK_ColorBLACK);
+    EXPECT_TRUE(bg_color == SK_ColorWHITE || bg_color == SK_ColorBLACK);
   }
 }
 
