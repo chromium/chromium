@@ -145,6 +145,14 @@ const char* TestEnvironmentKeyToString(TestEnvironmentKey key) {
       return "system";
     case TestEnvironmentKey::kProcessor:
       return "processor";
+    case TestEnvironmentKey::kSystemVersion:
+      return "system_version";
+    case TestEnvironmentKey::kGpuDriverVendor:
+      return "driver_vendor";
+    case TestEnvironmentKey::kGpuDriverVersion:
+      return "driver_version";
+    case TestEnvironmentKey::kGlRenderer:
+      return "gl_renderer";
   }
 
   NOTREACHED_NORETURN();

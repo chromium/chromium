@@ -30,7 +30,21 @@ enum class TestEnvironmentKey {
   // The processor architecture.
   kProcessor,
 
-  // Begin subtype-provided keys.
+  // Begin subtype-provided keys.\
+
+  // The version of the operating system.
+  // On Windows, this is the release ID string and is used to track the DWM
+  // version.
+  kSystemVersion,
+
+  // The vendor name of the GPU used for ths test.
+  kGpuDriverVendor,
+
+  // The GPU driver version.
+  kGpuDriverVersion,
+
+  // The GL_RENDERER string returned from the GLContext.
+  kGlRenderer,
 };
 
 using TestEnvironmentMap = base::flat_map<TestEnvironmentKey, std::string>;

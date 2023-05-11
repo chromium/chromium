@@ -7,15 +7,19 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/test/skia_gold_pixel_diff.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/frame_data.h"
@@ -39,6 +43,8 @@
 
 namespace gl {
 namespace {
+
+constexpr const char* kSkiaGoldPixelDiffCorpus = "chrome-gpu-gtest";
 
 class TestPlatformDelegate : public ui::PlatformWindowDelegate {
  public:
@@ -1435,6 +1441,133 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
 
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
+}
+
+class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
+ protected:
+  void SetUp() override {
+    DCompPresenterPixelTest::SetUp();
+
+    // |pixel_diff_| only needs to be initialized once per suite, but depends on
+    // | DCompPresenterTest::SetUp()| so is initialized here.
+    if (!pixel_diff_.has_value()) {
+      pixel_diff_.emplace();
+
+      ASSERT_TRUE(context_);
+      const ui::test::TestEnvironmentMap test_environment = {
+          {ui::test::TestEnvironmentKey::kSystemVersion,
+           base::win::OSInfo::GetInstance()->release_id()},
+          {ui::test::TestEnvironmentKey::kGpuDriverVendor,
+           context_->GetVersionInfo()->driver_vendor},
+          {ui::test::TestEnvironmentKey::kGpuDriverVersion,
+           context_->GetVersionInfo()->driver_version},
+          {ui::test::TestEnvironmentKey::kGlRenderer,
+           context_->GetGLRenderer()},
+
+      };
+
+      pixel_diff_->Init(::testing::UnitTest::GetInstance()
+                            ->current_test_info()
+                            ->test_suite_name(),
+                        kSkiaGoldPixelDiffCorpus, test_environment);
+    }
+  }
+
+  void TearDown() override {
+    DCompPresenterPixelTest::TearDown();
+    test_initialized_ = false;
+  }
+
+  void InitializeTest(const gfx::Size& window_size) {
+    ASSERT_FALSE(test_initialized_)
+        << "InitializeTest should only be called once per test";
+    test_initialized_ = true;
+
+    ResizeWindow(window_size);
+
+    capture_names_in_test_.clear();
+  }
+
+  void ResizeWindow(const gfx::Size& window_size) {
+    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
+    window_size_ = window_size;
+  }
+
+  // |capture_name| identifies this screenshot and is appended to the skia gold
+  // remote test name. Empty string is allowed, e.g. for tests that only have
+  // one screenshot.
+  // Tests should consider passing meaningful capture names if it helps make
+  // them easier to understand and debug.
+  // Unique capture names are required if a test checks multiple screenshots.
+  void PresentAndCheckScreenshot(
+      std::string capture_name = std::string(),
+      const base::Location& caller_location = FROM_HERE) {
+    ASSERT_TRUE(test_initialized_) << "Must call InitializeTest first";
+
+    if (capture_names_in_test_.contains(capture_name)) {
+      ADD_FAILURE_AT(caller_location.file_name(), caller_location.line_number())
+          << "Capture names must be unique in a test. Capture name \""
+          << capture_name << "\" is already used.";
+      return;
+    }
+    capture_names_in_test_.insert(capture_name);
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+    std::string screenshot_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    if (!capture_name.empty()) {
+      screenshot_name = base::StringPrintf("%s/%s", screenshot_name.c_str(),
+                                           capture_name.c_str());
+    }
+
+    SkBitmap window_readback =
+        GLTestHelper::ReadBackWindow(window_.hwnd(), window_size_);
+    ASSERT_TRUE(pixel_diff_);
+    if (!pixel_diff_->CompareScreenshot(screenshot_name, window_readback)) {
+      ADD_FAILURE_AT(caller_location.file_name(), caller_location.line_number())
+          << "Screenshot mismatch for "
+          << (capture_name.empty() ? "(unnamed capture)" : capture_name);
+    }
+  }
+
+  const gfx::Size& current_window_size() const { return window_size_; }
+
+ private:
+  absl::optional<ui::test::SkiaGoldPixelDiff> pixel_diff_;
+
+  // |true|, if |InitializeTest| has been called.
+  bool test_initialized_ = false;
+
+  // The size of the window and screenshots, in pixels.
+  gfx::Size window_size_;
+
+  // The values of the |capture_name| parameter of |PresentAndCheckScreenshot|
+  // seen in the test so far.
+  base::flat_set<std::string> capture_names_in_test_;
+};
+
+TEST_F(DCompPresenterSkiaGoldTest, NonAxisPerservingTransform) {
+  InitializeTest(gfx::Size(100, 100));
+
+  InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
+
+  auto overlay = std::make_unique<DCLayerOverlayParams>();
+  overlay->content_rect = gfx::Rect(50, 50);
+  overlay->quad_rect = gfx::Rect(50, 50);
+  overlay->overlay_image =
+      CreateDCompSurface(gfx::Size(50, 50), SkColors::kRed);
+  overlay->z_order = 1;
+
+  // Center and partially rotate the overlay
+  overlay->transform.Translate(50, 50);
+  overlay->transform.Rotate(15);
+  overlay->transform.Translate(-25, -25);
+
+  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+
+  PresentAndCheckScreenshot();
 }
 
 class DCompPresenterBufferCountTest : public DCompPresenterTest,

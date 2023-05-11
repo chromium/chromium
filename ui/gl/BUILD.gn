@@ -625,7 +625,10 @@ test("gl_unittests") {
   ]
 
   if (is_win) {
-    deps += [ "//media/base/win:test_support" ]
+    deps += [
+      "//media/base/win:test_support",
+      "//ui/base:pixel_diff_test_support",
+    ]
     libs = [ "dxguid.lib" ]
   }
 
