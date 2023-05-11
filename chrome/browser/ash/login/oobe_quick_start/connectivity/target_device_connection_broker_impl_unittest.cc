@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -284,54 +285,6 @@ class FakeConnectionLifecycleListener
   bool connection_closed_ = false;
   TargetDeviceConnectionBroker::ConnectionClosedReason
       connection_closed_reason_;
-};
-
-class FakeConnection : public Connection {
- public:
-  class Factory : public Connection::Factory {
-   public:
-    // Connection::Factory:
-    std::unique_ptr<Connection> Create(
-        NearbyConnection* nearby_connection,
-        Connection::SessionContext session_context,
-        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-        ConnectionClosedCallback on_connection_closed,
-        ConnectionAuthenticatedCallback on_connection_authenticated) override {
-      auto connection = std::make_unique<FakeConnection>(
-          nearby_connection, session_context, std::move(quick_start_decoder),
-          std::move(on_connection_closed),
-          std::move(on_connection_authenticated));
-      instance_ = connection->weak_ptr_factory_.GetWeakPtr();
-      return std::move(connection);
-    }
-
-    base::WeakPtr<FakeConnection> instance_;
-  };
-
-  FakeConnection(
-      NearbyConnection* nearby_connection,
-      Connection::SessionContext session_context,
-      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-      ConnectionClosedCallback on_connection_closed,
-      ConnectionAuthenticatedCallback on_connection_authenticated)
-      : Connection(nearby_connection,
-                   session_context,
-                   std::move(quick_start_decoder),
-                   std::make_unique<Connection::NonceGenerator>(),
-                   std::move(on_connection_closed),
-                   std::move(on_connection_authenticated)) {}
-
-  // Connection:
-  void InitiateHandshake(const std::string& authentication_token,
-                         HandshakeSuccessCallback callback) override {
-    handshake_initiated_ = true;
-    handshake_success_callback_ = std::move(callback);
-  }
-
-  bool handshake_initiated_ = false;
-  HandshakeSuccessCallback handshake_success_callback_;
-
-  base::WeakPtrFactory<FakeConnection> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -820,7 +773,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
       kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
 
   ASSERT_TRUE(connection());
-  EXPECT_TRUE(connection()->handshake_initiated_);
+  EXPECT_TRUE(connection()->WasHandshakeInitiated());
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,

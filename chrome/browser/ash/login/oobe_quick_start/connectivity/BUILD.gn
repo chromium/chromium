@@ -53,6 +53,8 @@ source_set("test_support") {
     "//components/cbor",
   ]
   sources = [
+    "fake_connection.cc",
+    "fake_connection.h",
     "fake_target_device_connection_broker.cc",
     "fake_target_device_connection_broker.h",
     "fido_authentication_message_helper.cc",
