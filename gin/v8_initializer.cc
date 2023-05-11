@@ -333,6 +333,10 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                            "--no-slow-histograms");
   }
 
+  SetV8FlagsIfOverridden(features::kV8IgnitionElideRedundantTdzChecks,
+                         "--ignition-elide-redundant-tdz-checks",
+                         "--no-ignition-elide-redundant-tdz-checks");
+
   // JavaScript language features.
   SetV8FlagsIfOverridden(features::kJavaScriptSymbolAsWeakMapKey,
                          "--harmony-symbol-as-weakmap-key",

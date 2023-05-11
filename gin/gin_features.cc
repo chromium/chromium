@@ -152,6 +152,12 @@ BASE_FEATURE(kV8UseLibmTrigFunctions,
              "V8UseLibmTrigFunctions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Elide redundant TDZ hole checks in bytecode. This only sets the V8 flag when
+// manually overridden.
+BASE_FEATURE(kV8IgnitionElideRedundantTdzChecks,
+             "V8IgnitionElideRedundantTdzChecks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // JavaScript language features.
 
 // Enables the Symbols-as-WeakMap-keys proposal.
