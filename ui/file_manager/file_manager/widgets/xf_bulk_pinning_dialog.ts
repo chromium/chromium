@@ -102,7 +102,13 @@ export class XfBulkPinningDialog extends XfBase {
         this.$dialog_.close();
         break;
 
+      case BulkPinStage.NOT_ENOUGH_SPACE:
+        this.state = DialogState.NOT_ENOUGH_SPACE;
+        break;
+
       default:
+        console.warn(
+            `Cannot calculate bulk-pinning space requirements: ${this.stage_}`);
         this.state = DialogState.ERROR;
         break;
     }
