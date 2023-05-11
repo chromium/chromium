@@ -13,7 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/isolation_context.h"
@@ -1497,12 +1496,8 @@ RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
 
 bool SiteInstanceImpl::IsCoopRelatedSiteInstance(
     const SiteInstanceImpl* instance) const {
-  return instance->browsing_instance_->GetCoopRelatedGroupId() ==
-         browsing_instance_->GetCoopRelatedGroupId();
-}
-
-CoopRelatedGroupId SiteInstanceImpl::GetCoopRelatedGroupId() const {
-  return browsing_instance_->GetCoopRelatedGroupId();
+  return instance->browsing_instance_->coop_related_group_token() ==
+         browsing_instance_->coop_related_group_token();
 }
 
 void SiteInstanceImpl::SetProcessForTesting(RenderProcessHost* process) {

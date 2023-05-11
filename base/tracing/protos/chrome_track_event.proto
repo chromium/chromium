@@ -513,7 +513,10 @@ message BrowsingContextState {
   optional int32 browsing_instance_id = 1;
 
   // The ID of the CoopRelatedGroup that the BrowsingContextState belongs to.
-  optional int32 coop_related_group_id = 2;
+  optional int32 coop_related_group_id = 2 [deprecated = true];
+
+  // The token of the CoopRelatedGroup that the BrowsingContextState belongs to.
+  optional string coop_related_group_token = 3;
 
   // Additional untyped debug information associated with this
   // FrameTreeNode, populated via TracedProto::AddDebugAnnotations API.

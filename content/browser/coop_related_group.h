@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/types/id_type.h"
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
@@ -56,8 +55,6 @@ class SiteInstanceImpl;
 // the same CoopRelatedGroup but in a different BrowsingInstance, use
 // SiteInstanceImpl::GetCoopRelatedSiteInstance. Because of this,
 // CoopRelatedGroups are tested in site_instance_impl_unittest.cc.
-using CoopRelatedGroupId = base::IdType32<class CoopRelatedGroupIdTag>;
-
 class CONTENT_EXPORT CoopRelatedGroup final
     : public base::RefCounted<CoopRelatedGroup> {
  public:
@@ -74,8 +71,8 @@ class CONTENT_EXPORT CoopRelatedGroup final
                             bool is_fenced);
   ~CoopRelatedGroup();
 
-  // Returns the unique ID associated with this CoopRelatedGroup.
-  CoopRelatedGroupId GetId();
+  // Returns the token uniquely identifying this CoopRelatedGroup.
+  base::UnguessableToken token() const { return token_; }
 
   // Returns a SiteInstance in this CoopRelatedGroup, depending on the passed
   // `url_info`. It might reuse an existing BrowsingInstance that is part of the
@@ -120,12 +117,6 @@ class CONTENT_EXPORT CoopRelatedGroup final
     active_contents_count_--;
   }
 
-  // Members used to provide IDs to CoopRelatedGroup.
-  // `next_coop_related_group_id_` is used as a static generator, while `id_`
-  // represent this specific CoopRelatedGroup id.
-  static int next_coop_related_group_id_;
-  CoopRelatedGroupId id_;
-
   // Recorded with the first BrowsingInstance and used to create new
   // BrowsingInstances. All BrowsingInstances in a CoopRelatedGroup should share
   // the same BrowserContext, therefore recording it at creation time is fine.
@@ -164,6 +155,10 @@ class CONTENT_EXPORT CoopRelatedGroup final
   // group, to know whether certain actions (e.g. putting a page into the
   // BFCache) are allowed.
   size_t active_contents_count_{0u};
+
+  // A token uniquely identifying this CoopRelatedGroup. This can be sent to the
+  // renderer process if needed, without security risks.
+  const base::UnguessableToken token_ = base::UnguessableToken::Create();
 };
 
 }  // namespace content

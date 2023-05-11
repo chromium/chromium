@@ -448,8 +448,9 @@ void RenderFrameHostManager::InitRoot(
               ? static_cast<absl::optional<BrowsingInstanceId>>(absl::nullopt)
               : site_instance->GetBrowsingInstanceId(),
           is_legacy_browsing_context_state_mode
-              ? static_cast<absl::optional<CoopRelatedGroupId>>(absl::nullopt)
-              : site_instance->GetCoopRelatedGroupId());
+              ? static_cast<absl::optional<base::UnguessableToken>>(
+                    absl::nullopt)
+              : site_instance->coop_related_group_token());
   browsing_context_state->CommitFramePolicy(initial_main_frame_policy);
   browsing_context_state->SetFrameName(name, "");
   UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
@@ -499,8 +500,9 @@ void RenderFrameHostManager::InitChild(
               ? static_cast<absl::optional<BrowsingInstanceId>>(absl::nullopt)
               : site_instance->GetBrowsingInstanceId(),
           is_legacy_browsing_context_state_mode
-              ? static_cast<absl::optional<CoopRelatedGroupId>>(absl::nullopt)
-              : site_instance->GetCoopRelatedGroupId());
+              ? static_cast<absl::optional<base::UnguessableToken>>(
+                    absl::nullopt)
+              : site_instance->coop_related_group_token());
   browsing_context_state->CommitFramePolicy(frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
@@ -3458,7 +3460,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
                 ->current_replication_state()
                 .Clone(),
             frame_tree_node_->parent(), new_instance->GetBrowsingInstanceId(),
-            new_instance->GetCoopRelatedGroupId());
+            new_instance->coop_related_group_token());
 
         // Add a proxy to the outer delegate if one exists, as this is not
         // copied over to the new BrowsingContextState otherwise.

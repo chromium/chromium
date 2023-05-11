@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/types/id_type.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/coop_related_group.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -136,8 +137,11 @@ class CONTENT_EXPORT SiteInstanceGroup
     return browsing_instance_->isolation_context().browsing_instance_id();
   }
 
-  // Returns the ID of the CoopRelatedGroup this SiteInstanceGroup belongs to.
-  CoopRelatedGroupId GetCoopRelatedGroupId() const;
+  // Returns the token uniquely identifying the CoopRelatedGroup this
+  // SiteInstanceGroup belongs to.
+  base::UnguessableToken coop_related_group_token() const {
+    return browsing_instance_->coop_related_group_token();
+  }
 
   AgentSchedulingGroupHost& agent_scheduling_group() {
     DCHECK_EQ(agent_scheduling_group_->GetProcess(), &*process_);

@@ -307,10 +307,6 @@ int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
   return result;
 }
 
-CoopRelatedGroupId BrowsingInstance::GetCoopRelatedGroupId() {
-  return coop_related_group_->GetId();
-}
-
 size_t BrowsingInstance::GetCoopRelatedGroupActiveContentsCount() {
   return coop_related_group_->active_contents_count();
 }

@@ -209,9 +209,16 @@ class CONTENT_EXPORT BrowsingInstance final
   // BrowsingInstance.
   void UnregisterSiteInstance(SiteInstanceImpl* site_instance);
 
-  // Returns the Id of the CoopRelatedGroup to which this BrowsingInstance
-  // belongs.
-  CoopRelatedGroupId GetCoopRelatedGroupId();
+  // Returns the token uniquely identifying the CoopRelatedGroup this
+  // BrowsingInstance belongs to. This might be used in the renderer, as opposed
+  // to IDs.
+  base::UnguessableToken coop_related_group_token() const {
+    return coop_related_group_->token();
+  }
+
+  // Returns the token uniquely identifying this BrowsingInstance. See member
+  // declaration for more context.
+  base::UnguessableToken token() const { return token_; }
 
   // Returns the total number of WebContents either living in this
   // BrowsingInstance or that can communicate with it via the CoopRelatedGroup.
@@ -338,6 +345,14 @@ class CONTENT_EXPORT BrowsingInstance final
   // cross-origin iframes are opened with no-opener. Once COOP inheritance for
   // those cases is figured out, change the mentions of origin to "COOP origin".
   absl::optional<url::Origin> common_coop_origin_;
+
+  // A token uniquely identifying this BrowsingInstance. This is used in case we
+  // need this information available in the renderer process, rather than
+  // sending an ID. Both IDs and Tokens are necessary, because some parts of the
+  // process model use the ordering of the IDs, that cannot be provided by
+  // tokens alone. Also note that IDs are defined in IsolationContext while
+  // tokens are more conveniently defined here.
+  const base::UnguessableToken token_ = base::UnguessableToken::Create();
 };
 
 }  // namespace content

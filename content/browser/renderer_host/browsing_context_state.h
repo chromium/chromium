@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/safe_ref.h"
+#include "base/unguessable_token.h"
 #include "content/browser/coop_related_group.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_group.h"
@@ -88,7 +89,7 @@ class CONTENT_EXPORT BrowsingContextState
       blink::mojom::FrameReplicationStatePtr replication_state,
       RenderFrameHostImpl* parent,
       absl::optional<BrowsingInstanceId> browsing_instance_id,
-      absl::optional<CoopRelatedGroupId> coop_related_group_id);
+      absl::optional<base::UnguessableToken> coop_related_group_token);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
@@ -299,16 +300,15 @@ class CONTENT_EXPORT BrowsingContextState
   // main frame BrowsingContextState.
   const raw_ptr<RenderFrameHostImpl> parent_;
 
-  // ID of the BrowsingInstance and CoopRelatedGroup to which this
+  // ID of the BrowsingInstance and token of the CoopRelatedGroup to which this
   // BrowsingContextState belongs. Currently `browsing_instance_id` and
-  // `coop_related_group_id` will be null iff the legacy mode is enabled, as the
-  // legacy mode BrowsingContextState is 1:1 with FrameTreeNode and therefore
-  // doesn't have a dedicated associated BrowsingInstance or CoopRelatedGroup.
-  // TODO(crbug.com/1270671): Make `browsing_instance_id` and
-  // `coop_related_group_id` non-optional when the legacy path
-  // is removed.
+  // `coop_related_group_token` will be null iff the legacy mode is enabled, as
+  // the legacy mode BrowsingContextState is 1:1 with FrameTreeNode and
+  // therefore doesn't have a dedicated associated BrowsingInstance or
+  // CoopRelatedGroup. TODO(crbug.com/1270671): Make `browsing_instance_id` and
+  // `coop_related_group_token` non-optional when the legacy path is removed.
   const absl::optional<BrowsingInstanceId> browsing_instance_id_;
-  const absl::optional<CoopRelatedGroupId> coop_related_group_id_;
+  const absl::optional<base::UnguessableToken> coop_related_group_token_;
 
   base::WeakPtrFactory<BrowsingContextState> weak_factory_{this};
 };
