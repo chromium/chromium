@@ -24,7 +24,9 @@
 #     skip tests for historical reasons.
 
 # Intentional failures to test the layout test system.
-harness-tests/crash.html [ Crash ]
+[ Linux ] harness-tests/crash.html [ Crash ]
+[ Mac ] harness-tests/crash.html [ Crash ]
+crbug.com/1420658 [ Win ] harness-tests/crash.html [ Crash Timeout ]
 harness-tests/timeout.html [ Timeout ]
 fast/harness/sample-fail-mismatch-reftest.html [ Failure ]
 
