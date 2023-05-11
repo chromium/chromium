@@ -13,165 +13,188 @@
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './pin_keyboard.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenProgress} from './lock_screen_constants.js';
+import {PinKeyboardElement} from './pin_keyboard.js';
 import {getTemplate} from './setup_pin_keyboard.html.js';
 
 /**
  * Keep in sync with the string keys provided by settings.
- * @enum {string}
  */
-export const MessageType = {
-  TOO_SHORT: 'configurePinTooShort',
-  TOO_LONG: 'configurePinTooLong',
-  TOO_WEAK: 'configurePinWeakPin',
-  MISMATCH: 'configurePinMismatched',
-  INTERNAL_ERROR: 'internalError',
-};
+export enum MessageType {
+  TOO_SHORT = 'configurePinTooShort',
+  TOO_LONG = 'configurePinTooLong',
+  TOO_WEAK = 'configurePinWeakPin',
+  MISMATCH = 'configurePinMismatched',
+  INTERNAL_ERROR = 'internalError',
+}
 
-/** @enum {string} */
-export const ProblemType = {
-  WARNING: 'warning',
-  ERROR: 'error',
-};
+export enum ProblemType {
+  WARNING = 'warning',
+  ERROR = 'error',
+}
 
-Polymer({
-  _template: getTemplate(),
-  is: 'setup-pin-keyboard',
+const SetupPinKeyboardElementBase = I18nMixin(PolymerElement);
 
-  behaviors: [I18nBehavior],
+export interface SetupPinKeyboardElement {
+  $: {
+    pinKeyboard: PinKeyboardElement,
+  };
+}
 
-  properties: {
-    /**
-     * Reflects property set in password_prompt_dialog.js.
-     * @type {?Object}
-     */
-    setModes: {
-      type: Object,
-      notify: true,
-    },
+export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
+  static get is() {
+    return 'setup-pin-keyboard' as const;
+  }
 
-    /**
-     * The current PIN keyboard value.
-     * @private
-     */
-    pinKeyboardValue_: String,
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Stores the initial PIN value so it can be confirmed.
-     * @private
-     */
-    initialPin_: String,
-
-    /**
-     * The message ID of actual problem message to display.
-     * @private
-     */
-    problemMessageId_: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * The additional parameters to format for the problem message string.
-     * @private
-     */
-    problemMessageParameters_: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * The type of problem class to show (warning or error).
-     * @private
-     */
-    problemClass_: String,
-
-    /**
-     * Should the step-specific submit button be displayed?
-     * This has upward data flow only.
-     */
-    enableSubmit: {
-      notify: true,
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * writeUma is a function that handles writing uma stats.
-     *
-     * @type {function(LockScreenProgress)}
-     */
-    writeUma: {
-      type: Object,
-      value() {
-        return function() {};
+  static get properties() {
+    return {
+      /**
+       * Reflects property set in password_prompt_dialog.js.
+       */
+      setModes: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /**
-     * The current step/subpage we are on.
-     * This is has upward data flow only.
-     */
-    isConfirmStep: {
-      notify: true,
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The current PIN keyboard value.
+       */
+      pinKeyboardValue_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Interface for chrome.quickUnlockPrivate calls.
-     * @type {QuickUnlockPrivate}
-     */
-    quickUnlockPrivate: Object,
+      /**
+       * Stores the initial PIN value so it can be confirmed.
+       */
+      initialPin_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * |pinHasPassedMinimumLength_| tracks whether a user has passed the minimum
-     * length threshold at least once, and all subsequent PIN too short messages
-     * will be displayed as errors. They will be displayed as warnings prior to
-     * this.
-     * @private
-     */
-    pinHasPassedMinimumLength_: {type: Boolean, value: false},
+      /**
+       * The message ID of actual problem message to display.
+       */
+      problemMessageId_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Enables pin placeholder.
-     */
-    enablePlaceholder: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The additional parameters to format for the problem message string.
+       */
+      problemMessageParameters_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {boolean} */
-    isSetModesCallPending_: {
-      notify: true,
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * The type of problem class to show (warning or error).
+       */
+      problemClass_: String,
 
-  focus() {
+      /**
+       * Should the step-specific submit button be displayed?
+       * This has upward data flow only.
+       */
+      enableSubmit: {
+        notify: true,
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * writeUma is a function that handles writing uma stats.
+       */
+      writeUma: {
+        type: Object,
+        value() {
+          return function() {};
+        },
+      },
+
+      /**
+       * The current step/subpage we are on.
+       * This is has upward data flow only.
+       */
+      isConfirmStep: {
+        notify: true,
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Interface for chrome.quickUnlockPrivate calls.
+       */
+      quickUnlockPrivate: Object,
+
+      /**
+       * |pinHasPassedMinimumLength_| tracks whether a user has passed the
+       * minimum length threshold at least once, and all subsequent PIN too
+       * short messages will be displayed as errors. They will be displayed as
+       * warnings prior to this.
+       */
+      pinHasPassedMinimumLength_: {type: Boolean, value: false},
+
+      /**
+       * Enables pin placeholder.
+       */
+      enablePlaceholder: {
+        type: Boolean,
+        value: false,
+      },
+
+      isSetModesCallPending_: {
+        notify: true,
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  private pinKeyboardValue_: string;
+  private initialPin_: string;
+  private problemMessageId_: string;
+  private problemMessageParameters_: string;
+  private problemClass_: string|undefined;
+  private pinHasPassedMinimumLength_: boolean;
+  private isSetModesCallPending_: boolean;
+  setModes:
+      ((modes: chrome.quickUnlockPrivate.QuickUnlockMode[],
+        credentials: string[],
+        onComplete: (result: boolean) => void) => void)|undefined;
+  enableSubmit: boolean;
+  writeUma: (progress: LockScreenProgress) => void;
+  isConfirmStep: boolean;
+  quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
+  enablePlaceholder: boolean;
+
+  override focus(): void {
     this.$.pinKeyboard.focusInput();
-  },
+  }
 
-  /** @override */
-  attached() {
+  override connectedCallback(): void {
     this.resetState();
 
     // Show the pin is too short error when first displaying the PIN dialog.
     this.problemClass_ = ProblemType.WARNING;
-    this.quickUnlockPrivate.getCredentialRequirements(
+    chrome.quickUnlockPrivate.getCredentialRequirements(
         chrome.quickUnlockPrivate.QuickUnlockMode.PIN,
         this.processPinRequirements_.bind(this, MessageType.TOO_SHORT));
-  },
+  }
 
   /**
    * Resets the element to the initial state.
    */
-  resetState() {
+  resetState(): void {
     this.initialPin_ = '';
     this.pinKeyboardValue_ = '';
     this.enableSubmit = false;
@@ -180,26 +203,25 @@ Polymer({
     this.hideProblem_();
     this.onPinChange_(
         new CustomEvent('pin-change', {detail: {pin: this.pinKeyboardValue_}}));
-  },
+  }
 
   /**
    * Returns true if the PIN is ready to be changed to a new value.
-   * @private
-   * @return {boolean}
    */
-  canSubmit_() {
+  private canSubmit_(): boolean {
     return this.initialPin_ === this.pinKeyboardValue_;
-  },
+  }
 
   /**
    * Handles writing the appropriate message to |problemMessageId_| &&
    * |problemMessageParameters_|.
-   * @private
-   * @param {string} messageId
-   * @param {chrome.quickUnlockPrivate.CredentialRequirements} requirements
+   * @param messageId
+   * @param requirements
    *     The requirements received from getCredentialRequirements.
    */
-  processPinRequirements_(messageId, requirements) {
+  private processPinRequirements_(
+      messageId: MessageType,
+      requirements: chrome.quickUnlockPrivate.CredentialRequirements): void {
     let additionalInformation = '';
     switch (messageId) {
       case MessageType.TOO_SHORT:
@@ -214,41 +236,35 @@ Polymer({
         break;
       default:
         assertNotReached();
-        break;
     }
     this.problemMessageId_ = messageId;
     this.problemMessageParameters_ = additionalInformation;
-  },
+  }
 
   /**
    * Notify the user about a problem.
-   * @private
-   * @param {string} messageId
-   * @param {string} problemClass
    */
-  showProblem_(messageId, problemClass) {
+  private showProblem_(messageId: MessageType, problemClass: ProblemType):
+      void {
     this.quickUnlockPrivate.getCredentialRequirements(
         chrome.quickUnlockPrivate.QuickUnlockMode.PIN,
         this.processPinRequirements_.bind(this, messageId));
     this.problemClass_ = problemClass;
     this.enableSubmit = problemClass !== ProblemType.ERROR &&
         messageId !== MessageType.TOO_SHORT;
-  },
+  }
 
-  /** @private */
-  hideProblem_() {
+  private hideProblem_(): void {
     this.problemMessageId_ = '';
     this.problemClass_ = '';
-  },
+  }
 
   /**
    * Processes the message received from the quick unlock api and hides/shows
    * the problem based on the message.
-   * @private
-   * @param {chrome.quickUnlockPrivate.CredentialCheck} message The message
-   *     received from checkCredential.
    */
-  processPinProblems_(message) {
+  private processPinProblems_(message:
+                                  chrome.quickUnlockPrivate.CredentialCheck) {
     if (!message.errors.length && !message.warnings.length) {
       this.hideProblem_();
       this.enableSubmit = true;
@@ -285,16 +301,14 @@ Polymer({
           break;
         default:
           assertNotReached();
-          break;
       }
     }
-  },
+  }
 
   /**
-   * @param {!CustomEvent<{pin: string}>} e Custom event containing the new pin.
-   * @private
+   * @param e Custom event containing the new pin.
    */
-  onPinChange_(e) {
+  private onPinChange_(e: CustomEvent<{pin: string}>): void {
     const newPin = e.detail.pin;
     if (!this.isConfirmStep) {
       if (newPin) {
@@ -309,21 +323,17 @@ Polymer({
 
     this.hideProblem_();
     this.enableSubmit = newPin.length > 0;
-  },
+  }
 
-  /** @private */
-  onPinSubmit_() {
+  private onPinSubmit_(): void {
     // Notify container object.
-    this.fire('pin-submit');
-  },
+    this.dispatchEvent(new Event('pin-submit'));
+  }
 
   /**
    * This is callback for quickUnlockPrivate.QuickUnlockMode.PIN API.
-   *
-   * @private
-   * @param {boolean} didSet
    */
-  onSetModesCompleted_(didSet) {
+  private onSetModesCompleted_(didSet: boolean): void {
     this.isSetModesCallPending_ = false;
     if (!didSet) {
       console.error('Failed to update pin');
@@ -333,11 +343,11 @@ Polymer({
     }
 
     this.resetState();
-    this.fire('set-pin-done');
-  },
+    this.dispatchEvent(new Event('set-pin-done'));
+  }
 
   /** This is called by container object when user initiated submit. */
-  doSubmit() {
+  doSubmit(): void {
     if (!this.isConfirmStep) {
       if (!this.enableSubmit) {
         return;
@@ -368,28 +378,27 @@ Polymer({
         null, [chrome.quickUnlockPrivate.QuickUnlockMode.PIN],
         [this.pinKeyboardValue_], this.onSetModesCompleted_.bind(this));
     this.writeUma(LockScreenProgress.CONFIRM_PIN);
-  },
+  }
 
-  /**
-   * @private
-   * @param {string} problemMessageId
-   * @param {string} problemClass
-   * @return {boolean}
-   */
-  hasError_(problemMessageId, problemClass) {
+  private hasError_(problemMessageId: string, problemClass: ProblemType):
+      boolean {
     return !!problemMessageId && problemClass === ProblemType.ERROR;
-  },
+  }
 
   /**
-   * Formar problem message
-   * @private
-   * @param {string} locale  i18n locale data
-   * @param {string} messageId
-   * @param {string} messageParameters
-   * @return {string}
+   * Format problem message
    */
-  formatProblemMessage_(locale, messageId, messageParameters) {
+  private formatProblemMessage_(
+      locale: string, messageId: string|undefined,
+      messageParameters: string): string {
     return messageId ? this.i18nDynamic(locale, messageId, messageParameters) :
                        '';
-  },
-});
+  }
+}
+
+customElements.define(SetupPinKeyboardElement.is, SetupPinKeyboardElement);
+declare global {
+  interface HTMLElementTagNameMap {
+    [SetupPinKeyboardElement.is]: SetupPinKeyboardElement;
+  }
+}
