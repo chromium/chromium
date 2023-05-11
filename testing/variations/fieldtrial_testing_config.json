@@ -5000,6 +5000,22 @@
             ]
         }
     ],
+    "EnablePreferencesAccountStorage": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePreferencesAccountStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListDesktop": [
         {
             "platforms": [
