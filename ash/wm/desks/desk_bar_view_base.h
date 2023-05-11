@@ -281,7 +281,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   State state_ = State::kZero;
 
-  // True if the `DesksBarBoundsAnimation` is started and hasn't finished yet.
+  // True if the `DeskBarBoundsAnimation` is started and hasn't finished yet.
   // It will be used to hold `Layout` until the bounds animation is completed.
   // `Layout` is expensive and will be called on bounds changes, which means it
   // will be called lots of times during the bounds changes animation. This is
