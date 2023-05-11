@@ -11,10 +11,8 @@
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -28,6 +26,7 @@ AmbientManagedSlideshowUiLauncher::AmbientManagedSlideshowUiLauncher(
       screensaver_images_policy_handler_(active_pref_service) {
   ambient_backend_model_observer_.Observe(
       photo_controller_.ambient_backend_model());
+  photo_controller_.SetObserver(this);
 
   screensaver_images_policy_handler_.SetScreensaverImagesUpdatedCallback(
       base::BindRepeating(
@@ -38,9 +37,28 @@ AmbientManagedSlideshowUiLauncher::AmbientManagedSlideshowUiLauncher(
 AmbientManagedSlideshowUiLauncher::~AmbientManagedSlideshowUiLauncher() =
     default;
 
+void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
+  CHECK(initialization_callback_);
+  std::move(initialization_callback_).Run(/*success=*/true);
+}
+
+void AmbientManagedSlideshowUiLauncher::OnErrorStateChanged() {
+  SetReadyState(ComputeReadyState());
+}
+
+void AmbientManagedSlideshowUiLauncher::OnLockStateChanged(bool locked) {
+  SetReadyState(ComputeReadyState());
+}
+
 void AmbientManagedSlideshowUiLauncher::Initialize(
     InitializationCallback on_done) {
   initialization_callback_ = std::move(on_done);
+  // TODO(b/281056480): Remove this line and add the login screen visible method
+  // to session observer. This is required because if we compute the ready state
+  // in the constructor, some of the login screen tests fail as there is no
+  // lock/login screen at the time of construction and the ready state is false.
+  // This will be a no-op if the ready state is already true.
+  SetReadyState(ComputeReadyState());
   photo_controller_.UpdateImageFilePaths(
       screensaver_images_policy_handler_.GetScreensaverImages());
   photo_controller_.StartScreenUpdate();
@@ -65,17 +83,13 @@ AmbientManagedSlideshowUiLauncher::GetAmbientBackendModel() {
   return photo_controller_.ambient_backend_model();
 }
 
-void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
-  CHECK(initialization_callback_);
-  std::move(initialization_callback_).Run(/*success=*/true);
-}
-
 bool AmbientManagedSlideshowUiLauncher::IsActive() {
   return photo_controller_.IsScreenUpdateActive();
 }
 
-bool AmbientManagedSlideshowUiLauncher::IsReady() {
-  return LockScreen::HasInstance();
+bool AmbientManagedSlideshowUiLauncher::ComputeReadyState() {
+  return LockScreen::HasInstance() &&
+         !photo_controller_.HasScreenUpdateErrors();
 }
 
 }  // namespace ash

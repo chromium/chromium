@@ -1365,6 +1365,10 @@ void AmbientController::CreateUiLauncher() {
     // new API.
     ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
   }
+
+  if (ambient_ui_launcher_) {
+    ambient_ui_launcher_->SetObserver(this);
+  }
 }
 
 void AmbientController::DestroyUiLauncher() {
@@ -1381,6 +1385,18 @@ bool AmbientController::IsUiLauncherActive() const {
          // migrated to AmbientUiLauncher.
          (ambient_photo_controller_ &&
           ambient_photo_controller_->IsScreenUpdateActive());
+}
+
+void AmbientController::OnReadyStateChanged(bool is_ready) {
+  if (!is_ready) {
+    // Close the UI if the launcher isn't ready. This is done so that we can
+    // stop the current ui launcher session and prevent screenburn.
+    SetUiVisibilityClosed();
+    return;
+  }
+  // In case the ready state changes on the login/lock screen we should re-show
+  // the ambient mode.
+  OnLoginLockStateChanged(GetLockScreenState());
 }
 
 }  // namespace ash

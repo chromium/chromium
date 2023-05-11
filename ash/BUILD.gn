@@ -172,6 +172,7 @@ component("ash") {
     "ambient/ambient_photo_cache.h",
     "ambient/ambient_photo_controller.cc",
     "ambient/ambient_photo_controller.h",
+    "ambient/ambient_ui_launcher.cc",
     "ambient/ambient_ui_launcher.h",
     "ambient/ambient_ui_settings.cc",
     "ambient/ambient_ui_settings.h",

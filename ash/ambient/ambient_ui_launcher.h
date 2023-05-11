@@ -23,6 +23,12 @@ namespace ash {
 class AmbientUiLauncher {
  public:
   using InitializationCallback = base::OnceCallback<void(bool success)>;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnReadyStateChanged(bool is_ready) {}
+  };
+
   virtual ~AmbientUiLauncher() = default;
 
   // Do any asynchronous initialization before launching the UI. This method is
@@ -49,7 +55,21 @@ class AmbientUiLauncher {
   // `Intiailize` method can be called. Note: This can potentially disable
   // ambient mode until the next lock/unlock event if this is false on the lock
   // screen.
-  virtual bool IsReady() = 0;
+  bool IsReady();
+
+  void SetObserver(Observer* observer);
+
+ protected:
+  // Sets the ready state and notifies the observer whenvever the reader state
+  // changes.
+  void SetReadyState(bool is_ready);
+
+ private:
+  base::raw_ptr<Observer> observer_ = nullptr;
+
+  // The ready state of the launcher, indicates whether the launcher is ready to
+  // be shown or not.
+  bool is_ready_ = true;
 };
 
 }  // namespace ash

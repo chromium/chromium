@@ -71,7 +71,8 @@ class ASH_EXPORT AmbientController
       public device::mojom::FingerprintObserver,
       public ui::UserActivityObserver,
       public ui::EventHandler,
-      public AssistantInteractionModelObserver {
+      public AssistantInteractionModelObserver,
+      public AmbientUiLauncher::Observer {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -125,6 +126,9 @@ class ASH_EXPORT AmbientController
 
   // AssistantInteractionModelObserver:
   void OnInteractionStateChanged(InteractionState interaction_state) override;
+
+  // AmbientUiLauncher::Observer:
+  void OnReadyStateChanged(bool is_ready) override;
 
   // Invoked by the `LockScreen` to notify ambient mode that either the login or
   // lock screen has been created.

@@ -98,8 +98,4 @@ bool AmbientVideoUiLauncher::IsActive() {
   return is_active_;
 }
 
-bool AmbientVideoUiLauncher::IsReady() {
-  return true;
-}
-
 }  // namespace ash

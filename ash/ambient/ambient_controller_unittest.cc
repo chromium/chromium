@@ -1610,7 +1610,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
 
-  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_FALSE(GetContainerView());
   UnlockScreen();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
@@ -1641,7 +1641,6 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
 
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
-  FastForwardTiny();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
@@ -1658,7 +1657,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
   ASSERT_TRUE(ambient_controller()->ambient_ui_launcher());
 
-  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
 
   SimulateScreensaverStart();
   UnlockScreen();
@@ -1671,7 +1670,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
   SetAmbientModeEnabled(/*enabled=*/true);
 
-  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
 
   SimulateScreensaverStart();
   UnlockScreen();
@@ -1702,12 +1701,8 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
        WorksWithAmbientManagedPhotoSource) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
 
-  SimulateScreensaverStart();
   managed_policy_handler()->SetImagesForTesting(image_file_paths_);
-
-  // Forward the task environment a bit to make sure any pending tasks get
-  // started.
-  FastForwardTiny();
+  SimulateScreensaverStart();
 
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
@@ -1717,7 +1712,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   ASSERT_FALSE(GetContainerView());
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
-  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   SimulateScreensaverStart();
   // Will start as there are images present already
   ASSERT_TRUE(GetContainerView());
@@ -1832,10 +1827,38 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   DisableBackupCacheDownloads();
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
-  FastForwardTiny();
 
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ManagedScreensaverClosedWhenImagesCleared) {
+  TriggerLoginScreen();
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  ASSERT_TRUE(GetContainerView());
+  // Clear images
+  managed_policy_handler()->SetImagesForTesting({});
+  EXPECT_FALSE(ambient_controller()->IsShowing());
+  FastForwardByLockScreenInactivityTimeout();
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+
+  // Simulate login
+  CreateUserSessions(/*session_count=*/1);
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+
+  SetAmbientModeManagedScreensaverEnabled(true);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
+  LockScreen();
+  FastForwardByLockScreenInactivityTimeout();
+
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  ASSERT_TRUE(GetContainerView());
+
+  managed_policy_handler()->SetImagesForTesting({});
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  FastForwardByLockScreenInactivityTimeout();
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
 TEST_F(AmbientControllerForManagedScreensaverTest,

@@ -47,15 +47,14 @@ void AmbientManagedPhotoController::StartScreenUpdate() {
 
 void AmbientManagedPhotoController::UpdateImageFilePaths(
     const std::vector<base::FilePath>& images) {
+  // Reset `error_state_` when a sufficient number of new images are received
   if (images.size() < kMinImagesRequired) {
     // TODO(b/269579804): Add Metrics
-    // TODO(b/175142676): Consider stopping managed screensaver if started
-    // with an insufficient no of images.
-
-    LOG(WARNING) << "AmbientManagedPhotoController updated with an "
-                    "insufficient number of images.";
+    SetErrorState(ErrorState::kInsufficientImages);
     return;
   }
+  SetErrorState(ErrorState::kNone);
+
   images_file_paths_ = images;
   image_attempt_no_ = 0;
 
@@ -73,6 +72,20 @@ void AmbientManagedPhotoController::UpdateImageFilePaths(
     // the next topic buffer size images from disk, this will automatically
     // fill the backend model with only the latest images.
     LoadImages();
+  }
+}
+
+bool AmbientManagedPhotoController::HasScreenUpdateErrors() const {
+  return error_state_ != ErrorState::kNone;
+}
+
+void AmbientManagedPhotoController::SetErrorState(ErrorState error_state) {
+  if (error_state == error_state_) {
+    return;
+  }
+  error_state_ = error_state;
+  if (observer_) {
+    observer_->OnErrorStateChanged();
   }
 }
 
@@ -193,6 +206,11 @@ void AmbientManagedPhotoController::OnPhotoDecoded(
 size_t AmbientManagedPhotoController::GetMaxImageAttempts() const {
   CHECK_GE(images_file_paths_.size(), kMinImagesRequired);
   return images_file_paths_.size() - 1;
+}
+
+void AmbientManagedPhotoController::SetObserver(Observer* observer) {
+  CHECK(!observer_);
+  observer_ = observer;
 }
 
 }  // namespace ash
