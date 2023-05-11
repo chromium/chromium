@@ -5896,23 +5896,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
 
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          blink::TestInterestGroupBuilder(
-              /*owner=*/test_origin,
-              /*name=*/"cars")
-              .SetBiddingUrl(https_server_->GetURL(
-                  "a.test", "/interest_group/bidding_logic_with_size.js"))
-              .SetAds(
-                  /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt, "group_1"}}})
-              .SetAdSizes(
-                  {{{"size_1",
-                     blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
-                                   50,
-                                   blink::AdSize::LengthUnit::kScreenHeight)}}})
-              .SetSizeGroups({{{"group_1", {"size_1"}}}})
-              .Build()));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic_with_size.js"))
+                    .SetAds(
+                        /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                   /*size_group=*/"group_1"}}})
+                    .SetAdSizes(
+                        {{{"size_1",
+                           blink::AdSize(
+                               100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                               blink::AdSize::LengthUnit::kScreenHeight)}}})
+                    .SetSizeGroups({{{"group_1", {"size_1"}}}})
+                    .Build()));
 
   std::string auction_config = JsReplace(
       R"({
@@ -5922,6 +5922,88 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         })",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+}
+
+// Runs an auction just like InterestGroupBrowserTest.RunAdAuctionWithWinner,
+// but where the render size is specified only in the interest group, not the
+// bid. When size is only specified in one place, the ads are considered
+// matching (as long as their urls are the same), but the auction proceeds as if
+// no size information was specified.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionWithSizeForInterestGroupWithWinnerNoMacroSubstitution) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/echo?render_cars&size={%AD_WIDTH%}x{%AD_HEIGHT%}");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds(
+                        /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                   /*size_group=*/"group_1"}}})
+                    .SetAdSizes(
+                        {{{"size_1",
+                           blink::AdSize(
+                               100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                               blink::AdSize::LengthUnit::kScreenHeight)}}})
+                    .SetSizeGroups({{{"group_1", {"size_1"}}}})
+                    .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+          seller: $1,
+          decisionLogicUrl: $2,
+          interestGroupBuyers: [$1]
+        })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  // Size is only specified in the interest group, ad size macro substitution
+  // should not happen.
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+}
+
+// Runs an auction just like InterestGroupBrowserTest.RunAdAuctionWithWinner,
+// but where the render size is specified only in the bid, not the interest
+// group. When size is only specified in one place, the ads are considered
+// matching (as long as their urls are the same), but the auction proceeds as if
+// no size information was specified.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionWithSizeForBidWithWinnerNoMacroSubstitution) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/echo?render_cars&size={%AD_WIDTH%}x{%AD_HEIGHT%}");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic_with_size.js"))
+                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}})
+                    .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+          seller: $1,
+          decisionLogicUrl: $2,
+          interestGroupBuyers: [$1]
+        })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  // Size is only specified in the bid, ad size macro substitution should not
+  // happen.
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 }
 

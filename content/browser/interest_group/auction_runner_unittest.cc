@@ -9579,20 +9579,6 @@ TEST_F(AuctionRunnerTest, BadBid) {
           base::TimeDelta(),
       },
 
-      // HTTPS render URL with a size specification that does not match any
-      // allowed ad descriptors.
-      {
-          "Bid render ad must have a valid URL and size (if specified)",
-          1,
-          /*bid_currency=*/absl::nullopt,
-          blink::AdDescriptor(
-              GURL("https://ad1.com"),
-              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 100,
-                            blink::AdSize::LengthUnit::kPixels)),
-          absl::nullopt,
-          base::TimeDelta(),
-      },
-
       // Invalid component URL.
       {
           "Bid ad component must have a valid URL and size (if specified)",
@@ -9646,19 +9632,6 @@ TEST_F(AuctionRunnerTest, BadBid) {
           std::vector<blink::AdDescriptor>{blink::AdDescriptor(
               GURL("https://ad1.com-component1.com"),
               blink::AdSize(100, blink::AdSize::LengthUnit::kInvalid, 100,
-                            blink::AdSize::LengthUnit::kPixels))},
-          base::TimeDelta(),
-      },
-      // HTTPS component URL with a size specification that does not match any
-      // allowed ad descriptors.
-      {
-          "Bid ad component must have a valid URL and size (if specified)",
-          1,
-          /*bid_currency=*/absl::nullopt,
-          blink::AdDescriptor(GURL("https://ad1.com")),
-          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
-              GURL("https://ad1.com-component1.com"),
-              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 100,
                             blink::AdSize::LengthUnit::kPixels))},
           base::TimeDelta(),
       },

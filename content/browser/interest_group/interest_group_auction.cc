@@ -158,10 +158,11 @@ const blink::InterestGroup::Ad* FindMatchingAd(
       // they have the same url.
       return &ad;
     }
-    if (!ad.size_group || !ad_descriptor.size) {
-      // Since only one of the ads has a size specification, they are considered
-      // not matching.
-      continue;
+    if (!ad.size_group != !ad_descriptor.size) {
+      // When only one of the two ads has a size specification, they are
+      // considered matching. The caller is responsible for discarding the
+      // extraneous size information
+      return &ad;
     }
     // Both `blink::InterestGroup::Ad` and the ad from the bid have size
     // specifications. They are considered as matching ad only if their
@@ -1624,6 +1625,11 @@ class InterestGroupAuction::BuyerHelper
           "Bid render ad must have a valid URL and size (if specified)");
       return nullptr;
     }
+    // If the matching ad does not have size specified, the bid to be created
+    // should not have size specified to fall back to old behavior.
+    blink::AdDescriptor ad_descriptor(
+        mojo_bid->ad_descriptor.url,
+        matching_ad->size_group ? mojo_bid->ad_descriptor.size : absl::nullopt);
 
     // Validate `ad_component` URLs, if present.
     std::vector<blink::AdDescriptor> ad_component_descriptors;
@@ -1647,15 +1653,21 @@ class InterestGroupAuction::BuyerHelper
       // group's `ad_components` field.
       for (const blink::AdDescriptor& ad_component_descriptor :
            *mojo_bid->ad_component_descriptors) {
-        if (!FindMatchingAd(*interest_group.ad_components, bid_state.kanon_keys,
-                            interest_group, bid_role, /*is_component_ad=*/true,
-                            ad_component_descriptor)) {
+        const blink::InterestGroup::Ad* matching_ad_component = FindMatchingAd(
+            *interest_group.ad_components, bid_state.kanon_keys, interest_group,
+            bid_role, /*is_component_ad=*/true, ad_component_descriptor);
+        if (!matching_ad_component) {
           generate_bid_client_receiver_set_.ReportBadMessage(
               "Bid ad component must have a valid URL and size (if specified)");
           return nullptr;
         }
+        // If the matching ad does not have size specified, the bid to be
+        // created should not have size specified to fall back to old behavior.
+        ad_component_descriptors.emplace_back(ad_component_descriptor.url,
+                                              matching_ad_component->size_group
+                                                  ? ad_component_descriptor.size
+                                                  : absl::nullopt);
       }
-      ad_component_descriptors = *std::move(mojo_bid->ad_component_descriptors);
     }
 
     // Validate `debug_loss_report_url` and `debug_win_report_url`, if present.
@@ -1675,7 +1687,7 @@ class InterestGroupAuction::BuyerHelper
     return std::make_unique<Bid>(
         bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
         std::move(mojo_bid->bid_currency), mojo_bid->ad_cost,
-        std::move(mojo_bid->ad_descriptor), std::move(ad_component_descriptors),
+        std::move(ad_descriptor), std::move(ad_component_descriptors),
         std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
         bidding_signals_data_version, matching_ad, &bid_state, auction_);
   }
