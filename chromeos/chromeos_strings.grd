@@ -308,7 +308,7 @@
 
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu.">
-        Half
+        Split
       </message>
       <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME" desc="Title and and accessible name of the partial button on the multitask menu.">
         Partial
