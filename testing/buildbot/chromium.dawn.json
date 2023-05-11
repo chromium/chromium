@@ -8227,45 +8227,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "display_attached": "1",
-              "gpu": "10de:2184-27.21.14.5638",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
@@ -9192,45 +9153,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "display_attached": "1",
-              "gpu": "10de:2184-27.21.14.5638",
-              "os": "Windows-10-18363",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
