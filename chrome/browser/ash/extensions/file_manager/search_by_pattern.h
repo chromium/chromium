@@ -22,13 +22,15 @@ namespace extensions {
 std::string CreateFnmatchQuery(const std::string& query);
 
 // For the given root it attempts to find files that have name matching the
-// given pattern, are modified after the given min_timestamp and are of the
+// given pattern, are not in folders whose paths are anywhere on the
+// excluded_paths, are modified after the given min_timestamp and are of the
 // given file type. This function will return up to max_results. The results are
 // returned as a vector of pairs, with the first element of the pair being the
 // matched file path, and the second indicating if the file is a directory or a
 // plain file.
 std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
     const base::FilePath& root,
+    const std::vector<base::FilePath>& excluded_paths,
     const std::string& query,
     const base::Time& min_timestamp,
     ash::RecentSource::FileType file_type,
