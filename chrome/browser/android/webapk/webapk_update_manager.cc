@@ -113,6 +113,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   info.background_color = ui::JavaColorToOptionalSkColor(java_background_color);
   info.best_primary_icon_url =
       GURL(ConvertJavaStringToUTF8(env, java_primary_icon_url));
+  info.is_primary_icon_maskable = java_is_primary_icon_maskable;
   info.splash_image_url =
       GURL(ConvertJavaStringToUTF8(env, java_splash_icon_url));
   info.is_splash_image_maskable = java_is_splash_icon_maskable;
@@ -223,7 +224,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
 
   WebApkInstaller::StoreUpdateRequestToFile(
       base::FilePath(update_request_path), info, app_key, primary_icon_data,
-      java_is_primary_icon_maskable, splash_icon_data, webapk_package,
+      splash_icon_data, webapk_package,
       base::NumberToString(java_webapk_version),
       std::move(icon_url_to_murmur2_hash), java_is_manifest_stale,
       java_is_app_identity_update_supported, std::move(update_reasons),

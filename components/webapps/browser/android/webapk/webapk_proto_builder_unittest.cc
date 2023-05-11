@@ -68,8 +68,7 @@ class BuildProtoRunner {
       info.shortcut_items.back().icons.back().src = shortcut_url;
     }
 
-    webapps::BuildProto(info, app_key, primary_icon_data,
-                        false /* is_primary_icon_maskable */, splash_icon_data,
+    webapps::BuildProto(info, app_key, primary_icon_data, splash_icon_data,
                         "" /* package_name */, "" /* version */,
                         std::move(icon_url_to_murmur2_hash), is_manifest_stale,
                         is_app_identity_update_supported,
