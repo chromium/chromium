@@ -342,7 +342,16 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
                             touchpad.settings->tap_dragging_enabled);
   base::UmaHistogramBoolean(touchpad_metrics_prefix + "TapToClick.Initial",
                             touchpad.settings->tap_to_click_enabled);
-  // TODO(yyhyyh@): Add haptic settings metrics.
+
+  if (touchpad.is_haptic) {
+    PointerSensitivity haptic_sensitivity =
+        static_cast<PointerSensitivity>(touchpad.settings->haptic_sensitivity);
+    base::UmaHistogramBoolean(touchpad_metrics_prefix + "HapticEnabled.Initial",
+                              touchpad.settings->haptic_enabled);
+    base::UmaHistogramEnumeration(
+        touchpad_metrics_prefix + "HapticSensitivity.Initial",
+        haptic_sensitivity);
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
@@ -378,7 +387,21 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
     base::UmaHistogramBoolean(touchpad_metrics_prefix + "TapToClick.Changed",
                               touchpad.settings->tap_to_click_enabled);
   }
-  // TODO(yyhyyh@): Add haptic settings metrics.
+  if (touchpad.is_haptic) {
+    if (touchpad.settings->haptic_enabled != old_settings.haptic_enabled) {
+      bool haptic_enabled = touchpad.settings->haptic_enabled;
+      base::UmaHistogramBoolean(
+          touchpad_metrics_prefix + "HapticEnabled.Changed", haptic_enabled);
+    }
+    if (touchpad.settings->haptic_sensitivity !=
+        old_settings.haptic_sensitivity) {
+      PointerSensitivity haptic_sensitivity = static_cast<PointerSensitivity>(
+          touchpad.settings->haptic_sensitivity);
+      base::UmaHistogramEnumeration(
+          touchpad_metrics_prefix + "HapticSensitivity.Changed",
+          haptic_sensitivity);
+    }
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordModifierRemappingHash(
