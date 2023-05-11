@@ -393,8 +393,8 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setScreenReaderEnabledForTesting(true);
-            AccessibilityState.setOnlyPasswordManagersEnabledForTesting(false);
+            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
         });
 
         var histogramWatcher =
@@ -428,9 +428,8 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setScreenReaderEnabledForTesting(false);
-            AccessibilityState.setOnlyPasswordManagersEnabledForTesting(true);
-
+            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
         });
 
         var histogramWatcher =
@@ -465,8 +464,8 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and screen reader state.
         FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setScreenReaderEnabledForTesting(false);
-            AccessibilityState.setOnlyPasswordManagersEnabledForTesting(false);
+            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
         });
 
         var histogramWatcher =
@@ -503,8 +502,8 @@ public class WebContentsAccessibilityTest {
         FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-            AccessibilityState.setScreenReaderEnabledForTesting(true);
-            AccessibilityState.setOnlyPasswordManagersEnabledForTesting(false);
+            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
         });
 
         var histogramWatcher =
@@ -541,8 +540,8 @@ public class WebContentsAccessibilityTest {
         FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-            AccessibilityState.setScreenReaderEnabledForTesting(false);
-            AccessibilityState.setOnlyPasswordManagersEnabledForTesting(true);
+            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
         });
 
         var histogramWatcher =
@@ -579,8 +578,8 @@ public class WebContentsAccessibilityTest {
         FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-            AccessibilityState.setScreenReaderEnabledForTesting(false);
-            AccessibilityState.setOnlyPasswordManagersEnabledForTesting(false);
+            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
         });
 
         var histogramWatcher =
