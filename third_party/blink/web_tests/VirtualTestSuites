@@ -1249,6 +1249,16 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "force-renderer-accessibility-form-controls",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/accessibility/crashtests/bdo-table-cell.html",
+              "external/wpt/accessibility/crashtests/displaylocked-serialize.html",
+              "external/wpt/accessibility/crashtests/img-map-pseudo.html",
+              "external/wpt/accessibility/crashtests/map-inside-map.html"],
+    "args": ["--force-renderer-accessibility=form-controls"],
+    "expires": "never"
+  },
+  {
     "prefix": "no-alloc-direct-call",
     "platforms": ["Linux"],
     "bases": ["fast/canvas"],
