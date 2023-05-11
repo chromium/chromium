@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 
 namespace sync_preferences {
@@ -21,7 +22,8 @@ class FakeDeviceTrustConnectorService : public DeviceTrustConnectorService {
       sync_preferences::TestingPrefServiceSyncable* profile_prefs);
   ~FakeDeviceTrustConnectorService() override;
 
-  void update_policy(base::Value::List new_urls);
+  void UpdateInlinePolicy(base::Value::List new_urls,
+                          DTCPolicyLevel policy_level);
 
  private:
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> test_prefs_;

@@ -6,109 +6,187 @@
 
 #include <set>
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_signals {
 
+using DTCPolicyLevel = enterprise_connectors::DTCPolicyLevel;
+
 namespace {
+
 constexpr char kUserEmail[] = "someEmail@example.com";
 constexpr char kOtherUserEmail[] = "someOtherUser@example.com";
 constexpr char kOtherUserGaiaId[] = "some-other-user-gaia";
+
+base::Value::List GetUrls() {
+  base::Value::List trusted_urls;
+  trusted_urls.Append("https://www.example.com");
+  trusted_urls.Append("example2.example.com");
+  return trusted_urls;
+}
+
 }  // namespace
 
 class UserDelegateImplTest : public testing::Test {
  protected:
-  std::unique_ptr<TestingProfile> CreateProfile(bool is_managed) {
+  void CreateDelegate(bool is_managed_user = true) {
     TestingProfile::Builder builder;
-    builder.OverridePolicyConnectorIsManagedForTesting(is_managed);
-    return builder.Build();
+    builder.OverridePolicyConnectorIsManagedForTesting(is_managed_user);
+    testing_profile_ = builder.Build();
+
+    fake_dt_connector_service_ = std::make_unique<
+        enterprise_connectors::FakeDeviceTrustConnectorService>(
+        testing_profile_->GetTestingPrefService());
+
+    user_delegate_ = std::make_unique<UserDelegateImpl>(
+        testing_profile_.get(), identity_test_env_.identity_manager(),
+        fake_dt_connector_service_.get());
   }
 
   content::BrowserTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<TestingProfile> testing_profile_;
+  std::unique_ptr<enterprise_connectors::FakeDeviceTrustConnectorService>
+      fake_dt_connector_service_;
+
+  std::unique_ptr<UserDelegateImpl> user_delegate_;
 };
 
 // Tests that IsManagedUser returns false when the user is not managed.
 TEST_F(UserDelegateImplTest, IsManagedUser_False) {
-  auto test_profile = CreateProfile(/*is_managed=*/false);
-
-  UserDelegateImpl user_delegate(test_profile.get(),
-                                 identity_test_env_.identity_manager());
-  EXPECT_FALSE(user_delegate.IsManagedUser());
+  CreateDelegate(/*is_managed_user=*/false);
+  EXPECT_FALSE(user_delegate_->IsManagedUser());
 }
 
 // Tests that IsManagedUser returns true when the user is managed.
 TEST_F(UserDelegateImplTest, IsManagedUser_True) {
-  auto test_profile = CreateProfile(/*is_managed=*/true);
-
-  UserDelegateImpl user_delegate(test_profile.get(),
-                                 identity_test_env_.identity_manager());
-  EXPECT_TRUE(user_delegate.IsManagedUser());
+  CreateDelegate();
+  EXPECT_TRUE(user_delegate_->IsManagedUser());
 }
 
 // Tests that IsSameUser returns false when given a different user.
 TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
-  auto test_profile = CreateProfile(/*is_managed=*/true);
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
   auto other_account = identity_test_env_.MakeAccountAvailableWithCookies(
       kOtherUserEmail, kOtherUserGaiaId);
 
-  UserDelegateImpl user_delegate(test_profile.get(),
-                                 identity_test_env_.identity_manager());
-  EXPECT_FALSE(user_delegate.IsSameUser(kOtherUserGaiaId));
+  CreateDelegate();
+  EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
 }
 
 // Tests that IsSameUser returns false when there is no primary user.
 TEST_F(UserDelegateImplTest, IsSameUser_NoPrimaryUser) {
-  auto test_profile = CreateProfile(/*is_managed=*/true);
   auto other_account = identity_test_env_.MakeAccountAvailableWithCookies(
       kOtherUserEmail, kOtherUserGaiaId);
 
-  UserDelegateImpl user_delegate(test_profile.get(),
-                                 identity_test_env_.identity_manager());
-  EXPECT_FALSE(user_delegate.IsSameUser(kOtherUserGaiaId));
+  CreateDelegate();
+  EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
 }
 
 // Tests that IsSameUser returns true when given the same user, and the
 // user did not give Sync consent.
 TEST_F(UserDelegateImplTest, IsSameUser_SameUser_Signin) {
-  auto test_profile = CreateProfile(/*is_managed=*/true);
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
 
-  UserDelegateImpl user_delegate(test_profile.get(),
-                                 identity_test_env_.identity_manager());
-  EXPECT_TRUE(user_delegate.IsSameUser(account.gaia));
+  CreateDelegate();
+  EXPECT_TRUE(user_delegate_->IsSameUser(account.gaia));
 }
 
 // Tests that IsSameUser returns true when given the same user, and the
 // user gave Sync consent.
 TEST_F(UserDelegateImplTest, IsSameUser_SameUser_Sync) {
-  auto test_profile = CreateProfile(/*is_managed=*/true);
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSync);
 
-  UserDelegateImpl user_delegate(test_profile.get(),
-                                 identity_test_env_.identity_manager());
-  EXPECT_TRUE(user_delegate.IsSameUser(account.gaia));
+  CreateDelegate();
+  EXPECT_TRUE(user_delegate_->IsSameUser(account.gaia));
 }
 
-// Tests that GetPolicyScopesNeedingSignals only returns an empty set
-// for now.
+// Tests that GetPolicyScopesNeedingSignals returns an empty set when
+// no policies are enabled.
 TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Empty) {
-  auto test_profile = CreateProfile(/*is_managed=*/true);
-  UserDelegateImpl user_delegate(test_profile.get(),
-                                 identity_test_env_.identity_manager());
-  EXPECT_EQ(user_delegate.GetPolicyScopesNeedingSignals(),
+  CreateDelegate();
+  EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
             std::set<policy::PolicyScope>());
 }
+
+class UserDelegateImplFlagsTest : public UserDelegateImplTest,
+                                  public testing::WithParamInterface<bool> {
+ protected:
+  UserDelegateImplFlagsTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        enterprise_connectors::kUserDTCInlineFlowEnabled,
+        is_new_flag_enabled());
+  }
+
+  bool is_new_flag_enabled() const { return GetParam(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled
+// at the user level.
+TEST_P(UserDelegateImplFlagsTest, GetPolicyScopesNeedingSignals_User) {
+  CreateDelegate();
+  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
+                                                 DTCPolicyLevel::kUser);
+
+  const auto& policy_scopes = user_delegate_->GetPolicyScopesNeedingSignals();
+
+  std::set<policy::PolicyScope> expected_scopes = {policy::POLICY_SCOPE_USER};
+  if (!is_new_flag_enabled()) {
+    expected_scopes.insert(policy::POLICY_SCOPE_MACHINE);
+  }
+  EXPECT_EQ(policy_scopes, expected_scopes);
+}
+
+// Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled
+// at the browser level.
+TEST_P(UserDelegateImplFlagsTest, GetPolicyScopesNeedingSignals_Browser) {
+  CreateDelegate();
+  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
+                                                 DTCPolicyLevel::kBrowser);
+
+  const auto& policy_scopes = user_delegate_->GetPolicyScopesNeedingSignals();
+
+  std::set<policy::PolicyScope> expected_scopes = {
+      policy::POLICY_SCOPE_MACHINE};
+  if (!is_new_flag_enabled()) {
+    expected_scopes.insert(policy::POLICY_SCOPE_USER);
+  }
+  EXPECT_EQ(policy_scopes, expected_scopes);
+}
+
+// Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled
+// at the both the user and browser levels.
+TEST_P(UserDelegateImplFlagsTest,
+       GetPolicyScopesNeedingSignals_UserAndBrowser) {
+  CreateDelegate();
+  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
+                                                 DTCPolicyLevel::kBrowser);
+  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
+                                                 DTCPolicyLevel::kUser);
+
+  const auto& policy_scopes = user_delegate_->GetPolicyScopesNeedingSignals();
+
+  std::set<policy::PolicyScope> expected_scopes = {policy::POLICY_SCOPE_MACHINE,
+                                                   policy::POLICY_SCOPE_USER};
+  EXPECT_EQ(policy_scopes, expected_scopes);
+}
+
+INSTANTIATE_TEST_SUITE_P(, UserDelegateImplFlagsTest, testing::Bool());
 
 }  // namespace enterprise_signals

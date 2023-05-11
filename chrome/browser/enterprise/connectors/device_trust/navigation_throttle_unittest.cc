@@ -89,7 +89,10 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
     fake_connector_ = std::make_unique<FakeDeviceTrustConnectorService>(
         profile_.GetTestingPrefService());
 
-    fake_connector_->update_policy(GetTrustedUrls());
+    fake_connector_->UpdateInlinePolicy(GetTrustedUrls(),
+                                        DTCPolicyLevel::kBrowser);
+    fake_connector_->UpdateInlinePolicy(GetTrustedUrls(),
+                                        DTCPolicyLevel::kUser);
 
     EXPECT_CALL(mock_device_trust_service_, Watches(_))
         .WillRepeatedly(Invoke(

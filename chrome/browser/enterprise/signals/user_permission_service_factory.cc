@@ -62,14 +62,16 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
-  auto* user_permission_service = new device_signals::UserPermissionServiceImpl(
-      management_service,
-      std::make_unique<UserDelegateImpl>(profile, identity_manager),
-      profile->GetPrefs());
-
   auto* device_trust_connector_service =
       enterprise_connectors::DeviceTrustConnectorServiceFactory::GetForProfile(
           profile);
+
+  auto* user_permission_service = new device_signals::UserPermissionServiceImpl(
+      management_service,
+      std::make_unique<UserDelegateImpl>(profile, identity_manager,
+                                         device_trust_connector_service),
+      profile->GetPrefs());
+
   if (device_trust_connector_service) {
     device_trust_connector_service->AddObserver(
         std::make_unique<enterprise_connectors::ConsentPolicyObserver>(

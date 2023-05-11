@@ -7,6 +7,8 @@
 #include <set>
 
 #include "base/check.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,11 +18,31 @@
 
 namespace enterprise_signals {
 
-UserDelegateImpl::UserDelegateImpl(Profile* profile,
-                                   signin::IdentityManager* identity_manager)
-    : profile_(profile), identity_manager_(identity_manager) {
-  DCHECK(profile_);
-  DCHECK(identity_manager_);
+using DTCPolicyLevel = enterprise_connectors::DTCPolicyLevel;
+
+namespace {
+
+policy::PolicyScope ToPolicyScope(DTCPolicyLevel policy_level) {
+  switch (policy_level) {
+    case DTCPolicyLevel::kUser:
+      return policy::POLICY_SCOPE_USER;
+    case DTCPolicyLevel::kBrowser:
+      return policy::POLICY_SCOPE_MACHINE;
+  }
+}
+
+}  // namespace
+
+UserDelegateImpl::UserDelegateImpl(
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    enterprise_connectors::DeviceTrustConnectorService*
+        device_trust_connector_service)
+    : profile_(profile),
+      identity_manager_(identity_manager),
+      device_trust_connector_service_(device_trust_connector_service) {
+  CHECK(profile_);
+  CHECK(identity_manager_);
 }
 
 UserDelegateImpl::~UserDelegateImpl() = default;
@@ -47,8 +69,14 @@ bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
 
 std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()
     const {
-  // TODO(b:279060607): Add actual policy scopes.
-  return std::set<policy::PolicyScope>();
+  std::set<policy::PolicyScope> policy_scopes;
+  if (device_trust_connector_service_) {
+    for (const auto policy_level :
+         device_trust_connector_service_->GetEnabledInlinePolicyLevels()) {
+      policy_scopes.insert(ToPolicyScope(policy_level));
+    }
+  }
+  return policy_scopes;
 }
 
 }  // namespace enterprise_signals
