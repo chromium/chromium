@@ -2072,6 +2072,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-cros-diacritics-use-replace-surrounding-text",
+    "owners": ["jopalmer", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-cros-first-party-vietnamese-input",
     "owners": ["jhtin", "essential-inputs-team@google.com" ],
     "expiry_milestone": 122

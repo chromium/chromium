@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
@@ -112,6 +113,11 @@ class InputMethodEngine : virtual public TextInputMethod,
     int total_candidates = 0;
   };
 
+  enum class Error {
+    kInputMethodNotActive,
+    kIncorrectContextId,
+  };
+
   InputMethodEngine();
   InputMethodEngine(const InputMethodEngine&) = delete;
   InputMethodEngine& operator=(const InputMethodEngine&) = delete;
@@ -151,6 +157,16 @@ class InputMethodEngine : virtual public TextInputMethod,
                              int offset,
                              size_t number_of_chars,
                              std::string* error);
+
+  // Deletes any active composition, and the current selection plus the
+  // specified number of char16 values before and after the selection, and
+  // replaces it with |replacement_string|.
+  // Places the cursor at the end of |replacement_string|.
+  base::expected<void, Error> ReplaceSurroundingText(
+      int context_id,
+      int length_before_selection,
+      int length_after_selection,
+      base::StringPiece16 replacement_text);
 
   // Commit the text currently being composed to the composition.
   // Fails if the context is not focused.
@@ -251,6 +267,7 @@ class InputMethodEngine : virtual public TextInputMethod,
   bool AcceptSuggestionCandidate(int context_id,
                                  const std::u16string& candidate,
                                  size_t delete_previous_utf16_len,
+                                 bool use_replace_surrounding_text,
                                  std::string* error) override;
   bool SetAssistiveWindowProperties(
       int context_id,

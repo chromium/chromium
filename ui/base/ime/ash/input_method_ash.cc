@@ -973,6 +973,18 @@ void InputMethodAsh::DeleteSurroundingText(uint32_t num_char16s_before_cursor,
                                                  num_char16s_after_cursor);
 }
 
+void InputMethodAsh::ReplaceSurroundingText(
+    uint32_t length_before_selection,
+    uint32_t length_after_selection,
+    base::StringPiece16 replacement_text) {
+  if (!GetTextInputClient()) {
+    return;
+  }
+
+  GetTextInputClient()->ExtendSelectionAndReplace(
+      length_before_selection, length_after_selection, replacement_text);
+}
+
 bool InputMethodAsh::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   if (!character_composer_.FilterKeyPress(event))
     return false;

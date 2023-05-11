@@ -5906,6 +5906,12 @@ const char kDiacriticsOnPhysicalKeyboardLongpressDefaultOnDescription[] =
     "Enable diacritics and other varient character selection on physical "
     "keyboard longpress by default.";
 
+const char kDiacriticsUseReplaceSurroundingTextName[] =
+    "Use ReplaceSurroundingText API for longpress diacritics.";
+const char kDiacriticsUseReplaceSurroundingTextDescription[] =
+    "When longpress diacritics is enabled, use the ReplaceSurroundingText API "
+    "for better app compatibility.";
+
 const char kHoldingSpacePredictabilityName[] =
     "Enable holding space predictability";
 const char kHoldingSpacePredictabilityDescription[] =

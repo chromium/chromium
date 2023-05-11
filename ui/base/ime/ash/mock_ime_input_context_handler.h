@@ -37,6 +37,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
     uint32_t num_char16s_after_cursor;
   };
 
+  struct ReplaceSurroundingTextArg {
+    uint32_t length_before_selection;
+    uint32_t length_after_selection;
+    std::u16string replacement_text;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called whenever the commit text is updated.
@@ -75,6 +81,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
       const std::vector<ui::GrammarFragment>& fragments) override;
   void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
                              uint32_t num_char16s_after_cursor) override;
+  void ReplaceSurroundingText(uint32_t length_before_selection,
+                              uint32_t length_after_selection,
+                              base::StringPiece16 replacement_text) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(ui::KeyEvent* event) override;
   ui::InputMethod* GetInputMethod() override;
@@ -109,6 +118,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
     return last_delete_surrounding_text_arg_;
   }
 
+  const ReplaceSurroundingTextArg& last_replace_surrounding_text_arg() const {
+    return last_replace_surrounding_text_arg_;
+  }
+
   void set_autocorrect_enabled(bool enabled) {
     autocorrect_enabled_ = enabled;
     if (!enabled) {
@@ -135,6 +148,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   bool autocorrect_enabled_ = true;
   std::vector<ui::GrammarFragment> grammar_fragments_;
   gfx::Range cursor_range_;
+  ReplaceSurroundingTextArg last_replace_surrounding_text_arg_;
   base::ObserverList<Observer> observers_;
 };
 

@@ -66,7 +66,7 @@ bool LongpressControlVSuggester::AcceptSuggestion(size_t index) {
     suggestion_handler_->AcceptSuggestionCandidate(
         *focused_context_id_, /*candidate=*/u"",
         /*delete_previous_utf16_len=*/pasted_text_end - *pasted_text_start_,
-        &error);
+        /*use_replace_surrounding_text=*/false, &error);
     if (!error.empty()) {
       LOG(ERROR) << "suggest: Accepted long-press Ctrl+V suggestion without "
                     "replacing originally pasted content: "

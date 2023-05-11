@@ -395,6 +395,14 @@ void TextInput::ExtendSelectionAndDelete(size_t before, size_t after) {
   surrounding_text_tracker_.OnExtendSelectionAndDelete(before, after);
 }
 
+void TextInput::ExtendSelectionAndReplace(
+    size_t before,
+    size_t after,
+    const base::StringPiece16 replacement_text) {
+  // TODO(crbug.com/1443726): Implement this using an extended Wayland API.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void TextInput::EnsureCaretNotInRect(const gfx::Rect& rect) {
   if (ShouldStageVKState()) {
     staged_vk_occluded_bounds_ = rect;

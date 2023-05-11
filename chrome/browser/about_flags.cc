@@ -5148,6 +5148,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kDiacriticsOnPhysicalKeyboardLongpressDefaultOn)},
+    {"enable-cros-diacritics-use-replace-surrounding-text",
+     flag_descriptions::kDiacriticsUseReplaceSurroundingTextName,
+     flag_descriptions::kDiacriticsUseReplaceSurroundingTextDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDiacriticsUseReplaceSurroundingText)},
     {"enable-cros-first-party-vietnamese-input",
      flag_descriptions::kFirstPartyVietnameseInputName,
      flag_descriptions::kFirstPartyVietnameseInputDescription, kOsCrOS,

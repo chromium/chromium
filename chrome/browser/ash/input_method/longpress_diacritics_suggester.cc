@@ -6,12 +6,14 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/tray/system_nudge.h"
 #include "ash/system/tray/system_nudge_controller.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -319,7 +321,10 @@ bool LongpressDiacriticsSuggester::AcceptSuggestion(size_t index) {
   std::string error;
   suggestion_handler_->AcceptSuggestionCandidate(
       *focused_context_id_, current_suggestions[index],
-      /* delete_previous_utf16_len=*/1, &error);
+      /* delete_previous_utf16_len=*/1, /*use_replace_surrounding_text=*/
+      base::FeatureList::IsEnabled(
+          features::kDiacriticsUseReplaceSurroundingText),
+      &error);
   if (error.empty()) {
     suggestion_handler_->Announce(
         l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_INSERTED));

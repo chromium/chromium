@@ -78,6 +78,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
   virtual void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
                                      uint32_t num_char16s_after_cursor) = 0;
 
+  // Deletes any active composition, and the current selection plus the
+  // specified number of char16 values before and after the selection, and
+  // replaces it with |replacement_string|.
+  // Places the cursor at the end of |replacement_string|.
+  virtual void ReplaceSurroundingText(uint32_t length_before_selection,
+                                      uint32_t length_after_selection,
+                                      base::StringPiece16 replacement_text) = 0;
+
   // Called from the extension API.
   // WARNING: This could return a stale cache that doesn't reflect reality, due
   // to async-ness between browser-process IMF and render-process
