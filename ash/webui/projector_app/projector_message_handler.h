@@ -14,20 +14,9 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace signin {
-struct AccessTokenInfo;
-}  // namespace signin
-
 namespace ash {
 
 struct ProjectorScreencastVideo;
-
-// Enum to record the different errors that may occur in the Projector app.
-enum class ProjectorError {
-  kNone = 0,
-  kOther,
-  kTokenFetchFailure,
-};
 
 // Handles messages from the Projector WebUIs (i.e. chrome://projector).
 class ProjectorMessageHandler : public content::WebUIMessageHandler {
@@ -46,22 +35,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
-  // Requested by the Projector SWA to get access to the OAuth token for the
-  // account email provided in the `args`.
-  void GetOAuthTokenForAccount(const base::Value::List& args);
-
-  // Called by the Projector SWA when an error occurred.
-  void OnError(const base::Value::List& args);
-
-  // Called when OAuth token fetch request is completed by
-  // ProjectorOAuthTokenFetcher. Resolves the javascript promise created by
-  // ProjectorBrowserProxy.getOAuthTokenForAccount by calling the
-  // `js_callback_id`.
-  void OnAccessTokenRequestCompleted(const std::string& js_callback_id,
-                                     const std::string& email,
-                                     GoogleServiceAuthError error,
-                                     const signin::AccessTokenInfo& info);
-
   // Requested by the Projector SWA to fetch a single video from DriveFS with
   // the Drive item id specified by `args`.
   void GetVideo(const base::Value::List& args);
@@ -72,8 +45,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   void OnVideoLocated(const std::string& js_callback_id,
                       std::unique_ptr<ProjectorScreencastVideo> video,
                       const std::string& error_message);
-
-  ProjectorOAuthTokenFetcher oauth_token_fetcher_;
 
   base::WeakPtrFactory<ProjectorMessageHandler> weak_ptr_factory_{this};
 };

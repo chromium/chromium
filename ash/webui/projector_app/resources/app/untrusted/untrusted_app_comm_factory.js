@@ -91,8 +91,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<!projectorApp.OAuthToken>}
    */
   getOAuthTokenForAccount(account) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getOAuthTokenForAccount', [account]);
+    return Promise.reject('Unsupported method getOauthTokenForAccount');
   },
 
   /**
@@ -102,8 +101,7 @@ const CLIENT_DELEGATE = {
    * @param {!Array<ProjectorError>} msg Error messages.
    */
   onError(msg) {
-    AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'onError', [msg]);
+    console.error('Received error messages:', msg);
   },
 
   /**

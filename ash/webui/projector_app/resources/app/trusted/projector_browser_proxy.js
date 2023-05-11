@@ -12,21 +12,6 @@ import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
  */
 export class ProjectorBrowserProxy {
   /**
-   * Gets the oauth token with the required scopes for the specified account.
-   * @param {string} email, user's email.
-   * @return {!Promise<!projectorApp.OAuthToken>}
-   */
-  getOAuthTokenForAccount(email) {}
-
-  /**
-   * Sends 'error' message to handler.
-   * The Handler will log the message. If the error is not a recoverable error,
-   * the handler closes the corresponding WebUI.
-   * @param {!Array<string>} msg Error messages.
-   */
-  onError(msg) {}
-
-  /**
    * Gets information about the specified video from DriveFS.
    * @param {string} videoFileId The Drive item id of the video file.
    * @param {string|undefined} resourceKey The Drive item resource key.
@@ -52,16 +37,6 @@ export class ProjectorBrowserProxyImpl {
       browserProxy = new ProjectorBrowserProxyImpl();
     }
     return browserProxy;
-  }
-
-  /** @override */
-  getOAuthTokenForAccount(email) {
-    return sendWithPromise('getOAuthTokenForAccount', [email]);
-  }
-
-  /** @override */
-  onError(msg) {
-    return chrome.send('onError', msg);
   }
 
   /** @override */

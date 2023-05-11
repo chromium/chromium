@@ -23,12 +23,10 @@ namespace {
 
 using ::testing::_;
 
-const char kTestUserEmail[] = "testuser1@gmail.com";
 const char kVideoFileId[] = "video_file_id";
 const char kResourceKey[] = "resource_key";
 
 const char kWebUIResponse[] = "cr.webUIResponse";
-const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kGetVideoCallback[] = "getVideoCallback";
 
 }  // namespace
@@ -70,25 +68,6 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
   MockAppClient mock_app_client_;
   content::TestWebUI web_ui_;
 };
-
-TEST_F(ProjectorMessageHandlerUnitTest, GetOAuthTokenForAccount) {
-  mock_app_client().SetAutomaticIssueOfAccessTokens(false);
-
-  base::Value::List list_args;
-  list_args.Append(kGetOAuthTokenCallback);
-  base::Value::List args;
-  args.Append(kTestUserEmail);
-  list_args.Append(std::move(args));
-
-  web_ui().HandleReceivedMessage("getOAuthTokenForAccount", list_args);
-  mock_app_client().WaitForAccessRequest(kTestUserEmail);
-
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kGetOAuthTokenCallback);
-}
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {
   ProjectorScreencastVideo expected_video;
