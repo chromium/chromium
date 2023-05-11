@@ -156,6 +156,7 @@ void TabIcon::SetData(const TabRendererData& data) {
   const bool was_showing_load = GetShowingLoadingAnimation();
 
   inhibit_loading_animation_ = data.should_hide_throbber;
+  is_monochrome_favicon_ = data.is_monochrome_favicon;
   SetIcon(data.favicon, data.should_themify_favicon);
   SetNetworkState(data.network_state);
   SetCrashed(data.IsCrashed());
@@ -175,6 +176,16 @@ void TabIcon::SetData(const TabRendererData& data) {
     // Loading animation transitioning from off to on. The animation painting
     // function will lazily initialize the data.
     SchedulePaint();
+  }
+}
+
+void TabIcon::SetActiveState(bool is_active) {
+  if (is_active_tab_ != is_active) {
+    is_active_tab_ = is_active;
+    if (is_monochrome_favicon_) {
+      themed_favicon_ = ThemeMonochromeFavicon(favicon_);
+      SchedulePaint();
+    }
   }
 }
 
@@ -254,8 +265,13 @@ void TabIcon::OnPaint(gfx::Canvas* canvas) {
 void TabIcon::OnThemeChanged() {
   views::View::OnThemeChanged();
   crashed_icon_ = gfx::ImageSkia();  // Force recomputation if crashed.
-  if (!themed_favicon_.isNull())
-    themed_favicon_ = ThemeFavicon(favicon_);
+  if (!themed_favicon_.isNull()) {
+    if (is_monochrome_favicon_) {
+      themed_favicon_ = ThemeMonochromeFavicon(favicon_);
+    } else {
+      themed_favicon_ = ThemeFavicon(favicon_);
+    }
+  }
 }
 
 void TabIcon::AnimationProgressed(const gfx::Animation* animation) {
@@ -476,6 +492,8 @@ void TabIcon::SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon) {
 
   if (!GetNonDefaultFavicon() || should_themify_favicon) {
     themed_favicon_ = ThemeFavicon(icon);
+  } else if (is_monochrome_favicon_) {
+    themed_favicon_ = ThemeMonochromeFavicon(icon);
   } else {
     themed_favicon_ = gfx::ImageSkia();
   }
@@ -565,6 +583,14 @@ gfx::ImageSkia TabIcon::ThemeFavicon(const gfx::ImageSkia& source) {
       source, cp->GetColor(kColorToolbarButtonIcon),
       cp->GetColor(kColorTabBackgroundActiveFrameActive),
       cp->GetColor(kColorTabBackgroundInactiveFrameActive));
+}
+
+gfx::ImageSkia TabIcon::ThemeMonochromeFavicon(const gfx::ImageSkia& source) {
+  const auto* cp = GetColorProvider();
+  return favicon::ThemeMonochromeFavicon(
+      source, is_active_tab_
+                  ? cp->GetColor(kColorTabBackgroundActiveFrameActive)
+                  : cp->GetColor(kColorTabBackgroundInactiveFrameActive));
 }
 
 BEGIN_METADATA(TabIcon, views::View)

@@ -23,6 +23,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/font_list.h"
@@ -233,6 +234,15 @@ gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
              ? gfx::ImageSkiaOperations::CreateColorMask(source,
                                                          alternate_color)
              : source;
+}
+
+gfx::ImageSkia ThemeMonochromeFavicon(const gfx::ImageSkia& source,
+                                      SkColor background) {
+  return (color_utils::GetContrastRatio(gfx::kGoogleGrey900, background) >
+          color_utils::GetContrastRatio(SK_ColorWHITE, background))
+             ? gfx::ImageSkiaOperations::CreateColorMask(source,
+                                                         gfx::kGoogleGrey900)
+             : gfx::ImageSkiaOperations::CreateColorMask(source, SK_ColorWHITE);
 }
 
 }  // namespace favicon

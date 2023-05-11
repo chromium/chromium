@@ -71,8 +71,6 @@
 
 namespace {
 
-const int kMinimumHomeTabIconSizeInPx = 16;
-
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
 #endif
@@ -364,43 +362,12 @@ ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
   return *app_icon_;
 }
 
-bool WebAppBrowserController::DoesHomeTabIconExist() const {
-  const web_app::WebApp* web_app = registrar().GetAppById(app_id());
-  if (web_app && web_app->tab_strip()) {
-    web_app::TabStrip tab_strip = web_app->tab_strip().value();
-    if (const auto* params =
-            absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
-      return !params->icons.empty();
-    }
-  }
-  return false;
+gfx::ImageSkia WebAppBrowserController::GetHomeTabIcon() const {
+  return provider_->icon_manager().GetMonochromeFavicon(app_id());
 }
 
-gfx::ImageSkia WebAppBrowserController::GetHomeTabIcon() const {
-  if (home_tab_icon_) {
-    return *home_tab_icon_;
-  }
-
-  const web_app::WebApp* web_app = registrar().GetAppById(app_id());
-  if (web_app && web_app->tab_strip()) {
-    web_app::TabStrip tab_strip = web_app->tab_strip().value();
-    if (const auto* params =
-            absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
-      if (!params->icons.empty()) {
-        provider_->icon_manager().ReadBestHomeTabIcon(
-            app_id(), params->icons, kMinimumHomeTabIconSizeInPx,
-            base::BindOnce(&WebAppBrowserController::OnReadHomeTabIcon,
-                           weak_ptr_factory_.GetWeakPtr()));
-      }
-    }
-  }
-  if (!home_tab_icon_) {
-    home_tab_icon_ = provider_->icon_manager().GetMonochromeFavicon(app_id());
-  }
-  if (home_tab_icon_->width() == 0 || home_tab_icon_->height() == 0) {
-    home_tab_icon_ = *(GetWindowAppIcon().GetImage().ToImageSkia());
-  }
-  return *home_tab_icon_;
+gfx::ImageSkia WebAppBrowserController::GetFallbackHomeTabIcon() const {
+  return provider_->icon_manager().GetFaviconImageSkia(app_id());
 }
 
 ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
@@ -623,12 +590,6 @@ bool WebAppBrowserController::IsInstalled() const {
   return registrar().IsInstalled(app_id());
 }
 
-base::CallbackListSubscription
-WebAppBrowserController::AddHomeTabIconLoadCallbackForTesting(
-    base::OnceClosure callback) {
-  return home_tab_callback_list_.Add(std::move(callback));
-}
-
 void WebAppBrowserController::SetIconLoadCallbackForTesting(
     base::OnceClosure callback) {
   IconLoadCallbackForTesting() = std::move(callback);
@@ -691,21 +652,6 @@ void WebAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
   if (IconLoadCallbackForTesting()) {
     std::move(IconLoadCallbackForTesting()).Run();
   }
-}
-
-void WebAppBrowserController::OnReadHomeTabIcon(
-    SkBitmap home_tab_icon_bitmap) const {
-  if (home_tab_icon_bitmap.empty()) {
-    DLOG(ERROR) << "Failed to read icon for the pinned home tab";
-    return;
-  }
-
-  home_tab_icon_ = gfx::ImageSkia::CreateFrom1xBitmap(home_tab_icon_bitmap);
-  if (auto* contents = web_contents()) {
-    contents->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
-  }
-
-  home_tab_callback_list_.Notify();
 }
 
 void WebAppBrowserController::OnReadIcon(IconPurpose purpose, SkBitmap bitmap) {

@@ -799,6 +799,7 @@ bool Tab::IsActive() const {
 void Tab::ActiveStateChanged() {
   UpdateTabIconNeedsAttentionBlocked();
   UpdateForegroundColors();
+  icon_->SetActiveState(IsActive());
   alert_indicator_button_->OnParentTabButtonColorChanged();
   Layout();
 }

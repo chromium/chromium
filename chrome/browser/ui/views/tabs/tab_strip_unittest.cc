@@ -729,6 +729,21 @@ TEST_P(TabStripTest, PreferredWidthDuringDrag) {
             tab_strip_->GetPreferredSize().width());
 }
 
+TEST_P(TabStripTest, TabIconActiveState) {
+  controller_->AddTab(0, TabActive::kActive);
+  ASSERT_EQ(1, tab_strip_->GetTabCount());
+  Tab* tab0 = tab_strip_->tab_at(0);
+  EXPECT_TRUE(tab0->GetTabIconForTesting()->GetActiveStateForTesting());
+
+  controller_->AddTab(1, TabActive::kActive);
+  ASSERT_EQ(2, tab_strip_->GetTabCount());
+  EXPECT_FALSE(tab0->GetTabIconForTesting()->GetActiveStateForTesting());
+
+  controller_->SelectTab(0, dummy_event_);
+  ASSERT_EQ(2, tab_strip_->GetTabCount());
+  EXPECT_TRUE(tab0->GetTabIconForTesting()->GetActiveStateForTesting());
+}
+
 // TabStripTestWithScrollingDisabled contains tests that will run with scrolling
 // disabled.
 // TODO(http://crbug.com/951078) Remove these tests as well as tests in

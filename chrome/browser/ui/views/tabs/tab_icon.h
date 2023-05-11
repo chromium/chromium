@@ -51,6 +51,9 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // used to render the tab icon.
   void SetData(const TabRendererData& data);
 
+  // Sets whether this tab is currently active.
+  void SetActiveState(bool is_active);
+
   // Enables or disables the given attention type. The attention indicator
   // will be shown as long as any of the types are enabled.
   void SetAttention(AttentionType type, bool enabled);
@@ -70,6 +73,8 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
   gfx::LinearAnimation* GetTabDiscardAnimationForTesting();
+  gfx::ImageSkia GetThemedIconForTesting() { return themed_favicon_; }
+  bool GetActiveStateForTesting() { return is_active_tab_; }
 
  private:
   class CrashAnimation;
@@ -127,6 +132,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void RefreshLayer();
 
   gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
+  gfx::ImageSkia ThemeMonochromeFavicon(const gfx::ImageSkia& source);
 
   raw_ptr<const base::TickClock> clock_;
 
@@ -185,6 +191,10 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   bool can_paint_to_layer_ = false;
 
   bool has_tab_renderer_data_ = false;
+
+  bool is_active_tab_ = false;
+
+  bool is_monochrome_favicon_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
