@@ -85,24 +85,12 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // Tells if "extended drag" extension is available.
   bool IsExtendedDragAvailable() const;
 
-  // Returns true if there there is currently an active drag-and-drop session.
-  // This is true if the `data_source_` exists (the session ends when this is
-  // destroyed).
-  bool IsActiveDragAndDropSession() const;
-
   // Makes IsExtendedDragAvailable() always return true.
   void set_extended_drag_available_for_testing(bool available) {
     extended_drag_available_for_testing_ = available;
   }
 
-  WaylandWindow* drag_target_window_for_testing() {
-    return drag_target_window_;
-  }
-  WaylandWindow* dragged_window_for_testing() { return dragged_window_; }
   WaylandWindow* origin_window_for_testing() { return origin_window_; }
-  WaylandWindow* pointer_grab_owner_for_testing() {
-    return pointer_grab_owner_;
-  }
 
   absl::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
 
@@ -111,12 +99,6 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
                            HandleDraggedWindowDestructionAfterMoveLoop);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleWindowsDestructionDuringMoveLoop);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleTargetWindowDestruction_DetachedState);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleTargetWindowDestruction_AttachedState);
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest, GetSerial);
 
   // WaylandDataDevice::DragDelegate:

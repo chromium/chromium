@@ -214,12 +214,6 @@ void WaylandWindowDragController::OnDragOffer(
 void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
                                               const gfx::PointF& location,
                                               uint32_t serial) {
-  // Drag-and-drop sessions may be terminated by the client while drag-and-drop
-  // server events are still in-flight. No-op if this is the case.
-  if (!IsActiveDragAndDropSession()) {
-    return;
-  }
-
   DCHECK_GE(state_, State::kAttached);
   DCHECK(window);
   DCHECK(data_source_);
@@ -257,11 +251,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
 }
 
 void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
-  // Drag-and-drop sessions may be terminated by the client while drag-and-drop
-  // server events are still in-flight. No-op if this is the case.
-  if (!IsActiveDragAndDropSession()) {
-    return;
-  }
+  DCHECK(drag_target_window_);
 
   DCHECK_GE(state_, State::kAttached);
   DVLOG(2) << "OnMotion. location=" << location.ToString();
@@ -296,12 +286,6 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
 }
 
 void WaylandWindowDragController::OnDragLeave() {
-  // Drag and drop sessions may be terminated by the client while drag-and-drop
-  // server events may still be in-flight. No-op if this is the case.
-  if (!IsActiveDragAndDropSession()) {
-    return;
-  }
-
   DCHECK_GE(state_, State::kAttached);
 
   drag_target_window_ = nullptr;
@@ -360,12 +344,6 @@ void WaylandWindowDragController::OnDragLeave() {
 }
 
 void WaylandWindowDragController::OnDragDrop() {
-  // Drag-and-drop sessions may be terminated by the client while drag-and-drop
-  // server events are still in-flight. No-op if this is the case.
-  if (!IsActiveDragAndDropSession()) {
-    return;
-  }
-
   DCHECK_GE(state_, State::kAttached);
   DVLOG(1) << "Dropped. state=" << state_;
 
@@ -475,35 +453,14 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
   DCHECK_NE(state_, State::kIdle);
   DVLOG(1) << "Window being destroyed. widget=" << window->GetWidget();
 
-  // The drag should only be cancelled after all window pointers have had a
-  // chance invalidate. This is necessary as a single aura::Window can serve
-  // multiple roles (e.g target window can also be the origin window). Cancel
-  // The drag if either `drag_target_window_` or `dragged_window_` have been
-  // removed.
-  bool should_cancel_drag = false;
-
-  if (window == drag_target_window_) {
-    drag_target_window_ = nullptr;
-    should_cancel_drag = true;
-  }
-
-  if (window == pointer_grab_owner_) {
+  if (window == pointer_grab_owner_)
     pointer_grab_owner_ = nullptr;
-  }
 
-  if (window == origin_window_) {
+  if (window == origin_window_)
     origin_surface_ = origin_window_->TakeWaylandSurface();
-    origin_window_ = nullptr;
-  }
 
-  if (window == dragged_window_) {
+  if (window == dragged_window_)
     SetDraggedWindow(nullptr, {});
-    should_cancel_drag = true;
-  }
-
-  if (should_cancel_drag) {
-    OnDataSourceFinish(/*completed=*/false);
-  }
 }
 
 void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
@@ -611,10 +568,6 @@ void WaylandWindowDragController::SetDraggedWindow(
 bool WaylandWindowDragController::IsExtendedDragAvailable() const {
   return extended_drag_available_for_testing_ ||
          IsExtendedDragAvailableInternal();
-}
-
-bool WaylandWindowDragController::IsActiveDragAndDropSession() const {
-  return !!data_source_;
 }
 
 bool WaylandWindowDragController::IsExtendedDragAvailableInternal() const {
