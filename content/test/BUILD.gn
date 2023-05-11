@@ -1524,6 +1524,8 @@ test("content_browsertests") {
     "../browser/web_contents/web_contents_view_aura_browsertest.cc",
     "../browser/web_package/signed_exchange_request_handler_browsertest.cc",
     "../browser/web_package/signed_exchange_subresource_prefetch_browsertest.cc",
+    "../browser/webid/test/mock_identity_request_dialog_controller.cc",
+    "../browser/webid/test/mock_identity_request_dialog_controller.h",
     "../browser/webid/test/mock_mdoc_provider.cc",
     "../browser/webid/test/mock_mdoc_provider.h",
     "../browser/webid/test/mock_modal_dialog_view_delegate.cc",

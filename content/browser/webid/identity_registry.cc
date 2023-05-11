@@ -21,12 +21,20 @@ IdentityRegistry::IdentityRegistry(
 
 IdentityRegistry::~IdentityRegistry() = default;
 
-void IdentityRegistry::Notify(const url::Origin& notifier_origin) {
+void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
   if (!registry_origin_.IsSameOriginWith(notifier_origin)) {
     return;
   }
 
   delegate_->NotifyClose();
+}
+
+bool IdentityRegistry::NotifyResolve(const url::Origin& notifier_origin,
+                                     const std::string& token) {
+  if (!registry_origin_.IsSameOriginWith(notifier_origin)) {
+    return false;
+  }
+  return delegate_->NotifyResolve(token);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IdentityRegistry);

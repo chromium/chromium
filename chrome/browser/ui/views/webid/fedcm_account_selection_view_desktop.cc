@@ -151,8 +151,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& top_frame_etld_plus_one,
     const absl::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
-    const content::IdentityProviderMetadata& idp_metadata,
-    IdentityRegistryCallback identity_registry_callback) {
+    const content::IdentityProviderMetadata& idp_metadata) {
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
   absl::optional<std::u16string> iframe_etld_plus_one_u16 =
       iframe_etld_plus_one ? absl::make_optional<std::u16string>(
@@ -180,8 +179,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
 
   GetBubbleView()->ShowFailureDialog(
       base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
-      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata,
-      std::move(identity_registry_callback));
+      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
 
   if (create_bubble) {
     bubble_widget_->Show();
@@ -373,16 +371,17 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void FedCmAccountSelectionView::ShowModalDialog(const GURL& url) {
+void FedCmAccountSelectionView::OnSigninToIdP() {
+  delegate_->OnSigninToIdP();
+}
+
+content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
+    const GURL& url) {
   idp_signin_modal_dialog_ = FedCmModalDialogView::ShowFedCmModalDialog(
       delegate_->GetWebContents(), url, this);
-  if (GetBubbleView()->HasIdentityRegistryCallback()) {
-    std::move(GetBubbleView()->GetIdentityRegistryCallback())
-        .Run(idp_signin_modal_dialog_->GetWebViewWebContents());
-  }
-
   input_protector_->VisibilityChanged(false);
   bubble_widget_->Hide();
+  return idp_signin_modal_dialog_->GetWebViewWebContents();
 }
 
 void FedCmAccountSelectionView::CloseModalDialog() {

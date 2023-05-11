@@ -74,7 +74,7 @@ void IdentityRequestDialogController::ShowFailureDialog(
     const std::string& idp_for_display,
     const IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
-    IdentityRegistryCallback identity_registry_callback) {
+    SigninToIdPCallback signin_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }
@@ -96,13 +96,13 @@ void IdentityRequestDialogController::ShowIdpSigninFailureDialog(
   }
 }
 
-void IdentityRequestDialogController::ShowModalDialog(
+WebContents* IdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
-    TokenCallback on_resolve,
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }
+  return nullptr;
 }
 
 void IdentityRequestDialogController::CloseModalDialog() {}

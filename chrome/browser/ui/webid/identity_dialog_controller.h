@@ -19,8 +19,6 @@ using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
 using DismissCallback =
     content::IdentityRequestDialogController::DismissCallback;
-using IdentityRegistryCallback =
-    content::IdentityRequestDialogController::IdentityRegistryCallback;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
@@ -49,29 +47,29 @@ class IdentityDialogController
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback) override;
-  void ShowFailureDialog(
-      content::WebContents* rp_web_contents,
-      const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
-      const std::string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata,
-      DismissCallback dismiss_callback,
-      IdentityRegistryCallback identity_registry_callback) override;
+  void ShowFailureDialog(content::WebContents* rp_web_contents,
+                         const std::string& top_frame_for_display,
+                         const absl::optional<std::string>& iframe_for_display,
+                         const std::string& idp_for_display,
+                         const content::IdentityProviderMetadata& idp_metadata,
+                         DismissCallback dismiss_callback,
+                         SigninToIdPCallback signin_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
 
   // Show a modal dialog that loads content from the IdP in a WebView.
-  void ShowModalDialog(const GURL& url,
-                       TokenCallback on_resolve,
-                       DismissCallback dismiss_callback) override;
+  content::WebContents* ShowModalDialog(
+      const GURL& url,
+      DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const GURL& idp_config_url,
                          const Account& account) override;
   void OnDismiss(DismissReason dismiss_reason) override;
+  void OnSigninToIdP() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
 
@@ -79,6 +77,7 @@ class IdentityDialogController
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;
+  SigninToIdPCallback on_signin_;
   raw_ptr<content::WebContents> rp_web_contents_;
 };
 

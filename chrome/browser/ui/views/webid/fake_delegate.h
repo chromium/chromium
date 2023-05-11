@@ -21,6 +21,7 @@ class FakeDelegate : public AccountSelectionView::Delegate {
 
   void OnDismiss(content::IdentityRequestDialogController::DismissReason
                      dismiss_reason) override {}
+  void OnSigninToIdP() override {}
 
   // AccountSelectionView::Delegate
   gfx::NativeView GetNativeView() override;

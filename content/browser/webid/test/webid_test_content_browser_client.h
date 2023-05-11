@@ -44,6 +44,11 @@ class WebIdTestContentBrowserClient
                            FederatedIdentityModalDialogViewDelegate* delegate,
                            const url::Origin& url);
 
+  IdentityRequestDialogController*
+  GetIdentityRequestDialogControllerForTests() {
+    return test_dialog_controller_.get();
+  }
+
   MDocProvider* GetMDocProviderForTests() { return test_mdoc_provider_.get(); }
 
  private:

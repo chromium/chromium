@@ -59,8 +59,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::string& top_frame_etld_plus_one,
       const absl::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
-      const content::IdentityProviderMetadata& idp_metadata,
-      IdentityRegistryCallback identity_registry_callback) override;
+      const content::IdentityProviderMetadata& idp_metadata) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
 
@@ -131,7 +130,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
-  void ShowModalDialog(const GURL& url) override;
+  content::WebContents* ShowModalDialog(const GURL& url) override;
+  void OnSigninToIdP() override;
   void CloseModalDialog() override;
 
   void ShowVerifyingSheet(const Account& account,

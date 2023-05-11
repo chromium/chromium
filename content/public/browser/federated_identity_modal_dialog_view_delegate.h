@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_MODAL_DIALOG_VIEW_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_MODAL_DIALOG_VIEW_DELEGATE_H_
 
+#include <string>
+
 #include "content/common/content_export.h"
 
 namespace content {
@@ -22,6 +24,10 @@ class CONTENT_EXPORT FederatedIdentityModalDialogViewDelegate {
 
   // Closes the FedCM modal dialog, if any.
   virtual void NotifyClose() = 0;
+
+  // The modal dialog has provided a token to resolve the original request.
+  // TODO(crbug.com/1429083): pass the configURL in the notification.
+  virtual bool NotifyResolve(const std::string& token) = 0;
 };
 
 }  // namespace content

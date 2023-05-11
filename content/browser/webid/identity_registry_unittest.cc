@@ -58,7 +58,7 @@ class IdentityRegistryTest : public RenderViewHostImplTestHarness {
 // be closed.
 TEST_F(IdentityRegistryTest, NotifierAndRegistrySameOrigin) {
   EXPECT_FALSE(test_delegate_->closed_);
-  identity_registry_->Notify(url::Origin::Create(GURL(kIdpUrl)));
+  identity_registry_->NotifyClose(url::Origin::Create(GURL(kIdpUrl)));
   EXPECT_TRUE(test_delegate_->closed_);
 }
 
@@ -66,7 +66,7 @@ TEST_F(IdentityRegistryTest, NotifierAndRegistrySameOrigin) {
 // remain open.
 TEST_F(IdentityRegistryTest, NotifierAndRegistryCrossOrigin) {
   EXPECT_FALSE(test_delegate_->closed_);
-  identity_registry_->Notify(
+  identity_registry_->NotifyClose(
       url::Origin::Create(GURL("https://cross-origin.example")));
   EXPECT_FALSE(test_delegate_->closed_);
 }

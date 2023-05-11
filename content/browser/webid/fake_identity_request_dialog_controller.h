@@ -34,9 +34,9 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   std::string GetTitle() const override;
 
-  void ShowModalDialog(const GURL& url,
-                       TokenCallback on_resolve,
-                       DismissCallback dismiss_callback) override;
+  content::WebContents* ShowModalDialog(
+      const GURL& url,
+      DismissCallback dismiss_callback) override;
 
  private:
   absl::optional<std::string> selected_account_;

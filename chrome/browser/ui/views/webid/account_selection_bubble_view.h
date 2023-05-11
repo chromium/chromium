@@ -17,9 +17,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
-using IdentityRegistryCallback =
-    content::IdentityRequestDialogController::IdentityRegistryCallback;
-
 namespace views {
 class Checkbox;
 class ImageButton;
@@ -64,8 +61,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
     // Called when the user clicks "close" button.
     virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
 
-    // Called to load a modal webview.
-    virtual void ShowModalDialog(const GURL& url) = 0;
+    // Called when the user clicks the "continue" button on the sign-in
+    // failure dialog.
+    virtual void OnSigninToIdP() = 0;
 
     // Called when IdentityProvider.close() is called from the renderer.
     virtual void CloseModalDialog() = 0;
@@ -101,17 +99,13 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::u16string& top_frame_for_display,
       const absl::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata,
-      IdentityRegistryCallback identity_registry_callback) override;
+      const content::IdentityProviderMetadata& idp_metadata) override;
 
   // Populates `idp_images` when an IDP image has been fetched.
   void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
 
   std::string GetDialogTitle() const override;
   absl::optional<std::string> GetDialogSubtitle() const override;
-
-  bool HasIdentityRegistryCallback() override;
-  IdentityRegistryCallback GetIdentityRegistryCallback() override;
 
  private:
   gfx::Rect GetBubbleBounds() override;
@@ -224,9 +218,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.
   raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
-
-  // Callback to create an identity registry.
-  IdentityRegistryCallback identity_registry_callback_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

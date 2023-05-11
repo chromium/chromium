@@ -365,8 +365,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         expected_subtitle.has_value()
             ? absl::make_optional<std::u16string>(kIframeETLDPlusOne)
             : absl::nullopt,
-        kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-        /*identity_registry_callback=*/base::DoNothing());
+        kIdpETLDPlusOne, content::IdentityProviderMetadata());
 
     const std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 2u);

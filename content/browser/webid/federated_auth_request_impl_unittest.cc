@@ -611,7 +611,7 @@ class TestDialogController
       const std::string& idp_for_display,
       const IdentityProviderMetadata& idp_metadata,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
-      IdentityRequestDialogController::IdentityRegistryCallback
+      IdentityRequestDialogController::SigninToIdPCallback
           identity_registry_callback) override {
     if (!state_) {
       return;
@@ -721,7 +721,9 @@ class TestIdentityRegistry : public NiceMock<MockIdentityRegistry> {
                                        delegate,
                                        registry_origin) {}
 
-  void Notify(const url::Origin& notifier_origin) override { notified_ = true; }
+  void NotifyClose(const url::Origin& notifier_origin) override {
+    notified_ = true;
+  }
 };
 
 }  // namespace
@@ -4021,13 +4023,19 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
 
   // When the pop-up window is opened, resolve it immediately by
   // producing an access token.
-  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _, _))
-      .WillOnce(::testing::WithArg<1>(
-          [&](IdentityRequestDialogController::TokenCallback on_resolve) {
-            std::move(on_resolve).Run("an-access-token");
-          }));
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  auto impl = federated_auth_request_impl_;
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _))
+      .WillOnce(::testing::WithArg<0>([&modal, &impl](const GURL& url) {
+        impl->NotifyResolve("an-access-token");
+        return modal.get();
+      }));
 
-  RunAuthTest(parameters, kExpectationSuccess, config);
+  RequestExpectations success = {RequestTokenStatus::kSuccess,
+                                 {FederatedAuthRequestResult::kSuccess},
+                                 /*selected_idp_config_url=*/absl::nullopt};
+
+  RunAuthTest(parameters, success, config);
 
   // When the authorization is delegated and the feature is enabled
   // we don't fetch the client metadata endpoint (which is used to

@@ -21,7 +21,9 @@ class CONTENT_EXPORT IdentityRegistry
     : public WebContentsUserData<IdentityRegistry> {
  public:
   ~IdentityRegistry() override;
-  virtual void Notify(const url::Origin& notifier_origin);
+  virtual void NotifyClose(const url::Origin& notifier_origin);
+  virtual bool NotifyResolve(const url::Origin& notifier_origin,
+                             const std::string& token);
 
  private:
   friend class content::WebContentsUserData<IdentityRegistry>;

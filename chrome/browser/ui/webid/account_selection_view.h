@@ -12,8 +12,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 using Account = content::IdentityRequestAccount;
-using IdentityRegistryCallback =
-    content::IdentityRequestDialogController::IdentityRegistryCallback;
 
 // This class represents the interface used for communicating between the
 // identity dialog controller with the Android frontend.
@@ -30,6 +28,7 @@ class AccountSelectionView {
     virtual void OnDismiss(
         content::IdentityRequestDialogController::DismissReason
             dismiss_reason) = 0;
+    virtual void OnSigninToIdP() = 0;
     // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
     // The WebContents for the page.
@@ -75,13 +74,12 @@ class AccountSelectionView {
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata,
-      IdentityRegistryCallback identity_registry_callback) = 0;
+      const content::IdentityProviderMetadata& idp_metadata) = 0;
 
   virtual std::string GetTitle() const = 0;
   virtual absl::optional<std::string> GetSubtitle() const = 0;
 
-  virtual void ShowModalDialog(const GURL& url) = 0;
+  virtual content::WebContents* ShowModalDialog(const GURL& url) = 0;
   virtual void CloseModalDialog() = 0;
 
  protected:

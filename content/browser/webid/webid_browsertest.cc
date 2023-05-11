@@ -16,6 +16,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
+#include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_mdoc_provider.h"
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
@@ -780,9 +781,41 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
 
   idp_server()->SetConfigResponseDetails(config_details);
 
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  auto config_url = GURL(BaseIdpUrl());
+
+  // Expects the account chooser to be opened. Selects the first account.
+  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _, _))
+      .WillOnce(::testing::WithArg<6>([&config_url](auto on_selected) {
+        std::move(on_selected)
+            .Run(config_url,
+                 /* account_id=*/"not_real_account",
+                 /* is_sign_in= */ true);
+      }));
+
+  // Create a WebContents that represents the modal dialog, specifically
+  // the structure that the Identity Registry hangs to.
+  Shell* modal = CreateBrowser();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*controller, ShowModalDialog(_, _))
+      .WillOnce(::testing::WithArg<0>([&modal, &run_loop](const GURL& url) {
+        // When the pop-up window is opened, resolve it immediately by
+        // returning a test web contents, which can then later be used
+        // to refer to the identity registry.
+        run_loop.Quit();
+        return modal->web_contents();
+      }));
+
   std::string script = R"(
-        (async () => {
-          var x = (await navigator.credentials.get({
+          var result = navigator.credentials.get({
             identity: {
               providers: [{
                 configURL: ')" +
@@ -794,15 +827,27 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
                 ],
               }]
             }
-          }));
-          return x.token;
-        }) ()
+         }).then(({token}) => token);
     )";
 
-  // Assert that a fake token was returned from the pop-up window,
-  // as opposed to directly from the id assertion endpoint.
-  EXPECT_EQ(std::string("--fake-token-from-pop-up-window--"),
-            EvalJs(shell(), script));
+  // Kick off the identity credential request and deliberately
+  // leave the promise hanging, since it requires UX permission
+  // prompts to be accepted later.
+  EXPECT_TRUE(content::ExecJs(shell(), script,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the modal dialog to be resolved.
+  run_loop.Run();
+
+  std::string token = "--fake-token-from-pop-up-window--";
+
+  // Resolve the hanging token request by notifying the registry.
+  IdentityRegistry::FromWebContents(modal->web_contents())
+      ->NotifyResolve(url::Origin::Create(config_url), token);
+
+  // Finally, wait for the promise to resolve and compare its result
+  // to the expected token that was provided in the modal dialog.
+  EXPECT_EQ(token, EvalJs(shell(), "result"));
 }
 
 }  // namespace content

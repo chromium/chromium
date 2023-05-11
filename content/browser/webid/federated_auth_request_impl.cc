@@ -1290,19 +1290,14 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      FederatedAuthRequestResult::kError,
                      TokenStatus::kNotSignedInWithIdp,
                      /*should_delay_callback=*/true),
-      base::BindOnce(&FederatedAuthRequestImpl::CreateIdentityRegistry,
-                     weak_ptr_factory_.GetWeakPtr(), idp_origin));
-}
-
-void FederatedAuthRequestImpl::CreateIdentityRegistry(
-    const url::Origin& idp_origin,
-    content::WebContents* web_contents) {
-  IdentityRegistry::CreateForWebContents(web_contents, this, idp_origin);
+      base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     idp_info->metadata.idp_signin_url));
 }
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
   if (identity_registry_) {
-    identity_registry_->Notify(origin());
+    identity_registry_->NotifyClose(origin());
   }
 }
 
@@ -1553,6 +1548,14 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
                            /*should_delay_callback=*/false);
 }
 
+void FederatedAuthRequestImpl::ShowModalDialog(const GURL& url) {
+  WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
+      url, base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                          weak_ptr_factory_.GetWeakPtr()));
+  IdentityRegistry::CreateForWebContents(web_contents, this,
+                                         url::Origin::Create(url));
+}
+
 void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     IdentityProviderConfigPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
@@ -1566,13 +1569,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   }
 
   // TODO(crbug.com/1429083): record the appropriate metrics.
-  request_dialog_controller_->ShowModalDialog(
-      std::move(continue_on),
-      base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(idp),
-                     std::move(status)),
-      base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ShowModalDialog(idp->config_url);
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
@@ -1962,6 +1959,15 @@ void FederatedAuthRequestImpl::SetDialogControllerForTests(
 
 void FederatedAuthRequestImpl::NotifyClose() {
   request_dialog_controller_->CloseModalDialog();
+}
+
+bool FederatedAuthRequestImpl::NotifyResolve(const std::string& token) {
+  // TODO(crbug.com/1429083): handle the multi-idp case when there are
+  // more than one config_urls hanging.
+  CompleteRequest(FederatedAuthRequestResult::kSuccess, TokenStatus::kSuccess,
+                  absl::nullopt, token,
+                  /*should_delay_callback=*/false);
+  return true;
 }
 
 void FederatedAuthRequestImpl::OnRejectRequest() {

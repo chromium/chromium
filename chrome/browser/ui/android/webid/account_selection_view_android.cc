@@ -181,8 +181,7 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
     const std::string& top_frame_for_display,
     const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
-    const content::IdentityProviderMetadata& idp_metadata,
-    IdentityRegistryCallback identity_registry_callback) {
+    const content::IdentityProviderMetadata& idp_metadata) {
   // TODO(crbug.com/1357790): add support on Android.
 }
 
@@ -204,8 +203,10 @@ absl::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
   return ConvertJavaStringToUTF8(subtitle);
 }
 
-void AccountSelectionViewAndroid::ShowModalDialog(const GURL& url) {
+content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
+    const GURL& url) {
   // TODO(crbug.com/1429083): Support the AuthZ modal dialog on Android.
+  return nullptr;
 }
 
 void AccountSelectionViewAndroid::CloseModalDialog() {

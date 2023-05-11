@@ -23,6 +23,7 @@ class MockModalDialogViewDelegate
       delete;
 
   MOCK_METHOD0(NotifyClose, void());
+  MOCK_METHOD1(NotifyResolve, bool(const std::string&));
 };
 
 }  // namespace content
