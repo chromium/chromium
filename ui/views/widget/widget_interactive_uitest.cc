@@ -1127,8 +1127,7 @@ TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
 }
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1438286): Re-enable this test
-TEST_F(WidgetTestInteractive, DISABLED_InactiveWidgetDoesNotGrabActivation) {
+TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   UniqueWidgetPtr widget = base::WrapUnique(CreateTopLevelPlatformWidget());
   ShowSync(widget.get());
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
