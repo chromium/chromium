@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -94,7 +95,7 @@ class MockAttributionManager : public AttributionManager {
 
   MOCK_METHOD(void,
               GetAllDataKeys,
-              (base::OnceCallback<void(std::vector<DataKey>)>),
+              (base::OnceCallback<void(std::set<DataKey>)>),
               (override));
 
   MOCK_METHOD(void,

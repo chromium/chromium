@@ -922,14 +922,13 @@ void AttributionManagerImpl::OnClearDataComplete() {
 }
 
 void AttributionManagerImpl::GetAllDataKeys(
-    base::OnceCallback<void(std::vector<AttributionManager::DataKey>)>
-        callback) {
+    base::OnceCallback<void(std::set<DataKey>)> callback) {
   attribution_storage_.AsyncCall(&AttributionStorage::GetAllDataKeys)
       .Then(std::move(callback));
 }
 
 void AttributionManagerImpl::RemoveAttributionDataByDataKey(
-    const AttributionManager::DataKey& data_key,
+    const DataKey& data_key,
     base::OnceClosure callback) {
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteByDataKey)
       .WithArgs(data_key)

@@ -113,7 +113,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) override;
   std::vector<StoredSource> GetActiveSources(int limit = -1) override;
-  std::vector<AttributionDataModel::DataKey> GetAllDataKeys() override;
+  std::set<AttributionDataModel::DataKey> GetAllDataKeys() override;
   void DeleteByDataKey(const AttributionDataModel::DataKey& datakey) override;
   bool DeleteReport(AttributionReport::Id report_id) override;
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,

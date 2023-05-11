@@ -1003,7 +1003,7 @@ TEST_F(RateLimitTableTest, GetAttributionDataKeyList) {
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
           .BuildStored()));
 
-  std::vector<AttributionDataModel::DataKey> keys;
+  std::set<AttributionDataModel::DataKey> keys;
   table_.AppendRateLimitDataKeys(&db_, keys);
 
   EXPECT_THAT(keys, ElementsAre(expected_1, expected_2));

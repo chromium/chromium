@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/content/browsing_data_model.h"
 
+#include <set>
+
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
@@ -310,7 +312,7 @@ void OnInterestGroupsLoaded(
 void OnAttributionReportingLoaded(
     BrowsingDataModel* model,
     base::OnceClosure loaded_callback,
-    std::vector<content::AttributionDataModel::DataKey> attribution_reporting) {
+    std::set<content::AttributionDataModel::DataKey> attribution_reporting) {
   for (const auto& data_key : attribution_reporting) {
     model->AddBrowsingData(
         data_key, BrowsingDataModel::StorageType::kAttributionReporting,

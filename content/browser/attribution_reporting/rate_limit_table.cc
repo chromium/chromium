@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -457,7 +458,7 @@ bool RateLimitTable::ClearDataForSourceIds(
 
 void RateLimitTable::AppendRateLimitDataKeys(
     sql::Database* db,
-    std::vector<AttributionDataModel::DataKey>& keys) {
+    std::set<AttributionDataModel::DataKey>& keys) {
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetRateLimitDataKeysSql));
 
@@ -466,7 +467,7 @@ void RateLimitTable::AppendRateLimitDataKeys(
     if (reporting_origin.opaque()) {
       continue;
     }
-    keys.emplace_back(std::move(reporting_origin));
+    keys.emplace(std::move(reporting_origin));
   }
 }
 

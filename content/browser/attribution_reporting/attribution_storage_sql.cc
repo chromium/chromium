@@ -9,6 +9,7 @@
 #include <functional>
 #include <iterator>
 #include <limits>
+#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -3039,7 +3040,7 @@ void AttributionStorageSql::AssignTriggerVerificationData(
       random_report.data());
 }
 
-std::vector<AttributionDataModel::DataKey>
+std::set<AttributionDataModel::DataKey>
 AttributionStorageSql::GetAllDataKeys() {
   // We don't bother creating the DB here if it doesn't exist, because it's not
   // possible for there to be any data to return if there's no DB
@@ -3048,7 +3049,7 @@ AttributionStorageSql::GetAllDataKeys() {
     return {};
   }
 
-  std::vector<AttributionDataModel::DataKey> keys;
+  std::set<AttributionDataModel::DataKey> keys;
 
   const auto get_data_keys = [&](sql::Statement& statement) {
     while (statement.Step()) {
@@ -3057,7 +3058,7 @@ AttributionStorageSql::GetAllDataKeys() {
       if (reporting_origin.opaque()) {
         continue;
       }
-      keys.emplace_back(std::move(reporting_origin));
+      keys.emplace(std::move(reporting_origin));
     }
   };
 
@@ -3070,8 +3071,7 @@ AttributionStorageSql::GetAllDataKeys() {
   get_data_keys(null_reports_statement);
 
   rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
-  return base::flat_set<AttributionDataModel::DataKey>(std::move(keys))
-      .extract();
+  return keys;
 }
 
 void AttributionStorageSql::DeleteByDataKey(

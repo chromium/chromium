@@ -66,17 +66,17 @@ inline constexpr const char kDedupKeySql[] =
     "SELECT dedup_key FROM dedup_keys WHERE source_id=? AND report_type=?";
 
 inline constexpr const char kGetSourcesDataKeysSql[] =
-    "SELECT DISTINCT reporting_origin FROM sources";
+    "SELECT reporting_origin FROM sources";
 
 static_assert(
     static_cast<int>(
         attribution_reporting::mojom::ReportType::kNullAggregatable) == 2,
     "update `report_type=2` clause below");
 inline constexpr const char kGetNullReportsDataKeysSql[] =
-    "SELECT DISTINCT reporting_origin FROM reports WHERE report_type=2";
+    "SELECT reporting_origin FROM reports WHERE report_type=2";
 
 inline constexpr const char kGetRateLimitDataKeysSql[] =
-    "SELECT DISTINCT reporting_origin FROM rate_limits";
+    "SELECT reporting_origin FROM rate_limits";
 
 inline constexpr const char kCountReportsForDestinationSql[] =
     "SELECT COUNT(*)FROM source_destinations D "

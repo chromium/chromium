@@ -142,7 +142,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       attribution_reporting::mojom::SourceRegistrationError) override;
 
   void GetAllDataKeys(
-      base::OnceCallback<void(std::vector<DataKey>)> callback) override;
+      base::OnceCallback<void(std::set<DataKey>)> callback) override;
 
   void RemoveAttributionDataByDataKey(const DataKey& data_key,
                                       base::OnceClosure callback) override;

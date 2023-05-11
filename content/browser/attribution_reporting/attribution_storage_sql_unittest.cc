@@ -9,6 +9,7 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,6 +43,7 @@
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_verification.h"
@@ -951,11 +953,12 @@ TEST_F(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
           .Build();
   storage()->MaybeCreateAndStoreReport(trigger);
 
-  std::vector keys = storage()->GetAllDataKeys();
+  std::set<AttributionDataModel::DataKey> keys = storage()->GetAllDataKeys();
   ASSERT_THAT(keys, SizeIs(2));
 
-  storage()->DeleteByDataKey(keys[0]);
-  storage()->DeleteByDataKey(keys[1]);
+  for (const auto& key : keys) {
+    storage()->DeleteByDataKey(key);
+  }
 
   CloseDatabase();
 
