@@ -1661,7 +1661,7 @@ BASE_FEATURE(kOsSyncConsentRevamp,
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kOsFeedbackJelly,
              "OsFeedbackJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables app badging toggle to be displayed in app notification page in
 // ChromeOS Settings.
