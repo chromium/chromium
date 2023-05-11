@@ -8,7 +8,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {BluetoothBrailleDisplayUiElement, SettingsChromeVoxSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -286,8 +286,7 @@ suite('<settings-chromevox-subpage>', () => {
 
     // Get Bluetooth Braille Display UI element.
     const bluetoothBrailleDisplayUi =
-        page.shadowRoot!.querySelector<BluetoothBrailleDisplayUiElement>(
-            'bluetooth-braille-display-ui');
+        page.shadowRoot!.querySelector('bluetooth-braille-display-ui');
     assert(bluetoothBrailleDisplayUi);
 
     // Update list of devices.
@@ -300,8 +299,7 @@ suite('<settings-chromevox-subpage>', () => {
     assert(dropdownMenu);
 
     // Get Bluetooth Braille Display select element.
-    const selectElement =
-        dropdownMenu.shadowRoot!.querySelector<HTMLSelectElement>('select');
+    const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
     assert(selectElement);
 
     // Select VarioUltra simulated device.
@@ -312,5 +310,53 @@ suite('<settings-chromevox-subpage>', () => {
 
     // Update list of devices.
     await bluetoothBrailleDisplayUi.onDisplayListChanged(displays);
+  });
+
+  test('no custom dropdown item shown', async function() {
+    // Get Bluetooth Braille Display UI element.
+    const bluetoothBrailleDisplayUi =
+        page.shadowRoot!.querySelector('bluetooth-braille-display-ui');
+    assert(bluetoothBrailleDisplayUi);
+
+    // Get Bluetooth Braille Display dropdown element.
+    const dropdownMenu =
+        bluetoothBrailleDisplayUi.shadowRoot!
+            .querySelector<SettingsDropdownMenuElement>('#displaySelect');
+    assert(dropdownMenu);
+
+    // Get Bluetooth Braille Display select element.
+    const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
+    assert(selectElement);
+
+    // Verify Bluetooth Braille Display select element is blank (not custom).
+    assertEquals('', selectElement.value);
+  });
+
+  test('braille display shown', async function() {
+    // Mock chrome.bluetooth.getDevice using `display` as the backing source.
+    const displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
+    chrome.bluetooth.getDevice = async address =>
+        displays.find(display => display.address === address)!;
+
+    // Get Bluetooth Braille Display UI element.
+    const bluetoothBrailleDisplayUi =
+        page.shadowRoot!.querySelector('bluetooth-braille-display-ui');
+    assert(bluetoothBrailleDisplayUi);
+
+    // Update list of devices.
+    await bluetoothBrailleDisplayUi.onDisplayListChanged(displays);
+
+    // Get Bluetooth Braille Display dropdown element.
+    const dropdownMenu =
+        bluetoothBrailleDisplayUi.shadowRoot!
+            .querySelector<SettingsDropdownMenuElement>('#displaySelect');
+    assert(dropdownMenu);
+
+    // Get Bluetooth Braille Display select element.
+    const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
+    assert(selectElement);
+
+    // Verify VarioUltra Bluetooth Braille Display is selected.
+    assertEquals('abcd1234', selectElement.value);
   });
 });

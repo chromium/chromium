@@ -29,6 +29,11 @@ import {getTemplate} from './bluetooth_braille_display_ui.html.js';
 const CONNECTED_METRIC_NAME =
     'Accessibility.ChromeVox.BluetoothBrailleDisplayConnectedButtonClick';
 const PINCODE_TIMEOUT_MS = 60000;
+// TODO(b/281743542): Update string for empty braille display picker.
+const BLANK_BRAILLE_DISPLAY_MENU_ITEM = {
+  value: '',
+  name: '',
+};
 
 /**
  * A widget used for interacting with bluetooth braille displays.
@@ -71,7 +76,7 @@ export class BluetoothBrailleDisplayUiElement extends
        */
       brailleDisplayMenuOptions_: {
         type: Array,
-        value: [],
+        value: [BLANK_BRAILLE_DISPLAY_MENU_ITEM],
       },
     };
   }
@@ -110,10 +115,21 @@ export class BluetoothBrailleDisplayUiElement extends
   }
 
   onDisplayListChanged(displays: chrome.bluetooth.Device[]) {
-    this.brailleDisplayMenuOptions_ = displays.map(display => ({
-                                                     value: display.address,
-                                                     name: display.name!,
-                                                   }));
+    // If there are no displays, just include a blank menu item.
+    if (displays.length === 0) {
+      this.brailleDisplayMenuOptions_ = [BLANK_BRAILLE_DISPLAY_MENU_ITEM];
+    } else {
+      this.brailleDisplayMenuOptions_ = displays.map(display => ({
+                                                       value: display.address,
+                                                       name: display.name!,
+                                                     }));
+      // If the blank option was selected, update the display selection.
+      if (this.brailleDisplayAddressPref_.value === '') {
+        this.set(
+            'brailleDisplayAddressPref_.value',
+            this.selectedAndConnectedDisplayAddress_ || displays[0].address);
+      }
+    }
     this.updateControls_();
   }
 
