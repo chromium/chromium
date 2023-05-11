@@ -37,10 +37,10 @@ class CloudDeviceDescription {
   const base::Value::Dict* GetDictItem(base::StringPiece path) const;
   const base::Value::List* GetListItem(base::StringPiece path) const;
 
-  // Creates item with given type for capability/option.
-  // Returns nullptr if an intermediate Value in the path is not a dictionary.
-  base::Value::Dict* CreateDictItem(base::StringPiece path);
-  base::Value::List* CreateListItem(base::StringPiece path);
+  // Sets item with given type for capability/option. Returns false if an
+  // intermediate Value in the path is not a dictionary.
+  bool SetDictItem(base::StringPiece path, base::Value::Dict dict);
+  bool SetListItem(base::StringPiece path, base::Value::List list);
 
  private:
   base::Value::Dict root_;

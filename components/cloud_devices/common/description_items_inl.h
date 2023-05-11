@@ -74,12 +74,13 @@ template <class Option, class Traits>
 void ListCapability<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  base::Value::List* options_list = description->CreateListItem(GetPath());
+  base::Value::List options_list;
   for (const Option& option : options_) {
     base::Value::Dict option_value;
     Traits::Save(option, &option_value);
-    options_list->Append(std::move(option_value));
+    options_list.Append(std::move(option_value));
   }
+  description->SetListItem(GetPath(), std::move(options_list));
 }
 
 template <class Option, class Traits>
@@ -133,9 +134,9 @@ template <class Option, class Traits>
 void SelectionCapability<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  base::Value::Dict* dict =
-      description->CreateDictItem(Traits::GetCapabilityPath());
-  SaveTo(dict);
+  base::Value::Dict dict;
+  SaveTo(&dict);
+  description->SetDictItem(Traits::GetCapabilityPath(), std::move(dict));
 }
 
 template <class Option, class Traits>
@@ -201,10 +202,11 @@ bool BooleanCapability<Traits>::LoadFrom(
 template <class Traits>
 void BooleanCapability<Traits>::SaveTo(
     CloudDeviceDescription* description) const {
-  base::Value::Dict* dict =
-      description->CreateDictItem(Traits::GetCapabilityPath());
-  if (default_value_ != Traits::kDefault)
-    dict->Set(json::kKeyDefault, default_value_);
+  base::Value::Dict dict;
+  if (default_value_ != Traits::kDefault) {
+    dict.Set(json::kKeyDefault, default_value_);
+  }
+  description->SetDictItem(Traits::GetCapabilityPath(), std::move(dict));
 }
 
 template <class Traits>
@@ -216,7 +218,7 @@ bool EmptyCapability<Traits>::LoadFrom(
 template <class Traits>
 void EmptyCapability<Traits>::SaveTo(
     CloudDeviceDescription* description) const {
-  description->CreateDictItem(Traits::GetCapabilityPath());
+  description->SetDictItem(Traits::GetCapabilityPath(), base::Value::Dict());
 }
 
 template <class Option, class Traits>
@@ -252,9 +254,9 @@ template <class Option, class Traits>
 void ValueCapability<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  base::Value::Dict* dict =
-      description->CreateDictItem(Traits::GetCapabilityPath());
-  Traits::Save(value(), dict);
+  base::Value::Dict dict;
+  Traits::Save(value(), &dict);
+  description->SetDictItem(Traits::GetCapabilityPath(), std::move(dict));
 }
 
 template <class Option, class Traits>
@@ -290,9 +292,9 @@ template <class Option, class Traits>
 void TicketItem<Option, Traits>::SaveTo(
     CloudDeviceDescription* description) const {
   DCHECK(IsValid());
-  base::Value::Dict* dict =
-      description->CreateDictItem(Traits::GetTicketItemPath());
-  Traits::Save(value(), dict);
+  base::Value::Dict dict;
+  Traits::Save(value(), &dict);
+  description->SetDictItem(Traits::GetTicketItemPath(), std::move(dict));
 }
 
 }  // namespace cloud_devices
