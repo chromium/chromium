@@ -39,6 +39,8 @@ class DestinationThrottlerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
+using Result = DestinationThrottler::Result;
+
 TEST_F(DestinationThrottlerTest, SourceLimits) {
   DestinationThrottler::Policy policy{
       .max_total = 2,
@@ -47,20 +49,28 @@ TEST_F(DestinationThrottlerTest, SourceLimits) {
   DestinationThrottler throttler(policy);
 
   // First source site:
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test"}), Site("source1.test"), Site("report.test")));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo2.test"}), Site("source1.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source1.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source1.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo2.test"}),
+                                  Site("source1.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitGlobalLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo3.test"}),
+                                   Site("source1.test"), Site("report.test")));
 
   // Second source site should be independent:
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test"}), Site("source2.test"), Site("report.test")));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo2.test"}), Site("source2.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source2.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source2.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo2.test"}),
+                                  Site("source2.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitGlobalLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo3.test"}),
+                                   Site("source2.test"), Site("report.test")));
 }
 
 TEST_F(DestinationThrottlerTest, ReportingSitesLimits) {
@@ -70,20 +80,28 @@ TEST_F(DestinationThrottlerTest, ReportingSitesLimits) {
   DestinationThrottler throttler(policy);
 
   // First reporting site:
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test"}), Site("source.test"), Site("report1.test")));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo2.test"}), Site("source.test"), Site("report1.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source.test"), Site("report1.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source.test"), Site("report1.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo2.test"}),
+                                  Site("source.test"), Site("report1.test")));
+  EXPECT_EQ(
+      Result::kHitReportingLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo3.test"}),
+                                   Site("source.test"), Site("report1.test")));
 
   // Second reporting site should be independent:
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test"}), Site("source.test"), Site("report2.test")));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo2.test"}), Site("source.test"), Site("report2.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source.test"), Site("report2.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source.test"), Site("report2.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo2.test"}),
+                                  Site("source.test"), Site("report2.test")));
+  EXPECT_EQ(
+      Result::kHitReportingLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo3.test"}),
+                                   Site("source.test"), Site("report2.test")));
 }
 
 TEST_F(DestinationThrottlerTest, MultipleOverLimit) {
@@ -93,16 +111,21 @@ TEST_F(DestinationThrottlerTest, MultipleOverLimit) {
       .rate_limit_window = base::Minutes(1)};
   DestinationThrottler throttler(policy);
 
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test", "foo2.test", "foo3.test"}),
-      Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kHitGlobalLimit,
+            throttler.UpdateAndGetResult(
+                Destinations({"foo1.test", "foo2.test", "foo3.test"}),
+                Site("source.test"), Site("report.test")));
 
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo2.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo2.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitGlobalLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo3.test"}),
+                                   Site("source.test"), Site("report.test")));
 }
 
 TEST_F(DestinationThrottlerTest, RollingWindow) {
@@ -113,30 +136,38 @@ TEST_F(DestinationThrottlerTest, RollingWindow) {
   DestinationThrottler throttler(policy);
 
   // Time 0s
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source.test"), Site("report.test")));
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
   // Time 30s
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo2.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo2.test"}),
+                                  Site("source.test"), Site("report.test")));
 
   task_environment_.FastForwardBy(base::Seconds(31));
 
   // Time 1:01. foo1.test should be evicted.
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo4.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo3.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitGlobalLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo4.test"}),
+                                   Site("source.test"), Site("report.test")));
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
   // Time 1:31. foo2.test should be evicted.
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo5.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo6.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo5.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitGlobalLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo6.test"}),
+                                   Site("source.test"), Site("report.test")));
 }
 
 // Insert a new element once all previous elements are too old.
@@ -147,20 +178,28 @@ TEST_F(DestinationThrottlerTest, CleanUpOldEntries) {
   DestinationThrottler throttler(policy);
 
   // Time 0s
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo1.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo2.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo2.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitReportingLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo3.test"}),
+                                   Site("source.test"), Site("report.test")));
 
   task_environment_.FastForwardBy(base::Seconds(61));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo4.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo5.test"}), Site("source.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo6.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo4.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo5.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitReportingLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo6.test"}),
+                                   Site("source.test"), Site("report.test")));
 }
 
 // Exercises EvictEntriesOlderThan with multiple deleted entries.
@@ -171,23 +210,44 @@ TEST_F(DestinationThrottlerTest, EvictMultiple) {
       .rate_limit_window = base::Minutes(1)};
   DestinationThrottler throttler(policy);
 
-  EXPECT_TRUE(
-      throttler.UpdateAndGetAllowed(Destinations({"foo1.test", "foo2.test"}),
-                                    Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test", "foo2.test"}),
+                                  Site("source.test"), Site("report.test")));
 
   task_environment_.FastForwardBy(base::Seconds(31));
 
-  EXPECT_TRUE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo3.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo3.test"}),
+                                  Site("source.test"), Site("report.test")));
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
   // Should evict the first two destinations.
-  EXPECT_TRUE(
-      throttler.UpdateAndGetAllowed(Destinations({"foo4.test", "foo5.test"}),
-                                    Site("source.test"), Site("report.test")));
-  EXPECT_FALSE(throttler.UpdateAndGetAllowed(
-      Destinations({"foo6.test"}), Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo4.test", "foo5.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitGlobalLimit,
+      throttler.UpdateAndGetResult(Destinations({"foo6.test"}),
+                                   Site("source.test"), Site("report.test")));
+}
+
+TEST_F(DestinationThrottlerTest, HitBothLimits) {
+  DestinationThrottler::Policy policy{.max_total = 1,
+                                      .max_per_reporting_site = 1,
+                                      .rate_limit_window = base::Minutes(1)};
+  DestinationThrottler throttler(policy);
+
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(Result::kAllowed, throttler.UpdateAndGetResult(
+                                  Destinations({"foo1.test"}),
+                                  Site("source.test"), Site("report.test")));
+  EXPECT_EQ(
+      Result::kHitBothLimits,
+      throttler.UpdateAndGetResult(Destinations({"foo2.test"}),
+                                   Site("source.test"), Site("report.test")));
 }
 
 }  // namespace

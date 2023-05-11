@@ -577,12 +577,12 @@ void AttributionManagerImpl::HandleSource(
   }
 
   // TODO(csharrison): Consider enforcing this limit after checking metrics.
-  bool allowed_by_destination_window = throttler_.UpdateAndGetAllowed(
+  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
       source.registration().destination_set,
       net::SchemefulSite(source.common_info().source_origin()),
       net::SchemefulSite(source.common_info().reporting_origin()));
-  base::UmaHistogramBoolean("Conversions.SourceAllowedByDestinationWindowLimit",
-                            allowed_by_destination_window);
+  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
+                                throttle_result);
 
   MaybeEnqueueEvent(std::move(source));
 }

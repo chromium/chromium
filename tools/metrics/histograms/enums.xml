@@ -5598,6 +5598,13 @@ others/histograms.xml -->
   <int value="9" label="STATUS_DBUS_ERROR"/>
 </enum>
 
+<enum name="AttributionDestinationThrottlerResult">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Disallowed (global limit)"/>
+  <int value="2" label="Disallowed (reporting site limit)"/>
+  <int value="3" label="Disallowed (both limits)"/>
+</enum>
+
 <enum name="AttributionNavigationType">
   <int value="0" label="Anchor"/>
   <int value="1" label="window.open"/>

@@ -3694,6 +3694,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DestinationThrottlerResult"
+    enum="AttributionDestinationThrottlerResult" expires_after="2023-10-08">
+  <owner>csharrison@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    For every successfully parsed attribution source that is also allowed by
+    browser policy, records the result of the time-based destination limit,
+    which governs whether a source can proceed to the storage layer.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.EnqueueEventAllowed" enum="BooleanAllowed"
     expires_after="2023-10-08">
   <owner>apaseltiner@chromium.org</owner>
@@ -4022,17 +4033,6 @@ chromium-metrics-reviews@google.com.
     rather than initial report time assigned by the API. Accounts for any delays
     in Chrome scheduling the report. Recorded when an event-level report is to
     be sent.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.SourceAllowedByDestinationWindowLimit"
-    enum="BooleanAllowed" expires_after="2023-10-08">
-  <owner>csharrison@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    For every successfully parsed attribution source that is also allowed by
-    browser policy, records true if the time-based destination limit allows the
-    source to proceed to the storage layer.
   </summary>
 </histogram>
 
