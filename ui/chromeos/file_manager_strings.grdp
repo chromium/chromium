@@ -1134,6 +1134,9 @@
   <message name="IDS_FILE_BROWSER_METADATA_BOX_DURATION" desc="Label for audio/video duration.">
     Duration
   </message>
+  <message name="IDS_FILE_BROWSER_METADATA_BOX_ENCRYPTED" desc="Type hint for a file, encrypted with CSE (https://support.google.com/a/answer/10741897).">
+    Encrypted <ph name='ORIGINAL_MIME_TYPE'>$1<ex>text/plain</ex></ph>
+  </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_EXIF_DEVICE_MODEL" desc="Label for the device model which created the image.">
     Device model
   </message>

@@ -151,6 +151,7 @@ FileType.getType = (entry, opt_mimeType) => {
       const type = /** @type {FileExtensionType} */ (
           {...FileType.getType(entry, cseMatch[1])});
       type.encrypted = true;
+      type.originalMimeType = cseMatch[1];
       return type;
     }
   }

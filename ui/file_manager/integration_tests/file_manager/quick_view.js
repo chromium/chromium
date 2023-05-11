@@ -87,6 +87,7 @@ async function i18nQuickViewLabelText(text) {
     'Device settings': 'METADATA_BOX_EXIF_DEVICE_SETTINGS',
     'Dimensions': 'METADATA_BOX_DIMENSION',
     'Duration': 'METADATA_BOX_DURATION',
+    'Encrypted': 'METADATA_BOX_ENCRYPTED',
     'File location': 'METADATA_BOX_FILE_LOCATION',
     'Frame rate': 'METADATA_BOX_FRAME_RATE',
     'General info': 'METADATA_BOX_GENERAL_INFO',
@@ -3626,4 +3627,9 @@ testcase.openQuickViewEncryptedFile = async () => {
     return checkInnerContentPanel(await remoteCall.callRemoteTestUtil(
         'deepQueryAllElements', appId, [contentPanel, ['display']]));
   });
+
+  // Check: the correct file mimeType should be displayed.
+  const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
+  chrome.test.assertEq(
+      await i18nQuickViewLabelText('Encrypted') + ' text/plain', mimeType);
 };
