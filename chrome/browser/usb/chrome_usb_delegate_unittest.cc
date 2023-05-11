@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -631,5 +632,24 @@ TEST_F(ChromeUsbDelegateTest, AllowlistedSmartCardConnectorExtension) {
     EXPECT_EQ(claim_interface_future.Get(),
               device::mojom::UsbClaimInterfaceResult::kProtectedClass);
   }
+}
+
+TEST_F(ChromeUsbDelegateTest, BrowserContextIsNull) {
+  ChromeUsbDelegate chrome_usb_delegate;
+  url::Origin origin = url::Origin::Create(GURL(kDefaultTestUrl));
+  EXPECT_FALSE(chrome_usb_delegate.CanRequestDevicePermission(
+      /*browser_context=*/nullptr, origin));
+  EXPECT_FALSE(chrome_usb_delegate.HasDevicePermission(
+      /*browser_context=*/nullptr, origin, device::mojom::UsbDeviceInfo()));
+  EXPECT_EQ(nullptr, chrome_usb_delegate.GetDeviceInfo(
+                         /*browser_context=*/nullptr,
+                         base::Uuid::GenerateRandomV4().AsLowercaseString()));
+
+  TestFuture<std::vector<device::mojom::UsbDeviceInfoPtr>> get_devices_future;
+  chrome_usb_delegate.GetDevices(/*browser_context=*/nullptr,
+                                 get_devices_future.GetCallback());
+  EXPECT_TRUE(get_devices_future.Get().empty());
+
+  // TODO(crbug.com/1303193): Test GetDevice with null browser_context.
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
