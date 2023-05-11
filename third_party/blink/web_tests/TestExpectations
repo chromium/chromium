@@ -6813,3 +6813,4 @@ crbug.com/1444049 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prere
 
 # Sheriff 2023-05-11
 crbug.com/1444592 [ Linux ] external/wpt/js-self-profiling/function-anonymous-names.https.html [ Failure ]
+crbug.com/1444626 [ Mac ] external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Failure ]
