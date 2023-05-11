@@ -337,7 +337,7 @@ void OnQuotaManagedDataLoaded(
     base::OnceClosure loaded_callback,
     const std::list<BrowsingDataQuotaHelper::QuotaInfo>& quota_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto entry : quota_info) {
+  for (const auto& entry : quota_info) {
     model->AddBrowsingData(
         entry.storage_key,
         BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage,
