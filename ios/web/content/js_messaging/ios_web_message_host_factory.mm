@@ -7,6 +7,8 @@
 #import <string>
 
 #import "base/functional/overloaded.h"
+#import "base/json/json_reader.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/js_injection/browser/js_communication_host.h"
 #import "components/js_injection/browser/web_message.h"
 #import "components/js_injection/browser/web_message_host.h"
@@ -22,31 +24,65 @@ namespace {
 // Created when a message is received from JavaScript.
 class IOSWebMessageHost : public js_injection::WebMessageHost {
  public:
-  IOSWebMessageHost(const std::string& origin_string, bool is_main_frame) {}
+  IOSWebMessageHost(
+      const std::string& origin_string,
+      bool is_main_frame,
+      IOSWebMessageHostFactory::WebMessageCallback message_callback)
+      : origin_string_(origin_string),
+        is_main_frame_(is_main_frame),
+        message_callback_(message_callback) {}
 
   ~IOSWebMessageHost() override = default;
 
   // js_injection::WebMessageHost:
   void OnPostMessage(
       std::unique_ptr<js_injection::WebMessage> web_message) override {
+    absl::optional<std::u16string> received_message;
     absl::visit(
         base::Overloaded{
-            [](const std::u16string& str) {
-              // TODO(crbug.com/1423527): Pass on the extracted message to
-              // feature code.
-              LOG(ERROR) << "webkitMessageHandler received: " << str;
+            [&received_message](const std::u16string& str) {
+              received_message = str;
             },
             [](const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
                    array_buffer) {
               // Do nothing if the received message is not a string.
             }},
         web_message->message);
+    if (!received_message) {
+      return;
+    }
+
+    // TODO(crbug.com/1423527): Move this parsing to the renderer process.
+    absl::optional<base::Value> message_value =
+        base::JSONReader::Read(base::UTF16ToUTF8(*received_message));
+    if (!message_value) {
+      return;
+    }
+    // TODO(crbug.com/1423527): Determine whether the user has interacted with
+    // the source page.
+    bool is_user_interacting = false;
+    ScriptMessage script_message(
+        std::make_unique<base::Value>(std::move(*message_value)),
+        is_user_interacting, is_main_frame_, GURL(origin_string_));
+    message_callback_.Run(script_message);
   }
+
+ private:
+  // The origin of the page that sent the message.
+  std::string origin_string_;
+
+  // Whether the page that sent the message is a main frame.
+  bool is_main_frame_ = false;
+
+  // Called with the message received from JavaScript.
+  IOSWebMessageHostFactory::WebMessageCallback message_callback_;
 };
 
 }  // namespace
 
-IOSWebMessageHostFactory::IOSWebMessageHostFactory() = default;
+IOSWebMessageHostFactory::IOSWebMessageHostFactory(
+    WebMessageCallback message_callback)
+    : message_callback_(message_callback) {}
 
 IOSWebMessageHostFactory::~IOSWebMessageHostFactory() = default;
 
@@ -55,7 +91,8 @@ IOSWebMessageHostFactory::CreateHost(
     const std::string& origin_string,
     bool is_main_frame,
     js_injection::WebMessageReplyProxy* proxy) {
-  return std::make_unique<IOSWebMessageHost>(origin_string, is_main_frame);
+  return std::make_unique<IOSWebMessageHost>(origin_string, is_main_frame,
+                                             message_callback_);
 }
 
 }  // namespace web

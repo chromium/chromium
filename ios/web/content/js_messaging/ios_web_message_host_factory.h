@@ -5,7 +5,10 @@
 #ifndef IOS_WEB_CONTENT_JS_MESSAGING_IOS_WEB_MESSAGE_HOST_FACTORY_H_
 #define IOS_WEB_CONTENT_JS_MESSAGING_IOS_WEB_MESSAGE_HOST_FACTORY_H_
 
+#import "base/functional/callback.h"
+#import "base/values.h"
 #import "components/js_injection/browser/web_message_host_factory.h"
+#import "ios/web/public/js_messaging/script_message.h"
 
 namespace web {
 
@@ -13,9 +16,11 @@ namespace web {
 // creating a WebMessageHost when JavaScript sends a message to the browser.
 class IOSWebMessageHostFactory : public js_injection::WebMessageHostFactory {
  public:
-  // TODO(crbug.com/1423527): Add a listener argument to this constructor. The
-  // listener will be called when messages are received from JavaScript.
-  IOSWebMessageHostFactory();
+  using WebMessageCallback =
+      base::RepeatingCallback<void(const ScriptMessage&)>;
+
+  // `message_callback` is called with each message received from JavaScript.
+  IOSWebMessageHostFactory(WebMessageCallback message_callback);
   IOSWebMessageHostFactory(const IOSWebMessageHostFactory&) = delete;
   IOSWebMessageHostFactory& operator=(const IOSWebMessageHostFactory&) = delete;
   ~IOSWebMessageHostFactory() override;
@@ -25,6 +30,10 @@ class IOSWebMessageHostFactory : public js_injection::WebMessageHostFactory {
       const std::string& origin_string,
       bool is_main_frame,
       js_injection::WebMessageReplyProxy* proxy) override;
+
+ private:
+  // Called with each message received from JavaScript.
+  WebMessageCallback message_callback_;
 };
 
 }  // namespace web

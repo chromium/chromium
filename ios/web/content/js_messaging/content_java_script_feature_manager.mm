@@ -11,6 +11,7 @@
 #import "content/public/browser/render_frame_host.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -91,7 +92,28 @@ void ContentJavaScriptFeatureManager::AddFeature(
     }
   }
 
-  // TODO(crbug.com/1423527): Add mapping for script message handlers.
+  absl::optional<std::string> handler_name =
+      feature->GetScriptMessageHandlerName();
+  if (handler_name) {
+    absl::optional<JavaScriptFeature::ScriptMessageHandler> handler =
+        feature->GetScriptMessageHandler();
+    CHECK(handler);
+    CHECK(!script_message_handlers_.count(*handler_name));
+    script_message_handlers_[*handler_name] = *handler;
+  }
+}
+
+void ContentJavaScriptFeatureManager::ScriptMessageReceived(
+    const ScriptMessage& script_message,
+    std::string handler_name,
+    WebState* web_state) {
+  auto it = script_message_handlers_.find(handler_name);
+  if (it == script_message_handlers_.end()) {
+    LOG(ERROR) << "No message handler for " << handler_name;
+    return;
+  }
+
+  it->second.Run(web_state, script_message);
 }
 
 }  // namespace web

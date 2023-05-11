@@ -16,12 +16,22 @@
 #import "ios/web/content/js_messaging/ios_web_message_host_factory.h"
 #import "ios/web/content/web_state/content_web_state.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace web {
+
+namespace {
+
+// Names of JSON dictionary properties that JavaScript populates when sending
+// messages to the browser.
+const char kHandlerNamePropertyName[] = "handler_name";
+const char kMessagePropertyName[] = "message";
+
+}  // namespace
 
 ContentWebFramesManager::ContentWebFramesManager(
     ContentWebState* content_web_state)
@@ -30,7 +40,11 @@ ContentWebFramesManager::ContentWebFramesManager(
       js_communication_host_(
           std::make_unique<js_injection::JsCommunicationHost>(
               content_web_state->GetWebContents())) {
-  auto message_host_factory = std::make_unique<IOSWebMessageHostFactory>();
+  auto web_message_callback =
+      base::BindRepeating(&ContentWebFramesManager::ScriptMessageReceived,
+                          weak_factory_.GetWeakPtr());
+  auto message_host_factory =
+      std::make_unique<IOSWebMessageHostFactory>(web_message_callback);
   js_communication_host_->AddWebMessageHostFactory(
       std::move(message_host_factory), u"webkitMessageHandler", {"*"});
 
@@ -172,6 +186,36 @@ WebFrame* ContentWebFramesManager::WebFrameForContentId(
   DCHECK(web_frame_it != web_frames_.end());
 
   return web_frame_it->second.get();
+}
+
+void ContentWebFramesManager::ScriptMessageReceived(
+    const ScriptMessage& script_message) {
+  // In ios/web/content, only a single script message handler is exposed to
+  // JavaScript. To simulate having multiple handlers (as in WKWebView-based
+  // ios/web), messages sent to this handler have the form of a dictionary with
+  // two fields, specifying the destination handler name along with the actual
+  // message for that handler. Once these two parts are extracted from
+  // `script_message`, a new ScriptMessage is constructed with only the actual
+  // message intended for the handler.
+
+  base::Value::Dict* dict = script_message.body()->GetIfDict();
+  if (!dict) {
+    return;
+  }
+
+  const std::string* handler_name = dict->FindString(kHandlerNamePropertyName);
+  base::Value* message_content = dict->Find(kMessagePropertyName);
+  if (!handler_name || !message_content) {
+    return;
+  }
+
+  ScriptMessage message_for_handler(
+      std::make_unique<base::Value>(std::move(*message_content)),
+      script_message.is_user_interacting(), script_message.is_main_frame(),
+      script_message.request_url());
+
+  js_feature_manager_->ScriptMessageReceived(message_for_handler, *handler_name,
+                                             content_web_state_);
 }
 
 }  // namespace web
