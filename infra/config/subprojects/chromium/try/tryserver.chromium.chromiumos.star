@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -166,7 +166,6 @@ try_.builder(
         ),
     ),
     builderless = not settings.is_main,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -195,7 +194,6 @@ try_.builder(
     mirrors = [
         "ci/lacros-arm64-generic-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -221,7 +219,6 @@ try_.builder(
     mirrors = [
         "ci/chromeos-jacuzzi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -231,7 +228,6 @@ try_.builder(
     mirrors = [
         "ci/chromeos-octopus-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 

@@ -264,7 +264,6 @@ def thin_tester(
     if builder_spec and builder_spec.execution_mode != builder_config.execution_mode.TEST:
         fail("thin testers with builder specs must have TEST execution mode")
     cores = defaults.get_value("thin_tester_cores", cores)
-    kwargs.setdefault("goma_backend", None)
     kwargs.setdefault("reclient_instance", None)
     kwargs.setdefault("os", builders.os.LINUX_DEFAULT)
     return ci.builder(
