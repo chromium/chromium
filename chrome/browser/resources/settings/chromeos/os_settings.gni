@@ -89,7 +89,7 @@ web_component_files = [
   "chromeos/internet_page/passpoint_subpage.ts",
   "chromeos/internet_page/settings_traffic_counters.ts",
   "chromeos/internet_page/tether_connection_dialog.ts",
-  "chromeos/kerberos_page/kerberos_accounts.ts",
+  "chromeos/kerberos_page/kerberos_accounts_subpage.ts",
   "chromeos/kerberos_page/kerberos_add_account_dialog.ts",
   "chromeos/kerberos_page/kerberos_page.ts",
   "chromeos/keyboard_shortcut_banner/keyboard_shortcut_banner.ts",

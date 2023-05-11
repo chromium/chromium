@@ -25,6 +25,7 @@ import './internet_page/internet_detail_subpage.js';
 import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
+import './kerberos_page/kerberos_accounts_subpage.js';
 import './os_a11y_page/manage_a11y_subpage.js';
 import './os_a11y_page/display_and_magnification_subpage.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
@@ -115,6 +116,7 @@ export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_path
 export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared_usb_devices.js';
 export {SettingsPasspointSubpageElement} from './internet_page/passpoint_subpage.js';
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
+export {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_page/kerberos_accounts_browser_proxy.js';
 export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsMultideviceCombinedSetupItemElement} from './multidevice_page/multidevice_combined_setup_item.js';
 export {SettingsMultideviceFeatureItemElement} from './multidevice_page/multidevice_feature_item.js';

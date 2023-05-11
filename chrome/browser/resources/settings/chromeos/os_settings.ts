@@ -40,8 +40,6 @@ import './device_page/storage.js';
 import './device_page/storage_external.js';
 import './device_page/storage_external_entry.js';
 import './device_page/stylus.js';
-import './kerberos_page/kerberos_accounts.js';
-import './kerberos_page/kerberos_page.js';
 import './multidevice_page/multidevice_page.js';
 import './nearby_share_page/nearby_share_high_visibility_page.js';
 import './nearby_share_page/nearby_share_receive_dialog.js';
@@ -131,7 +129,6 @@ export {OsSettingsCellularSetupDialogElement} from './internet_page/cellular_set
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {NetworkSummaryElement} from './internet_page/network_summary.js';
 export {NetworkSummaryItemElement} from './internet_page/network_summary_item.js';
-export {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_page/kerberos_accounts_browser_proxy.js';
 export {SettingsKerberosPageElement} from './kerberos_page/kerberos_page.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
 export * as appNotificationHandlerMojom from './mojom-webui/app_notification_handler.mojom-webui.js';

@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'settings-kerberos-accounts' is the settings subpage containing controls to
- * list, add and delete Kerberos Accounts.
+ * 'settings-kerberos-accounts-subpage' is the settings subpage containing
+ * controls to list, add and delete Kerberos Accounts.
  */
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -33,16 +33,16 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
-import {getTemplate} from './kerberos_accounts.html.js';
 import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosErrorType} from './kerberos_accounts_browser_proxy.js';
+import {getTemplate} from './kerberos_accounts_subpage.html.js';
 
-const SettingsKerberosAccountsElementBase = DeepLinkingMixin(
+const SettingsKerberosAccountsSubpageElementBase = DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsKerberosAccountsElement extends
-    SettingsKerberosAccountsElementBase {
+class SettingsKerberosAccountsSubpageElement extends
+    SettingsKerberosAccountsSubpageElementBase {
   static get is() {
-    return 'settings-kerberos-accounts';
+    return 'settings-kerberos-accounts-subpage' as const;
   }
 
   static get template() {
@@ -255,9 +255,11 @@ class SettingsKerberosAccountsElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-kerberos-accounts': SettingsKerberosAccountsElement;
+    [SettingsKerberosAccountsSubpageElement.is]:
+        SettingsKerberosAccountsSubpageElement;
   }
 }
 
 customElements.define(
-    SettingsKerberosAccountsElement.is, SettingsKerberosAccountsElement);
+    SettingsKerberosAccountsSubpageElement.is,
+    SettingsKerberosAccountsSubpageElement);

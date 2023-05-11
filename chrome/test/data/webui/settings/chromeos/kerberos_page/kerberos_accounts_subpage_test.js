@@ -4,16 +4,19 @@
 
 'use strict';
 
-import {TestKerberosAccountsBrowserProxy, TEST_KERBEROS_ACCOUNTS} from './test_kerberos_accounts_browser_proxy.js';
-import {Router, Route, routes, KerberosErrorType, KerberosConfigErrorCode, KerberosAccountsBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
+import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {TestKerberosAccountsBrowserProxy, TEST_KERBEROS_ACCOUNTS} from './test_kerberos_accounts_browser_proxy.js';
 
-// Tests for the Kerberos Accounts settings page.
+// Tests for the Kerberos Accounts settings subpage.
 suite('KerberosAccountsTests', function() {
   let browserProxy = null;
   let kerberosAccounts = null;
@@ -57,7 +60,8 @@ suite('KerberosAccountsTests', function() {
       kerberosAccounts.remove();
     }
 
-    kerberosAccounts = document.createElement('settings-kerberos-accounts');
+    kerberosAccounts =
+        document.createElement('settings-kerberos-accounts-subpage');
     document.body.appendChild(kerberosAccounts);
 
     accountList = kerberosAccounts.shadowRoot.querySelector('#account-list');
