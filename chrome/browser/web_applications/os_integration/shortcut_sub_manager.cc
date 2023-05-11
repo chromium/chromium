@@ -58,6 +58,16 @@ void ShortcutSubManager::Configure(
 
   desired_state.clear_shortcut();
 
+#if BUILDFLAG(IS_MAC)
+  // This is required to create the app shim registry for the current profile
+  // on Mac, otherwise updates to the AppShimRegistry do not happen when file
+  // handlers are registered.
+  if (AreSubManagersExecuteEnabled()) {
+    AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                     profile_->GetPath());
+  }
+#endif
+
   if (!registrar_->IsLocallyInstalled(app_id)) {
     std::move(configure_done).Run();
     return;
@@ -93,13 +103,6 @@ void ShortcutSubManager::Execute(
 
   // Second, handle shortcut creation.
   if (desired_state.has_shortcut() && !current_state.has_shortcut()) {
-    // This is required to create the app shim registry for the current profile
-    // on Mac, otherwise updates to the AppShimRegistry do not happen.
-#if BUILDFLAG(IS_MAC)
-    AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
-                                                     profile_->GetPath());
-#endif
-
     std::unique_ptr<ShortcutInfo> desired_shortcut_info =
         BuildShortcutInfoWithoutFavicon(
             app_id, registrar_->GetAppStartUrl(app_id), profile_->GetPath(),
