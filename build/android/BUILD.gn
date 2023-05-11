@@ -155,12 +155,15 @@ python_library("test_runner_core_py") {
 
 group("test_runner_device_support") {
   testonly = true
+
+  # We hardcode using these tools from the public sdk in devil_chromium.json and
+  # in pylib's constants.
   data = [
-    "${android_sdk_build_tools}/aapt",
-    "${android_sdk_build_tools}/dexdump",
-    "${android_sdk_build_tools}/lib64/libc++.so",
-    "${android_sdk_build_tools}/split-select",
-    "${android_sdk_root}/platform-tools/adb",
+    "${public_android_sdk_build_tools}/aapt",
+    "${public_android_sdk_build_tools}/dexdump",
+    "${public_android_sdk_build_tools}/lib64/libc++.so",
+    "${public_android_sdk_build_tools}/split-select",
+    "${public_android_sdk_root}/platform-tools/adb",
   ]
   data_deps = [
     ":apk_installer_data",

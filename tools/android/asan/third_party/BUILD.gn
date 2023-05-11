@@ -24,7 +24,7 @@ generate_wrapper("asan_device_setup") {
     assert(false, "No ASAN library available for $target_cpu")
   }
 
-  _adb_path = "${android_sdk_root}/platform-tools/adb"
+  _adb_path = "${public_android_sdk_root}/platform-tools/adb"
   _lib_dir = "${clang_base_path}/lib/clang/${clang_version}/lib/linux"
   _lib_paths = []
   foreach(_lib_arch, _lib_archs) {
