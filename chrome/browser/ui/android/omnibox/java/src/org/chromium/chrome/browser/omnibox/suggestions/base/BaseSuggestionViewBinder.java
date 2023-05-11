@@ -343,7 +343,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams == null) {
             layoutParams =
-                    new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    new MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         }
 
         if (layoutParams instanceof MarginLayoutParams) {

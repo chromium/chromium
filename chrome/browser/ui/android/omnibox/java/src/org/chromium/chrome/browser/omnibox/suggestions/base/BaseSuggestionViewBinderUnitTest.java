@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.ActionBar.LayoutParams;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
@@ -278,6 +279,7 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertEquals(13, layoutParams.topMargin);
         Assert.assertEquals(sideSpacing, layoutParams.rightMargin);
         Assert.assertEquals(17, layoutParams.bottomMargin);
+        Assert.assertEquals(LayoutParams.MATCH_PARENT, layoutParams.width);
     }
 
     @Test
