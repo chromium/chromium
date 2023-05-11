@@ -115,6 +115,10 @@ component("shell_dialogs") {
     libs = [ "jnigraphics" ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     frameworks = [
       "CoreServices.framework",
@@ -153,6 +157,10 @@ test("shell_dialogs_unittests") {
     "run_all_unittests.cc",
     "select_file_dialog_unittest.cc",
   ]
+
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
 
   if (is_mac) {
     sources += [ "select_file_dialog_mac_unittest.mm" ]

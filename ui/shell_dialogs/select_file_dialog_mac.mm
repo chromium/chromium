@@ -16,6 +16,10 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using remote_cocoa::mojom::SelectFileDialogType;
 using remote_cocoa::mojom::SelectFileTypeInfo;
 using remote_cocoa::mojom::SelectFileTypeInfoPtr;
