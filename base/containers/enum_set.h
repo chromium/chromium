@@ -7,6 +7,7 @@
 
 #include <bitset>
 #include <cstddef>
+#include <initializer_list>
 #include <type_traits>
 #include <utility>
 
@@ -164,6 +165,8 @@ class EnumSet {
     return bitstring << shift_amount;
   }
 
+  // TODO(crbug/1444105): Deprecated. Use std::initializer_list version below.
+  // Remove once there are no usages.
   template <class... T>
   static constexpr uint64_t bitstring(T... values) {
     uint64_t converted[] = {single_val_bitstring(values)...};
@@ -173,9 +176,22 @@ class EnumSet {
     return result;
   }
 
+  // TODO(crbug/1444105): Deprecated. Use std::initializer_list version below.
+  // Remove once there are no usages.
   template <class... T>
   constexpr EnumSet(E head, T... tail)
       : EnumSet(EnumBitSet(bitstring(head, tail...))) {}
+
+  static constexpr uint64_t bitstring(const std::initializer_list<E>& values) {
+    uint64_t result = 0;
+    for (E value : values) {
+      result |= single_val_bitstring(value);
+    }
+    return result;
+  }
+
+  constexpr EnumSet(std::initializer_list<E> values)
+      : EnumSet(EnumBitSet(bitstring(values))) {}
 
   // Returns an EnumSet with all possible values.
   static constexpr EnumSet All() {
