@@ -106,6 +106,9 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   bool IsBisectLineBreakDisabled() const {
     return Data().IsBisectLineBreakDisabled();
   }
+  bool IsScoreLineBreakDisabled() const {
+    return Data().IsScoreLineBreakDisabled();
+  }
 
   // @return if this node can contain the "first formatted line".
   // https://www.w3.org/TR/CSS22/selector.html#first-formatted-line

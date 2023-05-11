@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
@@ -149,6 +149,14 @@ class RenderingTest : public PageTestBase {
 
   LayoutBox* GetLayoutBoxByElementId(const char* id) const {
     return To<LayoutBox>(GetLayoutObjectByElementId(id));
+  }
+
+  LayoutBlockFlow* GetLayoutBlockFlowByElementId(const char* id) const {
+    return To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
+  }
+
+  NGInlineNode GetInlineNodeByElementId(const char* id) const {
+    return NGInlineNode(GetLayoutBlockFlowByElementId(id));
   }
 
   PaintLayer* GetPaintLayerByElementId(const char* id) {

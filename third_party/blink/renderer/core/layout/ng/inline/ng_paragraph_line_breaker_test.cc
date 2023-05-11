@@ -13,13 +13,12 @@ namespace blink {
 
 class NGParagraphLineBreakerTest : public RenderingTest {
  public:
-  absl::optional<LayoutUnit> AttemptParagraphBalancing(const char* id) {
-    auto* layout_object = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
+  absl::optional<LayoutUnit> AttemptParagraphBalancing(
+      const NGInlineNode& node) {
     const NGPhysicalBoxFragment* fragment =
-        layout_object->GetPhysicalFragment(0);
+        node.GetLayoutBox()->GetPhysicalFragment(0);
     const LayoutUnit width = fragment->Size().width;
 
-    NGInlineNode node(layout_object);
     NGConstraintSpaceBuilder builder(
         WritingMode::kHorizontalTb,
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -32,7 +31,7 @@ class NGParagraphLineBreakerTest : public RenderingTest {
   }
 };
 
-TEST_F(NGParagraphLineBreakerTest, ShouldFailByBlockInInline) {
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByBlockInInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -51,10 +50,36 @@ TEST_F(NGParagraphLineBreakerTest, ShouldFailByBlockInInline) {
       </span>
     </div>
   )HTML");
-  EXPECT_FALSE(AttemptParagraphBalancing("target"));
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  EXPECT_TRUE(target.IsBisectLineBreakDisabled());
+  EXPECT_TRUE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, ShouldFailByFloat) {
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByFirstLine) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-size: 10px;
+      width: 10ch;
+    }
+    #target::first-line {
+      font-weight: bold;
+    }
+    </style>
+    <div id="target">
+      1234 6789
+      1234 6789
+    </div>
+  )HTML");
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  EXPECT_FALSE(target.IsBisectLineBreakDisabled());
+  EXPECT_TRUE(target.IsScoreLineBreakDisabled());
+  EXPECT_TRUE(AttemptParagraphBalancing(target));
+}
+
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloat) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -70,10 +95,13 @@ TEST_F(NGParagraphLineBreakerTest, ShouldFailByFloat) {
       1234 6789
     </div>
   )HTML");
-  EXPECT_FALSE(AttemptParagraphBalancing("target"));
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  EXPECT_TRUE(target.IsBisectLineBreakDisabled());
+  EXPECT_TRUE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, ShouldFailByForcedBreak) {
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreak) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -88,10 +116,13 @@ TEST_F(NGParagraphLineBreakerTest, ShouldFailByForcedBreak) {
       1234 6789
     </div>
   )HTML");
-  EXPECT_FALSE(AttemptParagraphBalancing("target"));
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  EXPECT_TRUE(target.IsBisectLineBreakDisabled());
+  EXPECT_FALSE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, ShouldFailByInitialLetter) {
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByInitialLetter) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -108,7 +139,28 @@ TEST_F(NGParagraphLineBreakerTest, ShouldFailByInitialLetter) {
       1234 6789
     </div>
   )HTML");
-  EXPECT_FALSE(AttemptParagraphBalancing("target"));
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  EXPECT_TRUE(target.IsBisectLineBreakDisabled());
+  EXPECT_TRUE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(AttemptParagraphBalancing(target));
+}
+
+TEST_F(NGParagraphLineBreakerTest, IsDisabledByTabulationCharacters) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-size: 10px;
+      width: 10ch;
+      white-space: pre-wrap;
+    }
+    </style>
+    <div id="target">1234 6789&#0009;1234 6789</div>
+  )HTML");
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  EXPECT_FALSE(target.IsBisectLineBreakDisabled());
+  EXPECT_TRUE(target.IsScoreLineBreakDisabled());
+  EXPECT_TRUE(AttemptParagraphBalancing(target));
 }
 
 }  // namespace blink

@@ -224,9 +224,8 @@ LogicalOffset LogicalFromBfcOffsets(const NGBfcOffset& child_bfc_offset,
 inline bool NeedsLineInfoList(const NGInlineNode& node) {
   const TextWrap wrap = node.Style().GetTextWrap();
   if (UNLIKELY(wrap == TextWrap::kPretty)) {
-    // TODO(crbug.com/1432798): Needs more conditions not to needed it.
     DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
-    return true;
+    return !node.IsScoreLineBreakDisabled();
   }
   return false;
 }

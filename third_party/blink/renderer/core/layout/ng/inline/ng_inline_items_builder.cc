@@ -876,6 +876,7 @@ void NGInlineItemsBuilderTemplate<
             layout_object);
         item.SetTextType(NGTextType::kFlowControl);
         start = end;
+        is_score_line_break_disabled_ = true;
         continue;
       }
       // ZWNJ splits item, but it should be text.
@@ -1075,6 +1076,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
   // block-in-inline, before it and after it separately. See
   // `NGParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
+  is_score_line_break_disabled_ = true;
 }
 
 template <typename OffsetMappingBuilder>
@@ -1085,6 +1087,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
   // Floats/exclusions require computing line heights, which is currently
   // skipped during the bisect. See `NGParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
+  is_score_line_break_disabled_ = true;
 }
 
 template <typename OffsetMappingBuilder>
@@ -1416,6 +1419,7 @@ void NGInlineItemsBuilderTemplate<
   data->is_block_level_ = IsBlockLevel();
   data->changes_may_affect_earlier_lines_ = HasUnicodeBidiPlainText();
   data->is_bisect_line_break_disabled_ = is_bisect_line_break_disabled_;
+  data->is_score_line_break_disabled_ = is_score_line_break_disabled_;
 
 #if DCHECK_IS_ON()
   data->CheckConsistency();
@@ -1431,6 +1435,7 @@ void NGInlineItemsBuilderTemplate<
   // Floats/exclusions require computing line heights, which is currently
   // skipped during the bisect. See `NGParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
+  is_score_line_break_disabled_ = true;
 }
 
 template <typename OffsetMappingBuilder>

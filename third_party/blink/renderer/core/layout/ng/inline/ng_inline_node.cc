@@ -1515,6 +1515,9 @@ void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
     ShapeText(first_line_items);
 
   data->first_line_items_ = first_line_items;
+  // The score line breaker can't apply different styles by different line
+  // breaking.
+  data->is_score_line_break_disabled_ = true;
 }
 
 void NGInlineNode::ShapeTextIncludingFirstLine(
