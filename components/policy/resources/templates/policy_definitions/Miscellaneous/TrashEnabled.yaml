@@ -10,7 +10,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 supported_on:
-- chrome_os:108-
+- chrome_os:109-
 items:
 - caption: Trash is enabled for the user.
   value: true
