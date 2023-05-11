@@ -29,8 +29,6 @@ namespace {
 
 const base::FilePath kDecoderDevicePrefix("/dev/dri/");
 
-#define V4L2_PIX_FMT_INVALID 0
-
 #define TOSTR(enumCase) \
   case enumCase:        \
     return #enumCase
