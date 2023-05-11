@@ -95,8 +95,6 @@ class DateTimeFieldElement : public HTMLSpanElement {
   void Trace(Visitor*) const override;
   DateTimeField Type() const;
 
-  static float ComputeTextWidth(const ComputedStyle&, const String&);
-
  protected:
   DateTimeFieldElement(Document&, FieldOwner&, DateTimeField);
   void FocusOnNextField();
