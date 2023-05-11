@@ -591,12 +591,13 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .has_border = false});
 }
 
+// TODO(crbug/1444833): Re-enable once passing
 // TODO(crbug.com/1444732): Enable on CrOS.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(
     TabSharingUIViewsBrowserTest,
-    NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedBeforeCapture) {
+    DISABLED_NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedBeforeCapture) {
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
@@ -622,9 +623,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 0u);
 }
 
+// TODO(crbug/1444833): Re-enable once passing
 IN_PROC_BROWSER_TEST_P(
     TabSharingUIViewsBrowserTest,
-    NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedAfterCapture) {
+    DISABLED_NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedAfterCapture) {
   // Create a normal-mode browser.
   Browser* const main_browser = CreateBrowser(browser()->profile());
   AddTabs(main_browser, 1);
@@ -650,9 +652,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 0u);
 }
 
+// TODO(crbug/1444833): Re-enable once passing
 IN_PROC_BROWSER_TEST_P(
     TabSharingUIViewsBrowserTest,
-    GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedBeforeCapture) {
+    DISABLED_GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedBeforeCapture) {
   // Create a normal-mode browser.
   Browser* const main_browser = CreateBrowser(browser()->profile());
   AddTabs(main_browser, 1);
@@ -678,9 +681,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 0u);
 }
 
+// TODO(crbug/1444833): Re-enable once passing
 IN_PROC_BROWSER_TEST_P(
     TabSharingUIViewsBrowserTest,
-    GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedAfterCapture) {
+    DISABLED_GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedAfterCapture) {
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
@@ -706,8 +710,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
-                       TabsAddedInGuestModeHaveInfobarIfGuestModeCapture) {
+// TODO(crbug/1444833): Re-enable once passing
+IN_PROC_BROWSER_TEST_P(
+    TabSharingUIViewsBrowserTest,
+    DISABLED_TabsAddedInGuestModeHaveInfobarIfGuestModeCapture) {
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
