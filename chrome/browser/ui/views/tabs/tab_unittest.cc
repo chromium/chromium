@@ -323,7 +323,8 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   TabRendererData data;
-  data.favicon = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  data.favicon =
+      ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 
   // Perform layout over all possible combinations, checking for correct
   // results.

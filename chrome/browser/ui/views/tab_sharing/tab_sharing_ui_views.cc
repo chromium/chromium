@@ -547,7 +547,7 @@ ui::ImageModel TabSharingUIViews::TabFavicon(WebContents* web_contents) const {
   }
 
   if (!web_contents) {
-    return ui::ImageModel::FromImage(favicon::GetDefaultFavicon());
+    return favicon::GetDefaultFaviconModel();
   }
 
   auto it = favicon_overrides_for_testing_.find(web_contents);
@@ -556,8 +556,8 @@ ui::ImageModel TabSharingUIViews::TabFavicon(WebContents* web_contents) const {
   }
 
   const gfx::Image favicon = favicon::TabFaviconFromWebContents(web_contents);
-  return ui::ImageModel::FromImage(
-      favicon.IsEmpty() ? favicon::GetDefaultFavicon() : favicon);
+  return favicon.IsEmpty() ? favicon::GetDefaultFaviconModel()
+                           : ui::ImageModel::FromImage(favicon);
 }
 
 ui::ImageModel TabSharingUIViews::TabFavicon(

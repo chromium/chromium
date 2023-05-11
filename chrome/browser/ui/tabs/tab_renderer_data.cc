@@ -45,7 +45,7 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
       security_interstitial_tab_helper->ShouldDisplayURL();
   TabRendererData data;
   TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(contents);
-  data.favicon = tab_ui_helper->GetFavicon().AsImageSkia();
+  data.favicon = tab_ui_helper->GetFavicon();
 
   // Tabbed web apps should use the app icon on the home tab.
   Browser* app_browser = chrome::FindBrowserWithWebContents(contents);
@@ -56,11 +56,11 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
       gfx::ImageSkia home_tab_icon = app_controller->GetHomeTabIcon();
       if (!home_tab_icon.isNull()) {
         data.is_monochrome_favicon = true;
-        data.favicon = home_tab_icon;
+        data.favicon = ui::ImageModel::FromImageSkia(home_tab_icon);
       } else {
         home_tab_icon = app_controller->GetFallbackHomeTabIcon();
         if (!home_tab_icon.isNull()) {
-          data.favicon = home_tab_icon;
+          data.favicon = ui::ImageModel::FromImageSkia(home_tab_icon);
         }
       }
     }
@@ -122,9 +122,9 @@ TabRendererData& TabRendererData::operator=(TabRendererData&& other) = default;
 TabRendererData::~TabRendererData() = default;
 
 bool TabRendererData::operator==(const TabRendererData& other) const {
-  return favicon.BackedBySameObjectAs(other.favicon) &&
-         thumbnail == other.thumbnail && network_state == other.network_state &&
-         title == other.title && visible_url == other.visible_url &&
+  return favicon == other.favicon && thumbnail == other.thumbnail &&
+         network_state == other.network_state && title == other.title &&
+         visible_url == other.visible_url &&
          last_committed_url == other.last_committed_url &&
          should_display_url == other.should_display_url &&
          crashed_status == other.crashed_status &&

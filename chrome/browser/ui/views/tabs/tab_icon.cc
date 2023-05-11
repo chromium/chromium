@@ -182,10 +182,7 @@ void TabIcon::SetData(const TabRendererData& data) {
 void TabIcon::SetActiveState(bool is_active) {
   if (is_active_tab_ != is_active) {
     is_active_tab_ = is_active;
-    if (is_monochrome_favicon_) {
-      themed_favicon_ = ThemeMonochromeFavicon(favicon_);
-      SchedulePaint();
-    }
+    UpdateThemedFavicon();
   }
 }
 
@@ -265,13 +262,7 @@ void TabIcon::OnPaint(gfx::Canvas* canvas) {
 void TabIcon::OnThemeChanged() {
   views::View::OnThemeChanged();
   crashed_icon_ = gfx::ImageSkia();  // Force recomputation if crashed.
-  if (!themed_favicon_.isNull()) {
-    if (is_monochrome_favicon_) {
-      themed_favicon_ = ThemeMonochromeFavicon(favicon_);
-    } else {
-      themed_favicon_ = ThemeFavicon(favicon_);
-    }
-  }
+  UpdateThemedFavicon();
 }
 
 void TabIcon::AnimationProgressed(const gfx::Animation* animation) {
@@ -377,7 +368,8 @@ void TabIcon::PaintLoadingAnimation(gfx::Canvas* canvas, gfx::Rect bounds) {
   }
 }
 
-const gfx::ImageSkia& TabIcon::GetIconToPaint() {
+gfx::ImageSkia TabIcon::GetIconToPaint() {
+  CHECK(GetWidget());
   if (should_display_crashed_favicon_) {
     if (crashed_icon_.isNull()) {
       // Lazily create a themed sad tab icon.
@@ -388,7 +380,8 @@ const gfx::ImageSkia& TabIcon::GetIconToPaint() {
     return crashed_icon_;
   }
 
-  return themed_favicon_.isNull() ? favicon_ : themed_favicon_;
+  return themed_favicon_.isNull() ? favicon_.Rasterize(GetColorProvider())
+                                  : themed_favicon_;
 }
 
 void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
@@ -478,27 +471,21 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
 }
 
 bool TabIcon::GetNonDefaultFavicon() const {
-  return !favicon_.isNull() && !favicon_.BackedBySameObjectAs(
-                                   favicon::GetDefaultFavicon().AsImageSkia());
+  const auto default_favicon =
+      favicon::GetDefaultFaviconModel(kColorTabBackgroundActiveFrameActive);
+  return !favicon_.IsEmpty() && favicon_ != default_favicon;
 }
 
-void TabIcon::SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon) {
+void TabIcon::SetIcon(const ui::ImageModel& icon, bool should_themify_favicon) {
   // Detect when updating to the same icon. This avoids re-theming and
   // re-painting.
-  if (favicon_.BackedBySameObjectAs(icon))
+  if (favicon_ == icon) {
     return;
-
-  favicon_ = icon;
-
-  if (!GetNonDefaultFavicon() || should_themify_favicon) {
-    themed_favicon_ = ThemeFavicon(icon);
-  } else if (is_monochrome_favicon_) {
-    themed_favicon_ = ThemeMonochromeFavicon(icon);
-  } else {
-    themed_favicon_ = gfx::ImageSkia();
   }
 
-  SchedulePaint();
+  favicon_ = icon;
+  should_themify_favicon_ = should_themify_favicon;
+  UpdateThemedFavicon();
 }
 
 void TabIcon::SetDiscarded(bool should_show_discard_status) {
@@ -591,6 +578,23 @@ gfx::ImageSkia TabIcon::ThemeMonochromeFavicon(const gfx::ImageSkia& source) {
       source, is_active_tab_
                   ? cp->GetColor(kColorTabBackgroundActiveFrameActive)
                   : cp->GetColor(kColorTabBackgroundInactiveFrameActive));
+}
+
+void TabIcon::UpdateThemedFavicon() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  if (!GetNonDefaultFavicon() || should_themify_favicon_) {
+    themed_favicon_ = ThemeFavicon(favicon_.Rasterize(GetColorProvider()));
+  } else if (is_monochrome_favicon_) {
+    themed_favicon_ =
+        ThemeMonochromeFavicon(favicon_.Rasterize(GetColorProvider()));
+  } else {
+    themed_favicon_ = gfx::ImageSkia();
+  }
+
+  SchedulePaint();
 }
 
 BEGIN_METADATA(TabIcon, views::View)

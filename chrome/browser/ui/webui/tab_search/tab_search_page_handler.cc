@@ -456,14 +456,18 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
           ? tab_renderer_data.visible_url
           : last_committed_url;
 
-  if (tab_renderer_data.favicon.isNull()) {
+  if (tab_renderer_data.favicon.IsEmpty()) {
     tab_data->is_default_favicon = true;
   } else {
+    const ui::ColorProvider& provider =
+        web_ui_->GetWebContents()->GetColorProvider();
+    const gfx::ImageSkia default_favicon =
+        favicon::GetDefaultFaviconModel().Rasterize(&provider);
     tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
-        tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor()));
+        default_favicon, web_ui_->GetDeviceScaleFactor()));
     tab_data->is_default_favicon =
-        tab_renderer_data.favicon.BackedBySameObjectAs(
-            favicon::GetDefaultFavicon().AsImageSkia());
+        tab_renderer_data.favicon.Rasterize(&provider).BackedBySameObjectAs(
+            default_favicon);
   }
 
   tab_data->show_icon = tab_renderer_data.show_icon;

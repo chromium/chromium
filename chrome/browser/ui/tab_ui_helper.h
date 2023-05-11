@@ -14,6 +14,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -35,7 +36,7 @@ class TabUIHelper : public content::WebContentsObserver,
 
   // Get the favicon of the tab. It will return a favicon from history service
   // if it needs to, otherwise, it will return the favicon of the WebContents.
-  gfx::Image GetFavicon() const;
+  ui::ImageModel GetFavicon() const;
 
   // Return true if the throbber should be hidden during a page load.
   bool ShouldHideThrobber() const;
@@ -63,7 +64,7 @@ class TabUIHelper : public content::WebContentsObserver,
   struct TabUIData {
     explicit TabUIData(const GURL& url);
     std::u16string title;
-    gfx::Image favicon;
+    ui::ImageModel favicon;
   };
 
   explicit TabUIHelper(content::WebContents* contents);
