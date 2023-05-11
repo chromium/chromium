@@ -7,6 +7,8 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::reporting {
 
@@ -18,6 +20,36 @@ void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry) {
       kReportAppUsageCollectionRateMs,
       ::reporting::metrics::kDefaultAppUsageTelemetryCollectionRate
           .InMilliseconds());
+}
+
+absl::optional<std::string> GetAppReportingCategoryForType(
+    ::apps::AppType app_type) {
+  switch (app_type) {
+    case ::apps::AppType::kArc:
+      return kAppCategoryAndroidApps;
+    case ::apps::AppType::kBuiltIn:
+    case ::apps::AppType::kSystemWeb:
+      return kAppCategorySystemApps;
+    case ::apps::AppType::kCrostini:
+    case ::apps::AppType::kBruschetta:
+      return kAppCategoryLinuxApps;
+    case ::apps::AppType::kChromeApp:
+    case ::apps::AppType::kRemote:
+    case ::apps::AppType::kStandaloneBrowserChromeApp:
+    case ::apps::AppType::kExtension:
+    case ::apps::AppType::kStandaloneBrowserExtension:
+      return kAppCategoryChromeAppsExtensions;
+    case ::apps::AppType::kWeb:
+      return kAppCategoryPWA;
+    case ::apps::AppType::kStandaloneBrowser:
+      return kAppCategoryBrowser;
+    case ::apps::AppType::kBorealis:
+      return kAppCategoryGames;
+    case ::apps::AppType::kMacOs:     // Not tracked today.
+    case ::apps::AppType::kPluginVm:  // Only applies to MGS, so we skip.
+    case ::apps::AppType::kUnknown:   // Invalid app type.
+      return absl::nullopt;
+  }
 }
 
 }  // namespace ash::reporting
