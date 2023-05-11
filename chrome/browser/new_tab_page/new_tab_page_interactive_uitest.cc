@@ -219,12 +219,9 @@ class NewTabPageTest : public InProcessBrowserTest,
 // ubsan.
 // TODO(crbug.com/1377330): NewTabPageTest.LandingPagePixelTest is failing on
 // Win11 Tests x64.
-#if (defined(UNDEFINED_SANITIZER) && BUILDFLAG(IS_LINUX)) || BUILDFLAG(IS_WIN)
-#define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
-#else
-#define MAYBE_LandingPagePixelTest LandingPagePixelTest
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_LandingPagePixelTest) {
+// TODO(crbug.com/1416880): It's also found flaky on Linux Tests, Linux Tests
+// (Wayland), linux-lacros-tester-rel, Mac12 Tests. Disabling on all platforms.
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LandingPagePixelTest) {
   WaitForLazyLoad();
   // By default WaitForNetworkLoad waits for all resources that have started
   // loading at this point. However, sometimes not all required resources have
