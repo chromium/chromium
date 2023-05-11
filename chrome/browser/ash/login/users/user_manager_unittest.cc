@@ -124,7 +124,7 @@ class UserManagerTest : public testing::Test {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     // Populate the stub DeviceSettingsProvider with valid values.
-    SetDeviceSettings(false, "", false);
+    SetDeviceSettings(/* ephemeral_users_enabled= */ false, /* owner= */ "");
 
     // Instantiate ProfileHelper.
     ash::ProfileHelper::Get();
@@ -202,8 +202,7 @@ class UserManagerTest : public testing::Test {
   }
 
   void SetDeviceSettings(bool ephemeral_users_enabled,
-                         const std::string& owner,
-                         bool supervised_users_enabled) {
+                         const std::string& owner) {
     settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
                                 ephemeral_users_enabled);
     settings_helper_.SetString(kDeviceOwner, owner);
@@ -272,8 +271,9 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
       /* exclude_list= */ std::vector<AccountId>{}));
   SetUserManagerOwnerId(EmptyAccountId());
 
-  SetDeviceSettings(false, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ false,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
@@ -286,8 +286,9 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdUsesEphemeralUsersEnabledPolicy) {
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
 
-  SetDeviceSettings(true, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   EXPECT_TRUE(IsEphemeralAccountId(EmptyAccountId()));
@@ -303,16 +304,18 @@ TEST_F(UserManagerTest,
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(true, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy);
   RetrieveTrustedDevicePolicies();
   EXPECT_TRUE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(false, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ false,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   RetrieveTrustedDevicePolicies();
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 }
@@ -326,16 +329,18 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsUnsetEphemeralMode) {
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(true, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kUnset);
   RetrieveTrustedDevicePolicies();
   EXPECT_TRUE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(false, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ false,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   RetrieveTrustedDevicePolicies();
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 }
@@ -349,8 +354,9 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsDisableEphemeralMode) {
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(true, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kDisable);
@@ -363,14 +369,15 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsDisableEphemeralMode) {
 // Tests that `UserManager` correctly parses device-local accounts with
 // ephemeral mode equals to `kEnable` by calling
 // `IsEphemeralAccountId(account_id)` function.
-TEST_F(UserManagerTest, IsEphemeralAccountIdRespectssEnableEphemeralMode) {
+TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsEnableEphemeralMode) {
   const AccountId account_id =
       CreateDeviceLocalKioskAppAccountId(kDeviceLocalAccountId);
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(false, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ false,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kEnable);
@@ -476,8 +483,9 @@ TEST_F(UserManagerTest, RemoveAllExceptOwnerFromList) {
   EXPECT_EQ((*users)[2]->GetAccountId(), owner_account_id_at_invalid_domain_);
 
   test_wallpaper_controller_.ClearCounts();
-  SetDeviceSettings(true, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   users = &user_manager::UserManager::Get()->GetUsers();
@@ -488,8 +496,9 @@ TEST_F(UserManagerTest, RemoveAllExceptOwnerFromList) {
 }
 
 TEST_F(UserManagerTest, RegularUserLoggedInAsEphemeral) {
-  SetDeviceSettings(true, owner_account_id_at_invalid_domain_.GetUserEmail(),
-                    false);
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   user_manager::UserManager::Get()->UserLoggedIn(
