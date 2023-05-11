@@ -71315,6 +71315,12 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="MainFrame-None"/>
   <int value="2" label="Subframe-Unload"/>
   <int value="3" label="MainFrame-Unload"/>
+  <int value="8" label="Subframe-NotHttp-None"/>
+  <int value="9" label="MainFrame-NotHttp-None"/>
+  <int value="10" label="Subframe-NotHttp-Unload"/>
+  <int value="11" label="MainFrame-NotHttp-Unload"/>
+  <int value="12" label="InitialEmptyDocument-None"/>
+  <int value="14" label="InitialEmptyDocument-Unload"/>
 </enum>
 
 <enum name="NavigationSuggestionDigitalAssetLinkValidationEvent">

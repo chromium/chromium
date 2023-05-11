@@ -3148,6 +3148,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            RecordUma);
   FRIEND_TEST_ALL_PREFIXES(
       NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeRecordUmaNotHttp);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeRecordUmaInitialEmptyDocument);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaSameOrigin);
   FRIEND_TEST_ALL_PREFIXES(
       NavigationBrowserTest,
@@ -3669,7 +3675,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   enum NavigationSuddenTerminationDisablerType : uint32_t {
     kMainFrame = 1 << 0,
     kUnload = 1 << 1,
-    kMaxValue = kUnload,
+    kInitialEmptyDocument = 1 << 2,
+    kNotHttp = 1 << 3,
+    kMaxValue = kNotHttp,
   };
   // Returns information to be recoreded in UMA about sudden termination
   // disablers presence.

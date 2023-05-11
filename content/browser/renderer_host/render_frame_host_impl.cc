@@ -9523,6 +9523,15 @@ void RenderFrameHostImpl::RecordNavigationSuddenTerminationHandlers() {
   uint32_t navigation_termination =
       is_main_frame() ? NavigationSuddenTerminationDisablerType::kMainFrame : 0;
 
+  if (is_initial_empty_document()) {
+    navigation_termination |=
+        NavigationSuddenTerminationDisablerType::kInitialEmptyDocument;
+  }
+
+  if (!GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+    navigation_termination |= NavigationSuddenTerminationDisablerType::kNotHttp;
+  }
+
   base::UmaHistogramExactLinear(
       "Navigation.SuddenTerminationDisabler.AllOrigins",
       navigation_termination |
