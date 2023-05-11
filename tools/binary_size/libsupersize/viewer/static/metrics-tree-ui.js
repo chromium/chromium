@@ -71,26 +71,6 @@ class MetricsTreeModel {
   }
 
   /**
-   * Returns a metadata |*size_file|'s |containers| list if it exists, or a list
-   * with a synthesized container for old format with out explicit containers.
-   * @param {?Object} sizeFile
-   * @return {!Array<!Object>}
-   * @private
-   */
-  getOrMakeContainers(sizeFile) {
-    if (sizeFile) {
-      if (sizeFile.containers)
-        return sizeFile.containers;
-      // Synthesize for old format without explicit containers.
-      const container = {name: '(Default container)'};
-      if (sizeFile.metrics_by_file)
-        container.metrics_by_file = sizeFile.metrics_by_file;
-      return [container];
-    }
-    return [];
-  }
-
-  /**
    * Visits multiple containers and files therein, applies
    * |containerFileFilter|, visits each metric ([name] -> value), and returns a
    * nested map [metric name] -> ([path = container/file] ->  metric value).
@@ -119,7 +99,7 @@ class MetricsTreeModel {
   }
 
   /**
-   * Creates MetricsTreeNode using commonly used fields.
+   * Creates MetricsTreeNode populated with commonly used fields.
    * @param {string} name
    * @param {?Array<!MetricsTreeNode>} children
    * @param {string} iconKey
@@ -133,7 +113,7 @@ class MetricsTreeModel {
     if (iconKey)
       node.iconKey = iconKey;
     return node;
-  };
+  }
 
   /**
    * Specialized makeDataNode() for metrics.
@@ -170,9 +150,9 @@ class MetricsTreeModel {
     if (metadata)
       this.metadata = metadata;
 
-    const containers = this.getOrMakeContainers(this.metadata?.size_file);
+    const containers = getOrMakeContainers(this.metadata?.size_file);
     const beforeContainers =
-        this.getOrMakeContainers(this.metadata?.before_size_file);
+        getOrMakeContainers(this.metadata?.before_size_file);
 
     /** @type {!Map<string, !Map<string, number>>} */
     const metricNameToData = this.transposeMetrics(containers);

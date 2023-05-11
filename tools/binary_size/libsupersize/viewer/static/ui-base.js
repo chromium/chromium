@@ -225,3 +225,24 @@ class ProgressBar {
     }
   }
 }
+
+/**
+ * Returns a metadata |*size_file|'s |containers| list if it exists, or a list
+ * with a synthesized container for old format without explicit containers.
+ * @param {?Object} sizeFile
+ * @return {!Array<!Object>}
+ */
+function getOrMakeContainers(sizeFile) {
+  if (sizeFile) {
+    if (sizeFile.containers)
+      return sizeFile.containers;
+    // Synthesize for old format without explicit containers.
+    const container = {name: '(Default container)'};
+    if (sizeFile.metrics_by_file)
+      container.metrics_by_file = sizeFile.metrics_by_file;
+    if (sizeFile.metadata)
+      container.metadata = sizeFile.metadata;
+    return [container];
+  }
+  return [];
+}

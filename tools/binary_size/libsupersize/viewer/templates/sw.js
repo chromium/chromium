@@ -18,6 +18,7 @@ const filesToCache = [
   'infocard.css',
   'main.css',
   'manifest.json',
+  'metadata-tree-ui.js',
   'metrics-tree-ui.js',
   'options.css',
   'shared.js',

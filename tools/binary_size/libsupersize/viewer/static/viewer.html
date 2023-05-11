@@ -31,6 +31,7 @@ found in the LICENSE file.
   <script defer src="tree-ui.js"></script>
   <script defer src="symbol-tree-ui.js"></script>
   <script defer src="metrics-tree-ui.js"></script>
+  <script defer src="metadata-tree-ui.js"></script>
   <script defer src="ui-main.js"></script>
   <script async defer src="https://accounts.google.com/gsi/client"
           onload="initClient()"></script>
@@ -431,7 +432,7 @@ found in the LICENSE file.
         <title>Unchanged</title>
       </svg>
     </div>
-    <div hidden id="div-metrics-icons">
+    <div hidden id="div-misc-icons">
       <svg class="icon metricsicon" height="24" width="24" fill="#716f71">
         <title>Metrics</title>
         <path d="M9.5 21v-18h4v18ZM2 21v-7h4v7ZM17 21v-12h4v12Z"/>
@@ -439,6 +440,11 @@ found in the LICENSE file.
       <svg class="icon elficon" height="24" width="24" fill="#1a73e8">
         <title>ELF</title>
         <path d="M8 13C3 13 3 2 8 2 13 2 13 13 8 13V11C6 11 6 6 8 6 10 6 10 11 8 11V12C11 12 11 3 8 3 5 3 5 12 8 12ZM16 13C11 13 11 2 16 2 21 2 21 13 16 13V12C19 12 19 3 16 3 13 3 13 12 16 12V11C14 11 14 6 16 6 18 6 18 11 16 11ZM12 11C14 11 20 15 20 16 20 17 14 22 12 22 10 22 4 17 4 16 4 15 10 11 12 11M12 12C11 12 6 15 6 16 6 17 11 21 12 21 13 21 18 17 18 16 18 15 13 12 12 12M5 15C8 15 11 17 12 17 13 17 16 15 19 15V16C16 16 14 18 12 19 10 18 8 16 5 16M10 12C11 12 11 15 10 15 9 15 9 12 10 12M14 12C15 12 15 15 14 15 13 15 13 12 14 12" />
+      </svg>
+      <svg class="icon metadataicon" width="24" height="24" fill="#716f71">
+        <title>Metadata</title>
+        <path fill-rule="evenodd"
+              d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 7V9H13V7H11ZM11 11V17H13V11H11ZM4 12C4 16.41 7.59 20 12 20C16.41 20 20 16.41 20 12C20 7.59 16.41 4 12 4C7.59 4 4 7.59 4 12Z"/>
       </svg>
     </div>
     <!-- Templates for symbol tree groups and leaves -->
@@ -469,11 +475,11 @@ found in the LICENSE file.
       <ul id="ul-symbol-tree" class="tree" role="tree"
           aria-labelledby="h1-headline"></ul>
     </main>
-    <!-- Empty .sizediff Message-->
+    <!-- Empty .sizediff Message -->
     <div id="div-no-symbols-msg" style="display:none">
       This diff contains no symbols (no sizes changed).
     </div>
-    <!-- Templates for metrics tree groups and leaves -->
+    <!-- Templates for Metrics Tree groups and leaves -->
     <template id="tmpl-metrics-tree-group">
       <li role="treeitem" aria-expanded="false">
         <a class="node" href="#" tabindex="-1" role="presentation">
@@ -496,25 +502,39 @@ found in the LICENSE file.
           aria-labelledby="h1-headline">
         <li>
           <a class="node" tabindex="0" role="presentation">
-            <span class="metadata-symbol-name">Metrics</span>
+            <span class="symbol-name">Metrics</span>
           </a>
         </li>
       </ul>
     </div>
+    <!-- Templates for Metadata Tree groups and leaves -->
+    <template id="tmpl-metadata-tree-group">
+      <li role="treeitem" aria-expanded="false">
+        <a class="node" href="#" tabindex="-1" role="presentation">
+          <span class="symbol-name"></span>
+        </a>
+        <ul role="group"></ul>
+      </li>
+    </template>
+    <template id="tmpl-metadata-tree-leaf">
+      <li role="treeitem">
+        <span class="node leaf">
+          <table></table>
+        </span>
+      </li>
+    </template>
     <!-- Metadata View -->
     <div id="div-metadata-view" class="top-view"
          title="Metadata from .size/.sizediff file">
-      <a class="node" tabindex="0" role="presentation">
-        <svg width="24" height="24" viewBox="0 0 24 24"
-             xmlns="http://www.w3.org/2000/svg" fill="#716f71">
-          <path fill-rule="evenodd"
-                d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 7V9H13V7H11ZM11 11V17H13V11H11ZM4 12C4 16.41 7.59 20 12 20C16.41 20 20 16.41 20 12C20 7.59 16.41 4 12 4C7.59 4 4 7.59 4 12Z">
-          </path>
-        </svg>
-        <span class="metadata-symbol-name">Metadata</span>
-      </a>
+      <ul id="ul-metadata-tree" class="tree" role="tree"
+          aria-labelledby="h1-headline">
+        <li>
+          <a class="node" tabindex="0" role="presentation">
+            <span class="symbol-name">Metadata</span>
+          </a>
+        </li>
+      </ul>
     </div>
-    <pre id="pre-metadata-content" class="top-view"></pre>
     <!-- Symbol and artifact breakdown cards -->
     <link href="infocard.css" rel="stylesheet">
     <div class="infocards">
