@@ -569,6 +569,14 @@ suite('InternetDetailPage', function() {
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Allow shared proxy toggle should be focused for settingId=11.');
+
+      // Close the page to ensure the test is fully cleaned up and wait for
+      // os_route's popstate listener to fire. If we don't add this wait, this
+      // event can fire during the other tests which may interfere with its
+      // routing.
+      const popStatePromise = eventToPromise('popstate', window);
+      internetDetailPage.close();
+      await popStatePromise;
     });
 
     test('WiFi page disabled when blocked by policy', async () => {
@@ -1596,6 +1604,58 @@ suite('InternetDetailPage', function() {
           assertFalse(!!apn);
         }
       });
+    });
+
+    test('Cellular network not found while in detail subpage', async () => {
+      init();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+
+      // Simulate navigating to mobile data subpage.
+      let params = new URLSearchParams();
+      params.append(
+          'type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+      Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+      assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
+      await flushAsync();
+
+      // Navigate to cellular detail page. Because the network is not found, the
+      // page should navigate backwards.
+      const popStatePromise = eventToPromise('popstate', window);
+      params = new URLSearchParams();
+      params.append('guid', 'cellular_guid');
+      params.append('type', 'Cellular');
+      params.append('name', 'cellular');
+      Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
+
+      await popStatePromise;
+      assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
+    });
+
+    // Regression test for b/281728200.
+    test('Cellular network not found while not in detail subpage', async () => {
+      init();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+
+      // Simulate navigating to top-level internet page.
+      let params = new URLSearchParams();
+      Router.getInstance().navigateTo(routes.INTERNET, params);
+      assertEquals(routes.INTERNET, Router.getInstance().currentRoute);
+
+      // Simulate navigating to mobile data subpage.
+      params = new URLSearchParams();
+      params.append(
+          'type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+      Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+      assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
+      await flushAsync();
+
+      // Trigger |internetDetailPage| attempting to fetch the network. Because
+      // the page is not the current route, it should not trigger a navigation
+      // backwards.
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      await flushAsync();
+
+      assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
     });
   });
 

@@ -647,7 +647,9 @@ class SettingsInternetDetailPageElement extends
       this.managedProperties_ = undefined;
       this.propertiesReceived_ = false;
 
-      Router.getInstance().navigateToPreviousRoute();
+      if (Router.getInstance().currentRoute === routes.NETWORK_DETAIL) {
+        Router.getInstance().navigateToPreviousRoute();
+      }
     });
   }
 

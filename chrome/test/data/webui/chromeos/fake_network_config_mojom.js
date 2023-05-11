@@ -560,7 +560,7 @@ export class FakeNetworkConfig {
           result = OncMojo.getDefaultManagedProperties(
               foundState.type, foundState.guid, foundState.name);
         } else {
-          console.error('GUID not found: ' + guid);
+          console.warn('GUID not found: ' + guid);
         }
       }
       if (this.beforeGetManagedProperties) {
