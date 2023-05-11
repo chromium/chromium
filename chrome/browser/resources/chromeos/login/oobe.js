@@ -54,12 +54,38 @@ function prepareGlobalValues() {
   window.Oobe = Oobe;
 }
 
+// Load Simon backdrop asset and trigger event once backdrop is ready to show.
+function loadSimonBackdrop() {
+  const backdropContainer = $('welcome-backdrop');
+  if (!backdropContainer || backdropContainer.style.backgroundImage !== '') {
+    return;
+  }
+
+  // Load of background-img can't be observed by js, therefore load to img
+  // first. BackdropContainer will take the file from cache instead of
+  // downloading it again.
+  const srcUrl = 'internal_assets/welcome_backdrop.svg';
+  var img = new Image();
+  img.addEventListener('load', function f(e) {
+    img.removeEventListener('load', f);
+    backdropContainer.style.backgroundImage = 'url(' + srcUrl + ')';
+    chrome.send('backdropLoaded');
+  });
+  img.src = srcUrl;
+}
+
 function initializeOobe() {
   if (document.readyState === 'loading') {
     return;
   }
   document.removeEventListener('DOMContentLoaded', initializeOobe);
   traceExecution(TraceEvent.DOM_CONTENT_LOADED);
+
+  // Prepare Simon flow backdrop.
+  const isOobeSimonEnabled = loadTimeData.getBoolean('isOobeSimonEnabled');
+  if (isOobeSimonEnabled) {
+    loadSimonBackdrop();
+  }
 
   const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
   if (isOobeJellyEnabled) {

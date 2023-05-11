@@ -19,10 +19,16 @@ import {MultiTapDetector} from './multi_tap_detector.js';
  * Maximum time in milliseconds to wait for step transition to finish.
  * The value is used as the duration for ensureTransitionEndEvent below.
  * It needs to be inline with the step screen transition duration time
- * defined in css file. The current value in css is 200ms. To avoid emulated
- * transitionend fired before real one, 250ms is used.
+ * defined in css file. The current value in css is 1,150ms. To avoid emulated
+ * transitionend fired before real one, +50ms is used.
  */
-const MAX_SCREEN_TRANSITION_DURATION = 250;
+const MAX_SCREEN_TRANSITION_DURATION = 1200;
+
+/**
+ * Maximum delay to call triggerDown from cpp logic. If the logic fails,
+ * triggerDown should be called after this duration to unblock CUJ.
+ */
+const TRIGGERDOWN_FALLBACK_DELAY = 10000;
 
 /**
  * As Polymer behaviors do not provide true inheritance, when two behaviors
@@ -264,18 +270,14 @@ export function invokePolymerMethod(element, name, ...args) {
         }
       } else {
         // First screen on OOBE launch.
+        const isOobeSimonEnabled =
+            loadTimeData.getBoolean('isOobeSimonEnabled');
         if (this.isOobeUI() && innerContainer.classList.contains('down')) {
-          innerContainer.classList.remove('down');
-          innerContainer.addEventListener('transitionend', function f(e) {
-            innerContainer.removeEventListener('transitionend', f);
-            // Refresh defaultControl. It could have changed.
-            const defaultControl = newStep.defaultControl;
-            if (defaultControl) {
-              defaultControl.focus();
-            }
-          });
-          ensureTransitionEndEvent(
-              innerContainer, MAX_SCREEN_TRANSITION_DURATION);
+          if (isOobeSimonEnabled) {
+            setTimeout(this.triggerDown.bind(this), TRIGGERDOWN_FALLBACK_DELAY);
+          } else {
+            this.triggerDown();
+          }
         } else {
           if (defaultControl) {
             defaultControl.focus();
@@ -394,6 +396,29 @@ export function invokePolymerMethod(element, name, ...args) {
           screen.setTabletModeState(isInTabletMode);
         }
       }
+    }
+
+    /**
+     * Trigger of play down animation for current screen step.
+     */
+    triggerDown() {
+      const innerContainer = $('inner-container');
+      if (!this.isOobeUI() || !innerContainer.classList.contains('down')) {
+        return;
+      }
+
+      innerContainer.classList.remove('down');
+      innerContainer.addEventListener('transitionend', function f(e) {
+        innerContainer.removeEventListener('transitionend', f);
+        // Refresh defaultControl. It could have changed.
+        const stepId = this.screens_[this.currentStep_];
+        const step = $(stepId);
+        const defaultControl = step.defaultControl;
+        if (defaultControl) {
+          defaultControl.focus();
+        }
+      }.bind(this));
+      ensureTransitionEndEvent(innerContainer, MAX_SCREEN_TRANSITION_DURATION);
     }
 
     /** Initializes demo mode start listener.
