@@ -328,6 +328,8 @@ void ContainerNode::InsertNodeVector(
       Node& child = *target_node;
       mutator(*this, child, next);
       ChildListMutationScope(*this).ChildAdded(child);
+      recordreplay::Assert("[1436-1922] ContainerNode::InsertNodeVector %d %d",
+                           RecordReplayId(), child.RecordReplayId());
       if (GetDocument().MayContainShadowRoots())
         child.CheckSlotChangeAfterInserted();
       probe::DidInsertDOMNode(&child);
@@ -542,6 +544,7 @@ void ContainerNode::ParserInsertBefore(Node* new_child, Node& next_child) {
     AdoptAndInsertBefore()(*this, *new_child, &next_child);
     DCHECK_EQ(new_child->ConnectedSubframeCount(), 0u);
     ChildListMutationScope(*this).ChildAdded(*new_child);
+    recordreplay::Assert("[1436-1922] ContainerNode::ParserInsertBefore %d %d", RecordReplayId(), new_child->RecordReplayId());
   }
 
   NotifyNodeInserted(*new_child, ChildrenChangeSource::kParser);
@@ -646,6 +649,10 @@ Node* ContainerNode::ReplaceChild(Node* new_child, Node* old_child) {
 void ContainerNode::WillRemoveChild(Node& child) {
   DCHECK_EQ(child.parentNode(), this);
   ChildListMutationScope(*this).WillRemoveChild(child);
+
+  recordreplay::Assert("[1436-1922] ContainerNode::WillRemoveChild %d %d",
+                       RecordReplayId(), child.RecordReplayId());
+
   child.NotifyMutationObserversNodeWillDetach();
   DispatchChildRemovalEvents(child);
   ChildFrameDisconnector(child).Disconnect();
@@ -677,6 +684,8 @@ void ContainerNode::WillRemoveChildren() {
     DCHECK(node);
     Node& child = *node;
     mutation.WillRemoveChild(child);
+    recordreplay::Assert("[1436-1922] ContainerNode::WillRemoveChildren %d %d",
+                         RecordReplayId(), child.RecordReplayId());
     child.NotifyMutationObserversNodeWillDetach();
     DispatchChildRemovalEvents(child);
   }
@@ -755,6 +764,8 @@ Node* ContainerNode::RemoveChild(Node* old_child,
   }
 
   WillRemoveChild(*child);
+  recordreplay::Assert("[1436-1922] ContainerNode::RemoveChild %d %d",
+                       RecordReplayId(), child->RecordReplayId());
 
   // TODO(crbug.com/927646): |WillRemoveChild()| may dispatch events that set
   // focus to a node that will be detached, leaving behind a detached focused
@@ -836,6 +847,9 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
     return;
 
   ChildListMutationScope(*this).WillRemoveChild(old_child);
+  recordreplay::Assert("[1436-1922] ContainerNode::ParserRemoveChild %d %d",
+                       RecordReplayId(), old_child.RecordReplayId());
+
   old_child.NotifyMutationObserversNodeWillDetach();
 
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
@@ -975,6 +989,8 @@ void ContainerNode::ParserAppendChild(Node* new_child) {
     AdoptAndAppendChild()(*this, *new_child, nullptr);
     DCHECK_EQ(new_child->ConnectedSubframeCount(), 0u);
     ChildListMutationScope(*this).ChildAdded(*new_child);
+    recordreplay::Assert("[1436-1922] ContainerNode::ParserAppendChild %d %d",
+                         RecordReplayId(), new_child->RecordReplayId());
   }
 
   NotifyNodeInserted(*new_child, ChildrenChangeSource::kParser);
