@@ -30,6 +30,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuHighlightSeverityHigh] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuExpandedForegroundDefault] = {
       ui::kColorSysOnTonalContainer};
+  mixer[kColorAppMenuChipInkDropHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorAppMenuChipInkDropRipple] = {ui::kColorSysStateRipplePrimary};
   mixer[kColorAvatarButtonHighlightNormal] =
       AdjustHighlightColorForContrast(ui::kColorSysPrimary, kColorToolbar);
   mixer[kColorBookmarkBarBackground] = {ui::kColorSysBase};

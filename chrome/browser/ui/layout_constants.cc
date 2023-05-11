@@ -157,7 +157,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
 
     case TOOLBAR_INTERIOR_MARGIN:
       if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
-        return touch_ui ? gfx::Insets() : gfx::Insets::VH(6, 3);
+        return touch_ui ? gfx::Insets() : gfx::Insets::VH(6, 5);
       } else {
         return touch_ui ? gfx::Insets() : gfx::Insets::VH(4, 8);
       }

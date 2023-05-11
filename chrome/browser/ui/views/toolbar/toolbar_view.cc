@@ -167,6 +167,8 @@ constexpr int kToolbarDividerWidth = 2;
 constexpr int kToolbarDividerHeight = 16;
 constexpr int kToolbarDividerCornerRadius = 1;
 constexpr int kToolbarDividerSpacing = 9;
+constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
+constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 
 }  // namespace
 
@@ -814,10 +816,26 @@ void ToolbarView::InitLayout() {
 void ToolbarView::LayoutCommon() {
   DCHECK(display_mode_ == DisplayMode::NORMAL);
 
-  const gfx::Insets interior_margin =
+  gfx::Insets interior_margin =
       GetLayoutInsets(browser_view_->webui_tab_strip()
                           ? LayoutInset::WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN
                           : LayoutInset::TOOLBAR_INTERIOR_MARGIN);
+
+  if (features::IsChromeRefresh2023() && !browser_view_->webui_tab_strip()) {
+    if (app_menu_button_->IsLabelPresentAndVisible()) {
+      // The interior margin in an expanded state should be more than in a
+      // collapsed state.
+      interior_margin.set_right(interior_margin.right() + 1);
+      app_menu_button_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
+    } else {
+      app_menu_button_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
+    }
+  }
+
   layout_manager_->SetInteriorMargin(interior_margin);
 
   // Extend buttons to the window edge if we're either in a maximized or

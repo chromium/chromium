@@ -52,6 +52,10 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+namespace {
+constexpr int kChromeRefreshImageLabelPadding = 2;
+}
+
 // static
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
 
@@ -60,6 +64,9 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
                                         base::Unretained(this))),
       toolbar_view_(toolbar_view) {
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  if (features::IsChromeRefresh2023()) {
+    SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
+  }
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() {}
@@ -128,6 +135,9 @@ void BrowserAppMenuButton::UpdateColors() {
   // Call `UpdateIcon()` after `UpdateTextAndHighlightColor()` as the icon color
   // depends on if the container is in an expanded state.
   UpdateIcon();
+  if (features::IsChromeRefresh2023()) {
+    UpdateInkdrop();
+  }
 }
 
 void BrowserAppMenuButton::UpdateIcon() {
@@ -141,6 +151,18 @@ void BrowserAppMenuButton::UpdateIcon() {
         toolbar_view_->app_menu_icon_controller()->GetIconColor(
             GetForegroundColor(state));
     SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
+  }
+}
+
+void BrowserAppMenuButton::UpdateInkdrop() {
+  CHECK(features::IsChromeRefresh2023());
+
+  if (IsLabelPresentAndVisible()) {
+    ConfigureToolbarInkdropForRefresh2023(this, kColorAppMenuChipInkDropHover,
+                                          kColorAppMenuChipInkDropRipple);
+  } else {
+    ConfigureToolbarInkdropForRefresh2023(this, kColorToolbarInkDropHover,
+                                          kColorToolbarInkDropRipple);
   }
 }
 

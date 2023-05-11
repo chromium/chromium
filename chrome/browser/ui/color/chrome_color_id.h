@@ -22,6 +22,8 @@
   E_CPONLY(kColorAppMenuHighlightSeverityMedium) \
   E_CPONLY(kColorAppMenuHighlightDefault) \
   E_CPONLY(kColorAppMenuExpandedForegroundDefault) \
+  E_CPONLY(kColorAppMenuChipInkDropHover) \
+  E_CPONLY(kColorAppMenuChipInkDropRipple) \
   /* Avatar colors. */ \
   E_CPONLY(kColorAvatarButtonHighlightNormal) \
   E_CPONLY(kColorAvatarButtonHighlightSyncError) \
