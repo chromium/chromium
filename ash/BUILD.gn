@@ -3796,6 +3796,7 @@ test("ash_pixeltests") {
     "shelf/shelf_layout_manager_pixeltest.cc",
     "system/accessibility/accessibility_detailed_view_pixeltest.cc",
     "system/audio/audio_detailed_view_pixeltest.cc",
+    "system/bluetooth/bluetooth_detailed_view_impl_pixeltest.cc",
     "system/bluetooth/bluetooth_detailed_view_legacy_pixeltest.cc",
     "system/brightness/display_detailed_view_pixeltest.cc",
     "system/cast/cast_detailed_view_pixeltest.cc",
