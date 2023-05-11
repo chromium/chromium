@@ -12,6 +12,7 @@
   },
   "try": {
     "android-12-x64-rel": "Ubuntu-22.04",
+    "android-12-x64-rel-compilator": "Ubuntu-22.04",
     "android-arm64-rel": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
