@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/browsing_data/content/browsing_data_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -227,7 +228,7 @@ bool BrowsingDataRemoverBrowserTestBase::HasDataForType(
     content::WebContents* web_contents) {
   if (!web_contents)
     web_contents = GetActiveWebContents();
-  return RunScriptAndGetBool("has" + type + "()", web_contents);
+  return browsing_data_test_util::HasDataForType(type, web_contents);
 }
 
 void BrowsingDataRemoverBrowserTestBase::SetDataForType(
@@ -235,8 +236,7 @@ void BrowsingDataRemoverBrowserTestBase::SetDataForType(
     content::WebContents* web_contents) {
   if (!web_contents)
     web_contents = GetActiveWebContents();
-  ASSERT_TRUE(RunScriptAndGetBool("set" + type + "()", web_contents))
-      << "Couldn't create data for: " << type;
+  browsing_data_test_util::SetDataForType(type, web_contents);
 }
 
 int BrowsingDataRemoverBrowserTestBase::GetSiteDataCount(

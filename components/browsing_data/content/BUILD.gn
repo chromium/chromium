@@ -88,6 +88,8 @@ source_set("test_support") {
   sources = [
     "browsing_data_model_test_util.cc",
     "browsing_data_model_test_util.h",
+    "browsing_data_test_util.cc",
+    "browsing_data_test_util.h",
     "fake_browsing_data_model.cc",
     "fake_browsing_data_model.h",
     "mock_browsing_data_quota_helper.cc",
@@ -116,6 +118,7 @@ source_set("test_support") {
     "//base",
     "//components/services/storage",
     "//content/public/browser",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

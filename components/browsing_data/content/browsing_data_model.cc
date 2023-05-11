@@ -80,19 +80,18 @@ std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
   // TODO(crbug.com/1271155): This logic is useful for testing during the
   // implementation of the model, but ultimately these storage types may not
   // coexist.
-  if (storage_type_ == BrowsingDataModel::StorageType::kPartitionedQuotaStorage)
-    return data_key.top_level_site().GetURL().host();
+  switch (storage_type_) {
+    case BrowsingDataModel::StorageType::kPartitionedQuotaStorage:
+      return data_key.top_level_site().GetURL().host();
 
-  if (storage_type_ ==
-      BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage) {
-    return data_key.origin().host();
+    case BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage:
+    case BrowsingDataModel::StorageType::kSharedStorage:
+      return data_key.origin().host();
+    default:
+      NOTREACHED() << "Unexpected StorageType: "
+                   << static_cast<int>(storage_type_);
+      return "";
   }
-
-  if (storage_type_ == BrowsingDataModel::StorageType::kSharedStorage) {
-    return data_key.origin().host();
-  }
-  NOTREACHED() << "Unexpected StorageType: " << static_cast<int>(storage_type_);
-  return "";
 }
 
 template <>
@@ -200,8 +199,6 @@ void StorageRemoverHelper::Visitor::operator()<url::Origin>(
 template <>
 void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
     const blink::StorageKey& storage_key) {
-  bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
-      browsing_data::features::kDeprecateCookiesTreeModel);
   if (types.Has(BrowsingDataModel::StorageType::kSharedStorage)) {
     helper->storage_partition_->GetSharedStorageManager()->Clear(
         storage_key.origin(),
@@ -211,20 +208,15 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
               std::move(complete_callback).Run();
             },
             helper->GetCompleteCallback()));
+  }
 
-  } else if (is_cookies_tree_model_deprecated &&
-             types.Has(
-                 BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage)) {
+  if (types.Has(BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage)) {
     const blink::mojom::StorageType quota_types[] = {
         blink::mojom::StorageType::kTemporary,
         blink::mojom::StorageType::kSyncable};
     for (auto type : quota_types) {
       helper->quota_helper_->DeleteHostData(storage_key.origin().host(), type);
     }
-
-  } else {
-    // TODO(crbug.com/1271155): Implement for quota managed storage.
-    NOTREACHED();
   }
 }
 

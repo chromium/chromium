@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
+#include "components/browsing_data/content/browsing_data_test_util.h"
 #include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -180,6 +181,8 @@ void EnsurePageAccessedStorage(content::WebContents* web_contents) {
 using browsing_data_model_test_util::ValidateBrowsingDataEntries;
 using browsing_data_model_test_util::ValidateBrowsingDataEntriesIgnoreUsage;
 using OperationResult = storage::SharedStorageDatabase::OperationResult;
+using browsing_data_test_util::HasDataForType;
+using browsing_data_test_util::SetDataForType;
 
 class BrowsingDataModelBrowserTest
     : public InProcessBrowserTest,
@@ -650,32 +653,54 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        QuotaManagedDataHandledCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
   // Ensure that there isn't any data fetched.
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
-  AccessStorage();
+  // TODO(crbug.com/1442473): Investigate and include remaining quota managed
+  // data types ["ServiceWorker", "WebSql", "MediaLicense"].
+  std::string quota_managed_data_types[] = {"IndexedDb", "FileSystem"};
 
-  // Ensure that quota data is fetched
-  browsing_data_model = BuildBrowsingDataModel();
-  bool is_cookies_tree_model_deprecated = GetParam();
-  if (is_cookies_tree_model_deprecated) {
-    // Validate that quota data is fetched to browsing data model.
-    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-    ValidateBrowsingDataEntriesIgnoreUsage(
-        browsing_data_model.get(),
-        {{kTestHost,
-          data_key,
-          {BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage,
-           /*storage_size=*/0, /*cookie_count=*/0}}});
+  for (auto data_type : quota_managed_data_types) {
+    SetDataForType(data_type, web_contents());
 
-    ASSERT_EQ(browsing_data_model->size(), 1u);
-  } else {
-    ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-    ASSERT_EQ(browsing_data_model->size(), 0u);
+    // Ensure that quota data is fetched
+    browsing_data_model = BuildBrowsingDataModel();
+
+    bool is_cookies_tree_model_deprecated = GetParam();
+    if (is_cookies_tree_model_deprecated) {
+      // Validate that quota data is fetched to browsing data model.
+      url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+      auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
+      ValidateBrowsingDataEntriesIgnoreUsage(
+          browsing_data_model.get(),
+          {{kTestHost,
+            data_key,
+            {BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage,
+             /*storage_size=*/0, /*cookie_count=*/0}}});
+      ASSERT_EQ(browsing_data_model->size(), 1u);
+
+      // Remove quota entry.
+      {
+        base::RunLoop run_loop;
+        browsing_data_model.get()->RemoveBrowsingData(kTestHost,
+                                                      run_loop.QuitClosure());
+        run_loop.Run();
+      }
+
+      // Rebuild Browsing Data Model and verify entries are empty.
+      browsing_data_model = BuildBrowsingDataModel();
+      ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+      ASSERT_EQ(browsing_data_model->size(), 0u);
+    } else {
+      ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+      ASSERT_EQ(browsing_data_model->size(), 0u);
+    }
   }
 }
 

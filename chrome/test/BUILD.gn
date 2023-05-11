@@ -936,6 +936,7 @@ if (is_android) {
       "//components/autofill/content/renderer:test_support",
       "//components/blocked_content",
       "//components/browser_ui/widget/android:java",
+      "//components/browsing_data/content:test_support",
       "//components/commerce/core:commerce_heuristics_data",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:persisted_state_db_content_proto",
