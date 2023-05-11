@@ -392,7 +392,16 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
-IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
+// TODO(crbug.com/1444657): Flaky on MacOS
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MultiProfileWithDifferentThresholds \
+  DISABLED_MultiProfileWithDifferentThresholds
+#else
+#define MAYBE_MultiProfileWithDifferentThresholds \
+  MultiProfileWithDifferentThresholds
+#endif
+IN_PROC_BROWSER_TEST_F(IdleServiceTest,
+                       MAYBE_MultiProfileWithDifferentThresholds) {
   // `profile` has the IdleTimeout policy set to 5 minutes.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
