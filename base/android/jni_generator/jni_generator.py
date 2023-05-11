@@ -346,12 +346,6 @@ class JniParams(object):
       if not self._fully_qualified_class.endswith(inner):
         self._inner_classes += [self._fully_qualified_class + '$' + inner]
 
-    re_additional_imports = re.compile(
-        r'@JNIAdditionalImport\(\s*{?(?P<class_names>.*?)}?\s*\)')
-    for match in re.finditer(re_additional_imports, contents):
-      for class_name in match.group('class_names').split(','):
-        self._AddAdditionalImport(class_name.strip())
-
   def JavaToJni(self, param):
     """Converts a java param into a JNI signature type."""
     pod_param_map = {
@@ -422,28 +416,12 @@ class JniParams(object):
       for qualified_name in self._imports:
         if qualified_name.endswith('/' + outer):
           return (prefix + qualified_name + '$' + inner + ';')
-      raise SyntaxError('Inner class (%s) can not be '
-                        'used directly by JNI. Please import the outer '
-                        'class, probably:\n'
-                        'import %s.%s;' % (param, self._package.replace(
-                            '/', '.'), outer.replace('/', '.')))
+      param = param.replace('.', '$')
 
     self._CheckImplicitImports(param)
 
     # Type not found, falling back to same package as this class.
     return (prefix + 'L' + self._package + '/' + param + ';')
-
-  def _AddAdditionalImport(self, class_name):
-    assert class_name.endswith('.class')
-    raw_class_name = class_name[:-len('.class')]
-    if '.' in raw_class_name:
-      raise SyntaxError('%s cannot be used in @JNIAdditionalImport. '
-                        'Only import unqualified outer classes.' % class_name)
-    new_import = 'L%s/%s' % (self._package, raw_class_name)
-    if new_import in self._imports:
-      raise SyntaxError('Do not use JNIAdditionalImport on an already '
-                        'imported class: %s' % (new_import.replace('/', '.')))
-    self._imports += [new_import]
 
   def _CheckImplicitImports(self, param):
     # Ensure implicit imports, such as java.lang.*, are not being treated

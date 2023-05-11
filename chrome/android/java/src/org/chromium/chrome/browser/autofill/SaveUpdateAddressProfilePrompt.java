@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
@@ -38,7 +37,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * TODO(crbug.com/1432549): cover with render tests.
  */
 @JNINamespace("autofill")
-@JNIAdditionalImport(PersonalDataManager.class)
 public class SaveUpdateAddressProfilePrompt {
     private final SaveUpdateAddressProfilePromptController mController;
     private final ModalDialogManager mModalDialogManager;

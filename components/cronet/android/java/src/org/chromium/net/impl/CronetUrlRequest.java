@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
@@ -51,8 +50,6 @@ import javax.annotation.concurrent.GuardedBy;
  * any thread it is protected by mUrlRequestAdapterLock.
  */
 @JNINamespace("cronet")
-// Qualifies VersionSafeCallbacks.UrlRequestStatusListener which is used in onStatus, a JNI method.
-@JNIAdditionalImport(VersionSafeCallbacks.class)
 @VisibleForTesting
 public final class CronetUrlRequest extends UrlRequestBase {
     private final boolean mAllowDirectExecutor;

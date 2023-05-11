@@ -4,13 +4,12 @@
 
 package org.chromium.example.jni_generator;
 
-@JNIAdditionalImport({Bar1.class, Bar2.class})
 class SampleUniqueAnnotations {
     // Poorly spaced intentionally
     private void do_not_match();
+
     @VisibleForTesting
     @NativeMethods
-
     @Generated("Test")
     interface Natives {
         @NativeClassQualifiedName("FooAndroid::BarDelegate")
@@ -21,6 +20,7 @@ class SampleUniqueAnnotations {
 
     @CalledByNative
     static void useBar1(Bar1.Inner inner) {}
+
     @NativeClassQualifiedName("Foo::Bar")
     native void nativeCallWithQualifiedObject(long nativePtr);
 }

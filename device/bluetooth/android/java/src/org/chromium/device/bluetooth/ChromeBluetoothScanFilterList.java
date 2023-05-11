@@ -7,7 +7,6 @@ package org.chromium.device.bluetooth;
 import android.bluetooth.le.ScanFilter;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
  * Allows for the creation of a Java ArrayList of the ScanFilter object.
  */
 @JNINamespace("device")
-@JNIAdditionalImport(Wrappers.class)
 final class ChromeBluetoothScanFilterList {
     ArrayList<ScanFilter> mFilters;
 

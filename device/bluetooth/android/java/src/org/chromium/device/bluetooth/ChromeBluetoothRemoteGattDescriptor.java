@@ -6,7 +6,6 @@ package org.chromium.device.bluetooth;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -17,7 +16,6 @@ import org.chromium.base.annotations.NativeMethods;
  * Lifetime is controlled by device::BluetoothRemoteGattDescriptorAndroid.
  */
 @JNINamespace("device")
-@JNIAdditionalImport(Wrappers.class)
 final class ChromeBluetoothRemoteGattDescriptor {
     private static final String TAG = "Bluetooth";
 

@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothDevice;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -22,7 +21,6 @@ import java.util.HashMap;
  * Lifetime is controlled by device::BluetoothDeviceAndroid.
  */
 @JNINamespace("device")
-@JNIAdditionalImport(Wrappers.class)
 final class ChromeBluetoothDevice {
     private static final String TAG = "Bluetooth";
 

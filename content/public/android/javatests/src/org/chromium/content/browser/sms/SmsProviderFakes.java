@@ -20,11 +20,9 @@ import com.google.android.gms.tasks.Tasks;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 
 @JNINamespace("content")
-@JNIAdditionalImport(Wrappers.class)
 class SmsProviderFakes {
     private static final String TAG = "WebOTPService";
 
