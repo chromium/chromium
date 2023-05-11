@@ -19,6 +19,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
@@ -461,6 +462,10 @@ enum class PresentedState {
   DCHECK(_URLs) << [self description];
 
   [self stopBookmarksFolderChooserCoordinator];
+
+  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+  SetLastUsedBookmarkFolder(_browserState->GetPrefs(), folder, type);
   [self.snackbarCommandsHandler
       showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
   _URLs = nil;
