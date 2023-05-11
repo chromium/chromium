@@ -14198,6 +14198,25 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebDatabase.FailedMigrationToVersion" units="version"
+    expires_after="2023-12-01">
+  <owner>battre@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <summary>
+    If a migration to a new WebDatabase schema fails, this histogram records the
+    target version to which the migration failed.
+  </summary>
+</histogram>
+
+<histogram name="WebDatabase.InitResult" enum="WebDatabaseInitResult"
+    expires_after="2023-12-01">
+  <owner>battre@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <summary>
+    Records whether WebDatabase::Init succeeds or otherwise a failure reason.
+  </summary>
+</histogram>
+
 <histogram name="WebFont.BlankTextShownTime" units="ms"
     expires_after="2023-10-01">
   <owner>kenjibaheux@chromium.org</owner>

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/web_data_service_factory.h"
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
@@ -57,12 +55,6 @@ ProfileErrorType ProfileErrorFromWebDataServiceWrapperError(
 void ProfileErrorCallback(WebDataServiceWrapper::ErrorType error_type,
                           sql::InitStatus status,
                           const std::string& diagnostics) {
-  // TODO(crbug.com/1430313): Remove when fixed.
-  SCOPED_CRASH_KEY_NUMBER("profile_error", "error_type", error_type);
-  SCOPED_CRASH_KEY_NUMBER("profile_error", "status", status);
-  SCOPED_CRASH_KEY_STRING1024("profile_error", "diagnostics", diagnostics);
-  base::debug::DumpWithoutCrashing();
-
   ShowProfileErrorDialog(ProfileErrorFromWebDataServiceWrapperError(error_type),
                          SqlInitStatusToMessageId(status), diagnostics);
 }
