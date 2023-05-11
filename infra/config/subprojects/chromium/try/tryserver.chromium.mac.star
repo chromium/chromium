@@ -534,7 +534,7 @@ ios_builder(
     mirrors = [
         "ci/ios16-beta-simulator",
     ],
-    os = os.MAC_DEFAULT,
+    os = os.MAC_13,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
