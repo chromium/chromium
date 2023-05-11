@@ -809,10 +809,6 @@ BASE_FEATURE(kResamplingInputEvents,
              "ResamplingInputEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInputTargetClientHighPriority,
-             "InputTargetClientHighPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kResamplingScrollEvents,
              "ResamplingScrollEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);

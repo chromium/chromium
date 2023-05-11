@@ -824,24 +824,6 @@ class SitePerProcessHitTestBrowserTest : public SitePerProcessBrowserTestBase {
 #endif
 };
 
-// This tests the kInputTargetClientHighPriority finch experiment where we
-// upgrade the TaskQueue priority for InputTargetClient methods.
-class SitePerProcessHitTestTaskPriorityBrowserTest
-    : public SitePerProcessHitTestBrowserTest {
- public:
-  SitePerProcessHitTestTaskPriorityBrowserTest() = default;
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeature(
-        blink::features::kInputTargetClientHighPriority);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 //
 // SitePerProcessHighDPIHitTestBrowserTest
 //
@@ -6743,13 +6725,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, HitTestClippedFrame) {
 
 // Verify InputTargetClient works within an OOPIF process.
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, HitTestNestedFrames) {
-  HitTestNestedFramesHelper(shell(), embedded_test_server());
-}
-
-// Test that the InputTargetClient interface works as expected even when Running
-// a TaskPriority finch experiment.
-IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestTaskPriorityBrowserTest,
-                       SmokeTestInputTargetClientTaskPriority) {
   HitTestNestedFramesHelper(shell(), embedded_test_server());
 }
 

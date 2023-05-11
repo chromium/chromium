@@ -965,9 +965,7 @@ TaskPriority FrameSchedulerImpl::ComputePriority(
   }
 
   if (task_queue->GetPrioritisationType() ==
-          MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput &&
-      base::FeatureList::IsEnabled(
-          ::blink::features::kInputTargetClientHighPriority)) {
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput) {
     return TaskPriority::kHighestPriority;
   }
 
