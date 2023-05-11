@@ -508,7 +508,9 @@ const char* const kUnredactedMacAddresses[] = {
 };
 constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 
-constexpr char kFeedbackRedactionToolHistogramName[] = "Feedback.RedactionTool";
+void RecordPIIRedactedHistogram(const PIIType pii_type) {
+  UMA_HISTOGRAM_ENUMERATION("Feedback.RedactionTool", pii_type);
+}
 
 }  // namespace
 
@@ -639,12 +641,10 @@ std::string RedactionTool::RedactMACAddresses(
     }
     skipped.AppendToString(&result);
     result += replacement_mac;
+    RecordPIIRedactedHistogram(PIIType::kMACAddress);
   }
 
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            PIIType::kMACAddress);
 
   return result;
 }
@@ -700,12 +700,11 @@ std::string RedactionTool::RedactHashes(
     }
 
     result += replacement_hash;
+
+    RecordPIIRedactedHistogram(PIIType::kStableIdentifier);
   }
 
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            PIIType::kStableIdentifier);
 
   return result;
 }
@@ -770,12 +769,10 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
       (*detected)[PIIType::kAndroidAppStoragePath].insert(
           app_specific.as_string());
     }
+    RecordPIIRedactedHistogram(PIIType::kAndroidAppStoragePath);
   }
 
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            PIIType::kAndroidAppStoragePath);
 
   return result;
 #else
@@ -847,11 +844,9 @@ std::string RedactionTool::RedactCustomPatternWithContext(
     pre_matched_id.AppendToString(&result);
     result += replacement_id;
     post_matched_id.AppendToString(&result);
+    RecordPIIRedactedHistogram(pattern.pii_type);
   }
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            pattern.pii_type);
 
   return result;
 }
@@ -969,11 +964,10 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
 
     skipped.AppendToString(&result);
     result += replacement_id;
+
+    RecordPIIRedactedHistogram(pattern.pii_type);
   }
   text.AppendToString(&result);
-
-  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
-                            pattern.pii_type);
 
   return result;
 }
