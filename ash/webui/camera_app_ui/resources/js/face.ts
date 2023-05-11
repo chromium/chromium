@@ -7,9 +7,6 @@ import * as dom from './dom.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import {Resolution} from './type.js';
 
-// G-yellow-600 with alpha = 0.8
-const RECT_COLOR = 'rgba(249, 171, 0, 0.8)';
-
 /**
  * Rotates the given coordinates in [0, 1] square space by the given
  * clockwise orientation.
@@ -80,7 +77,13 @@ export class FaceOverlay {
 
     // TODO(b/178344897): Handle zoomed preview.
 
-    this.ctx.strokeStyle = RECT_COLOR;
+    // TODO(pihsun): This currently doesn't change dynamically when the color
+    // is changed, although the "warning" color is fixed in the current color
+    // token design. It's still better to change drawing face overlay with SVG
+    // instead of canvas for easier styling.
+    const rectColor = getComputedStyle(document.documentElement)
+                          .getPropertyValue('--cros-sys-warning');
+    this.ctx.strokeStyle = rectColor;
     for (let i = 0; i < rects.length; i += 4) {
       let [x1, y1, x2, y2] = rects.slice(i, i + 4);
       x1 /= this.activeArraySize.width;
