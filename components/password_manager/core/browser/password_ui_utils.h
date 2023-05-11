@@ -79,6 +79,10 @@ int GetPlatformAuthenticatorLabel();
 std::u16string ToUsernameString(const std::u16string& username);
 std::u16string ToUsernameString(const std::string& username);
 
+// Converts a passkey's relying party identifier into an equivalent URL for
+// display.
+GURL RPIDToURL(const std::string& relying_party_id);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_UI_UTILS_H_

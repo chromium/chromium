@@ -25,6 +25,10 @@ constexpr char kSortKeyPartsSeparator = ' ';
 // this character should be alphabetically smaller than real federations.
 constexpr char kSortKeyNoFederationSymbol = '-';
 
+// Symbols to differentiate between passwords and passkeys.
+constexpr char kSortKeyPasskeySymbol = 'k';
+constexpr char kSortKeyPasswordSymbol = 'w';
+
 }  // namespace
 
 std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
@@ -84,6 +88,10 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
 
   // To separate HTTP/HTTPS credentials, add the scheme to the key.
   key += kSortKeyPartsSeparator + GetShownUrl(credential).scheme();
+
+  // Separate passwords from passkeys.
+  key += kSortKeyPartsSeparator;
+  key += credential.is_passkey ? kSortKeyPasskeySymbol : kSortKeyPasswordSymbol;
 
   return key;
 }

@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -56,6 +57,12 @@ std::string GetFacetRepresentation(const PasswordForm& form) {
     scheme_and_authority = form.signon_realm;
   }
   return FacetURI::FromPotentiallyInvalidSpec(scheme_and_authority)
+      .potentially_invalid_spec();
+}
+
+std::string GetFacetRepresentation(const PasskeyCredential& passkey) {
+  std::string as_url = RPIDToURL(passkey.rp_id()).possibly_invalid_spec();
+  return FacetURI::FromPotentiallyInvalidSpec(as_url)
       .potentially_invalid_spec();
 }
 
@@ -221,6 +228,9 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
 
 }  // namespace
 
+PasswordsGrouper::Credentials::Credentials() = default;
+PasswordsGrouper::Credentials::~Credentials() = default;
+
 PasswordsGrouper::PasswordsGrouper(AffiliationService* affiliation_service)
     : affiliation_service_(affiliation_service) {
   DCHECK(affiliation_service_);
@@ -230,8 +240,9 @@ PasswordsGrouper::PasswordsGrouper(AffiliationService* affiliation_service)
 }
 PasswordsGrouper::~PasswordsGrouper() = default;
 
-void PasswordsGrouper::GroupPasswords(std::vector<PasswordForm> forms,
-                                      base::OnceClosure callback) {
+void PasswordsGrouper::GroupCredentials(std::vector<PasswordForm> forms,
+                                        std::vector<PasskeyCredential> passkeys,
+                                        base::OnceClosure callback) {
   // Convert forms to Facets.
   std::vector<FacetURI> facets;
   facets.reserve(forms.size());
@@ -243,9 +254,15 @@ void PasswordsGrouper::GroupPasswords(std::vector<PasswordForm> forms,
     }
   }
 
-  AffiliationService::GroupsCallback group_callback =
-      base::BindOnce(&PasswordsGrouper::GroupPasswordsImpl,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(forms));
+  // Convert passkey relying party IDs to Facets.
+  for (const auto& passkey : passkeys) {
+    facets.emplace_back(
+        FacetURI::FromPotentiallyInvalidSpec(GetFacetRepresentation(passkey)));
+  }
+
+  AffiliationService::GroupsCallback group_callback = base::BindOnce(
+      &PasswordsGrouper::GroupPasswordsImpl, weak_ptr_factory_.GetWeakPtr(),
+      std::move(forms), std::move(passkeys));
 
   // Before grouping passwords merge related groups. After grouping is finished
   // invoke |callback|.
@@ -258,12 +275,15 @@ void PasswordsGrouper::GroupPasswords(std::vector<PasswordForm> forms,
 std::vector<AffiliatedGroup>
 PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
   std::vector<AffiliatedGroup> affiliated_groups;
-  for (auto const& [group_id, affiliated_group] : map_group_id_to_forms) {
+  for (auto const& [group_id, affiliated_group] :
+       map_group_id_to_credentials_) {
+    // Convert each credential into CredentialUIEntry.
     std::vector<CredentialUIEntry> credentials;
-
-    // Convert each vector<PasswordForm> into CredentialUIEntry.
-    for (auto const& [username_password_key, forms] : affiliated_group) {
+    for (auto const& [username_password_key, forms] : affiliated_group.forms) {
       credentials.emplace_back(forms);
+    }
+    for (auto const& passkey : affiliated_group.passkeys) {
+      credentials.emplace_back(passkey);
     }
 
     // Add branding information to the affiliated group.
@@ -306,9 +326,14 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
 
 std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
   std::vector<CredentialUIEntry> credentials;
-  for (const auto& [group_id, affiliated_credentials] : map_group_id_to_forms) {
-    for (const auto& [username_password_key, forms] : affiliated_credentials) {
+  for (const auto& [group_id, affiliated_credentials] :
+       map_group_id_to_credentials_) {
+    for (const auto& [username_password_key, forms] :
+         affiliated_credentials.forms) {
       credentials.emplace_back(forms);
+    }
+    for (const auto& passkey : affiliated_credentials.passkeys) {
+      credentials.emplace_back(passkey);
     }
   }
   return credentials;
@@ -349,14 +374,14 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
 
   // Get all username/password pairs related to this group.
   GroupId group_id = group_id_iterator->second;
-  auto group_iterator = map_group_id_to_forms.find(group_id);
-  if (group_iterator == map_group_id_to_forms.end()) {
+  auto group_iterator = map_group_id_to_credentials_.find(group_id);
+  if (group_iterator == map_group_id_to_credentials_.end()) {
     return {};
   }
 
   // Get all password forms with matching username/password.
   const std::map<UsernamePasswordKey, std::vector<PasswordForm>>&
-      username_to_forms = group_iterator->second;
+      username_to_forms = group_iterator->second.forms;
   auto forms_iterator = username_to_forms.find(
       UsernamePasswordKey(CreateUsernamePasswordSortKey(credential)));
   if (forms_iterator == username_to_forms.end()) {
@@ -369,12 +394,13 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
 void PasswordsGrouper::ClearCache() {
   map_signon_realm_to_group_id.clear();
   map_group_id_to_branding_info.clear();
-  map_group_id_to_forms.clear();
+  map_group_id_to_credentials_.clear();
   blocked_sites.clear();
 }
 
 void PasswordsGrouper::GroupPasswordsImpl(
     std::vector<PasswordForm> forms,
+    std::vector<PasskeyCredential> passkeys,
     const std::vector<GroupedFacets>& groups) {
   ClearCache();
   // Construct map to keep track of facet URI to group id mapping.
@@ -399,7 +425,17 @@ void PasswordsGrouper::GroupPasswordsImpl(
 
     // Store form for username/password key.
     UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
-    map_group_id_to_forms[group_id][key].push_back(std::move(form));
+    map_group_id_to_credentials_[group_id].forms[key].push_back(
+        std::move(form));
+  }
+
+  for (auto& passkey : passkeys) {
+    // Group passkeys.
+    std::string facet_uri = GetFacetRepresentation(passkey);
+    GroupId group_id = map_facet_to_group_id[facet_uri];
+    map_signon_realm_to_group_id[SignonRealm(facet_uri)] = group_id;
+    map_group_id_to_credentials_[group_id].passkeys.push_back(
+        std::move(passkey));
   }
 }
 

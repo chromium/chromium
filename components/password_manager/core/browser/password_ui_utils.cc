@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -172,6 +173,11 @@ std::u16string ToUsernameString(const std::u16string& username) {
 
 std::u16string ToUsernameString(const std::string& username) {
   return ToUsernameString(base::UTF8ToUTF16(username));
+}
+
+GURL RPIDToURL(const std::string& relying_party_id) {
+  return GURL(base::StrCat(
+      {url::kHttpsScheme, url::kStandardSchemeSeparator, relying_party_id}));
 }
 
 }  // namespace password_manager

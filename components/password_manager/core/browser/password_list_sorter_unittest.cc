@@ -7,7 +7,9 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -234,6 +236,20 @@ TEST(PasswordListSorterTest, CreateUsernamePasswordSortKeyBlockedByUser) {
   form.blocked_by_user = true;
 
   EXPECT_EQ(CreateUsernamePasswordSortKey(form), "g.com");
+}
+
+TEST(PasswordListSorterTest, PasskeyVsPasswordSortKey) {
+  PasswordForm form;
+  form.signon_realm = "https://test.com/";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"lora";
+  CredentialUIEntry password(std::move(form));
+
+  PasskeyCredential passkey_credential(PasskeyCredential::Source::kAndroidPhone,
+                                       "test.com", {}, {}, "lora");
+  CredentialUIEntry passkey(std::move(passkey_credential));
+
+  EXPECT_NE(CreateSortKey(password), CreateSortKey(passkey));
 }
 
 }  // namespace password_manager

@@ -30,7 +30,8 @@ using IgnoreStore = base::StrongAlias<class IgnoreStoreTag, bool>;
 // If |ignore_store| is true, forms differing only by the originating password
 // store will map to the same key.
 std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store);
-// Same as |CreateSortKey| for |PasswordForm| but it always ignores store.
+// Same as |CreateSortKey| for |PasswordForm| but it always ignores store and
+// takes passkeys into account.
 // TODO(vsemeniuk): find a better name for this function.
 std::string CreateSortKey(const CredentialUIEntry& credential);
 

@@ -601,8 +601,8 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms,
   }
 
   // Notify observers after grouping is complete.
-  passwords_grouper_->GroupPasswords(
-      std::move(all_forms),
+  passwords_grouper_->GroupCredentials(
+      std::move(all_forms), /*passkeys=*/{},
       metrics_util::TimeCallback(std::move(completion),
                                  "PasswordManager.PasswordsGrouping.Time"));
 }
