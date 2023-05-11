@@ -115,7 +115,7 @@
   </if>
 
 
-  <!-- Omnibox Actions, which are a generalization of Omnibox Pedals. -->
+  <!-- History Clusters Actions. -->
   <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT" desc="The button text for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
     Resume your journey
   </message>
@@ -135,6 +135,30 @@
   </message>
   <message name="IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST" desc="Announcement when the Action in Suggest button is focused. Unlike Pedals or History Clusters, Actions come from the server and may encompass things like `Website` or `Call`, but are otherwise no different than, say, `Switch To Tab` on the attached screenshot.">
     Press Enter to activate this action.
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT" desc="Label for Omnibox Action button that pre-dials the phone number." meaning="Length: 12em">
+    Call
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Connect with a business by initiating a phone call.
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT" desc="Label for Omnibox Action button that starts navigation to the POI." meaning="Length: 12em">
+    Directions
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Get directions to your destination with turn-by-turn guidance using the navigation feature.
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT" desc="Label for Omnibox Action button that opens Reviews page for the POI." meaning="Length: 12em">
+    Reviews
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Read customer evaluations of products, services, or experiences to help inform your decisions with reviews.
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT" desc="Label for Omnibox Action button that opens the POI website." meaning="Length: 12em">
+    Website
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Access the website to view information, resources, or services provided by the business.
   </message>
 
   <!-- Accessibility labels for autocomplete match types.
