@@ -50,12 +50,6 @@ BASE_FEATURE(kPauseBrowserInitiatedHeavyTrafficForP2P,
              "PauseBrowserInitiatedHeavyTrafficForP2P",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When kCORBProtectionSniffing is enabled CORB sniffs additional same-origin
-// resources if they look sensitive.
-BASE_FEATURE(kCORBProtectionSniffing,
-             "CORBProtectionSniffing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When kProactivelyThrottleLowPriorityRequests is enabled,
 // resource scheduler proactively throttles low priority requests to avoid
 // network contention with high priority requests that may arrive soon.
@@ -118,27 +112,10 @@ BASE_FEATURE(kMdnsResponderGeneratedNameListing,
              "MdnsResponderGeneratedNameListing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Switches Cross-Origin Read Blocking (CORB) to use an early implementation of
-// Opaque Response Blocking (ORB, aka CORB++) behind the scenes.
-//
-// This is ORB v0.1 - it doesn't implement the full spec from
-// https://github.com/annevk/orb:
-// - No Javascript sniffing is done.  Instead the implementation uses all
-//   of CORB's confirmation sniffers (for HTML, XML and JSON).
-// - Blocking is still done by injecting an empty response rather than erroring
-//   out the network request
-// - Other differences and more details can be found in
-//   //services/network/public/cpp/corb/README.md
-//
-// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
-BASE_FEATURE(kOpaqueResponseBlockingV01_LAUNCHED,
-             "OpaqueResponseBlockingV01",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables ORB blocked responses being treated as errors (according to the spec)
 // rather than the current, CORB-style handling of injecting an empty response.
 // This is ORB v0.2.
-// This should only be enabled when ORB v0.1 is, too.
+// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
 BASE_FEATURE(kOpaqueResponseBlockingV02,
              "OpaqueResponseBlockingV02",
              base::FEATURE_DISABLED_BY_DEFAULT);

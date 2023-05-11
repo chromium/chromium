@@ -637,8 +637,7 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
         mojom::RequestMode::kNoCors, request_url,
         cross_origin_request_initiator, response, canonical_mime_type_);
     corb_protection_logging_needs_sniffing_ =
-        (would_protect_based_on_headers == Decision::kSniffMore) &&
-        base::FeatureList::IsEnabled(features::kCORBProtectionSniffing);
+        (would_protect_based_on_headers == Decision::kSniffMore);
     hypothetical_sniffing_mode_ =
         corb_protection_logging_needs_sniffing_ &&
         should_block_based_on_headers_ != Decision::kSniffMore;

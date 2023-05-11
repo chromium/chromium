@@ -52,9 +52,8 @@ class ComparingAnalyzer : public ResponseAnalyzer {
   explicit ComparingAnalyzer(PerFactoryState& state)
       : corb_analyzer_(
             std::make_unique<CrossOriginReadBlocking::CorbResponseAnalyzer>()),
-        orb_analyzer_(std::make_unique<OpaqueResponseBlockingAnalyzer>(state)),
-        is_orb_enabled_(base::FeatureList::IsEnabled(
-            features::kOpaqueResponseBlockingV01_LAUNCHED)) {}
+        orb_analyzer_(std::make_unique<OpaqueResponseBlockingAnalyzer>(state)) {
+  }
 
   ~ComparingAnalyzer() override {
     Comparison comparison = Comparison::kInvalid;
@@ -134,20 +133,14 @@ class ComparingAnalyzer : public ResponseAnalyzer {
       return Decision::kSniffMore;
     }
 
-    return is_orb_enabled_ ? orb_decision_ : corb_decision_;
+    return orb_decision_;
   }
 
-  const ResponseAnalyzer& GetEnabledAnalyzer() const {
-    if (is_orb_enabled_)
-      return *orb_analyzer_;
-    else
-      return *corb_analyzer_;
-  }
+  const ResponseAnalyzer& GetEnabledAnalyzer() const { return *orb_analyzer_; }
 
   const std::unique_ptr<CrossOriginReadBlocking::CorbResponseAnalyzer>
       corb_analyzer_;
   const std::unique_ptr<OpaqueResponseBlockingAnalyzer> orb_analyzer_;
-  const bool is_orb_enabled_ = false;
 
   Decision corb_decision_ = Decision::kSniffMore;
   Decision orb_decision_ = Decision::kSniffMore;
