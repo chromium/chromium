@@ -169,6 +169,18 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           '*:api,operation,command_buffer,image_copy:origins_and_extents:'
           'initMethod="WriteTexture";checkMethod="PartialCopyT2B";format="%s";*'
       ) % f)
+
+    # Run shader tests in serial if backend validation is enabled on Mac.
+    # The validation layers significantly slow down shader compilation.
+    if sys.platform == 'darwin' and self._enable_dawn_backend_validation:
+      globs.add('webgpu:shader,execution*')
+
+    # Run limit tests in serial if backend validation is enabled on Windows.
+    # The validation layers add memory overhead which makes OOM likely when
+    # many browsers and tests run in parallel.
+    if sys.platform == 'win32' and self._enable_dawn_backend_validation:
+      globs.add('webgpu:api,validation,capability_checks,limits*')
+
     return globs
 
   def _GetSerialTests(self) -> Set[str]:
