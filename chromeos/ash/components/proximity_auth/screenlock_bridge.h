@@ -142,7 +142,8 @@ class ScreenlockBridge {
     // Invoked after the screen lock is dismissed.
     virtual void OnScreenDidUnlock(LockHandler::ScreenType screen_type) = 0;
 
-    // Invoked when the user focused on the lock screen changes.
+    // TODO(b/227674947): This method isn't being used anywhere and can be
+    // deleted. Invoked when the user focused on the lock screen changes.
     virtual void OnFocusedUserChanged(const AccountId& account_id) = 0;
 
    protected:
