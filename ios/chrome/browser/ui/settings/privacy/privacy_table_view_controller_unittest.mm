@@ -93,7 +93,7 @@ class PrivacyTableViewControllerTest
             static_cast<int>(GetParam().incognitoModeAvailability)));
 
     // TODO(crbug.com/1443624): Remove when feature is enabled by default.
-    feature_list_.InitAndEnableFeature(web::kEnableBrowserLockdownMode);
+    feature_list_.InitAndEnableFeature(web::kBrowserLockdownModeAvailable);
   }
 
   void TearDown() override {
@@ -156,7 +156,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
     expectedNumberOfSections++;
   }
 
-  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 
@@ -179,7 +179,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       SafeBrowsingDetailText(), currentSection, 0);
 
   // Lockdown Mode section.
-  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     currentSection++;
     EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
     CheckTextCellTextAndDetailText(
@@ -257,7 +257,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
     expectedNumberOfSections++;
   }
 
-  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 
@@ -287,7 +287,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
     expectedNumberOfSections++;
   }
 
-  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 

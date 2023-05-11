@@ -217,8 +217,8 @@ extern const char kEnableBookmarksAccountStorageName[];
 extern const char kEnableBookmarksAccountStorageDescription[];
 
 // Title and description for the flag to enable browser lockdown mode.
-extern const char kEnableBrowserLockdownModeName[];
-extern const char kEnableBrowserLockdownModeDescription[];
+extern const char kBrowserLockdownModeAvailableName[];
+extern const char kBrowserLockdownModeAvailableDescription[];
 
 // Title and description for the flag to enable checking feed visibility on
 // attention log start.

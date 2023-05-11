@@ -10,7 +10,7 @@
 namespace web {
 
 // Feature flag to enable lockdown mode within browser.
-BASE_DECLARE_FEATURE(kEnableBrowserLockdownMode);
+BASE_DECLARE_FEATURE(kBrowserLockdownModeAvailable);
 
 // Returns true if the use of Browser Lockdown Mode is enabled.
 bool IsBrowserLockdownModeEnabled();

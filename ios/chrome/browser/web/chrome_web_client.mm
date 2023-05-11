@@ -512,7 +512,7 @@ bool ChromeWebClient::IsMixedContentAutoupgradeEnabled(
 
 bool ChromeWebClient::IsBrowserLockdownModeEnabled(
     web::BrowserState* browser_state) {
-  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     ChromeBrowserState* chrome_browser_state =
         ChromeBrowserState::FromBrowserState(browser_state);
     PrefService* prefs = chrome_browser_state->GetPrefs();
