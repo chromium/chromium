@@ -63,18 +63,6 @@ enum DCLayerResult {
   kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG,
 };
 
-gfx::RectF GetExpandedRectWithPixelMovingFilter(
-    const AggregatedRenderPassDrawQuad* rpdq,
-    float max_pixel_movement) {
-  const SharedQuadState* shared_quad_state = rpdq->shared_quad_state;
-  gfx::RectF expanded_rect(rpdq->rect);
-  expanded_rect.Inset(-max_pixel_movement);
-
-  // expanded_rect in the target space
-  return cc::MathUtil::MapClippedRect(
-      shared_quad_state->quad_to_target_transform, expanded_rect);
-}
-
 DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
     const gfx::ColorSpace& video_color_space,
@@ -350,9 +338,8 @@ bool IsOccluded(
       auto render_pass_it = render_pass_filters.find(rpdq->render_pass_id);
       if (render_pass_it != render_pass_filters.end()) {
         auto* filters = render_pass_it->second;
-        float max_pixel_movement = filters->MaximumPixelMovement();
-        overlap_rect =
-            GetExpandedRectWithPixelMovingFilter(rpdq, max_pixel_movement);
+        overlap_rect = gfx::RectF(
+            GetExpandedRectWithPixelMovingForegroundFilter(*rpdq, *filters));
         has_pixel_moving_filter = true;
       }
     }

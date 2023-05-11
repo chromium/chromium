@@ -62,7 +62,11 @@ class CC_PAINT_EXPORT FilterOperations {
   gfx::Rect MapRectReverse(const gfx::Rect& rect, const SkMatrix& matrix) const;
 
   bool HasFilterThatMovesPixels() const;
-  float MaximumPixelMovement() const;
+
+  // Expands `rect` to add any additional area that applying pixel moving
+  // filters will modify.
+  gfx::Rect ExpandRectForPixelMovement(const gfx::Rect& rect) const;
+
   bool HasFilterThatAffectsOpacity() const;
   bool HasReferenceFilter() const;
   bool HasFilterOfType(FilterOperation::FilterType type) const;
@@ -92,6 +96,8 @@ class CC_PAINT_EXPORT FilterOperations {
   std::string ToString() const;
 
  private:
+  float MaximumPixelMovement() const;
+
   std::vector<FilterOperation> operations_;
 };
 

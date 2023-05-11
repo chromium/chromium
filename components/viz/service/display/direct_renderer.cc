@@ -487,9 +487,7 @@ bool DirectRenderer::ShouldSkipQuad(const DrawQuad& quad,
     // visible bounds.
     auto filter_it = render_pass_filters_.find(rpdq->render_pass_id);
     if (filter_it != render_pass_filters_.end()) {
-      gfx::RectF rect(target_rect);
-      rect.Outset(filter_it->second->MaximumPixelMovement());
-      target_rect = gfx::ToEnclosingRect(rect);
+      target_rect = filter_it->second->ExpandRectForPixelMovement(target_rect);
     }
   }
 

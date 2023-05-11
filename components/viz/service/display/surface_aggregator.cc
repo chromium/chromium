@@ -1688,11 +1688,10 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // offset backdrop filters may be involved.
 
       // For the pixel-moving foreground filters, all effects can be expanded
-      // outside the RenderPassDrawQuad rect to the size of rect +
-      // filters.MaximumPixelMovement(). Therefore, we have to check if
-      // (rpdq->rect + MaximumPixelMovement()) intersects the damage under it.
-      // Then we extend the damage rect to include the (rpdq->rect +
-      // MaximumPixelMovement()).
+      // outside the RenderPassDrawQuad rect based on filter pixel movement.
+      // Therefore, we have to check if the expanded rpdq->rect intersects the
+      // damage under it. Then we extend the damage rect to include the expanded
+      // rpdq->rect.
 
       // Expand the damage to cover entire |output_rect| if the |render_pass|
       // has pixel-moving foreground filter.
