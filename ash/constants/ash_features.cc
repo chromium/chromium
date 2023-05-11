@@ -1313,14 +1313,25 @@ BASE_FEATURE(kInstantTethering,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the internal server side speech recognition on ChromeOS.
+// Controls the launched locales.
 BASE_FEATURE(kInternalServerSideSpeechRecognition,
              "InternalServerSideSpeechRecognition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature overrides the `InternalServerSideSpeechRecognition` flag if disabled.
+// Feature overrides the `InternalServerSideSpeechRecognition` that is exposed
+// via chrome://flags. This flag is used as a kill switch to disable the feature
+// in case that the feature introduced unexpected server load.
+// TODO(b/265957535) Clean up this flag after launch.
 BASE_FEATURE(kInternalServerSideSpeechRecognitionControl,
              "InternalServerSideSpeechRecognitionControl",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables the internal server side speech recognition on ChromeOS.
+// The supported locales for this feature are specified using the locales
+// filter in finch config.
+BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
+             "InternalServerSideSpeechRecognitionByFinch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2931,6 +2942,15 @@ bool IsInternalServerSideSpeechRecognitionControlEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return base::FeatureList::IsEnabled(
       kInternalServerSideSpeechRecognitionControl);
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return base::FeatureList::IsEnabled(
+      kInternalServerSideSpeechRecognitionByFinch);
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
