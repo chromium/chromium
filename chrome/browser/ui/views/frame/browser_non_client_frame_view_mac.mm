@@ -399,8 +399,14 @@ void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
   // TODO(kerenzhu): we need this workaround due to the design of NonClientView,
   // that the frame part is not an independent child view. If it is an
   // independent view, overriding PaintChildren() will not be necessary.
-  if (!browser_view()->immersive_mode_controller()->IsRevealed())
+  //
+  // Tabbed immersive fullscreen paints its own background. In this case we
+  // allow painting of the frame's children, which fixes a flickering bug:
+  // 1400287.
+  if (browser_view()->UsesImmersiveFullscreenTabbedMode() ||
+      !browser_view()->immersive_mode_controller()->IsRevealed()) {
     BrowserNonClientFrameView::PaintChildren(info);
+  }
 }
 
 gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets() const {
