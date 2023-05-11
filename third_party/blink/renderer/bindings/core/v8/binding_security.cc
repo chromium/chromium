@@ -429,32 +429,4 @@ void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
                                             cross_document_access));
 }
 
-bool BindingSecurity::ShouldAllowNamedAccessTo(
-    const DOMWindow* accessing_window,
-    const DOMWindow* target_window) {
-  const Frame* accessing_frame = accessing_window->GetFrame();
-  DCHECK(accessing_frame);
-  DCHECK(accessing_frame->GetSecurityContext());
-  const SecurityOrigin* accessing_origin =
-      accessing_frame->GetSecurityContext()->GetSecurityOrigin();
-
-  const Frame* target_frame = target_window->GetFrame();
-  DCHECK(target_frame);
-  DCHECK(target_frame->GetSecurityContext());
-  const SecurityOrigin* target_origin =
-      target_frame->GetSecurityContext()->GetSecurityOrigin();
-  SECURITY_CHECK(!(target_window && target_window->GetFrame()) ||
-                 target_window == target_window->GetFrame()->DomWindow());
-
-  if (!accessing_origin->CanAccess(target_origin))
-    return false;
-
-  // Note that there is no need to call back
-  // FrameLoader::didAccessInitialDocument() because |targetWindow| must be
-  // a child window inside iframe or frame and it doesn't have a URL bar,
-  // so there is no need to worry about URL spoofing.
-
-  return true;
-}
-
 }  // namespace blink

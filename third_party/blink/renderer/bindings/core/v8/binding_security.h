@@ -100,6 +100,11 @@ class CORE_EXPORT BindingSecurity {
       v8::MaybeLocal<v8::Context> target_context,
       ErrorReportOption);
 
+  static void FailedAccessCheckFor(v8::Isolate*,
+                                   const WrapperTypeInfo*,
+                                   v8::Local<v8::Object> holder);
+
+ private:
   // Checks if a wrapper creation of the given wrapper type associated with
   // |creation_context| is allowed in |accessing_context|.
   static bool ShouldAllowWrapperCreationOrThrowException(
@@ -114,25 +119,6 @@ class CORE_EXPORT BindingSecurity {
       v8::MaybeLocal<v8::Context> creation_context,
       const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Value> cross_context_exception);
-
-  static void FailedAccessCheckFor(v8::Isolate*,
-                                   const WrapperTypeInfo*,
-                                   v8::Local<v8::Object> holder);
-
- private:
-  // Returns true if |accessingWindow| is allowed named access to |targetWindow|
-  // because they're the same origin.  Note that named access should be allowed
-  // even if they're cross origin as long as the browsing context name matches
-  // the browsing context container's name.
-  //
-  // Unlike shouldAllowAccessTo, this function returns true even when
-  // |accessingWindow| or |targetWindow| is a RemoteDOMWindow, but remember that
-  // only limited operations are allowed on a RemoteDOMWindow.
-  //
-  // This function should be only used from V8Window::NamedPropertyGetterCustom.
-  friend class V8Window;
-  static bool ShouldAllowNamedAccessTo(const DOMWindow* accessing_window,
-                                       const DOMWindow* target_window);
 };
 
 }  // namespace blink

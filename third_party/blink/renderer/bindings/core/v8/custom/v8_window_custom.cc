@@ -215,7 +215,8 @@ void V8Window::NamedPropertyGetterCustom(
     // active document's origin is not same origin with activeDocument's origin
     // and whose browsing context name does not match the name of its browsing
     // context container's name content attribute value.
-    if (BindingSecurity::ShouldAllowNamedAccessTo(window, child->DomWindow()) ||
+    if (frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+            child->GetSecurityContext()->GetSecurityOrigin()) ||
         name == child->Owner()->BrowsingContextContainerName()) {
       bindings::V8SetReturnValue(
           info, child->DomWindow(), window,
