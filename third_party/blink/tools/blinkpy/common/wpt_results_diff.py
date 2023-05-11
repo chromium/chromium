@@ -131,7 +131,7 @@ class WPTResultsDiffGenerator:
                 expected_result = "PASS"
                 if expected_node.get_subtest(
                         expected_subtest) and expected_node.get_subtest(
-                            expected_subtest).expected:
+                            expected_subtest).has_key("expected"):
                     expected_result = expected_node.get_subtest(
                         expected_subtest).expected
                 self.build_tbody_miss(2, expected_subtest, expected_result)
