@@ -6,7 +6,6 @@ import("//build/config/features.gni")
 
 declare_args() {
   # Certificate transparency is not supported on iOS.
-  # TODO(mmenke): It's actually not supported on Android, either.
   is_ct_supported = !is_ios
 
   # Controls whether P2P is exposed by the network service.
