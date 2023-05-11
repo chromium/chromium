@@ -53,8 +53,8 @@ describe('ProcessingQueue', () => {
   it('rejects should not stop processing', async () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.reject(error));
-    const mycatch = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, mycatch);
+    const logger = sinon.spy();
+    const queue = new ProcessingQueue<number>(processor, logger);
     const deferred1 = new Deferred<number>();
     const deferred2 = new Deferred<number>();
 
@@ -69,7 +69,7 @@ describe('ProcessingQueue', () => {
     sinon.assert.calledOnceWithExactly(processor, 2);
 
     // Assert `_catch` was called for waiting entry and processor call.
-    const processedValues = mycatch.getCalls().map((c) => c.firstArg);
+    const processedValues = logger.getCalls().map((c) => c.args[2]);
     expect(processedValues).to.deep.equal([1, error]);
   });
 

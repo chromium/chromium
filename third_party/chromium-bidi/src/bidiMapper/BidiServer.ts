@@ -16,7 +16,7 @@
  */
 
 import {EventEmitter} from '../utils/EventEmitter.js';
-import {LoggerFn} from '../utils/log.js';
+import {LogType, LoggerFn} from '../utils/log.js';
 import type {Message} from '../protocol/protocol.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
 
@@ -41,7 +41,9 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #logger?: LoggerFn;
 
   #handleIncomingMessage = (message: Message.RawCommandRequest) => {
-    this.#commandProcessor.processCommand(message);
+    void this.#commandProcessor.processCommand(message).catch((error) => {
+      this.#logger?.(LogType.system, error);
+    });
   };
 
   #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {
@@ -67,7 +69,6 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     this.#realmStorage = new RealmStorage();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage,
-      () => Promise.resolve(),
       this.#logger
     );
     this.#transport = bidiTransport;

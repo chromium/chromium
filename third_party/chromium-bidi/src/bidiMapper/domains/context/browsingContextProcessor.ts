@@ -131,7 +131,8 @@ export class BrowsingContextProcessor {
         .sendCommand('Runtime.runIfWaitingForDebugger')
         .then(() =>
           parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
-        );
+        )
+        .catch((error) => this.#logger?.(LogType.system, error));
       return;
     }
 

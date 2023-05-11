@@ -110,26 +110,33 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
-    // Enable Network domain, if it is enabled globally.
-    // TODO: enable Network domain for OOPiF targets.
-    if (this.#eventManager.isNetworkDomainEnabled) {
-      await this.enableNetworkDomain();
+    try {
+      // Enable Network domain, if it is enabled globally.
+      // TODO: enable Network domain for OOPiF targets.
+      if (this.#eventManager.isNetworkDomainEnabled) {
+        await this.enableNetworkDomain();
+      }
+
+      await this.#cdpClient.sendCommand('Runtime.enable');
+      await this.#cdpClient.sendCommand('Page.enable');
+      await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+        enabled: true,
+      });
+      await this.#cdpClient.sendCommand('Target.setAutoAttach', {
+        autoAttach: true,
+        waitForDebuggerOnStart: true,
+        flatten: true,
+      });
+
+      await this.loadPreloadScripts();
+
+      await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+    } catch (error: any) {
+      // The target might have been closed before the initialization finished.
+      if (!error.message.includes('Target closed')) {
+        throw error;
+      }
     }
-
-    await this.#cdpClient.sendCommand('Runtime.enable');
-    await this.#cdpClient.sendCommand('Page.enable');
-    await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-      enabled: true,
-    });
-    await this.#cdpClient.sendCommand('Target.setAutoAttach', {
-      autoAttach: true,
-      waitForDebuggerOnStart: true,
-      flatten: true,
-    });
-
-    await this.loadPreloadScripts();
-
-    await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
 
     this.#targetUnblocked.resolve();
   }

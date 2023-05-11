@@ -21,6 +21,7 @@ import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 import {IEventManager} from '../events/EventManager.js';
+import {LogType, LoggerFn} from '../../../utils/log.js';
 
 import {SHARED_ID_DIVIDER, ScriptEvaluator} from './scriptEvaluator.js';
 import {RealmStorage} from './realmStorage.js';
@@ -42,6 +43,8 @@ export class Realm {
   readonly sandbox?: string;
   readonly cdpSessionId: string;
 
+  #logger?: LoggerFn;
+
   constructor(
     realmStorage: RealmStorage,
     browsingContextStorage: BrowsingContextStorage,
@@ -53,7 +56,8 @@ export class Realm {
     sandbox: string | undefined,
     cdpSessionId: string,
     cdpClient: CdpClient,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    logger?: LoggerFn
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
@@ -69,13 +73,11 @@ export class Realm {
     this.#scriptEvaluator = new ScriptEvaluator(this.#eventManager);
 
     this.#realmStorage.realmMap.set(this.#realmId, this);
+
+    this.#logger = logger;
   }
 
-  async disown(handle: CommonDataTypes.Handle): Promise<void> {
-    // Disowning an object from different realm does nothing.
-    if (this.#realmStorage.knownHandlesToRealm.get(handle) !== this.realmId) {
-      return;
-    }
+  async #releaseObject(handle: CommonDataTypes.Handle): Promise<void> {
     try {
       await this.cdpClient.sendCommand('Runtime.releaseObject', {
         objectId: handle,
@@ -87,6 +89,16 @@ export class Realm {
         throw e;
       }
     }
+  }
+
+  async disown(handle: CommonDataTypes.Handle): Promise<void> {
+    // Disowning an object from different realm does nothing.
+    if (this.#realmStorage.knownHandlesToRealm.get(handle) !== this.realmId) {
+      return;
+    }
+
+    await this.#releaseObject(handle);
+
     this.#realmStorage.knownHandlesToRealm.delete(handle);
   }
 
@@ -109,7 +121,9 @@ export class Realm {
         this.#realmStorage.knownHandlesToRealm.set(objectId, this.realmId);
       } else {
         // No need in awaiting for the object to be released.
-        void this.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
+        void this.#releaseObject(objectId).catch((error) =>
+          this.#logger?.(LogType.system, error)
+        );
       }
     }
 

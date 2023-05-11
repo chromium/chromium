@@ -106,7 +106,10 @@ export class CdpConnection {
 
       const messageStr = JSON.stringify(messageObj);
       const messagePretty = JSON.stringify(messageObj, null, 2);
-      this.#transport.sendMessage(messageStr);
+      void this.#transport.sendMessage(messageStr)?.catch((error) => {
+        this.#log('error', error);
+        this.#transport.close();
+      });
       this.#log('sent ▸', messagePretty);
     });
   }
