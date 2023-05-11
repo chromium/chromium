@@ -125,35 +125,6 @@ inline constexpr base::FeatureParam<std::string> kRetriableGmsApiErrors = {
     &kUnifiedPasswordManagerAndroid, "retriable_api_errors",
     "7,17,20,22,11009"};
 
-// Enables fallback to the Chrome built-in backend if the operation executed on
-// the GMS Core backend returns with error. Errors listed in the
-// |kIgnoredGmsApiErrors| will not fallback and will be directly returned to the
-// caller to be addressed in a specific way.
-
-// Fallback on AddLogin and UpdateLogin operations. This is default behaviour
-// since M103.
-inline constexpr base::FeatureParam<bool> kFallbackOnModifyingOperations = {
-    &kUnifiedPasswordManagerAndroid, "fallback_on_modifying_operations", true};
-
-// Fallback on RemoveLogin* operations.
-inline constexpr base::FeatureParam<bool> kFallbackOnRemoveOperations = {
-    &kUnifiedPasswordManagerAndroid, "fallback_on_remove_operations", false};
-
-// Fallback on FillMatchingLogins which is needed to perform autofill and could
-// affect user experience.
-inline constexpr base::FeatureParam<bool>
-    kFallbackOnUserAffectingReadOperations = {
-        &kUnifiedPasswordManagerAndroid,
-        "fallback_on_user_affecting_read_operations", true};
-
-// Fallback on GetAllLogins* and GetAutofillableLogins operations which are
-// needed for certain features (e.g. PhishGuard) but do not affect the core
-// experience.
-inline constexpr base::FeatureParam<bool>
-    kFallbackOnNonUserAffectingReadOperations = {
-        &kUnifiedPasswordManagerAndroid,
-        "fallback_on_non_user_affecting_read_operations", false};
-
 inline constexpr base::FeatureParam<UpmExperimentVariation>::Option
     kUpmExperimentVariationOption[] = {
         {UpmExperimentVariation::kEnableForSyncingUsers, "0"},

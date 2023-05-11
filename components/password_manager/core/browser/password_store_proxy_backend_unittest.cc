@@ -51,9 +51,15 @@ using RemoveChangesReceived = PasswordStoreBackend::RemoteChangesReceived;
 const PasswordStoreBackendError kUnrecoverableError = PasswordStoreBackendError(
     PasswordStoreBackendErrorType::kUncategorized,
     PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+const PasswordStoreBackendError kUnspecifiedError = PasswordStoreBackendError(
+    PasswordStoreBackendErrorType::kUncategorized,
+    PasswordStoreBackendErrorRecoveryType::kUnspecified);
 const PasswordStoreBackendError kRecoverableError = PasswordStoreBackendError(
     PasswordStoreBackendErrorType::kUncategorized,
     PasswordStoreBackendErrorRecoveryType::kRecoverable);
+const PasswordStoreBackendError kRetriableError = PasswordStoreBackendError(
+    PasswordStoreBackendErrorType::kUncategorized,
+    PasswordStoreBackendErrorRecoveryType::kRetriable);
 
 PasswordForm CreateTestForm() {
   PasswordForm form;
@@ -791,29 +797,16 @@ struct FallbackParam {
 
 class PasswordStoreProxyBackendTestWithFallbackParam
     : public PasswordStoreProxyBackendTest,
-      public testing::WithParamInterface<FallbackParam> {
- protected:
-  constexpr bool ShouldFallbackOnParam(const FallbackParam& p) {
-    return p.should_fallback && p.error == kUnrecoverableError;
-  }
-
-  void InitFeatureListWithFallbackEnableFeatureParam(
-      base::test::ScopedFeatureList& feature_list,
-      base::FeatureParam<bool> fallback_param) {
-    feature_list.InitAndEnableFeatureWithParameters(
-        password_manager::features::kUnifiedPasswordManagerAndroid,
-        {{"stage", "3"},
-         {fallback_param.name, GetParam().should_fallback ? "true" : "false"}});
-  }
-};
+      public testing::WithParamInterface<FallbackParam> {};
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
        RetriesAddLoginOnBuiltInBackend) {
   const FallbackParam& p = GetParam();
 
   base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list, password_manager::features::kFallbackOnModifyingOperations);
+  feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{"stage", "0"}});
 
   base::HistogramTester histogram_tester;
 
@@ -826,7 +819,7 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
           Invoke([&p](auto reply) -> void { std::move(reply).Run(p.error); })));
   const PasswordStoreChangeList changes = {
       PasswordStoreChange(PasswordStoreChange::Type::ADD, CreateTestForm())};
-  if (ShouldFallbackOnParam(p)) {
+  if (p.should_fallback) {
     EXPECT_CALL(built_in_backend(), AddLoginAsync)
         .WillOnce(WithArg<1>(Invoke([&changes](auto reply) -> void {
           std::move(reply).Run(changes);
@@ -840,7 +833,7 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   }
   proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
 
-  if (ShouldFallbackOnParam(p)) {
+  if (p.should_fallback) {
     histogram_tester.ExpectUniqueSample(
         GetFallbackHistogramNameForMethodName("AddLoginAsync"), true, 1);
   }
@@ -851,8 +844,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   const FallbackParam& p = GetParam();
 
   base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list, password_manager::features::kFallbackOnModifyingOperations);
+  feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{"stage", "0"}});
 
   base::HistogramTester histogram_tester;
 
@@ -865,7 +859,7 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
           Invoke([&p](auto reply) -> void { std::move(reply).Run(p.error); })));
   const PasswordStoreChangeList changes = {
       PasswordStoreChange(PasswordStoreChange::Type::ADD, CreateTestForm())};
-  if (ShouldFallbackOnParam(p)) {
+  if (p.should_fallback) {
     EXPECT_CALL(built_in_backend(), UpdateLoginAsync)
         .WillOnce(WithArg<1>(Invoke([&changes](auto reply) -> void {
           std::move(reply).Run(changes);
@@ -879,94 +873,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   }
   proxy_backend().UpdateLoginAsync(CreateTestForm(), mock_reply.Get());
 
-  if (ShouldFallbackOnParam(p)) {
+  if (p.should_fallback) {
     histogram_tester.ExpectUniqueSample(
         GetFallbackHistogramNameForMethodName("UpdateLoginAsync"), true, 1);
-  }
-}
-
-TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
-       RetriesGetAllLoginsOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-
-  base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list,
-      password_manager::features::kFallbackOnNonUserAffectingReadOperations);
-
-  base::HistogramTester histogram_tester;
-
-  EnablePasswordSync();
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-
-  EXPECT_CALL(android_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
-        std::move(reply).Run(p.error);
-      })));
-  if (ShouldFallbackOnParam(p)) {
-    EXPECT_CALL(built_in_backend(), GetAllLoginsAsync)
-        .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
-          std::move(reply).Run(CreateTestLogins());
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  } else {
-    EXPECT_CALL(built_in_backend(), GetAllLoginsAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply,
-                Run(VariantWith<PasswordStoreBackendError>(p.error)));
-  }
-  proxy_backend().GetAllLoginsAsync(mock_reply.Get());
-
-  if (ShouldFallbackOnParam(p)) {
-    histogram_tester.ExpectUniqueSample(
-        GetFallbackHistogramNameForMethodName("GetAllLoginsAsync"), true, 1);
-  }
-}
-
-TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
-       RetriesGetAutofillableLoginsOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-
-  base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list,
-      password_manager::features::kFallbackOnNonUserAffectingReadOperations);
-
-  base::HistogramTester histogram_tester;
-
-  EnablePasswordSync();
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-
-  EXPECT_CALL(android_backend(), GetAutofillableLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
-        std::move(reply).Run(p.error);
-      })));
-  if (ShouldFallbackOnParam(p)) {
-    EXPECT_CALL(built_in_backend(), GetAutofillableLoginsAsync)
-        .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
-          std::move(reply).Run(CreateTestLogins());
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  } else {
-    EXPECT_CALL(built_in_backend(), GetAutofillableLoginsAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply,
-                Run(VariantWith<PasswordStoreBackendError>(p.error)));
-  }
-  proxy_backend().GetAutofillableLoginsAsync(mock_reply.Get());
-  {
-    if (ShouldFallbackOnParam(p))
-      histogram_tester.ExpectUniqueSample(
-          GetFallbackHistogramNameForMethodName("GetAutofillableLoginsAsync"),
-          true, 1);
   }
 }
 
@@ -975,10 +884,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   const FallbackParam& p = GetParam();
 
   base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list,
-      password_manager::features::kFallbackOnUserAffectingReadOperations);
-
+  feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kUnifiedPasswordManagerAndroid,
+      {{"stage", "0"}});
   base::HistogramTester histogram_tester;
 
   EnablePasswordSync();
@@ -991,7 +899,7 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
       .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(p.error);
       })));
-  if (ShouldFallbackOnParam(p)) {
+  if (p.should_fallback) {
     EXPECT_CALL(built_in_backend(), FillMatchingLoginsAsync)
         .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
           std::move(reply).Run(CreateTestLogins());
@@ -1008,153 +916,10 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
 
                                           /*include_psl=*/false,
                                           std::vector<PasswordFormDigest>());
-  if (ShouldFallbackOnParam(p)) {
+  if (p.should_fallback) {
     histogram_tester.ExpectUniqueSample(
         GetFallbackHistogramNameForMethodName("FillMatchingLoginsAsync"), true,
         1);
-  }
-}
-
-TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
-       RetriesRemoveLoginOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-
-  base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list, password_manager::features::kFallbackOnRemoveOperations);
-
-  base::HistogramTester histogram_tester;
-
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  PasswordForm form = CreateTestForm();
-  PasswordStoreChangeList change_list;
-  change_list.emplace_back(Type::REMOVE, form);
-
-  EXPECT_CALL(android_backend(), RemoveLoginAsync)
-      .WillOnce(
-          WithArg<1>(Invoke([&p](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(p.error);
-          })));
-
-  if (ShouldFallbackOnParam(p)) {
-    EXPECT_CALL(built_in_backend(), RemoveLoginAsync)
-        .WillOnce(WithArg<1>(Invoke([&change_list](auto reply) -> void {
-          std::move(reply).Run(change_list);
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply,
-                Run(VariantWith<PasswordChanges>(Optional(change_list))));
-  } else {
-    EXPECT_CALL(built_in_backend(), RemoveLoginAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
-  }
-  proxy_backend().RemoveLoginAsync(form, mock_reply.Get());
-
-  if (ShouldFallbackOnParam(p)) {
-    histogram_tester.ExpectUniqueSample(
-        GetFallbackHistogramNameForMethodName("RemoveLoginAsync"), true, 1);
-  }
-}
-
-TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
-       RetriesRemoveLoginByURLAndTimeOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-
-  base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list, password_manager::features::kFallbackOnRemoveOperations);
-
-  base::HistogramTester histogram_tester;
-
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  PasswordForm form = CreateTestForm();
-  PasswordStoreChangeList change_list;
-  change_list.emplace_back(Type::REMOVE, form);
-
-  base::Time kStart = base::Time::FromTimeT(111111);
-  base::Time kEnd = base::Time::FromTimeT(22222222);
-
-  EXPECT_CALL(android_backend(), RemoveLoginsByURLAndTimeAsync)
-      .WillOnce(
-          WithArg<4>(Invoke([&p](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(p.error);
-          })));
-
-  if (ShouldFallbackOnParam(p)) {
-    EXPECT_CALL(built_in_backend(), RemoveLoginsByURLAndTimeAsync)
-        .WillOnce(WithArg<4>(Invoke([&change_list](auto reply) -> void {
-          std::move(reply).Run(change_list);
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply,
-                Run(VariantWith<PasswordChanges>(Optional(change_list))));
-  } else {
-    EXPECT_CALL(built_in_backend(), RemoveLoginsByURLAndTimeAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
-  }
-  proxy_backend().RemoveLoginsByURLAndTimeAsync(
-      base::BindRepeating(&FilterNoUrl), kStart, kEnd, base::NullCallback(),
-      mock_reply.Get());
-
-  if (ShouldFallbackOnParam(p)) {
-    histogram_tester.ExpectUniqueSample(
-        GetFallbackHistogramNameForMethodName("RemoveLoginsByURLAndTimeAsync"),
-        true, 1);
-  }
-}
-
-TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
-       RetriesRemoveLoginCreatedBetweenOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-
-  base::test::ScopedFeatureList feature_list;
-  InitFeatureListWithFallbackEnableFeatureParam(
-      feature_list, password_manager::features::kFallbackOnRemoveOperations);
-
-  base::HistogramTester histogram_tester;
-
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  PasswordForm form = CreateTestForm();
-  PasswordStoreChangeList change_list;
-  change_list.emplace_back(Type::REMOVE, form);
-
-  base::Time kStart = base::Time::FromTimeT(111111);
-  base::Time kEnd = base::Time::FromTimeT(22222222);
-
-  EXPECT_CALL(android_backend(), RemoveLoginsCreatedBetweenAsync)
-      .WillOnce(
-          WithArg<2>(Invoke([&p](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(p.error);
-          })));
-
-  if (ShouldFallbackOnParam(p)) {
-    EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync)
-        .WillOnce(WithArg<2>(Invoke([&change_list](auto reply) -> void {
-          std::move(reply).Run(change_list);
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply,
-                Run(VariantWith<PasswordChanges>(Optional(change_list))));
-  } else {
-    EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
-  }
-  proxy_backend().RemoveLoginsCreatedBetweenAsync(kStart, kEnd,
-                                                  mock_reply.Get());
-
-  if (ShouldFallbackOnParam(p)) {
-    histogram_tester.ExpectUniqueSample(GetFallbackHistogramNameForMethodName(
-                                            "RemoveLoginsCreatedBetweenAsync"),
-                                        true, 1);
   }
 }
 
@@ -1163,9 +928,9 @@ INSTANTIATE_TEST_SUITE_P(
     PasswordStoreProxyBackendTestWithFallbackParam,
     testing::Values(
         FallbackParam{.error = kUnrecoverableError, .should_fallback = true},
-        FallbackParam{.error = kRecoverableError, .should_fallback = true},
+        FallbackParam{.error = kUnspecifiedError, .should_fallback = true},
         FallbackParam{.error = kRecoverableError, .should_fallback = false},
-        FallbackParam{.error = kUnrecoverableError, .should_fallback = false}));
+        FallbackParam{.error = kRetriableError, .should_fallback = false}));
 
 // Holds the main and shadow backend's logins and the expected number of common
 // and different logins.
