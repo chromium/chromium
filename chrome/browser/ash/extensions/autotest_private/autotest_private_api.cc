@@ -3947,6 +3947,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetShelfItemsFunction::Run() {
     result_item.status = GetShelfItemStatus(item.status);
     result_item.shows_tooltip = item.shows_tooltip;
     result_item.pinned_by_policy = item.pinned_by_policy;
+    result_item.pin_state_forced_by_type = item.pin_state_forced_by_type;
     result_item.has_notification = item.has_notification;
     result_items.emplace_back(std::move(result_item));
   }

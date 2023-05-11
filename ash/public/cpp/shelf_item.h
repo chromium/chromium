@@ -20,6 +20,9 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   ShelfItem(const ShelfItem& shelf_item);
   ~ShelfItem();
 
+  // Returns true if the pin state of the item is forced and can not be changed.
+  bool IsPinStateForced() const;
+
   ShelfItemType type = TYPE_UNDEFINED;
 
   // Image to display in the shelf.
@@ -50,6 +53,10 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // Whether the item is pinned by a policy preference. If so, pin state should
   // not be modifiable by user.
   bool pinned_by_policy = false;
+
+  // Whether the item pin state is forced according to its app type. The pin
+  // state can not be modified by user if this is set to true.
+  bool pin_state_forced_by_type = false;
 
   // Whether the item has a notification.
   bool has_notification = false;

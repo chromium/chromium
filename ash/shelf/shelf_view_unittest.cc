@@ -31,6 +31,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_observer.h"
@@ -866,6 +867,36 @@ TEST_F(ShelfViewTest, DragAppsToPin) {
   // After pinning the last unpinned app by dragging, the separator is removed
   // as there is no unpinned app on the shelf.
   EXPECT_EQ(test_api_->GetSeparatorIndex(), absl::nullopt);
+}
+
+// Ensure that the unpinnable apps can not be pinned by dragging.
+TEST_F(ShelfViewTest, NotPinnableItemCantBePinnedByDragging) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+  size_t pinned_apps_size = id_map.size();
+
+  // Add an unpinnable app.
+  const ShelfItem unpinnable_app =
+      ShelfTestUtil::AddAppNotPinnable(base::NumberToString(id_++));
+  const ShelfID id = unpinnable_app.id;
+  id_map.emplace_back(id, GetButtonByID(id));
+
+  ASSERT_TRUE(GetButtonByID(id)->state() & ShelfAppButton::STATE_RUNNING);
+  ASSERT_FALSE(IsAppPinned(id));
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+
+  // Drag an unpinnable app and move it to the beginning of the shelf. The app
+  // can not be moved across the separator so the dragged app will stay unpinned
+  // beside the separator after release.
+  views::View* dragged_button =
+      SimulateDrag(ShelfView::MOUSE, id_map.size() - 1, 0, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+  EXPECT_FALSE(IsAppPinned(id));
 }
 
 // Check that separator index updates as expected when a drag view is dragged

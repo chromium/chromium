@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -91,6 +91,61 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   }
 
   return AppListControllerDelegate::PIN_EDITABLE;
+}
+
+bool IsAppPinEditable(apps::AppType app_type,
+                      const std::string& app_id,
+                      Profile* profile) {
+  switch (app_type) {
+    case apps::AppType::kArc: {
+      const arc::ArcAppShelfId& arc_shelf_id =
+          arc::ArcAppShelfId::FromString(app_id);
+      DCHECK(arc_shelf_id.valid());
+      const ArcAppListPrefs* arc_list_prefs = ArcAppListPrefs::Get(profile);
+      DCHECK(arc_list_prefs);
+      std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+          arc_list_prefs->GetApp(arc_shelf_id.app_id());
+      if (!arc_shelf_id.has_shelf_group_id() && app_info &&
+          app_info->launchable) {
+        return true;
+      }
+      return false;
+    }
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kBuiltIn: {
+      bool show_in_launcher = false;
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->AppRegistryCache()
+          .ForOneApp(
+              app_id, [&show_in_launcher](const apps::AppUpdate& update) {
+                show_in_launcher = update.ShowInLauncher().value_or(false);
+              });
+      return show_in_launcher;
+    }
+    case apps::AppType::kCrostini:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
+    case apps::AppType::kStandaloneBrowserChromeApp:
+      return true;
+    case apps::AppType::kStandaloneBrowser:
+      // Lacros behaves like the Chrome browser icon and cannot be unpinned.
+      return false;
+    case apps::AppType::kUnknown:
+      // Type kUnknown is used for "unregistered" Crostini apps, which do not
+      // have a .desktop file and can only be closed, not pinned.
+      return false;
+    case apps::AppType::kMacOs:
+    case apps::AppType::kRemote:
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
+      NOTREACHED() << "Type " << (int)app_type
+                   << " should not appear in shelf.";
+      return false;
+    case apps::AppType::kBruschetta:
+      return true;
+  }
 }
 
 bool IsBrowserRepresentedInBrowserList(Browser* browser,

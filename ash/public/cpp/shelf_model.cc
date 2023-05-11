@@ -79,7 +79,7 @@ void ShelfModel::PinExistingItemWithID(const std::string& app_id) {
 
   ShelfItem item = items_[index];
   DCHECK_EQ(item.type, TYPE_APP);
-  DCHECK(!item.pinned_by_policy);
+  DCHECK(!item.IsPinStateForced());
   item.type = TYPE_PINNED_APP;
   Set(index, item);
 }

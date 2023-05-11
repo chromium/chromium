@@ -113,8 +113,8 @@ bool ShelfContextMenu::IsCommandIdChecked(int command_id) const {
 
 bool ShelfContextMenu::IsCommandIdEnabled(int command_id) const {
   if (command_id == ash::TOGGLE_PIN) {
-    // Users cannot modify the pinned state of apps pinned by policy.
-    return !item_.pinned_by_policy &&
+    // Users cannot modify apps with a forced pinned state.
+    return !item_.IsPinStateForced() &&
            (item_.type == ash::TYPE_PINNED_APP || item_.type == ash::TYPE_APP);
   }
 

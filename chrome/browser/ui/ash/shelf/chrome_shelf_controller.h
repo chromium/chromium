@@ -371,12 +371,17 @@ class ChromeShelfController
   // Schedules re-sync of shelf model.
   void ScheduleUpdatePinnedAppsFromSync();
 
-  // Update the policy-pinned flag for each shelf item.
-  void UpdatePolicyPinnedAppsFromPrefs();
+  // Updates the policy-pinned and the forced-pin-state flag for each shelf
+  // item.
+  void UpdateAppsPinStatesFromPrefs();
 
   // Updates the policy-pinned flag for shelf item at `model_index` in shelf
   // model.
   void UpdatePinnedByPolicyForItemAtIndex(int model_index);
+
+  // Updates the pin_state_forced_by_type flag for shelf item at `model_index`
+  // in shelf model.
+  void UpdateForcedPinStateForItemAtIndex(int model_index);
 
   // Returns the shelf item status for the given |app_id|, which can be either
   // STATUS_RUNNING (if there is such an app) or STATUS_CLOSED.

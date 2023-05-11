@@ -40,6 +40,7 @@
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -1309,7 +1310,7 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
       ++index;
   }
 
-  UpdatePolicyPinnedAppsFromPrefs();
+  UpdateAppsPinStatesFromPrefs();
 
   ReportUpdateShelfIconList(model_);
 }
@@ -1354,9 +1355,10 @@ bool ChromeShelfController::EnsureAppPinnedInModelAtIndex(
   return true;
 }
 
-void ChromeShelfController::UpdatePolicyPinnedAppsFromPrefs() {
-  for (int index = 0; index < model_->item_count(); index++)
+void ChromeShelfController::UpdateAppsPinStatesFromPrefs() {
+  for (int index = 0; index < model_->item_count(); index++) {
     UpdatePinnedByPolicyForItemAtIndex(index);
+  }
 }
 
 void ChromeShelfController::UpdatePinnedByPolicyForItemAtIndex(
@@ -1365,8 +1367,26 @@ void ChromeShelfController::UpdatePinnedByPolicyForItemAtIndex(
   const bool pinned_by_policy =
       GetPinnableForAppID(item.id.app_id, profile()) ==
       AppListControllerDelegate::PIN_FIXED;
+
   if (item.pinned_by_policy != pinned_by_policy) {
     item.pinned_by_policy = pinned_by_policy;
+    model_->Set(model_index, item);
+  }
+
+  ReportUpdateShelfIconList(model_);
+}
+
+void ChromeShelfController::UpdateForcedPinStateForItemAtIndex(
+    int model_index) {
+  ash::ShelfItem item = model_->items()[model_index];
+  auto app_type = apps::AppServiceProxyFactory::GetForProfile(profile())
+                      ->AppRegistryCache()
+                      .GetAppType(item.id.app_id);
+
+  const bool pin_state_forced_by_type =
+      !IsAppPinEditable(app_type, item.id.app_id, profile());
+  if (item.pin_state_forced_by_type != pin_state_forced_by_type) {
+    item.pin_state_forced_by_type = pin_state_forced_by_type;
     model_->Set(model_index, item);
   }
 
@@ -1606,6 +1626,8 @@ void ChromeShelfController::ShelfItemAdded(int index) {
     if (needs_update)
       model_->Set(index, item);
   }
+
+  UpdateForcedPinStateForItemAtIndex(index);
 
   // Update the pin position preference as needed.
   if (ShouldSyncItemWithReentrancy(item))

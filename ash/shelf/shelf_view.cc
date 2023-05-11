@@ -2000,7 +2000,7 @@ bool ShelfView::CanDragAcrossSeparator(views::View* drag_view) const {
 
   // Note that |drag_and_drop_shelf_id_| is set only when the current drag view
   // is from app list, which can not be dragged to the unpinned app side.
-  return !ShelfItemForView(drag_view)->pinned_by_policy &&
+  return !ShelfItemForView(drag_view)->IsPinStateForced() &&
          drag_and_drop_shelf_id_ == ShelfID() && can_change_pin_state;
 }
 

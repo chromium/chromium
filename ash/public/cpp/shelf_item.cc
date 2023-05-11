@@ -10,4 +10,8 @@ ShelfItem::ShelfItem() = default;
 ShelfItem::ShelfItem(const ShelfItem& shelf_item) = default;
 ShelfItem::~ShelfItem() = default;
 
+bool ShelfItem::IsPinStateForced() const {
+  return pinned_by_policy || pin_state_forced_by_type;
+}
+
 }  // namespace ash

@@ -29,6 +29,9 @@ class ShelfTestUtil {
   static ShelfItem AddAppShortcutWithIcon(const std::string& id,
                                           ShelfItemType type,
                                           gfx::ImageSkia icon);
+
+  // Adds an app that is not pinnable to the shelf model.
+  static ShelfItem AddAppNotPinnable(const std::string& id);
 };
 
 // Waits for an overview enter animation if |enter|; waits for an overview exit
