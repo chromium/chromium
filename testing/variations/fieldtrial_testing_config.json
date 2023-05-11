@@ -870,6 +870,29 @@
             ]
         }
     ],
+    "AudioRendererAlgorithmStartingCapacityForEncrypted": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "StartingCapacityForEncrypted_1000ms",
+                    "params": {
+                        "starting_capacity_for_encrypted": "1000ms"
+                    },
+                    "enable_features": [
+                        "AudioRendererAlgorithmParameters"
+                    ]
+                }
+            ]
+        }
+    ],
     "AudioServiceSandboxLinux": [
         {
             "platforms": [
