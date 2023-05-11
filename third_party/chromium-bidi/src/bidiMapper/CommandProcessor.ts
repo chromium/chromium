@@ -249,6 +249,13 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
           this.#parser.parseGetSessionParams(commandData.params)
         );
     }
+
+    // Intentionally kept outside of the switch statement to ensure that
+    // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
+    // command is added.
+    throw new Message.UnknownCommandException(
+      `Unknown command '${commandData.method as string}'.`
+    );
   }
 
   async processCommand(command: Message.RawCommandRequest): Promise<void> {

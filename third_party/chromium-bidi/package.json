@@ -48,6 +48,12 @@
         ".eslintignore",
         ".eslintrc.js",
         "src/**/*.ts"
+      ],
+      "output": [
+        ".eslintcache"
+      ],
+      "dependencies": [
+        "build"
       ]
     },
     "format": {
