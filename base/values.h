@@ -764,9 +764,6 @@ class BASE_EXPORT GSL_OWNER Value {
   //
   // DEPRECATED: prefer `Value::Dict::FindInt()`.
   absl::optional<int> FindIntKey(StringPiece key) const;
-  // DEPRECATED: prefer `Value::Dict::FindString()`.
-  const std::string* FindStringKey(StringPiece key) const;
-  std::string* FindStringKey(StringPiece key);
 
   // `SetKey` looks up `key` in the underlying dictionary and sets the mapped
   // value to `value`. If `key` could not be found, a new element is inserted.

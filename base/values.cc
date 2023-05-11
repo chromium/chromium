@@ -1156,14 +1156,6 @@ absl::optional<int> Value::FindIntKey(StringPiece key) const {
   return GetDict().FindInt(key);
 }
 
-const std::string* Value::FindStringKey(StringPiece key) const {
-  return GetDict().FindString(key);
-}
-
-std::string* Value::FindStringKey(StringPiece key) {
-  return GetDict().FindString(key);
-}
-
 Value* Value::SetKey(StringPiece key, Value&& value) {
   return GetDict().Set(key, std::move(value));
 }
