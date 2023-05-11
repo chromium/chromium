@@ -996,8 +996,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   // Trigger a infobars in both tabs by trying to send messages.
   std::string script =
       base::StringPrintf("assertions.trySendMessage('%s')", app->id().c_str());
-  CHECK(content::ExecuteScript(incognito_frame1, script));
-  CHECK(content::ExecuteScript(incognito_frame2, script));
+  CHECK(content::ExecJs(incognito_frame1, script));
+  CHECK(content::ExecJs(incognito_frame2, script));
   EXPECT_EQ(1U, infobar_manager1->infobar_count());
   EXPECT_EQ(1U, infobar_manager2->infobar_count());
 
@@ -1663,9 +1663,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingApiTest,
             web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   // This is a hack to make sure messaging IPCs are finished. Since IPCs
   // are sent synchronously, anything started prior to this method will finish
-  // before this method returns (as content::ExecuteScript() blocks until
+  // before this method returns (as content::ExecJs() blocks until
   // completion).
-  ASSERT_TRUE(content::ExecuteScript(web_contents, "1 == 1;"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "1 == 1;"));
 
   content::RunAllTasksUntilIdle();
 
