@@ -317,7 +317,8 @@ void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
 
 void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
                                                   views::View* focused_now) {
-  if (browser_view_->top_container()->Contains(focused_now)) {
+  if (browser_view_->top_container()->Contains(focused_now) ||
+      browser_view_->tab_overlay_view()->Contains(focused_now)) {
     if (!focus_lock_)
       focus_lock_ = GetRevealedLock(ANIMATE_REVEAL_NO);
   } else {
@@ -425,11 +426,16 @@ class ImmersiveModeTabbedControllerMac : public ImmersiveModeControllerMac {
 
  private:
   int tab_widget_height_ = 0;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      tab_container_observation_{this};
 };
 
 void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
   BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
   if (enabled) {
+    tab_container_observation_.Observe(browser_view->tab_overlay_view());
+
     tab_widget_height_ = browser_view->tab_strip_region_view()->height();
     tab_widget_height_ += static_cast<BrowserNonClientFrameViewMac*>(
                               browser_view->frame()->GetFrameView())
@@ -471,6 +477,7 @@ void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
     SetTabNativeWidgetID(tab_overlay_host->bridged_native_widget_id());
     ImmersiveModeControllerMac::SetEnabled(enabled);
   } else {
+    tab_container_observation_.Reset();
     browser_view->tab_overlay_widget()->Hide();
     browser_view->tab_strip_region_view()->SetBorder(nullptr);
     browser_view->top_container()->AddChildViewAt(
