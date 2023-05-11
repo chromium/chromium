@@ -6,9 +6,6 @@ on:
   schedule:
     # Run hourly at xx:30.
     - cron: '30 * * * *'
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -30,3 +27,8 @@ jobs:
           echo "$browser_spec" > .browser
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
+          commit-message: Update the browser version
+          committer: Browser Automation Bot <browser-automation-bot@google.com>
+          author: Browser Automation Bot <browser-automation-bot@google.com>
