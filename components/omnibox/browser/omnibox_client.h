@@ -171,9 +171,6 @@ class OmniboxClient {
                              const AutocompleteResult& result,
                              bool has_focus) {}
 
-  // Called when input has been accepted.
-  virtual void OnInputAccepted(const AutocompleteMatch& match) {}
-
   // Called when the edit model is being reverted back to its unedited state.
   virtual void OnRevert() {}
 

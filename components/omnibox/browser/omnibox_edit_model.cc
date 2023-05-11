@@ -2255,8 +2255,6 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
     match.transition = ui::PAGE_TRANSITION_LINK;
   }
 
-  client_->OnInputAccepted(match);
-
   if (popup_view_) {
     OpenMatch(match, disposition, alternate_nav_url, std::u16string(),
               GetPopupSelection().line, match_selection_timestamp);
