@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
-#define CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_TEST_SUPPORT_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
+#define CHROME_BROWSER_ASH_POLICY_TEST_SUPPORT_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
 
 #include <initializer_list>
 #include <memory>
@@ -17,7 +17,6 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "net/http/http_status_code.h"
 
 namespace policy {
 class EmbeddedPolicyTestServer;
@@ -155,4 +154,4 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_TEST_SUPPORT_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_

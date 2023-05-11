@@ -12,7 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"

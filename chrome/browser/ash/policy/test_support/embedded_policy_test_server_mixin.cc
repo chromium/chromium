@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 
 #include <string>
 #include <utility>
@@ -11,9 +11,9 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/test/policy_test_server_constants.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
+#include "chrome/browser/ash/policy/test_support/policy_test_server_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -206,8 +206,9 @@ bool EmbeddedPolicyTestServerMixin::SetDeviceStateRetrievalResponse(
       },
       &keys, loop.QuitClosure()));
   loop.Run();
-  if (keys.empty())
+  if (keys.empty()) {
     return false;
+  }
 
   policy::ClientStorage::ClientInfo client_info;
   client_info.device_token = "dm_token";
