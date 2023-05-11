@@ -80,31 +80,7 @@ class FuzzTestLauncherDelegate : public content::TestLauncherDelegate {
 };
 
 int fuzz_callback(const uint8_t* data, size_t size) {
-  return g_test->FuzzCallback(data, size);
-}
-
-int InProcessFuzzTest::FuzzCallback(const uint8_t* data, size_t size) {
-  int result;
-  base::RunLoop run_loop;
-
-  base::RepeatingCallback<void()> run_fuzz_case_lambda =
-      base::BindLambdaForTesting([&]() {
-        result = Fuzz(data, size);
-        run_loop.QuitClosure().Run();
-      });
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_fuzz_case_lambda);
-  run_loop.Run();
-  return result;
-}
-
-void InProcessFuzzTest::FuzzCaseFinished(
-    int* result_storage,
-    const base::RepeatingClosure& quit_closure,
-    int result) {
-  *result_storage = result;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                              quit_closure);
+  return g_test->Fuzz(data, size);
 }
 
 void InProcessFuzzTest::RunTestOnMainThread() {
