@@ -18,7 +18,7 @@ import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Desc
 import {feedDescriptor} from './feed/module.js';
 import {HistoryClustersProxyImpl} from './history_clusters/history_clusters_proxy.js';
 import {historyClustersDescriptor} from './history_clusters/module.js';
-import {historyClustersV2Descriptor} from './history_clusters_v2/module.js';
+import {historyClustersDescriptor as historyClustersV2Descriptor} from './history_clusters_v2/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';

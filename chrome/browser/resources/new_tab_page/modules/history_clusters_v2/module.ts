@@ -16,6 +16,8 @@ import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
 
+export const MAX_MODULE_ELEMENT_INSTANCES = 3;
+
 export interface HistoryClustersModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
@@ -99,20 +101,31 @@ export class HistoryClustersModuleElement extends I18nMixin
 customElements.define(
     HistoryClustersModuleElement.is, HistoryClustersModuleElement);
 
-async function createElement(): Promise<HTMLElement> {
-  const {clusters} =
-      await HistoryClustersProxyImpl.getInstance().handler.getClusters();
-  // Do not show module if there are no clusters.
-  if (clusters.length === 0) {
-    return document.createElement('div');
-  }
-
+async function createElement(cluster: Cluster):
+    Promise<HistoryClustersModuleElement> {
   const element = new HistoryClustersModuleElement();
-  element.cluster = clusters[0];
+  element.cluster = cluster;
 
-  return element as HTMLElement;
+  return element;
 }
 
-export const historyClustersV2Descriptor: ModuleDescriptor =
-    new ModuleDescriptor(
-        /*id=*/ 'history_clusters', createElement);
+async function createElements(): Promise<HTMLElement[]|null> {
+  const {clusters} =
+      await HistoryClustersProxyImpl.getInstance().handler.getClusters();
+  if (!clusters || clusters.length === 0) {
+    return null;
+  }
+
+  const elements: HistoryClustersModuleElement[] = [];
+  for (let i = 0; i < clusters.length; i++) {
+    if (elements.length === MAX_MODULE_ELEMENT_INSTANCES) {
+      break;
+    }
+    elements.push(await createElement(clusters[i]));
+  }
+
+  return (elements as unknown) as HTMLElement[];
+}
+
+export const historyClustersDescriptor: ModuleDescriptor = new ModuleDescriptor(
+    /*id=*/ 'history_clusters', createElements);

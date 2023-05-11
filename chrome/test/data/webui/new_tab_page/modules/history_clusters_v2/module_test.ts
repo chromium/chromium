@@ -16,8 +16,15 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {installMock} from '../../test_support.js';
 import {assertModuleHeaderTitle, createRelatedSearches, createSampleVisits} from '../history_clusters/test_support.js';
 
+function createSampleClusters(count: number): Cluster[] {
+  return new Array(count).fill(0).map(
+      (_, i) => createSampleCluster(2, {id: BigInt(i)}));
+}
+
 function createSampleCluster(
-    numRelatedSearches?: number, overrides?: Partial<Cluster>): Cluster {
+    numRelatedSearches: number,
+    overrides?: Partial<Cluster>,
+    ): Cluster {
   const cluster: Cluster = Object.assign(
       {
         id: BigInt(111),
@@ -46,43 +53,43 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
   });
 
   async function initializeModule(clusters: Cluster[], cart: Cart|null = null):
-      Promise<HistoryClustersV2ModuleElement> {
+      Promise<HistoryClustersV2ModuleElement[]> {
     handler.setResultFor('getClusters', Promise.resolve({clusters}));
     handler.setResultFor('getCartForCluster', Promise.resolve({cart}));
-    const moduleElement = await historyClustersV2Descriptor.initialize(0) as
-        HistoryClustersV2ModuleElement;
-    await handler.whenCalled('getClusters');
-    document.body.append(moduleElement);
-    await waitAfterNextRender(moduleElement);
-    return moduleElement;
+    const moduleElements = await historyClustersV2Descriptor.initialize(0) as
+        HistoryClustersV2ModuleElement[];
+    if (moduleElements) {
+      moduleElements.forEach(element => {
+        document.body.append(element);
+      });
+    }
+
+    await waitAfterNextRender(document.body);
+    return moduleElements;
   }
 
   suite('core', () => {
     test('No module created if no history cluster data', async () => {
       // Arrange.
-      const moduleElement = await initializeModule([]);
+      const moduleElements = await initializeModule([]);
 
       // Assert.
-      assertEquals('', moduleElement.innerHTML);
+      assertEquals(null, moduleElements);
     });
 
-    test('No module created when data does not match layouts', async () => {
-      // Arrange.
-      const cluster: Partial<Cluster> = {
-        visits: createSampleVisits(2, 0),
-      };
-      const moduleElement =
-          await initializeModule([createSampleCluster(undefined, cluster)]);
-
-      // Assert.
-      assertEquals('', moduleElement.innerHTML);
+    test('Multiple module instances created successfully', async () => {
+      const instanceCount = 3;
+      const moduleElements =
+          await initializeModule(createSampleClusters(instanceCount));
+      assertEquals(instanceCount, moduleElements.length);
     });
 
     test('Header element populated with correct data', async () => {
       // Arrange.
       const sampleClusterLabel = '"Sample Journey"';
-      const moduleElement = await initializeModule(
-          [createSampleCluster(undefined, {label: sampleClusterLabel})]);
+      const moduleElements = await initializeModule(
+          [createSampleCluster(2, {label: sampleClusterLabel})]);
+      const moduleElement = moduleElements[0];
 
       // Assert.
       assertTrue(!!moduleElement);
@@ -95,8 +102,9 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
     test('Header info button click opens info dialog', async () => {
       // Arrange.
       const sampleClusterLabel = '"Sample Journey"';
-      const moduleElement = await initializeModule(
-          [createSampleCluster(undefined, {label: sampleClusterLabel})]);
+      const moduleElements = await initializeModule(
+          [createSampleCluster(2, {label: sampleClusterLabel})]);
+      const moduleElement = moduleElements[0];
 
       // Act.
       assertTrue(!!moduleElement);

@@ -42,7 +42,7 @@ export {HistoryClustersProxy, HistoryClustersProxyImpl} from './modules/history_
 export {HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS} from './modules/history_clusters/module.js';
 export {SuggestTileModuleElement} from './modules/history_clusters/suggest_tile.js';
 export {TileModuleElement} from './modules/history_clusters/tile.js';
-export {HistoryClustersModuleElement as HistoryClustersV2ModuleElement, historyClustersV2Descriptor} from './modules/history_clusters_v2/module.js';
+export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/history_clusters_v2/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
