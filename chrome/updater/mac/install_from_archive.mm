@@ -89,8 +89,14 @@ bool MountDMG(const base::FilePath& dmg_path, std::string* mount_point) {
     return false;
   }
   @autoreleasepool {
-    NSString* output = base::SysUTF8ToNSString(command_output);
-    NSDictionary* plist = [output propertyList];
+    NSDictionary* plist = nil;
+    @try {
+      plist = [base::SysUTF8ToNSString(command_output) propertyList];
+    } @catch (NSException*) {
+      // `[NSString propertyList]` throws an NSParseErrorException if bad data.
+      VLOG(1) << "Unable to parse command output: [" << command_output << "]";
+      return false;
+    }
     // Look for the mountpoint.
     NSArray* system_entities = [plist objectForKey:@"system-entities"];
     NSString* dmg_mount_point = nil;
