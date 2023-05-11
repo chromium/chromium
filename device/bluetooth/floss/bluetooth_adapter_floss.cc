@@ -743,6 +743,15 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
 
   BLUETOOTH_LOG(EVENT) << __func__ << device_found;
 
+  UpdateDeviceProperties(true, device_found);
+}
+
+void BluetoothAdapterFloss::UpdateDeviceProperties(
+    bool is_triggered_by_inquiry,
+    const FlossDeviceId& device_found) {
+  DCHECK(FlossDBusManager::Get());
+  DCHECK(IsPresent());
+
   auto device_floss = CreateBluetoothDeviceFloss(device_found);
   BluetoothDeviceFloss* new_device_ptr = nullptr;
 
@@ -759,9 +768,16 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
         static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
   }
 
+  BluetoothDeviceFloss::PropertiesState state =
+      BluetoothDeviceFloss::PropertiesState::kTriggeredByScan;
+  if (is_triggered_by_inquiry) {
+    state = BluetoothDeviceFloss::PropertiesState::kTriggeredByInquiry;
+  }
+
   // Trigger property reads for new devices.
   if (new_device_ptr) {
     new_device_ptr->InitializeDeviceProperties(
+        state,
         base::BindOnce(&BluetoothAdapterFloss::OnInitializeDeviceProperties,
                        weak_ptr_factory_.GetWeakPtr(), new_device_ptr));
 
@@ -782,12 +798,15 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
       static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
 
   // If the name has changed, we should also reinitialize the device properties.
+  // For dual mode devices, if this is the first inquiry result received or
+  // first scan result received, reinitialize the device properties.
   // NotifyDeviceChanged will get called after properties are re-init.
-  if (device_floss->GetName() && device->GetName() != device_floss->GetName()) {
-    device->SetName(device_floss->GetName().value_or(""));
+  if ((!device_found.name.empty() && device->GetName() != device_found.name) ||
+      !(device->GetPropertiesState() & state)) {
+    device->SetName(device_found.name);
     device->InitializeDeviceProperties(
-        base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
-                       weak_ptr_factory_.GetWeakPtr(), device));
+        state, base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
+                              weak_ptr_factory_.GetWeakPtr(), device));
   }
 }
 
@@ -958,7 +977,7 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
   if (!device) {
     BLUETOOTH_LOG(EVENT) << "Adding newly connected device to devices_ map: "
                          << device_id.address;
-    AdapterFoundDevice(device_id);
+    UpdateDeviceProperties(false, device_id);
     return;
   }
 
@@ -1383,10 +1402,10 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
     observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
 
-  // We are currently in an LE discovery session. Also emit a DeviceFound event
-  // since we have updated data for this device.
+  // We are currently in an LE discovery session. Update properties and emit
+  // a |DeviceFound| if newly found or |DeviceChanged|.
   if (le_discovery_session_) {
-    AdapterFoundDevice(device_ptr->AsFlossDeviceId());
+    UpdateDeviceProperties(false, device_ptr->AsFlossDeviceId());
   }
 }
 

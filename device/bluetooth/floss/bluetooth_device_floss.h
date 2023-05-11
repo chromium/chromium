@@ -43,6 +43,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
     kGattConnecting,
     kGattConnected,
   };
+  enum PropertiesState : uint32_t {
+    kNotRead = 0,
+    kTriggeredByScan = 1 << 1,
+    kTriggeredByInquiry = 1 << 2,
+    kTriggeredbyBoth = (kTriggeredByScan | kTriggeredByInquiry)
+  };
 
   BluetoothDeviceFloss(const BluetoothDeviceFloss&) = delete;
   BluetoothDeviceFloss& operator=(const BluetoothDeviceFloss&) = delete;
@@ -137,9 +143,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   BluetoothPairingFloss* pairing() const { return pairing_.get(); }
 
-  void InitializeDeviceProperties(base::OnceClosure callback);
-  bool IsReadingProperties() const { return property_reads_triggered_; }
-  bool HasReadProperties() const { return property_reads_completed_; }
+  void InitializeDeviceProperties(PropertiesState state,
+                                  base::OnceClosure callback);
+  bool IsReadingProperties() const {
+    return property_reads_triggered_ != PropertiesState::kNotRead;
+  }
+  bool HasReadProperties() const {
+    return property_reads_completed_ != PropertiesState::kNotRead;
+  }
+  PropertiesState GetPropertiesState() const {
+    return property_reads_completed_;
+  }
 
   // FlossGattClientObserver overrides
   void GattClientConnectionState(GattStatus status,
@@ -274,10 +288,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool svc_resolved_ = false;
 
   // Have we triggered initial property reads?
-  bool property_reads_triggered_ = false;
+  PropertiesState property_reads_triggered_ = PropertiesState::kNotRead;
 
   // Have we completed reading properties?
-  bool property_reads_completed_ = false;
+  PropertiesState property_reads_completed_ = PropertiesState::kNotRead;
 
   // Specific uuid to search for after gatt connection is established. If this
   // is not set, then we do full discovery.

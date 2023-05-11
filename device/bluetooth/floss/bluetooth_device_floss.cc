@@ -828,13 +828,14 @@ void BluetoothDeviceFloss::OnConnectToServiceError(
 }
 
 void BluetoothDeviceFloss::InitializeDeviceProperties(
+    PropertiesState state,
     base::OnceClosure callback) {
   // If a property read is already active, don't re-run it.
-  if (property_reads_triggered_) {
+  if (IsReadingProperties()) {
     return;
   }
 
-  property_reads_triggered_ = true;
+  property_reads_triggered_ = state;
   pending_callback_on_init_props_ = std::move(callback);
   // This must be incremented when adding more properties below
   // and followed up with a TriggerInitDevicePropertiesCallback()
@@ -861,8 +862,9 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
 
 void BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback() {
   if (--num_pending_properties_ == 0 && pending_callback_on_init_props_) {
-    property_reads_completed_ = true;
-    property_reads_triggered_ = false;
+    property_reads_completed_ = static_cast<PropertiesState>(
+        property_reads_completed_ | property_reads_triggered_);
+    property_reads_triggered_ = PropertiesState::kNotRead;
     std::move(*pending_callback_on_init_props_).Run();
     pending_callback_on_init_props_ = absl::nullopt;
   }
