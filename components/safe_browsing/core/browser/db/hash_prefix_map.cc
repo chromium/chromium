@@ -66,7 +66,7 @@ class OffsetMapBuilder {
       : prefix_size_(prefix_size) {}
 
   void Reserve(size_t size) {
-    offsets_.resize(GetOffsetMapSize(size), kInvalidOffset);
+    offsets_.Resize(GetOffsetMapSize(size), kInvalidOffset);
   }
 
   // Add() may be called in two situations:
@@ -95,13 +95,15 @@ class OffsetMapBuilder {
     }
   }
 
-  std::vector<uint32_t> TakeOffsets() {
+  google::protobuf::RepeatedField<uint32_t> TakeOffsets() {
     // Backfill any empty spots with the value right after it.
     uint32_t last = cur_offset_;
     for (int i = offsets_.size() - 1; i >= 0; i--) {
-      if (offsets_[i] == kInvalidOffset)
+      if (offsets_[i] == kInvalidOffset) {
         offsets_[i] = last;
-      last = offsets_[i];
+      } else {
+        last = offsets_[i];
+      }
     }
     return std::move(offsets_);
   }
@@ -110,7 +112,7 @@ class OffsetMapBuilder {
 
  private:
   const PrefixSize prefix_size_;
-  std::vector<uint32_t> offsets_;
+  google::protobuf::RepeatedField<uint32_t> offsets_;
   size_t cur_offset_ = 0;
 };
 
@@ -302,7 +304,9 @@ class MmapHashPrefixMap::BufferedFileWriter {
 
   void Reserve(size_t size) { offset_builder_.Reserve(size); }
 
-  std::vector<uint32_t> TakeOffsets() { return offset_builder_.TakeOffsets(); }
+  google::protobuf::RepeatedField<uint32_t> TakeOffsets() {
+    return offset_builder_.TakeOffsets();
+  }
 
   size_t GetFileSize() const { return offset_builder_.GetFileSize(); }
 
@@ -435,8 +439,7 @@ HashPrefixMap::MigrateResult MmapHashPrefixMap::MigrateFileFormat(
       return MigrateResult::kFailure;
 
     builder.Add(info.GetView());
-    auto offsets = builder.TakeOffsets();
-    hash_file.mutable_offsets()->Assign(offsets.begin(), offsets.end());
+    *hash_file.mutable_offsets() = builder.TakeOffsets();
     offsets_updated = true;
   }
 
@@ -516,8 +519,7 @@ bool MmapHashPrefixMap::FileInfo::Finalize(HashFile* hash_file) {
 
   hash_file->set_prefix_size(prefix_size_);
 
-  auto offsets = writer_->TakeOffsets();
-  hash_file->mutable_offsets()->Assign(offsets.begin(), offsets.end());
+  *hash_file->mutable_offsets() = writer_->TakeOffsets();
   hash_file->set_file_size(writer_->GetFileSize());
   hash_file->set_extension(writer_->extension());
   writer_.reset();
