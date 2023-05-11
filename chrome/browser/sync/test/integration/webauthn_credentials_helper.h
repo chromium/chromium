@@ -20,6 +20,16 @@ class WebauthnCredentialSpecifics;
 
 namespace webauthn_credentials_helper {
 
+// Checker to wait until the WEBAUTHN_CREDENTIAL datatype becomes active.
+class PasskeySyncActiveChecker : public SingleClientStatusChangeChecker {
+ public:
+  explicit PasskeySyncActiveChecker(syncer::SyncServiceImpl* service);
+  ~PasskeySyncActiveChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+};
+
 class LocalPasskeysMatchChecker : public SingleClientStatusChangeChecker {
  public:
   using Matcher =

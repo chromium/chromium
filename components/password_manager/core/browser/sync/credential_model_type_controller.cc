@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/sync/password_model_type_controller.h"
+#include "components/password_manager/core/browser/sync/credential_model_type_controller.h"
 
 #include <utility>
 
@@ -37,7 +37,8 @@ BASE_FEATURE(kSyncAllowTransportModeWithNonStandardEncryption,
 
 }  // namespace
 
-PasswordModelTypeController::PasswordModelTypeController(
+CredentialModelTypeController::CredentialModelTypeController(
+    syncer::ModelType model_type,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
@@ -45,7 +46,7 @@ PasswordModelTypeController::PasswordModelTypeController(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
-    : ModelTypeController(syncer::PASSWORDS,
+    : ModelTypeController(model_type,
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
@@ -55,14 +56,16 @@ PasswordModelTypeController::PasswordModelTypeController(
           pref_service_,
           sync_service_,
           base::BindRepeating(
-              &PasswordModelTypeController::OnOptInStateMaybeChanged,
+              &CredentialModelTypeController::OnOptInStateMaybeChanged,
               base::Unretained(this))) {
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::WEBAUTHN_CREDENTIAL);
   identity_manager_observation_.Observe(identity_manager_);
 }
 
-PasswordModelTypeController::~PasswordModelTypeController() = default;
+CredentialModelTypeController::~CredentialModelTypeController() = default;
 
-void PasswordModelTypeController::LoadModels(
+void CredentialModelTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
@@ -71,8 +74,8 @@ void PasswordModelTypeController::LoadModels(
   ModelTypeController::LoadModels(configure_context, model_load_callback);
 }
 
-void PasswordModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
-                                       StopCallback callback) {
+void CredentialModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
+                                         StopCallback callback) {
   DCHECK(CalledOnValidThread());
   sync_service_observation_.Reset();
   // In transport-only mode, our storage is scoped to the Gaia account. That
@@ -87,7 +90,7 @@ void PasswordModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
 }
 
 syncer::DataTypeController::PreconditionState
-PasswordModelTypeController::GetPreconditionState() const {
+CredentialModelTypeController::GetPreconditionState() const {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // If Sync-the-feature is enabled, then the user has opted in to that, and no
   // additional opt-in is required here.
@@ -95,7 +98,7 @@ PasswordModelTypeController::GetPreconditionState() const {
       sync_service_->IsLocalSyncEnabled()) {
     return PreconditionState::kPreconditionsMet;
   }
-  // If Sync-the-feature is *not* enabled, then password sync should only be
+  // If Sync-the-feature is *not* enabled, then credential sync should only be
   // turned on if the user has opted in to the account-scoped storage.
   return features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)
              ? PreconditionState::kPreconditionsMet
@@ -108,8 +111,9 @@ PasswordModelTypeController::GetPreconditionState() const {
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
-  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
+bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
+  if (type() == syncer::PASSWORDS &&
+      !base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     return false;
   }
 #if BUILDFLAG(IS_IOS)
@@ -136,12 +140,12 @@ bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
   return true;
 }
 
-void PasswordModelTypeController::OnStateChanged(syncer::SyncService* sync) {
+void CredentialModelTypeController::OnStateChanged(syncer::SyncService* sync) {
   DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(syncer::PASSWORDS);
+  sync_service_->DataTypePreconditionChanged(type());
 }
 
-void PasswordModelTypeController::OnAccountsInCookieUpdated(
+void CredentialModelTypeController::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -166,13 +170,13 @@ void PasswordModelTypeController::OnAccountsInCookieUpdated(
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-void PasswordModelTypeController::OnAccountsCookieDeletedByUserAction() {
+void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   features_util::ClearAccountStorageSettingsForAllUsers(pref_service_);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-void PasswordModelTypeController::OnPrimaryAccountChanged(
+void CredentialModelTypeController::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
@@ -188,11 +192,11 @@ void PasswordModelTypeController::OnPrimaryAccountChanged(
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-void PasswordModelTypeController::OnOptInStateMaybeChanged() {
+void CredentialModelTypeController::OnOptInStateMaybeChanged() {
   // Note: This method gets called in many other situations as well, not just
   // when the opt-in state changes, but DataTypePreconditionChanged() is cheap
   // if nothing actually changed, so some spurious calls don't hurt.
-  sync_service_->DataTypePreconditionChanged(syncer::PASSWORDS);
+  sync_service_->DataTypePreconditionChanged(type());
 }
 
 }  // namespace password_manager

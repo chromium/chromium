@@ -362,7 +362,7 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
   // transport mode so calling IsTrustedVaultKeyRequiredForPreferredDataTypes()
   // is enough.
   //
-  // WARNING: Must match PasswordModelTypeController::GetPreconditionState().
+  // WARNING: Must match CredentialModelTypeController::GetPreconditionState().
   return password_manager::features_util::IsOptedInForAccountStorage(
       pref_service, sync_service);
 }
@@ -390,7 +390,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
   // (SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() relies on the preferred
   // types).
   //
-  // WARNING: Must match PasswordModelTypeController::GetPreconditionState().
+  // WARNING: Must match CredentialModelTypeController::GetPreconditionState().
   return password_manager::features_util::IsOptedInForAccountStorage(
       pref_service, sync_service);
 }

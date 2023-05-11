@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_MODEL_TYPE_CONTROLLER_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_MODEL_TYPE_CONTROLLER_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_CREDENTIAL_MODEL_TYPE_CONTROLLER_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_CREDENTIAL_MODEL_TYPE_CONTROLLER_H_
 
 #include <memory>
 
@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -24,12 +25,13 @@ class SyncService;
 
 namespace password_manager {
 
-// A class that manages the startup and shutdown of password sync.
-class PasswordModelTypeController : public syncer::ModelTypeController,
-                                    public syncer::SyncServiceObserver,
-                                    public signin::IdentityManager::Observer {
+// A class that manages the startup and shutdown of password & passkey sync.
+class CredentialModelTypeController : public syncer::ModelTypeController,
+                                      public syncer::SyncServiceObserver,
+                                      public signin::IdentityManager::Observer {
  public:
-  PasswordModelTypeController(
+  CredentialModelTypeController(
+      syncer::ModelType model_type,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
@@ -38,11 +40,11 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
 
-  PasswordModelTypeController(const PasswordModelTypeController&) = delete;
-  PasswordModelTypeController& operator=(const PasswordModelTypeController&) =
-      delete;
+  CredentialModelTypeController(const CredentialModelTypeController&) = delete;
+  CredentialModelTypeController& operator=(
+      const CredentialModelTypeController&) = delete;
 
-  ~PasswordModelTypeController() override;
+  ~CredentialModelTypeController() override;
 
   // DataTypeController overrides.
   void LoadModels(const syncer::ConfigureContext& configure_context,
@@ -81,9 +83,9 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 
-  base::WeakPtrFactory<PasswordModelTypeController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CredentialModelTypeController> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_MODEL_TYPE_CONTROLLER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_CREDENTIAL_MODEL_TYPE_CONTROLLER_H_
