@@ -957,7 +957,6 @@ SurroundingTextInfo InputMethodAsh::GetSurroundingTextInfo() {
   info.selection_range.set_start(info.selection_range.start() -
                                  text_range.start());
   info.selection_range.set_end(info.selection_range.end() - text_range.start());
-  info.offset = text_range.start();
   return info;
 }
 
