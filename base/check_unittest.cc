@@ -490,7 +490,8 @@ TEST(CheckDeathTest, NotReached) {
   // logging::NotReachedError::TriggerNotReached() but we have no good way of
   // asserting what that filename or line number is from here.
   EXPECT_LOG_ERROR_WITH_FILENAME("", -1, NOTREACHED() << "foo",
-                                 "Check failed: false. \n");
+                                 "Check failed: false. NOTREACHED log messages "
+                                 "are omitted in official builds. Sorry!\n");
 #endif
   EXPECT_DEATH_IF_SUPPORTED(NotReachedNoreturnInFunction(),
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");

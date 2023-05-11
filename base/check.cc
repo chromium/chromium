@@ -253,7 +253,8 @@ NotReachedError NotReachedError::NotReached(const base::Location& location) {
 void NotReachedError::TriggerNotReached() {
   // This triggers a NOTREACHED() error as the returned NotReachedError goes out
   // of scope.
-  NotReached();
+  NotReached()
+      << "NOTREACHED log messages are omitted in official builds. Sorry!";
 }
 
 NotReachedError::~NotReachedError() = default;
