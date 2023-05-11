@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -87,7 +86,6 @@ bool DownloadPathIsDangerous(const base::FilePath& download_path) {
 #else
   base::FilePath desktop_dir;
   if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_dir)) {
-    NOTREACHED();
     return false;
   }
   return (download_path == desktop_dir);
@@ -111,14 +109,12 @@ class DefaultDownloadDirectory {
 
   void Initialize() {
     if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &path_)) {
-      NOTREACHED();
+      base::GetTempDir(&path_);
     }
     if (DownloadPathIsDangerous(path_)) {
       // This is only useful on platforms that support
       // DIR_DEFAULT_DOWNLOADS_SAFE.
-      if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE, &path_)) {
-        NOTREACHED();
-      }
+      base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE, &path_);
     }
   }
 
