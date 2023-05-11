@@ -2065,7 +2065,7 @@ TEST_P(WaylandBufferManagerTest,
         EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
         EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
         EXPECT_CALL(*mock_surface,
-                    DamageBuffer(0, 0, bounds.width(), bounds.height()))
+                    Damage(0, 0, bounds.width(), bounds.height()))
             .Times(1);
         EXPECT_CALL(*mock_surface, Commit()).Times(1);
       });
@@ -2090,7 +2090,7 @@ TEST_P(WaylandBufferManagerTest,
         EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
         EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
         EXPECT_CALL(*mock_surface,
-                    DamageBuffer(0, 0, bounds.width(), bounds.height()))
+                    Damage(0, 0, bounds.width(), bounds.height()))
             .Times(1);
         EXPECT_CALL(*mock_surface, Commit()).Times(1);
       });
@@ -2115,7 +2115,7 @@ TEST_P(WaylandBufferManagerTest,
 
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
     EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
-    EXPECT_CALL(*mock_surface, DamageBuffer(_, _, _, _)).Times(0);
+    EXPECT_CALL(*mock_surface, Damage(_, _, _, _)).Times(0);
     EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
     mock_surface->ReleaseBuffer(mock_surface->prev_attached_buffer());
@@ -2142,7 +2142,7 @@ TEST_P(WaylandBufferManagerTest,
         EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
         EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
         EXPECT_CALL(*mock_surface,
-                    DamageBuffer(0, 0, bounds.width(), bounds.height()))
+                    Damage(0, 0, bounds.width(), bounds.height()))
             .Times(1);
         EXPECT_CALL(*mock_surface, Commit()).Times(1);
       });
@@ -2165,7 +2165,7 @@ TEST_P(WaylandBufferManagerTest,
 
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
     EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
-    EXPECT_CALL(*mock_surface, DamageBuffer(_, _, _, _)).Times(0);
+    EXPECT_CALL(*mock_surface, Damage(_, _, _, _)).Times(0);
     EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
     mock_surface->SendFrameCallback();
@@ -2188,7 +2188,7 @@ TEST_P(WaylandBufferManagerTest,
         EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
         EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
         EXPECT_CALL(*mock_surface,
-                    DamageBuffer(0, 0, bounds.width(), bounds.height()))
+                    Damage(0, 0, bounds.width(), bounds.height()))
             .Times(1);
         EXPECT_CALL(*mock_surface, Commit()).Times(1);
       });

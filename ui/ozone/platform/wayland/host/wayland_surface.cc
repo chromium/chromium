@@ -781,42 +781,18 @@ void WaylandSurface::ApplyPendingState() {
   }
 
   DCHECK(pending_state_.buffer);
-  if (wl::get_version_of_object(surface_.get()) >=
-      WL_SURFACE_DAMAGE_BUFFER_SINCE_VERSION) {
-    // wl_surface_damage_buffer relies on compositor API version 4. See
-    // https://bit.ly/2u00lv6 for details.
-    // We don't need to apply any scaling because pending_state_.damage_px is
-    // already in buffer coordinates.
-    wl_surface_damage_buffer(surface_.get(),
-                             pending_state_.damage_px.back().x(),
-                             pending_state_.damage_px.back().y(),
-                             pending_state_.damage_px.back().width(),
-                             pending_state_.damage_px.back().height());
-  } else {
-    gfx::RectF damage_uv =
-        gfx::ScaleRect(gfx::RectF(pending_state_.damage_px.back()),
-                       1.0f / pending_state_.buffer_size_px.width(),
-                       1.0f / pending_state_.buffer_size_px.height());
 
-    if (!crop.IsEmpty()) {
-      damage_uv.Offset(-crop.OffsetFromOrigin());
-      damage_uv.InvScale(crop.width(), crop.height());
-    }
-    damage_uv.Intersect(gfx::RectF(1, 1));
+  // Lacros on Ash will always have a scale factory of 1, so damage will be
+  // unchanged on Ash, but that won't always be true on other compositors.
+  gfx::Rect damage = ScaleToEnclosingRect(
+      pending_state_.damage_px.back(), 1.f / GetWaylandScale(pending_state_));
 
-    gfx::RectF damage_uv_transformed = wl::ApplyWaylandTransform(
-        damage_uv, gfx::SizeF(1, 1),
-        wl::ToWaylandTransform(pending_state_.buffer_transform));
-
-    gfx::RectF damage_float =
-        gfx::ScaleRect(damage_uv_transformed, viewport_dst_dip.width(),
-                       viewport_dst_dip.height());
-    constexpr float kAcceptableSubDipDamageError = 0.001f;
-    gfx::Rect damage = gfx::ToEnclosingRectIgnoringError(
-        damage_float, kAcceptableSubDipDamageError);
-    wl_surface_damage(surface_.get(), damage.x(), damage.y(), damage.width(),
-                      damage.height());
-  }
+  // TODO(fangzhoug): The newer wl_surface_damage_buffer API is not currently
+  // supported by Ash. Damage is specified in viz::Display space, so if we want
+  // to use that API in the future, some math will be required to transform the
+  // damage into buffer space.
+  wl_surface_damage(surface_.get(), damage.x(), damage.y(), damage.width(),
+                    damage.height());
 
   pending_state_.damage_px.clear();
   state_ = pending_state_;

@@ -372,7 +372,14 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   // If we don't attach a released buffer, graphics freeze will occur.
   DCHECK(will_attach || !buffer_handle->released(surface));
 
-  surface->UpdateBufferDamageRegion(config.damage_region);
+  // |damage_region| is specified in viz::Display space, the same as
+  // |bounds_rect|. To get the damage in surface space we need to offset the
+  // origin by the surface's position.
+  // Note: The damage may be enlarged if bounds_rect is sub-pixel positioned
+  // because |damage_region| is a Rect, and |bounds_rect| is a RectF.
+  gfx::RectF surface_damage = gfx::RectF(config.damage_region);
+  surface_damage -= config.bounds_rect.OffsetFromOrigin();
+  surface->UpdateBufferDamageRegion(ToEnclosingRect(surface_damage));
   if (!config.access_fence_handle.is_null())
     surface->set_acquire_fence(std::move(config.access_fence_handle));
 
