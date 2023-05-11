@@ -137,6 +137,7 @@ public class CreatorActivity extends SnackbarActivity {
 
     @Override
     protected void onDestroy() {
+        mWindowAndroid.destroy();
         mTabShareDelegateSupplier.destroy();
         mShareDelegateSupplier.destroy();
         super.onDestroy();
