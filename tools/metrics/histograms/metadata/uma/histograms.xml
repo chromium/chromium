@@ -777,6 +777,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.StackProfiler.SampleInOrder" enum="BooleanOrdered"
+    expires_after="2023-08-01">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records if the timestamp for a stack profiler sample is received in order.
+    Emitted once per stack sample. Temporary for researching crbug.com/1084272.
+  </summary>
+</histogram>
+
 <histogram name="UMA.Startup.LocalStateFileExistence" enum="BooleanExists"
     expires_after="2023-10-22">
   <owner>caitlinfischer@google.com</owner>
