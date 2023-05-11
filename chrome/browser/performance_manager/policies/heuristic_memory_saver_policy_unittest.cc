@@ -89,24 +89,30 @@ class HeuristicMemorySaverPolicyTest
           kDefaultHeartbeatInterval,
       base::TimeDelta minimum_time_in_background =
           kDefaultMinimumTimeInBackground,
+      bool feature_enabled = true,
       HeuristicMemorySaverPolicy::AvailableMemoryCallback
           available_memory_callback = base::BindRepeating([] {
             return kDefaultAvailableMemoryValue;
           }),
       HeuristicMemorySaverPolicy::TotalMemoryCallback total_memory_callback =
           base::BindRepeating([] { return kDefaultTotalMemoryValue; })) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kHeuristicMemorySaver,
-        {
-            {"threshold_percent", base::NumberToString(pmf_threshold_percent)},
-            {"threshold_mb", base::NumberToString(pmf_threshold_mb)},
-            {"threshold_reached_heartbeat_interval",
-             FormatTimeDeltaParam(threshold_reached_heartbeat_interval)},
-            {"threshold_not_reached_heartbeat_interval",
-             FormatTimeDeltaParam(threshold_not_reached_heartbeat_interval)},
-            {"minimum_time_in_background",
-             FormatTimeDeltaParam(minimum_time_in_background)},
-        });
+    if (feature_enabled) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          features::kHeuristicMemorySaver,
+          {
+              {"threshold_percent",
+               base::NumberToString(pmf_threshold_percent)},
+              {"threshold_mb", base::NumberToString(pmf_threshold_mb)},
+              {"threshold_reached_heartbeat_interval",
+               FormatTimeDeltaParam(threshold_reached_heartbeat_interval)},
+              {"threshold_not_reached_heartbeat_interval",
+               FormatTimeDeltaParam(threshold_not_reached_heartbeat_interval)},
+              {"minimum_time_in_background",
+               FormatTimeDeltaParam(minimum_time_in_background)},
+          });
+    } else {
+      feature_list_.InitAndDisableFeature(features::kHeuristicMemorySaver);
+    }
 
     auto policy = std::make_unique<HeuristicMemorySaverPolicy>(
         available_memory_callback, total_memory_callback);
@@ -151,8 +157,9 @@ TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfPolicyInactive) {
   // Advance the time by at least `minimum_time_in_background` +
   // `heartbeat_interval`. If a tab is to be discarded, it will be at this
   // point.
-  task_env().FastForwardBy(kDefaultHeartbeatInterval +
-                           kDefaultMinimumTimeInBackground);
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting() +
+      policy()->GetMinimumTimeInBackgroundForTesting());
   // No discard.
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -168,7 +175,7 @@ TEST_F(HeuristicMemorySaverPolicyTest, DiscardIfPolicyActive) {
   page_node()->SetIsVisible(false);
 
   // Advance the time by at least `minimum_time_in_background`
-  task_env().FastForwardBy(kDefaultMinimumTimeInBackground);
+  task_env().FastForwardBy(policy()->GetMinimumTimeInBackgroundForTesting());
   // No discard yet.
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -176,7 +183,8 @@ TEST_F(HeuristicMemorySaverPolicyTest, DiscardIfPolicyActive) {
   // now-eligible tab.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
-  task_env().FastForwardBy(kDefaultHeartbeatInterval);
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting());
 
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -194,8 +202,52 @@ TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfAboveThreshold) {
   // Advance the time by at least `minimum_time_in_background` +
   // `heartbeat_interval`. If a tab is to be discarded, it will be at this
   // point.
-  task_env().FastForwardBy(kDefaultHeartbeatInterval +
-                           kDefaultMinimumTimeInBackground);
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting() +
+      policy()->GetMinimumTimeInBackgroundForTesting());
+  // No discard.
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardWithZeroThresholdPercent) {
+  // Verify that a 0 threshold doesn't cause division by zero.
+  CreatePolicy(/*pmf_threshold_percent=*/0);
+  policy()->SetActive(true);
+
+  page_node()->SetType(PageType::kTab);
+  // Toggle visibility so that the page node updates its last visibility timing
+  // information.
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+
+  // Advance the time by at least `minimum_time_in_background` +
+  // `heartbeat_interval`. If a tab is to be discarded, it will be at this
+  // point.
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting() +
+      policy()->GetMinimumTimeInBackgroundForTesting());
+  // No discard.
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardWithZeroThresholdMB) {
+  // Verify that a 0 threshold doesn't cause division by zero.
+  CreatePolicy(/*pmf_threshold_percent=*/100,
+               /*pmf_threshold_mb=*/0);
+  policy()->SetActive(true);
+
+  page_node()->SetType(PageType::kTab);
+  // Toggle visibility so that the page node updates its last visibility timing
+  // information.
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+
+  // Advance the time by at least `minimum_time_in_background` +
+  // `heartbeat_interval`. If a tab is to be discarded, it will be at this
+  // point.
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting() +
+      policy()->GetMinimumTimeInBackgroundForTesting());
   // No discard.
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -217,6 +269,7 @@ TEST_F(HeuristicMemorySaverPolicyTest,
       /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground,
+      /*feature_enabled=*/true,
       /*available_memory_callback=*/
       base::BindRepeating(&MemoryMetricsMocker::GetAvailableMemory,
                           base::Unretained(&mocker)),
@@ -233,7 +286,7 @@ TEST_F(HeuristicMemorySaverPolicyTest,
   page_node()->SetIsVisible(false);
 
   // Advance the time by at least `minimum_time_in_background`
-  task_env().FastForwardBy(kDefaultMinimumTimeInBackground);
+  task_env().FastForwardBy(policy()->GetMinimumTimeInBackgroundForTesting());
   // No discard yet.
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -241,7 +294,58 @@ TEST_F(HeuristicMemorySaverPolicyTest,
   // now-eligible tab.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
-  task_env().FastForwardBy(kDefaultHeartbeatInterval);
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting());
+
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HeuristicMemorySaverPolicyTest, DiscardIfPolicyActiveWithoutFeature) {
+  // Pretend there's 1 byte of memory available out of 8 GB. That should be low
+  // enough to trigger a discard no matter what the default thresholds are.
+  MemoryMetricsMocker mocker;
+  mocker.SetAvailableMemory(1);
+  mocker.SetTotalMemory(8 * kBytesPerGb);
+
+  // It should be possible to activate the policy even if the
+  // kHeuristicMemorySaver feature is disabled (it just won't happen by
+  // default). In this case the feature parameters are ignored.
+  CreatePolicy(
+      /*pmf_threshold_percent=*/0,
+      /*pmf_threshold_mb=*/0,
+      /*threshold_reached_heartbeat_interval=*/base::TimeDelta(),
+      /*threshold_not_reached_heartbeat_interval=*/base::TimeDelta(),
+      /*minimum_time_in_background=*/base::TimeDelta(),
+      /*feature_enabled=*/false,
+      /*available_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetAvailableMemory,
+                          base::Unretained(&mocker)),
+      /*total_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetTotalMemory,
+                          base::Unretained(&mocker)));
+
+  policy()->SetActive(true);
+
+  EXPECT_FALSE(
+      policy()->GetThresholdReachedHeartbeatIntervalForTesting().is_zero());
+  EXPECT_FALSE(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting().is_zero());
+  EXPECT_FALSE(policy()->GetMinimumTimeInBackgroundForTesting().is_zero());
+
+  page_node()->SetType(PageType::kTab);
+  // Toggle visibility so that the page node updates its last visibility timing
+  // information.
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+
+  // Advance the time by at least `minimum_time_in_background` +
+  // `heartbeat_interval`. One or more tabs should be discarded by this point.
+  // The exact timing depends on the default values of the policy parameters.
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillRepeatedly(Return(true));
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting() +
+      policy()->GetMinimumTimeInBackgroundForTesting());
 
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -264,6 +368,7 @@ TEST_F(HeuristicMemorySaverPolicyTest,
       /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground,
+      /*feature_enabled=*/true,
       /*available_memory_callback=*/
       base::BindRepeating(&MemoryMetricsMocker::GetAvailableMemory,
                           base::Unretained(&mocker)),
@@ -282,8 +387,9 @@ TEST_F(HeuristicMemorySaverPolicyTest,
   // Advance the time by at least `minimum_time_in_background` +
   // `heartbeat_interval`. If a tab is to be discarded, it will be at this
   // point.
-  task_env().FastForwardBy(kDefaultHeartbeatInterval +
-                           kDefaultMinimumTimeInBackground);
+  task_env().FastForwardBy(
+      policy()->GetThresholdNotReachedHeartbeatIntervalForTesting() +
+      policy()->GetMinimumTimeInBackgroundForTesting());
   // No discard.
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -299,6 +405,7 @@ TEST_F(HeuristicMemorySaverPolicyTest, DifferentThresholds) {
       /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*threshold_not_reached_heartbeat_interval=*/kLongHeartbeatInterval,
       /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground,
+      /*feature_enabled=*/true,
       /*available_memory_callback=*/
       base::BindRepeating(&MemoryMetricsMocker::GetAvailableMemory,
                           base::Unretained(&mocker)),
@@ -307,6 +414,11 @@ TEST_F(HeuristicMemorySaverPolicyTest, DifferentThresholds) {
                           base::Unretained(&mocker)));
 
   policy()->SetActive(true);
+
+  EXPECT_EQ(policy()->GetThresholdNotReachedHeartbeatIntervalForTesting(),
+            kLongHeartbeatInterval);
+  EXPECT_EQ(policy()->GetThresholdReachedHeartbeatIntervalForTesting(),
+            kDefaultHeartbeatInterval);
 
   // Advance the time just enough to get the first heartbeat
   task_env().FastForwardBy(kDefaultHeartbeatInterval);

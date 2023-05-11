@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
@@ -97,39 +98,49 @@ class HighEfficiencyModeDelegateImpl
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
           HighEfficiencyModeDelegate {
  public:
-  void ToggleHighEfficiencyMode(bool enabled) override {
+  void ToggleHighEfficiencyMode(HighEfficiencyModeState state) override {
     performance_manager::PerformanceManager::CallOnGraph(
         FROM_HERE,
         base::BindOnce(
-            [](bool enabled, performance_manager::Graph* graph) {
-              if (base::FeatureList::IsEnabled(
-                      performance_manager::features::kHeuristicMemorySaver)) {
-                CHECK(policies::HeuristicMemorySaverPolicy::GetInstance());
-                policies::HeuristicMemorySaverPolicy::GetInstance()->SetActive(
-                    enabled);
-              } else {
-                CHECK(policies::HighEfficiencyModePolicy::GetInstance());
-                policies::HighEfficiencyModePolicy::GetInstance()
-                    ->OnHighEfficiencyModeChanged(enabled);
+            [](HighEfficiencyModeState state) {
+              auto* heuristic_memory_saver_policy =
+                  policies::HeuristicMemorySaverPolicy::GetInstance();
+              CHECK(heuristic_memory_saver_policy);
+              auto* high_efficiency_mode_policy =
+                  policies::HighEfficiencyModePolicy::GetInstance();
+              CHECK(high_efficiency_mode_policy);
+              switch (state) {
+                case HighEfficiencyModeState::kDisabled:
+                  heuristic_memory_saver_policy->SetActive(false);
+                  high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
+                      false);
+                  return;
+                case HighEfficiencyModeState::kEnabled:
+                  heuristic_memory_saver_policy->SetActive(true);
+                  high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
+                      false);
+                  return;
+                case HighEfficiencyModeState::kEnabledOnTimer:
+                  heuristic_memory_saver_policy->SetActive(false);
+                  high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
+                      true);
+                  return;
               }
+              NOTREACHED_NORETURN();
             },
-            enabled));
+            state));
   }
 
   void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) override {
     performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::TimeDelta time_before_discard,
-               performance_manager::Graph* graph) {
-              if (!base::FeatureList::IsEnabled(
-                      performance_manager::features::kHeuristicMemorySaver)) {
-                CHECK(policies::HighEfficiencyModePolicy::GetInstance());
-                policies::HighEfficiencyModePolicy::GetInstance()
-                    ->SetTimeBeforeDiscard(time_before_discard);
-              }
-            },
-            time_before_discard));
+        FROM_HERE, base::BindOnce(
+                       [](base::TimeDelta time_before_discard) {
+                         auto* policy =
+                             policies::HighEfficiencyModePolicy::GetInstance();
+                         CHECK(policy);
+                         policy->SetTimeBeforeDiscard(time_before_discard);
+                       },
+                       time_before_discard));
   }
 
   ~HighEfficiencyModeDelegateImpl() override = default;
@@ -677,9 +688,24 @@ void UserPerformanceTuningManager::Start() {
 }
 
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
-  high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(
-      IsHighEfficiencyModeActive());
-
+  HighEfficiencyModeState state =
+      prefs::GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
+  if (!IsHighEfficiencyModeManaged() &&
+      base::FeatureList::IsEnabled(features::kForceHeuristicMemorySaver)) {
+    // Set the heuristic policy for experimentation regardless of the pref.
+    state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
+                ? HighEfficiencyModeState::kEnabled
+                : HighEfficiencyModeState::kDisabled;
+  } else if (state != HighEfficiencyModeState::kDisabled &&
+             !base::FeatureList::IsEnabled(
+                 features::kHighEfficiencyMultistateMode)) {
+    // The user has enabled high efficiency mode, but without the multistate UI
+    // they didn't choose a policy. The feature controls which policy to use.
+    state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
+                ? HighEfficiencyModeState::kEnabled
+                : HighEfficiencyModeState::kEnabledOnTimer;
+  }
+  high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(state);
   for (auto& obs : observers_) {
     obs.OnHighEfficiencyModeChanged();
   }

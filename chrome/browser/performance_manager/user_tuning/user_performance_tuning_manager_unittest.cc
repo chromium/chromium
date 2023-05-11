@@ -4,6 +4,10 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
@@ -12,6 +16,8 @@
 #include "base/test/power_monitor_test_utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
@@ -20,6 +26,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -30,6 +37,12 @@
 
 namespace performance_manager::user_tuning {
 namespace {
+
+using HighEfficiencyModeState = prefs::HighEfficiencyModeState;
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::Optional;
+using ::testing::ValuesIn;
 
 class QuitRunLoopObserverBase : public performance_manager::user_tuning::
                                     UserPerformanceTuningManager::Observer {
@@ -101,7 +114,7 @@ class ScopedFakePowerManagerClientLifetime {
 
 }  // namespace
 
-class UserPerformanceTuningManagerTest : public testing::Test {
+class UserPerformanceTuningManagerTest : public ::testing::Test {
  public:
   void SetUp() override {
     auto source = std::make_unique<FakePowerMonitorSource>();
@@ -286,8 +299,8 @@ TEST_F(UserPerformanceTuningManagerTest, SetDefaultTimeBeforeDiscardPref) {
   EXPECT_EQ(5, local_state_.GetInteger(
                    performance_manager::user_tuning::prefs::
                        kHighEfficiencyModeTimeBeforeDiscardInMinutes));
-  EXPECT_EQ(base::Minutes(5),
-            high_efficiency_mode_delegate_->GetLastTimeBeforeDiscard());
+  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastTimeBeforeDiscard(),
+              Optional(base::Minutes(5)));
 }
 
 TEST_F(UserPerformanceTuningManagerTest, EnabledOnBatteryPower) {
@@ -513,8 +526,8 @@ TEST_F(UserPerformanceTuningManagerTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(UserPerformanceTuningManagerTest, ManagedFromPowerManager) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       performance_manager::features::kUseDeviceBatterySaverChromeOS);
 
   StartManager();
@@ -540,8 +553,8 @@ TEST_F(UserPerformanceTuningManagerTest, ManagedFromPowerManager) {
 
 TEST_F(UserPerformanceTuningManagerTest,
        StartsEnabledIfAlreadyEnabledInPowerManager) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       performance_manager::features::kUseDeviceBatterySaverChromeOS);
 
   // Request to enable PowerManager's BSM
@@ -565,5 +578,169 @@ TEST_F(UserPerformanceTuningManagerTest,
   EXPECT_TRUE(throttling_enabled());
 }
 #endif
+
+// States of the HeuristicMemorySaver and MultistateMode features to test, with
+// expected outcomes.
+struct PrefTestFeatureState {
+  // Whether the MultistateMode feature is enabled.
+  bool is_multistate_enabled;
+
+  // Whether the HeuristicMemorySaver feature is enabled.
+  bool is_heuristic_memory_saver_enabled;
+
+  // The expected result when the pref is set to kEnabled with these params.
+  HighEfficiencyModeState expected_enabled_state;
+
+  // The expected result when the pref is set to kEnabledOnTimer with these
+  // params.
+  HighEfficiencyModeState expected_enabled_on_timer_state;
+};
+
+// List of feature states to test, not including the ForceHeuristicMemorySaver
+// feature. These include the expected states that should be passed to
+// ToggleHighEfficiencyMode when ForceHeuristicMemorySaver is disabled.
+constexpr PrefTestFeatureState kNonForcedPrefTestFeatureStates[] = {
+    // If multistate is off, both "enabled" states are controlled by the
+    // HeuristicMemorySaver feature.
+    {
+        .is_multistate_enabled = false,
+        .is_heuristic_memory_saver_enabled = false,
+        .expected_enabled_state = HighEfficiencyModeState::kEnabledOnTimer,
+        .expected_enabled_on_timer_state =
+            HighEfficiencyModeState::kEnabledOnTimer,
+    },
+    {
+        .is_multistate_enabled = false,
+        .is_heuristic_memory_saver_enabled = true,
+        .expected_enabled_state = HighEfficiencyModeState::kEnabled,
+        .expected_enabled_on_timer_state = HighEfficiencyModeState::kEnabled,
+    },
+    // If multistate is on, the true "enabled" state is used regardless of the
+    // HeuristicMemorySaver feature.
+    {
+        .is_multistate_enabled = true,
+        .is_heuristic_memory_saver_enabled = false,
+        .expected_enabled_state = HighEfficiencyModeState::kEnabled,
+        .expected_enabled_on_timer_state =
+            HighEfficiencyModeState::kEnabledOnTimer,
+    },
+    {
+        .is_multistate_enabled = true,
+        .is_heuristic_memory_saver_enabled = true,
+        .expected_enabled_state = HighEfficiencyModeState::kEnabled,
+        .expected_enabled_on_timer_state =
+            HighEfficiencyModeState::kEnabledOnTimer,
+    }};
+
+// Test parameters are (feature_state, is_force_heuristic_memory_saver_enabled).
+// Each feature state above is tested once with the ForceHeuristicMemorySaver
+// feature enabled and once with it disabled.
+class UserPerformanceTuningManagerPrefTest
+    : public UserPerformanceTuningManagerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<PrefTestFeatureState, bool>> {
+ protected:
+  void SetUp() override {
+    UserPerformanceTuningManagerTest::SetUp();
+
+    std::tie(feature_state_, is_force_heuristic_memory_saver_enabled_) =
+        GetParam();
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (feature_state_.is_multistate_enabled) {
+      enabled_features.push_back(features::kHighEfficiencyMultistateMode);
+    } else {
+      disabled_features.push_back(features::kHighEfficiencyMultistateMode);
+    }
+    if (feature_state_.is_heuristic_memory_saver_enabled) {
+      enabled_features.push_back(features::kHeuristicMemorySaver);
+    } else {
+      disabled_features.push_back(features::kHeuristicMemorySaver);
+    }
+    if (is_force_heuristic_memory_saver_enabled_) {
+      enabled_features.push_back(features::kForceHeuristicMemorySaver);
+    } else {
+      disabled_features.push_back(features::kForceHeuristicMemorySaver);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  base::Value ValueForState(HighEfficiencyModeState state) {
+    return base::Value(static_cast<int>(state));
+  }
+
+  PrefTestFeatureState feature_state_;
+  bool is_force_heuristic_memory_saver_enabled_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserPerformanceTuningManagerPrefTest,
+                         Combine(ValuesIn(kNonForcedPrefTestFeatureStates),
+                                 Bool()));
+
+TEST_P(UserPerformanceTuningManagerPrefTest, OnHighEfficiencyModePrefChanged) {
+  StartManager();
+
+  // If the ForceHeuristicMemorySaver feature is overriding the pref, the final
+  // state should always be based on the HeuristicMemorySaver feature.
+  absl::optional<HighEfficiencyModeState> expected_overridden_state;
+  if (is_force_heuristic_memory_saver_enabled_) {
+    expected_overridden_state = feature_state_.is_heuristic_memory_saver_enabled
+                                    ? HighEfficiencyModeState::kEnabled
+                                    : HighEfficiencyModeState::kDisabled;
+  }
+
+  local_state_.SetUserPref(prefs::kHighEfficiencyModeState,
+                           ValueForState(HighEfficiencyModeState::kDisabled));
+  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+              Optional(expected_overridden_state.value_or(
+                  HighEfficiencyModeState::kDisabled)));
+
+  high_efficiency_mode_delegate_->ClearLastState();
+
+  local_state_.SetUserPref(prefs::kHighEfficiencyModeState,
+                           ValueForState(HighEfficiencyModeState::kEnabled));
+  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+              Optional(expected_overridden_state.value_or(
+                  feature_state_.expected_enabled_state)));
+  high_efficiency_mode_delegate_->ClearLastState();
+
+  local_state_.SetUserPref(
+      prefs::kHighEfficiencyModeState,
+      ValueForState(HighEfficiencyModeState::kEnabledOnTimer));
+  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+              Optional(expected_overridden_state.value_or(
+                  feature_state_.expected_enabled_on_timer_state)));
+  high_efficiency_mode_delegate_->ClearLastState();
+}
+
+TEST_P(UserPerformanceTuningManagerPrefTest,
+       OnHighEfficiencyModePrefChangedManaged) {
+  StartManager();
+
+  // Since the pref is managed, ForceHeuristicMemorySaver is not allowed to
+  // override it, so ignore `is_force_heuristic_memory_saver_enabled_`.
+  local_state_.SetManagedPref(
+      prefs::kHighEfficiencyModeState,
+      ValueForState(HighEfficiencyModeState::kDisabled));
+  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+              Optional(HighEfficiencyModeState::kDisabled));
+  high_efficiency_mode_delegate_->ClearLastState();
+
+  local_state_.SetManagedPref(prefs::kHighEfficiencyModeState,
+                              ValueForState(HighEfficiencyModeState::kEnabled));
+  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+              Optional(feature_state_.expected_enabled_state));
+  high_efficiency_mode_delegate_->ClearLastState();
+
+  local_state_.SetManagedPref(
+      prefs::kHighEfficiencyModeState,
+      ValueForState(HighEfficiencyModeState::kEnabledOnTimer));
+  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+              Optional(feature_state_.expected_enabled_on_timer_state));
+  high_efficiency_mode_delegate_->ClearLastState();
+}
 
 }  // namespace performance_manager::user_tuning

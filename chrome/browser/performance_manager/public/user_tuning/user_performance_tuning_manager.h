@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -52,7 +53,8 @@ class UserPerformanceTuningManager {
 
   class HighEfficiencyModeDelegate {
    public:
-    virtual void ToggleHighEfficiencyMode(bool enabled) = 0;
+    virtual void ToggleHighEfficiencyMode(
+        prefs::HighEfficiencyModeState state) = 0;
     virtual void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) = 0;
     virtual ~HighEfficiencyModeDelegate() = default;
   };

@@ -4,18 +4,30 @@
 
 #include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
 
-namespace performance_manager {
+namespace performance_manager::user_tuning {
 
-void FakeHighEfficiencyModeDelegate::ToggleHighEfficiencyMode(bool enabled) {}
+void FakeHighEfficiencyModeDelegate::ToggleHighEfficiencyMode(
+    prefs::HighEfficiencyModeState state) {
+  last_state_ = state;
+}
 
 void FakeHighEfficiencyModeDelegate::SetTimeBeforeDiscard(
     base::TimeDelta time_before_discard) {
-  FakeHighEfficiencyModeDelegate::last_time_before_discard =
-      time_before_discard;
+  last_time_before_discard_ = time_before_discard;
 }
 
-base::TimeDelta FakeHighEfficiencyModeDelegate::GetLastTimeBeforeDiscard() {
-  return last_time_before_discard;
+void FakeHighEfficiencyModeDelegate::ClearLastState() {
+  last_state_.reset();
 }
 
-}  // namespace performance_manager
+absl::optional<prefs::HighEfficiencyModeState>
+FakeHighEfficiencyModeDelegate::GetLastState() const {
+  return last_state_;
+}
+
+absl::optional<base::TimeDelta>
+FakeHighEfficiencyModeDelegate::GetLastTimeBeforeDiscard() const {
+  return last_time_before_discard_;
+}
+
+}  // namespace performance_manager::user_tuning

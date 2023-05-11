@@ -15,14 +15,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class FakeHighEfficiencyModeDelegate
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          HighEfficiencyModeDelegate {
- public:
-  void ToggleHighEfficiencyMode(bool enabled) override {}
-  ~FakeHighEfficiencyModeDelegate() override = default;
-};
-
 class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
  protected:
   PrefService* local_state() { return &local_state_; }

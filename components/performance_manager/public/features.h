@@ -54,7 +54,19 @@ BASE_DECLARE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey);
 extern const base::FeatureParam<base::TimeDelta>
     kPerformanceControlsBatterySurveyLookback;
 
-// When enabled, the memory saver policy used is HeuristicMemorySaverPolicy.
+// Controls whether HeuristicMemorySaverPolicy is used as the memory saver
+// policy:
+//
+// * If neither this nor kHighEfficiencyMultistateMode are enabled, the
+//   timer-based memory saver policy is used.
+// * If this is enabled but kHighEfficiencyMultistateMode is not, the heuristic
+//   memory saver is used, with parameters set from the feature params.
+// * If this and kHighEfficiencyMultistateMode are both enabled, the policy
+//   that's used is controlled by the multistate UI, and the heuristic policy
+//   parameters are set from the feature params.
+// * If kHighEfficiencyMultistateMode is enabled and this is not, heuristic
+//   memory saver is enabled if chosen by the user, but the policy params use
+//   default values.
 BASE_DECLARE_FEATURE(kHeuristicMemorySaver);
 
 // Controls the interval at which HeuristicMemorySaverPolicy checks whether the
@@ -100,6 +112,21 @@ extern const base::FeatureParam<int> kHeuristicMemorySaverPageCacheDiscountMac;
 // HeuristicMemorySaverPolicy will consider it eligible for discarding.
 extern const base::FeatureParam<base::TimeDelta>
     kHeuristicMemorySaverMinimumTimeInBackground;
+
+// If enabled, the kHeuristicMemorySaver feature controls the memory saver
+// policy regardless of the state of the UI:
+//
+// * If kHeuristicMemorySaver is enabled, HeuristicMemorySaverPolicy will be
+//   turned on.
+// * If kHeuristicMemorySaver is disabled, all memory saver policies will be
+//   turned off (for the control group of experiemnts).
+//
+// Note: to get uniform control and experiment groups,
+// kForceHeuristicMemorySaver should only be tested for users who are valid for
+// randomized studies (eg. not for users with the HighEfficiencyModeState pref
+// managed by enterprise policy). It's always safe to read kHeuristicMemorySaver
+// without kForceHeuristicMemorySaver to get the policy params.
+BASE_DECLARE_FEATURE(kForceHeuristicMemorySaver);
 
 // Round 2 Performance Controls features
 

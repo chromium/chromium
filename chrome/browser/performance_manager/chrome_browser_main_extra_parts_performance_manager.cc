@@ -171,16 +171,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::PageFreezingPolicy>());
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kHeuristicMemorySaver)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::HeuristicMemorySaverPolicy>());
-  } else {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::HighEfficiencyModePolicy>());
-  }
+  // Add both policies. Only one will be enabled at a time.
+  graph->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::HeuristicMemorySaverPolicy>());
+  graph->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::HighEfficiencyModePolicy>());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   graph->PassToGraph(

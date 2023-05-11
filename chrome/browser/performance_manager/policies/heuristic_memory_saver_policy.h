@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
 
@@ -63,6 +64,10 @@ class HeuristicMemorySaverPolicy : public GraphOwned {
 
   void SetActive(bool enabled);
   bool IsActive() const;
+
+  base::TimeDelta GetThresholdReachedHeartbeatIntervalForTesting() const;
+  base::TimeDelta GetThresholdNotReachedHeartbeatIntervalForTesting() const;
+  base::TimeDelta GetMinimumTimeInBackgroundForTesting() const;
 
  private:
   void OnHeartbeatCallback();

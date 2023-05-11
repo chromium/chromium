@@ -7,24 +7,30 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace performance_manager {
+namespace performance_manager::user_tuning {
 
 class FakeHighEfficiencyModeDelegate
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          HighEfficiencyModeDelegate {
+    : public UserPerformanceTuningManager::HighEfficiencyModeDelegate {
  public:
   // overrides of methods in HighEfficiencyModeDelegate
-  void ToggleHighEfficiencyMode(bool enabled) override;
+  void ToggleHighEfficiencyMode(prefs::HighEfficiencyModeState state) override;
   void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) override;
   ~FakeHighEfficiencyModeDelegate() override = default;
 
-  base::TimeDelta GetLastTimeBeforeDiscard();
+  void ClearLastState();
+
+  absl::optional<prefs::HighEfficiencyModeState> GetLastState() const;
+
+  absl::optional<base::TimeDelta> GetLastTimeBeforeDiscard() const;
 
  private:
-  base::TimeDelta last_time_before_discard = base::TimeDelta::Max();
+  absl::optional<base::TimeDelta> last_time_before_discard_;
+  absl::optional<prefs::HighEfficiencyModeState> last_state_;
 };
 
-}  // namespace performance_manager
+}  // namespace performance_manager::user_tuning
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_FAKE_HIGH_EFFICIENCY_MODE_DELEGATE_H_
