@@ -2323,7 +2323,7 @@
     },
     {
       name: "NewFlexboxSizing",
-      status: "test",
+      status: "stable",
     },
     {
       name: "NodeAsNSResolver",
