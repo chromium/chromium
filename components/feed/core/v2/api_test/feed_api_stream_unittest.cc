@@ -4051,6 +4051,120 @@ TEST_F(FeedApiTest, ClearAllOnSigninAllowedPrefChange) {
   EXPECT_FALSE(on_clear_all.called());
 }
 
+class SignedOutViewDemotionTest : public FeedApiTest {
+ public:
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features =
+                                            {kFeedSignedOutViewDemotion},
+                                        disabled_features = {};
+    features.InitWithFeatures(enabled_features, disabled_features);
+    FeedApiTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList features;
+};
+
+TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
+  account_info_ = {};
+  // Simulate loading the feed, viewing one document, and closing Chrome.
+  {
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+
+    stream_->RecordContentViewed(123);
+    WaitForIdleTaskQueue();
+  }
+
+  // Simulate loading the feed again later after restart, triggering a refresh.
+  task_environment_.FastForwardBy(GetFeedConfig().stale_content_threshold +
+                                  base::Minutes(1));
+  CreateStream(true);
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_THAT(network_.query_request_sent->feed_request()
+                  .client_user_profiles()
+                  .view_demotion_profile(),
+              EqualsTextProto(
+                  R"({
+  view_demotion_profile {
+    tables {
+      name: "url_all_ondevice"
+      num_rows: 1
+      columns {
+        type: 4
+        name: "dimension_key"
+        uint64_values: 123
+      }
+      columns {
+        type: 4
+        name: "FEED_CARD_VIEW"
+        uint64_values: 1
+      }
+    }
+  }
+})"));
+}
+
+TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  stream_->RecordContentViewed(123);
+  WaitForIdleTaskQueue();
+
+  CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
+  store_->ReadDocViews(read_callback.Bind());
+  EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
+}
+
+TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
+  base::test::ScopedFeatureList features;
+  std::vector<base::test::FeatureRef> enabled_features = {},
+                                      disabled_features = {
+                                          kFeedSignedOutViewDemotion};
+  features.InitWithFeatures(enabled_features, disabled_features);
+
+  account_info_ = {};
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  stream_->RecordContentViewed(123);
+  WaitForIdleTaskQueue();
+
+  CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
+  store_->ReadDocViews(read_callback.Bind());
+  EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
+}
+
+TEST_F(SignedOutViewDemotionTest, OldViewsAreDeleted) {
+  account_info_ = {};
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  network_.query_request_sent.reset();
+  stream_->RecordContentViewed(123);
+
+  task_environment_.FastForwardBy(base::Hours(72) + base::Minutes(1));
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  stream_->ManualRefresh(surface.GetStreamType(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  EXPECT_THAT(network_.query_request_sent->feed_request()
+                  .client_user_profiles()
+                  .view_demotion_profile(),
+              EqualsProto(feedwire::ViewDemotionProfile()));
+  CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
+  store_->ReadDocViews(read_callback.Bind());
+  EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
+}
+
 // Keep instantiations at the bottom.
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,

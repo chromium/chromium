@@ -232,6 +232,13 @@ feedstore::Metadata MakeMetadata(const std::string& gaia) {
   return md;
 }
 
+feedstore::DocView CreateDocView(uint64_t docid, base::Time timestamp) {
+  feedstore::DocView doc_view;
+  doc_view.set_docid(docid);
+  doc_view.set_view_time_millis(feedstore::ToTimestampMillis(timestamp));
+  return doc_view;
+}
+
 absl::optional<Metadata> SetStreamViewContentHashes(
     const Metadata& metadata,
     const StreamType& stream_type,

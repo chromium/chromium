@@ -738,6 +738,12 @@ void FeedStream::InvalidateContentCacheFor(StreamKind stream_kind) {
   if (stream_kind != StreamKind::kUnknown)
     SetStreamStale(StreamType(stream_kind), true);
 }
+void FeedStream::RecordContentViewed(uint64_t docid) {
+  if (!store_) {
+    return;
+  }
+  WriteDocViewIfEnabled(*this, docid);
+}
 
 DebugStreamData FeedStream::GetDebugStreamData() {
   return ::feed::prefs::GetDebugStreamData(*profile_prefs_);

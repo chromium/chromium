@@ -65,6 +65,9 @@ struct Config {
   int max_prefetch_image_requests_per_refresh = 50;
   // Maximum size of most recent viewed content hash list.
   int max_most_recent_viewed_content_hashes = 100;
+  // Maximum number of docviews to send in a request for signed-out view
+  // demotion.
+  size_t max_docviews_to_send = 500;
 
   // Configuration for Web Feeds.
 

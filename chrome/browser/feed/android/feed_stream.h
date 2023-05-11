@@ -142,6 +142,8 @@ class FeedStream : public ::feed::FeedStreamSurface {
       const base::android::JavaParamRef<jobject>& obj,
       jint stream_kind);
 
+  void ContentViewed(JNIEnv* env, uint64_t docid);
+
   void ReportContentSliceVisibleTimeForGoodVisits(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

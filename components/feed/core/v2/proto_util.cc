@@ -20,6 +20,7 @@
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
+#include "components/feed/core/proto/v2/wire/table.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed_id.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed_identifier_token.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -164,15 +165,9 @@ feedwire::Request CreateFeedQueryRequest(
 
   feed_request.add_client_capability(Capability::READ_LATER);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Note that the Crow feature is referenced as THANK_CREATOR within the feed.
-  if (base::FeatureList::IsEnabled(kShareCrowButton)) {
-    feed_request.add_client_capability(Capability::THANK_CREATOR);
-  }
   if (base::FeatureList::IsEnabled(kCormorant)) {
     feed_request.add_client_capability(Capability::OPEN_WEB_FEED_COMMAND);
   }
-#endif
 
   if (base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers)) {
     feed_request.add_client_capability(Capability::ON_DEVICE_USER_PROFILE);
@@ -313,6 +308,24 @@ void SetChromeSignInStatus(feedwire::Request* request,
       ->mutable_sign_in_status()
       ->set_sign_in_status(request_metadata.sign_in_status);
 }
+
+void WriteDocIdsTable(const std::vector<DocViewCount> doc_view_counts,
+                      feedwire::Table& table) {
+  table.set_name("url_all_ondevice");
+  table.set_num_rows(doc_view_counts.size());
+
+  feedwire::Table::Column* ids = table.add_columns();
+  ids->set_name("dimension_key");
+  ids->set_type(feedwire::TypeKind::TYPE_UINT64);
+  feedwire::Table::Column* counts = table.add_columns();
+  counts->set_name("FEED_CARD_VIEW");
+  counts->set_type(feedwire::TypeKind::TYPE_UINT64);
+  for (const auto& doc_view_count : doc_view_counts) {
+    ids->add_uint64_values(doc_view_count.docid);
+    counts->add_uint64_values(doc_view_count.view_count);
+  }
+}
+
 }  // namespace
 
 std::string ContentIdString(const feedwire::ContentId& content_id) {
@@ -395,7 +408,8 @@ feedwire::Request CreateFeedQueryRefreshRequest(
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token,
-    const SingleWebFeedEntryPoint single_feed_entry_point) {
+    const SingleWebFeedEntryPoint single_feed_entry_point,
+    const std::vector<DocViewCount> doc_view_counts) {
   feedwire::Request request = CreateFeedQueryRequest(
       stream_type, request_reason, request_metadata, consistency_token,
       std::string(), single_feed_entry_point);
@@ -424,6 +438,15 @@ feedwire::Request CreateFeedQueryRefreshRequest(
   SetInfoCardTrackingStates(&request, request_metadata);
   SetTimesFollowedFromWebPageMenu(&request, request_metadata);
   SetChromeSignInStatus(&request, request_metadata);
+
+  if (!doc_view_counts.empty()) {
+    WriteDocIdsTable(doc_view_counts, *request.mutable_feed_request()
+                                           ->mutable_client_user_profiles()
+                                           ->mutable_view_demotion_profile()
+                                           ->mutable_view_demotion_profile()
+                                           ->add_tables());
+  }
+
   return request;
 }
 

@@ -566,6 +566,12 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().resetInfoCardStates(mNativeFeedStream, FeedStream.this, type);
         }
 
+        @Override
+        public void contentViewed(long docId) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().contentViewed(mNativeFeedStream, docId);
+        }
+
         private @StreamType int feedIdentifierToType(@FeedIdentifier int fid) {
             switch (fid) {
                 case FeedIdentifier.MAIN_FEED:
@@ -1460,5 +1466,6 @@ public class FeedStream implements Stream {
                 long nativeFeedStream, FeedStream caller, @StreamType int feedToInvalidate);
         void reportContentSliceVisibleTimeForGoodVisits(
                 long nativeFeedStream, FeedStream caller, long elapsedMs);
+        void contentViewed(long nativeFeedStream, long docid);
     }
 }

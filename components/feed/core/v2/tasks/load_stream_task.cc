@@ -31,6 +31,7 @@
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/types.h"
+#include "components/feed/core/v2/view_demotion.h"
 #include "components/feed/feed_feature_list.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -197,8 +198,9 @@ void LoadStreamTask::PassedPreconditions() {
     GetLaunchReliabilityLogger().LogCacheReadStart();
 
   if (options_.load_type == LoadType::kManualRefresh) {
-    // Pass empty pending actions to force reading from the store.
-    UploadActions(std::vector<feedstore::StoredAction>());
+    std::vector<feedstore::StoredAction> empty_pending_actions;
+    LoadFromNetwork1(std::move(empty_pending_actions),
+                     /*need_to_read_pending_actions=*/true);
     return;
   }
 
@@ -246,19 +248,40 @@ void LoadStreamTask::LoadFromStoreComplete(
     stale_store_state_ = std::move(result.update_request);
   }
 
+  LoadFromNetwork1(std::move(result.pending_actions),
+                   /*need_to_read_pending_actions=*/false);
+}
+
+void LoadStreamTask::LoadFromNetwork1(
+    std::vector<feedstore::StoredAction> pending_actions_from_store,
+    bool need_to_read_pending_actions) {
   // Don't consume quota if refreshed by user.
   LaunchResult should_make_request = stream_->ShouldMakeFeedQueryRequest(
       options_.stream_type, options_.load_type,
       /*consume_quota=*/options_.load_type != LoadType::kManualRefresh);
-  if (should_make_request.load_stream_status != LoadStreamStatus::kNoStatus)
+  if (should_make_request.load_stream_status != LoadStreamStatus::kNoStatus) {
     return Done(should_make_request);
+  }
+
+  ReadDocViewDigestIfEnabled(
+      *stream_, base::BindOnce(&LoadStreamTask::LoadFromNetwork2, GetWeakPtr(),
+                               std::move(pending_actions_from_store),
+                               need_to_read_pending_actions));
+}
+
+void LoadStreamTask::LoadFromNetwork2(
+    std::vector<feedstore::StoredAction> pending_actions_from_store,
+    bool need_to_read_pending_actions,
+    DocViewDigest doc_view_digest) {
+  stream_->GetStore().RemoveDocViews(doc_view_digest.old_doc_views);
+  doc_view_counts_ = std::move(doc_view_digest.doc_view_counts);
 
   // If no pending action exists in the store, go directly to send query
   // request.
-  if (result.pending_actions.empty()) {
+  if (pending_actions_from_store.empty()) {
     SendFeedQueryRequest();
   } else {
-    UploadActions(std::move(result.pending_actions));
+    UploadActions(std::move(pending_actions_from_store));
   }
 }
 
@@ -299,7 +322,7 @@ void LoadStreamTask::SendFeedQueryRequest() {
       options_.stream_type,
       GetRequestReason(options_.stream_type, options_.load_type),
       request_metadata, stream_->GetMetadata().consistency_token(),
-      options_.single_feed_entry_point);
+      options_.single_feed_entry_point, doc_view_counts_);
 
   const AccountInfo account_info = stream_->GetAccountInfo();
   stream_->GetMetricsReporter().NetworkRefreshRequestStarted(

@@ -28,16 +28,17 @@ namespace {
 
 // Keys are defined as:
 // [Key format]                     -> [Record field]
-// S/<stream-key>                    -> stream_data
-// T/<stream-key>/<sequence-number>  -> stream_structures
-// c/<stream-key>/<content-id>       -> content
-// s/<stream-key>/<content-id>       -> shared_state
+// S/<stream-key>                   -> stream_data
+// T/<stream-key>/<sequence-number> -> stream_structures
+// c/<stream-key>/<content-id>      -> content
+// s/<stream-key>/<content-id>      -> shared_state
 // a/<action-id>                    -> action
 // m                                -> metadata
 // subs                             -> subscribed_web_feeds
 // recommendedIndex                 -> recommended_web_feed_index
 // R/<web_feed_id>                  -> recommended_web_feed
 // W/<operation-id>                 -> pending_web_feed_operation
+// v/<docid>/<timestamp>            -> docview
 constexpr char kLocalActionPrefix[] = "a/";
 constexpr char kMetadataKey[] = "m";
 constexpr char kSubscribedFeedsKey[] = "subs";
@@ -84,9 +85,12 @@ std::string SharedStateKey(const StreamType& stream_type,
 std::string LocalActionKey(int64_t id) {
   return kLocalActionPrefix + base::NumberToString(id);
 }
-
 std::string LocalActionKey(const LocalActionId& id) {
   return LocalActionKey(id.GetUnsafeValue());
+}
+std::string DocViewKey(const feedstore::DocView& doc_view) {
+  return base::StrCat({"v/", base::NumberToString(doc_view.docid()), "/",
+                       base::NumberToString(doc_view.view_time_millis())});
 }
 
 // Returns true if the record key is for stream data (stream_data,
@@ -188,6 +192,8 @@ std::string KeyForRecord(const feedstore::Record& record) {
       return base::StrCat(
           {"W/",
            base::NumberToString(record.pending_web_feed_operation().id())});
+    case feedstore::Record::kDocView:
+      return DocViewKey(record.doc_view());
     case feedstore::Record::DATA_NOT_SET:
       break;
   }
@@ -259,6 +265,12 @@ feedstore::Record MakeRecord(feedstore::WebFeedInfo web_feed_info) {
 feedstore::Record MakeRecord(feedstore::PendingWebFeedOperation operation) {
   feedstore::Record record;
   *record.mutable_pending_web_feed_operation() = std::move(operation);
+  return record;
+}
+
+feedstore::Record MakeRecord(feedstore::DocView doc_view) {
+  feedstore::Record record;
+  *record.mutable_doc_view() = std::move(doc_view);
   return record;
 }
 
@@ -893,6 +905,43 @@ void FeedStore::RemovePendingWebFeedOperation(int64_t operation_id) {
       /*entries_to_save=*/std::make_unique<
           std::vector<std::pair<std::string, feedstore::Record>>>(),
       std::move(keys_to_remove), base::DoNothing());
+}
+
+void FeedStore::WriteDocView(feedstore::DocView doc_view) {
+  std::vector<feedstore::Record> records;
+  records.push_back(MakeRecord(std::move(doc_view)));
+  Write(std::move(records), base::DoNothing());
+}
+
+void FeedStore::RemoveDocViews(std::vector<feedstore::DocView> doc_views) {
+  if (doc_views.empty()) {
+    return;
+  }
+  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+  for (const feedstore::DocView& doc_view : doc_views) {
+    keys_to_remove->push_back(DocViewKey(doc_view));
+  }
+  database_->UpdateEntries(
+      /*entries_to_save=*/std::make_unique<
+          std::vector<std::pair<std::string, feedstore::Record>>>(),
+      std::move(keys_to_remove), base::DoNothing());
+}
+
+void FeedStore::ReadDocViews(
+    base::OnceCallback<void(std::vector<feedstore::DocView>)> callback) {
+  auto adapter =
+      [](base::OnceCallback<void(std::vector<feedstore::DocView>)> callback,
+         bool ok,
+         std::unique_ptr<std::map<std::string, feedstore::Record>> results) {
+        std::vector<feedstore::DocView> doc_views;
+        for (auto& entry : *results) {
+          feedstore::Record& record = entry.second;
+          doc_views.push_back(std::move(record.doc_view()));
+        }
+        std::move(callback).Run(std::move(doc_views));
+      };
+  database_->LoadKeysAndEntriesInRange(
+      "v/0", "v/~", base::BindOnce(adapter, std::move(callback)));
 }
 
 }  // namespace feed

@@ -10,6 +10,7 @@
 
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/client_user_profiles.pb.h"
 #include "components/feed/core/proto/v2/wire/info_card.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
@@ -52,6 +53,7 @@ DECLARE_PRINTER(feedstore, StreamStructureSet)
 DECLARE_PRINTER(feedstore, SubscribedWebFeeds)
 DECLARE_PRINTER(feedstore, WebFeedInfo)
 DECLARE_PRINTER(feedstore, PendingWebFeedOperation)
+DECLARE_PRINTER(feedstore, DocView)
 DECLARE_PRINTER(feedui, StreamUpdate)
 DECLARE_PRINTER(feedwire, ActionPayload)
 DECLARE_PRINTER(feedwire, ClientInfo)
@@ -62,6 +64,11 @@ DECLARE_PRINTER(feedwire, FeedAction)
 DECLARE_PRINTER(feedwire, InfoCardTrackingState)
 DECLARE_PRINTER(feedwire, UploadActionsRequest)
 DECLARE_PRINTER(feedwire, UploadActionsResponse)
+DECLARE_PRINTER(feedwire, ViewDemotionProfileExtension)
+DECLARE_PRINTER(feedwire, ViewDemotionProfile)
+DECLARE_PRINTER(feedwire, Table)
+DECLARE_PRINTER(feedwire, Table::Column)
+DECLARE_PRINTER(feedwire, ClientUserProfiles)
 DECLARE_PRINTER(feedwire::webfeed, ListRecommendedWebFeedsRequest)
 DECLARE_PRINTER(feedwire::webfeed, ListRecommendedWebFeedsResponse)
 DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsRequest)

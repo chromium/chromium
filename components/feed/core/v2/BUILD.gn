@@ -114,6 +114,8 @@ source_set("feed_core_v2") {
     "types.h",
     "user_actions_collector.cc",
     "user_actions_collector.h",
+    "view_demotion.cc",
+    "view_demotion.h",
     "web_feed_subscription_coordinator.cc",
     "web_feed_subscription_coordinator.h",
     "web_feed_subscriptions/fetch_recommended_web_feeds_task.cc",
@@ -245,6 +247,7 @@ source_set("core_unit_tests") {
     "test/test_util.h",
     "types_unittest.cc",
     "user_actions_collector_unittest.cc",
+    "view_demotion_unittest.cc",
     "web_feed_subscriptions/web_feed_index_unittest.cc",
     "xsurface_datastore_unittest.cc",
   ]

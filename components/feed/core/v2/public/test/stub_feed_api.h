@@ -72,6 +72,7 @@ class StubFeedApi : public FeedApi {
   }
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   void InvalidateContentCacheFor(StreamKind stream_kind) override {}
+  void RecordContentViewed(uint64_t docid) override {}
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,
                          const std::string& slice_id) override {}

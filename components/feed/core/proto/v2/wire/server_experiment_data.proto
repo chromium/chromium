@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 message ServerExperimentData {
   message NamespacedExperimentInfo {
     optional string namespace = 1;
-    repeated int32 experiment_id = 2;
+    repeated int32 experiment_id = 2 [packed = true];
   }
   repeated NamespacedExperimentInfo namespaced_experiment_info = 1;
 }
