@@ -29,6 +29,7 @@ class IdentityManager;
 
 namespace ash {
 
+class GlanceablesClassroomClientImpl;
 class GlanceablesTasksClientImpl;
 
 // Browser context keyed service that owns implementations of interfaces from
@@ -74,6 +75,9 @@ class GlanceablesKeyedService : public KeyedService {
 
   // Account id associated with the primary profile.
   const AccountId account_id_;
+
+  // Instance of the `GlanceablesClassroomClient` interface implementation.
+  std::unique_ptr<GlanceablesClassroomClientImpl> classroom_client_;
 
   // Instance of the `GlanceablesTasksClient` interface implementation.
   std::unique_ptr<GlanceablesTasksClientImpl> tasks_client_;

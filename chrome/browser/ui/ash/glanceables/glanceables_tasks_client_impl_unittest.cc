@@ -9,14 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
@@ -171,7 +169,6 @@ class GlanceablesTasksClientImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
-  base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
   scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_ =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
           /*network_service=*/nullptr,

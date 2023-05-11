@@ -2376,6 +2376,8 @@ static_library("ui") {
       "ash/game_dashboard/chrome_game_dashboard_delegate.h",
       "ash/glanceables/chrome_glanceables_delegate.cc",
       "ash/glanceables/chrome_glanceables_delegate.h",
+      "ash/glanceables/glanceables_classroom_client_impl.cc",
+      "ash/glanceables/glanceables_classroom_client_impl.h",
       "ash/glanceables/glanceables_keyed_service.cc",
       "ash/glanceables/glanceables_keyed_service.h",
       "ash/glanceables/glanceables_keyed_service_factory.cc",
