@@ -214,6 +214,7 @@ class ScopedInstallDanglingRawPtrChecks {
   ScopedInstallDanglingRawPtrChecks()
       : ScopedInstallDanglingRawPtrChecks(ConstructorParams{}) {}
   ~ScopedInstallDanglingRawPtrChecks() {
+    InstallDanglingRawPtrChecks();  // Check for leaks.
     partition_alloc::SetDanglingRawPtrDetectedFn(old_detected_fn_);
     partition_alloc::SetDanglingRawPtrReleasedFn(old_dereferenced_fn_);
   }
@@ -227,10 +228,12 @@ class ScopedInstallDanglingRawPtrChecks {
 }  // namespace
 
 TEST(PartitionAllocDanglingPtrChecks, Basic) {
-  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
-  partition_alloc::GetDanglingRawPtrDetectedFn()(42);
   EXPECT_DEATH(
-      partition_alloc::GetDanglingRawPtrReleasedFn()(42),
+      {
+        ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+        partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+        partition_alloc::GetDanglingRawPtrReleasedFn()(42);
+      },
       AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
             HasSubstr("[DanglingSignature]\t"),
             HasSubstr("The memory was freed at:"),
@@ -240,48 +243,71 @@ TEST(PartitionAllocDanglingPtrChecks, Basic) {
 // The StackTrace buffer might run out of storage and not record where the
 // memory was freed. Anyway, it must still report the error.
 TEST(PartitionAllocDanglingPtrChecks, FreeNotRecorded) {
-  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
   EXPECT_DEATH(
-      partition_alloc::GetDanglingRawPtrReleasedFn()(42),
+      {
+        ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+        partition_alloc::GetDanglingRawPtrReleasedFn()(42);
+      },
       AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
             HasSubstr("[DanglingSignature]\tmissing\tmissing\t"),
             HasSubstr("It was not recorded where the memory was freed."),
             HasSubstr("The dangling raw_ptr was released at:")));
 }
 
-// DCHECK message are stripped in official build. It causes death tests with
-// matchers to fail.
-#if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
-TEST(PartitionAllocDanglingPtrChecks, DoubleDetection) {
-  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
-  partition_alloc::GetDanglingRawPtrDetectedFn()(42);
-  EXPECT_DCHECK_DEATH_WITH(partition_alloc::GetDanglingRawPtrDetectedFn()(42),
-                           "Check failed: !entry \\|\\| entry->id != id");
+// TODO(https://crbug.com/1425095): Check for leaked refcount on Android.
+#if BUILDFLAG(IS_ANDROID)
+// Some raw_ptr might never release their refcount. Make sure this cause a
+// crash on exit.
+TEST(PartitionAllocDanglingPtrChecks, ReleaseNotRecorded) {
+  EXPECT_DEATH(
+      {
+        ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+        partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+      },
+      HasSubstr("A freed allocation is still referenced by a dangling pointer "
+                "at exit, or at test end. Leaked raw_ptr/raw_ref "
+                "could cause PartitionAlloc's quarantine memory bloat."
+                "\n\n"
+                "Memory was released on:"));
 }
-#endif  // !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
+#endif
+
+// Getting the same allocation reported twice in a row, without matching
+// `DanglingRawPtrReleased` in between is unexpected. Make sure this kind of
+// potential regression would be detected.
+TEST(PartitionAllocDanglingPtrChecks, DoubleDetection) {
+  EXPECT_DCHECK_DEATH_WITH(
+      {
+        ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+        partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+        partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+      },
+      "Check failed: !entry \\|\\| entry->id != id");
+}
 
 // Free and release from two different tasks with cross task dangling pointer
 // detection enabled.
 TEST(PartitionAllocDanglingPtrChecks, CrossTask) {
-  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks({
-      .type = "cross_task",
-  });
+  BASE_EXPECT_DEATH(
+      {
+        ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks({
+            .type = "cross_task",
+        });
 
-  base::test::TaskEnvironment task_environment;
-  task_environment.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(partition_alloc::GetDanglingRawPtrDetectedFn(), 42));
-  task_environment.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce([]() {
-        BASE_EXPECT_DEATH(
-            partition_alloc::GetDanglingRawPtrReleasedFn()(42),
-            AllOf(HasSubstr(
-                      "Detected dangling raw_ptr with id=0x000000000000002a:"),
-                  HasSubstr("[DanglingSignature]\t"),
-                  HasSubstr("The memory was freed at:"),
-                  HasSubstr("The dangling raw_ptr was released at:")));
-      }));
-  task_environment.RunUntilIdle();
+        base::test::TaskEnvironment task_environment;
+        task_environment.GetMainThreadTaskRunner()->PostTask(
+            FROM_HERE,
+            base::BindOnce(partition_alloc::GetDanglingRawPtrDetectedFn(), 42));
+        task_environment.GetMainThreadTaskRunner()->PostTask(
+            FROM_HERE,
+            base::BindOnce(partition_alloc::GetDanglingRawPtrReleasedFn(), 42));
+
+        task_environment.RunUntilIdle();
+      },
+      AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
+            HasSubstr("[DanglingSignature]\t"),
+            HasSubstr("The memory was freed at:"),
+            HasSubstr("The dangling raw_ptr was released at:")));
 }
 
 TEST(PartitionAllocDanglingPtrChecks, CrossTaskIgnoredFailuresClearsCache) {

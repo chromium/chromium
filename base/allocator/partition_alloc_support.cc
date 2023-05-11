@@ -24,6 +24,7 @@
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/at_exit.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
@@ -656,17 +657,48 @@ void DanglingRawPtrReleased(uintptr_t id) {
   }
 }
 
-void ClearDanglingRawPtrBuffer() {
+void CheckDanglingRawPtrBufferEmpty() {
   internal::PartitionAutoLock guard(g_stack_trace_buffer_lock);
+
+  // TODO(https://crbug.com/1425095): Check for leaked refcount on Android.
+#if BUILDFLAG(IS_ANDROID)
   g_stack_trace_buffer = DanglingRawPtrBuffer();
+#else
+  bool errors = false;
+  for (auto entry : g_stack_trace_buffer) {
+    if (!entry) {
+      continue;
+    }
+    errors = true;
+    LOG(ERROR) << "A freed allocation is still referenced by a dangling "
+                  "pointer at exit, or at test end. Leaked raw_ptr/raw_ref "
+                  "could cause PartitionAlloc's quarantine memory bloat."
+                  "\n\n"
+                  "Memory was released on:\n"
+               << entry->task_trace << "\n"
+               << entry->stack_trace << "\n";
+  }
+  CHECK(!errors);
+#endif
 }
 
 }  // namespace
 
 void InstallDanglingRawPtrChecks() {
-  // Clearing storage is useful for running multiple unit tests without
-  // restarting the test executable.
-  ClearDanglingRawPtrBuffer();
+  // Multiple tests can run within the same executable's execution. This line
+  // ensures problems detected from the previous test are causing error before
+  // entering the next one...
+  CheckDanglingRawPtrBufferEmpty();
+
+  // ... similarly, some allocation may stay forever in the quarantine and we
+  // might ignore them if the executable exists. This line makes sure dangling
+  // pointers errors are never ignored, by crashing at exit, as a last resort.
+  // This makes quarantine memory bloat more likely to be detected.
+  static bool first_run_in_process = true;
+  if (!first_run_in_process) {
+    first_run_in_process = true;
+    AtExitManager::RegisterTask(base::BindOnce(CheckDanglingRawPtrBufferEmpty));
+  }
 
   if (!FeatureList::IsEnabled(features::kPartitionAllocDanglingPtr)) {
     partition_alloc::SetDanglingRawPtrDetectedFn([](uintptr_t) {});
