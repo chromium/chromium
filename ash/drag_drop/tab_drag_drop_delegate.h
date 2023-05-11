@@ -11,6 +11,7 @@
 #include "ash/drag_drop/drag_drop_capture_delegate.h"
 #include "ash/drag_drop/tab_drag_drop_windows_hider.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/point.h"

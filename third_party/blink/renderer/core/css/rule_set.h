@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"

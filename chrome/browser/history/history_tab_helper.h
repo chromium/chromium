@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 #define CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

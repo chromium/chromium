@@ -12,6 +12,7 @@
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/base/window_state_type.h"

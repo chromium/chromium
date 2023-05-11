@@ -8,9 +8,11 @@
 #include <DirectML.h>
 #include <d3d12.h>
 #include <wrl.h>
-#include <deque>
 
+#include <deque>
 #include <vector>
+
+#include "base/gtest_prod_util.h"
 #include "base/win/scoped_handle.h"
 
 namespace webnn::dml {

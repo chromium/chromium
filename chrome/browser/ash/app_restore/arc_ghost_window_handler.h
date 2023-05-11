@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_HANDLER_H_
 
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
 #define CHROME_BROWSER_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry.h"

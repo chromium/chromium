@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEMORY_OOM_KILLS_MONITOR_H_
 #define CHROME_BROWSER_MEMORY_OOM_KILLS_MONITOR_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/atomic_flag.h"

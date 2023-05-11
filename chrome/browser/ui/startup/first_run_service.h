@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"

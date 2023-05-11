@@ -6,6 +6,7 @@
 #define ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
 
 #include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_registry_simple.h"

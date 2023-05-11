@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TEXT_SELECTION_TEXT_CLASSIFIER_MODEL_SERVICE_H_
 #define IOS_CHROME_BROWSER_TEXT_SELECTION_TEXT_CLASSIFIER_MODEL_SERVICE_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"

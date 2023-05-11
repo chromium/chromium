@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/camera_roll_menu_model.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/camera_roll_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"

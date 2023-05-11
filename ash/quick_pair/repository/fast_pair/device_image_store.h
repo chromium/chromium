@@ -10,6 +10,7 @@
 
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"

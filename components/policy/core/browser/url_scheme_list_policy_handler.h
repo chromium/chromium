@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_URL_SCHEME_LIST_POLICY_HANDLER_H_
 
 #include "base/compiler_specific.h"
+#include "base/gtest_prod_util.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/policy_export.h"
 

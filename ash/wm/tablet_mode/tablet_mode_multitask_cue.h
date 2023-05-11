@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"

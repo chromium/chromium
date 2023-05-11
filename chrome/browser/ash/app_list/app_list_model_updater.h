@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"

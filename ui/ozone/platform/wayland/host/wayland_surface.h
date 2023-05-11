@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

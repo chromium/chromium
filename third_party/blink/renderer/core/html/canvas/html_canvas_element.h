@@ -30,6 +30,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"

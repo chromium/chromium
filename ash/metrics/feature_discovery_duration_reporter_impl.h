@@ -10,6 +10,7 @@
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 
 class PrefRegistrySimple;
