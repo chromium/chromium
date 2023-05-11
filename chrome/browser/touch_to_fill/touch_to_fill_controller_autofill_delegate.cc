@@ -230,7 +230,7 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
 
   password_manager::metrics_util::LogFilledCredentialIsFromAndroidApp(
       credential.is_affiliation_based_match().value());
-  driver_->TouchToFillClosed(ShowVirtualKeyboard(false));
+  driver_->KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false));
 
   driver_->FillSuggestion(credential.username(), credential.password());
 
@@ -255,6 +255,7 @@ void TouchToFillControllerAutofillDelegate::CleanUpDriverAndReportOutcome(
     TouchToFillOutcome outcome,
     bool show_virtual_keyboard) {
   std::exchange(driver_, nullptr)
-      ->TouchToFillClosed(ShowVirtualKeyboard(show_virtual_keyboard));
+      ->KeyboardReplacingSurfaceClosed(
+          ShowVirtualKeyboard(show_virtual_keyboard));
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
 }

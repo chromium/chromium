@@ -1171,7 +1171,7 @@ void AutofillAgent::FormControlElementClicked(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  password_autofill_agent_->TryToShowTouchToFill(element);
+  password_autofill_agent_->TryToShowKeyboardReplacingSurface(element);
 #endif
 
   ShowSuggestions(

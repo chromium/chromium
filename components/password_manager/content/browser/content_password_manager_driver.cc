@@ -190,9 +190,10 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ContentPasswordManagerDriver::TouchToFillClosed(
+void ContentPasswordManagerDriver::KeyboardReplacingSurfaceClosed(
     ShowVirtualKeyboard show_virtual_keyboard) {
-  GetPasswordAutofillAgent()->TouchToFillClosed(show_virtual_keyboard.value());
+  GetPasswordAutofillAgent()->KeyboardReplacingSurfaceClosed(
+      show_virtual_keyboard.value());
 }
 
 void ContentPasswordManagerDriver::TriggerFormSubmission() {
@@ -437,7 +438,7 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ContentPasswordManagerDriver::ShowTouchToFill(
+void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
     autofill::mojom::SubmissionReadinessState submission_readiness) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))

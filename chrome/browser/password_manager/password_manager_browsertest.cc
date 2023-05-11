@@ -4224,7 +4224,7 @@ class MockPrerenderPasswordManagerDriver
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
-              ShowTouchToFill,
+              ShowKeyboardReplacingSurface,
               (autofill::mojom::SubmissionReadinessState),
               (override));
 #endif
@@ -4296,10 +4296,10 @@ class MockPrerenderPasswordManagerDriver
                                          options, bounds);
         });
 #if BUILDFLAG(IS_ANDROID)
-    ON_CALL(*this, ShowTouchToFill)
+    ON_CALL(*this, ShowKeyboardReplacingSurface)
         .WillByDefault([this](autofill::mojom::SubmissionReadinessState
                                   submission_readiness) {
-          impl_->ShowTouchToFill(submission_readiness);
+          impl_->ShowKeyboardReplacingSurface(submission_readiness);
         });
 #endif
     ON_CALL(*this, CheckSafeBrowsingReputation)
