@@ -37,6 +37,30 @@
 
 namespace cc::slim {
 
+namespace {
+
+class LayerTreeImplScopedKeepSurfaceAlive
+    : public LayerTree::ScopedKeepSurfaceAlive {
+ public:
+  LayerTreeImplScopedKeepSurfaceAlive(base::WeakPtr<LayerTreeImpl> layer_tree,
+                                      const viz::SurfaceId& surface_id)
+      : layer_tree_(std::move(layer_tree)), range_(surface_id, surface_id) {
+    layer_tree_->AddSurfaceRange(range_);
+  }
+
+  ~LayerTreeImplScopedKeepSurfaceAlive() override {
+    if (layer_tree_) {
+      layer_tree_->RemoveSurfaceRange(range_);
+    }
+  }
+
+ private:
+  const base::WeakPtr<LayerTreeImpl> layer_tree_;
+  const viz::SurfaceRange range_;
+};
+
+}  // namespace
+
 LayerTreeImpl::PresentationCallbackInfo::PresentationCallbackInfo(
     uint32_t frame_token,
     std::vector<PresentationCallback> presentation_callbacks,
@@ -227,6 +251,17 @@ void LayerTreeImpl::ReleaseLayerTreeFrameSink() {
   damage_from_previous_frame_.clear();
 }
 
+std::unique_ptr<LayerTree::ScopedKeepSurfaceAlive>
+LayerTreeImpl::CreateScopedKeepSurfaceAlive(const viz::SurfaceId& surface_id) {
+  return std::make_unique<LayerTreeImplScopedKeepSurfaceAlive>(
+      weak_factory_.GetWeakPtr(), surface_id);
+}
+
+const LayerTree::SurfaceRangesAndCounts&
+LayerTreeImpl::GetSurfaceRangesForTesting() const {
+  return referenced_surfaces_;
+}
+
 bool LayerTreeImpl::BeginFrame(
     const viz::BeginFrameArgs& args,
     viz::CompositorFrame& out_frame,
@@ -343,14 +378,21 @@ gfx::Size LayerTreeImpl::GetUIResourceSize(int resource_id) {
 
 void LayerTreeImpl::AddSurfaceRange(const viz::SurfaceRange& range) {
   DCHECK(range.IsValid());
-  DCHECK(!referenced_surfaces_.contains(range));
-  referenced_surfaces_.insert(range);
+  DCHECK(!referenced_surfaces_.contains(range) ||
+         referenced_surfaces_[range] >= 1);
+  if (++(referenced_surfaces_[range]) == 1) {
+    SetNeedsDraw();
+  }
 }
 
 void LayerTreeImpl::RemoveSurfaceRange(const viz::SurfaceRange& range) {
   DCHECK(range.IsValid());
-  DCHECK(referenced_surfaces_.contains(range));
-  referenced_surfaces_.erase(range);
+  DCHECK(referenced_surfaces_.contains(range) &&
+         referenced_surfaces_[range] >= 1);
+  if (--(referenced_surfaces_[range]) == 0) {
+    referenced_surfaces_.erase(range);
+    SetNeedsDraw();
+  }
 }
 
 void LayerTreeImpl::MaybeRequestFrameSink() {
@@ -432,8 +474,10 @@ void LayerTreeImpl::GenerateCompositorFrame(
       viz::BeginFrameAck(args, /*has_damage=*/true);
   out_frame.metadata.device_scale_factor = device_scale_factor_;
   out_frame.metadata.root_background_color = background_color_;
-  out_frame.metadata.referenced_surfaces = std::vector<viz::SurfaceRange>(
-      referenced_surfaces_.begin(), referenced_surfaces_.end());
+  out_frame.metadata.referenced_surfaces.reserve(referenced_surfaces_.size());
+  for (const auto& [range, range_counts] : referenced_surfaces_) {
+    out_frame.metadata.referenced_surfaces.emplace_back(range);
+  }
   out_frame.metadata.top_controls_visible_height = top_controls_visible_height_;
   top_controls_visible_height_.reset();
   out_frame.metadata.display_transform_hint = display_transform_hint_;

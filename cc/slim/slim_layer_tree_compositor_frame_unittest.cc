@@ -31,6 +31,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/test/draw_quad_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -2115,6 +2116,59 @@ TEST_F(SlimLayerTreeCompositorFrameTest, RoundedCornerOnParentAndChild) {
     EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
     EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
               expected_rounded_conrer_in_target);
+  }
+}
+
+// Testing that {Add|Remove}SurfaceRange should trigger a draw via
+// `SetNeedsDraw`, where the added or removed surface range should be reflected
+// in the metadata of the next frame's metadata.
+TEST_F(SlimLayerTreeCompositorFrameTest,
+       AddRemoveSurfaceRangesTriggerSetNeedsDraw) {
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  surface_layer->SetIsDrawable(true);
+  surface_layer->SetContentsOpaque(true);
+  layer_tree_->SetRoot(surface_layer);
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(3u, 4u, token));
+  viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                     viz::LocalSurfaceId(5u, 6u, token));
+  cc::DeadlinePolicy deadline_policy = cc::DeadlinePolicy::UseDefaultDeadline();
+  surface_layer->SetOldestAcceptableFallback(start);
+  surface_layer->SetSurfaceId(end, deadline_policy);
+
+  // Add/remove a SurfaceRange different from the one of the `surface_layer`.
+  {
+    layer_tree_->AddSurfaceRange(viz::SurfaceRange(end, end));
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end),
+                                              viz::SurfaceRange(end, end)));
+  }
+  {
+    layer_tree_->RemoveSurfaceRange(viz::SurfaceRange(end, end));
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end)));
+  }
+
+  // Add/remove a SurfaceRange that's the same as the one of the
+  // `surface_layer`. Since the ranges are the same, only one range entry is
+  // referenced in the metadata.
+  {
+    layer_tree_->AddSurfaceRange(viz::SurfaceRange(start, end));
+
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end)));
+  }
+  {
+    layer_tree_->RemoveSurfaceRange(viz::SurfaceRange(start, end));
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.referenced_surfaces,
+                testing::UnorderedElementsAre(viz::SurfaceRange(start, end)));
   }
 }
 
