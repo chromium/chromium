@@ -19,7 +19,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders", "os", "os_category")
+load("./builders.star", "builders", "os")
 load("./orchestrator.star", "register_compilator", "register_orchestrator")
 load("//project.star", "settings")
 
@@ -103,7 +103,6 @@ defaults = args.defaults(
     # argument, if the more-specific default has not been set it will fall back
     # to the standard default.
     compilator_cores = args.DEFAULT,
-    compilator_goma_jobs = args.DEFAULT,
     compilator_reclient_jobs = args.DEFAULT,
     orchestrator_cores = args.DEFAULT,
 )
@@ -249,15 +248,6 @@ def try_builder(
     if subproject_list_view:
         list_view.append(subproject_list_view)
 
-    # in CQ/try, disable ATS on windows. http://b/183895446
-    goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
-    os = defaults.get_value_from_kwargs("os", kwargs)
-    if os and os.category == os_category.WINDOWS:
-        if goma_enable_ats == args.COMPUTE:
-            kwargs["goma_enable_ats"] = False
-        if kwargs["goma_enable_ats"] != False:
-            fail("Try Windows builder {} must disable ATS".format(name))
-
     properties = kwargs.pop("properties", {})
     properties = dict(properties)
     check_for_flakiness = defaults.get_value(
@@ -371,7 +361,6 @@ def _orchestrator_builder(
     kwargs.setdefault("cores", defaults.orchestrator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/orchestrator")
 
-    kwargs.setdefault("goma_backend", None)
     kwargs.setdefault("reclient_instance", None)
     kwargs.setdefault("os", os.LINUX_DEFAULT)
     kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
@@ -406,7 +395,6 @@ def _compilator_builder(*, name, **kwargs):
         The following kwargs will have defaults applied if not set:
         * builderless: True on branches, False on main
         * cores: The compilator_cores module-level default.
-        * goma_jobs: The compilator_goma_jobs module-level default.
         * reclient_jobs: The compilator_reclient_jobs module-level default.
         * executable: "recipe:chromium/compilator"
         * ssd: True
@@ -418,7 +406,6 @@ def _compilator_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", not settings.is_main)
     kwargs.setdefault("cores", defaults.compilator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/compilator")
-    kwargs.setdefault("goma_jobs", defaults.compilator_goma_jobs.get())
     kwargs.setdefault("reclient_jobs", defaults.compilator_reclient_jobs.get())
     kwargs.setdefault("ssd", True)
 
