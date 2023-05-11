@@ -1905,7 +1905,7 @@
   {
     "name": "enable-baseline-gm3-surface-colors",
     "owners": ["nemco", "skavuluru"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "enable-benchmarking",
