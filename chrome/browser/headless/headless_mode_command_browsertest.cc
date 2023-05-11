@@ -218,8 +218,14 @@ class HeadlessModePrintToPdfCommandBrowserTest
   }
 };
 
+// TODO(crbug.com/1440917): Reenable once deflaked.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HeadlessPrintToPdf DISABLED_HeadlessPrintToPdf
+#else
+#define MAYBE_HeadlessPrintToPdf HeadlessPrintToPdf
+#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
-                       HeadlessPrintToPdf) {
+                       MAYBE_HeadlessPrintToPdf) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   RunLoop();
