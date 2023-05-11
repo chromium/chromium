@@ -302,6 +302,7 @@ foreach(f, css_files) {
 non_web_component_files = [
   "chromeos/assert_extras.ts",
   "chromeos/common/global_scroll_target_mixin.ts",
+  "chromeos/common/load_time_booleans.ts",
   "chromeos/common/setting_id_param_util.ts",
   "chromeos/common/types.ts",
   "chromeos/os_files_page/google_drive_browser_proxy.ts",

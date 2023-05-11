@@ -75,8 +75,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       showArcvmManageUsb: Boolean,
 
-      showCrostini: Boolean,
-
       showPluginVm: Boolean,
 
       allowCrostini_: Boolean,

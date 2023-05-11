@@ -146,8 +146,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
       showArcvmManageUsb_: Boolean,
 
-      showCrostini_: Boolean,
-
       showToolbar_: Boolean,
 
       showNavMenu_: Boolean,
@@ -174,7 +172,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private havePlayStoreApp_: boolean;
   private showAndroidApps_: boolean;
   private showArcvmManageUsb_: boolean;
-  private showCrostini_: boolean;
   private showToolbar_: boolean;
   private showNavMenu_: boolean;
   private showPluginVm_: boolean;
@@ -232,7 +229,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.havePlayStoreApp_ = loadTimeData.getBoolean('havePlayStoreApp');
     this.showAndroidApps_ = loadTimeData.getBoolean('androidAppsVisible');
     this.showArcvmManageUsb_ = loadTimeData.getBoolean('showArcvmManageUsb');
-    this.showCrostini_ = loadTimeData.getBoolean('showCrostini');
     this.showPluginVm_ = loadTimeData.getBoolean('showPluginVm');
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');

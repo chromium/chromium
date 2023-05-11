@@ -72,8 +72,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         notify: true,
       },
 
-      showCrostini: Boolean,
-
       /**
        * |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_| start undefined so
        * observers don't trigger until they have been populated.

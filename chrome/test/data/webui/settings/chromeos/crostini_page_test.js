@@ -95,13 +95,13 @@ function selectContainerByIndex(select, index) {
 
 suite('CrostiniPageTests', function() {
   setup(function() {
+    loadTimeData.overrideValues({isCrostiniSupported: true});
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
     PolymerTest.clearBody();
     crostiniPage = document.createElement('settings-crostini-page');
-    crostiniPage.showCrostini = true;
     crostiniPage.allowCrostini = true;
     document.body.appendChild(crostiniPage);
     testing.Test.disableAnimationsAndTransitions();
@@ -167,7 +167,7 @@ suite('CrostiniPageTests', function() {
     });
 
     test('NotSupported', function() {
-      crostiniPage.showCrostini = false;
+      crostiniPage.set('isCrostiniSupported_', false);
       crostiniPage.allowCrostini = false;
       flush();
       assertTrue(!!crostiniPage.shadowRoot.querySelector('#enable'));
@@ -176,7 +176,7 @@ suite('CrostiniPageTests', function() {
     });
 
     test('NotAllowed', function() {
-      crostiniPage.showCrostini = true;
+      crostiniPage.set('isCrostiniSupported_', true);
       crostiniPage.allowCrostini = false;
       flush();
       assertTrue(!!crostiniPage.shadowRoot.querySelector('#enable'));

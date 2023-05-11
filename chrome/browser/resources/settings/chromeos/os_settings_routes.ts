@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {isCrostiniSupported} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /** Class for navigable routes. */
@@ -445,8 +446,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   // Crostini section.
   r.CROSTINI = createSection(
       r.ADVANCED, routesMojom.CROSTINI_SECTION_PATH, Section.kCrostini);
-  if (loadTimeData.valueExists('showCrostini') &&
-      loadTimeData.getBoolean('showCrostini')) {
+  if (isCrostiniSupported()) {
     r.CROSTINI_DETAILS = createSubpage(
         r.CROSTINI, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
         Subpage.kCrostiniDetails);

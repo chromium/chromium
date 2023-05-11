@@ -164,8 +164,7 @@
     </template>
     <os-settings-section page-title="$i18n{devicePageTitle}"
         section="device">
-      <settings-device-page prefs="{{prefs}}"
-          show-crostini="[[showCrostini]]">
+      <settings-device-page prefs="{{prefs}}">
       </settings-device-page>
     </os-settings-section>
     <template is="dom-if" if="[[!isGuestMode_]]" restamp>
@@ -247,8 +246,7 @@
       <os-settings-section page-title="$i18n{crostiniPageTitle}"
           section="crostini">
         <settings-crostini-page prefs="{{prefs}}"
-            allow-crostini="[[allowCrostini_]]"
-            show-crostini="[[showCrostini]]">
+            allow-crostini="[[allowCrostini_]]">
         </settings-crostini-page>
       </os-settings-section>
       <template is="dom-if"
