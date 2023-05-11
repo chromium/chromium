@@ -517,10 +517,12 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   for (const base::Value& transport_name : *transports) {
     absl::optional<device::FidoTransportProtocol> transport =
         FidoTransportProtocolFromValue(transport_name);
-    if (!transport) {
-      return InvalidMakeCredentialField("transports");
+    // Unknown transports are ignored because new transport values might be
+    // introduced in the future. Plausibly we should pass them as opaque
+    // strings, but our Mojo interface isn't shaped like that.
+    if (transport) {
+      response->transports.push_back(*transport);
     }
-    response->transports.push_back(*transport);
   }
 
   const base::Value::Dict* client_extension_results =

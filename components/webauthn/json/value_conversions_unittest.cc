@@ -211,7 +211,7 @@ TEST(WebAuthenticationJSONConversionTest,
   "response": {
     "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVikJr1yeL5GN2Hx-qGxCrTE-CZwJpxBDHJqH9bgWFXhm0ZdAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQnqQEo7oPQjy-pupOzL3-bqCFjsQklxGpULfOrnG6WpQECAyYgASFYIJZF8F3hN5jYY05Slr0X96-zXsT0Za1-ZXjoRO69uRL1Ilgg8ZOMJTagPCfl8zZ1n36qxA8lIOOGvZrn1CahB9G-DAI",
     "clientDataJSON": "dGVzdCBjbGllbnQgZGF0YSBqc29u",
-    "transports": [ "usb" ]
+    "transports": [ "usb", "unknowntransport" ]
   },
   "type": "public-key"
 })";
