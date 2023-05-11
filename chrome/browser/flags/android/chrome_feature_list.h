@@ -173,6 +173,7 @@ BASE_DECLARE_FEATURE(kTabGridLayoutAndroid);
 BASE_DECLARE_FEATURE(kTabStateV1Optimizations);
 BASE_DECLARE_FEATURE(kDiscoverFeedMultiColumn);
 BASE_DECLARE_FEATURE(kTabStripRedesign);
+BASE_DECLARE_FEATURE(kTabStripStartupRefactoring);
 BASE_DECLARE_FEATURE(kTabToGTSAnimation);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);

@@ -1791,6 +1791,9 @@ extern const char kEmptyStatesAndroidDescription[];
 extern const char kFoldableJankFixAndroidName[];
 extern const char kFoldableJankFixAndroidDescription[];
 
+extern const char kTabStripStartupRefactoringName[];
+extern const char kTabStripStartupRefactoringDescription[];
+
 extern const char kBaselineGM3SurfaceColorsName[];
 extern const char kBaselineGM3SurfaceColorsDescription[];
 

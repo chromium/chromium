@@ -311,6 +311,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupsForTablets,
     &kDiscoverFeedMultiColumn,
     &kTabStripRedesign,
+    &kTabStripStartupRefactoring,
     &kTabGridLayoutAndroid,
     &kTabStateV1Optimizations,
     &kTabToGTSAnimation,
@@ -1016,6 +1017,10 @@ BASE_FEATURE(kDiscoverFeedMultiColumn,
 
 BASE_FEATURE(kTabStripRedesign,
              "TabStripRedesign",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabStripStartupRefactoring,
+             "TabStripStartupRefactoring",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabled, but often disabled in tests to reduce animation flakes and test

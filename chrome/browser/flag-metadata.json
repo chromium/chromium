@@ -3332,6 +3332,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-tab-strip-startup-refactoring",
+    "owners": [ "skavuluru", "nemco", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-tab-switcher-on-return",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 108

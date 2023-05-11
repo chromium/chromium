@@ -6716,6 +6716,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFoldableJankFixDelayVariations,
                                     "FoldableJankFix")},
 
+    {"enable-tab-strip-startup-refactoring",
+     flag_descriptions::kTabStripStartupRefactoringName,
+     flag_descriptions::kTabStripStartupRefactoringDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripStartupRefactoring)},
+
     {"enable-baseline-gm3-surface-colors",
      flag_descriptions::kBaselineGM3SurfaceColorsName,
      flag_descriptions::kBaselineGM3SurfaceColorsDescription, kOsAndroid,

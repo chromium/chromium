@@ -60574,6 +60574,7 @@ from previous Chrome versions.
       label="EnableWebUsbOnExtensionServiceWorker:enabled"/>
   <int value="-1037128156" label="HomeLauncherGestures:disabled"/>
   <int value="-1035705204" label="PwaUpdateDialogForName:disabled"/>
+  <int value="-1035498688" label="TabStripStartupRefactoring:disabled"/>
   <int value="-1035346097" label="SyncErrorInfoBarAndroid:enabled"/>
   <int value="-1035140982" label="ClientSideDetectionModelOnAndroid:enabled"/>
   <int value="-1034344165" label="V8NoTurbo:disabled"/>
@@ -65570,6 +65571,7 @@ from previous Chrome versions.
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1665430464" label="force-control-face-ae"/>
+  <int value="1666933104" label="TabStripStartupRefactoring:enabled"/>
   <int value="1667533501" label="SameAppWindowCycle:disabled"/>
   <int value="1667584730" label="WebXR:disabled"/>
   <int value="1667886516"

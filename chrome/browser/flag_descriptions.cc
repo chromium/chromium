@@ -4250,6 +4250,13 @@ const char kFoldableJankFixAndroidDescription[] =
     "Enables fix for jank seen during fold to unfold transition on foldables "
     "with Android 12+";
 
+const char kTabStripStartupRefactoringName[] =
+    "Refactor for tablet tab strip startup.";
+const char kTabStripStartupRefactoringDescription[] =
+    "Enables refactor for tablet tab strip startup. This creates placeholder "
+    "tabs before the tab strip is initialized to prevent "
+    "jank (tabs seeming to quickly flicker / scroll).";
+
 const char kBaselineGM3SurfaceColorsName[] = "Baseline GM3 Surface Colors";
 const char kBaselineGM3SurfaceColorsDescription[] =
     "Updates baseline surface colors to match the GM3 formula.";
