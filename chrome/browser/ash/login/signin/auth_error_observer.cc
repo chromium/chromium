@@ -79,9 +79,11 @@ void AuthErrorObserver::HandleAuthError(
       ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user->HasGaiaAccount());
 
-  if (auth_error.IsPersistentError()) {
+  if (auth_error.IsPersistentError() && !auth_error.IsScopePersistentError()) {
     // Invalidate OAuth2 refresh token to force Gaia sign-in flow. This is
-    // needed because sign-out/sign-in solution is suggested to the user.
+    // needed because sign-out/sign-in solution is suggested to the user. Do
+    // this only for persistent errors which are not caused because of a service
+    // requesting an invalid scope.
     LOG(WARNING) << "Invalidate OAuth token because of an auth error: "
                  << auth_error.ToString();
     const AccountId& account_id = user->GetAccountId();
