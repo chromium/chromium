@@ -2666,6 +2666,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Malware warning for the user.">
         Malware
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS"
+        desc="Let the user know the download is suspicious and may need additional safety checks">
+        Suspicious
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS"
                desc="The label on the checkbox with which the user chooses to bypass blocked download.">
         I understand this download will harm my computer
@@ -2836,7 +2840,7 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
                desc="Prompt for Deep Scanning of a download">
-        Scan before opening
+        Scan for malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING"
                desc="Status text for a download item that is being scanned.">

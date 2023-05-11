@@ -1140,7 +1140,6 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
           .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
                            ui::kColorAlertMediumSeverityIcon)
           .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
-          .AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN)
           .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
                             DownloadCommands::Command::DEEP_SCAN,
                             /*is_prominent=*/true)
@@ -1434,9 +1433,12 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      // "Scan before opening"
-      return l10n_util::GetStringUTF16(
-          IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT);
+      // "Scan for malware • Suspicious"
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT),
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS));
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
 #if BUILDFLAG(IS_ANDROID)
       // "Scanning..."

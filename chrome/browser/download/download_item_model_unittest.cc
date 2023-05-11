@@ -593,7 +593,7 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
       {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK,
        "Blocked by your organization"},
       {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
-       "Scan before opening"},
+       "Scan for malware \xE2\x80\xA2 Suspicious"},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
     SetupDownloadItemDefaults();
@@ -731,7 +731,7 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
        {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
       {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
        false,
-       DownloadCommands::Command::DEEP_SCAN,
+       absl::nullopt,
        {DownloadCommands::Command::DEEP_SCAN,
         DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
       {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
@@ -795,7 +795,7 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off) {
        {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
       {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
        false,
-       DownloadCommands::Command::DEEP_SCAN,
+       absl::nullopt,
        {DownloadCommands::Command::DEEP_SCAN,
         DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
       {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
