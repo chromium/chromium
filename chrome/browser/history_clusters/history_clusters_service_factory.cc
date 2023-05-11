@@ -20,6 +20,32 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/storage_partition.h"
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
+  auto* profile = Profile::FromBrowserContext(context);
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  // The clusters service can't function without a HistoryService. This happens
+  // in some unit tests.
+  if (!history_service) {
+    return nullptr;
+  }
+
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
+  return std::make_unique<history_clusters::HistoryClustersService>(
+      g_browser_process->GetApplicationLocale(), history_service,
+      PageContentAnnotationsServiceFactory::GetForProfile(profile),
+      url_loader_factory, site_engagement::SiteEngagementService::Get(profile),
+      TemplateURLServiceFactory::GetForProfile(profile),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      profile->GetPrefs());
+}
+
+}  // namespace
+
 // static
 history_clusters::HistoryClustersService*
 HistoryClustersServiceFactory::GetForBrowserContext(
@@ -53,26 +79,15 @@ HistoryClustersServiceFactory::HistoryClustersServiceFactory()
 
 HistoryClustersServiceFactory::~HistoryClustersServiceFactory() = default;
 
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+HistoryClustersServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildService);
+}
+
 KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  auto* profile = Profile::FromBrowserContext(context);
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-
-  // The clusters service can't function without a HistoryService. This happens
-  // in some unit tests.
-  if (!history_service)
-    return nullptr;
-
-  auto url_loader_factory = context->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
-  return new history_clusters::HistoryClustersService(
-      g_browser_process->GetApplicationLocale(), history_service,
-      PageContentAnnotationsServiceFactory::GetForProfile(profile),
-      url_loader_factory, site_engagement::SiteEngagementService::Get(profile),
-      TemplateURLServiceFactory::GetForProfile(profile),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      profile->GetPrefs());
+  return BuildService(context).release();
 }
 
 // static
