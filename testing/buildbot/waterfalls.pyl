@@ -1000,7 +1000,7 @@
           'isolate_profile_data',
           'nougat-x86-emulator',
           'emulator-4-cores',
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'additional_compile_targets': [
