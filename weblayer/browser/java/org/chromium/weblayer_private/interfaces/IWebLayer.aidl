@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.weblayer_private.interfaces.IBrowser;
-import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
@@ -48,12 +47,6 @@ interface IWebLayer {
   // @param remoteContext A Context that refers to the WebLayer provider package.
   void loadSync(in IObjectWrapper appContext,
                 in IObjectWrapper remoteContext) = 9;
-
-  // Returns the singleton crash reporter controller. If WebLayer has not been
-  // initialized, does the minimum initialization needed for the crash reporter.
-  ICrashReporterController getCrashReporterController(
-      in IObjectWrapper appContext,
-      in IObjectWrapper remoteContext) = 10;
 
   // Forwards broadcast from a notification to the implementation.
   void onReceivedBroadcast(in IObjectWrapper appContext, in Intent intent) = 11;

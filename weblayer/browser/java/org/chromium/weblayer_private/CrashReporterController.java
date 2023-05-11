@@ -5,8 +5,6 @@
 package org.chromium.weblayer_private;
 
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.util.AndroidRuntimeException;
 
 import androidx.annotation.Nullable;
 
@@ -20,8 +18,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.components.crash.browser.ChildProcessCrashObserver;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.MinidumpUploader;
-import org.chromium.weblayer_private.interfaces.ICrashReporterController;
-import org.chromium.weblayer_private.interfaces.ICrashReporterControllerClient;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.io.File;
@@ -33,61 +29,52 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Provides the implementation of the API for managing captured crash reports.
- *
- * @see org.chromium.weblayer.CrashReporterController
+ * CrashReporterController handles crashes in weblayer_private and delegates them to the
+ * CrashReceiverService from android_webview non-embedded code.
  */
-public final class CrashReporterControllerImpl extends ICrashReporterController.Stub {
+public final class CrashReporterController {
     private static final String TAG = "CrashReporter";
     private static final int MAX_UPLOAD_RETRIES = 3;
 
-    @Nullable
-    private ICrashReporterControllerClient mClient;
     private CrashFileManager mCrashFileManager;
     private boolean mIsNativeInitialized;
 
     private static class Holder {
-        static CrashReporterControllerImpl sInstance = new CrashReporterControllerImpl();
+        static CrashReporterController sInstance = new CrashReporterController();
     }
 
-    private CrashReporterControllerImpl() {}
+    private CrashReporterController() {}
 
-    public static CrashReporterControllerImpl getInstance() {
+    public static CrashReporterController getInstance() {
         return Holder.sInstance;
     }
 
     public void notifyNativeInitialized() {
         mIsNativeInitialized = true;
-        if (mClient != null) {
-            processNewMinidumps();
-        }
+
+        processNewMinidumps();
+        TraceEvent.instant(TAG, "Start observing child process crashes");
+        ChildProcessCrashObserver.registerCrashCallback(
+                new ChildProcessCrashObserver.ChildCrashedCallback() {
+                    @Override
+                    public void childCrashed(int pid) {
+                        TraceEvent.instant(TAG, "Child process crashed. Process new minidumps.");
+                        processNewMinidumps();
+                    }
+                });
     }
 
-    @Override
     public void deleteCrash(String localId) {
         StrictModeWorkaround.apply();
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
-            deleteCrashOnBackgroundThread(localId);
-            try {
-                mClient.onCrashDeleted(localId);
-            } catch (RemoteException e) {
-                throw new AndroidRuntimeException(e);
-            }
-        });
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> { deleteCrashOnBackgroundThread(localId); });
     }
 
-    @Override
     public void uploadCrash(String localId) {
         StrictModeWorkaround.apply();
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
             TraceEvent.instant(TAG, "CrashReporterController: Begin uploading crash");
             File minidumpFile = getCrashFileManager().getCrashFileWithLocalId(localId);
             if (minidumpFile == null) {
-                try {
-                    mClient.onCrashUploadFailed(localId, "invalid crash id");
-                } catch (RemoteException e) {
-                    throw new AndroidRuntimeException(e);
-                }
                 return;
             }
             MinidumpUploader.Result result = new MinidumpUploader().upload(minidumpFile);
@@ -96,21 +83,13 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
             } else {
                 CrashFileManager.tryIncrementAttemptNumber(minidumpFile);
             }
-            try {
-                if (result.isSuccess()) {
-                    TraceEvent.instant(TAG, "CrashReporterController: Crash upload succeeded.");
-                    mClient.onCrashUploadSucceeded(localId, result.message());
-                } else {
-                    TraceEvent.instant(TAG, "CrashReporterController: Crash upload failed.");
-                    mClient.onCrashUploadFailed(localId, result.message());
-                }
-            } catch (RemoteException e) {
-                throw new AndroidRuntimeException(e);
-            }
+
+            TraceEvent.instant(TAG,
+                    "CrashReporterController: Crash upload "
+                            + (result.isSuccess() ? "succeeded" : "failed"));
         });
     }
 
-    @Override
     public @Nullable Bundle getCrashKeys(String localId) {
         StrictModeWorkaround.apply();
         JSONObject data = readSidecar(localId);
@@ -130,50 +109,9 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
         return result;
     }
 
-    @Override
-    public void checkForPendingCrashReports() {
-        StrictModeWorkaround.apply();
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
-            try {
-                mClient.onPendingCrashReports(getPendingMinidumpsOnBackgroundThread());
-            } catch (RemoteException e) {
-                throw new AndroidRuntimeException(e);
-            }
-        });
-    }
-
-    @Override
-    public void setClient(ICrashReporterControllerClient client) {
-        StrictModeWorkaround.apply();
-        mClient = client;
-        if (mIsNativeInitialized) {
-            processNewMinidumps();
-        }
-
-        // Now that there is a client, register to observe child process crashes.
-        TraceEvent.instant(TAG, "Start observing child process crashes");
-        ChildProcessCrashObserver.registerCrashCallback(
-                new ChildProcessCrashObserver.ChildCrashedCallback() {
-                    @Override
-                    public void childCrashed(int pid) {
-                        TraceEvent.instant(TAG, "Child process crashed. Process new minidumps.");
-                        processNewMinidumps();
-                    }
-                });
-    }
-
     /** Start an async task to import crashes, and notify if any are found. */
     private void processNewMinidumps() {
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
-            String[] localIds = processNewMinidumpsOnBackgroundThread();
-            if (localIds.length > 0) {
-                try {
-                    mClient.onPendingCrashReports(localIds);
-                } catch (RemoteException e) {
-                    throw new AndroidRuntimeException(e);
-                }
-            }
-        });
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> { processNewMinidumpsOnBackgroundThread(); });
     }
 
     /** Delete a crash report (and any sidecar file) given its local ID. */

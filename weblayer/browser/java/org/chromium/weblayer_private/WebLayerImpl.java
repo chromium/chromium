@@ -83,7 +83,6 @@ import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowser;
-import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IWebLayer;
@@ -218,7 +217,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         // TODO(swestphal): Move this earlier when it is not depending on native code being loaded.
         ChildProcessLauncherHelper.warmUp(appContext, true);
 
-        CrashReporterControllerImpl.getInstance().notifyNativeInitialized();
+        CrashReporterController.getInstance().notifyNativeInitialized();
         NetworkChangeNotifier.init();
         NetworkChangeNotifier.registerToReceiveNotificationsAlways();
 
@@ -398,16 +397,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     public boolean isRemoteDebuggingEnabled() {
         StrictModeWorkaround.apply();
         return WebLayerImplJni.get().isRemoteDebuggingEnabled();
-    }
-
-    @Override
-    public ICrashReporterController getCrashReporterController(
-            IObjectWrapper appContext, IObjectWrapper remoteContext) {
-        StrictModeWorkaround.apply();
-        // This is a no-op if init has already happened.
-        minimalInitForContext(ObjectWrapper.unwrap(appContext, Context.class),
-                ObjectWrapper.unwrap(remoteContext, Context.class));
-        return CrashReporterControllerImpl.getInstance();
     }
 
     @Override
@@ -664,10 +653,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         }
     }
 
-    /**
-     * Performs the minimal initialization needed for a context. This is used for example in
-     * CrashReporterControllerImpl, so it can be used before full WebLayer initialization.
-     */
     private static Context minimalInitForContext(Context appContext, Context remoteContext) {
         if (ContextUtils.getApplicationContext() != null) {
             return ContextUtils.getApplicationContext();

@@ -48,8 +48,6 @@ android_library("java") {
     "org/chromium/weblayer/CookieChangedCallback.java",
     "org/chromium/weblayer/CookieManager.java",
     "org/chromium/weblayer/CookieManagerDelegate.java",
-    "org/chromium/weblayer/CrashReporterCallback.java",
-    "org/chromium/weblayer/CrashReporterController.java",
     "org/chromium/weblayer/DarkModeStrategy.java",
     "org/chromium/weblayer/Download.java",
     "org/chromium/weblayer/DownloadCallback.java",
