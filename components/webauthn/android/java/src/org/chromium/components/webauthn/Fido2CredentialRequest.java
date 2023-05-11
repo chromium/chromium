@@ -773,7 +773,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 byte[] responseSerialized =
                         Fido2CredentialRequestJni.get().makeCredentialResponseFromJson(json);
                 if (responseSerialized == null) {
-                    Log.e(TAG, "Failed to convert response from CredMan to Mojo object");
+                    Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
@@ -892,7 +892,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 byte[] responseSerialized =
                         Fido2CredentialRequestJni.get().getCredentialResponseFromJson(json);
                 if (responseSerialized == null) {
-                    Log.e(TAG, "Failed to convert response from CredMan to Mojo object");
+                    Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
