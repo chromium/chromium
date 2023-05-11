@@ -599,6 +599,7 @@ void AppListClientImpl::OnTemplateURLServiceChanged() {
           template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
   current_model_updater_->SetSearchEngineIsGoogle(is_google);
+  search_controller_->OnDefaultSearchIsGoogleSet(is_google);
 }
 
 void AppListClientImpl::ShowAppList(ash::AppListShowSource source) {

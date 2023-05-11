@@ -72,10 +72,6 @@ FederatedMetricsManager::FederatedMetricsManager(
     ash::AppListNotifier* notifier,
     ash::federated::FederatedServiceController* controller)
     : controller_(controller) {
-  if (!IsLoggingEnabled()) {
-    return;
-  }
-
   if (!notifier) {
     LogInitStatus(InitStatus::kMissingNotifier);
     return;
@@ -145,14 +141,20 @@ void FederatedMetricsManager::OnLaunch(Location location,
   }
 }
 
+void FederatedMetricsManager::OnDefaultSearchIsGoogleSet(bool is_google) {
+  is_default_search_engine_google_ = is_google;
+}
+
 bool FederatedMetricsManager::IsFederatedServiceAvailable() {
   return controller_ && controller_->IsServiceAvailable();
 }
 
 bool FederatedMetricsManager::IsLoggingEnabled() {
+  CHECK(is_default_search_engine_google_.has_value());
   return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() &&
          ash::features::IsFederatedServiceEnabled() &&
-         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
+         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled() &&
+         is_default_search_engine_google_.value();
 }
 
 void FederatedMetricsManager::TryToBindFederatedServiceIfNecessary() {

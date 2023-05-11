@@ -423,6 +423,10 @@ void SearchController::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void SearchController::OnDefaultSearchIsGoogleSet(bool is_google) {
+  federated_metrics_manager_->OnDefaultSearchIsGoogleSet(is_google);
+}
+
 std::u16string SearchController::get_query() {
   return last_query_;
 }
