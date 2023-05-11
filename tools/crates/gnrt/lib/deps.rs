@@ -4,7 +4,7 @@
 
 //! Utilities to process `cargo metadata` dependency graph.
 
-use crate::crates::{self, Epoch};
+use crate::crates;
 use crate::platforms::{self, Platform, PlatformSet};
 
 use std::collections::{hash_map::Entry, HashMap, HashSet};
@@ -64,11 +64,8 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn third_party_crate_id(&self) -> crates::ChromiumVendoredCrate {
-        crates::ChromiumVendoredCrate {
-            name: self.package_name.clone(),
-            epoch: Epoch::from_version(&self.version),
-        }
+    pub fn crate_id(&self) -> crates::VendoredCrate {
+        crates::VendoredCrate { name: self.package_name.clone(), version: self.version.clone() }
     }
 }
 
@@ -89,11 +86,8 @@ pub struct DepOfDep {
 }
 
 impl DepOfDep {
-    pub fn third_party_crate_id(&self) -> crates::ChromiumVendoredCrate {
-        crates::ChromiumVendoredCrate {
-            name: self.package_name.clone(),
-            epoch: Epoch::from_version(&self.version),
-        }
+    pub fn crate_id(&self) -> crates::VendoredCrate {
+        crates::VendoredCrate { name: self.package_name.clone(), version: self.version.clone() }
     }
 }
 

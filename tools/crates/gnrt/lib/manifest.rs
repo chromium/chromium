@@ -83,6 +83,15 @@ pub enum Dependency {
     Full(FullDependency),
 }
 
+impl Dependency {
+    pub fn into_full(self) -> FullDependency {
+        match self {
+            Self::Short(version) => FullDependency { version: Some(version), ..Default::default() },
+            Self::Full(full) => full,
+        }
+    }
+}
+
 /// A single crate dependency with some extra fields from third_party.toml.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -107,6 +116,19 @@ pub struct FullDependency {
     /// verbatim.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gn_variables_lib: Option<String>,
+}
+
+impl Default for FullDependency {
+    fn default() -> Self {
+        FullDependency {
+            default_features: true,
+            version: None,
+            features: vec![],
+            allow_first_party_usage: true,
+            build_script_outputs: vec![],
+            gn_variables_lib: None,
+        }
+    }
 }
 
 /// Representation of a Cargo.toml file.

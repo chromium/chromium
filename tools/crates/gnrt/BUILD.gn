@@ -23,6 +23,8 @@ rust_executable("gnrt") {
     "//third_party/rust/anyhow/v1:test_support",
     "//third_party/rust/cargo_metadata/v0_14:test_support",
     "//third_party/rust/clap/v4:test_support",
+    "//third_party/rust/env_logger/v0_10:test_support",
+    "//third_party/rust/log/v0_4:test_support",
     "//third_party/rust/semver/v1:test_support",
     "//third_party/rust/serde/v1:lib",
     "//third_party/rust/serde_json/v1:test_support",

@@ -12,6 +12,13 @@ use anyhow::{Context, Result};
 use clap::arg;
 
 fn main() -> Result<()> {
+    let mut logger_builder = env_logger::Builder::new();
+    logger_builder.write_style(env_logger::WriteStyle::Always);
+    logger_builder.filter(None, log::LevelFilter::Warn);
+    logger_builder.parse_default_env();
+    logger_builder.format(format_log_entry);
+    logger_builder.init();
+
     let args = clap::Command::new("gnrt")
         .subcommand(
             clap::Command::new("gen")
@@ -53,4 +60,21 @@ fn main() -> Result<()> {
         }
         _ => unreachable!("Invalid subcommand"),
     }
+}
+
+fn format_log_entry(
+    fmt: &mut env_logger::fmt::Formatter,
+    record: &log::Record,
+) -> std::io::Result<()> {
+    use std::io::Write;
+
+    let level = fmt.default_styled_level(record.level());
+    write!(fmt, "[{level}")?;
+    if let Some(f) = record.file() {
+        write!(fmt, " {f}")?;
+        if let Some(l) = record.line() {
+            write!(fmt, ":{l}")?;
+        }
+    }
+    writeln!(fmt, "] {msg}", msg = record.args())
 }

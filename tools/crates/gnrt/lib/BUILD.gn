@@ -23,11 +23,13 @@ rust_static_library("lib") {
     "manifest.rs",
     "paths.rs",
     "platforms.rs",
+    "util.rs",
   ]
 
   deps = [
     "//third_party/rust/cargo_metadata/v0_14:test_support",
     "//third_party/rust/cargo_platform/v0_1:test_support",
+    "//third_party/rust/log/v0_4:test_support",
     "//third_party/rust/once_cell/v1:test_support",
     "//third_party/rust/semver/v1:test_support",
     "//third_party/rust/serde/v1:lib",

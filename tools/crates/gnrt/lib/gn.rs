@@ -119,6 +119,17 @@ impl RuleDep {
     }
 }
 
+/// Extra metadata influencing GN output for a particular crate.
+#[derive(Clone, Debug, Default)]
+pub struct PerCrateMetadata {
+    /// Names of files the build.rs script may output.
+    pub build_script_outputs: Vec<String>,
+    /// Extra GN code pasted literally into the build rule.
+    pub gn_variables: Option<String>,
+    /// GN target visibility.
+    pub visibility: Visibility,
+}
+
 /// Generate `BuildFile` descriptions for each third party crate in the
 /// dependency graph.
 ///
@@ -128,24 +139,21 @@ impl RuleDep {
 ///   script for each package.
 /// * `deps_visibility` is the visibility for each package, defining if it can
 ///   be used outside of third-party code and outside of tests.
-pub fn build_files_from_chromium_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package>>(
+pub fn build_files_from_chromium_deps<'a, 'b, Iter, GetManifest>(
     deps: Iter,
-    paths: &'b paths::ChromiumPaths,
-    metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
-    build_script_outputs: &HashMap<ChromiumVendoredCrate, Vec<String>>,
-    deps_visibility: &HashMap<ChromiumVendoredCrate, Visibility>,
-    gn_variables_libs: &HashMap<ChromiumVendoredCrate, String>,
-) -> HashMap<ChromiumVendoredCrate, BuildFile> {
+    paths: &paths::ChromiumPaths,
+    metadatas: &HashMap<VendoredCrate, PerCrateMetadata>,
+    get_manifest: GetManifest,
+) -> HashMap<VendoredCrate, BuildFile>
+where
+    Iter: IntoIterator<Item = &'a deps::Package>,
+    GetManifest: Fn(&VendoredCrate) -> &'b CargoPackage,
+{
     deps.into_iter()
         .filter_map(|dep| {
-            make_build_file_for_chromium_dep(
-                dep,
-                paths,
-                metadata,
-                build_script_outputs,
-                deps_visibility,
-                gn_variables_libs,
-            )
+            let crate_id = dep.crate_id();
+            let metadata = metadatas.get(&crate_id).cloned().unwrap_or_default();
+            make_build_file_for_chromium_dep(dep, paths, get_manifest(&crate_id), metadata)
         })
         .collect()
 }
@@ -175,7 +183,7 @@ pub fn build_rule_from_std_dep(
     // Used by reference if the provided crate config is empty.
     let default_crate_config = Default::default();
     let crate_config =
-        extra_config.per_crate_config.get(&dep.package_name).unwrap_or(&default_crate_config);
+        extra_config.per_crate_config.get(&*dep.package_name).unwrap_or(&default_crate_config);
     let all_config = &extra_config.all_config;
 
     // Helper macro to iterate over a particular config field: first the
@@ -221,7 +229,7 @@ pub fn build_rule_from_std_dep(
         edition: dep.edition.clone(),
         cargo_pkg_version: dep.version.to_string(),
         cargo_pkg_authors,
-        cargo_pkg_name: dep.package_name.clone(),
+        cargo_pkg_name: dep.package_name.to_string(),
         cargo_pkg_description: dep.description.clone(),
         add_library_configs: Vec::new(),
         remove_library_configs: Vec::new(),
@@ -249,7 +257,11 @@ pub fn build_rule_from_std_dep(
 
     // Add only normal dependencies: we don't run unit tests, and we don't run
     // build scripts (instead manually configuring build flags and env vars).
-    for dep_of_dep in dep.dependencies.iter().filter(|d| !exclude_deps.contains(&d.package_name)) {
+    for dep_of_dep in dep
+        .dependencies
+        .iter()
+        .filter(|d| exclude_deps.iter().find(|e| e.as_str() == &*d.package_name).is_none())
+    {
         let cond = match &dep_of_dep.platform {
             None => Condition::Always,
             Some(p) => Condition::If(platform_to_condition(p)),
@@ -290,40 +302,35 @@ fn do_concat_field<
 
 /// Generate the `BuildFile` for `dep`, or return `None` if no rules would be
 /// present.
-fn make_build_file_for_chromium_dep(
+fn make_build_file_for_chromium_dep<'a>(
     dep: &deps::Package,
     paths: &paths::ChromiumPaths,
-    metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
-    build_script_outputs: &HashMap<ChromiumVendoredCrate, Vec<String>>,
-    deps_visibility: &HashMap<ChromiumVendoredCrate, Visibility>,
-    gn_variables_libs: &HashMap<ChromiumVendoredCrate, String>,
-) -> Option<(ChromiumVendoredCrate, BuildFile)> {
+    manifest: &CargoPackage,
+    metadata: PerCrateMetadata,
+) -> Option<(VendoredCrate, BuildFile)> {
     let third_party_path_str = paths.third_party.to_str().unwrap();
-    let crate_id = dep.third_party_crate_id();
-    let crate_abs_path = paths.root.join(paths.third_party.join(crate_id.build_path()));
+    let crate_id = dep.crate_id();
+    let crate_abs_path =
+        paths.root.join(paths.third_party.join(ThirdPartySource::build_path(&crate_id)));
 
     let to_gn_path = |abs_path: &Path| {
         abs_path.strip_prefix(&crate_abs_path).unwrap().to_string_lossy().into_owned()
     };
 
-    let package_metadata = metadata.get(&crate_id).unwrap();
-    let cargo_pkg_description = package_metadata.description.clone();
-    let cargo_pkg_authors = if package_metadata.authors.is_empty() {
-        None
-    } else {
-        Some(package_metadata.authors.join(", "))
-    };
+    let cargo_pkg_description = manifest.description.clone();
+    let cargo_pkg_authors =
+        if manifest.authors.is_empty() { None } else { Some(manifest.authors.join(", ")) };
 
     // Template for all the rules in a build file. Several fields are
     // the same for all a package's rules.
     let mut rule_template = RuleConcrete {
-        edition: package_metadata.edition.0.clone(),
-        cargo_pkg_version: package_metadata.version.to_string(),
+        edition: manifest.edition.to_string(),
+        cargo_pkg_version: manifest.version.to_string(),
         cargo_pkg_authors: cargo_pkg_authors,
-        cargo_pkg_name: package_metadata.name.clone(),
+        cargo_pkg_name: manifest.name.clone(),
         cargo_pkg_description,
         build_root: dep.build_script.as_ref().map(|p| to_gn_path(p.as_path())),
-        build_script_outputs: build_script_outputs.get(&crate_id).cloned().unwrap_or_default(),
+        build_script_outputs: metadata.build_script_outputs,
         ..Default::default()
     };
 
@@ -346,10 +353,10 @@ fn make_build_file_for_chromium_dep(
                 Some(p) => Condition::If(platform_to_condition(p)),
             };
 
-            let crate_id = dep_of_dep.third_party_crate_id();
+            let crate_id = dep_of_dep.crate_id();
             let normalized_name = crate_id.normalized_name();
             let dep_use_name = dep_of_dep.use_name.as_str();
-            let epoch = crate_id.epoch;
+            let epoch = Epoch::from_version(&crate_id.version);
             let rule = format!("//{third_party_path_str}/{normalized_name}/{epoch}:{target_name}");
 
             if dep_use_name != normalized_name.as_str() {
@@ -431,15 +438,14 @@ fn make_build_file_for_chromium_dep(
 
             let mut lib_details = rule_template.clone();
             lib_details.crate_name = Some(crate_id.normalized_name().to_string());
-            lib_details.epoch = Some(crate_id.epoch);
+            lib_details.epoch = Some(Epoch::from_version(&crate_id.version));
             lib_details.crate_type = lib_target.lib_type.to_string();
             lib_details.crate_root = to_gn_path(lib_target.root.as_path());
             lib_details.features = per_kind_info.features.clone();
-            lib_details.gn_variables_lib = gn_variables_libs.get(&crate_id).cloned();
+            lib_details.gn_variables_lib = metadata.gn_variables.clone();
 
             let testonly = dep_kind == deps::DependencyKind::Development;
-            let visibility =
-                deps_visibility.get(&crate_id).map(Clone::clone).unwrap_or(Visibility::ThirdParty);
+            let visibility = metadata.visibility;
 
             let lib_rule = Rule::Concrete {
                 common: RuleCommon {
