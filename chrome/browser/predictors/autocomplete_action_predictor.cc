@@ -37,10 +37,29 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/page_transition_types.h"
+
+namespace {
+void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
+  preloading_data->SetIsNavigationInDomainCallback(
+      chrome_preloading_predictor::kOmniboxDirectURLInput,
+      base::BindRepeating(
+          [](content::NavigationHandle* navigation_handle) -> bool {
+            auto transition_type = navigation_handle->GetPageTransition();
+            return (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
+                   ui::PageTransitionCoreTypeIs(
+                       transition_type,
+                       ui::PageTransition::PAGE_TRANSITION_TYPED) &&
+                   ui::PageTransitionIsNewNavigation(
+                       navigation_handle->GetPageTransition());
+          }));
+}
+}  // namespace
 
 namespace {
 
@@ -207,6 +226,8 @@ void AutocompleteActionPredictor::StartPrerendering(
   content::PreloadingURLMatchCallback same_url_matcher =
       content::PreloadingData::GetSameURLMatcher(url);
 
+  SetIsNavigationInDomainCallback(preloading_data);
+
   if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
     // Create new PreloadingAttempt and pass all the values corresponding to
     // this prerendering attempt for Prerender.
@@ -308,6 +329,7 @@ AutocompleteActionPredictor::RecommendAction(
 
     auto* preloading_data =
         content::PreloadingData::GetOrCreateForWebContents(web_contents);
+    SetIsNavigationInDomainCallback(preloading_data);
 
     // We multiply confidence by 100 to pass the percentage and cast it into int
     // for logs.

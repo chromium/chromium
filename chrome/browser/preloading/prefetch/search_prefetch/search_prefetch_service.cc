@@ -39,6 +39,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
@@ -48,6 +49,28 @@
 #include "url/origin.h"
 
 using omnibox::mojom::NavigationPredictor;
+
+namespace {
+void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
+  constexpr content::PreloadingPredictor kPredictors[] = {
+      chrome_preloading_predictor::kDefaultSearchEngine,
+      chrome_preloading_predictor::kOmniboxSearchSuggestDefaultMatch,
+      chrome_preloading_predictor::kOmniboxMousePredictor,
+      chrome_preloading_predictor::kOmniboxSearchPredictor};
+  for (const auto& predictor : kPredictors) {
+    preloading_data->SetIsNavigationInDomainCallback(
+        predictor,
+        base::BindRepeating(
+            [](content::NavigationHandle* navigation_handle) -> bool {
+              auto transition_type = navigation_handle->GetPageTransition();
+              return (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
+                     ui::PageTransitionCoreTypeIs(
+                         transition_type,
+                         ui::PageTransition::PAGE_TRANSITION_GENERATED);
+            }));
+  }
+}
+}  // namespace
 
 namespace {
 
@@ -247,7 +270,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
 
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
-
+  SetIsNavigationInDomainCallback(preloading_data);
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this DefaultSearchEngine or OmniboxSearchPredictor prefetch attempt when
   // |navigation_prefetch| is true.
@@ -686,6 +709,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     int64_t confidence = BaseSearchProvider::ShouldPrerender(match) ? 80 : 60;
     auto* preloading_data =
         content::PreloadingData::GetOrCreateForWebContents(web_contents);
+    SetIsNavigationInDomainCallback(preloading_data);
     GURL canonical_search_url;
     HasCanoncialPreloadingOmniboxSearchURL(match.destination_url, profile_,
                                            &canonical_search_url);
@@ -834,7 +858,7 @@ void SearchPrefetchService::OnNavigationLikely(
         }
       };
   auto predictor = navigation_likely_event_to_predictor(navigation_predictor);
-
+  SetIsNavigationInDomainCallback(preloading_data);
   // Create PreloadingPrediction for this match. We set the confidence to 100 as
   // when the user changed the selected match, we always trigger prefetch.
   preloading_data->AddPreloadingPrediction(predictor, 100,
@@ -1043,6 +1067,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   // this prerendering attempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
+  SetIsNavigationInDomainCallback(preloading_data);
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kDefaultSearchEngine,
