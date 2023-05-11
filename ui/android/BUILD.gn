@@ -416,6 +416,7 @@ android_library("ui_no_recycler_view_java") {
     "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/base/cursor/mojom:cursor_type_java",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",

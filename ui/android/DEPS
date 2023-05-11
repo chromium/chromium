@@ -13,6 +13,7 @@ include_rules = [
   "+services/viz/public/mojom",
   "+skia/ext",
   "+third_party/skia",
+  "+ui/accessibility",
   "+ui/android/ui_android_jni_headers",
   "+ui/base",
   "+ui/compositor/compositor_lock.h",
