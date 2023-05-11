@@ -294,7 +294,7 @@ void NavigationItemImpl::SetShouldSkipSerialization(bool skip) {
 }
 
 bool NavigationItemImpl::ShouldSkipSerialization() const {
-  return should_skip_serialization_;
+  return should_skip_serialization_ || url_.spec().size() > url::kMaxURLChars;
 }
 
 void NavigationItemImpl::SetPostData(NSData* post_data) {
