@@ -518,7 +518,10 @@ TEST(CheckTest, NotImplemented) {
 
 #if DCHECK_IS_ON()
   // Expect LOG(ERROR) with streamed params intact.
-  EXPECT_LOG_ERROR(__LINE__, NOTIMPLEMENTED() << "foo", expected_msg + "foo\n");
+  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                 base::Location::Current().line_number(),
+                                 NOTIMPLEMENTED() << "foo",
+                                 expected_msg + "foo\n");
 #else
   // Expect nothing.
   EXPECT_NO_LOG(NOTIMPLEMENTED() << "foo");
@@ -534,7 +537,9 @@ TEST(CheckTest, NotImplementedLogOnce) {
       "Not implemented reached in void (anonymous namespace)::NiLogOnce()\n";
 
 #if DCHECK_IS_ON()
-  EXPECT_LOG_ERROR(__LINE__ - 8, NiLogOnce(), expected_msg);
+  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                 base::Location::Current().line_number() - 10,
+                                 NiLogOnce(), expected_msg);
   EXPECT_NO_LOG(NiLogOnce());
 #else
   EXPECT_NO_LOG(NiLogOnce());

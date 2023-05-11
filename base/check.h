@@ -66,7 +66,9 @@ class BASE_EXPORT CheckError {
   // Used by CheckOp. Takes ownership of `log_message`.
   explicit CheckError(LogMessage* log_message) : log_message_(log_message) {}
 
-  static CheckError Check(const char* file, int line, const char* condition);
+  static CheckError Check(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
 
   static CheckError DCheck(
       const char* condition,
@@ -76,16 +78,19 @@ class BASE_EXPORT CheckError {
       const char* condition,
       const base::Location& location = base::Location::Current());
 
-  static CheckError PCheck(const char* file, int line, const char* condition);
-  static CheckError PCheck(const char* file, int line);
+  static CheckError PCheck(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
+  static CheckError PCheck(
+      const base::Location& location = base::Location::Current());
 
   static CheckError DPCheck(
       const char* condition,
       const base::Location& location = base::Location::Current());
 
-  static CheckError NotImplemented(const char* file,
-                                   int line,
-                                   const char* function);
+  static CheckError NotImplemented(
+      const char* function,
+      const base::Location& location = base::Location::Current());
 
   // Stream for adding optional details to the error message.
   std::ostream& stream();
@@ -127,7 +132,8 @@ class BASE_EXPORT NotReachedError : public CheckError {
 // callers of NOTREACHED() have migrated to the CHECK-fatal version.
 class BASE_EXPORT NotReachedNoreturnError : public CheckError {
  public:
-  NotReachedNoreturnError(const char* file, int line);
+  explicit NotReachedNoreturnError(
+      const base::Location& location = base::Location::Current());
 
   [[noreturn]] NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedNoreturnError();
 };
@@ -171,22 +177,18 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #define CHECK_WILL_STREAM() false
 
 // Strip the conditional string from official builds.
-#define PCHECK(condition)                                                \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(__FILE__, __LINE__), \
-                      condition)
+#define PCHECK(condition) \
+  CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(), condition)
 
 #else
 
 #define CHECK_WILL_STREAM() true
 
 #define CHECK(condition) \
-  CHECK_FUNCTION_IMPL(   \
-      ::logging::CheckError::Check(__FILE__, __LINE__, #condition), condition)
+  CHECK_FUNCTION_IMPL(::logging::CheckError::Check(#condition), condition)
 
-#define PCHECK(condition)                                            \
-  CHECK_FUNCTION_IMPL(                                               \
-      ::logging::CheckError::PCheck(__FILE__, __LINE__, #condition), \
-      condition)
+#define PCHECK(condition) \
+  CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(#condition), condition)
 
 #endif
 
