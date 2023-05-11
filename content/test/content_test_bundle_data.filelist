@@ -5122,6 +5122,7 @@ data/attribution_reporting/interop/event_report_window.json
 data/attribution_reporting/interop/event_source.json
 data/attribution_reporting/interop/event_source_trigger_priority.json
 data/attribution_reporting/interop/expired_source.json
+data/attribution_reporting/interop/max_aggregatable_reports_per_source.json
 data/attribution_reporting/interop/most_recent_source.json
 data/attribution_reporting/interop/multiple_destinations.json
 data/attribution_reporting/interop/rate_limit_max_attribution_reporting_endpoints.json

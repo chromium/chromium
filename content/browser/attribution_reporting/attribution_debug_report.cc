@@ -57,7 +57,6 @@ enum class DebugDataType {
   kTriggerAggregateInsufficientBudget,
   kTriggerAggregateStorageLimit,
   kTriggerAggregateReportWindowPassed,
-  // TODO(crbug.com/1442939): Add an interop test for this.
   kTriggerAggregateExcessiveReports,
   kTriggerUnknownError,
 };
