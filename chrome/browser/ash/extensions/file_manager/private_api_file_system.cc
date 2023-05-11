@@ -55,7 +55,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/restore_io_task.h"
 #include "chrome/browser/ash/file_manager/restore_to_destination_io_task.h"
-#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/zip_io_task.h"
@@ -1414,21 +1413,10 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
     return RespondNow(Error("Cannot convert category to file type"));
   }
 
-  std::vector<base::FilePath> excluded_paths;
-  if (file_manager::trash::IsTrashEnabledForProfile((profile))) {
-    auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile, /*base_path=*/base::FilePath());
-    for (const auto& it : enabled_trash_locations) {
-      excluded_paths.emplace_back(
-          it.first.Append(it.second.relative_folder_path));
-    }
-  }
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
-          &SearchByPattern, root_path, excluded_paths, search_params.query,
+          &SearchByPattern, root_path, search_params.query,
           base::Time::FromJsTime(search_params.timestamp), file_type,
           base::internal::checked_cast<size_t>(search_params.max_results)),
       base::BindOnce(

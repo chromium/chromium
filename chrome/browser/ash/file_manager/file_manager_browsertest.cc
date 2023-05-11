@@ -2169,7 +2169,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("selectionPath").EnableSearchV2(),
         TestCase("searchHierarchy").EnableSearchV2(),
         TestCase("hideSearchInTrash").EnableSearchV2(),
-        TestCase("searchTrashedFiles").EnableSearchV2(),
         TestCase("matchDriveFilesByName").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
