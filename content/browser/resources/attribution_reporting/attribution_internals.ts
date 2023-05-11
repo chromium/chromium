@@ -535,13 +535,18 @@ class AggregatableAttributionReport extends Report {
   }
 }
 
-function commonReportTableColumns<T extends Report>(): Array<Column<T>> {
+function commonPreReportTableColumns<T extends Report>(): Array<Column<T>> {
   return [
-    new CodeColumn<T>('Report Body', (e) => e.reportBody),
     new ValueColumn<T, string>('Status', (e) => e.status),
     new ReportUrlColumn<T>(),
     new DateColumn<T>('Trigger Time', (e) => e.triggerTime),
     new DateColumn<T>('Report Time', (e) => e.reportTime),
+  ];
+}
+
+function commonPostReportTableColumns<T extends Report>(): Array<Column<T>> {
+  return [
+    new CodeColumn<T>('Report Body', (e) => e.reportBody),
   ];
 }
 
@@ -557,8 +562,9 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
       private readonly sendReportsButton: HTMLButtonElement,
       private readonly handler: HandlerInterface) {
     super(
-        commonReportTableColumns<T>().concat(cols),
-        5,  // Sort by report time by default; the extra column is added below
+        commonPreReportTableColumns<T>().concat(cols)
+            .concat(commonPostReportTableColumns<T>()),
+        4,  // Sort by report time by default; the extra column is added below
         'No sent or pending reports.',
     );
 
