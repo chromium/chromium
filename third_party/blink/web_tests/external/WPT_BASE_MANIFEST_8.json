@@ -86424,6 +86424,32 @@
        {}
       ]
      ],
+     "clipping-001.html": [
+      "da15ec7a2e383b34570130e24bf1707423dd12a1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "clipping-002.html": [
+      "e1f2c4e1c6bbe3b455c223c8c617f2f33237ccd8",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-strict-with-opacity-and-oof.html": [
       "b3323a60c75247249f4494834bbf2b57dda172d4",
       [
@@ -95342,6 +95368,71 @@
      ],
      "transform-016.html": [
       "5a10d860c3feaa787db420b0fec4f5bfaaa6fa96",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-017.html": [
+      "b01e3ccee765916161302bbe3fe5040201ffc9c4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-018.html": [
+      "dc9a791e6a8fdb025ceb4f43c1643617af1a5aab",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-019.html": [
+      "758ff713ba273d417294293c9277eb33b209d8d9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-020.html": [
+      "e15df5f7342c79ef4759c8f744c0ac838ed69225",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-021.html": [
+      "c97ef30b7f5db59bf1975b68459a1226d6384c5d",
       [
        null,
        [
@@ -255246,6 +255337,19 @@
        ]
       },
       "lists": {
+       "dir-type.html": [
+        "d1f0ae3fe3f1f11eaf4e8cb508121a8f58118b5f",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/lists/dir-type-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "li-type-supported-xhtml.xhtml": [
         "7a7640e03f05754836b30923b4002d27bcebb538",
         [
@@ -260260,7 +260364,7 @@
         {}
        ]
       ],
-      "popover-open-overflow-display.html": [
+      "popover-open-overflow-display.tentative.html": [
        "3d4d833063877ce1a9a3338d534709f94bdcdd77",
        [
         null,
@@ -271954,11 +272058,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "7e0db567c4245be664e5e1feb624c391960db727",
+     "cd7d1a90bad182741f05e8847d1e7e50537859f9",
      []
     ],
     "mtime.json": [
-     "74182d50d83363a72aadea8359a43db8f5d86678",
+     "c82378988f5242054dcc8739a6c5c3f4c9160591",
      []
     ]
    },
@@ -287806,7 +287910,7 @@
      ],
      "parsing": {
       "animation-computed-expected.txt": [
-       "7cf62fe5bbfce3752012ad4adfe7773b7ce127ce",
+       "f71ecc9d1c772669158a64728986729714d51cc0",
        []
       ],
       "animation-computed.html.ini": [
@@ -291739,10 +291843,6 @@
        "9f2446cc0e3668b8d01feaf7fe1f4db0c2ce2c0b",
        []
       ],
-      "color-valid-color-mix-function-expected.txt": [
-       "c763f87ab3d82da77f865ef6532ec200d6ef5d22",
-       []
-      ],
       "color-valid-color-mix-function.html.ini": [
        "a6532b8e209afedbab2c65756d1690a0a18e7b82",
        []
@@ -292282,6 +292382,10 @@
      ],
      "OWNERS": [
       "5e03d9bce08ec1c2c4d3a23b993e8f428c9e68db",
+      []
+     ],
+     "contain-html-overflow-001.html.ini": [
+      "0242e86515aecf5e8fa62d7f0a06766b16b11fa3",
       []
      ],
      "contain-inline-size-bfc-floats-001-ref.html": [
@@ -310902,7 +311006,7 @@
        []
       ],
       "clip-path-svg-invalidate.html.ini": [
-       "53c39b4237766803e26dbfe0d9dba745d4b32562",
+       "675938fece89cc04eb64599c04074d1aea5ea615",
        []
       ],
       "clip-path-svg-text-backdrop-filter-ref.html": [
@@ -329795,6 +329899,10 @@
        "7ab06ede5e4578ee34c04676699dd37957e38ff5",
        []
       ],
+      "kind-of-widget-fallback-textarea-border-inline-start-width-001.html.ini": [
+       "e8b5a37ee7faed92ea84fc866d8e9187e7841639",
+       []
+      ],
       "kind-of-widget-fallback-textarea-border-left-color-001.html.ini": [
        "bc888af907a67ea8ea618146766cbcd0a90810da",
        []
@@ -329919,7 +330027,7 @@
       []
      ],
      "outline-026.html.ini": [
-      "25f162f88c7e4fb5945bf6ff517681d50363d9bf",
+      "ce6736b1a79ca1f81a1c37f2d42026c4796f883d",
       []
      ],
      "outline-027.html.ini": [
@@ -336793,7 +336901,7 @@
       []
      ],
      "filtered-inline-is-container.html.ini": [
-      "539f4ab882a73ac17cfb4eb122573ff538de3d1f",
+      "11d580edf4d7c280e53f3556e18dc09761ee8759",
       []
      ],
      "filters-grayscale-001-ref.html": [
@@ -350128,7 +350236,7 @@
      []
     ],
     "generic-sensor-tests.js": [
-     "65f58ee7ca2c42b77b196a57276be3c935d598b8",
+     "3c8f478c541dcdb28d27012574dbdeb407902a16",
      []
     ],
     "resources": {
@@ -361708,6 +361816,10 @@
        ],
        "TODO-lists.html": [
         "6d79efc3846c8e427627e9d95af5699ca7096197",
+        []
+       ],
+       "dir-type-ref.html": [
+        "710b39ceca58425f3b6756e7e1312ad774bb6bbe",
         []
        ],
        "li-type-supported-ref.html": [
@@ -373348,7 +373460,7 @@
      []
     ],
     "Magnetometer.https-expected.txt": [
-     "478aba828f8782605fa8dc57c0e6958768206b80",
+     "32949aa2885b5ebf66bba2db84665d6658a33631",
      []
     ],
     "Magnetometer.https.html.ini": [
@@ -374907,7 +375019,7 @@
       []
      ],
      "mediasource-worker-play-terminate-worker.html.ini": [
-      "486b1b9e88d7091a42348881fb0f274b75953c79",
+      "ca7edf8f0510137064183f6a77497dd0d50b603d",
       []
      ],
      "mediasource-worker-play-terminate-worker.js": [
@@ -379112,7 +379224,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "e0355a2de0d2cc13ca79a236097178f36be67e63",
+     "9e9e21f4ed99dd72ea7e42df396f5a72d37e49af",
      []
     ],
     "modulepreload-expected.txt": [
@@ -387065,6 +387177,10 @@
       ],
       "prefetch.py": [
        "4a0a7a360209059937222e9eaebbd38f05c6240e",
+       []
+      ],
+      "prefetch_nvs_hint.py": [
+       "09c5d2eb737289ce0349fbefa8120ea4ab6dd26a",
        []
       ],
       "redirect.py": [
@@ -395711,11 +395827,11 @@
       []
      ],
      "bundle.https-expected.txt": [
-      "5ba096ab7d8fafbb28c7e56e17402bee81d9e798",
+      "60a94de73e8b0dfa31107a4b75c226b618deb9ea",
       []
      ],
      "bundle.https.html.ini": [
-      "afce8f6baf79c9fadcf6f8eebe45b6c668e5bb5a",
+      "756b5011a8ba179ffcfa23959c1c16c8cd72e3ba",
       []
      ],
      "crypto-suite.https-expected.txt": [
@@ -439270,7 +439386,7 @@
       ]
      ],
      "inheritance.html": [
-      "6e7697b9d81db6888077318389e1d70964241b3c",
+      "dd9d6469336cbc6bbf4fa3eba84e6ba05afad6de",
       [
        null,
        {}
@@ -439320,7 +439436,7 @@
        ]
       ],
       "animation-computed.html": [
-       "f8d34b889ba19dfc7d9fd4d644da499b979d4166",
+       "9152c49ee0cfedaff778f95765986392ea643f15",
        [
         null,
         {}
@@ -439586,7 +439702,7 @@
        ]
       ],
       "animation-shorthand.html": [
-       "464e42460b169f52b4558d0b2778c04c82eeaf36",
+       "8b482ff900f0d0a31189add815b08a7c6ca406b1",
        [
         null,
         {}
@@ -439600,7 +439716,7 @@
        ]
       ],
       "animation-valid.html": [
-       "4027ee1226e93b3804031e110b1a28a4ea3c4346",
+       "0c5d5713e3e335faeb4db6ae75062a1f894b2d3d",
        [
         null,
         {}
@@ -441999,7 +442115,7 @@
        ]
       ],
       "color-valid-hwb.html": [
-       "07367ac450b5d130bd9e1400ccfebb62105cbfde",
+       "dc2cec5276ec72547ccf642cda038460697af165",
        [
         null,
         {}
@@ -565214,7 +565330,7 @@
      ]
     },
     "roles.html": [
-     "5144fe3f0fbc51c02e642455c0446f1c3c9583bf",
+     "3609c26a23f9d826fa004c68835039ab051fedc9",
      [
       null,
       {
@@ -600786,7 +600902,7 @@
       ]
      ],
      "merge-timeline-offset-keyframes.html": [
-      "3a766de0c8565e53f4e45af9080e1fbbbe03d33e",
+      "c6d384fce546d132e11b43d786c17fe46a9fcd04",
       [
        null,
        {}
@@ -600982,7 +601098,7 @@
       ]
      ],
      "timeline-offset-keyframes-hidden-subject.html": [
-      "389c8baca3ad035df1de6767ac9abc6265756808",
+      "93ef7ffa1eb18ed16cb6edfe0caf35bb70b8d624",
       [
        null,
        {}
@@ -609304,6 +609420,109 @@
       ]
      ],
      "no-vary-search": {
+      "prefetch-single-with-hint.https.html": [
+       "d62788cabac4886099185bc527e1a026d23e19a7",
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?1-1",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?10-10",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?11-11",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?12-12",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?13-13",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?14-14",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?15-15",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?16-16",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?17-17",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?18-18",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?19-19",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?2-2",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?20-20",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?21-21",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?22-22",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?23-23",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?24-24",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?25-last",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?3-3",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?4-4",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?5-5",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?6-6",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?7-7",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?8-8",
+        {}
+       ],
+       [
+        "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?9-9",
+        {}
+       ]
+      ],
       "prefetch-single.https.html": [
        "fdbb6171353c9b986dc44be117af3e52c3fc77a6",
        [
@@ -640215,7 +640434,7 @@
       ]
      ],
      "bundle.https.html": [
-      "a9381e1e2ab1642ef6897d6d7fe40acdd1fc828b",
+      "3d2b835baf3b48fab62e0c19d142c68a73dd58e0",
       [
        null,
        {
