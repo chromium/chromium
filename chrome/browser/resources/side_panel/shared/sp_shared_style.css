@@ -116,3 +116,11 @@
 :host-context([chrome-refresh-2023]) .sp-hr {
   background: var(--color-side-panel-divider);
 }
+
+:host-context([chrome-refresh-2023]) .sp-cards-separator {
+  border: 0;
+  flex-shrink: 0;
+  height: 8px;
+  margin: 0;
+  width: 100%;
+}

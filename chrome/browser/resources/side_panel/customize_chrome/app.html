@@ -8,7 +8,7 @@
     margin: 8px 16px;
   }
 
-  .card-separator {
+  .sp-cards-separator {
     background-color: var(--google-grey-300);
     border: none;
     height: 2px;
@@ -17,14 +17,13 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    .card-separator {
+    .sp-cards-separator {
       background-color: var(--google-grey-700);
     }
   }
 
-  :host-context([chrome-refresh-2023]) .card-separator {
+  :host-context([chrome-refresh-2023]) .sp-cards-separator {
     background: transparent;
-    height: 8px;
   }
 
   :host-context([chrome-refresh-2023]) .sp-card {
@@ -56,7 +55,7 @@
         id="appearanceElement">
       </customize-chrome-appearance>
     </div>
-    <hr class="card-separator">
+    <hr class="sp-cards-separator">
     <div id="shortcuts" class="section sp-card">
       <sp-heading hide-back-button>
         <h2 slot="heading">$i18n{shortcutsHeader}</h2>
@@ -64,7 +63,7 @@
       <customize-chrome-shortcuts></customize-chrome-shortcuts>
     </div>
     <template is="dom-if" if="[[modulesEnabled_]]">
-      <hr class="card-separator">
+      <hr class="sp-cards-separator">
       <div id="modules" class="section sp-card">
         <sp-heading hide-back-button>
           <h2 slot="heading">$i18n{cardsHeader}</h2>
