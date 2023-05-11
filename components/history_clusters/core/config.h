@@ -10,8 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 
-class PrefService;
-
 namespace history_clusters {
 
 namespace switches {
@@ -19,8 +17,6 @@ namespace switches {
 extern const char kShouldShowAllClustersOnProminentUiSurfaces[];
 
 }  // namespace switches
-
-class HistoryClustersService;
 
 // The default configuration. Always use |GetConfig()| to get the current
 // configuration.
@@ -449,11 +445,6 @@ base::flat_set<std::string> JourneysMidBlocklist();
 // cached.
 bool IsApplicationLocaleSupportedByJourneys(
     const std::string& application_locale);
-
-// Checks some prerequisites for history cluster omnibox suggestions and
-// actions.
-bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
-                                PrefService* prefs);
 
 // Gets the current configuration.
 const Config& GetConfig();

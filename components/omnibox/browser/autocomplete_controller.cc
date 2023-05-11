@@ -1126,7 +1126,7 @@ void AutocompleteController::AttachActions() {
 #if !BUILDFLAG(IS_IOS)
     // HistoryClusters is not enabled on iOS.
     AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
-                                 provider_client_->GetPrefs(), result_);
+                                 result_);
 #endif
   }
   result_.TrimOmniboxActions();

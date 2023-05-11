@@ -11,7 +11,6 @@
 
 struct AutocompleteMatch;
 class AutocompleteResult;
-class PrefService;
 
 namespace gfx {
 struct VectorIcon;
@@ -80,7 +79,6 @@ class HistoryClustersAction : public OmniboxAction {
 // onto any relevant matches in `result`.
 void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
-    PrefService* prefs,
     AutocompleteResult& result);
 
 }  // namespace history_clusters

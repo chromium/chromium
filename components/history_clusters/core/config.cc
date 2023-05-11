@@ -13,10 +13,7 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
-#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -515,20 +512,6 @@ bool IsApplicationLocaleSupportedByJourneys(
   // the list.
   return allowlist.empty() || base::Contains(allowlist, application_locale) ||
          base::Contains(allowlist, l10n_util::GetLanguage(application_locale));
-}
-
-bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
-                                PrefService* prefs) {
-  if (!service)
-    return false;
-
-  if (!service->IsJourneysEnabled())
-    return false;
-
-  if (!prefs->GetBoolean(history_clusters::prefs::kVisible))
-    return false;
-
-  return true;
 }
 
 const Config& GetConfig() {
