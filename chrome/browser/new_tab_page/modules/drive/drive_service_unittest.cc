@@ -152,6 +152,8 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kContentError));
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Drive.FileCount", 2));
 }
 
 TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
@@ -254,6 +256,8 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kSuccess));
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Drive.FileCount", 1));
 }
 
 TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
