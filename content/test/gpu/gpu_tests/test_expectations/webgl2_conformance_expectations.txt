@@ -25,7 +25,9 @@
 #         lacros-chrome cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
-#         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
+#         apple apple-apple-m1 apple-apple-m2
+#             apple-angle-metal-renderer:-apple-m1
+#             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
@@ -390,17 +392,17 @@ crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gle
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/angleproject/8026 [ angle-metal intel monterey passthrough ] conformance2/uniforms/dependent-buffer-change.html [ Failure ]
 
-## Metal M1 ##
+## Metal Apple Silicon ##
 
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_combinations_04.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_sizes_03.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
-crbug.com/1298619 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/texturefiltering/cube_combinations_04.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/texturefiltering/cube_sizes_03.html [ Failure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
+crbug.com/1298619 [ mac passthrough angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
@@ -561,23 +563,23 @@ crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/function
 
 ## Mac / M1 / OpenGL ##
 
-crbug.com/angleproject/5223 [ angle-opengl apple-apple-m1 mac mac-arm64 no-asan oop-c passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
-crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
-crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
-crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_04.html [ Failure ]
-crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_sizes_03.html [ Failure ]
-crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
-crbug.com/1130117 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
-crbug.com/1130117 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
-crbug.com/1130118 [ mac apple-apple-m1 passthrough angle-opengl ] conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
-crbug.com/1130118 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
-crbug.com/1130118 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
-crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
-crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
-crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
-crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
-crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
+crbug.com/angleproject/5223 [ angle-opengl apple mac mac-arm64 no-asan oop-c passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
+crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
+crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
+crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_04.html [ Failure ]
+crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_sizes_03.html [ Failure ]
+crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
+crbug.com/1130117 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
+crbug.com/1130117 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+crbug.com/1130118 [ mac apple passthrough angle-opengl ] conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
+crbug.com/1130118 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
+crbug.com/1130118 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
+crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
+crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
+crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
+crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
+crbug.com/1130119 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+crbug.com/1130119 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
 crbug.com/1240443 [ angle-opengl apple-apple-m1 monterey passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 # Newly added tests on NVIDIA passthrough

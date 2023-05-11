@@ -2558,17 +2558,25 @@
       },
       'Mac FYI Experimental Release (Apple M1)': {
         'args': {
-          # The GPU information is not yet exposed in swarming, so we can't
-          # explicitly request it and have the JSON generation handle this
-          # automatically.
+          # Apple silicon does not show up normally as a PCI-e device, but
+          # Chrome is able to find a vendor ID that matches other (non-GPU)
+          # Apple PCI-e devices.
           '--expected-vendor-id': '106b',
         },
       },
       'Mac FYI Release (Apple M1)': {
         'args': {
-          # The GPU information is not yet exposed in swarming, so we can't
-          # explicitly request it and have the JSON generation handle this
-          # automatically.
+          # Apple silicon does not show up normally as a PCI-e device, but
+          # Chrome is able to find a vendor ID that matches other (non-GPU)
+          # Apple PCI-e devices.
+          '--expected-vendor-id': '106b',
+        },
+      },
+      'Mac FYI Retina Release (Apple M2)': {
+        'args': {
+          # Apple silicon does not show up normally as a PCI-e device, but
+          # Chrome is able to find a vendor ID that matches other (non-GPU)
+          # Apple PCI-e devices.
           '--expected-vendor-id': '106b',
         },
       },
