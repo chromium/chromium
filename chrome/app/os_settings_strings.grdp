@@ -3638,7 +3638,7 @@ Press an assigned switch or key to remove assignment.
     Forget this subscription?
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION" desc="Settings > Internet > Network details: Description of the Passpoint network removal dialog.">
-    By forgetting this network you will also remove the Passpoint subscription and its associated networks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    By forgetting this network you will also remove the Passpoint subscription and its associated networks.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
     Proxy
@@ -3828,6 +3828,15 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_DESCRIPTION" desc="Text of the dialog displayed when the remove button is clicked on Passpoint details page.">
     <ph name="SUBSCRIPTION_NAME">$1<ex>My Passpoint Provider</ex></ph> will be removed from this device only. To make changes to your subscription, contact the subscription provider. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_LEARN_MORE_A11Y" desc="A11y label that describes the Learn more link leading to the Passpoint user guide.">
+    Learn more about Passpoint subscriptions
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y" desc="A11y label for the Cancel button of the dialog displayed when a Passpoint network is removed.">
+    Cancel forgetting subscription
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CONFIRM_A11Y" desc="A11y label for the Confirm button of the dialog displayed when a Passpoint network is removed.">
+    Confirm subscription removal
   </message>
 
   <!-- Users Page (OS Settings) -->

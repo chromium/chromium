@@ -1012,6 +1012,12 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"passpointRemovalTitle", IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_TITLE},
       {"passpointRemovalDescription",
        IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_DESCRIPTION},
+      {"passpointLearnMoreA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_LEARN_MORE_A11Y},
+      {"passpointRemoveCancelA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y},
+      {"passpointRemoveConfirmA11yLabel",
+       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CONFIRM_A11Y},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

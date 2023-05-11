@@ -539,19 +539,21 @@
       $i18nPolymer{networkSectionPasspointRemovalTitle}
     </div>
     <div slot="body">
-      <localized-link
-          localized-string=
-              "$i18nPolymer{networkSectionPasspointRemovalDescription}"
-          link-url="$i18nRaw{wifiPasspointLearnMoreUrl}">
-      </localized-link>
+      $i18nPolymer{networkSectionPasspointRemovalDescription}
+      <a href="$i18nRaw{wifiPasspointLearnMoreUrl}" target="_blank"
+          aria-label="$i18n{passpointLearnMoreA11yLabel}">
+        $i18n{learnMoreLabel}
+      </a>
     </div>
     <div slot="button-container">
       <cr-button id="passpointRemovalCancelButton" class="cancel-button"
-          on-click="onPasspointRemovalDialogCancel_">
+          on-click="onPasspointRemovalDialogCancel_"
+          aria-label="$i18n{passpointRemoveCancelA11yLabel}">
         $i18n{cancel}
       </cr-button>
       <cr-button id="passpointRemovalConfirmButton" class="action-button"
-          on-click="onPasspointRemovalDialogConfirm_">
+          on-click="onPasspointRemovalDialogConfirm_"
+          aria-label="$i18n{passpointRemoveConfirmA11yLabel}">
         $i18n{confirm}
       </cr-button>
     </div>
