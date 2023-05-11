@@ -165,8 +165,6 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kPaused:
       return;
-    case file_manager::io_task::State::kWarning:
-      return;
     case file_manager::io_task::State::kSuccess:
       notification_manager_->SetDestinationPath(status.outputs[0].url.path());
       notification_manager_->ShowUploadProgress(100);

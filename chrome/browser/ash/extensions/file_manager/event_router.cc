@@ -152,8 +152,6 @@ file_manager_private::IOTaskState GetIOTaskState(
       return file_manager_private::IO_TASK_STATE_QUEUED;
     case file_manager::io_task::State::kScanning:
       return file_manager_private::IO_TASK_STATE_SCANNING;
-    case file_manager::io_task::State::kWarning:
-      return file_manager_private::IO_TASK_STATE_WARNING;
     case file_manager::io_task::State::kInProgress:
       return file_manager_private::IO_TASK_STATE_IN_PROGRESS;
     case file_manager::io_task::State::kPaused:
@@ -200,18 +198,21 @@ file_manager_private::IOTaskType GetIOTaskType(
   }
 }
 
-file_manager_private::SecurityErrorType GetSecurityErrorType(
-    file_manager::io_task::SecurityErrorType type) {
-  switch (type) {
-    case io_task::SecurityErrorType::kDlp:
-      return file_manager_private::SECURITY_ERROR_TYPE_DLP;
-    case io_task::SecurityErrorType::kEnterpriseConnectors:
-      return file_manager_private::SECURITY_ERROR_TYPE_ENTERPRISE_CONNECTORS;
-    case io_task::SecurityErrorType::kDlpWarningTimeout:
-      return file_manager_private::SECURITY_ERROR_TYPE_DLP_WARNING_TIMEOUT;
+file_manager_private::PolicyErrorType GetPolicyErrorType(
+    absl::optional<file_manager::io_task::PolicyErrorType> type) {
+  if (!type.has_value()) {
+    return file_manager_private::PolicyErrorType::POLICY_ERROR_TYPE_NONE;
+  }
+  switch (type.value()) {
+    case io_task::PolicyErrorType::kDlp:
+      return file_manager_private::POLICY_ERROR_TYPE_DLP;
+    case io_task::PolicyErrorType::kEnterpriseConnectors:
+      return file_manager_private::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS;
+    case io_task::PolicyErrorType::kDlpWarningTimeout:
+      return file_manager_private::POLICY_ERROR_TYPE_DLP_WARNING_TIMEOUT;
     default:
       NOTREACHED();
-      return file_manager_private::SECURITY_ERROR_TYPE_NONE;
+      return file_manager_private::POLICY_ERROR_TYPE_NONE;
   }
 }
 
@@ -1241,10 +1242,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.task_id = status.task_id;
   event_status.type = GetIOTaskType(status.type);
   event_status.state = GetIOTaskState(status.state);
-  event_status.security_error =
-      status.security_error.has_value()
-          ? GetSecurityErrorType(status.security_error.value())
-          : file_manager_private::SECURITY_ERROR_TYPE_NONE;
+  event_status.policy_error = GetPolicyErrorType(status.policy_error);
   event_status.destination_volume_id = status.GetDestinationVolumeId();
   event_status.show_notification = status.show_notification;
 

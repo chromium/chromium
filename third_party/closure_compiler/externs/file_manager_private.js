@@ -353,7 +353,6 @@ chrome.fileManagerPrivate.SharesheetLaunchSource = {
 chrome.fileManagerPrivate.IOTaskState = {
   QUEUED: 'queued',
   SCANNING: 'scanning',
-  WARNING: 'warning',
   IN_PROGRESS: 'in_progress',
   PAUSED: 'paused',
   SUCCESS: 'success',
@@ -380,7 +379,7 @@ chrome.fileManagerPrivate.IOTaskType = {
 /**
  * @enum {string}
  */
-chrome.fileManagerPrivate.SecurityErrorType = {
+chrome.fileManagerPrivate.PolicyErrorType = {
   DLP: 'dlp',
   ENTERPRISE_CONNECTORS: 'enterprise_connectors',
   DLP_WARNING_TIMEOUT: 'dlp_warning_timeout',
@@ -887,7 +886,7 @@ chrome.fileManagerPrivate.ResumeParams;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.IOTaskType,
  *   state: !chrome.fileManagerPrivate.IOTaskState,
- *   securityError: !chrome.fileManagerPrivate.SecurityErrorType,
+ *   policyError: (!chrome.fileManagerPrivate.PolicyErrorType|undefined),
  *   sourceName: string,
  *   numRemainingItems: number,
  *   itemCount: number,

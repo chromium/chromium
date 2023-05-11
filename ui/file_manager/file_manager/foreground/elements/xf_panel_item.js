@@ -176,6 +176,24 @@ export class PanelItem extends HTMLElement {
         }
         break;
       case this.panelTypeInfo:
+        this.setAttribute('indicator', 'status');
+        // TODO(b/281519804): Support 'warning' status.
+        this.setAttribute('status', 'failure');
+        secondaryButton = document.createElement('xf-button');
+        secondaryButton.id =
+            (hasExtraButton) ? 'secondary-action' : 'primary-action';
+        secondaryButton.onclick = assert(this.onclick);
+        // TODO(b/281830923): Use Cancel instead of X.
+        secondaryButton.dataset.category = 'cancel';
+        buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
+        if (hasExtraButton) {
+          primaryButton = document.createElement('xf-button');
+          primaryButton.id = 'primary-action';
+          primaryButton.dataset['category'] = 'extra-button';
+          primaryButton.onclick = assert(this.onclick);
+          primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
+          buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        }
         break;
       case this.panelTypeFormatProgress:
         this.setAttribute('indicator', 'status');

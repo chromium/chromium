@@ -307,7 +307,6 @@ enum SharesheetLaunchSource {
 enum IOTaskState {
   queued,
   scanning,
-  warning,
   in_progress,
   paused,
   success,
@@ -328,7 +327,7 @@ enum IOTaskType {
   zip
 };
 
-enum SecurityErrorType {
+enum PolicyErrorType {
   dlp,
   enterprise_connectors,
   dlp_warning_timeout
@@ -1102,9 +1101,9 @@ dictionary ProgressStatus {
   // Current state of the task sending the progress.
   IOTaskState state;
 
-  // Type of security error that occurred, if any.
+  // Type of policy error that occurred, if any.
   // Used only if Data Leak Prevention or Enterprise Connectors policies apply.
-  SecurityErrorType securityError;
+  PolicyErrorType policyError;
 
   // Name of the first source entry.
   DOMString sourceName;

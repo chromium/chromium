@@ -1233,7 +1233,8 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressWarning) {
   EXPECT_EQ(notification_strings.message, u"Copying 2 items\x2026");
 
   // Set the status to warning.
-  status.state = file_manager::io_task::State::kWarning;
+  status.state = file_manager::io_task::State::kPaused;
+  status.policy_error = file_manager::io_task::PolicyErrorType::kDlp;
   notification_manager->HandleIOTaskProgress(status);
 
   // Check: We have the same notification.
@@ -1282,8 +1283,9 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyError) {
   EXPECT_EQ(notification_strings.message, u"Copying src_file.txt\x2026");
 
   // Set the security error value.
-  status.security_error =
-      file_manager::io_task::SecurityErrorType::kEnterpriseConnectors;
+  status.state = file_manager::io_task::State::kError;
+  status.policy_error =
+      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors;
   notification_manager->HandleIOTaskProgress(status);
 
   // Check: We have the same notification.

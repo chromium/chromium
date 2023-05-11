@@ -221,6 +221,65 @@ export function testFilesDisplayPanelErrorText() {
   assertEquals('bar', panelItem.secondaryText);
 }
 
+export async function testFilesDisplayPanelInfo(done) {
+  // Get the host display panel container element.
+  /** @type {!DisplayPanel|!Element} */
+  const displayPanel = assert(document.querySelector('#test-xf-display-panel'));
+
+  // Add a panel item to the display panel container.
+  const panelItem = displayPanel.addPanelItem('testpanel');
+  panelItem.dataset.extraButtonText = 'Extra button';
+
+  /** @type {!HTMLElement} */
+  const text = assert(panelItem.shadowRoot.querySelector('.xf-panel-text'));
+
+  // To work with screen readers, the text element should have aria role
+  // 'alert'.
+  assertEquals('alert', text.getAttribute('role'));
+
+  // Change the primary and secondary text on the panel item.
+  panelItem.primaryText = 'foo';
+  panelItem.secondaryText = 'bar';
+
+  // Check the primary and secondary text has been set on the panel.
+  assertEquals('foo', panelItem.primaryText);
+  assertEquals('bar', panelItem.secondaryText);
+
+  // Change the panel item type to an info panel.
+  panelItem.panelType = panelItem.panelTypeInfo;
+
+  // Check the primary and secondary text has been set on the panel.
+  assertEquals('foo', panelItem.primaryText);
+  assertEquals('bar', panelItem.secondaryText);
+
+  // Setup the panel item signal (click) callback.
+  /** @type {?string} */
+  let signal = null;
+  panelItem.signalCallback = (name) => {
+    assert(typeof name === 'string');
+    signal = name;
+  };
+
+  /** @type {!HTMLElement} */
+  const extraButton = assert(panelItem.primaryButton);
+  extraButton.click();
+  await waitUntil(() => !!signal);
+  assertEquals(
+      signal, 'extra-button',
+      'Expected signal name "extra-button". Got ' + signal);
+  signal = null;
+
+  // Check cancel signal from the panel from a click.
+  /** @type {!HTMLElement} */
+  const cancel = assert(panelItem.secondaryButton);
+  cancel.click();
+  await waitUntil(() => !!signal);
+  assertEquals(
+      signal, 'cancel', 'Expected signal name "cancel". Got ' + signal);
+
+  done();
+}
+
 // Override the formatting function for unit testing.
 util.strf = (end, option) => {
   return option + end;

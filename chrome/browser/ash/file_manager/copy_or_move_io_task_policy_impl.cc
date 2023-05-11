@@ -174,11 +174,7 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
   DCHECK_LE(idx, progress_->sources.size());
   if (idx == progress_->sources.size()) {
     // Scanning is complete.
-
-    // Set the error if there were any.
-    if (has_blocked_files_) {
-      progress_->security_error = SecurityErrorType::kEnterpriseConnectors;
-    }
+    // TODO(ayaelattar): Set the policy error if any file was blocked.
 
     StartTransfer();
     return;

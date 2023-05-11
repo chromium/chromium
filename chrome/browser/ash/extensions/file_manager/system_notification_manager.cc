@@ -732,16 +732,9 @@ void SystemNotificationManager::HandleIOTaskProgress(
     return;
   }
 
-  // If the IOTask state has completed, remove the IOTask progress from system
-  // notifications.
-  if (status.IsCompleted()) {
-    Dismiss(id);
-    return;
-  }
-
   // If there's a warning or security error, show a data protection
   // notification.
-  if (status.HasWarning() || status.HasSecurityError()) {
+  if (status.HasWarning() || status.HasPolicyError()) {
     Dismiss(id);
     // TODO(aidazolic): Pass a real continue callback.
     std::unique_ptr<message_center::Notification> notification =
@@ -751,6 +744,13 @@ void SystemNotificationManager::HandleIOTaskProgress(
     GetNotificationDisplayService()->Display(
         NotificationHandler::Type::TRANSIENT, *notification,
         /*metadata=*/nullptr);
+    return;
+  }
+
+  // If the IOTask state has completed, remove the IOTask progress from system
+  // notifications.
+  if (status.IsCompleted()) {
+    Dismiss(id);
     return;
   }
 
@@ -1080,9 +1080,9 @@ SystemNotificationManager::MakeDataProtectionPolicyNotification(
           weak_ptr_factory_.GetWeakPtr(), std::move(continue_callback));
     }
   } else {  // Error - some files couldn't be transferred.
-    DCHECK(status.security_error.has_value());
-    if (status.security_error !=
-            file_manager::io_task::SecurityErrorType::kDlpWarningTimeout &&
+    DCHECK(status.policy_error.has_value());
+    if (status.policy_error !=
+            file_manager::io_task::PolicyErrorType::kDlpWarningTimeout &&
         status.sources.size() > 1) {
       // If more than one file was blocked, add the "Review" button.
       notification_buttons.emplace_back(

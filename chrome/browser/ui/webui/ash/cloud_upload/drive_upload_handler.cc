@@ -218,8 +218,6 @@ void DriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kPaused:
       return;
-    case file_manager::io_task::State::kWarning:
-      return;
     case file_manager::io_task::State::kSuccess:
       move_progress_ = 100;
       notification_manager_->SetDestinationPath(status.outputs[0].url.path());
