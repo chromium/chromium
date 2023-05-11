@@ -4031,6 +4031,38 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.JavaScriptFramework.Versions" singular="True">
+  <owner>houssein@chromium.org</owner>
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    Metrics stating the detected major+minor version of known frameworks when
+    detected. This event is recorded when the page is loaded. Note that a page
+    can use multiple frameworks at the same time, hence why this reports each
+    framework individually instead of a single number. The version numbers here
+    are a bit mask: 0xMMmm (Major+minor), e.g. version 16.3 would be 0x1003
+  </summary>
+  <metric name="AngularVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Angular version
+    </summary>
+  </metric>
+  <metric name="NextJSVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the NextJS version
+    </summary>
+  </metric>
+  <metric name="NuxtVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Nuxt version
+    </summary>
+  </metric>
+  <metric name="VueVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Vue version
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.PageLoad">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>

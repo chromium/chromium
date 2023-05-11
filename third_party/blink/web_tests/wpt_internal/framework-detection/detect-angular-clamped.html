@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-framework-version.js"></script>
+<body>
+<div ng-version="300.4000.333.12.x"></div>
+<script>
+  test_framework_version("Angular",`${300 & 0xff}.${4000 & 0xff}`);
+</script>
