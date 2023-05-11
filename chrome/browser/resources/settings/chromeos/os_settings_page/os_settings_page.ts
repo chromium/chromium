@@ -79,8 +79,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       showPluginVm: Boolean,
 
-      showReset: Boolean,
-
       showKerberosSection: Boolean,
 
       allowCrostini_: Boolean,
@@ -228,8 +226,9 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
         routes.ADVANCED.contains(route);
   }
 
-  private showPage_(visibility?: boolean): boolean {
-    return visibility !== false;
+  /** Stamp page in the DOM depending on page availability */
+  private shouldStampPage_(available?: boolean): boolean {
+    return !!available;
   }
 
   private computeShowSecondaryUserBanner_(): boolean {

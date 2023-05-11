@@ -250,7 +250,8 @@
             show-crostini="[[showCrostini]]">
         </settings-crostini-page>
       </os-settings-section>
-      <template is="dom-if" if="[[showReset]]">
+      <template is="dom-if"
+          if="[[shouldStampPage_(pageAvailability.reset)]]" restamp>
         <os-settings-section page-title="$i18n{resetPageTitle}"
             section="osReset">
           <os-settings-reset-page></os-settings-reset-page>
