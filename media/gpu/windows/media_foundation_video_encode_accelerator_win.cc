@@ -360,10 +360,12 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
   EncodeOutput(uint32_t size,
                bool key_frame,
                base::TimeDelta timestamp,
-               int temporal_id = 0)
+               int temporal_id,
+               absl::optional<gfx::ColorSpace> color_space)
       : keyframe(key_frame),
         capture_timestamp(timestamp),
         temporal_layer_id(temporal_id),
+        color_space(color_space),
         data_(size) {}
 
   EncodeOutput(const EncodeOutput&) = delete;
@@ -378,6 +380,7 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
   const base::TimeDelta capture_timestamp;
   const int temporal_layer_id;
   absl::optional<int32_t> frame_qp;
+  const absl::optional<gfx::ColorSpace> color_space;
 
  private:
   std::vector<uint8_t> data_;
@@ -778,6 +781,9 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   }
   if (temporal_scalable_coding()) {
     md.h264.emplace().temporal_idx = encode_output->temporal_layer_id;
+  }
+  if (encode_output->color_space) {
+    md.encoded_color_space = *encode_output->color_space;
   }
 
   client_->BitstreamBufferReady(buffer_ref->id, md);
@@ -1243,6 +1249,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
     }
 
+    output_color_spaces_.push_back(encoder_color_space_);
     has_prepared_input_sample_ = true;
   }
 
@@ -1726,13 +1733,17 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   }
   DVLOG(3) << "Encoded data with size:" << size << " keyframe " << keyframe;
 
+  DCHECK(!output_color_spaces_.empty());
+  auto output_cs = output_color_spaces_.front();
+  output_color_spaces_.pop_front();
+
   // If no bit stream buffer presents, queue the output first.
   if (bitstream_buffer_queue_.empty()) {
     DVLOG(3) << "No bitstream buffers.";
 
     // We need to copy the output so that encoding can continue.
-    auto encode_output =
-        std::make_unique<EncodeOutput>(size, keyframe, timestamp, temporal_id);
+    auto encode_output = std::make_unique<EncodeOutput>(
+        size, keyframe, timestamp, temporal_id, output_cs);
     {
       MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
       memcpy(encode_output->memory(), scoped_buffer.get(), size);
@@ -1775,9 +1786,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
       md.h265.emplace().temporal_idx = temporal_id;
     }
   }
-
-  if (encoder_color_space_) {
-    md.encoded_color_space = *encoder_color_space_;
+  if (output_cs) {
+    md.encoded_color_space = *output_cs;
   }
 
   client_->BitstreamBufferReady(buffer_ref->id, md);
@@ -1822,6 +1832,8 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
     }
     case METransformDrainComplete: {
       DCHECK(pending_input_queue_.empty());
+      DCHECK(encoder_output_queue_.empty());
+      DCHECK(output_color_spaces_.empty());
       DCHECK_EQ(state_, kFlushing);
       auto hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
       if (FAILED(hr)) {

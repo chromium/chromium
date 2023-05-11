@@ -285,8 +285,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Bitrate controller for CBR encoding.
   std::unique_ptr<VideoRateControlWrapper> rate_ctrl_;
 
-  // Color space of the first frame sent to Encode().
+  // Color space of the first frame sent to Encode(). Every input gets an entry
+  // in `output_color_spaces_`, new outputs take the color space from the front.
   absl::optional<gfx::ColorSpace> encoder_color_space_;
+  base::circular_deque<absl::optional<gfx::ColorSpace>> output_color_spaces_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
