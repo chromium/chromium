@@ -3809,6 +3809,7 @@ test("ash_pixeltests") {
     "system/time/calendar_unittest_utils.cc",
     "system/time/calendar_unittest_utils.h",
     "system/time/calendar_up_next_pixeltest.cc",
+    "system/unified/feature_tile_pixeltest.cc",
     "system/unified/power_button_pixeltest.cc",
     "test/pixel/demo_ash_pixel_diff_test.cc",
     "user_education/views/help_bubble_view_ash_pixeltest.cc",
