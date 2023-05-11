@@ -2187,7 +2187,8 @@ uint64_t aom_sum_squares_2d_i16_neon(const int16_t *src, int stride, int width, 
 #define aom_sum_squares_2d_i16 aom_sum_squares_2d_i16_neon
 
 uint64_t aom_sum_squares_i16_c(const int16_t *src, uint32_t N);
-#define aom_sum_squares_i16 aom_sum_squares_i16_c
+uint64_t aom_sum_squares_i16_neon(const int16_t* src, uint32_t N);
+#define aom_sum_squares_i16 aom_sum_squares_i16_neon
 
 uint64_t aom_sum_sse_2d_i16_c(const int16_t *src, int src_stride, int width, int height, int *sum);
 uint64_t aom_sum_sse_2d_i16_neon(const int16_t *src, int src_stride, int width, int height, int *sum);
@@ -2315,10 +2316,18 @@ void aom_v_predictor_8x8_neon(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *a
 #define aom_v_predictor_8x8 aom_v_predictor_8x8_neon
 
 uint64_t aom_var_2d_u16_c(uint8_t *src, int src_stride, int width, int height);
-#define aom_var_2d_u16 aom_var_2d_u16_c
+uint64_t aom_var_2d_u16_neon(uint8_t* src,
+                             int src_stride,
+                             int width,
+                             int height);
+#define aom_var_2d_u16 aom_var_2d_u16_neon
 
 uint64_t aom_var_2d_u8_c(uint8_t *src, int src_stride, int width, int height);
-#define aom_var_2d_u8 aom_var_2d_u8_c
+uint64_t aom_var_2d_u8_neon(uint8_t* src,
+                            int src_stride,
+                            int width,
+                            int height);
+#define aom_var_2d_u8 aom_var_2d_u8_neon
 
 unsigned int aom_variance128x128_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
 unsigned int aom_variance128x128_neon(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);

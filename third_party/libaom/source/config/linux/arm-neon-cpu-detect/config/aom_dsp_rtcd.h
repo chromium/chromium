@@ -2596,7 +2596,8 @@ uint64_t aom_sum_squares_2d_i16_neon(const int16_t *src, int stride, int width, 
 RTCD_EXTERN uint64_t (*aom_sum_squares_2d_i16)(const int16_t *src, int stride, int width, int height);
 
 uint64_t aom_sum_squares_i16_c(const int16_t *src, uint32_t N);
-#define aom_sum_squares_i16 aom_sum_squares_i16_c
+uint64_t aom_sum_squares_i16_neon(const int16_t* src, uint32_t N);
+RTCD_EXTERN uint64_t (*aom_sum_squares_i16)(const int16_t* src, uint32_t N);
 
 uint64_t aom_sum_sse_2d_i16_c(const int16_t *src, int src_stride, int width, int height, int *sum);
 uint64_t aom_sum_sse_2d_i16_neon(const int16_t *src, int src_stride, int width, int height, int *sum);
@@ -2769,10 +2770,24 @@ void aom_v_predictor_8x8_neon(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *a
 RTCD_EXTERN void (*aom_v_predictor_8x8)(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 
 uint64_t aom_var_2d_u16_c(uint8_t *src, int src_stride, int width, int height);
-#define aom_var_2d_u16 aom_var_2d_u16_c
+uint64_t aom_var_2d_u16_neon(uint8_t* src,
+                             int src_stride,
+                             int width,
+                             int height);
+RTCD_EXTERN uint64_t (*aom_var_2d_u16)(uint8_t* src,
+                                       int src_stride,
+                                       int width,
+                                       int height);
 
 uint64_t aom_var_2d_u8_c(uint8_t *src, int src_stride, int width, int height);
-#define aom_var_2d_u8 aom_var_2d_u8_c
+uint64_t aom_var_2d_u8_neon(uint8_t* src,
+                            int src_stride,
+                            int width,
+                            int height);
+RTCD_EXTERN uint64_t (*aom_var_2d_u8)(uint8_t* src,
+                                      int src_stride,
+                                      int width,
+                                      int height);
 
 unsigned int aom_variance128x128_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
 unsigned int aom_variance128x128_neon(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse);
@@ -3810,6 +3825,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) aom_subtract_block = aom_subtract_block_neon;
     aom_sum_squares_2d_i16 = aom_sum_squares_2d_i16_c;
     if (flags & HAS_NEON) aom_sum_squares_2d_i16 = aom_sum_squares_2d_i16_neon;
+    aom_sum_squares_i16 = aom_sum_squares_i16_c;
+    if (flags & HAS_NEON) {
+      aom_sum_squares_i16 = aom_sum_squares_i16_neon;
+    }
     aom_sum_sse_2d_i16 = aom_sum_sse_2d_i16_c;
     if (flags & HAS_NEON) aom_sum_sse_2d_i16 = aom_sum_sse_2d_i16_neon;
     aom_v_predictor_16x16 = aom_v_predictor_16x16_c;
@@ -3880,6 +3899,14 @@ static void setup_rtcd_internal(void)
     }
     aom_v_predictor_8x8 = aom_v_predictor_8x8_c;
     if (flags & HAS_NEON) aom_v_predictor_8x8 = aom_v_predictor_8x8_neon;
+    aom_var_2d_u16 = aom_var_2d_u16_c;
+    if (flags & HAS_NEON) {
+      aom_var_2d_u16 = aom_var_2d_u16_neon;
+    }
+    aom_var_2d_u8 = aom_var_2d_u8_c;
+    if (flags & HAS_NEON) {
+      aom_var_2d_u8 = aom_var_2d_u8_neon;
+    }
     aom_variance128x128 = aom_variance128x128_c;
     if (flags & HAS_NEON) aom_variance128x128 = aom_variance128x128_neon;
     aom_variance128x64 = aom_variance128x64_c;
