@@ -58,6 +58,10 @@
     `);
 
     testRunner.log(`${accessAfterDelete}\n`);
+
+    // Clean up
+    await dp.IndexedDB.deleteDatabase(
+        {storageBucket, databaseName: 'test-database'});
   }
 
   const { dp, session } = await testRunner.startBlank(
