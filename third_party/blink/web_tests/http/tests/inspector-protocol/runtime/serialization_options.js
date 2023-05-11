@@ -38,11 +38,9 @@
   await testExpression("new Int32Array()");
   await testExpression("new ArrayBuffer()");
   // Test DOM objects.
-  // TODO(crbug.com/1420968): re-enable after crrev.com/c/4517983 is merged.
-  // await testExpression("document.body")
+  await testExpression("document.body")
   await testExpression("window")
-  // TODO(crbug.com/1420968): reenable test after crrev.com/c/4517983 is merged.
-  // await testExpression("document.querySelector('body > div')")
+  await testExpression("document.querySelector('body > div')")
   await testExpression("new URL('http://example.com')")
 
   testRunner.completeTest();
