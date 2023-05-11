@@ -95,6 +95,7 @@ def main():
             stack.enter_context(ScopedFfxConfig('daemon.autostart', 'false'))
             stack.enter_context(
                 ScopedFfxConfig('discovery.zedboot.enabled', 'true'))
+            stack.enter_context(ScopedFfxConfig('log.level', 'debug'))
             log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
             start_ffx_daemon()
             stack.callback(stop_ffx_daemon)
