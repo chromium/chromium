@@ -64,7 +64,7 @@ bool RunHDIUtil(const std::vector<std::string>& args,
     command.AppendArg(arg);
 
   std::string output;
-  bool result = base::GetAppOutputAndError(command, &output);
+  bool result = base::GetAppOutput(command, &output);
   if (!result)
     VLOG(1) << "hdiutil failed.";
 
