@@ -1263,6 +1263,8 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kOsUIHelpAppURL), GURL(chrome::kOsUINetExportURL),
         GURL(chrome::kOsUILauncherInternalsURL),
         GURL(chrome::kOsUIExtensionsInternalsURL),
+        GURL(chrome::kChromeUINotificationTesterURL),
+        GURL(chrome::kOsUINotificationTesterURL),
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         // IME extension's Japanese options page. Opened via OS_URL_HANDLER SWA

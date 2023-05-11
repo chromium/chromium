@@ -403,6 +403,7 @@ extern const char kOsUINetExportURL[];
 extern const char kOsUIMultiDeviceInternalsURL[];
 extern const char kOsUINearbyInternalsURL[];
 extern const char kOsUINetworkURL[];
+extern const char kOsUINotificationTesterURL[];
 extern const char kOsUIPrefsInternalsURL[];
 extern const char kOsUIRestartURL[];
 extern const char kOsUISettingsURL[];

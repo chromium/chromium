@@ -430,6 +430,7 @@ const char kOsUIMultiDeviceInternalsURL[] = "os://multidevice-internals";
 const char kOsUINearbyInternalsURL[] = "os://nearby-internals";
 const char kOsUINetworkURL[] = "os://network";
 const char kOsUINetExportURL[] = "os://net-export";
+const char kOsUINotificationTesterURL[] = "os://notification-tester";
 const char kOsUIPrefsInternalsURL[] = "os://prefs-internals";
 const char kOsUIRestartURL[] = "os://restart";
 const char kOsUISettingsURL[] = "os://settings";
