@@ -42,7 +42,7 @@ found in the LICENSE file.
     </LinearLayout>
     <!-- Selected Device  -->
     <LinearLayout
-        android:id="@+id/selected_device_view"
+        android:id="@+id/restore_tabs_selected_device_view"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginTop="24dp"
@@ -52,14 +52,15 @@ found in the LICENSE file.
         android:background="@drawable/restore_tabs_device_info_background"
         android:orientation="horizontal">
       <ImageView
+          android:id="@+id/restore_tabs_promo_sheet_device_icon"
           android:layout_width="@dimen/restore_tabs_device_icon"
           android:layout_height="@dimen/restore_tabs_device_icon"
+          app:tint="@macro/default_icon_color"
           android:background="@null"
           android:layout_marginStart="@dimen/restore_tabs_device_icon_margin_horizontal"
           android:layout_marginEnd="@dimen/restore_tabs_device_icon_margin_horizontal"
           android:layout_gravity="center_vertical"
-          android:importantForAccessibility="no"
-          app:srcCompat="@drawable/restore_tabs_device_icon" />
+          android:importantForAccessibility="no" />
       <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="0dp"
@@ -87,8 +88,7 @@ found in the LICENSE file.
           android:layout_gravity="center_vertical"
           android:importantForAccessibility="no"
           android:contentDescription="@string/restore_tabs_promo_sheet_expand_icon_device_info_description"
-          app:tint="@color/default_icon_color_secondary_tint_list"
-          app:srcCompat="@drawable/restore_tabs_expand_more" />
+          app:tint="@color/default_icon_color_secondary_tint_list" />
     </LinearLayout>
     <!-- Action buttons section -->
     <org.chromium.ui.widget.ButtonCompat

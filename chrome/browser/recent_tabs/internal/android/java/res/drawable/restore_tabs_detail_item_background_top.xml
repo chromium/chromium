@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.fast_checkout.UnsharableRippleDrawable
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:color="?android:attr/colorControlHighlight">
+  <item>
+    <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+      android:shape="rectangle"
+      app:surfaceElevation="@dimen/default_elevation_1">
+      <corners android:topLeftRadius="@dimen/restore_tabs_outer_corner_radius"
+        android:topRightRadius="@dimen/restore_tabs_outer_corner_radius"
+        android:bottomLeftRadius="@dimen/restore_tabs_inner_corner_radius"
+        android:bottomRightRadius="@dimen/restore_tabs_inner_corner_radius" />
+    </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+  </item>
+</org.chromium.chrome.browser.ui.fast_checkout.UnsharableRippleDrawable>

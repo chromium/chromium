@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginTop="12dp"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/restore_tabs_toolbar_back_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:src="@drawable/ic_arrow_back_24dp"
+            app:tint="@macro/default_icon_color"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/restore_tabs_back_to_promo_screen_icon_description" />
+        <TextView
+            android:id="@+id/restore_tabs_toolbar_title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:singleLine="true"
+            style="@style/TextAppearance.Headline"/>
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/restore_tabs_detail_screen_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:divider="@null"
+        android:paddingBottom="24dp"
+        android:paddingLeft="@dimen/restore_tabs_sheet_padding_content"
+        android:paddingRight="@dimen/restore_tabs_sheet_padding_content"/>
+</LinearLayout>

@@ -214,6 +214,12 @@ found in the LICENSE file.
           other {<ph name="TABS_COUNT_MANY">%1$s<ex>8</ex></ph> tabs, last updated: <ph name="TIME_SINCE_MODIFIED">%2$s<ex>30 minutes ago</ex></ph>}
         }
       </message>
+      <message name="IDS_RESTORE_TABS_DEVICE_SCREEN_SHEET_TITLE" desc="Title for the Restore Tabs detail sheet where a user can pick a device and navigate back to the promo screen.">
+        Open from
+      </message>
+      <message name="IDS_RESTORE_TABS_BACK_TO_PROMO_SCREEN_ICON_DESCRIPTION" desc="Acessibility string describing the back icon on the device selection and review tabs detail sheets.">
+        Back
+      </message>
     </messages>
   </release>
 </grit>

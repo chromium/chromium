@@ -2622,6 +2622,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/optimization_guide/android:unit_device_javatests",
       "//chrome/browser/partnercustomizations:unit_device_javatests",
       "//chrome/browser/password_edit_dialog/android:unit_device_javatests",
+      "//chrome/browser/recent_tabs/internal:unit_device_javatests",
       "//chrome/browser/signin/services/android:unit_device_javatests",
       "//chrome/browser/thumbnail/generator:unit_device_javatests",
       "//chrome/browser/ui/android/appmenu/internal:unit_device_javatests",

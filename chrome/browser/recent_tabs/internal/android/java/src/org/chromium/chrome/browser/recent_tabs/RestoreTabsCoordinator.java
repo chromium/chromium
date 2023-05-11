@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType;
+import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -51,6 +52,10 @@ public class RestoreTabsCoordinator {
         RestoreTabsPromoScreenCoordinator restoreTabsPromoScreenCoordinator =
                 new RestoreTabsPromoScreenCoordinator(restoreTabsPromoScreenView, mModel);
 
+        View detailScreenView = rootView.findViewById(R.id.restore_tabs_detail_screen_sheet);
+        RestoreTabsDetailScreenCoordinator restoreTabsDetailScreenCoordinator =
+                new RestoreTabsDetailScreenCoordinator(context, detailScreenView, mModel);
+
         mViewFlipperView =
                 (ViewFlipper) rootView.findViewById(R.id.restore_tabs_bottom_sheet_view_flipper);
         mModel.addObserver((source, propertyKey) -> {
@@ -66,6 +71,10 @@ public class RestoreTabsCoordinator {
         switch (screenType) {
             case ScreenType.HOME_SCREEN:
                 return 0;
+            // Both the device and review tabs selection screens are displayed on the detail screen.
+            case ScreenType.DEVICE_SCREEN:
+            case ScreenType.REVIEW_TABS_SCREEN:
+                return 1;
         }
         assert false : "Undefined ScreenType: " + screenType;
         return 0;
@@ -88,5 +97,10 @@ public class RestoreTabsCoordinator {
     @VisibleForTesting
     ViewFlipper getViewFlipperForTesting() {
         return mViewFlipperView;
+    }
+
+    @VisibleForTesting
+    View getContentViewForTesting() {
+        return mContent.getContentView();
     }
 }

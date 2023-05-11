@@ -4,43 +4,34 @@
 
 package org.chromium.chrome.browser.recent_tabs.ui;
 
-import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.CURRENT_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DEVICE_MODEL_LIST;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.HOME_SCREEN_DELEGATE;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.NUM_TABS_DESELECTED;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.REVIEW_TABS_MODEL_LIST;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.SELECTED_DEVICE;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.HOME_SCREEN;
-import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.UNINITIALIZED;
 
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.R;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator.Delegate;
+import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * This class is responsible for pushing updates to the Restore Tabs promo screen view. These
- * updates are pulled from the RestoreTabsproperties when a notification of an update is
+ * updates are pulled from the RestoreTabsProperties when a notification of an update is
  * received.
  */
 public class RestoreTabsPromoScreenViewBinder {
-    /**
-     * A functional interface to perform a callback and run screen specific bind logic.
-     */
-    interface BindScreenCallback {
-        /**
-         * Perform bind logic on all property keys for the respective screen.
-         */
-        void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey);
-    }
-
     static class ViewHolder {
         final View mContentView;
 
@@ -49,25 +40,17 @@ public class RestoreTabsPromoScreenViewBinder {
         }
     }
 
+    // This binder handles logic that targets when the CURRENT_SCREEN switches to HOME_SCREEN.
     public static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
         int currentScreen = model.get(CURRENT_SCREEN);
 
         if (propertyKey == CURRENT_SCREEN) {
-            switch (currentScreen) {
-                case HOME_SCREEN:
-                    allKeysBinder(model, view, RestoreTabsPromoScreenViewBinder::bindHomeScreen);
-                    break;
-                default:
-                    assert currentScreen == UNINITIALIZED : "Switching to an unidentified screen.";
+            if (currentScreen == HOME_SCREEN) {
+                RestoreTabsViewBinderHelper.allKeysBinder(
+                        model, view, RestoreTabsPromoScreenViewBinder::bindHomeScreen);
             }
-        } else {
-            switch (currentScreen) {
-                case HOME_SCREEN:
-                    bindHomeScreen(model, view, propertyKey);
-                    break;
-                default:
-                    assert currentScreen == UNINITIALIZED : "Unidentified current screen.";
-            }
+        } else if (currentScreen == HOME_SCREEN) {
+            bindHomeScreen(model, view, propertyKey);
         }
     }
 
@@ -76,7 +59,15 @@ public class RestoreTabsPromoScreenViewBinder {
         if (propertyKey == HOME_SCREEN_DELEGATE) {
             Delegate delegate = model.get(HOME_SCREEN_DELEGATE);
 
-            getSelectedDeviceView(view).setOnClickListener((v) -> delegate.onShowDeviceList());
+            int numDevices = model.get(DEVICE_MODEL_LIST).size();
+            if (numDevices != 1) {
+                getExpandIconSelectorView(view).setImageResource(
+                        R.drawable.restore_tabs_expand_more);
+                getSelectedDeviceView(view).setOnClickListener((v) -> delegate.onShowDeviceList());
+            } else {
+                getExpandIconSelectorView(view).setVisibility(View.GONE);
+                getSelectedDeviceView(view).setOnClickListener(null);
+            }
 
             int numSelectedTabs =
                     model.get(REVIEW_TABS_MODEL_LIST).size() - model.get(NUM_TABS_DESELECTED);
@@ -109,6 +100,12 @@ public class RestoreTabsPromoScreenViewBinder {
             return;
         }
 
+        if (session.formFactor == FormFactor.PHONE) {
+            getDeviceIconView(view).setImageResource(R.drawable.restore_tabs_phone_icon);
+        } else if (session.formFactor == FormFactor.TABLET) {
+            getDeviceIconView(view).setImageResource(R.drawable.restore_tabs_tablet_icon);
+        }
+
         getDeviceNameTextView(view).setText(session.name);
         CharSequence lastModifiedTimeString = DateUtils.getRelativeTimeSpanString(
                 session.modifiedTime, System.currentTimeMillis(), 0);
@@ -117,13 +114,6 @@ public class RestoreTabsPromoScreenViewBinder {
                 model.get(REVIEW_TABS_MODEL_LIST).size(),
                 Integer.toString(model.get(REVIEW_TABS_MODEL_LIST).size()), lastModifiedTimeString);
         getSessionInfoTextView(view).setText(sessionInfo);
-    }
-
-    private static void allKeysBinder(
-            PropertyModel model, ViewHolder view, BindScreenCallback callback) {
-        for (PropertyKey propertyKey : ALL_KEYS) {
-            callback.bind(model, view, propertyKey);
-        }
     }
 
     private static TextView getDeviceNameTextView(ViewHolder view) {
@@ -135,7 +125,7 @@ public class RestoreTabsPromoScreenViewBinder {
     }
 
     private static LinearLayout getSelectedDeviceView(ViewHolder view) {
-        return view.mContentView.findViewById(R.id.selected_device_view);
+        return view.mContentView.findViewById(R.id.restore_tabs_selected_device_view);
     }
 
     private static ButtonCompat getRestoreTabsButton(ViewHolder view) {
@@ -144,5 +134,13 @@ public class RestoreTabsPromoScreenViewBinder {
 
     private static ButtonCompat getReviewTabsButton(ViewHolder view) {
         return view.mContentView.findViewById(R.id.restore_tabs_button_review_tabs);
+    }
+
+    private static ImageView getExpandIconSelectorView(ViewHolder view) {
+        return view.mContentView.findViewById(R.id.restore_tabs_expand_icon_device_selection);
+    }
+
+    private static ImageView getDeviceIconView(ViewHolder view) {
+        return view.mContentView.findViewById(R.id.restore_tabs_promo_sheet_device_icon);
     }
 }

@@ -22,4 +22,7 @@ found in the LICENSE file.
     <include
         android:id="@+id/restore_tabs_promo_screen_sheet"
         layout="@layout/restore_tabs_promo_screen_sheet" />
+    <include
+        android:id="@+id/restore_tabs_detail_screen_sheet"
+        layout="@layout/restore_tabs_detail_screen_sheet" />
 </ViewFlipper>

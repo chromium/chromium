@@ -8,6 +8,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.CURRENT_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DETAIL_SCREEN_TITLE;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.DEVICE_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.HOME_SCREEN;
 
 import android.app.Activity;
@@ -76,5 +78,9 @@ public class RestoreTabsCoordinatorUnitTest {
     public void testRestoreTabsCoordinator_viewFlipperScreenChange() {
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
         Assert.assertEquals(0, mViewFlipperView.getDisplayedChild());
+
+        mModel.set(DETAIL_SCREEN_TITLE, R.string.restore_tabs_device_screen_sheet_title);
+        mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
+        Assert.assertEquals(1, mViewFlipperView.getDisplayedChild());
     }
 }

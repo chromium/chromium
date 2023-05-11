@@ -21,6 +21,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -115,6 +116,11 @@ public class RestoreTabsMediator {
         assert sessions != null && sessions.size() != 0;
 
         ForeignSession previousSelection = mModel.get(RestoreTabsProperties.SELECTED_DEVICE);
+
+        // Sort the incoming list of foreign sessions by the most recent modified time.
+        Collections.sort(sessions,
+                (ForeignSession s1,
+                        ForeignSession s2) -> Long.compare(s2.modifiedTime, s1.modifiedTime));
         ForeignSession newSelection = sessions.get(0);
 
         // Populate all model entries.
@@ -220,6 +226,8 @@ public class RestoreTabsMediator {
         if (screenType == RestoreTabsProperties.ScreenType.DEVICE_SCREEN) {
             mModel.set(RestoreTabsProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(RestoreTabsProperties.DEVICE_MODEL_LIST));
+            mModel.set(RestoreTabsProperties.DETAIL_SCREEN_TITLE,
+                    R.string.restore_tabs_device_screen_sheet_title);
             mModel.set(RestoreTabsProperties.REVIEW_TABS_SCREEN_DELEGATE, null);
         } else if (screenType == RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN) {
             mModel.set(RestoreTabsProperties.DETAIL_SCREEN_MODEL_LIST,
