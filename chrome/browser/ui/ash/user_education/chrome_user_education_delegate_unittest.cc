@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 
-#include <vector>
+#include <memory>
 
 #include "ash/session/test_session_controller_client.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/functional/callback.h"
@@ -31,29 +32,22 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
-// Helpers ---------------------------------------------------------------------
-
-std::vector<ash::TutorialId> GetTutorialIds() {
-  std::vector<ash::TutorialId> tutorial_ids;
-  for (size_t i = static_cast<size_t>(ash::TutorialId::kMinValue);
-       i <= static_cast<size_t>(ash::TutorialId::kMaxValue); ++i) {
-    tutorial_ids.emplace_back(static_cast<ash::TutorialId>(i));
-  }
-  return tutorial_ids;
-}
+// Element identifiers.
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementId);
 
 }  // namespace
 
 // ChromeUserEducationDelegateTest ---------------------------------------------
 
-// Base class for tests of the `ChromeUserEducationDelegate` parameterized by
-// user education tutorial ID.
-class ChromeUserEducationDelegateTest
-    : public BrowserWithTestWindowTest,
-      public testing::WithParamInterface<ash::TutorialId> {
+// Base class for tests of the `ChromeUserEducationDelegate`.
+class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
  public:
   ChromeUserEducationDelegateTest()
       : user_manager_(new ash::FakeChromeUserManager()),
@@ -68,9 +62,6 @@ class ChromeUserEducationDelegateTest
 
   // Returns a pointer to the `delegate_` instance under test.
   ash::UserEducationDelegate* delegate() { return delegate_.get(); }
-
-  // Returns the tutorial ID associated with test parameterization.
-  ash::TutorialId tutorial_id() const { return GetParam(); }
 
  private:
   // BrowserWithTestWindowTest:
@@ -107,15 +98,46 @@ class ChromeUserEducationDelegateTest
   std::unique_ptr<ChromeUserEducationDelegate> delegate_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChromeUserEducationDelegateTest,
-                         testing::ValuesIn(GetTutorialIds()));
-
 // Tests -----------------------------------------------------------------------
 
+// Verifies `CreateHelpBubble()` is working as intended.
+TEST_F(ChromeUserEducationDelegateTest, CreateHelpBubble) {
+  // Create and show a `widget`.
+  views::Widget widget;
+  views::Widget::InitParams params;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  widget.Init(std::move(params));
+  widget.SetContentsView(std::make_unique<views::View>());
+  widget.CenterWindow(gfx::Size(100, 100));
+  widget.Show();
+
+  // Cache `element_context` for the widget.
+  const ui::ElementContext element_context =
+      views::ElementTrackerViews::GetContextForWidget(&widget);
+
+  // Verify that a help bubble is *not* created for the specified `kElementId`
+  // and `element_context` pair since no tracked element matching that pair has
+  // been registered with the element tracker framework.
+  EXPECT_FALSE(delegate()->CreateHelpBubble(
+      account_id(), ash::HelpBubbleId::kTest,
+      user_education::HelpBubbleParams(), kElementId, element_context));
+
+  // Register the `widget`s contents `view` with the element tracker framework.
+  views::View* const view = widget.GetContentsView();
+  view->SetProperty(ash::kHelpBubbleContextKey, ash::HelpBubbleContext::kAsh);
+  view->SetProperty(views::kElementIdentifierKey, kElementId);
+
+  // Verify that a help bubble *is* created for the specified `kElementId` and
+  // `element_context` pair.
+  EXPECT_TRUE(delegate()->CreateHelpBubble(
+      account_id(), ash::HelpBubbleId::kTest,
+      user_education::HelpBubbleParams(), kElementId, element_context));
+}
+
 // Verifies `RegisterTutorial()` registers a tutorial with the browser registry.
-TEST_P(ChromeUserEducationDelegateTest, RegisterTutorial) {
-  const ash::TutorialId tutorial_id = this->tutorial_id();
+TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
+  const ash::TutorialId tutorial_id = ash::TutorialId::kTest;
   const auto tutorial_id_str = ash::user_education_util::ToString(tutorial_id);
 
   // Initially there should be no tutorial registered.
@@ -133,13 +155,10 @@ TEST_P(ChromeUserEducationDelegateTest, RegisterTutorial) {
 }
 
 // Verifies `StartTutorial()` starts a tutorial with the browser service.
-TEST_P(ChromeUserEducationDelegateTest, StartTutorial) {
-  const ash::TutorialId tutorial_id = this->tutorial_id();
-
+TEST_F(ChromeUserEducationDelegateTest, StartTutorial) {
   // Create a test element.
-  const ui::ElementContext kElementContext(1);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementId);
-  ui::test::TestElement test_element(kElementId, kElementContext);
+  const ui::ElementContext element_context(1);
+  ui::test::TestElement test_element(kElementId, element_context);
 
   // Create a tutorial description.
   user_education::TutorialDescription tutorial_description;
@@ -149,7 +168,7 @@ TEST_P(ChromeUserEducationDelegateTest, StartTutorial) {
       /*element_name=*/std::string(), user_education::HelpBubbleArrow::kNone);
 
   // Register the tutorial.
-  delegate()->RegisterTutorial(account_id(), tutorial_id,
+  delegate()->RegisterTutorial(account_id(), ash::TutorialId::kTest,
                                std::move(tutorial_description));
 
   // Verify the tutorial is not running.
@@ -158,7 +177,8 @@ TEST_P(ChromeUserEducationDelegateTest, StartTutorial) {
   EXPECT_FALSE(tutorial_service.IsRunningTutorial());
 
   // Attempt to start the tutorial.
-  delegate()->StartTutorial(account_id(), tutorial_id, kElementContext,
+  delegate()->StartTutorial(account_id(), ash::TutorialId::kTest,
+                            element_context,
                             /*completed_callback=*/base::DoNothing(),
                             /*aborted_callback=*/base::DoNothing());
 

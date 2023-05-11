@@ -38,6 +38,7 @@ enum class TutorialId {
   kCaptureModeTourPrototype2,
   kHoldingSpaceTourPrototype1,
   kHoldingSpaceTourPrototype2,
+  kTest,
   kWelcomeTourPrototype1,
   kMaxValue = kWelcomeTourPrototype1,
 };

@@ -116,6 +116,8 @@ std::string ToString(TutorialId tutorial_id) {
       return "AshHoldingSpaceTourPrototype1";
     case TutorialId::kHoldingSpaceTourPrototype2:
       return "AshHoldingSpaceTourPrototype2";
+    case TutorialId::kTest:
+      return "AshTest";
     case TutorialId::kWelcomeTourPrototype1:
       return "AshWelcomeTourPrototype1";
   }
