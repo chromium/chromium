@@ -782,6 +782,7 @@ void PeopleHandler::CloseSyncSetup() {
   // (i.e. if the user is running in guest mode in cros and brings up settings).
   LoginUIService* service = GetLoginUIService();
   if (service) {
+    auto self_weak_ptr = weak_factory_.GetWeakPtr();
     syncer::SyncService* sync_service = GetSyncService();
 
     // Don't log a cancel event if the sync setup dialog is being
@@ -818,6 +819,14 @@ void PeopleHandler::CloseSyncSetup() {
     }
 
     service->LoginUIClosed(this);
+
+    // The call to RevokeSyncConsent() above may delete the current browser that
+    // owns `this` if force signin is enabled. Accessing instance members caused
+    // crashes (see https://crbug.com/1441820) which we guard against by
+    // checking a weak pointer to the current instance.
+    if (!self_weak_ptr) {
+      return;
+    }
   }
 
   // Alert the sync service anytime the sync setup dialog is closed. This can
