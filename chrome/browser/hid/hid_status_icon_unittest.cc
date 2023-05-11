@@ -276,13 +276,13 @@ TEST_F(HidStatusIconTest, ExtensionRemoval) {
 
 TEST_F(HidStatusIconTest, ProfileUserName) {
   std::vector<HidSystemTrayIconTestBase::ProfileItem> profile_connection_counts;
-  std::vector<std::string> profile_names;
-  std::vector<std::string> new_profile_names;
-  std::vector<base::FilePath> profile_paths;
+  // std::get<1>(profiles[i]) is the old profile name.
+  // std::get<2>(profiles[i]) is the new profile name.
+  std::vector<std::tuple<Profile*, std::string, std::string>> profiles;
   for (size_t idx = 0; idx < 2; idx++) {
-    profile_names.push_back(base::StringPrintf("user%zu", idx));
-    new_profile_names.push_back(base::StringPrintf("user%zu-newname", idx));
-    auto* profile = CreateTestingProfile(profile_names.back());
+    std::string profile_name = base::StringPrintf("user%zu", idx);
+    std::string new_profile_name = base::StringPrintf("user%zu-newname", idx);
+    auto* profile = CreateTestingProfile(profile_name);
     auto extension = CreateExtensionWithName("Test Extension");
     AddExtensionToProfile(profile, extension.get());
     auto* connection_tracker =
@@ -291,7 +291,7 @@ TEST_F(HidStatusIconTest, ProfileUserName) {
     connection_tracker->IncrementConnectionCount(extension->origin());
     profile_connection_counts.push_back(
         {profile, {{extension->origin(), 1, extension->name()}}});
-    profile_paths.push_back(profile->GetPath());
+    profiles.emplace_back(profile, profile_name, new_profile_name);
   }
   CheckIcon(profile_connection_counts);
 
@@ -302,35 +302,50 @@ TEST_F(HidStatusIconTest, ProfileUserName) {
   const auto* status_icon = static_cast<MockStatusIcon*>(
       status_tray->GetStatusIconsForTest().back().get());
 
+  // Sort the |profiles| by the address of the profile
+  // pointer. This is necessary because the menu items are created by
+  // iterating through a structure of flat_map<Profile*, bool>.
+  base::ranges::sort(profiles);
+
   // Check the current profile names.
   {
     auto* menu_item = status_icon->menu_item();
-    CheckMenuItemLabel(menu_item, 3, base::UTF8ToUTF16(profile_names[0]));
-    CheckMenuItemLabel(menu_item, 7, base::UTF8ToUTF16(profile_names[1]));
+    CheckMenuItemLabel(
+        menu_item, 3,
+        base::UTF8ToUTF16(std::get<0>(profiles[0])->GetProfileUserName()));
+    CheckMenuItemLabel(
+        menu_item, 7,
+        base::UTF8ToUTF16(std::get<0>(profiles[1])->GetProfileUserName()));
   }
 
   // Change the first profile name.
   {
     profile_manager()
         ->profile_attributes_storage()
-        ->GetProfileAttributesWithPath(profile_paths[0])
-        ->SetLocalProfileName(base::UTF8ToUTF16(new_profile_names[0]),
+        ->GetProfileAttributesWithPath(std::get<0>(profiles[0])->GetPath())
+        ->SetLocalProfileName(base::UTF8ToUTF16(std::get<2>(profiles[0])),
                               /*is_default_name*/ false);
+
     auto* menu_item = status_icon->menu_item();
-    CheckMenuItemLabel(menu_item, 3, base::UTF8ToUTF16(new_profile_names[0]));
-    CheckMenuItemLabel(menu_item, 7, base::UTF8ToUTF16(profile_names[1]));
+    CheckMenuItemLabel(menu_item, 3,
+                       base::UTF8ToUTF16(std::get<2>(profiles[0])));
+    CheckMenuItemLabel(menu_item, 7,
+                       base::UTF8ToUTF16(std::get<1>(profiles[1])));
   }
 
   // Change the second profile name.
   {
     profile_manager()
         ->profile_attributes_storage()
-        ->GetProfileAttributesWithPath(profile_paths[1])
-        ->SetLocalProfileName(base::UTF8ToUTF16(new_profile_names[1]),
+        ->GetProfileAttributesWithPath(std::get<0>(profiles[1])->GetPath())
+        ->SetLocalProfileName(base::UTF8ToUTF16(std::get<2>(profiles[1])),
                               /*is_default_name*/ false);
+
     auto* menu_item = status_icon->menu_item();
-    CheckMenuItemLabel(menu_item, 3, base::UTF8ToUTF16(new_profile_names[0]));
-    CheckMenuItemLabel(menu_item, 7, base::UTF8ToUTF16(new_profile_names[1]));
+    CheckMenuItemLabel(menu_item, 3,
+                       base::UTF8ToUTF16(std::get<2>(profiles[0])));
+    CheckMenuItemLabel(menu_item, 7,
+                       base::UTF8ToUTF16(std::get<2>(profiles[1])));
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
