@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -146,6 +147,11 @@ class AmbientAshTestBase : public AshTestBase {
   // timer, scaled by `factor`.
   void FastForwardByLockScreenInactivityTimeout(
       float factor = kDefaultFastForwardFactor);
+
+  // Approximately how much of the lock screen inactivity timeout is left.
+  // Bounded to [0,1], 1 meaning that the timer just started. If the lock screen
+  // inactivity timer is not running, returns null.
+  absl::optional<float> GetRemainingLockScreenTimeoutFraction();
 
   // Advance the task environment timer to load the next photo, scaled by
   // `factor`.

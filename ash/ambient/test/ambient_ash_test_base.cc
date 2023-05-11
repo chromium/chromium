@@ -24,7 +24,6 @@
 #include "ash/ambient/ui/ambient_info_view.h"
 #include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/constants/ash_features.h"
@@ -42,22 +41,17 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "base/values.h"
-#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -456,6 +450,7 @@ AmbientAnimationView* AmbientAshTestBase::GetAmbientAnimationView() {
 
 void AmbientAshTestBase::FastForwardByLockScreenInactivityTimeout(
     float factor) {
+  DCHECK_GT(factor, 0.f);
   task_environment()->FastForwardBy(factor *
                                     ambient_controller()
                                         ->ambient_ui_model()
@@ -466,6 +461,17 @@ void AmbientAshTestBase::FastForwardByPhotoRefreshInterval(float factor) {
   task_environment()->FastForwardBy(
       factor *
       ambient_controller()->ambient_ui_model()->photo_refresh_interval());
+}
+
+absl::optional<float>
+AmbientAshTestBase::GetRemainingLockScreenTimeoutFraction() {
+  const auto& inactivity_timer = ambient_controller()->inactivity_timer_;
+  if (!inactivity_timer.IsRunning()) {
+    return absl::nullopt;
+  }
+
+  return (inactivity_timer.desired_run_time() - base::TimeTicks::Now()) /
+         inactivity_timer.GetCurrentDelay();
 }
 
 void AmbientAshTestBase::FastForwardTiny() {
