@@ -28,6 +28,7 @@ found in the LICENSE file.
   <org.chromium.ui.widget.TextViewWithLeading
       android:id="@+id/empty_state_text_title"
       android:maxWidth="@dimen/empty_state_text_width"
+      android:paddingTop="@dimen/empty_state_heading_padding_top"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:textAlignment="center"

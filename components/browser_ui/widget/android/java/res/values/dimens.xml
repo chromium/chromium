@@ -201,5 +201,6 @@ found in the LICENSE file.
 
     <!-- Empty view layout dimensions -->
     <dimen name="empty_state_text_width">341dp</dimen>
+    <dimen name="empty_state_heading_padding_top">18dp</dimen>
     <dimen name="empty_state_subheading_padding_top">8dp</dimen>
 </resources>

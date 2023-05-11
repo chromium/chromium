@@ -265,9 +265,17 @@ public class SelectableListLayout<E> extends FrameLayout
         mEmptyViewWrapper = emptyStateView.findViewById(R.id.empty_state_container);
 
         // Set empty state properties.
-        mEmptyImageView.setImageResource(imageResId);
+        setEmptyStateImageRes(imageResId);
         setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingStringResId);
         return mEmptyView;
+    }
+
+    /**
+     * Sets the empty state view image when the selectable list is empty.
+     * @param imageResId The image view to show when the selectable list is empty.
+     */
+    public void setEmptyStateImageRes(int imageResId) {
+        mEmptyImageView.setImageResource(imageResId);
     }
 
     /**

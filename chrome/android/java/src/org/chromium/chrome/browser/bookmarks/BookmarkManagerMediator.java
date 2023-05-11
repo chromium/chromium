@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrde
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -238,9 +239,26 @@ class BookmarkManagerMediator
             } else if (getCurrentFolderId().getType() == BookmarkType.READING_LIST) {
                 TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(
                         EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
-                getSelectableListLayout().setEmptyViewText(R.string.reading_list_empty_list_title);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+                    getSelectableListLayout().setEmptyStateImageRes(
+                            R.drawable.reading_list_empty_state_illustration);
+                    getSelectableListLayout().setEmptyStateViewText(
+                            R.string.reading_list_manager_empty_state,
+                            R.string.reading_list_manager_save_page_to_read_later);
+                } else {
+                    getSelectableListLayout().setEmptyViewText(
+                            R.string.reading_list_empty_list_title);
+                }
             } else {
-                getSelectableListLayout().setEmptyViewText(R.string.bookmarks_folder_empty);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+                    getSelectableListLayout().setEmptyStateImageRes(
+                            R.drawable.bookmark_empty_state_illustration);
+                    getSelectableListLayout().setEmptyStateViewText(
+                            R.string.bookmark_manager_empty_state,
+                            R.string.bookmark_manager_back_to_page_by_adding_bookmark);
+                } else {
+                    getSelectableListLayout().setEmptyViewText(R.string.bookmarks_folder_empty);
+                }
             }
         }
 

@@ -3695,6 +3695,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NO_BOOKMARKS" desc="Text describing that there is no bookmarks in a bookmark folder.">
         No bookmarks
       </message>
+      <message name="IDS_BOOKMARK_MANAGER_EMPTY_STATE" desc="Text appearing on an empty tab that indicates that bookmarked page appear on this tab.">
+        You’ll find your bookmarks here
+      </message>
+      <message name="IDS_BOOKMARK_MANAGER_BACK_TO_PAGE_BY_ADDING_BOOKMARK" desc="Text appearing on an empty tab that indicates that users can get back to pages in this tab by adding bookmark.">
+        You can get back to a page that’s important to you by adding a bookmark
+      </message>
+      <message name="IDS_READING_LIST_MANAGER_EMPTY_STATE" desc="Text appearing on an empty tab that indicates that reading list page appear on this tab.">
+        You’ll find your reading list here
+      </message>
+      <message name="IDS_READING_LIST_MANAGER_SAVE_PAGE_TO_READ_LATER" desc="Text appearing on an empty tab that indicates that users can save pages read later in this tab.">
+        You can save pages to read later or offline
+      </message>
       <message name="IDS_BOOKMARKS_COUNT" desc="Text describing the number of bookmarks in a bookmark folder [ICU Syntax]">
         {BOOKMARKS_COUNT, plural,
           =1 {<ph name="BOOKMARKS_COUNT_ONE">%1$d<ex>1</ex></ph> bookmark}

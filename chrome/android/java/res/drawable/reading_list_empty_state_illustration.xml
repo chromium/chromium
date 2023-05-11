@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:autoMirrored="true"
+    android:height="130dp"
+    android:viewportHeight="130"
+    android:viewportWidth="130"
+    android:width="130dp">
+    <path
+        android:fillColor="@color/empty_state_icon_bg_background_color"
+        android:pathData="M2,63.5L2,27.5A16.5,16.5 0,0 1,18.5 11L71.5,11A16.5,16.5 135,0 1,88 27.5L88,63.5A16.5,16.5 0,0 1,71.5 80L18.5,80A16.5,16.5 0,0 1,2 63.5z"/>
+    <path
+        android:fillColor="@color/empty_state_icon_bg_foreground_color"
+        android:pathData="M16.78,92.65L85.42,30.62C93.96,22.91 107.64,26.9 110.67,38L127.65,100.03C130.35,109.86 122.95,119.55 112.76,119.55H27.13C12.99,119.55 6.29,102.13 16.78,92.65Z"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M49,51m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M49,66m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M49,81m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M55,50L67,50A1,1 0,0 1,68 51L68,51A1,1 0,0 1,67 52L55,52A1,1 0,0 1,54 51L54,51A1,1 0,0 1,55 50z"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M71,50L77,50A1,1 0,0 1,78 51L78,51A1,1 0,0 1,77 52L71,52A1,1 0,0 1,70 51L70,51A1,1 0,0 1,71 50z"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M55,65L68,65A1,1 0,0 1,69 66L69,66A1,1 0,0 1,68 67L55,67A1,1 0,0 1,54 66L54,66A1,1 0,0 1,55 65z"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M72,65L81,65A1,1 0,0 1,82 66L82,66A1,1 0,0 1,81 67L72,67A1,1 0,0 1,71 66L71,66A1,1 0,0 1,72 65z"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M55,80L61,80A1,1 0,0 1,62 81L62,81A1,1 0,0 1,61 82L55,82A1,1 0,0 1,54 81L54,81A1,1 0,0 1,55 80z"/>
+    <path
+        android:fillColor="@color/empty_state_icon_color"
+        android:pathData="M65,80L81,80A1,1 0,0 1,82 81L82,81A1,1 0,0 1,81 82L65,82A1,1 0,0 1,64 81L64,81A1,1 0,0 1,65 80z"/>
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M41,37L89,37A4,4 0,0 1,93 41L93,89A4,4 0,0 1,89 93L41,93A4,4 0,0 1,37 89L37,41A4,4 0,0 1,41 37z"
+        android:strokeColor="@color/empty_state_icon_color"
+        android:strokeWidth="2"/>
+</vector>

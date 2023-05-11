@@ -103,7 +103,8 @@ import java.util.Collections;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.SHOPPING_LIST})
+@Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.SHOPPING_LIST,
+        ChromeFeatureList.EMPTY_STATES})
 public class BookmarkManagerMediatorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -332,6 +333,60 @@ public class BookmarkManagerMediatorTest {
 
         finishLoading();
         assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.EMPTY_STATES})
+    public void testEmptyView_Bookmark() {
+        // Setup and open Bookmark folder.
+        finishLoading();
+        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
+        mMediator.openFolder(mFolderId1);
+
+        // Verify empty view initialized.
+        verify(mSelectableListLayout).setEmptyViewText(R.string.bookmarks_folder_empty);
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.EMPTY_STATES})
+    public void testEmptyView_ReadingList() {
+        // Setup and open Reading list folder.
+        finishLoading();
+        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
+        mMediator.openFolder(mReadingListFolderId);
+
+        // Verify empty view initialized.
+        verify(mSelectableListLayout).setEmptyViewText(R.string.reading_list_empty_list_title);
+    }
+
+    @Test
+    public void testEmptyView_EmptyState_Bookmark() {
+        // Setup and open Bookmark folder.
+        finishLoading();
+        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
+        mMediator.openFolder(mFolderId1);
+
+        // Verify empty view initialized.
+        verify(mSelectableListLayout)
+                .setEmptyStateImageRes(R.drawable.bookmark_empty_state_illustration);
+        verify(mSelectableListLayout)
+                .setEmptyStateViewText(R.string.bookmark_manager_empty_state,
+                        R.string.bookmark_manager_back_to_page_by_adding_bookmark);
+    }
+
+    @Test
+    public void testEmptyView_EmptyState_ReadingList() {
+        // Setup and open Reading list folder.
+        finishLoading();
+        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
+        mMediator.openFolder(mReadingListFolderId);
+
+        // Verify empty view initialized.
+        verify(mSelectableListLayout)
+                .setEmptyStateImageRes(R.drawable.reading_list_empty_state_illustration);
+        verify(mSelectableListLayout)
+                .setEmptyStateViewText(R.string.reading_list_manager_empty_state,
+                        R.string.reading_list_manager_save_page_to_read_later);
     }
 
     @Test

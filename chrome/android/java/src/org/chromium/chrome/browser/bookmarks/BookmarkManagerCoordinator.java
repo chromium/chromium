@@ -27,6 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
@@ -109,7 +110,15 @@ public class BookmarkManagerCoordinator
         SelectableListLayout<BookmarkId> selectableList =
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
-        mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+            mSelectableListLayout.initializeEmptyStateView(
+                    R.drawable.bookmark_empty_state_illustration,
+                    R.string.bookmark_manager_empty_state,
+                    R.string.bookmark_manager_back_to_page_by_adding_bookmark);
+        } else {
+            mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
+        }
+
         ModelList modelList = new ModelList();
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
                 new DragReorderableRecyclerViewAdapter(context, modelList);

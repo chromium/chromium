@@ -48,7 +48,7 @@ import org.chromium.ui.base.TestActivity;
 @Config(manifest = Config.NONE)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
-@Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+@Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.EMPTY_STATES})
 public class BookmarkManagerCoordinatorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
