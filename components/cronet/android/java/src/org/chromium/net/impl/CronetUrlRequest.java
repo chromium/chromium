@@ -701,10 +701,10 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 }
                 try {
                     mCallback.onSucceeded(CronetUrlRequest.this, mResponseInfo);
-                    maybeReportMetrics();
                 } catch (Exception e) {
                     Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onSucceeded method", e);
                 }
+                maybeReportMetrics();
             }
         };
         postTaskToExecutor(task);
@@ -749,10 +749,10 @@ public final class CronetUrlRequest extends UrlRequestBase {
             public void run() {
                 try {
                     mCallback.onCanceled(CronetUrlRequest.this, mResponseInfo);
-                    maybeReportMetrics();
                 } catch (Exception e) {
                     Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onCanceled method", e);
                 }
+                maybeReportMetrics();
             }
         };
         postTaskToExecutor(task);
@@ -823,10 +823,10 @@ public final class CronetUrlRequest extends UrlRequestBase {
             public void run() {
                 try {
                     mCallback.onFailed(CronetUrlRequest.this, mResponseInfo, mException);
-                    maybeReportMetrics();
                 } catch (Exception e) {
                     Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onFailed method", e);
                 }
+                maybeReportMetrics();
             }
         };
         try {

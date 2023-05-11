@@ -265,6 +265,22 @@ public class RequestFinishedInfoTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
+    public void testRequestFinishedListenerThrowInTerminalCallback() throws Exception {
+        TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
+        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        callback.setFailure(TestUrlRequestCallback.FailureType.THROW_SYNC,
+                TestUrlRequestCallback.ResponseStep.ON_SUCCEEDED);
+        mTestFramework.mCronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+        requestFinishedListener.blockUntilDone();
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListenerRemoved() throws Exception {
         TestExecutor testExecutor = new TestExecutor();
