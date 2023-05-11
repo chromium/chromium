@@ -8956,7 +8956,7 @@
             ]
         }
     ],
-    "OmniboxOnFocusMVCarouseliOS": [
+    "OmniboxOnFocusMVCarouseliOSV3": [
         {
             "platforms": [
                 "ios"
@@ -8967,7 +8967,6 @@
                     "enable_features": [
                         "EnableSuggestionsScrollingOnIPad",
                         "OmniboxFocusTriggersContextualWebZeroSuggest",
-                        "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxMostVisitedTiles"
                     ]
                 }
