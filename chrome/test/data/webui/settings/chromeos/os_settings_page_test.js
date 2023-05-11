@@ -44,6 +44,10 @@ suite('<os-settings-page>', function() {
 
   /** @return {OsSettingsPageElement} */
   function init() {
+    loadTimeData.overrideValues({
+      isKerberosEnabled: true,  // Simulate Kerberos enabled
+    });
+
     const element = document.createElement('os-settings-page');
     element.prefs = prefElement.prefs;
     element.pageAvailability = createPageAvailabilityForTesting();
@@ -56,9 +60,6 @@ suite('<os-settings-page>', function() {
     suiteSetup(() => {
       Router.getInstance().navigateTo(routes.BASIC);
       settingsPage = init();
-
-      // For Kerberos page
-      settingsPage.showKerberosSection = true;
     });
 
     suiteTeardown(() => {
@@ -124,9 +125,6 @@ suite('<os-settings-page>', function() {
       Router.getInstance().navigateTo(routes.BASIC);
       loadTimeData.overrideValues({isGuest: true});
       settingsPage = init();
-
-      // For Kerberos page
-      settingsPage.showKerberosSection = true;
 
       const idleRender =
           settingsPage.shadowRoot.querySelector('settings-idle-load');
@@ -197,7 +195,11 @@ suite('<os-settings-page>', function() {
     [{
       pageName: 'reset',
       elementName: 'os-settings-reset-page',
-    }].forEach(({pageName, elementName}) => {
+    },
+     {
+       pageName: 'kerberos',
+       elementName: 'settings-kerberos-page',
+     }].forEach(({pageName, elementName}) => {
       test(`${pageName} page is controlled by pageAvailability`, () => {
         // Make page available
         settingsPage.pageAvailability = {

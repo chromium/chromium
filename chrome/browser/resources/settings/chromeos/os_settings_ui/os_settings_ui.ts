@@ -154,8 +154,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
       showPluginVm_: Boolean,
 
-      showKerberosSection_: Boolean,
-
       /**
        * The threshold at which the toolbar will change from normal to narrow
        * mode, in px.
@@ -180,7 +178,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private showToolbar_: boolean;
   private showNavMenu_: boolean;
   private showPluginVm_: boolean;
-  private showKerberosSection_: boolean;
   private narrowThreshold_: number;
   private activeRoute_: Route|null;
   private scrollEndDebouncer_: Debouncer|null;
@@ -239,9 +236,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.showPluginVm_ = loadTimeData.getBoolean('showPluginVm');
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
-
-    this.showKerberosSection_ = loadTimeData.valueExists('isKerberosEnabled') &&
-        loadTimeData.getBoolean('isKerberosEnabled');
 
     this.addEventListener('show-container', () => {
       this.$.container.style.visibility = 'visible';

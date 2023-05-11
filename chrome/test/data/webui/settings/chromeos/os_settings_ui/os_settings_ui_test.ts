@@ -5,6 +5,7 @@
 import {CrSettingsPrefs, OsSettingsMainElement, OsSettingsPageElement, OsSettingsSectionElement, OsSettingsUiElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -19,6 +20,10 @@ suite('OSSettingsUi', function() {
 
   suiteSetup(async function() {
     document.body.innerHTML = '';
+    loadTimeData.overrideValues({
+      isKerberosEnabled: true,  // Simulate Kerberos enabled
+    });
+
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     flush();
@@ -29,9 +34,6 @@ suite('OSSettingsUi', function() {
 
     settingsPage = settingsMain.shadowRoot!.querySelector('os-settings-page');
     assert(settingsPage);
-
-    // Simulate Kerberos enabled.
-    settingsPage.showKerberosSection = true;
 
     const idleRender =
         settingsPage.shadowRoot!.querySelector('settings-idle-load');

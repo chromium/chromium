@@ -100,8 +100,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
 
       showCrostini: Boolean,
 
-      showKerberosSection: Boolean,
-
       havePlayStoreApp: Boolean,
     };
   }
@@ -113,7 +111,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   showAndroidApps: boolean;
   showArcvmManageUsb: boolean;
   showCrostini: boolean;
-  showKerberosSection: boolean;
   havePlayStoreApp: boolean;
   private overscroll_: number;
   private showPages_: MainPageVisibility;

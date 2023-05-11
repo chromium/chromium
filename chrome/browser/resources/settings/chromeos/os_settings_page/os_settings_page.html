@@ -155,7 +155,8 @@
         </os-settings-people-page>
       </os-settings-section>
     </template>
-    <template is="dom-if" if="[[showKerberosSection]]" restamp>
+    <template is="dom-if"
+        if="[[shouldStampPage_(pageAvailability.kerberos)]]" restamp>
       <os-settings-section page-title="$i18n{kerberosPageTitle}"
           section="kerberos">
         <settings-kerberos-page></settings-kerberos-page>
