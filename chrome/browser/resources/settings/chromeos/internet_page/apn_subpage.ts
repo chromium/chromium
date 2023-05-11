@@ -95,7 +95,11 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
     this.guid_ = '';
     this.managedProperties_ = undefined;
     this.deviceState_ = null;
-    Router.getInstance().navigateToPreviousRoute();
+
+    // Only navigate backwards if this is page is the current route.
+    if (Router.getInstance().currentRoute === routes.APN) {
+      Router.getInstance().navigateToPreviousRoute();
+    }
   }
 
   override currentRouteChanged(route: Route): void {
