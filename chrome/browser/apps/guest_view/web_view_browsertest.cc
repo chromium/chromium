@@ -1688,8 +1688,9 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   EXPECT_EQ(true,
             content::EvalJs(new_window_guest_frame, "!!window.newWindow"));
   if (IsNewWindowRestricted()) {
-    EXPECT_EQ(false, content::EvalJs(new_window_guest_frame,
-                                     "!!window.newWindow.location.href"));
+    EXPECT_EQ(url::kAboutBlankURL,
+              content::EvalJs(new_window_guest_frame,
+                              "window.newWindow.location.href"));
   } else {
     EXPECT_EQ(empty_guest_frame->GetLastCommittedURL(),
               content::EvalJs(new_window_guest_frame,

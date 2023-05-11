@@ -110,18 +110,21 @@ function emitExpectedResult(path, expected)
         expected = "'unsafe-none'";
         break;
 
-    // TODO(dcheng): Figure out why these become undefined...
-    case "location.hash":
-    case "location.host":
-    case "location.hostname":
+    // location's url is left intact on detach. The location getters will
+    // provide the appropriate components of our test url (about:blank).
     case "location.href":
-    case "location.origin":
-    case "location.pathname":
-    case "location.port":
-    case "location.protocol":
-    case "location.search":
-        expected = "undefined";
+        expected = "'about:blank'";
         break;
+    case "location.origin":
+        expected = "'null'";
+        break;
+    case "location.pathname":
+        expected = "'blank'";
+        break;
+    case "location.protocol":
+        expected = "'about:'";
+        break;
+
     case "navigator.mediaSession.playbackState":
         expected = "'none'";
         break;

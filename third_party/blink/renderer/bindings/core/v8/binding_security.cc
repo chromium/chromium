@@ -239,15 +239,6 @@ bool BindingSecurity::ShouldAllowAccessTo(
     const DOMWindow* target,
     ErrorReportOption reporting_option) {
   DCHECK(target);
-
-  // TODO(https://crbug.com/723057): This is intended to match the legacy
-  // behavior of when access checks revolved around Frame pointers rather than
-  // DOMWindow pointers. This prevents web-visible behavior changes, since the
-  // previous implementation had to follow the back pointer to the Frame, and
-  // would have to early return when it was null.
-  if (!target->GetFrame())
-    return false;
-
   bool can_access = CanAccessWindow(accessing_window, target, reporting_option);
 
   if (!can_access && accessing_window) {
@@ -267,15 +258,6 @@ bool BindingSecurity::ShouldAllowAccessTo(
     const Location* target,
     ErrorReportOption reporting_option) {
   DCHECK(target);
-
-  // TODO(https://crbug.com/723057): This is intended to match the legacy
-  // behavior of when access checks revolved around Frame pointers rather than
-  // DOMWindow pointers. This prevents web-visible behavior changes, since the
-  // previous implementation had to follow the back pointer to the Frame, and
-  // would have to early return when it was null.
-  if (!target->DomWindow()->GetFrame())
-    return false;
-
   bool can_access =
       CanAccessWindow(accessing_window, target->DomWindow(), reporting_option);
 
@@ -400,13 +382,11 @@ void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
   // exception could be a security issue, so just crash.
   CHECK(target);
 
-  // TODO(https://crbug.com/723057): This is intended to match the legacy
-  // behavior of when access checks revolved around Frame pointers rather than
-  // DOMWindow pointers. This prevents web-visible behavior changes, since the
-  // previous implementation had to follow the back pointer to the Frame, and
-  // would have to early return when it was null.
-  if (!target->GetFrame())
+  // wpt/html/cross-origin-opener-policy/resource-popup.https.html expects
+  // that illegally accessing a detached window doesn't throw.
+  if (!target->GetFrame()) {
     return;
+  }
 
   auto* local_dom_window = CurrentDOMWindow(isolate);
   // Determine if the access check failure was because of cross-origin or if the

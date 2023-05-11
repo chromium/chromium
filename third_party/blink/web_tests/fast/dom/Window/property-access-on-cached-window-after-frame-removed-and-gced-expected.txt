@@ -13,7 +13,16 @@ PASS childWindow.innerHeight is 0
 PASS childWindow.innerWidth is 0
 PASS childWindow.isSecureContext is true
 PASS childWindow.length is 0
-PASS childWindow.location.href is undefined
+PASS childWindow.location.ancestorOrigins.length is 0
+PASS childWindow.location.hash is ''
+PASS childWindow.location.host is ''
+PASS childWindow.location.hostname is ''
+PASS childWindow.location.href is 'about:blank'
+PASS childWindow.location.origin is 'null'
+PASS childWindow.location.pathname is 'blank'
+PASS childWindow.location.port is ''
+PASS childWindow.location.protocol is 'about:'
+PASS childWindow.location.search is ''
 PASS childWindow.locationbar.visible is false
 PASS childWindow.menubar.visible is false
 PASS childWindow.name is ''
