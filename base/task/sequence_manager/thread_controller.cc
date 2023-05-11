@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/task/sequence_manager/thread_controller.h"
+#include <atomic>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/notreached.h"
@@ -15,6 +17,21 @@
 namespace base {
 namespace sequence_manager {
 namespace internal {
+
+namespace {
+// Control whether sample metadata is recorded in this class. Enabled by
+// default to ensure never losing data.
+BASE_FEATURE(kThreadControllerSetsProfilerMetadata,
+             "ThreadControllerSetsProfilerMetadata",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Thread safe copy to be updated once feature list is available. This
+// defaults to true to make sure that no metadata is lost on clients that
+// need to record. This leads to some overeporting before feature list
+// initialization on other clients but that's still way better than the current
+// situation which is reporting all the time.
+std::atomic<bool> g_thread_controller_sets_profiler_metadata{true};
+}  // namespace
 
 ThreadController::ThreadController(const TickClock* time_source)
     : associated_thread_(AssociatedThreadId::CreateUnbound()),
@@ -36,6 +53,18 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 
   // There shouldn't be any remaining |run_levels_| by the time this unwinds.
   DCHECK_EQ(run_levels_.size(), 0u);
+}
+
+// static
+void ThreadController::InitializeFeatures() {
+  g_thread_controller_sets_profiler_metadata.store(
+      base::FeatureList::IsEnabled(kThreadControllerSetsProfilerMetadata),
+      std::memory_order_relaxed);
+}
+
+bool ThreadController::RunLevelTracker::RunLevel::ShouldRecordSampleMetadata() {
+  return g_thread_controller_sets_profiler_metadata.load(
+      std::memory_order_relaxed);
 }
 
 void ThreadController::EnableMessagePumpTimeKeeperMetrics(
@@ -247,12 +276,14 @@ ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
       // applied on the final pop().
       time_keeper_->RecordEndOfPhase(kNested, *exit_lazy_now_);
 
-      // Intentionally ordered after UpdateState(kIdle), reinstantiates
-      // thread_controller_sample_metadata_ when yielding back to a parent
-      // RunLevel (which is active by definition as it is currently running this
-      // one).
-      thread_controller_sample_metadata_.Set(
-          static_cast<int64_t>(++thread_controller_active_id_));
+      if (ShouldRecordSampleMetadata()) {
+        // Intentionally ordered after UpdateState(kIdle), reinstantiates
+        // thread_controller_sample_metadata_ when yielding back to a parent
+        // RunLevel (which is active by definition as it is currently running
+        // this one).
+        thread_controller_sample_metadata_.Set(
+            static_cast<int64_t>(++thread_controller_active_id_));
+      }
     }
   }
 }
@@ -279,12 +310,17 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
     // ThreadController::RunLevelTracker::RecordScheduleWork.
     TRACE_EVENT_BEGIN("base", "ThreadController active",
                       *terminating_wakeup_flow_lambda_);
-    // Overriding the annotation from the previous RunLevel is intentional. Only
-    // the top RunLevel is ever updated, which holds the relevant state.
-    thread_controller_sample_metadata_.Set(
-        static_cast<int64_t>(++thread_controller_active_id_));
+
+    if (ShouldRecordSampleMetadata()) {
+      // Overriding the annotation from the previous RunLevel is intentional.
+      // Only the top RunLevel is ever updated, which holds the relevant state.
+      thread_controller_sample_metadata_.Set(
+          static_cast<int64_t>(++thread_controller_active_id_));
+    }
   } else {
-    thread_controller_sample_metadata_.Remove();
+    if (ShouldRecordSampleMetadata()) {
+      thread_controller_sample_metadata_.Remove();
+    }
     TRACE_EVENT_END("base");
     // TODO(crbug.com/1021571): Remove this once fixed.
     PERFETTO_INTERNAL_ADD_EMPTY_EVENT();

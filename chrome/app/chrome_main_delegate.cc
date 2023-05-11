@@ -30,6 +30,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
+#include "base/task/sequence_manager/thread_controller.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
@@ -956,6 +957,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
+  base::sequence_manager::internal::ThreadController::InitializeFeatures();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   base::MessagePumpLibevent::InitializeFeatures();
 #elif BUILDFLAG(IS_MAC)
