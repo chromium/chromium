@@ -22,6 +22,11 @@ class MenuEntryView : public views::ImageButton {
   using OnPositionChangedCallback =
       base::RepeatingCallback<void(bool, absl::optional<gfx::Point>)>;
 
+  static MenuEntryView* Show(
+      PressedCallback pressed_callback,
+      OnPositionChangedCallback on_position_changed_callback,
+      DisplayOverlayController* display_overlay_controller);
+
   MenuEntryView(PressedCallback pressed_callback,
                 OnPositionChangedCallback on_position_changed_callback,
                 DisplayOverlayController* display_overlay_controller);
@@ -48,11 +53,8 @@ class MenuEntryView : public views::ImageButton {
   bool OnKeyReleased(const ui::KeyEvent& event) override;
 
  private:
-  // TODO(b/260937747) For Alpha version, this view is not movable. Cancel
-  // located event and reset event target when the located event doesn't
-  // released on top of this view. This can be removed when removing the AlphaV2
-  // flag.
-  void MayCancelLocatedEvent(const ui::LocatedEvent& event);
+  void Init();
+  gfx::Point CalculatePosition() const;
 
   OnPositionChangedCallback on_position_changed_callback_;
 

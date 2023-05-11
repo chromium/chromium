@@ -107,6 +107,7 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class EducationalView;
   friend class InputMappingView;
   friend class InputMenuView;
+  friend class MenuEntryView;
   friend class MenuEntryViewTest;
 
   // Display overlay is added for starting |display_mode|.
@@ -148,8 +149,6 @@ class DisplayOverlayController : public ui::EventHandler,
 
   views::Widget* GetOverlayWidget();
   views::View* GetOverlayWidgetContentsView();
-  gfx::Point CalculateMenuEntryPosition();
-  views::View* GetParentView();
   bool HasMenuView() const;
   // Used for edit mode, in which the input mapping must be temporarily visible
   // regardless of user setting, until it is overridden when the user presses

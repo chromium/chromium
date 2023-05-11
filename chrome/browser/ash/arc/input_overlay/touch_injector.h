@@ -96,7 +96,7 @@ class TouchInjector : public ui::EventRewriter {
   void NotifyFirstTimeLaunch();
   // Save the menu entry view position when it's changed.
   void SaveMenuEntryLocation(gfx::Point menu_entry_location_point);
-  absl::optional<gfx::Vector2dF> menu_entry_location() {
+  absl::optional<gfx::Vector2dF> menu_entry_location() const {
     return menu_entry_location_;
   }
 

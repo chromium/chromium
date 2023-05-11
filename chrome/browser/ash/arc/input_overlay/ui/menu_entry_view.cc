@@ -13,7 +13,10 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
+#include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -40,6 +43,7 @@ constexpr int kMenuEntrySize = 48;
 constexpr int kMenuEntryIconSize = 24;
 constexpr int kMenuEntryCornerRadius = 8;
 constexpr int kMenuEntryBorderThickness = 1;
+constexpr int kMenuEntrySideMargin = 24;
 // About focus ring.
 // Gap between focus ring outer edge to label.
 constexpr float kHaloInset = -5;
@@ -48,36 +52,27 @@ constexpr float kHaloThickness = 3;
 
 }  // namespace
 
+// static
+MenuEntryView* MenuEntryView::Show(
+    PressedCallback pressed_callback,
+    OnPositionChangedCallback on_position_changed_callback,
+    DisplayOverlayController* display_overlay_controller) {
+  auto* menu_entry =
+      display_overlay_controller->GetOverlayWidgetContentsView()->AddChildView(
+          std::make_unique<MenuEntryView>(pressed_callback,
+                                          on_position_changed_callback,
+                                          display_overlay_controller));
+  menu_entry->Init();
+  return menu_entry;
+}
+
 MenuEntryView::MenuEntryView(
     PressedCallback pressed_callback,
     OnPositionChangedCallback on_position_changed_callback,
     DisplayOverlayController* display_overlay_controller)
     : views::ImageButton(std::move(pressed_callback)),
       on_position_changed_callback_(on_position_changed_callback),
-      display_overlay_controller_(display_overlay_controller) {
-  auto game_icon = ui::ImageModel::FromVectorIcon(
-      kGameControlsGamepadIcon, SK_ColorBLACK, kMenuEntryIconSize);
-  SetImageModel(views::Button::STATE_NORMAL, game_icon);
-  SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
-                                                   kMenuEntryCornerRadius));
-
-  SetBorder(views::CreateRoundedRectBorder(
-      kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
-
-  SetSize(gfx::Size(kMenuEntrySize, kMenuEntrySize));
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  // Set up focus ring for |menu_entry_|.
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kMenuEntryCornerRadius);
-  ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                        /*highlight_on_hover=*/true,
-                                        /*highlight_on_focus=*/true);
-  auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetHaloInset(kHaloInset);
-  focus_ring->SetHaloThickness(kHaloThickness);
-  focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
-}
+      display_overlay_controller_(display_overlay_controller) {}
 
 MenuEntryView::~MenuEntryView() = default;
 
@@ -154,8 +149,60 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
   }
 }
 
+void MenuEntryView::Init() {
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
+  SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
+                                                   kMenuEntryCornerRadius));
+  SetBorder(views::CreateRoundedRectBorder(
+      kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
+
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(kGameControlsGamepadIcon, SK_ColorBLACK,
+                                     kMenuEntryIconSize));
+  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+
+  // Set up focus ring for |menu_entry_|.
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kMenuEntryCornerRadius);
+  ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                        /*highlight_on_hover=*/true,
+                                        /*highlight_on_focus=*/true);
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetHaloInset(kHaloInset);
+  focus_ring->SetHaloThickness(kHaloThickness);
+  focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
+
+  auto position = CalculatePosition();
+  SetBounds(position.x(), position.y(), kMenuEntrySize, kMenuEntrySize);
+}
+
+gfx::Point MenuEntryView::CalculatePosition() const {
+  const auto* touch_injector = display_overlay_controller_->touch_injector();
+  auto normalized_location = touch_injector->menu_entry_location();
+  if (normalized_location) {
+    auto content_bounds = touch_injector->content_bounds();
+    return gfx::Point(static_cast<int>(std::round(normalized_location->x() *
+                                                  content_bounds.width())),
+                      static_cast<int>(std::round(normalized_location->y() *
+                                                  content_bounds.height())));
+  } else {
+    auto* parent_view =
+        display_overlay_controller_->GetOverlayWidgetContentsView();
+    if (!parent_view || parent_view->bounds().IsEmpty()) {
+      return gfx::Point();
+    }
+
+    return gfx::Point(
+        std::max(0,
+                 parent_view->width() - kMenuEntrySize - kMenuEntrySideMargin),
+        std::max(0, parent_view->height() / 2 - kMenuEntrySize / 2));
+  }
+}
+
 void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
-  MayCancelLocatedEvent(*event);
   if (!reposition_controller_->OnGestureEvent(event)) {
     return views::ImageButton::OnGestureEvent(event);
   }
@@ -171,14 +218,6 @@ bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
   return reposition_controller_->OnKeyReleased(event)
              ? true
              : views::ImageButton::OnKeyReleased(event);
-}
-
-void MenuEntryView::MayCancelLocatedEvent(const ui::LocatedEvent& event) {
-  if ((event.IsMouseEvent() && !HitTestPoint(event.location())) ||
-      (event.IsGestureEvent() && event.type() == ui::ET_GESTURE_TAP_CANCEL)) {
-    on_position_changed_callback_.Run(/*leave_focus=*/true,
-                                      /*location=*/absl::nullopt);
-  }
 }
 
 void MenuEntryView::ChangeMenuEntryOnDrag(bool is_dragging) {
