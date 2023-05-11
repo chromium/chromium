@@ -350,8 +350,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     // manager to close the document, destroying the host.
     ExtensionHostTestHelper host_waiter(profile());
     host_waiter.RestrictToHost(offscreen_document);
-    ASSERT_TRUE(content::ExecuteScript(offscreen_document->host_contents(),
-                                       "window.close();"));
+    ASSERT_TRUE(content::ExecJs(offscreen_document->host_contents(),
+                                "window.close();"));
     host_waiter.WaitForHostDestroyed();
   }
 

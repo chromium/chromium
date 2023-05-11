@@ -536,7 +536,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   // |fetch_script| will include calls to |domAutomationController.send| and
   // therefore instances of FetchCallback should not inject their own calls to
   // |domAutomationController.send| (e.g. this constraint rules out
-  // ExecuteScriptInBackgroundPage and/or content::ExecuteScript).
+  // ExecuteScriptInBackgroundPage and/or content::ExecJs).
   //
   // The function should return true if script execution started successfully.
   //
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Clicking the button will execute the 'click' handler belonging to the
   // content script (i.e. the `startFetch` method defined in the
   // kNewButtonScriptTemplate above).  Directly executing the script via
-  // content::ExecuteScript would have executed the script in the main world
+  // content::ExecJs would have executed the script in the main world
   // (which is not what we want).
   const char kFetchInitiatingScript[] = R"(
       document.getElementById('fetch-button').click();
@@ -2276,7 +2276,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
   std::string web_view_injection_script = content::JsReplace(
       kWebViewInjectionScriptTemplate, CreateFetchScript(cross_site_resource));
-  ASSERT_TRUE(ExecuteScript(app_contents, web_view_injection_script));
+  ASSERT_TRUE(ExecJs(app_contents, web_view_injection_script));
 
   // Navigate <webview>, which should trigger content script execution.
   GURL guest_url(

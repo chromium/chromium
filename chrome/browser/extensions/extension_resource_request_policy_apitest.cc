@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
 
   GURL private_page(
       "chrome-extension://kegmjfcnjamahdnldjmlpachmpielcdk/private.html");
-  ASSERT_TRUE(content::ExecuteScript(web_contents, "navigateFrameNow()"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "navigateFrameNow()"));
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_NE(private_page, web_contents->GetLastCommittedURL());
 

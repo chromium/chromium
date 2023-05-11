@@ -2163,7 +2163,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
         R"( window.name = 'old-contents';
             chrome.windows.create({url: '%s', setSelfAsOpener: true}); )",
         extension_url.spec().c_str());
-    ASSERT_TRUE(content::ExecuteScript(old_contents, script));
+    ASSERT_TRUE(content::ExecJs(old_contents, script));
     new_contents = observer.GetWebContents();
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
   }
@@ -2174,13 +2174,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
   GURL web_url2 = embedded_test_server()->GetURL("/title2.html");
   {
     content::TestNavigationObserver nav_observer(new_contents, 1);
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         new_contents, "window.location = '" + web_url1.spec() + "';"));
     nav_observer.Wait();
   }
   {
     content::TestNavigationObserver nav_observer(old_contents, 1);
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         old_contents, "window.location = '" + web_url2.spec() + "';"));
     nav_observer.Wait();
   }
@@ -2235,7 +2235,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
         R"( window.name = 'old-contents';
             chrome.windows.create({url: '%s'}); )",
         extension_url.spec().c_str());
-    ASSERT_TRUE(content::ExecuteScript(old_contents, script));
+    ASSERT_TRUE(content::ExecJs(old_contents, script));
     new_contents = observer.GetWebContents();
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
   }
@@ -2315,7 +2315,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
     content::WebContents* new_contents = nullptr;
     {
       content::WebContentsAddedObserver observer;
-      ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+      ASSERT_TRUE(content::ExecJs(web_contents, script));
       new_contents = observer.GetWebContents();
     }
     ASSERT_TRUE(new_contents);

@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {
 
   // Insert a password field to make sure that's noticed.
   // Notice that we touch offsetTop to force a synchronous layout.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, R"(document.body.innerHTML = '<input type="password">';
               document.body.offsetTop;)"));
 
@@ -368,8 +368,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {
 
   // Remove it again to make sure that reverts the action.
   // Notice that we touch offsetTop to force a synchronous layout.
-  ASSERT_TRUE(
-      content::ExecuteScript(tab, R"(document.body.innerHTML = 'Hello world';
+  ASSERT_TRUE(content::ExecJs(tab, R"(document.body.innerHTML = 'Hello world';
                                      document.body.offsetTop;)"));
 
   test_observer.WaitForPageActionVisibilityChangeTo(0);
@@ -878,10 +877,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
       browser()->tab_strip_model()->GetWebContentsAt(0);
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, R"(document.body.innerHTML = '<iframe src="http://test2">';)"));
   // Replace the iframe to destroy its WebFrame.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, R"(document.body.innerHTML = '<span class="foo">';)"));
 
   // Observer to track page action visibility. This helps avoid flakes by

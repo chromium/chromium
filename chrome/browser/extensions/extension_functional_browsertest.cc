@@ -121,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
       tab1->GetSiteInstance()->IsRelatedSiteInstance(tab2->GetSiteInstance()));
 
   // Name the 2 frames.
-  EXPECT_TRUE(content::ExecuteScript(tab1, "window.name = 'tab1';"));
-  EXPECT_TRUE(content::ExecuteScript(tab2, "window.name = 'tab2';"));
+  EXPECT_TRUE(content::ExecJs(tab1, "window.name = 'tab1';"));
+  EXPECT_TRUE(content::ExecJs(tab2, "window.name = 'tab2';"));
 
   // Open a new window from tab1 and store it in tab1_popup.
   content::RenderFrameHost* tab1_popup = nullptr;

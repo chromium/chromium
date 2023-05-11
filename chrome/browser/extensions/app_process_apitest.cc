@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   content::LoadStopObserver js_reload_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Executing location.reload().";
-  ASSERT_TRUE(content::ExecuteScript(contents, "location.reload();"));
+  ASSERT_TRUE(content::ExecJs(contents, "location.reload();"));
   js_reload_observer.Wait();
   LOG(INFO) << "Executing location.reload() - done.";
   EXPECT_TRUE(process_map->Contains(
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   content::LoadStopObserver js_reload_observer2(
       browser()->tab_strip_model()->GetActiveWebContents());
   LOG(INFO) << "Executing location = location.";
-  ASSERT_TRUE(content::ExecuteScript(contents, "location = location;"));
+  ASSERT_TRUE(content::ExecJs(contents, "location = location;"));
   js_reload_observer2.Wait();
   LOG(INFO) << "Executing location = location - done.";
   EXPECT_FALSE(process_map->Contains(
@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
   GURL non_app_url(base_url.Resolve("path3/empty.html"));
   {
     content::TestNavigationObserver observer(popup_contents);
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         popup_contents,
         base::StringPrintf("location = '%s';", non_app_url.spec().c_str())));
     observer.Wait();

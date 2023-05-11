@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
     )";
 
     ResultCatcher catcher;
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         source, content::JsReplace(kScript, expected_response)));
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   };
@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
       });
     )";
     ResultCatcher catcher;
-    ASSERT_TRUE(content::ExecuteScript(extension_tab, kScript));
+    ASSERT_TRUE(content::ExecJs(extension_tab, kScript));
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
 }

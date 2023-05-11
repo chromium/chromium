@@ -121,9 +121,8 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainWorldExecution) {
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
   constexpr char kSetFlagScript[] = "window.mainWorldFlag = 'executionFlag';";
-  // NOTE: We use ExecuteScript() (and not EvalJs or ExecJs) because we
-  // explicitly *need* this to happen in the main world for the test.
-  EXPECT_TRUE(content::ExecuteScript(main_frame, kSetFlagScript));
+  // NOTE: We *need* this to happen in the main world for the test.
+  EXPECT_TRUE(content::ExecJs(main_frame, kSetFlagScript));
 
   ScriptExecutor script_executor(web_contents);
 

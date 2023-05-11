@@ -56,8 +56,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
       button.click();
     })();)";
 
-  EXPECT_TRUE(content::ExecuteScript(tab_strip->GetActiveWebContents(),
-                                     kScriptClickOptionButton));
+  EXPECT_TRUE(content::ExecJs(tab_strip->GetActiveWebContents(),
+                              kScriptClickOptionButton));
   tab_add.Wait();
   ASSERT_EQ(2, tab_strip->count());
   content::WebContents* tab = tab_strip->GetWebContentsAt(1);

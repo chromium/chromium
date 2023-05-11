@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
   std::string script =
       base::StringPrintf("location.href = '%s';", redirect_url.spec().c_str());
   content::TestNavigationObserver observer(new_web_contents);
-  EXPECT_TRUE(content::ExecuteScript(new_web_contents, script));
+  EXPECT_TRUE(content::ExecJs(new_web_contents, script));
   observer.Wait();
 
   EXPECT_EQ(observer.last_navigation_url(), blocked_url);
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(
             canAccess;
          }
        )";
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, base::StringPrintf(kOpenNewWindow, url.spec().c_str())));
 
     // WaitForLoadStop() will return false on a 404, but that can happen if we

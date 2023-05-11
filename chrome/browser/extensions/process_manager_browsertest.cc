@@ -217,7 +217,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
             .Set("name", name)
             .Set("version", "1")
             .Set("manifest_version", 2)
-            // To allow ExecuteScript* to work.
+            // To allow ExecJs* to work.
             .Set("content_security_policy",
                  "script-src 'self' 'unsafe-eval'; object-src 'self'")
             .Set("sandbox",
@@ -275,8 +275,8 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
                                   const GURL& url,
                                   bool expect_success = true) {
     ui_test_utils::TabAddedWaiter waiter(browser());
-    EXPECT_TRUE(ExecuteScript(
-        opener, "window.popup = window.open('" + url.spec() + "')"));
+    EXPECT_TRUE(
+        ExecJs(opener, "window.popup = window.open('" + url.spec() + "')"));
     waiter.Wait();
     content::WebContents* popup =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -289,8 +289,8 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
   content::WebContents* OpenPopupNoOpener(content::RenderFrameHost* opener,
                                           const GURL& url) {
     content::WebContentsAddedObserver popup_observer;
-    EXPECT_TRUE(ExecuteScript(
-        opener, "window.open('" + url.spec() + "', '', 'noopener')"));
+    EXPECT_TRUE(
+        ExecJs(opener, "window.open('" + url.spec() + "', '', 'noopener')"));
     content::WebContents* popup = popup_observer.GetWebContents();
     WaitForLoadStop(popup);
     return popup;
@@ -883,8 +883,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
           ? 2
           : 1;
   for (size_t i = 0; i < nested_url_count; i++) {
-    EXPECT_TRUE(ExecuteScript(
-        popup, "location.href = '" + nested_urls[i].spec() + "';"));
+    EXPECT_TRUE(
+        ExecJs(popup, "location.href = '" + nested_urls[i].spec() + "';"));
 
     // If a navigation was started, wait for it to finish.  This can't just use
     // a TestNavigationObserver, since after https://crbug.com/811558 blob: and
@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
     // Blink, run a dummy script on the renderer to ensure that the navigation,
     // if started, has made it to the browser process before we call
     // WaitForLoadStop().
-    EXPECT_TRUE(ExecuteScript(popup, "true"));
+    EXPECT_TRUE(ExecJs(popup, "true"));
     EXPECT_TRUE(content::WaitForLoadStop(popup));
 
     // This is a top-level navigation that should be blocked since it
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
          anchor.download = '';
          anchor.click();)",
       blob_url.spec().c_str());
-  EXPECT_TRUE(ExecuteScript(tab, script));
+  EXPECT_TRUE(ExecJs(tab, script));
   observer.WaitForFinished();
   EXPECT_EQ(1u,
             observer.NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
@@ -1132,8 +1132,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
     EXPECT_NE(popup, tab);
 
     content::TestNavigationObserver observer(popup);
-    EXPECT_TRUE(ExecuteScript(
-        popup, "location.href = '" + nested_urls[0].spec() + "';"));
+    EXPECT_TRUE(
+        ExecJs(popup, "location.href = '" + nested_urls[0].spec() + "';"));
     observer.Wait();
 
     EXPECT_EQ(nested_urls[0], popup->GetLastCommittedURL());
@@ -1154,8 +1154,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
     content::WebContentsConsoleObserver console_observer(popup);
     console_observer.SetPattern("Not allowed to navigate to*");
-    EXPECT_TRUE(ExecuteScript(
-        popup, "location.href = '" + nested_urls[1].spec() + "';"));
+    EXPECT_TRUE(
+        ExecJs(popup, "location.href = '" + nested_urls[1].spec() + "';"));
     ASSERT_TRUE(console_observer.Wait());
 
     // about:blank URLs can be modified by their opener. In that case their
@@ -1255,8 +1255,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   GURL nested_urls[] = {blob_url, filesystem_url};
   for (size_t i = 0; i < std::size(nested_urls); i++) {
     content::TestNavigationObserver observer(web_tab);
-    EXPECT_TRUE(ExecuteScript(
-        web_tab, "location.href = '" + nested_urls[i].spec() + "';"));
+    EXPECT_TRUE(
+        ExecJs(web_tab, "location.href = '" + nested_urls[i].spec() + "';"));
     observer.Wait();
     EXPECT_NE(nested_urls[i], web_tab->GetLastCommittedURL());
     EXPECT_FALSE(app_origin.IsSameOriginWith(
@@ -1307,7 +1307,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
     // Navigate via the proxy to |nested_url|. This should be blocked by
     // FilterURL.
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         tab, "window.popup.location.href = '" + nested_url.spec() + "';"));
     EXPECT_TRUE(WaitForLoadStop(popup));
 
@@ -1354,8 +1354,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Navigate popup to an extension page.
   const GURL extension_url(extension->url().Resolve("empty.html"));
   content::TestNavigationObserver observer(popup);
-  EXPECT_TRUE(
-      ExecuteScript(popup, "location.href = '" + extension_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(popup, "location.href = '" + extension_url.spec() + "';"));
   observer.Wait();
   EXPECT_EQ(1u, pm->GetAllFrames().size());
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
@@ -1477,9 +1476,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
       extension2, extension2_manifest.path(), initiator_origin));
   {
     content::TestNavigationObserver nav_observer(tab, 1);
-    EXPECT_TRUE(ExecuteScript(
-        tab, base::StringPrintf("frames[0].location.href = '%s';",
-                                extension2_manifest.spec().c_str())));
+    EXPECT_TRUE(
+        ExecJs(tab, base::StringPrintf("frames[0].location.href = '%s';",
+                                       extension2_manifest.spec().c_str())));
     nav_observer.Wait();
     EXPECT_FALSE(nav_observer.last_navigation_succeeded());
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
@@ -1496,7 +1495,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
       "/server-redirect?" + extension2_manifest.spec()));
   {
     content::TestNavigationObserver nav_observer(tab, 1);
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         tab, base::StringPrintf("frames[1].location.href = '%s';",
                                 sneaky_extension2_manifest.spec().c_str())));
     nav_observer.Wait();
@@ -1519,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
         ChildFrameAt(main_frame, 1));
     const GURL extension2_accessible_redirect(embedded_test_server()->GetURL(
         "/server-redirect?" + extension2_empty.spec()));
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         tab,
         base::StringPrintf("frames[1].location.href = '%s';",
                            extension2_accessible_redirect.spec().c_str())));
@@ -1790,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
           tab, tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 
   GURL web_url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       tab, base::StringPrintf("window.open('%s');", web_url.spec().c_str())));
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();

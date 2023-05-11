@@ -110,7 +110,7 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
 
     EXPECT_EQ(0U, test_guest_view_manager_->num_guests_created());
 
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         webui,
         content::JsReplace(
             "let extensionoptions = document.createElement('extensionoptions');"
@@ -236,14 +236,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
   const std::string storage_key = "test";
   const int storage_value = 42;
 
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       guest_rfh,
       content::JsReplace("var onChangedPromise = new Promise((resolve) => {"
                          "  chrome.storage.onChanged.addListener((change) => {"
                          "    resolve(change[$1].newValue);"
                          "  });"
                          "});",
-                         storage_key)));
+                         storage_key),
+      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   ASSERT_EQ(
       "success",
@@ -303,8 +304,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
   auto* guest_rfh = OpenExtensionOptions(extension);
 
   content::WebContentsAddedObserver new_contents_observer;
-  EXPECT_TRUE(content::ExecuteScript(
-      guest_rfh, "document.getElementById('link').click();"));
+  EXPECT_TRUE(
+      content::ExecJs(guest_rfh, "document.getElementById('link').click();"));
   content::WebContents* new_contents = new_contents_observer.GetWebContents();
   EXPECT_NE(TabStripModel::kNoTab,
             browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
@@ -399,8 +400,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
   EXPECT_FALSE(event_router->HasEventListener("test.onMessage"));
   // Register a listener and create a child frame at a different URL.
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(content::ExecuteScript(main_frame, R"(
-      const listener = e => {};
+  EXPECT_TRUE(content::ExecJs(main_frame, R"(
+      var listener = e => {};
       chrome.test.onMessage.addListener(listener);
       const iframe = document.createElement('iframe');
       iframe.src = 'chrome://test/body2.html';
@@ -413,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_EQ(GURL("chrome://test/body2.html"),
             child_frame->GetLastCommittedURL());
-  EXPECT_TRUE(content::ExecuteScript(child_frame, R"(
+  EXPECT_TRUE(content::ExecJs(child_frame, R"(
       const listener = e => {};
       chrome.test.onMessage.addListener(listener);
       chrome.test.onMessage.removeListener(listener);
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
   EXPECT_TRUE(event_router->HasEventListener("test.onMessage"));
 
   // Now remove last listener from main frame.
-  EXPECT_TRUE(content::ExecuteScript(main_frame, R"(
+  EXPECT_TRUE(content::ExecJs(main_frame, R"(
       chrome.test.onMessage.removeListener(listener);
   )"));
   EXPECT_FALSE(event_router->HasEventListener("test.onMessage"));

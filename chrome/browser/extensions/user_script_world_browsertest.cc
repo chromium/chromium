@@ -151,9 +151,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   // Set a flag in the main world of the page. This will allow us to verify
   // the new script is running in an isolated world.
   constexpr char kSetFlagScript[] = "window.mainWorldFlag = 'executionFlag';";
-  // NOTE: We use ExecuteScript() (and not EvalJs or ExecJs) because we
-  // explicitly *need* this to happen in the main world for the test.
-  EXPECT_TRUE(content::ExecuteScript(main_frame, kSetFlagScript));
+  // NOTE: We *need* this to happen in the main world for the test.
+  EXPECT_TRUE(content::ExecJs(main_frame, kSetFlagScript));
 
   // Inject a script into a user script world. The script will return the
   // values of both the main world flag (set above) and all properties exposed

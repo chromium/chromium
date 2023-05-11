@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
       content::WebContents::FromRenderFrameHost(frame_host));
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/popup_iframe.html"));
   std::string script = "location.href = '" + foo_url.spec() + "'";
-  EXPECT_TRUE(ExecuteScript(frame_host, script));
+  EXPECT_TRUE(ExecJs(frame_host, script));
 
   frame_host = watcher.WaitAndReturnNewFrame();
 
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
   std::string script =
       "document.querySelector('fencedframe').config = new FencedFrameConfig('" +
       foo_url.spec() + "')";
-  EXPECT_TRUE(ExecuteScript(primary_rfh, script));
+  EXPECT_TRUE(ExecJs(primary_rfh, script));
   observer.WaitForNavigationFinished();
 
   content::RenderFrameHost* fenced_frame_rfh =

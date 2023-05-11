@@ -538,8 +538,8 @@ IN_PROC_BROWSER_TEST_F(
                                                        "tabs.onCreated"));
 
   // Register both lsiteners, and verify they were added.
-  ASSERT_TRUE(content::ExecuteScript(first_tab, "registerListener()"));
-  ASSERT_TRUE(content::ExecuteScript(second_tab, "registerListener()"));
+  ASSERT_TRUE(content::ExecJs(first_tab, "registerListener()"));
+  ASSERT_TRUE(content::ExecJs(second_tab, "registerListener()"));
   EXPECT_TRUE(event_router->ExtensionHasEventListener(extension->id(),
                                                       "tabs.onCreated"));
 
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::CloseWebContents(browser(), second_tab, add_to_history);
   watcher.Wait();
   // Hacky round trip to the renderer to flush IPCs.
-  ASSERT_TRUE(content::ExecuteScript(first_tab, ""));
+  ASSERT_TRUE(content::ExecJs(first_tab, ""));
 
   // Since the second page is still open, the extension should still be
   // registered as a listener.

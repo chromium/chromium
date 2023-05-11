@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(HangoutServicesBrowserTest,
   g_browser_process->webrtc_log_uploader()->SetUploadUrlForTesting(
       https_server().GetURL("any-subdomain.google.com", kLogUploadUrlPath));
 
-  ASSERT_TRUE(content::ExecuteScript(tab, "browsertestRunAllTests();"));
+  ASSERT_TRUE(content::ExecJs(tab, "browsertestRunAllTests();"));
 
   content::TitleWatcher title_watcher(tab, u"success");
   title_watcher.AlsoWaitForTitle(u"failure");

@@ -1329,7 +1329,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
     GURL guest_url1(embedded_test_server()->GetURL("foo.com", "/title1.html"));
 
     content::WebContentsAddedObserver guest_contents_observer;
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         app_contents,
         content::JsReplace(kWebViewInjectionScriptTemplate, guest_url1)));
     guest_contents = guest_contents_observer.GetWebContents();
@@ -1444,7 +1444,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
     GURL guest_url1(embedded_test_server()->GetURL("foo.com", "/title1.html"));
 
     content::WebContentsAddedObserver guest_contents_observer;
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         app_contents,
         content::JsReplace(kWebViewInjectionScriptTemplate, guest_url1)));
     guest_contents = guest_contents_observer.GetWebContents();
