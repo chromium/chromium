@@ -14,10 +14,10 @@ import androidx.collection.ArraySet;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.EntityInfoProto;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
 import org.chromium.components.omnibox.action.OmniboxActionType;
@@ -163,7 +163,7 @@ public class ActionChipsProcessor {
     private void executeAction(@NonNull OmniboxAction action, int position) {
         switch (action.actionId) {
             case OmniboxActionType.HISTORY_CLUSTERS:
-                SuggestionsMetrics.recordResumeJourneyClick(position);
+                OmniboxMetrics.recordResumeJourneyClick(position);
                 break;
 
             case OmniboxActionType.ACTION_IN_SUGGEST:
@@ -183,19 +183,19 @@ public class ActionChipsProcessor {
      */
     private void recordActionsShown() {
         for (Integer pedal : mLastVisiblePedals) {
-            SuggestionsMetrics.recordPedalShown(pedal);
+            OmniboxMetrics.recordPedalShown(pedal);
         }
 
         for (var actionIndex = 0; actionIndex < mActionInSuggestShownOrUsed.size(); actionIndex++) {
             int actionType = mActionInSuggestShownOrUsed.keyAt(actionIndex);
             boolean wasUsed = mActionInSuggestShownOrUsed.valueAt(actionIndex);
-            SuggestionsMetrics.recordActionInSuggestShown(actionType);
+            OmniboxMetrics.recordActionInSuggestShown(actionType);
             if (wasUsed) {
-                SuggestionsMetrics.recordActionInSuggestUsed(actionType);
+                OmniboxMetrics.recordActionInSuggestUsed(actionType);
             }
         }
 
-        SuggestionsMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
+        OmniboxMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
 
         mJourneysActionShownPosition = -1;
         mLastVisiblePedals.clear();

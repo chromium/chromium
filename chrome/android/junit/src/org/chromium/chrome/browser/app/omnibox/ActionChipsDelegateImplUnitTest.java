@@ -36,12 +36,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.EntityInfoProto;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
@@ -266,7 +266,7 @@ public class ActionChipsDelegateImplUnitTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS));
+                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
         verifyNoMoreInteractions(mTab);
     }
 
@@ -316,7 +316,7 @@ public class ActionChipsDelegateImplUnitTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+                        OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
 
         var loadParamsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mTab, times(1)).loadUrl(loadParamsCaptor.capture());
@@ -357,7 +357,7 @@ public class ActionChipsDelegateImplUnitTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+                        OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
     }
 
     @Test
@@ -375,7 +375,7 @@ public class ActionChipsDelegateImplUnitTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS));
+                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
         verifyNoMoreInteractions(mTab);
     }
 
@@ -393,7 +393,7 @@ public class ActionChipsDelegateImplUnitTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+                        OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
         verifyNoMoreInteractions(mTab);
     }
 
@@ -414,6 +414,6 @@ public class ActionChipsDelegateImplUnitTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+                        OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
     }
 }

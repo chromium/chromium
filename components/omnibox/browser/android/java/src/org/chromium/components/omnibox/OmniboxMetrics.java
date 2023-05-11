@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions;
+package org.chromium.components.omnibox;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This class collects a variety of different Suggestions related metrics.
+ * This class collects a variety of different Omnibox related metrics.
  */
-public class SuggestionsMetrics {
+public class OmniboxMetrics {
     /**
      * Maximum number of suggest tile types we want to record.
      * Anything beyond this will be reported in the overflow bucket.
@@ -33,20 +33,20 @@ public class SuggestionsMetrics {
      * Duration between the request for suggestions and the time the first (synchronous) reply is
      * converted to the UI model.
      */
-    static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST =
+    public static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST =
             "Android.Omnibox.SuggestionList.RequestToUiModel.First";
     /**
      * Duration between the request for suggestions and the time the last (asynchronous) reply is
      * converted to the UI model.
      */
-    static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST =
+    public static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST =
             "Android.Omnibox.SuggestionList.RequestToUiModel.Last";
 
     @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
             RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
             RefineActionUsage.COUNT})
     @Retention(RetentionPolicy.SOURCE)
-    @interface RefineActionUsage {
+    public @interface RefineActionUsage {
         int NOT_USED = 0; // User did not interact with Refine button.
         int SEARCH_WITH_ZERO_PREFIX = 1; // User interacted with Refine button in zero-prefix mode.
         int SEARCH_WITH_PREFIX = 2; // User interacted with Refine button in non-zero-prefix mode.
@@ -73,14 +73,14 @@ public class SuggestionsMetrics {
     /**
      * Record how long the Suggestion List needed to layout its content and children.
      */
-    static TimingMetric recordSuggestionListLayoutTime() {
+    public static TimingMetric recordSuggestionListLayoutTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.LayoutTime2");
     }
 
     /**
      * Record how long the Suggestion List needed to measure its content and children.
      */
-    static TimingMetric recordSuggestionListMeasureTime() {
+    public static TimingMetric recordSuggestionListMeasureTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.MeasureTime2");
     }
 
@@ -88,7 +88,7 @@ public class SuggestionsMetrics {
      * Record the amount of time needed to create a new suggestion view.
      * The type of view is intentionally ignored for this call.
      */
-    static TimingMetric recordSuggestionViewCreateTime() {
+    public static TimingMetric recordSuggestionViewCreateTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime2");
     }
 
@@ -100,7 +100,7 @@ public class SuggestionsMetrics {
      * @param viewsReused Ratio of views re-used to total views bound. Effectively captures the
      *         efficiency of view recycling.
      */
-    static void recordSuggestionViewReuseStats(int viewsCreated, int viewsReused) {
+    public static void recordSuggestionViewReuseStats(int viewsCreated, int viewsReused) {
         RecordHistogram.recordCount100Histogram(
                 "Android.Omnibox.SuggestionView.SessionViewsCreated", viewsCreated);
         RecordHistogram.recordCount100Histogram(
@@ -115,7 +115,7 @@ public class SuggestionsMetrics {
      *
      * @param type The type of view that needed to be recreated.
      */
-    static void recordSuggestionsViewCreatedType(@OmniboxSuggestionUiType int type) {
+    public static void recordSuggestionsViewCreatedType(@OmniboxSuggestionUiType int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Omnibox.SuggestionView.CreatedType", type, OmniboxSuggestionUiType.COUNT);
     }
@@ -127,7 +127,7 @@ public class SuggestionsMetrics {
      *
      * @param type The type of view that was reused from pool.
      */
-    static void recordSuggestionsViewReusedType(@OmniboxSuggestionUiType int type) {
+    public static void recordSuggestionsViewReusedType(@OmniboxSuggestionUiType int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Omnibox.SuggestionView.ReusedType", type, OmniboxSuggestionUiType.COUNT);
     }
@@ -138,7 +138,7 @@ public class SuggestionsMetrics {
      *
      * @param focusResultedInNavigation Whether the user completed interaction with navigation.
      */
-    static void recordOmniboxFocusResultedInNavigation(boolean focusResultedInNavigation) {
+    public static void recordOmniboxFocusResultedInNavigation(boolean focusResultedInNavigation) {
         RecordHistogram.recordBooleanHistogram(
                 "Omnibox.FocusResultedInNavigation", focusResultedInNavigation);
     }
@@ -146,7 +146,7 @@ public class SuggestionsMetrics {
     /**
      * Record the length of time between when omnibox gets focused and when a omnibox match is open.
      */
-    static void recordFocusToOpenTime(long focusToOpenTimeInMillis) {
+    public static void recordFocusToOpenTime(long focusToOpenTimeInMillis) {
         RecordHistogram.recordMediumTimesHistogram(
                 "Omnibox.FocusToOpenTimeAnyPopupState3", focusToOpenTimeInMillis);
     }
@@ -156,7 +156,7 @@ public class SuggestionsMetrics {
      *
      * @param isFromCache Whether the suggestion selected by the User comes from suggestion cache.
      */
-    static void recordUsedSuggestionFromCache(boolean isFromCache) {
+    public static void recordUsedSuggestionFromCache(boolean isFromCache) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.Omnibox.UsedSuggestionFromCache", isFromCache);
     }
@@ -169,7 +169,7 @@ public class SuggestionsMetrics {
      *
      * @param refineActionUsage Whether - and how Refine action button was used.
      */
-    static void recordRefineActionUsage(@RefineActionUsage int refineActionUsage) {
+    public static void recordRefineActionUsage(@RefineActionUsage int refineActionUsage) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Omnibox.RefineActionUsage", refineActionUsage, RefineActionUsage.COUNT);
     }
@@ -201,7 +201,7 @@ public class SuggestionsMetrics {
      * @param pageClass Page classification.
      * @param wasScrolled Whether the suggestions list was scrolled.
      */
-    static void recordSuggestionsListScrolled(int pageClass, boolean wasScrolled) {
+    public static void recordSuggestionsListScrolled(int pageClass, boolean wasScrolled) {
         RecordHistogram.recordBooleanHistogram(
                 histogramName("Android.Omnibox.SuggestionsListScrolled", pageClass), wasScrolled);
     }
@@ -227,8 +227,8 @@ public class SuggestionsMetrics {
      */
     public static void recordResumeJourneyClick(int position) {
         if (position < 0) return;
-        RecordHistogram.recordExactLinearHistogram("Omnibox.SuggestionUsed.ResumeJourney", position,
-                SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
+        RecordHistogram.recordExactLinearHistogram(
+                "Omnibox.SuggestionUsed.ResumeJourney", position, MAX_AUTOCOMPLETE_POSITION);
     }
 
     /**
@@ -237,8 +237,8 @@ public class SuggestionsMetrics {
      */
     public static void recordResumeJourneyShown(int position) {
         if (position < 0) return;
-        RecordHistogram.recordEnumeratedHistogram("Omnibox.ResumeJourneyShown", position,
-                SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.ResumeJourneyShown", position, MAX_AUTOCOMPLETE_POSITION);
     }
 
     /**

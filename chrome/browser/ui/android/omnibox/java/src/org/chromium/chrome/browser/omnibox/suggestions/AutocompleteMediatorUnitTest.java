@@ -61,6 +61,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -706,22 +707,22 @@ public class AutocompleteMediatorUnitTest {
             @Nullable Integer lastHistogramTime) {
         Assert.assertEquals(firstHistogramTotalCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST));
+                        OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST));
         Assert.assertEquals(lastHistogramTotalCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST));
+                        OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST));
 
         if (firstHistogramTime != null) {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
-                            SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST,
+                            OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST,
                             firstHistogramTime));
         }
 
         if (lastHistogramTime != null) {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
-                            SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
+                            OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
                             lastHistogramTime));
         }
     }

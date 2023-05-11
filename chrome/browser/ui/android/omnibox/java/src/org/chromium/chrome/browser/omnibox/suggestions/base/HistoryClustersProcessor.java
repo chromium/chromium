@@ -15,10 +15,10 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionType;
@@ -57,7 +57,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     public void onUrlFocusChange(boolean hasFocus) {
         super.onUrlFocusChange(hasFocus);
         if (!hasFocus) {
-            SuggestionsMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
+            OmniboxMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
         }
     }
 
@@ -97,7 +97,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     private void onJourneysSuggestionClicked(HistoryClustersAction action, int position) {
         if (mOpenHistoryClustersDelegate != null) {
             String query = action.query;
-            SuggestionsMetrics.recordResumeJourneyClick(position);
+            OmniboxMetrics.recordResumeJourneyClick(position);
             mOpenHistoryClustersDelegate.openHistoryClustersUi(query);
         }
     }

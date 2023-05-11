@@ -13,11 +13,11 @@ import androidx.annotation.NonNull;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
@@ -94,7 +94,7 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                 mOpenIncognitoTabCb.run();
                 break;
         }
-        SuggestionsMetrics.recordPedalUsed(pedalId);
+        OmniboxMetrics.recordPedalUsed(pedalId);
     }
 
     @Override
@@ -182,14 +182,14 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
 
             // Record intent started only if it was sent.
             if (actionStarted) {
-                SuggestionsMetrics.recordActionInSuggestIntentResult(
-                        SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS);
+                OmniboxMetrics.recordActionInSuggestIntentResult(
+                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS);
             }
         } catch (URISyntaxException e) {
             // Never happens. http://b/279756377.
         } catch (ActivityNotFoundException e) {
-            SuggestionsMetrics.recordActionInSuggestIntentResult(
-                    SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
+            OmniboxMetrics.recordActionInSuggestIntentResult(
+                    OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
         } finally {
             // At this point we know that we were unable to launch the target activity.
             // We may still be able to handle the corresponding action inside the browser.

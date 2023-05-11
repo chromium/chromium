@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.util.ArrayList;
@@ -130,9 +131,9 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         stopCreatingViews();
         ViewHolder result = super.getRecycledView(viewType);
         if (result == null) {
-            SuggestionsMetrics.recordSuggestionsViewCreatedType(viewType);
+            OmniboxMetrics.recordSuggestionsViewCreatedType(viewType);
         } else {
-            SuggestionsMetrics.recordSuggestionsViewReusedType(viewType);
+            OmniboxMetrics.recordSuggestionsViewReusedType(viewType);
         }
         return result;
     }
