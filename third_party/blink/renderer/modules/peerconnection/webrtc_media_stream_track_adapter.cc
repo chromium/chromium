@@ -112,7 +112,13 @@ void WebRtcMediaStreamTrackAdapter::Dispose() {
   DCHECK(is_initialized_);
   if (is_disposed_)
     return;
-  remote_track_can_complete_initialization_.Reset();
+  // https://linear.app/replay/issue/RUN-1829
+  // Only reset the WaitableEvent if we're not recording/replaying,
+  // or if we're recording/replaying and events are allowed.
+  if (!recordreplay::IsRecordingOrReplaying("disallow-events") ||
+      !recordreplay::AreEventsDisallowed()) {
+    remote_track_can_complete_initialization_.Reset();
+  }
   is_disposed_ = true;
   if (component_->GetSourceType() == MediaStreamSource::kTypeAudio) {
     if (local_track_audio_sink_)
