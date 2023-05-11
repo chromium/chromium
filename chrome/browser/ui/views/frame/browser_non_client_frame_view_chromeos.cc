@@ -1084,6 +1084,12 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
     return false;
   }
 
+  // Enabling immersive mode controller would allow for the user to exit
+  // fullscreen. We don't want this for locked fullscreen windows.
+  if (!CanUserExitFullscreen()) {
+    return false;
+  }
+
   if (chromeos::TabletState::Get()->InTabletMode()) {
     // Tabbed browsers do not support immersive mode in tablet mode. We use the
     // web ui touchable tabstrip, which has its own sliding mechanism to view
