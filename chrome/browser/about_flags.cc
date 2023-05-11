@@ -3362,6 +3362,28 @@ const FeatureEntry::FeatureVariation kDiscardedTabTreatmentVariations[] = {
 
 };
 
+const FeatureEntry::FeatureParam kMemorySavingsReportingFrequent[] = {
+    // 100 * 1024 * 1024
+    {"expanded_high_efficiency_chip_threshold_bytes", "104857600"},
+    {"expanded_high_efficiency_chip_frequency", "2h"},
+    {"expanded_high_efficiency_chip_discarded_duration", "1h"}};
+
+const FeatureEntry::FeatureParam kMemorySavingsReportingInfrequent[] = {
+    // 200 * 1024 * 1024
+    {"expanded_high_efficiency_chip_threshold_bytes", "209715200"},
+    {"expanded_high_efficiency_chip_frequency", "1d"},
+    {"expanded_high_efficiency_chip_discarded_duration", "6h"}};
+
+const FeatureEntry::FeatureVariation
+    kHighEfficiencyMemorySavingsReportingVariations[] = {
+        {"With Frequent Memory Savings Reporting",
+         kMemorySavingsReportingFrequent,
+         std::size(kMemorySavingsReportingFrequent), nullptr},
+        {"With Infrequent Memory Savings Reporting",
+         kMemorySavingsReportingInfrequent,
+         std::size(kMemorySavingsReportingInfrequent), nullptr},
+};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -9629,8 +9651,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHighEfficiencySavingsReportingImprovementsName,
      flag_descriptions::kHighEfficiencySavingsReportingImprovementsDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kMemorySavingsReportingImprovements)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         performance_manager::features::kMemorySavingsReportingImprovements,
+         kHighEfficiencyMemorySavingsReportingVariations,
+         "MemorySavingsReportingImprovements")},
 
 #endif
 
