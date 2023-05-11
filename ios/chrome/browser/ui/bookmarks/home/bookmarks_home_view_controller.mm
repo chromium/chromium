@@ -922,69 +922,68 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [self.navigationController pushViewController:controller animated:YES];
     return;
   }
-    // Clear bookmark path cache.
-    int64_t unusedFolderId;
-    int unusedIndexPathRow;
-    while ([BookmarkPathCache
-        getBookmarkTopMostRowCacheWithPrefService:self.browserState->GetPrefs()
-                                            model:_profileBookmarkModel.get()
-                                         folderId:&unusedFolderId
-                                       topMostRow:&unusedIndexPathRow]) {
+  // Clear bookmark path cache.
+  int64_t unusedFolderId;
+  int unusedIndexPathRow;
+  while ([BookmarkPathCache
+      getBookmarkTopMostRowCacheWithPrefService:self.browserState->GetPrefs()
+                                          model:_profileBookmarkModel.get()
+                                       folderId:&unusedFolderId
+                                     topMostRow:&unusedIndexPathRow]) {
     [BookmarkPathCache
         clearBookmarkTopMostRowCacheWithPrefService:self.browserState
                                                         ->GetPrefs()];
-    }
+  }
 
-    // Rebuild folder controller list, going back up the tree.
-    NSMutableArray<BookmarksHomeViewController*>* stack =
-        [NSMutableArray array];
-    std::vector<const bookmarks::BookmarkNode*> nodes;
-    const bookmarks::BookmarkNode* cursor = folder;
-    while (cursor) {
-      // Build reversed list of nodes to restore bookmark path below.
-      nodes.insert(nodes.begin(), cursor);
+  // Rebuild folder controller list, going back up the tree.
+  NSMutableArray<BookmarksHomeViewController*>* stack = [NSMutableArray array];
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  const bookmarks::BookmarkNode* cursor = folder;
+  while (cursor) {
+    // Build reversed list of nodes to restore bookmark path below.
+    nodes.insert(nodes.begin(), cursor);
 
-      // Build reversed list of controllers.
-      BookmarksHomeViewController* controller =
-          [self createControllerWithDisplayedFolderNode:cursor];
-      [stack insertObject:controller atIndex:0];
+    // Build reversed list of controllers.
+    BookmarksHomeViewController* controller =
+        [self createControllerWithDisplayedFolderNode:cursor];
+    [stack insertObject:controller atIndex:0];
 
-      // Setup now, so that the back button labels shows parent folder
-      // title and that we don't show large title everywhere.
-      [self setupNavigationForBookmarksHomeViewController:controller
-                                        usingBookmarkNode:cursor];
+    // Setup now, so that the back button labels shows parent folder
+    // title and that we don't show large title everywhere.
+    [self setupNavigationForBookmarksHomeViewController:controller
+                                      usingBookmarkNode:cursor];
 
-      cursor = cursor->parent();
-    }
+    cursor = cursor->parent();
+  }
 
-    // Reconstruct bookmark path cache.
-    for (const bookmarks::BookmarkNode* node : nodes) {
-      [BookmarkPathCache
-          cacheBookmarkTopMostRowWithPrefService:self.browserState->GetPrefs()
-                                        folderId:node->id()
-                                      topMostRow:0];
-    }
+  // Reconstruct bookmark path cache.
+  for (const bookmarks::BookmarkNode* node : nodes) {
+    [BookmarkPathCache
+        cacheBookmarkTopMostRowWithPrefService:self.browserState->GetPrefs()
+                                      folderId:node->id()
+                                    topMostRow:0];
+  }
 
-    [self navigateAway];
+  [self navigateAway];
 
-    // At root, since there's a large title, the search bar is lower than on
-    // whatever destination folder it is transitioning to (root is never
-    // reachable through search). To avoid a kink in the animation, the title
-    // is set to regular size, which means the search bar is at same level at
-    // beginning and end of animation. This controller will be replaced in
-    // `stack` so there's no need to care about restoring this.
-    if ([self isDisplayingBookmarkRoot]) {
-      self.navigationItem.largeTitleDisplayMode =
-          UINavigationItemLargeTitleDisplayModeNever;
-    }
+  // At root, since there's a large title, the search bar is lower than on
+  // whatever destination folder it is transitioning to (root is never
+  // reachable through search). To avoid a kink in the animation, the title
+  // is set to regular size, which means the search bar is at same level at
+  // beginning and end of animation. This controller will be replaced in
+  // `stack` so there's no need to care about restoring this.
+  if ([self isDisplayingBookmarkRoot]) {
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeNever;
+  }
 
-    __weak BookmarksHomeViewController* weakSelf = self;
-    auto completion = ^{
-      [weakSelf.navigationController setViewControllers:stack animated:YES];
-    };
+  __weak BookmarksHomeViewController* weakSelf = self;
+  auto completion = ^{
+    [weakSelf.navigationController setViewControllers:stack animated:YES];
+  };
 
-    [self.searchController dismissViewControllerAnimated:YES
-                                              completion:completion];
+  [self.searchController dismissViewControllerAnimated:YES
+                                            completion:completion];
 }
 
 - (void)handleSelectEditNodes:
