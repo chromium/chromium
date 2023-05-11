@@ -264,6 +264,11 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     params.startup_id =
         command_line_->GetSwitchValueASCII("desktop-startup-id");
 #endif
+    if (command_line_->HasSwitch(switches::kWindowName)) {
+      params.user_title =
+          command_line_->GetSwitchValueASCII(switches::kWindowName);
+    }
+
     browser = Browser::Create(params);
   }
 

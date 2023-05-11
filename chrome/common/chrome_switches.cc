@@ -650,6 +650,9 @@ const char kWebRtcRemoteEventLogUploadNoSuppression[] =
 // handling policy is specified in Preferences.
 const char kWebRtcIPHandlingPolicy[] = "webrtc-ip-handling-policy";
 
+// Specify the initial window user title: --window-name="My custom title"
+const char kWindowName[] = "window-name";
+
 // Specify the initial window position: --window-position=x,y
 const char kWindowPosition[] = "window-position";
 
