@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/crypto_utility.h"
 
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -92,8 +92,9 @@ bool VerifySignatureUsingHexKey(const std::string& public_key_modulus_hex,
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
                            base::as_bytes(base::make_span(signature)),
-                           base::as_bytes(base::make_span(public_key_info))))
+                           base::as_bytes(base::make_span(public_key_info)))) {
     return false;
+  }
 
   verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
   return verifier.VerifyFinal();
@@ -115,8 +116,9 @@ bool EncryptWithSeed(const std::string& data,
   std::unique_ptr<crypto::SymmetricKey> symmetric_key(
       crypto::SymmetricKey::GenerateRandomKey(crypto::SymmetricKey::AES,
                                               kAesKeySizeBits));
-  if (!symmetric_key)
+  if (!symmetric_key) {
     return false;
+  }
   key = symmetric_key->key();
 
   // Generate initialized vector of size 128 bits.
@@ -124,10 +126,12 @@ bool EncryptWithSeed(const std::string& data,
   crypto::RandBytes(base::WriteInto(&iv, kAesBlockSize + 1), kAesBlockSize);
 
   crypto::Encryptor encryptor;
-  if (!encryptor.Init(symmetric_key.get(), crypto::Encryptor::CBC, iv))
+  if (!encryptor.Init(symmetric_key.get(), crypto::Encryptor::CBC, iv)) {
     return false;
-  if (!encryptor.Encrypt(data, encrypted->mutable_encrypted_data()))
+  }
+  if (!encryptor.Encrypt(data, encrypted->mutable_encrypted_data())) {
     return false;
+  }
 
   encrypted->set_iv(iv);
   encrypted->set_mac(HmacSha512(key, iv + encrypted->encrypted_data()));

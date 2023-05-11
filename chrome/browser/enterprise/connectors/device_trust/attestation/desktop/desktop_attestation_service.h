@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_runner.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {

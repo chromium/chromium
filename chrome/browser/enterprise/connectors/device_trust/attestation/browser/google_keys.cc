@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 
 namespace enterprise_connectors {
 
