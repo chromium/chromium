@@ -101,8 +101,6 @@ class CoreTabHelper : public content::WebContentsObserver,
  private:
   explicit CoreTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<CoreTabHelper>;
-  FRIEND_TEST_ALL_PREFIXES(CoreTabHelperWindowUnitTest,
-                           SearchWithLens_LensPingEnabled_TriggersLensPing);
 
   static bool GetStatusTextForWebContents(std::u16string* status_text,
                                           content::WebContents* source);

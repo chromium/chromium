@@ -38,6 +38,13 @@ class SidePanel : public views::AccessiblePaneView,
   bool IsRightAligned();
   gfx::Size GetMinimumSize() const override;
 
+  // Gets the upper bound of the content area size if the side panel is shown
+  // right now. If the side panel is not showing, returns the minimum width
+  // and browser view height minus the padding insets. The actual content
+  // size will be smaller than the returned result when the side panel header
+  // is shown, for example.
+  gfx::Size GetContentSizeUpperBound() const;
+
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
