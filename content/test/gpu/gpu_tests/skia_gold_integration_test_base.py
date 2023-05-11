@@ -18,10 +18,10 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
-from gpu_tests.skia_gold import gpu_skia_gold_session_manager as sgsm
 
 from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session as sgs
+from skia_gold_common import skia_gold_session_manager as sgsm
 
 import gpu_path_util
 
@@ -83,9 +83,9 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return cls._skia_gold_properties
 
   @classmethod
-  def GetSkiaGoldSessionManager(cls) -> sgsm.GpuSkiaGoldSessionManager:
+  def GetSkiaGoldSessionManager(cls) -> sgsm.SkiaGoldSessionManager:
     if not cls._skia_gold_session_manager:
-      cls._skia_gold_session_manager = sgsm.GpuSkiaGoldSessionManager(
+      cls._skia_gold_session_manager = sgsm.SkiaGoldSessionManager(
           cls._skia_gold_temp_dir, cls.GetSkiaGoldProperties())
     return cls._skia_gold_session_manager
 

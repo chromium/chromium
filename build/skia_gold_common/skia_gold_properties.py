@@ -29,7 +29,10 @@ def _IsWin() -> bool:
 
 class SkiaGoldProperties():
   def __init__(self, args: ParsedCmdArgs):
-    """Abstract class to validate and store properties related to Skia Gold.
+    """Class to validate and store properties related to Skia Gold.
+
+    The base implementation is usable on its own, but is meant to be overridden
+    as necessary.
 
     Args:
       args: The parsed arguments from an argparse.ArgumentParser.

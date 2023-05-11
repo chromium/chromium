@@ -78,7 +78,7 @@ from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
 from scripts import common
 from skia_gold_common.skia_gold_properties import SkiaGoldProperties
-from skia_gold_infra import finch_skia_gold_session_manager
+from skia_gold_common import skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
 from run_wpt_tests import get_device
 
@@ -334,7 +334,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     self._device.adb.Emu(['power', 'ac', 'on'])
     self._skia_gold_tmp_dir = tempfile.mkdtemp()
     self._skia_gold_session_manager = (
-        finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
+        skia_gold_session_manager.SkiaGoldSessionManager(
             self._skia_gold_tmp_dir, SkiaGoldProperties(self.options)))
     return self
 

@@ -19,7 +19,6 @@ from typing import Tuple
 # to the search path.
 from chrome.test.variations.test_utils import SRC_DIR
 sys.path.append(os.path.join(SRC_DIR, 'build'))
-from skia_gold_common import output_managerless_skia_gold_session as omsgs
 from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session_manager as sgsm
 from skia_gold_common.skia_gold_session import SkiaGoldSession
@@ -32,11 +31,6 @@ def _get_skia_gold_args() -> argparse.Namespace:
   sgp.SkiaGoldProperties.AddCommandLineArguments(parser)
   skia_options, _ = parser.parse_known_args()
   return skia_options
-
-class _VariationsSkiaGoldSessionManager(sgsm.SkiaGoldSessionManager):
-  @staticmethod
-  def GetSessionClass():
-    return omsgs.OutputManagerlessSkiaGoldSession
 
 
 @attr.attrs()
@@ -90,7 +84,7 @@ def skia_gold_util(
 
   skia_gold_properties = sgp.SkiaGoldProperties(
     args=_get_skia_gold_args())
-  skia_gold_session_manager = _VariationsSkiaGoldSessionManager(
+  skia_gold_session_manager = SkiaGoldSessionManager(
     skia_tmp_dir,
     skia_gold_properties
   )

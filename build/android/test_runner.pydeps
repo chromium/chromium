@@ -134,6 +134,7 @@
 ../gn_helpers.py
 ../print_python_deps.py
 ../skia_gold_common/__init__.py
+../skia_gold_common/output_managerless_skia_gold_session.py
 ../skia_gold_common/skia_gold_properties.py
 ../skia_gold_common/skia_gold_session.py
 ../skia_gold_common/skia_gold_session_manager.py
