@@ -15,6 +15,7 @@
 
 namespace ax {
 class V8Manager;
+class InterfaceBinder;
 
 // Implementation of the assistive technology controller interface
 // for Chrome OS. This tracks which features are enabled and will
@@ -55,6 +56,8 @@ class AssistiveTechnologyControllerImpl
   void RunScriptForTest(mojom::AssistiveTechnologyType type,
                         const std::string& script,
                         base::OnceClosure on_complete);
+  void SetTestInterface(mojom::AssistiveTechnologyType type,
+                        std::unique_ptr<InterfaceBinder> test_interface);
 
  private:
   scoped_refptr<V8Manager> GetOrMakeV8Manager(

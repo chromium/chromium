@@ -69,6 +69,12 @@ void AssistiveTechnologyControllerImpl::RunScriptForTest(
   enabled_ATs_[type]->ExecuteScript(script, std::move(on_complete));
 }
 
+void AssistiveTechnologyControllerImpl::SetTestInterface(
+    mojom::AssistiveTechnologyType type,
+    std::unique_ptr<InterfaceBinder> test_interface) {
+  enabled_ATs_[type]->SetTestMojoInterface(std::move(test_interface));
+}
+
 scoped_refptr<V8Manager> AssistiveTechnologyControllerImpl::GetOrMakeV8Manager(
     mojom::AssistiveTechnologyType type) {
   // For the first one we can ask it to initialize v8.

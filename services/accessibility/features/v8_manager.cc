@@ -87,6 +87,7 @@ V8Manager::~V8Manager() {
 void V8Manager::InstallAutomation(
     base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
   v8_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V8Manager::BindAutomationOnThread,
                                 weak_ptr_factory_.GetWeakPtr(), at_controller));
@@ -94,6 +95,7 @@ void V8Manager::InstallAutomation(
 
 void V8Manager::AddV8Bindings() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&V8Manager::AddV8BindingsOnThread,
                                       weak_ptr_factory_.GetWeakPtr()));
@@ -102,6 +104,7 @@ void V8Manager::AddV8Bindings() {
 void V8Manager::ExecuteScript(const std::string& script,
                               base::OnceCallback<void()> on_complete) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&V8Manager::ExecuteScriptOnThread,
                                       weak_ptr_factory_.GetWeakPtr(), script,
@@ -133,8 +136,12 @@ void V8Manager::BindInterface(const std::string& interface_name,
 
 void V8Manager::SetTestMojoInterface(
     std::unique_ptr<InterfaceBinder> test_interface) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  test_mojo_interface_ = std::move(test_interface);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
+  v8_runner_->PostTask(FROM_HERE,
+                       base::BindOnce(&V8Manager::SetTestMojoInterfaceOnThread,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(test_interface)));
 }
 
 void V8Manager::ConstructIsolateOnThread() {
@@ -237,6 +244,12 @@ void V8Manager::BindAutomationOnThread(
   // Construct the AutomationInternalBindings and its routes.
   automation_bindings_ = std::make_unique<AutomationInternalBindings>(
       weak_ptr_factory_.GetWeakPtr(), at_controller, main_runner_);
+}
+
+void V8Manager::SetTestMojoInterfaceOnThread(
+    std::unique_ptr<InterfaceBinder> test_interface) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  test_mojo_interface_ = std::move(test_interface);
 }
 
 void V8Manager::ExecuteScriptOnThread(const std::string& script,

@@ -93,6 +93,8 @@ class V8Manager : public BindingsIsolateHolder,
   void AddV8BindingsOnThread();
   void BindAutomationOnThread(
       base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
+  void SetTestMojoInterfaceOnThread(
+      std::unique_ptr<InterfaceBinder> test_interface);
   void ExecuteScriptOnThread(const std::string& script,
                              base::OnceCallback<void()> on_complete);
 
