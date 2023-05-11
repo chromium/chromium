@@ -1464,14 +1464,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return 0;
   }
 
-  // If the first row is still visible, return 0.
-  NSIndexPath* topMostIndexPath = [visibleIndexPaths objectAtIndex:0];
-  if (topMostIndexPath.row == 0) {
-    return 0;
-  }
-
   // Return the first visible row.
-  topMostIndexPath = [visibleIndexPaths objectAtIndex:0];
+  NSIndexPath* topMostIndexPath = [visibleIndexPaths objectAtIndex:0];
   return topMostIndexPath.row;
 }
 
