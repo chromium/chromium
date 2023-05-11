@@ -5,9 +5,9 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_WRITER_ON_DISK_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_WRITER_ON_DISK_H_
 
+#include <deque>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
 
   State state_ = State::kBeforeInitialize;
   disk_cache::ScopedEntryPtr entry_;
-  std::vector<scoped_refptr<net::StringIOBuffer>> pending_write_buffers_;
+  std::deque<scoped_refptr<net::StringIOBuffer>> pending_write_buffers_;
 
   int offset_ = 0;
   bool finish_called_ = false;

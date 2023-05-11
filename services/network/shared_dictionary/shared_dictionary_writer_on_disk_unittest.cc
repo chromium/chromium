@@ -514,6 +514,76 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWrite) {
   writer.reset();
 }
 
+TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWriteSyncWrite) {
+  auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
+      CreateBackendResultType::kAsyncSuccess);
+  disk_cache->Initialize();
+
+  std::unique_ptr<disk_cache::EntryMock> entry =
+      std::make_unique<disk_cache::EntryMock>();
+
+  EXPECT_CALL(*entry, WriteData)
+      .WillOnce([&](int index, int offset, net::IOBuffer* buf, int buf_len,
+                    net::CompletionOnceCallback callback,
+                    bool truncate) -> int {
+        EXPECT_EQ(1, index);
+        EXPECT_EQ(0, offset);
+        EXPECT_EQ(base::checked_cast<int>(kTestData1.size()), buf_len);
+        EXPECT_EQ(
+            kTestData1,
+            std::string(reinterpret_cast<const char*>(buf->data()), buf_len));
+        return base::checked_cast<int>(kTestData1.size());
+      })
+      .WillOnce([&](int index, int offset, net::IOBuffer* buf, int buf_len,
+                    net::CompletionOnceCallback callback,
+                    bool truncate) -> int {
+        EXPECT_EQ(1, index);
+        EXPECT_EQ(base::checked_cast<int>(kTestData1.size()), offset);
+        EXPECT_EQ(base::checked_cast<int>(kTestData2.size()), buf_len);
+        EXPECT_EQ(
+            kTestData2,
+            std::string(reinterpret_cast<const char*>(buf->data()), buf_len));
+        return base::checked_cast<int>(kTestData2.size());
+      });
+
+  absl::optional<std::string> cache_key;
+  disk_cache::EntryResultCallback create_entry_callback;
+  EXPECT_CALL(*disk_cache->backend(), CreateEntry)
+      .WillOnce([&](const std::string& key, net::RequestPriority priority,
+                    disk_cache::EntryResultCallback callback) {
+        cache_key = key;
+        create_entry_callback = std::move(callback);
+        return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
+      });
+
+  bool finish_callback_called = false;
+  scoped_refptr<SharedDictionaryWriterOnDisk> writer =
+      base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::BindLambdaForTesting(
+              [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
+                  const net::SHA256HashValue& hash,
+                  const base::UnguessableToken& cache_key_token) {
+                EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kSuccess,
+                          result);
+                EXPECT_EQ(kTestData1.size() + kTestData2.size(), size);
+                EXPECT_EQ(*cache_key, cache_key_token.ToString());
+                EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
+                finish_callback_called = true;
+              }),
+          disk_cache->GetWeakPtr());
+  writer->Initialize();
+  writer->Append(kTestData1.c_str(), kTestData1.size());
+  writer->Append(kTestData2.c_str(), kTestData2.size());
+  writer->Finish();
+
+  disk_cache->RunCreateCacheBackendCallback();
+  std::move(create_entry_callback)
+      .Run(disk_cache::EntryResult::MakeCreated(entry.release()));
+  EXPECT_TRUE(finish_callback_called);
+
+  writer.reset();
+}
+
 TEST_F(SharedDictionaryWriterOnDiskTest, AsyncWriteFailureOnMultipleWrites) {
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);

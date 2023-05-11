@@ -101,9 +101,10 @@ void SharedDictionaryWriterOnDisk::OnEntry(disk_cache::EntryResult result) {
     MaybeFinish();
     return;
   }
-  std::vector<scoped_refptr<net::StringIOBuffer>> buffers =
-      std::move(pending_write_buffers_);
-  for (auto buffer : buffers) {
+
+  while (!pending_write_buffers_.empty()) {
+    scoped_refptr<net::StringIOBuffer> buffer = *pending_write_buffers_.begin();
+    pending_write_buffers_.pop_front();
     WriteData(std::move(buffer));
   }
 }
