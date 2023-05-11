@@ -159,9 +159,13 @@ export class XfBulkPinningDialog extends XfBase {
     this.$dialog_.cancel();
   }
 
-  /**
-   * Called when the "View storage" link is clicked.
-   */
+  // Called when the "Learn more" link is clicked.
+  private onLearnMore(e: UIEvent) {
+    e.preventDefault();
+    util.visitURL(str('GOOGLE_DRIVE_HELP_URL'));
+  }
+
+  // Called when the "View storage" link is clicked.
   private onViewStorage(e: UIEvent) {
     e.preventDefault();
     chrome.fileManagerPrivate.openSettingsSubpage('storage');
@@ -180,7 +184,7 @@ export class XfBulkPinningDialog extends XfBase {
           <div class="description">
             ${str('BULK_PINNING_EXPLANATION')}
             &ensp;
-            <a href="_blank" @click="${this.onViewStorage}">
+            <a href="_blank" @click="${this.onLearnMore}">
               ${str('LEARN_MORE_LABEL')}
             </a>
           </div>
