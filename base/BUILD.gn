@@ -2440,14 +2440,6 @@ component("base") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
-
-  if (!use_allocation_event_dispatcher && (!is_ios || use_allocator_shim)) {
-    # The old hooks depend on PoissonAllocationSampler, which is not always enabled.
-    sources += [
-      "allocator/dispatcher/standard_hooks.cc",
-      "allocator/dispatcher/standard_hooks.h",
-    ]
-  }
 }
 
 # Build flags for Control Flow Integrity

@@ -5,6 +5,8 @@
 #include "components/memory_system/memory_system.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/initializer.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/memory_system/parameters.h"
@@ -36,10 +38,6 @@
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-#include "base/allocator/dispatcher/dispatcher.h"
-#include "base/allocator/dispatcher/initializer.h"
-
 #if HEAP_PROFILING_SUPPORTED
 // If profiling is not supported, the PoissonAllocationSampler is removed from
 // base, which causes linker errors. Since we need it only for the dispatcher,
@@ -52,7 +50,6 @@
 #include "base/debug/allocation_trace.h"
 #include "components/allocation_recorder/crash_client/client.h"
 #endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-#endif  // BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 
 namespace memory_system {
 namespace {
@@ -108,7 +105,6 @@ struct MemorySystem::Impl {
   bool IsAllocatorShimInitialized();
 
 #if HEAP_PROFILING_SUPPORTED
-#if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
   // Check if the the dispatcher should include the PoissonAllocationSampler as
   // observer.
   bool DispatcherIncludesPoissonAllocationSampler(
@@ -120,7 +116,6 @@ struct MemorySystem::Impl {
   // an observer.
   bool DispatcherIncludesAllocationTraceRecorder(
       const DispatcherParameters& dispatcher_parameters);
-#endif
 #endif
 
   std::unique_ptr<heap_profiling::HeapProfilerController>
@@ -228,7 +223,6 @@ void MemorySystem::Impl::InitializeHeapProfiler(
 #endif
 }
 
-#if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 #if HEAP_PROFILING_SUPPORTED
 bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
     const DispatcherParameters& dispatcher_parameters,
@@ -294,14 +288,6 @@ void MemorySystem::Impl::InitializeDispatcher(
 #endif
       .DoInitialize(base::allocator::dispatcher::Dispatcher::GetInstance());
 }
-
-#else  // BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-
-void MemorySystem::Impl::InitializeDispatcher(
-    const DispatcherParameters& dispatcher_parameters,
-    InitializationData& initialization_data) {}
-
-#endif  // BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 
 MemorySystem::MemorySystem() : impl_(std::make_unique<Impl>()) {}
 
