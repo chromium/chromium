@@ -649,6 +649,12 @@ void DeepScanningRequest::OnDownloadDestroyed(
     enterprise_connectors::RunSavePackageScanningCallback(download, false);
   }
 
+  // We can't safely return a verdict for this download because it's already
+  // been destroyed, so reset the callback here. We still need to run
+  // `FinishRequest` to notify the DownloadProtectionService that this deep scan
+  // has finished.
+  callback_.Reset();
+
   FinishRequest(DownloadCheckResult::UNKNOWN);
 }
 
