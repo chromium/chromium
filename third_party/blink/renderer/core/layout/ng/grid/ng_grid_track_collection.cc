@@ -626,7 +626,8 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     LayoutUnit subgrid_gutter_size,
     const NGBoxStrut& subgrid_margin,
     const NGBoxStrut& subgrid_border_scrollbar_padding,
-    GridTrackSizingDirection subgrid_track_direction) const {
+    GridTrackSizingDirection subgrid_track_direction,
+    bool is_opposite_direction_in_root_grid) const {
   DCHECK_LE(begin_range_index, end_range_index);
   DCHECK_LT(end_range_index, ranges_.size());
 
@@ -644,15 +645,25 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     auto& subgrid_properties = subgrid_track_collection.properties_;
     auto& subgrid_ranges = subgrid_track_collection.ranges_;
 
-    subgrid_ranges.ReserveInitialCapacity(end_range_index + 1 -
-                                          begin_range_index);
+    const wtf_size_t range_count = end_range_index - begin_range_index;
+    wtf_size_t current_begin_set_index = 0;
+    wtf_size_t current_start_line = 0;
 
-    const wtf_size_t first_start_line = ranges_[begin_range_index].start_line;
+    subgrid_ranges.ReserveInitialCapacity(range_count + 1);
 
-    for (wtf_size_t i = begin_range_index; i <= end_range_index; ++i) {
-      auto& subgrid_translated_range = subgrid_ranges.emplace_back(ranges_[i]);
-      subgrid_translated_range.begin_set_index -= begin_set_index;
-      subgrid_translated_range.start_line -= first_start_line;
+    for (wtf_size_t i = 0; i <= range_count; ++i) {
+      // Opposite direction subgrids need to iterate backwards.
+      const wtf_size_t current_index = is_opposite_direction_in_root_grid
+                                           ? begin_range_index + i
+                                           : end_range_index - i;
+
+      auto& subgrid_translated_range =
+          subgrid_ranges.emplace_back(ranges_[current_index]);
+      subgrid_translated_range.begin_set_index = current_begin_set_index;
+      current_begin_set_index += subgrid_translated_range.set_count;
+
+      subgrid_translated_range.start_line = current_start_line;
+      current_start_line += subgrid_translated_range.track_count;
 
       subgrid_properties |= subgrid_translated_range.properties;
     }
@@ -685,32 +696,65 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     subgrid_track_collection.accumulated_gutter_size_delta_ =
         subgrid_gutter_size_delta + accumulated_gutter_size_delta_;
 
-    subgrid_track_collection.accumulated_start_extra_margin_ =
-        subgrid_margin_start + subgrid_border_scrollbar_padding_start +
-        StartExtraMargin(begin_set_index);
-
-    subgrid_track_collection.accumulated_end_extra_margin_ =
-        subgrid_margin_border_scrollbar_padding_end +
-        EndExtraMargin(end_set_index);
-
     auto& subgrid_sets_geometry = subgrid_track_collection.sets_geometry_;
-
     subgrid_sets_geometry.ReserveInitialCapacity(set_span_size + 1);
     subgrid_sets_geometry.emplace_back(
         /* offset */ subgrid_border_scrollbar_padding_start);
 
-    const auto first_set_offset =
-        sets_geometry_[begin_set_index].offset + subgrid_margin_start;
+    // Opposite direction subgrids need to adjust extra margin from the opposite
+    // side.
+    const LayoutUnit start_extra_margin =
+        is_opposite_direction_in_root_grid ? EndExtraMargin(end_set_index)
+                                           : StartExtraMargin(begin_set_index);
+    const LayoutUnit end_extra_margin = is_opposite_direction_in_root_grid
+                                            ? StartExtraMargin(begin_set_index)
+                                            : EndExtraMargin(end_set_index);
 
-    for (wtf_size_t i = begin_set_index + 1; i < end_set_index; ++i) {
-      auto& set = subgrid_sets_geometry.emplace_back(sets_geometry_[i]);
-      set.offset += subgrid_gutter_size_delta / 2 - first_set_offset;
+    subgrid_track_collection.accumulated_start_extra_margin_ =
+        subgrid_margin_start + subgrid_border_scrollbar_padding_start +
+        start_extra_margin;
+
+    subgrid_track_collection.accumulated_end_extra_margin_ =
+        subgrid_margin_border_scrollbar_padding_end + end_extra_margin;
+
+    // Opposite direction subgrids iterate backwards.
+    const wtf_size_t first_set_index =
+        is_opposite_direction_in_root_grid ? end_set_index : begin_set_index;
+    const wtf_size_t last_set_index =
+        is_opposite_direction_in_root_grid ? begin_set_index : end_set_index;
+
+    LayoutUnit first_set_offset = sets_geometry_[first_set_index].offset;
+
+    if (is_opposite_direction_in_root_grid) {
+      first_set_offset -= subgrid_margin_start;
+    } else {
+      first_set_offset += subgrid_margin_start;
     }
 
+    for (wtf_size_t i = 1; i < set_span_size; ++i) {
+      // Opposite direction subgrids need to iterate backwards.
+      const wtf_size_t current_index = is_opposite_direction_in_root_grid
+                                           ? end_set_index - i
+                                           : begin_set_index + i;
+      auto& set =
+          subgrid_sets_geometry.emplace_back(sets_geometry_[current_index]);
+      if (is_opposite_direction_in_root_grid) {
+        set.offset = first_set_offset - set.offset;
+      } else {
+        set.offset -= first_set_offset;
+      }
+      set.offset += subgrid_gutter_size_delta / 2;
+    }
     auto& last_set =
-        subgrid_sets_geometry.emplace_back(sets_geometry_[end_set_index]);
-    last_set.offset += subgrid_gutter_size_delta - first_set_offset -
-                       subgrid_margin_border_scrollbar_padding_end;
+        subgrid_sets_geometry.emplace_back(sets_geometry_[last_set_index]);
+
+    if (is_opposite_direction_in_root_grid) {
+      last_set.offset = first_set_offset - last_set.offset;
+    } else {
+      last_set.offset -= first_set_offset;
+    }
+    last_set.offset +=
+        subgrid_gutter_size_delta - subgrid_margin_border_scrollbar_padding_end;
   }
 
   // Copy the last indefinite indices in the subgrid's span.
@@ -730,6 +774,10 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
               ? kNotFound
               : last_indefinite_index_[i] - begin_set_index);
     }
+
+    // TODO(kschmi): Handle `subgrid_last_indefinite_index` when
+    // `is_opposite_direction_to_parent`. This can be done by looking at the
+    // difference between subsequent entries.
   }
 
   // Copy the major and minor baselines in the subgrid's span.
@@ -741,10 +789,14 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     subgrid_baselines.major.ReserveInitialCapacity(set_span_size);
     subgrid_baselines.minor.ReserveInitialCapacity(set_span_size);
 
-    for (wtf_size_t i = begin_set_index; i < end_set_index; ++i) {
-      subgrid_baselines.major.emplace_back(baselines_->major[i]);
-      subgrid_baselines.minor.emplace_back(baselines_->minor[i]);
+    for (wtf_size_t i = 0; i < set_span_size; ++i) {
+      const wtf_size_t current_index = is_opposite_direction_in_root_grid
+                                           ? end_set_index - i + 1
+                                           : begin_set_index + i;
+      subgrid_baselines.major.emplace_back(baselines_->major[current_index]);
+      subgrid_baselines.minor.emplace_back(baselines_->minor[current_index]);
     }
+
     subgrid_track_collection.baselines_ = std::move(subgrid_baselines);
   }
 

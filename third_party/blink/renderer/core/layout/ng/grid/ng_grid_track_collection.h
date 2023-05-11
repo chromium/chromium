@@ -213,7 +213,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
       LayoutUnit subgrid_gutter_size,
       const NGBoxStrut& subgrid_margin,
       const NGBoxStrut& subgrid_border_scrollbar_padding,
-      GridTrackSizingDirection subgrid_track_direction) const;
+      GridTrackSizingDirection subgrid_track_direction,
+      bool is_opposite_direction_in_root_grid) const;
 
   GridTrackSizingDirection Direction() const { return track_direction_; }
   LayoutUnit GutterSize() const { return gutter_size_; }

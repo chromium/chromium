@@ -1575,7 +1575,8 @@ NGGridLayoutAlgorithm::CreateSubgridTrackCollection(
           range_indices.begin, range_indices.end,
           GutterSize(track_direction, parent_track_collection.GutterSize()),
           ComputeMarginsForSelf(ConstraintSpace(), Style()),
-          BorderScrollbarPadding(), track_direction));
+          BorderScrollbarPadding(), track_direction,
+          subgrid_data->IsOppositeDirectionInRootGrid(track_direction)));
 }
 
 void NGGridLayoutAlgorithm::InitializeTrackCollection(

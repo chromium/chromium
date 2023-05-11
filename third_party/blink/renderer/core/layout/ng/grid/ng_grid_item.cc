@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_item.h"
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
+#include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 namespace blink {
 
@@ -193,6 +194,18 @@ GridItemData::GridItemData(
                               ? style.GridTemplateRows().IsSubgriddedAxis()
                               : style.GridTemplateColumns().IsSubgriddedAxis();
   }
+
+  // The `false, true, false, true` parameters get the converter to calculate
+  // whether the subgrids and its root grid are opposite direction in all cases.
+  const LogicalToLogical<bool> direction_converter(
+      root_grid_style.GetWritingDirection(), style.GetWritingDirection(),
+      /* inline_start */ false,
+      /* inline_end */ true,
+      /* block_start */ false,
+      /* block_end */ true);
+  is_opposite_direction_in_root_grid_columns =
+      direction_converter.InlineStart();
+  is_opposite_direction_in_root_grid_rows = direction_converter.BlockStart();
 
   // From https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution:
   //   The subgrid itself [...] acts as if it was completely empty for track
