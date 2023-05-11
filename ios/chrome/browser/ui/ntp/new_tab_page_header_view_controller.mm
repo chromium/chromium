@@ -643,6 +643,10 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
       content_suggestions::HeightForLogoHeader(
           self.logoIsShowing, self.logoVendor.isShowingDoodle, [self topInset],
           self.traitCollection);
+  // Trigger relayout so that it immediately returns the updated content height
+  // for the NTP to update content inset.
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
   [self.commandHandler updateForHeaderSizeChange];
 }
 
