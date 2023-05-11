@@ -310,6 +310,7 @@ ts_files = [
   # Foreground.
   "file_manager/foreground/js/file_tasks.ts",
   "file_manager/foreground/js/task_controller.ts",
+  "file_manager/foreground/js/uma_enums.gen.ts",
 
   # Util
   "file_manager/widgets/xf_tree_util.ts",
