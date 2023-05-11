@@ -742,7 +742,13 @@ class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
+// TODO(crbug/1444625): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Debugger DISABLED_Debugger
+#else
+#define MAYBE_Debugger Debugger
+#endif
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, MAYBE_Debugger) {
   GURL url(embedded_test_server()->GetURL(
       "a.com", "/extensions/api_test/debugger/oopif.html"));
   GURL iframe_url(embedded_test_server()->GetURL(
