@@ -4,16 +4,20 @@
 
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -22,6 +26,8 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -29,6 +35,13 @@
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
 #endif
+
+namespace {
+
+constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
+constexpr int kAudioToggleChildSpacing = 8;
+
+}  // namespace
 
 ShareThisTabDialogView::ShareThisTabDialogView(
     const DesktopMediaPicker::Params& params,
@@ -54,24 +67,17 @@ ShareThisTabDialogView::ShareThisTabDialogView(
           views::DialogContentType::kText, views::DialogContentType::kControl),
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
 
-  auto description_label = std::make_unique<views::Label>();
-  description_label->SetMultiLine(true);
-  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description_label_ = AddChildView(std::move(description_label));
+  description_label_ = AddChildView(std::make_unique<views::Label>());
+  description_label_->SetMultiLine(true);
+  description_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_label_->SetText(
       l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_TEXT));
 
-  View* source_container = AddChildView(std::make_unique<views::View>());
-  views::BoxLayout* source_layout =
-      source_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  source_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  source_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetupSourceView();
 
-  source_view_ = source_container->AddChildView(
-      std::make_unique<ShareThisTabSourceView>(web_contents_));
+  if (params.request_audio) {
+    SetupAudioToggle();
+  }
 
   activation_timer_.Start(
       FROM_HERE,
@@ -135,12 +141,15 @@ bool ShareThisTabDialogView::Accept() {
 
   source_view_->StopRefreshing();
   if (parent_ && web_contents_) {
-    parent_->NotifyDialogResult(content::DesktopMediaID(
+    content::DesktopMediaID desktop_media_id(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
             web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
-            web_contents_->GetPrimaryMainFrame()->GetRoutingID())));
+            web_contents_->GetPrimaryMainFrame()->GetRoutingID()));
+    desktop_media_id.audio_share =
+        audio_toggle_button_ && audio_toggle_button_->GetIsOn();
+    parent_->NotifyDialogResult(desktop_media_id);
   }
 
   // Return true to close the window.
@@ -157,6 +166,56 @@ bool ShareThisTabDialogView::Cancel() {
 bool ShareThisTabDialogView::ShouldShowCloseButton() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return false;
+}
+
+void ShareThisTabDialogView::SetupSourceView() {
+  View* source_container = AddChildView(std::make_unique<views::View>());
+  views::BoxLayout* source_layout =
+      source_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  source_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  source_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  source_view_ = source_container->AddChildView(
+      std::make_unique<ShareThisTabSourceView>(web_contents_));
+}
+
+void ShareThisTabDialogView::SetupAudioToggle() {
+  View* audio_toggle_container = AddChildView(std::make_unique<views::View>());
+  // TODO(crbug.com/1444707): Create a color_id for this usage.
+  audio_toggle_container->SetBackground(
+      views::CreateSolidBackground(gfx::kGoogleGrey050));
+
+  views::ImageView* audio_icon_view = audio_toggle_container->AddChildView(
+      std::make_unique<views::ImageView>());
+  audio_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kVolumeUpIcon, ui::kColorIcon,
+      GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+
+  views::Label* audio_toggle_label =
+      audio_toggle_container->AddChildView(std::make_unique<views::Label>());
+  audio_toggle_label->SetText(
+      l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_AUDIO_SHARE));
+  audio_toggle_label->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  audio_toggle_button_ = audio_toggle_container->AddChildView(
+      std::make_unique<views::ToggleButton>());
+  audio_toggle_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_AUDIO_SHARE));
+  audio_toggle_button_->SetIsOn(
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kScreenCaptureAudioDefaultUnchecked));
+
+  views::BoxLayout* audio_toggle_layout =
+      audio_toggle_container->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal, kAudioToggleInsets));
+  audio_toggle_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  audio_toggle_layout->set_between_child_spacing(kAudioToggleChildSpacing);
+  audio_toggle_layout->SetFlexForView(audio_toggle_label, 1);
 }
 
 void ShareThisTabDialogView::Activate() {

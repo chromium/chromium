@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -39,6 +40,9 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   bool ShouldShowCloseButton() const override;
 
  private:
+  void SetupSourceView();
+  void SetupAudioToggle();
+
   void Activate();
 
   const base::WeakPtr<content::WebContents> web_contents_;
@@ -51,6 +55,9 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   // Child view displaying a preview, icon and title for the tab being shared,
   // or a throbber while the dialog is not yet activated.
   raw_ptr<ShareThisTabSourceView> source_view_ = nullptr;
+
+  raw_ptr<views::ToggleButton, DanglingUntriaged> audio_toggle_button_ =
+      nullptr;
 
   // Timer for an initial delay during which the allow-button is disabled.
   base::OneShotTimer activation_timer_;
