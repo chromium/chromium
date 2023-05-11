@@ -90,6 +90,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/donottrack",
     "//third_party/blink/renderer/modules/encoding",
     "//third_party/blink/renderer/modules/encryptedmedia",
+    "//third_party/blink/renderer/modules/environment_integrity",
     "//third_party/blink/renderer/modules/eventsource",
     "//third_party/blink/renderer/modules/exported",
     "//third_party/blink/renderer/modules/eyedropper",

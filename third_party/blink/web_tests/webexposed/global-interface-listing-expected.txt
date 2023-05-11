@@ -6374,6 +6374,7 @@ interface Navigator
     method constructor
     method createHandwritingRecognizer
     method getBattery
+    method getEnvironmentIntegrity
     method getGamepads
     method getInstalledRelatedApps
     method getUserMedia
