@@ -111,7 +111,8 @@ class RequestManager {
   };
 
   RequestManager(Profile* profile,
-                 NotificationManagerInterface* notification_manager);
+                 NotificationManagerInterface* notification_manager,
+                 base::TimeDelta timeout);
 
   RequestManager(const RequestManager&) = delete;
   RequestManager& operator=(const RequestManager&) = delete;
@@ -168,10 +169,6 @@ class RequestManager {
     // Handler tied to this request.
     std::unique_ptr<HandlerInterface> handler;
   };
-
-  RequestManager(Profile* profile,
-                 NotificationManagerInterface* notification_manager,
-                 base::TimeDelta timeout);
 
   // Called when a request with |request_id| timeouts.
   virtual void OnRequestTimeout(int request_id);

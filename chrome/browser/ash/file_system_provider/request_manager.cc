@@ -12,19 +12,7 @@ namespace ash {
 namespace file_system_provider {
 namespace {
 
-// Timeout in minutes, before a request is considered as stale and hence
-// aborted.
-const int kDefaultTimeout = 5;
-
 }  // namespace
-
-RequestManager::RequestManager(
-    Profile* profile,
-    NotificationManagerInterface* notification_manager)
-    : profile_(profile),
-      notification_manager_(notification_manager),
-      next_id_(1),
-      timeout_(base::Minutes(kDefaultTimeout)) {}
 
 RequestManager::RequestManager(
     Profile* profile,

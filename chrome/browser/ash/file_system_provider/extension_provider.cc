@@ -29,6 +29,10 @@ namespace ash {
 namespace file_system_provider {
 namespace {
 
+// Timeout before an onMountRequested request is considered as stale and hence
+// aborted.
+constexpr base::TimeDelta kDefaultMountTimeout = base::Minutes(5);
+
 extensions::file_system_provider::ServiceWorkerLifetimeManager*
 GetServiceWorkerLifetimeManager(Profile* profile) {
   if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
@@ -150,7 +154,7 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
                           weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile));
   request_manager_ = std::make_unique<RequestManager>(
-      profile, /*notification_manager=*/nullptr);
+      profile, /*notification_manager=*/nullptr, kDefaultMountTimeout);
   ObserveAppServiceForIcons(profile);
 }
 

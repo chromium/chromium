@@ -36,11 +36,11 @@ class OperationRequestManager : public RequestManager {
   // multiple instances per provider.
   OperationRequestManager(Profile* profile,
                           const std::string& provider_id,
-                          NotificationManagerInterface* notification_manager);
+                          NotificationManagerInterface* notification_manager,
+                          base::TimeDelta timeout);
 
-  explicit OperationRequestManager(const RequestManager&) = delete;
-  OperationRequestManager& operator=(const RequestManager&) = delete;
-
+  OperationRequestManager(const OperationRequestManager&) = delete;
+  OperationRequestManager& operator=(const OperationRequestManager&) = delete;
   ~OperationRequestManager() override;
 
  private:

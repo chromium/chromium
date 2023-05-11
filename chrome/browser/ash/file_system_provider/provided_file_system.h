@@ -248,6 +248,9 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
 
   void OnLacrosOperationForwarded(int request_id, base::File::Error error);
 
+  // Creates `request_manager_`, or replaces it if it exists (in tests).
+  void ConstructRequestManager();
+
   raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
   raw_ptr<extensions::EventRouter, ExperimentalAsh>
       event_router_;  // Not owned. May be NULL.

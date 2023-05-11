@@ -360,8 +360,8 @@ class FileSystemProviderRequestManagerTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     notification_manager_ = std::make_unique<FakeNotificationManager>();
     request_manager_ = std::make_unique<OperationRequestManager>(
-        profile_.get(), std::string() /* provider_id */,
-        notification_manager_.get());
+        profile_.get(), /*provider_id=*/std::string(),
+        notification_manager_.get(), /*timeout=*/base::Seconds(10));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -719,7 +719,8 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnDestroy) {
 
   {
     OperationRequestManager request_manager(
-        profile_.get(), std::string() /* provider_id */, nullptr);
+        profile_.get(), /*provider_id=*/std::string(),
+        /*notification_manager=*/nullptr, /*timeout=*/base::Seconds(10));
     request_manager.AddObserver(&observer);
 
     request_id = request_manager.CreateRequest(

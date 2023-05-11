@@ -15,19 +15,14 @@
 namespace ash::file_system_provider {
 namespace {
 
-// Timeout in seconds, before a file system operation request is considered as
-// stale and hence aborted.
-const int kDefaultOperationTimeout = 10;
-
 }  // namespace
 
 OperationRequestManager::OperationRequestManager(
     Profile* profile,
     const std::string& provider_id,
-    NotificationManagerInterface* notification_manager)
-    : RequestManager(profile,
-                     notification_manager,
-                     base::Seconds(kDefaultOperationTimeout)),
+    NotificationManagerInterface* notification_manager,
+    base::TimeDelta timeout)
+    : RequestManager(profile, notification_manager, timeout),
       provider_id_(provider_id) {}
 
 OperationRequestManager::~OperationRequestManager() = default;
