@@ -201,7 +201,14 @@ export class NudgeContainer {
       // Self dismissable nudge only dismisses if the user clicks on the nudge.
       this.nudge_.addEventListener(
           'pointerdown', () => this.closeNudge(this.currentNudgeType_), config);
-      // TODO(lucmult): Dismiss via keyboard.
+      const dismissOnKeyDown = info.dismissOnKeyDown;
+      if (dismissOnKeyDown) {
+        document.addEventListener('keydown', (event: KeyboardEvent) => {
+          if (dismissOnKeyDown(anchor, event)) {
+            this.closeNudge(this.currentNudgeType_);
+          }
+        }, config);
+      }
     } else {
       // Otherwise the nudge dismisses when user clicks anywhere in the app.
       document.addEventListener('keydown', e => this.handleKeyDown_(e), config);
@@ -353,6 +360,33 @@ interface NudgeInfo {
   // nudge. Otherwise the nudge is dismissed when clicking anywhere in
   // the app/document.
   selfDismiss?: boolean;
+
+  // For selfDismiss nudge the nudge and its anchor might not get keyboard focus
+  // to be able to dismiss via keyboard.
+  // Implement this callback that receives the keydown from document and should
+  // return true if the nudge should be dismissed.
+  dismissOnKeyDown?:
+      (anchor: HTMLElement|null, event: KeyboardEvent) => boolean;
+}
+
+/**
+ * Dismisses the nudge when the tree-item that anchors the nudge is selected.
+ *
+ * NOTE: It relies on the nudge anchor being in the icon, to traverse 2 parents
+ * up to the tree-item.
+ */
+function treeDismissOnKeyDownOnTreeItem(
+    anchor: HTMLElement|null, event: KeyboardEvent) {
+  const dismissKeys = new Set(['Enter', 'Space']);
+  if (!dismissKeys.has(event.key)) {
+    return false;
+  }
+
+  // When the anchor (tree item) is selected we dismiss.
+  if (anchor?.parentElement?.parentElement?.hasAttribute('selected')) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -396,6 +430,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     direction: NudgeDirection.TRAILING_DOWNWARD,
     expiryDate: new Date(2999, 1, 1),
     selfDismiss: true,
+    dismissOnKeyDown: treeDismissOnKeyDownOnTreeItem,
   },
   [NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
@@ -410,6 +445,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
     selfDismiss: true,
+    dismissOnKeyDown: treeDismissOnKeyDownOnTreeItem,
   },
   [NudgeType['DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
@@ -424,6 +460,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
     selfDismiss: true,
+    dismissOnKeyDown: treeDismissOnKeyDownOnTreeItem,
   },
   [NudgeType['SEARCH_V2_EDUCATION_NUDGE']]: {
     anchor: () => document.querySelector<HTMLSpanElement>('#search-wrapper'),
