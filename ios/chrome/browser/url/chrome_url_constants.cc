@@ -8,6 +8,7 @@
 
 #include <iterator>
 
+#include "components/commerce/core/commerce_constants.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 
@@ -64,6 +65,7 @@ const char kChromeUIVersionHost[] = "version";
 // These hosts will also be suggested by BuiltinProvider.
 // 'histograms' is chrome WebUI on iOS, content WebUI on other platforms.
 const char* const kChromeHostURLs[] = {
+    commerce::kChromeUICommerceInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUICreditsHost,
     kChromeUIFlagsHost,

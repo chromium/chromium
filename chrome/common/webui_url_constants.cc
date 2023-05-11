@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/lens/buildflags.h"
 #include "components/nacl/common/buildflags.h"
@@ -677,6 +678,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIBrowsingTopicsInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUIComponentsHost,
+    commerce::kChromeUICommerceInternalsHost,
     kChromeUICrashesHost,
     kChromeUICreditsHost,
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)

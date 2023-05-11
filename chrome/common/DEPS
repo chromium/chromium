@@ -11,6 +11,7 @@ include_rules = [
   "+components/bookmarks/common",
   "+components/cdm/common",
   "+components/cloud_devices/common",
+  "+components/commerce/core",
   "+components/content_settings/core/common",
   "+components/crash/core/app",
   "+components/history_clusters",

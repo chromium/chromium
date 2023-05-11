@@ -187,6 +187,7 @@ static_library("common_lib") {
     "//components/cdm/common",
     "//components/client_hints/common",
     "//components/cloud_devices/common",
+    "//components/commerce/core:commerce_constants",
     "//components/component_updater",
     "//components/content_settings/core/common",
     "//components/crash/core/common",
