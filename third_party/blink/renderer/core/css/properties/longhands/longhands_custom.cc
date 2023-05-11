@@ -7269,6 +7269,48 @@ const CSSValue* ScrollStartY::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForScrollStart(style, style.ScrollStartY());
 }
 
+const CSSValue* ScrollStartTargetBlock::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeScrollStartTarget(range);
+}
+
+const CSSValue* ScrollStartTargetInline::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeScrollStartTarget(range);
+}
+
+const CSSValue* ScrollStartTargetX::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeScrollStartTarget(range);
+}
+
+const CSSValue* ScrollStartTargetX::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.ScrollStartTargetX());
+}
+
+const CSSValue* ScrollStartTargetY::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeScrollStartTarget(range);
+}
+
+const CSSValue* ScrollStartTargetY::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.ScrollStartTargetY());
+}
+
 const CSSValue* ScrollTimelineAttachment::InitialValue() const {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kLocal));

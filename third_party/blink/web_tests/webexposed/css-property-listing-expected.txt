@@ -345,6 +345,10 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-type
     scroll-start-block
     scroll-start-inline
+    scroll-start-target-block
+    scroll-start-target-inline
+    scroll-start-target-x
+    scroll-start-target-y
     scroll-start-x
     scroll-start-y
     scroll-timeline-attachment

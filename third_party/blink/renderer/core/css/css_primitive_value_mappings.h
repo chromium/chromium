@@ -1941,6 +1941,32 @@ inline ScrollStartValueType CSSIdentifierValue::ConvertTo() const {
   }
 }
 
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(EScrollStartTarget target)
+    : CSSValue(kIdentifierClass) {
+  switch (target) {
+    case EScrollStartTarget::kNone:
+      value_id_ = CSSValueID::kNone;
+      break;
+    case EScrollStartTarget::kAuto:
+      value_id_ = CSSValueID::kAuto;
+      break;
+  };
+}
+
+template <>
+inline EScrollStartTarget CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kNone:
+      return EScrollStartTarget::kNone;
+    case CSSValueID::kAuto:
+      return EScrollStartTarget::kAuto;
+    default:
+      NOTREACHED();
+      return EScrollStartTarget::kNone;
+  };
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_

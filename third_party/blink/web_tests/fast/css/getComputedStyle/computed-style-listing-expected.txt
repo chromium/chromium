@@ -313,6 +313,10 @@ scroll-padding-inline-end: auto
 scroll-padding-inline-start: auto
 scroll-start-block: auto
 scroll-start-inline: auto
+scroll-start-target-block: none
+scroll-start-target-inline: none
+scroll-start-target-x: none
+scroll-start-target-y: none
 scroll-start-x: auto
 scroll-start-y: auto
 scroll-timeline-attachment: local

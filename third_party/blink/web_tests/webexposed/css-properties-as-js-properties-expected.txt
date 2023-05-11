@@ -392,6 +392,10 @@ scrollSnapType
 scrollStart
 scrollStartBlock
 scrollStartInline
+scrollStartTargetBlock
+scrollStartTargetInline
+scrollStartTargetX
+scrollStartTargetY
 scrollStartX
 scrollStartY
 scrollTimeline
