@@ -47,5 +47,5 @@ release:
 	$(shell cp piex*wasm extension)
 
 clean:
-	$(shell rm -f tests.{result*,log} package-lock* *.bc piex.out.js)
+	$(shell rm -f tests.{result*,log} *.bc piex.out.js)
 	$(shell rm -f piex*wasm extension/piex*wasm)
