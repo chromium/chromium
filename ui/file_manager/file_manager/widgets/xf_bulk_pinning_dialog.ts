@@ -165,7 +165,7 @@ export class XfBulkPinningDialog extends XfBase {
     return html`
       <cr-dialog @close="${this.onClose}">
         <div slot="title">
-          <xf-icon type="drive_logo" size="medium"></xf-icon>
+          <xf-icon type="drive_bulk_pinning" size="medium"></xf-icon>
           <div class="title">
             ${str('BULK_PINNING_TITLE')}
           </div>

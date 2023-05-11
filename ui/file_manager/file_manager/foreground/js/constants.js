@@ -144,6 +144,7 @@ constants.ICON_TYPES = {
   COMPUTERS_GRAND_ROOT: 'computers_grand_root',
   CROSTINI: 'crostini',
   DOWNLOADS: 'downloads',
+  DRIVE_BULK_PINNING: 'drive_bulk_pinning',
   DRIVE_LOGO: 'drive_logo',
   DRIVE_OFFLINE: 'drive_offline',
   DRIVE_RECENT: 'drive_recent',

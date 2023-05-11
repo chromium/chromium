@@ -220,6 +220,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/files/ui/drive_logo.svg);
     }
 
+    :host([type="drive_bulk_pinning"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/drive_bulk_pinning.svg);
+    }
+
     :host([type="excel"]) span {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_excel.svg);
     }
