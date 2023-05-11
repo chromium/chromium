@@ -67,6 +67,7 @@ source_set("unittests") {
     "//ios/web/common:web_view_creation_util",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/js_messaging:web_view_js_utils",
     "//ios/web/public/test",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",

@@ -153,6 +153,7 @@ source_set("util") {
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/js_messaging:web_view_js_utils",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/test:js_test_util_internal",
