@@ -58,10 +58,8 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   // will result in stopping the current animation.
   void SetAnimatedImage(std::unique_ptr<lottie::Animation> animated_image);
 
-  // Plays the animation and must only be called when this view has
-  // access to a widget.
-  //
-  // If a null |playback_config| is provided, the default one is used.
+  // Plays the animation. If a null |playback_config| is provided, the default
+  // one is used.
   void Play(absl::optional<lottie::Animation::PlaybackConfig> playback_config =
                 absl::nullopt);
 
@@ -87,6 +85,7 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
   void NativeViewHierarchyChanged() override;
+  void AddedToWidget() override;
   void RemovedFromWidget() override;
 
   // Overridden from ui::CompositorAnimationObserver:
@@ -96,11 +95,16 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   // Overridden from ImageViewBase:
   gfx::Size GetImageSize() const override;
 
+  void DoPlay(lottie::Animation::PlaybackConfig playback_config);
   void SetCompositorFromWidget();
   void ClearCurrentCompositor();
 
   // The current state of the animation.
   State state_ = State::kStopped;
+
+  // playback_config_ stores the config while the object is waiting to be added
+  // to a widget.
+  std::unique_ptr<lottie::Animation::PlaybackConfig> playback_config_;
 
   // The compositor associated with the widget of this view.
   raw_ptr<ui::Compositor> compositor_ = nullptr;

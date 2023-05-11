@@ -142,5 +142,17 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin - 5));
 }
 
+TEST_F(AnimatedImageViewTest, PlayBeforeWidget) {
+  auto animated_view = std::make_unique<AnimatedImageView>();
+  animated_view->SetAnimatedImage(CreateAnimationWithSize(gfx::Size(80, 80)));
+  // It should be valid to call `Play` before `animated_view` has been added to
+  // a widget.
+  animated_view->Play();
+
+  view_ = widget_.SetContentsView(std::move(animated_view));
+  view_->SetUseDefaultFillLayout(true);
+  widget_.Show();
+}
+
 }  // namespace
 }  // namespace views
