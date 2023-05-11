@@ -17,7 +17,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.webengine.ProfileManager;
+import org.chromium.webengine.WebEngineParams;
 import org.chromium.webengine.WebSandbox;
+
+import java.util.List;
 
 /**
  * Tests functions called on the ProfileManager object.
@@ -50,7 +53,54 @@ public class ProfileManagerTest {
 
     @Test
     @SmallTest
-    public void profileManagerIsAvailable() throws Exception {
+    public void profileManagerIsAvailable() {
         Assert.assertNotNull(mProfileManager);
+    }
+
+    @Test
+    @SmallTest
+    public void getAllProfileNamesReturnsNames() throws Exception {
+        String name1 = "TestProfile1";
+        WebEngineParams params1 = new WebEngineParams.Builder().setProfileName(name1).build();
+        runOnUiThreadBlocking(() -> mSandbox.createWebEngine(params1));
+
+        List<String> initialNames =
+                runOnUiThreadBlocking(() -> mProfileManager.getAllProfileNames()).get();
+        Assert.assertEquals(1, initialNames.size());
+        Assert.assertTrue(initialNames.contains(name1));
+
+        String profileName2 = "TestProfile2";
+        WebEngineParams params2 =
+                new WebEngineParams.Builder().setProfileName(profileName2).build();
+        runOnUiThreadBlocking(() -> mSandbox.createWebEngine(params2));
+
+        List<String> newNames =
+                runOnUiThreadBlocking(() -> mProfileManager.getAllProfileNames()).get();
+        Assert.assertEquals(2, newNames.size());
+        Assert.assertTrue(newNames.contains(profileName2));
+    }
+
+    @Test
+    @SmallTest
+    public void createProfileWithIdenticalName() throws Exception {
+        String profileName = "TestProfile";
+        WebEngineParams params = new WebEngineParams.Builder().setProfileName(profileName).build();
+        runOnUiThreadBlocking(() -> mSandbox.createWebEngine(params, "tag-1"));
+        runOnUiThreadBlocking(() -> mSandbox.createWebEngine(params, "tag-2"));
+
+        List<String> names =
+                runOnUiThreadBlocking(() -> mProfileManager.getAllProfileNames()).get();
+
+        Assert.assertEquals(1, names.size());
+        Assert.assertTrue(names.contains(profileName));
+    }
+
+    @Test
+    @SmallTest
+    public void noProfilesOnWebSandboxStartup() throws Exception {
+        List<String> names =
+                runOnUiThreadBlocking(() -> mProfileManager.getAllProfileNames()).get();
+
+        Assert.assertEquals(0, names.size());
     }
 }

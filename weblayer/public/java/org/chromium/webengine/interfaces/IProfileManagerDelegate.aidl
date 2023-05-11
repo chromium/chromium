@@ -4,5 +4,8 @@
 
 package org.chromium.webengine.interfaces;
 
+import org.chromium.webengine.interfaces.IStringListCallback;
+
 oneway interface IProfileManagerDelegate {
+    void getAllProfileNames(IStringListCallback callback) = 1;
 }

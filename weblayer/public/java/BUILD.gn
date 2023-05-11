@@ -198,6 +198,7 @@ android_aidl("webengine_aidl") {
     "org/chromium/webengine/interfaces/IPostMessageCallback.aidl",
     "org/chromium/webengine/interfaces/IProfileManagerDelegate.aidl",
     "org/chromium/webengine/interfaces/IStringCallback.aidl",
+    "org/chromium/webengine/interfaces/IStringListCallback.aidl",
     "org/chromium/webengine/interfaces/ITabCallback.aidl",
     "org/chromium/webengine/interfaces/ITabListObserverDelegate.aidl",
     "org/chromium/webengine/interfaces/ITabManagerDelegate.aidl",
