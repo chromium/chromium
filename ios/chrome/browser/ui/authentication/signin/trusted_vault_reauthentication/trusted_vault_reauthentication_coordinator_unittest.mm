@@ -54,7 +54,8 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    authentication_service->SignIn(identity);
+    authentication_service->SignIn(
+        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
   }

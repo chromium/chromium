@@ -12,6 +12,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/pref_names.h"
@@ -286,7 +287,8 @@ TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSignedInSyncDisabled) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  authentication_service->SignIn(identity);
+  authentication_service->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   IdentitySigninState state =
       signin::GetPrimaryIdentitySigninState(chrome_browser_state_.get());
@@ -305,7 +307,8 @@ TEST_F(SigninUtilsTest,
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  authentication_service->SignIn(identity);
+  authentication_service->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
   authentication_service->GrantSyncConsent(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
   chrome_browser_state_->GetPrefs()->SetBoolean(
@@ -332,7 +335,8 @@ TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSyncGranted) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  authentication_service->SignIn(identity);
+  authentication_service->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
   authentication_service->GrantSyncConsent(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
 

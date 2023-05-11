@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -108,7 +109,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates cookies being added on the web.
   void SigninAndSimulateCookies(ConsistencyPromoSigninMediator* mediator,
                                 id<SystemIdentity> identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(
+        identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE);
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSignInDone:mediator
                                     withIdentity:identity]);
@@ -129,7 +132,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates a cookie error.
   void SigninAndSimulateError(ConsistencyPromoSigninMediator* mediator,
                               id<SystemIdentity> identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(
+        identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE);
     __block BOOL error_did_happen_called = NO;
     OCMExpect(
         [mediator_delegate_mock_

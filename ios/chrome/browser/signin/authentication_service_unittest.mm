@@ -293,7 +293,8 @@ TEST_F(AuthenticationServiceTest, TestSetReauthPromptForSignInAndSync) {
 TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   // Sign in.
   SetExpectationsForSignInAndSync();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   authentication_service()->GrantSyncConsent(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
@@ -321,7 +322,8 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
 TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // Sign in.
   SetExpectationsForSignInAndSync();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   authentication_service()->GrantSyncConsent(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
@@ -348,7 +350,8 @@ TEST_F(AuthenticationServiceTest,
        TestHandleForgottenIdentityNoPromptSignInAndSync) {
   // Sign in.
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   // Set the authentication service as "In Background", remove identity and run
   // the loop.
@@ -372,7 +375,8 @@ TEST_F(AuthenticationServiceTest,
        OnApplicationEnterForegroundReloadCredentials) {
   // Sign in.
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   fake_system_identity_manager()->AddIdentities(@[ @"foo3" ]);
 
@@ -405,7 +409,8 @@ TEST_F(AuthenticationServiceTest,
 // Tests the account list is approved after adding an account with in Chrome.
 TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_AddedByUser) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   fake_system_identity_manager()->AddIdentities(@[ @"foo3" ]);
   FireIdentityListChanged(/*notify_user=*/false);
@@ -417,7 +422,8 @@ TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_AddedByUser) {
 // app (through the keychain).
 TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_ChangedByKeychain) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   fake_system_identity_manager()->AddIdentities(@[ @"foo3" ]);
   FireIdentityListChanged(/*notify_user=*/true);
@@ -430,7 +436,8 @@ TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_ChangedByKeychain) {
 TEST_F(AuthenticationServiceTest,
        AccountListApprovedByUser_ChangedTwiceByKeychain) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   fake_system_identity_manager()->AddIdentities(@[ @"foo3" ]);
   FireIdentityListChanged(/*notify_user=*/true);
@@ -449,7 +456,8 @@ TEST_F(AuthenticationServiceTest,
 TEST_F(AuthenticationServiceTest,
        AccountListApprovedByUser_ResetOntwoBackgrounds) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   fake_system_identity_manager()->AddIdentities(@[ @"foo3" ]);
   FireIdentityListChanged(/*notify_user=*/true);
@@ -475,7 +483,8 @@ TEST_F(AuthenticationServiceTest,
 TEST_F(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
   // Sign in.
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 
@@ -493,7 +502,8 @@ TEST_F(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
 // notifications that the state of error has changed.
 TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
@@ -533,7 +543,8 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
 // Tests that MDM errors are correctly cleared when signing out.
 TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
@@ -550,7 +561,8 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
 TEST_F(AuthenticationServiceTest,
        MDMErrorsClearedOnSignoutAndClearBrowsingData) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
@@ -568,7 +580,8 @@ TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
   fake_system_identity_manager()->AddManagedIdentities(@[ @"foo3" ]);
 
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(2));
+  authentication_service()->SignIn(
+      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -588,7 +601,8 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
   fake_system_identity_manager()->AddManagedIdentities(@[ @"foo3" ]);
 
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(2));
+  authentication_service()->SignIn(
+      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -610,7 +624,8 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOutAndClearBrowsingData) {
   fake_system_identity_manager()->AddManagedIdentities(@[ @"foo3" ]);
 
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(2));
+  authentication_service()->SignIn(
+      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -628,7 +643,8 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOutAndClearBrowsingData) {
 // to MDM service when necessary.
 TEST_F(AuthenticationServiceTest, HandleMDMNotification) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -665,7 +681,8 @@ TEST_F(AuthenticationServiceTest, HandleMDMNotification) {
 // the primary account is blocked.
 TEST_F(AuthenticationServiceTest, HandleMDMBlockedNotification) {
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -712,7 +729,8 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialogInvalidCachedError) {
 // Tests that MDM dialog is shown when there is a cached error and a
 // corresponding error for the account.
 TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -731,7 +749,8 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
 TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.
   SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
                                signin::ConsentLevel::kSignin));
@@ -763,7 +782,8 @@ TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
   browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
 
   // Attempt to sign in, and verify there is a crash.
-  EXPECT_CHECK_DEATH(authentication_service()->SignIn(identity(0)));
+  EXPECT_CHECK_DEATH(authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
 }
 
 // Tests that reauth prompt is not set if the primary identity is restricted and
@@ -773,7 +793,8 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   authentication_service()->AddObserver(&observer_test);
   // Sign in.
   SetExpectationsForSignInAndSync();
-  authentication_service()->SignIn(identity(0));
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   authentication_service()->GrantSyncConsent(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 

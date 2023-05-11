@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -111,7 +112,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 // Tests that a signed-in user with Sync enabled will have an action sheet with
 // a sign-out title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
-  authentication_service()->SignIn(identity_);
+  authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(true));
 
@@ -124,7 +126,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
 // Tests that a signed-in user with Sync disabled will have an action sheet with
 // no title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
-  authentication_service()->SignIn(identity_);
+  authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(false));
 
@@ -141,7 +144,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kForced));
 
-  authentication_service()->SignIn(identity_);
+  authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(false));
 
@@ -155,7 +159,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
 // Tests that a signed-in managed user with Sync enabled will have an action
 // sheet with a sign-out title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
-  authentication_service()->SignIn(identity_);
+  authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(true));
 
@@ -168,7 +173,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
 // Tests that a signed-in managed user with Sync disabled will have an action
 // sheet with no title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithoutSync) {
-  authentication_service()->SignIn(identity_);
+  authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(false));
 

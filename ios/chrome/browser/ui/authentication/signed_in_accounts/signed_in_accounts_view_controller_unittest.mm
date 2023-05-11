@@ -62,7 +62,8 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
             browser_state_.get());
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    auth_service->SignIn(account_manager_service->GetDefaultIdentity());
+    auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
+                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
  protected:

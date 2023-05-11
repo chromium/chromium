@@ -87,7 +87,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     AuthenticationService* auth_service = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service->SignIn(fake_identity);
+    auth_service->SignIn(fake_identity,
+                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   // Advances the coordinator to the next screen.
