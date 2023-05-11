@@ -73,6 +73,12 @@ int CombineNetAndHttpErrors(const network::SimpleURLLoader& loader) {
   return loader.ResponseInfo()->headers->response_code();
 }
 
+std::string CreateAuthorizationHeader(StringPiece access_token) {
+  // Do not use StringPiece with StringPrintf, see crbug/1444165
+  return base::JoinString({supervised_user::kAuthorizationHeader, access_token},
+                          " ");
+}
+
 // TODO(b/276898959): Support payload for POST requests.
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
     StringPiece access_token,
@@ -83,10 +89,8 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   resource_request->url = url;
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf(supervised_user::kAuthorizationHeaderFormat,
-                         access_token));
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                      CreateAuthorizationHeader(access_token));
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        fetcher_config.traffic_annotation());

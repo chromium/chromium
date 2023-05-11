@@ -11,7 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -207,8 +207,8 @@ void PermissionRequestCreatorApiary::OnAccessTokenFetchComplete(
   resource_request->method = "POST";
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf(supervised_user::kAuthorizationHeaderFormat,
-                         token_info.token.c_str()));
+      base::JoinString(
+          {supervised_user::kAuthorizationHeader, token_info.token}, " "));
   (*it)->simple_url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   (*it)->simple_url_loader->AttachStringForUpload(body, "application/json");

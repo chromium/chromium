@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -15,6 +16,7 @@
 #include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -150,6 +152,36 @@ TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
   EXPECT_FALSE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().error().state(),
             KidsExternalFetcherStatus::State::INVALID_RESPONSE);
+}
+
+// crbug/1444165: Do not use StringPrintf with StringPiece, c-strings are
+// expected.
+TEST_F(KidsExternalFetcherTest, CreatesToken) {
+  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
+
+  auto fetcher = FetchListFamilyMembers(
+      *identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      BindOnce(&Receiver<ListFamilyMembersRequest,
+                         ListFamilyMembersResponse>::Receive,
+               base::Unretained(&receiver)),
+      test_fetcher_config_);
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "token", Time::Max());
+
+  // That's enough: request is pending, so token is accepted.
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(nullptr, pending_request);
+
+  // Only check header format here.
+  std::string authorization_header;
+  ASSERT_TRUE(pending_request->request.headers.GetHeader(
+      net::HttpRequestHeaders::kAuthorization, &authorization_header));
+  EXPECT_EQ(authorization_header, "Bearer token");
 }
 
 TEST_F(KidsExternalFetcherTest, HandlesServerError) {

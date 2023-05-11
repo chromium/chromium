@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
@@ -294,8 +295,8 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
 
   req->resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf(supervised_user::kAuthorizationHeaderFormat,
-                         token_info.token.c_str()));
+      base::JoinString(
+          {supervised_user::kAuthorizationHeader, token_info.token}, " "));
 
   std::string request_data;
   // TODO(crbug.com/980273): remove this when experiment flag is fully flipped.
