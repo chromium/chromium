@@ -274,6 +274,23 @@
             ]
         }
     ],
+    "AndroidOmniboxPerf": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "All_Enabled",
+                    "enable_features": [
+                        "OmniboxCacheSuggestionResources",
+                        "OmniboxIgnoreIntermediateResults",
+                        "OmniboxWarmRecycledViewPool"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidOmniboxUxRevampPhase2": [
         {
             "platforms": [
