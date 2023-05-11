@@ -742,7 +742,6 @@
       // to those properties.
       name: "CSSAnimationDelayStartEnd",
       depends_on: ["ScrollTimeline"],
-      status: "test",
     },
     {
       // Whether <image> values are allowed as counter style <symbol>

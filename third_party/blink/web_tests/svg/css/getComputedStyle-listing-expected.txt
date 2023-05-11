@@ -54,8 +54,7 @@ anchor-default: implicit
 anchor-name: none
 anchor-scroll: none
 animation-composition: replace
-animation-delay-end: 0s
-animation-delay-start: 0s
+animation-delay: 0s
 animation-direction: normal
 animation-duration: auto
 animation-fill-mode: none

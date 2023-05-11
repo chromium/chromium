@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+PASS e.style['animation-delay'] = "1s" should set the property value
+PASS e.style['animation-delay'] = "-1s" should set the property value
+FAIL e.style['animation-delay'] = "1s 2s" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['animation-delay'] = "1s, 2s" should set the property value
+FAIL e.style['animation-delay'] = "1s 2s, 3s" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-delay'] = "1s, 2s 3s" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['animation-delay'] = "1s, 2s, 3s" should set the property value
+PASS e.style['animation-delay'] = "1s 2s 3s" should not set the property value
+PASS e.style['animation-delay'] = "0s, 1s 2s 3s" should not set the property value
+PASS e.style['animation-delay'] = "1s / 2s" should not set the property value
+PASS e.style['animation-delay'] = "1s, 2px" should not set the property value
+PASS e.style['animation-delay'] = "#ff0000" should not set the property value
+PASS e.style['animation-delay'] = "red" should not set the property value
+PASS e.style['animation-delay'] = "thing" should not set the property value
+PASS e.style['animation-delay'] = "thing 0%" should not set the property value
+PASS e.style['animation-delay'] = "thing 42%" should not set the property value
+PASS e.style['animation-delay'] = "thing 100%" should not set the property value
+PASS e.style['animation-delay'] = "thing 100px" should not set the property value
+PASS e.style['animation-delay'] = "100% thing" should not set the property value
+FAIL e.style['animation-delay'] = "1s 2s" should set animation-delay-end assert_equals: animation-delay-end should be canonical expected (string) "2s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s 2s" should set animation-delay-start assert_equals: animation-delay-start should be canonical expected (string) "1s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s 2s" should not set unrelated longhands assert_true: expected true got false
+FAIL e.style['animation-delay'] = "1s" should set animation-delay-end assert_equals: animation-delay-end should be canonical expected (string) "0s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s" should set animation-delay-start assert_equals: animation-delay-start should be canonical expected (string) "1s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s" should not set unrelated longhands assert_equals: expected 0 but got 1
+FAIL e.style['animation-delay'] = "1s 2s, 3s 4s" should set animation-delay-end assert_equals: animation-delay-end should be canonical expected (string) "2s, 4s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s 2s, 3s 4s" should set animation-delay-start assert_equals: animation-delay-start should be canonical expected (string) "1s, 3s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s 2s, 3s 4s" should not set unrelated longhands assert_true: expected true got false
+FAIL e.style['animation-delay'] = "1s 2s, 3s, 4s 5s" should set animation-delay-end assert_equals: animation-delay-end should be canonical expected (string) "2s, 0s, 5s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s 2s, 3s, 4s 5s" should set animation-delay-start assert_equals: animation-delay-start should be canonical expected (string) "1s, 3s, 4s" but got (undefined) undefined
+FAIL e.style['animation-delay'] = "1s 2s, 3s, 4s 5s" should not set unrelated longhands assert_true: expected true got false
+Harness: the test ran to completion.
+

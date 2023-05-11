@@ -2026,12 +2026,10 @@ TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInStandardProperty) {
 TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInAnimationDelay) {
   TestCascade cascade(GetDocument());
   cascade.Add(AnimationTaintedSet("--x", "1s"));
-  cascade.Add("animation-delay-start", "var(--x)");
-  cascade.Add("animation-delay-end", "var(--x)");
+  cascade.Add("animation-delay", "var(--x)");
   cascade.Apply();
   EXPECT_EQ("1s", cascade.ComputedValue("--x"));
-  EXPECT_EQ("0s", cascade.ComputedValue("animation-delay-start"));
-  EXPECT_EQ("0s", cascade.ComputedValue("animation-delay-end"));
+  EXPECT_EQ("0s", cascade.ComputedValue("animation-delay"));
 }
 
 TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInAnimationProperty) {
@@ -3630,7 +3628,7 @@ TEST_F(StyleCascadeTest, GetCascadedValuesInterpolated) {
   cascade.Add("animation-name: test");
   cascade.Add("animation-timing-function: linear");
   cascade.Add("animation-duration: 10s");
-  cascade.Add("animation-delay-start: -5s");
+  cascade.Add("animation-delay: -5s");
   cascade.Apply();
 
   cascade.AddInterpolations();
@@ -3648,7 +3646,7 @@ TEST_F(StyleCascadeTest, GetCascadedValuesInterpolated) {
   EXPECT_EQ("test", CssTextAt(map, "animation-name"));
   EXPECT_EQ("linear", CssTextAt(map, "animation-timing-function"));
   EXPECT_EQ("10s", CssTextAt(map, "animation-duration"));
-  EXPECT_EQ("-5s", CssTextAt(map, "animation-delay-start"));
+  EXPECT_EQ("-5s", CssTextAt(map, "animation-delay"));
 }
 
 TEST_F(StyleCascadeTest, RevertOrigin) {

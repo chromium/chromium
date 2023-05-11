@@ -61,8 +61,7 @@ All changes to this list should go through Blink's feature review process: http:
     anchor-name
     anchor-scroll
     animation-composition
-    animation-delay-end
-    animation-delay-start
+    animation-delay
     animation-direction
     animation-duration
     animation-fill-mode
@@ -466,8 +465,7 @@ All changes to this list should go through Blink's feature review process: http:
         -webkit-text-stroke-color
         -webkit-text-stroke-width
     animation
-        animation-delay-end
-        animation-delay-start
+        animation-delay
         animation-direction
         animation-duration
         animation-fill-mode
@@ -478,9 +476,6 @@ All changes to this list should go through Blink's feature review process: http:
         animation-range-start
         animation-timeline
         animation-timing-function
-    animation-delay
-        animation-delay-end
-        animation-delay-start
     animation-range
         animation-range-end
         animation-range-start

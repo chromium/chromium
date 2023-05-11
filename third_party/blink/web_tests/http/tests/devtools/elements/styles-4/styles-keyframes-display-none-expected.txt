@@ -38,8 +38,7 @@ element.style { ()
     animation: animName 1000s;
         animation-duration: 1000s;
         animation-timing-function: ease;
-        animation-delay-start: 0s;
-        animation-delay-end: 0s;
+        animation-delay: 0s;
         animation-iteration-count: 1;
         animation-direction: normal;
         animation-fill-mode: none;

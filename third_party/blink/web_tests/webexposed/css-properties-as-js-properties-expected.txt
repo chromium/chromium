@@ -14,8 +14,6 @@ anchorScroll
 animation
 animationComposition
 animationDelay
-animationDelayEnd
-animationDelayStart
 animationDirection
 animationDuration
 animationFillMode
