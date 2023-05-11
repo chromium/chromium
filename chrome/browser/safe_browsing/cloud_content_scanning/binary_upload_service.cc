@@ -213,14 +213,6 @@ void BinaryUploadService::Request::set_printer_name(
       ->set_printer_name(printer_name);
 }
 
-void BinaryUploadService::Request::set_printer_type(
-    enterprise_connectors::ContentMetaData::PrintMetadata::PrinterType
-        printer_type) {
-  content_analysis_request_.mutable_request_data()
-      ->mutable_print_metadata()
-      ->set_printer_type(printer_type);
-}
-
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
 

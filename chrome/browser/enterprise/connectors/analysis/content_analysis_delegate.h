@@ -116,12 +116,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // Printer name of the page being sent to, empty for non-print actions.
     std::string printer_name;
 
-    // TODO(b/280457160): Set printer type once scan after printer preview
-    // is done.
-    // Printer type of the page being sent to, empty for non-print actions.
-    enterprise_connectors::ContentMetaData::PrintMetadata::PrinterType
-        printer_type;
-
     // The settings to use for the analysis of the data in this struct.
     enterprise_connectors::AnalysisSettings settings;
   };
