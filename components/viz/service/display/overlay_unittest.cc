@@ -840,6 +840,19 @@ SkM44 GetNonIdentityColorMatrix() {
   return matrix;
 }
 
+gfx::RectF ScaleForBufferDamageUV(const gfx::RectF buffer_damage_no_uv,
+                                  const gfx::SizeF resource_size) {
+  auto transformed_damage = buffer_damage_no_uv;
+  gfx::RectF uv = {kUVTopLeft.x(), kUVTopLeft.y(),
+                   kUVBottomRight.x() - kUVTopLeft.x(),
+                   kUVBottomRight.y() - kUVTopLeft.y()};
+
+  transformed_damage.Scale(uv.width(), uv.height());
+  transformed_damage.Offset(uv.x() * resource_size.width(),
+                            uv.y() * resource_size.height());
+  return transformed_damage;
+}
+
 template <typename OverlayProcessorType>
 class OverlayTest : public testing::Test {
  protected:
@@ -2493,7 +2506,13 @@ TEST_F(SingleOverlayOnTopTest, TargetOffsetCandidateDamageRect) {
       kOverlayRectInContent.y() + kOverlayOffsetTarget.y(),
       kOverlayRectInContent.width(), kOverlayRectInContent.height()};
 
-  surface_damage_rect_list.push_back(display_rect);
+  constexpr auto kIntendedBufferOffset = gfx::Vector2d(5.f, 7.f);
+  gfx::Rect damage_in_target_space = display_rect;
+  auto inside_quad_offset =
+      kIntendedBufferOffset + display_rect.OffsetFromOrigin();
+  damage_in_target_space.set_origin(
+      gfx::Point(inside_quad_offset.x(), inside_quad_offset.y()));
+  surface_damage_rect_list.push_back(damage_in_target_space);
   overlay_processor_->AddExpectedRect(gfx::RectF(display_rect));
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -2501,8 +2520,18 @@ TEST_F(SingleOverlayOnTopTest, TargetOffsetCandidateDamageRect) {
       std::move(surface_damage_rect_list), nullptr, &candidate_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(1U, candidate_list.size());
-  EXPECT_RECTF_NEAR(gfx::RectF(display_rect), candidate_list[0].damage_rect,
-                    0.0001f);
+  // |transformed_damage| would correspond to candidate buffer damage if our
+  // texture uvs were 0,0 1x1.
+  gfx::RectF transformed_damage = {
+      kIntendedBufferOffset.x(), kIntendedBufferOffset.y(),
+      kOverlayRectInContent.width() - kIntendedBufferOffset.x(),
+      kOverlayRectInContent.height() - kIntendedBufferOffset.y()};
+  // However, the default uvs for candidates are 0.1,0.2 .9x.8  (see the value
+  // of |kUVTopLeft|). So the damage in buffer space is actually smaller because
+  // the uvs have the effect of magnifying portions of the buffer.
+  transformed_damage = ScaleForBufferDamageUV(
+      transformed_damage, gfx::SizeF(kOverlayRectInContent.size()));
+  EXPECT_RECTF_NEAR(transformed_damage, candidate_list[0].damage_rect, 0.0001f);
 }
 
 TEST_F(SingleOverlayOnTopTest, AcceptMirrorYTransform) {
@@ -5370,16 +5399,22 @@ TEST_F(DelegatedTest, ScaledBufferDamage) {
       overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
       &damage_rect_, &content_bounds_);
 
-  // Expected damage is the intersection of the rect with the screen damage,
-  // regardless of resource size.
-  const auto kExpectedRectDamage =
-      gfx::RectF(IntersectRects(kDisplayDamage, kSmallCandidateRect));
+  // Expected damage is basically the intersection of the rect with the screen
+  // damage but relative to that rect.
+  const auto kExpectedRectRelDamage = gfx::RectF(25 - 15, 0, 5, 32 - 10);
+  const auto kExpectedScaledRelDamage =
+      gfx::ScaleRect(kExpectedRectRelDamage, 0.5f, 0.25f);
   EXPECT_EQ(main_pass->quad_list.size(), candidate_list.size());
   EXPECT_TRUE(damage_rect_.IsEmpty());
-  EXPECT_RECTF_NEAR(candidate_list[0].damage_rect, kExpectedRectDamage,
-                    0.0001f);
-  EXPECT_RECTF_NEAR(candidate_list[1].damage_rect, kExpectedRectDamage,
-                    0.0001f);
+  EXPECT_RECTF_NEAR(candidate_list[0].damage_rect,
+                    ScaleForBufferDamageUV(kExpectedScaledRelDamage,
+                                           gfx::SizeF(kResourceSize)),
+                    0.001f);
+  EXPECT_RECTF_NEAR(
+      candidate_list[1].damage_rect,
+      ScaleForBufferDamageUV(kExpectedRectRelDamage,
+                             gfx::SizeF(kSmallCandidateRect.size())),
+      0.001f);
 }
 
 TEST_F(DelegatedTest, QuadTypes) {

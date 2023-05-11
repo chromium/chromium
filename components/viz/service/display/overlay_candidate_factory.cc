@@ -657,11 +657,47 @@ void OverlayCandidateFactory::HandleClipAndSubsampling(
 
 void OverlayCandidateFactory::AssignDamage(const DrawQuad* quad,
                                            OverlayCandidate& candidate) const {
-  candidate.damage_rect = GetDamageRect(quad, candidate);
+  auto& transform = quad->shared_quad_state->quad_to_target_transform;
+  auto damage_rect = GetDamageRect(quad, candidate);
+  gfx::RectF transformed_damage;
+  if (absl::optional<gfx::RectF> transformed =
+          transform.InverseMapRect(damage_rect)) {
+    transformed_damage = *transformed;
+    // The quad's |rect| is in content space. To get to buffer space we need
+    // to remove the |rect|'s pixel offset.
+    auto buffer_damage_origin =
+        transformed_damage.origin() - gfx::PointF(quad->rect.origin());
+    transformed_damage.set_origin(
+        gfx::PointF(buffer_damage_origin.x(), buffer_damage_origin.y()));
+
+    if (!quad->rect.IsEmpty()) {
+      // Normalize damage to be in UVs.
+      transformed_damage.InvScale(quad->rect.width(), quad->rect.height());
+    }
+
+    // The normalization above is not enough if the |uv_rect| is not 0,0-1x1.
+    // This is because texture uvs can effectively magnify damage.
+    if (!candidate.uv_rect.IsEmpty()) {
+      transformed_damage.Scale(candidate.uv_rect.width(),
+                               candidate.uv_rect.height());
+      transformed_damage.Offset(candidate.uv_rect.OffsetFromOrigin());
+    }
+
+    // Buffer damage is in texels not UVs so scale by resource size.
+    transformed_damage.Scale(candidate.resource_size_in_pixels.width(),
+                             candidate.resource_size_in_pixels.height());
+  } else {
+    // If not invertible, set to full damage.
+    // TODO(https://crbug.com/1279965): |resource_size_in_pixels| might not be
+    // properly initialized at this stage.
+    transformed_damage =
+        gfx::RectF(gfx::SizeF(candidate.resource_size_in_pixels));
+  }
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
-  candidate.damage_area_estimate = candidate.damage_rect.size().GetArea();
+  candidate.damage_area_estimate = damage_rect.size().GetArea();
+  candidate.damage_rect = transformed_damage;
 }
 
 gfx::RectF OverlayCandidateFactory::GetDamageRect(

@@ -182,7 +182,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // is an estimate when 'EstimateOccludedDamage' function is used.
   float damage_area_estimate = 0.f;
 
-  // Damage in viz Display space, the same space as |display_rect|;
+  // Damage in buffer space (extents bound by |resource_size_in_pixels|).
   gfx::RectF damage_rect;
 
   static constexpr uint32_t kInvalidDamageIndex = UINT_MAX;
