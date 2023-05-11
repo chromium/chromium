@@ -52,6 +52,8 @@ using mojom::AcceleratorConfigResult;
 using HiddenAcceleratorMap =
     std::map<AcceleratorActionId, std::vector<ui::Accelerator>>;
 
+constexpr size_t kMaxAcceleratorsAllowed = 5;
+
 // Raw accelerator data may result in the same shortcut being displayed multiple
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
@@ -480,6 +482,16 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   if (error_result.has_value()) {
     pending_accelerator_.reset();
     result_data->result = *error_result;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Only allow a maximum of five accelerators per action.
+  const size_t accelerator_count =
+      ash_accelerator_configuration_->GetAcceleratorsForAction(action_id)
+          .size();
+  if (accelerator_count >= kMaxAcceleratorsAllowed) {
+    result_data->result = AcceleratorConfigResult::kMaximumAcceleratorsReached;
     std::move(callback).Run(std::move(result_data));
     return;
   }

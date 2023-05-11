@@ -457,6 +457,62 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(editElement.hasError);
   });
 
+  test('AddAcceleratorMaximumAccelerators', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    // Open dialog for first accelerator in second subsection.
+    await openDialogForAcceleratorInSubsection(1);
+    const editDialog = getPage().shadowRoot!.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Grab the first accelerator from second subsection.
+    const dialogAccels =
+        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+            'accelerator-edit-view');
+    // Expect only 1 accelerator initially.
+    assertEquals(1, dialogAccels!.length);
+
+    // Click on add button.
+    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
+     CrButtonElement)
+        .click();
+
+    await flushTasks();
+
+    const editElement =
+        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
+        AcceleratorEditViewElement;
+
+    // Assert no error has occurred prior to pressing a shortcut.
+    assertFalse(editElement.hasError);
+
+    const viewElement =
+        editElement!.shadowRoot!.querySelector('#acceleratorItem');
+
+    // Set the fake mojo return call.
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kMaximumAcceleratorsReached,
+      shortcutName: undefined,
+    };
+    provider.setFakeAddAcceleratorResult(fakeResult);
+
+    // Dispatch an add event, this should fail as it has a failure state.
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: 221,
+      code: 'Key]',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+
+    assertTrue(editElement.hasError);
+  });
+
   test('DisableDefaultAccelerator', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();

@@ -30,4 +30,6 @@ enum AcceleratorConfigResult {
   kMissingModifier = 7,
   // Error - shift cannot be the only modifier.
   kShiftOnlyNotAllowed = 8,
+  // Error - reached maximum number of allowed accelerators for the action.
+  kMaximumAcceleratorsReached = 9,
 };

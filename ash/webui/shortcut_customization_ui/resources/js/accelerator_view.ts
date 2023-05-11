@@ -294,6 +294,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.hasError = true;
         return;
       }
+      case AcceleratorConfigResult.kMaximumAcceleratorsReached: {
+        // TODO(jimmyxgong): Localize this message.
+        this.statusMessage = 'Maximum accelerators have reached.';
+        this.hasError = true;
+        return;
+      }
       case AcceleratorConfigResult.kSuccess: {
         this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
         this.fireUpdateEvent();
