@@ -38,11 +38,12 @@ void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
   DrawInternal(canvas, flags, dest_rect, src_rect, draw_options, image_);
 }
 
-void PaintWorkletDeferredImage::DrawTile(GraphicsContext& context,
+void PaintWorkletDeferredImage::DrawTile(cc::PaintCanvas* canvas,
                                          const gfx::RectF& src_rect,
                                          const ImageDrawOptions& draw_options) {
-  DrawInternal(context.Canvas(), context.FillFlags(), gfx::RectF(), src_rect,
-               draw_options, image_);
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  DrawInternal(canvas, flags, gfx::RectF(), src_rect, draw_options, image_);
 }
 
 sk_sp<PaintShader> PaintWorkletDeferredImage::CreateShader(
@@ -51,10 +52,8 @@ sk_sp<PaintShader> PaintWorkletDeferredImage::CreateShader(
     const gfx::RectF& src_rect,
     const ImageDrawOptions&) {
   SkRect tile = gfx::RectFToSkRect(tile_rect);
-  sk_sp<PaintShader> shader = PaintShader::MakeImage(
-      image_, SkTileMode::kRepeat, SkTileMode::kRepeat, pattern_matrix, &tile);
-
-  return shader;
+  return PaintShader::MakeImage(image_, SkTileMode::kRepeat,
+                                SkTileMode::kRepeat, pattern_matrix, &tile);
 }
 
 }  // namespace blink

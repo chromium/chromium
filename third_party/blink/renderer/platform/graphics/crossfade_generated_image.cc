@@ -91,19 +91,15 @@ void CrossfadeGeneratedImage::Draw(cc::PaintCanvas* canvas,
   DrawCrossfade(canvas, flags, draw_options);
 }
 
-void CrossfadeGeneratedImage::DrawTile(GraphicsContext& context,
+void CrossfadeGeneratedImage::DrawTile(cc::PaintCanvas* canvas,
                                        const gfx::RectF& src_rect,
                                        const ImageDrawOptions& options) {
   // Draw nothing if either of the images hasn't loaded yet.
   if (from_image_ == Image::NullImage() || to_image_ == Image::NullImage())
     return;
-  cc::PaintFlags flags = context.FillFlags();
-  flags.setBlendMode(SkBlendMode::kSrcOver);
-  gfx::RectF dest_rect(size_);
-  ImageDrawOptions draw_options(options);
-  draw_options.sampling_options =
-      context.ComputeSamplingOptions(*this, dest_rect, src_rect);
-  DrawCrossfade(context.Canvas(), flags, draw_options);
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  DrawCrossfade(canvas, flags, options);
 }
 
 }  // namespace blink
