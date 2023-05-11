@@ -123,10 +123,6 @@ vars = {
   # By default, do not check out src-internal. This can be overridden e.g. with
   # custom_vars.
   'checkout_src_internal': False,
-  #
-  # For git submodule migration purpose only, details in
-  # TODO(crbug.com/1423494): Remove once the migration is completed.
-  'include_src_internal_deps': False,
 
   # For super-internal deps. Set by the official builders.
   'checkout_google_internal': False,
