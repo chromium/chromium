@@ -1694,6 +1694,7 @@ void RenderAccessibilityImpl::ConnectionClosed() {
   if (!serialize_post_lifecycle_) {
     legacy_event_schedule_status_ = LegacyEventScheduleStatus::kNotWaiting;
   }
+  serialization_in_flight_ = false;
 }
 
 void RenderAccessibilityImpl::MaybeSendUKM() {
