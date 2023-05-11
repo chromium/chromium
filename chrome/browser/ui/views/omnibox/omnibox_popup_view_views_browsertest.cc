@@ -34,6 +34,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
@@ -195,13 +196,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   }
 
   // Same in the non-incognito browser.
-  EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
+  if (features::IsChromeRefresh2023()) {
+    // TODO(khalidpeer): Delete this clause once CR23 colors are supported on
+    //   themed clients. Currently themed clients fall back to pre-CR23 colors.
+    EXPECT_NE(selection_color_light, GetSelectedColor(browser()));
+  } else {
+    EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
+  }
 
   // Switch to the default theme without installing a custom theme. E.g. this is
   // what gets used on KDE or when switching to the "classic" theme in settings.
   UseDefaultTheme();
 
-  EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
+  if (features::IsChromeRefresh2023()) {
+    // TODO(khalidpeer): Delete this clause once CR23 colors are supported on
+    //   themed clients. Currently themed clients fall back to pre-CR23 colors.
+    EXPECT_NE(selection_color_light, GetSelectedColor(browser()));
+  } else {
+    EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
+  }
 }
 
 // Integration test for omnibox popup theming in Incognito.
