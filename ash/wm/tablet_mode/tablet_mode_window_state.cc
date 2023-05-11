@@ -314,7 +314,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       UpdateWindow(window_state,
                    window_state->GetMaximizedOrCenteredWindowType(),
                    /*animate=*/true);
-      return;
+      break;
     case WM_EVENT_NORMAL: {
       // `WM_EVENT_NORMAL` may be restoring state from minimized.
       if (window_state->window()->GetProperty(aura::client::kIsRestoringKey)) {
@@ -324,7 +324,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
                      window_state->GetMaximizedOrCenteredWindowType(),
                      /*animate=*/true);
       }
-      return;
+      break;
     }
     case WM_EVENT_RESTORE: {
       // We special handle `WM_EVENT_RESTORE` event here.
@@ -334,7 +334,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_FLOAT:
       // Not all windows can be floated.
       if (!chromeos::wm::CanFloatWindow(window_state->window()))
-        return;
+        break;
 
       UpdateWindow(window_state, WindowStateType::kFloated,
                    /*=animate=*/true);
@@ -345,27 +345,27 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       DoTabletSnap(window_state, event->type(),
                    event->AsSnapEvent()->snap_ratio(),
                    event->AsSnapEvent()->snap_action_source());
-      return;
+      break;
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
       CycleTabletSnap(window_state,
                       SplitViewController::SnapPosition::kPrimary);
-      return;
+      break;
     case WM_EVENT_CYCLE_SNAP_SECONDARY:
       CycleTabletSnap(window_state,
                       SplitViewController::SnapPosition::kSecondary);
-      return;
+      break;
     case WM_EVENT_MINIMIZE:
       UpdateWindow(window_state, WindowStateType::kMinimized,
                    /*=animate=*/true);
-      return;
+      break;
     case WM_EVENT_SHOW_INACTIVE:
     case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
-      return;
+      break;
     case WM_EVENT_SET_BOUNDS: {
       gfx::Rect bounds_in_parent =
           (static_cast<const SetBoundsWMEvent*>(event))->requested_bounds();
       if (bounds_in_parent.IsEmpty())
-        return;
+        break;
 
       if (window_state->is_dragged() ||
           TabDragDropDelegate::IsSourceWindowForDrag(window_state->window()) ||
