@@ -14,6 +14,7 @@ import androidx.javascriptengine.EvaluationFailedException;
 import androidx.javascriptengine.EvaluationResultSizeLimitExceededException;
 import androidx.javascriptengine.IsolateStartupParameters;
 import androidx.javascriptengine.IsolateTerminatedException;
+import androidx.javascriptengine.JavaScriptConsoleCallback;
 import androidx.javascriptengine.JavaScriptIsolate;
 import androidx.javascriptengine.JavaScriptSandbox;
 import androidx.javascriptengine.MemoryLimitExceededException;
@@ -36,8 +37,10 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Instrumentation test for JavaScriptSandbox.
@@ -52,6 +55,28 @@ public class JsSandboxServiceTest {
     // require more memory.
     private static final long REASONABLE_HEAP_SIZE = 100 * 1024 * 1024;
     private static final int LARGE_NAMED_DATA_SIZE = 2 * 1024 * 1024;
+
+    // ASCII, embedded null, Latin-1 supplement, code points above 0xff, and surrogate pairs.
+    private static final String UNICODE_TEST_STRING =
+            "Hello \u0000 Hell\u00f3 \u4f60\u597d \ud83d\udc4b";
+    private static final String JS_UNICODE_TEST_STRING =
+            "'Hello \u0000 Hell\u00f3 \u4f60\u597d \ud83d\udc4b'";
+    // Prefer this unless you are deliberately testing script input. Sending the script in pure
+    // ASCII reduces the probability that there may be both input and output bugs which cancel each
+    // other out.
+    private static final String ASCII_ESCAPED_JS_UNICODE_TEST_STRING =
+            "'Hello \\u0000 Hell\\u00f3 \\u4f60\\u597d \\ud83d\\udc4b'";
+
+    private static void assertStringEndsWithValidCodePoint(String string) {
+        Assert.assertNotNull(string);
+        if (string.length() == 0) {
+            return;
+        }
+        char lastChar = string.charAt(string.length() - 1);
+        Assert.assertFalse(Character.isHighSurrogate(lastChar));
+        // Reject replacement character
+        Assert.assertNotEquals(0xfffd, lastChar);
+    }
 
     @Test
     @MediumTest
@@ -1291,6 +1316,233 @@ public class JsSandboxServiceTest {
                         jsIsolate.evaluateJavaScriptAsync(lessThanMaxSizeCode);
                 String lessThanMaxSizeResult = lessThanMaxSizeResultFuture.get(5, TimeUnit.SECONDS);
                 Assert.assertEquals(lessThanMaxSizeExpected, lessThanMaxSizeResult);
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testErrorSizeEnforced() throws Throwable {
+        final int maxSize = 100;
+        final Context context = ContextUtils.getApplicationContext();
+        final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            final IsolateStartupParameters settings = new IsolateStartupParameters();
+            settings.setMaxEvaluationReturnSizeBytes(maxSize);
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(settings)) {
+                // Errors which exceed the message threshold should preserve their error type but
+                // not their message.
+                //
+                // Don't test boundary cases as the exact error message is not necessarily
+                // well-defined.
+                final String largeError = "a".repeat(maxSize + 1);
+                final String largeErrorCode = "throw '" + largeError + "';";
+                final ListenableFuture<String> largeErrorResultFuture =
+                        jsIsolate.evaluateJavaScriptAsync(largeErrorCode);
+                try {
+                    largeErrorResultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    // Assert that the error type is preserved (and not replaced by a size error).
+                    Assert.assertTrue(
+                            e.getCause().getClass().equals(EvaluationFailedException.class));
+                    // Assert that some of the error message is preserved...
+                    Assert.assertTrue(e.getCause().getMessage().contains("aaaaaaaaaaaaaaaa"));
+                    // ... but not all of it.
+                    Assert.assertFalse(e.getCause().getMessage().contains(largeError));
+                    final int messageUtf8ByteLength =
+                            e.getCause().getMessage().getBytes(StandardCharsets.UTF_8).length;
+                    // Our truncation may chop off a complete UTF-8 code point (only 1 byte here).
+                    Assert.assertTrue(messageUtf8ByteLength >= maxSize - 1);
+                    Assert.assertTrue(messageUtf8ByteLength <= maxSize);
+                }
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testUnicodeResult() throws Throwable {
+        final Context context = ContextUtils.getApplicationContext();
+        final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+            final ListenableFuture<String> resultFuture =
+                    jsIsolate.evaluateJavaScriptAsync(ASCII_ESCAPED_JS_UNICODE_TEST_STRING);
+            final String result = resultFuture.get(5, TimeUnit.SECONDS);
+
+            Assert.assertEquals(UNICODE_TEST_STRING, result);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testUnicodeError() throws Throwable {
+        final Context context = ContextUtils.getApplicationContext();
+        final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+            final ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(
+                    "throw " + ASCII_ESCAPED_JS_UNICODE_TEST_STRING);
+            try {
+                resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.fail("Should have thrown.");
+            } catch (ExecutionException e) {
+                Assert.assertTrue(e.getCause().getClass().equals(EvaluationFailedException.class));
+                Assert.assertTrue(e.getCause().getMessage().contains(UNICODE_TEST_STRING));
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testUnicodeScript() throws Throwable {
+        final Context context = ContextUtils.getApplicationContext();
+        final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            // Test evaluation using String
+            {
+                final ListenableFuture<String> resultFuture =
+                        jsIsolate.evaluateJavaScriptAsync(JS_UNICODE_TEST_STRING);
+                final String result = resultFuture.get(5, TimeUnit.SECONDS);
+
+                Assert.assertEquals(UNICODE_TEST_STRING, result);
+            }
+
+            // Test evaluation using UTF-8 byte[]
+            {
+                final byte[] codeBytes = JS_UNICODE_TEST_STRING.getBytes(StandardCharsets.UTF_8);
+                final ListenableFuture<String> resultFuture =
+                        jsIsolate.evaluateJavaScriptAsync(codeBytes);
+                final String result = resultFuture.get(5, TimeUnit.SECONDS);
+
+                Assert.assertEquals(UNICODE_TEST_STRING, result);
+            }
+
+            // Assert that the byte[] API treats ISO_8859_1 (Latin-1) encoded Latin-1
+            // supplement characters as invalid UTF-8. (Replaced by U+FFFD replacement character.)
+            {
+                final byte[] codeBytes = "'Hell\u00f3'".getBytes(StandardCharsets.ISO_8859_1);
+                final ListenableFuture<String> resultFuture =
+                        jsIsolate.evaluateJavaScriptAsync(codeBytes);
+                final String result = resultFuture.get(5, TimeUnit.SECONDS);
+
+                Assert.assertEquals("Hell\ufffd", result);
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testUnicodeConsoleMessage() throws Throwable {
+        final Context context = ContextUtils.getApplicationContext();
+        final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_CONSOLE_MESSAGING));
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            // Test a small console message
+            {
+                final String code = "console.log(" + ASCII_ESCAPED_JS_UNICODE_TEST_STRING + ");";
+                final AtomicReference<String> messageBody = new AtomicReference<String>(null);
+                final CountDownLatch latch = new CountDownLatch(1);
+                jsIsolate.setConsoleCallback(new JavaScriptConsoleCallback() {
+                    @Override
+                    public void onConsoleMessage(JavaScriptConsoleCallback.ConsoleMessage message) {
+                        messageBody.set(message.getMessage());
+                        latch.countDown();
+                    }
+                });
+                jsIsolate.evaluateJavaScriptAsync(code).get(5, TimeUnit.SECONDS);
+
+                Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
+                Assert.assertEquals(UNICODE_TEST_STRING, messageBody.get());
+            }
+            // Test a large message.
+            // Test that truncation of Unicode doesn't result in a crash (but ignore exact result).
+            // The truncation length is not defined as part of the API (or Binder). Just try
+            // something significantly larger than the typical 1MB Binder memory limit.
+            // The truncationUpperBound is measured in bytes.
+            final int truncationUpperBound = 1024 * 1024;
+            for (int byteOffset = 0; byteOffset < 4; byteOffset++) {
+                // \ud83d\udc4b (waving hand sign) is 4 bytes in both UTF-8 and UTF-16.
+                final String longString = "a".repeat(byteOffset)
+                        + "\ud83d\udc4b".repeat(truncationUpperBound / 4 + 1)
+                        + "a".repeat(byteOffset);
+                final String code = "console.log('" + longString + "');";
+                final AtomicReference<String> messageBody = new AtomicReference<String>(null);
+                final CountDownLatch latch = new CountDownLatch(1);
+                jsIsolate.setConsoleCallback(new JavaScriptConsoleCallback() {
+                    @Override
+                    public void onConsoleMessage(JavaScriptConsoleCallback.ConsoleMessage message) {
+                        messageBody.set(message.getMessage());
+                        latch.countDown();
+                    }
+                });
+                jsIsolate.evaluateJavaScriptAsync(code).get(5, TimeUnit.SECONDS);
+
+                Assert.assertTrue(
+                        "Timeout with byteOffset " + byteOffset, latch.await(2, TimeUnit.SECONDS));
+                final int messageUtf8ByteLength =
+                        messageBody.get().getBytes(StandardCharsets.UTF_8).length;
+                Assert.assertTrue("messageUtf8ByteLength too large with byteOffset " + byteOffset,
+                        messageUtf8ByteLength <= truncationUpperBound);
+                assertStringEndsWithValidCodePoint(messageBody.get());
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testUnicodeErrorTruncation() throws Throwable {
+        // Test that truncation of Unicode doesn't result in a crash (but ignore exact result).
+        final int maxSize = 100;
+        final Context context = ContextUtils.getApplicationContext();
+        final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            final IsolateStartupParameters settings = new IsolateStartupParameters();
+            settings.setMaxEvaluationReturnSizeBytes(maxSize);
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(settings)) {
+                for (int byteOffset = 0; byteOffset < 4; byteOffset++) {
+                    final String longString = "a".repeat(byteOffset)
+                            + "\ud83d\udc4b".repeat(maxSize) + "a".repeat(byteOffset);
+                    final String code = "throw '" + longString + "';";
+                    final ListenableFuture<String> resultFuture =
+                            jsIsolate.evaluateJavaScriptAsync(code);
+                    try {
+                        resultFuture.get(5, TimeUnit.SECONDS);
+                        Assert.fail("Should have thrown with byteOffset " + byteOffset);
+                    } catch (ExecutionException e) {
+                        Assert.assertTrue("Bad exception with byteOffset " + byteOffset,
+                                e.getCause().getClass().equals(EvaluationFailedException.class));
+                        final int messageUtf8ByteLength =
+                                e.getCause().getMessage().getBytes(StandardCharsets.UTF_8).length;
+                        // Our truncation may chop off a complete or incomplete multi-byte code
+                        // point.
+                        Assert.assertTrue(
+                                "messageUtf8ByteLength too small with byteOffset " + byteOffset,
+                                messageUtf8ByteLength >= maxSize - 4);
+                        Assert.assertTrue(
+                                "messageUtf8ByteLength too large with byteOffset " + byteOffset,
+                                messageUtf8ByteLength <= maxSize);
+                        assertStringEndsWithValidCodePoint(e.getCause().getMessage());
+                    }
+                }
             }
         }
     }
