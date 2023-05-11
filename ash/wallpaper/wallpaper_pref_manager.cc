@@ -619,7 +619,6 @@ const char WallpaperPrefManager::kOnlineWallpaperUrlNodeName[] = "url";
 bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {
   if (IsTimeOfDayWallpaper(local_info)) {
     // Time Of Day wallpapers are not syncable.
-    // TODO(b/277804153): Confirm the sync rules for time of day wallpapers.
     return false;
   }
   return IsWallpaperTypeSyncable(local_info.type);
@@ -639,8 +638,8 @@ bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
   if (synced_info.date < local_info.date) {
     return false;
   }
-  // TODO(b/277804153): Confirm the sync rules for time of day wallpapers.
   if (IsTimeOfDayWallpaper(local_info)) {
+    // Time Of Day wallpapers cannot be overwritten by other wallpapers.
     return false;
   }
   return true;
