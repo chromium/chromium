@@ -848,8 +848,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED},
       {"perDeviceKeyboardKeyEscape",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE},
-      {"perDeviceKeyboardKeyExternalMeta",
-       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_EXTERNAL_META},
+      {"perDeviceKeyboardKeyMeta", IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META},
       {"perDeviceKeyboardKeySearch",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH},
 

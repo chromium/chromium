@@ -4915,8 +4915,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_COMMAND" desc="In keyboard remap keys subpage, the dropdown list item for the external Command key on Apple keyboards when there's no internal keyboard on the device.">
     command
   </message>
-  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_EXTERNAL_META" desc="In keyboard remap keys subpage, the dropdown list item for the external Meta key (Search key on ChromeOS keyboards, and Windows key on Windows keyboards).">
-    external meta
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META" desc="In keyboard remap keys subpage, the dropdown list item for the Meta key (Search key on ChromeOS keyboards, and Windows key on Windows keyboards).">
+    meta
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH" desc="In keyboard remap keys subpage, the label and dropdown list item for the Search key.">
     search
