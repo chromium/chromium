@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
 
 namespace gfx {
@@ -17,6 +18,10 @@ struct VectorIcon;
 namespace chromeos::clipboard_history {
 
 namespace {
+
+// The DIP size of a menu item icon that indicates the clipboard data format.
+constexpr int kIconSize = 20;
+
 QueryItemDescriptorsImpl& GetQueryItemDescriptorsImpl() {
   static base::NoDestructor<QueryItemDescriptorsImpl>
       query_item_descriptors_impl;
@@ -27,6 +32,7 @@ PasteClipboardItemByIdImpl& GetPasteClipboardItemByIdImpl() {
   static base::NoDestructor<PasteClipboardItemByIdImpl> paste_item_by_id_impl;
   return *paste_item_by_id_impl;
 }
+
 }  // namespace
 
 void SetQueryItemDescriptorsImpl(QueryItemDescriptorsImpl impl) {
@@ -63,7 +69,8 @@ ui::ImageModel GetIconForDisplayFormat(
       icon = &kFiletypeImageIcon;
       break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
-      [[fallthrough]];
+      icon = &vector_icons::kCodeIcon;
+      break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       // TODO(b/281568172): Add menu item icons for other display formats.
       break;
@@ -74,7 +81,8 @@ ui::ImageModel GetIconForDisplayFormat(
   if (icon) {
     // TODO(b/278109818): Double-check the icon color.
     return ui::ImageModel::FromVectorIcon(*icon,
-                                          /*color_id=*/ui::kColorSysSecondary);
+                                          /*color_id=*/ui::kColorSysSecondary,
+                                          kIconSize);
   }
 
   return ui::ImageModel();

@@ -88,7 +88,10 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
               const std::string& markup,
               const gfx::Size& bounding_box_size,
               ImageModelCallback callback) override {
-    std::move(callback).Run(ui::ImageModel());
+    // Return a dummy image as the render result.
+    std::move(callback).Run(
+        ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFrom1xBitmap(
+            gfx::test::CreateBitmap(/*width=*/2, /*height=*/2))));
   }
 
   void CancelRequest(const base::UnguessableToken& request_id) override {}
@@ -961,25 +964,38 @@ class ClipboardHistoryRefreshDisplayFormatTest
   // text. The clipboard data is written based on the test parameter. The
   // returned array follows the reverse clipboard data writing order.
   std::vector<std::u16string> WriteClipboardDataBasedOnParam() {
-    // TODO(b/278915828): Modify this part when other display formats are
-    // supported.
-    if (GetDisplayFormat() ==
-        crosapi::mojom::ClipboardHistoryDisplayFormat::kText) {
-      WriteTextToClipboardAndConfirm(u"A");
-      WriteTextToClipboardAndConfirm(u"B");
-      return std::vector<std::u16string>{u"B", u"A"};
+    switch (GetDisplayFormat()) {
+      case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
+        WriteTextToClipboardAndConfirm(u"A");
+        WriteTextToClipboardAndConfirm(u"B");
+        return std::vector<std::u16string>{u"B", u"A"};
+      case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
+        WriteImageToClipboardAndConfirm(
+            gfx::test::CreateBitmap(/*width=*/3, /*height=*/3));
+        WriteImageToClipboardAndConfirm(
+            gfx::test::CreateBitmap(/*width=*/2, /*height=*/2));
+        return std::vector<std::u16string>{u"Image", u"Image"};
+      case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
+        WriteHtmlAndConfirm("<table>A</table>");
+        WriteHtmlAndConfirm("<table>B></table>");
+        return std::vector<std::u16string>{u"HTML Content", u"HTML Content"};
+      case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
+        // TODO(b/278915828): Modify this part when other display formats are
+        // supported.
+        [[fallthrough]];
+      case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  void WriteHtmlAndConfirm(const std::string& html) {
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"",
+                    ui::ClipboardContentType::kUnsanitized);
     }
 
-    if (GetDisplayFormat() ==
-        crosapi::mojom::ClipboardHistoryDisplayFormat::kPng) {
-      WriteImageToClipboardAndConfirm(
-          gfx::test::CreateBitmap(/*width=*/3, /*height=*/3));
-      WriteImageToClipboardAndConfirm(
-          gfx::test::CreateBitmap(/*width=*/2, /*height=*/2));
-      return std::vector<std::u16string>{u"Image", u"Image"};
-    }
-
-    NOTREACHED_NORETURN();
+    WaitForOperationConfirmed();
   }
 
   crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
@@ -997,7 +1013,8 @@ INSTANTIATE_TEST_SUITE_P(
         /*enable_clipboard_history_refresh=*/testing::Bool(),
         /*display_format_under_test=*/testing::Values(
             crosapi::mojom::ClipboardHistoryDisplayFormat::kText,
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kPng)));
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kPng,
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml)));
 
 // Verifies that the clipboard history submenu model of the text services
 // context menu in Ash works as expected.
