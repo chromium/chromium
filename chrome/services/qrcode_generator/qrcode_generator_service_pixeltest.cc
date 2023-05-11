@@ -82,8 +82,15 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
   }
 };
 
+// Flaky on Linux https://crbug.com/1444578
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DinoWithRoundQrPixelsAndLocators \
+  DISABLED_DinoWithRoundQrPixelsAndLocators
+#else
+#define MAYBE_DinoWithRoundQrPixelsAndLocators DinoWithRoundQrPixelsAndLocators
+#endif
 IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest,
-                       DinoWithRoundQrPixelsAndLocators) {
+                       MAYBE_DinoWithRoundQrPixelsAndLocators) {
   TestGolden("https://example.com", mojom::CenterImage::CHROME_DINO,
              mojom::ModuleStyle::CIRCLES, mojom::LocatorStyle::ROUNDED);
 }
