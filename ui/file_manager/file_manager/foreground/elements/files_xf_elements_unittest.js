@@ -216,12 +216,9 @@ export function testFilesDisplayPanelErrorText() {
   // Change the panel item type to an error panel.
   panelItem.panelType = panelItem.panelTypeError;
 
-  // Check the default primary text displays a generic error message.
-  // Note, the i18n message gets smooshed into 'An error occurred.' in the app.
-  assertEquals(str('FILE_ERROR_GENERIC'), panelItem.primaryText);
-
-  // Check the secondary text is empty.
-  assertEquals('', panelItem.secondaryText);
+  // Check that primary and secondary text don't change.
+  assertEquals('foo', panelItem.primaryText);
+  assertEquals('bar', panelItem.secondaryText);
 }
 
 // Override the formatting function for unit testing.

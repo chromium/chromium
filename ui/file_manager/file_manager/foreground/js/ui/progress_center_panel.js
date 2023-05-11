@@ -256,7 +256,11 @@ export class ProgressCenterPanel {
   }
 
   /**
-   * Generates remaining time message with formatted time.
+   * Generates the secondary string to display on the feedback panel.
+   *
+   * The string can be empty in case of errors or tasks with no
+   * remaining time set, a custom string in case of scanning.
+   * Otherwise the message shows formatted remaining task time.
    *
    * The time format in hour and minute and the durations more
    * than 24 hours also formatted in hour.
@@ -265,14 +269,20 @@ export class ProgressCenterPanel {
    * of time part is handled using Intl methods.
    *
    * @param {!ProgressCenterItem} item Item we're generating a message for.
-   * @return {!string} Remaining time message.
+   * @return {!string} Secondary string message.
+   * @private
    */
-  generateRemainingTimeMessage(item) {
+  generateSecondaryString_(item) {
+    if (item.state === ProgressItemState.ERROR) {
+      // Error doesn't have secondary text.
+      return '';
+    }
+
     const seconds = item.remainingTime;
 
     // Return empty string for unsupported operation (which didn't set
     // remaining time).
-    if (seconds == null) {
+    if (seconds === undefined) {
       return '';
     }
 
@@ -355,7 +365,7 @@ export class ProgressCenterPanel {
       }
 
       const primaryText = this.generatePrimaryString_(item, panelItem.userData);
-      panelItem.secondaryText = this.generateRemainingTimeMessage(item);
+      panelItem.secondaryText = this.generateSecondaryString_(item);
       panelItem.primaryText = primaryText;
       panelItem.setAttribute('data-progress-id', item.id);
 
@@ -436,8 +446,6 @@ export class ProgressCenterPanel {
             panelItem.dataset.extraButtonText = extraButton.text;
           }
           panelItem.panelType = panelItem.panelTypeError;
-          panelItem.primaryText = item.message;
-          panelItem.secondaryText = '';
           // Make sure the panel is attached so it shows immediately.
           this.feedbackHost_.attachPanelItem(panelItem);
           break;

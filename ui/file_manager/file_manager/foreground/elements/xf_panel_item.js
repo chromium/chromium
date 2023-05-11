@@ -160,8 +160,6 @@ export class PanelItem extends HTMLElement {
       case this.panelTypeError:
         this.setAttribute('indicator', 'status');
         this.setAttribute('status', 'failure');
-        this.primaryText = str('FILE_ERROR_GENERIC');
-        this.secondaryText = '';
         secondaryButton = document.createElement('xf-button');
         secondaryButton.id =
             (hasExtraButton) ? 'secondary-action' : 'primary-action';
