@@ -1144,8 +1144,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="The text label of the addresses and more item for the autofill submenu">
             &amp;Addresses and more
           </message>
-          <message name="IDS_AUTOFILL_MENU" desc="The text label of the autofill menu item">
-            &amp;Autofill and passwords
+          <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="The text label of the passwords and autofill menu item">
+            Passwords and &amp;autofill
           </message>
           <message name="IDS_NEW_TAB" desc="The text label of a menu item for opening a new tab">
             New &amp;tab
@@ -1245,8 +1245,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="In Title Case: The text label of the addresses and more item for the autofill submenu">
             &amp;Addresses and More
           </message>
-          <message name="IDS_AUTOFILL_MENU" desc="In Title Case: The text label of the autofill menu item">
-            &amp;Autofill and Passwords
+          <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="In Title Case: The text label of the passwords and autofill menu item">
+            Passwords and &amp;Autofill
           </message>
           <message name="IDS_NEW_TAB" desc="In Title Case: The text label of a menu item for opening a new tab">
             New &amp;Tab

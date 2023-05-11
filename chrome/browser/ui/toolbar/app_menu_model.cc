@@ -1052,7 +1052,7 @@ void AppMenuModel::Build() {
       !base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerRedesign)) {
     sub_menus_.push_back(std::make_unique<AutofillSubMenuModel>(this));
-    AddSubMenuWithStringId(IDC_AUTOFILL_MENU, IDS_AUTOFILL_MENU,
+    AddSubMenuWithStringId(IDC_AUTOFILL_MENU, IDS_PASSWORDS_AND_AUTOFILL_MENU,
                            sub_menus_.back().get());
   }
 
