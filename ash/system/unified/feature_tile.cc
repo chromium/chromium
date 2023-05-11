@@ -38,7 +38,7 @@ namespace {
 // Tile constants
 constexpr int kIconSize = 20;
 constexpr int kButtonRadius = 16;
-constexpr int kFocusRingPadding = 2;
+constexpr float kFocusRingPadding = 3.0f;
 
 // Primary tile constants
 constexpr int kPrimarySubtitleLineHeight = 18;
@@ -79,8 +79,22 @@ FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
                          bool is_togglable,
                          TileType type)
     : Button(callback), is_togglable_(is_togglable), type_(type) {
-  views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(-kFocusRingPadding), kButtonRadius + kFocusRingPadding);
+  // Set up ink drop on click. The corner radius must match the button
+  // background corner radius, see UpdateColors().
+  // TODO(jamescook): Consider adding support for highlight-path-based
+  // backgrounds so we don't have to match the shape manually. For example, add
+  // something like CreateThemedHighlightPathBackground() to
+  // ui/views/background.h.
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kButtonRadius);
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetMode(InkDropHost::InkDropMode::ON);
+  ink_drop->GetInkDrop()->SetShowHighlightOnHover(false);
+  ink_drop->SetVisibleOpacity(1.0f);  // The colors already contain opacity.
+
+  // The focus ring appears slightly outside the tile bounds.
+  views::FocusRing::Get(this)->SetHaloInset(-kFocusRingPadding);
+
   CreateChildViews();
   UpdateColors();
 
@@ -94,7 +108,11 @@ FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
       base::Unretained(this)));
 }
 
-FeatureTile::~FeatureTile() = default;
+FeatureTile::~FeatureTile() {
+  // Remove the InkDrop explicitly so FeatureTile::RemoveLayerFromRegions() is
+  // called before views::View teardown.
+  views::InkDrop::Remove(this);
+}
 
 void FeatureTile::CreateChildViews() {
   const bool is_compact = type_ == TileType::kCompact;
@@ -103,6 +121,10 @@ void FeatureTile::CreateChildViews() {
   layout_manager->SetOrientation(is_compact
                                      ? views::LayoutOrientation::kVertical
                                      : views::LayoutOrientation::kHorizontal);
+
+  ink_drop_container_ =
+      AddChildView(std::make_unique<views::InkDropContainerView>());
+  layout_manager->SetChildViewIgnoredByLayout(ink_drop_container_, true);
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -241,6 +263,10 @@ void FeatureTile::UpdateColors() {
 
   SetBackground(views::CreateThemedRoundedRectBackground(background_color,
                                                          kButtonRadius));
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetBaseColorId(toggled_
+                               ? cros_tokens::kCrosSysRipplePrimary
+                               : cros_tokens::kCrosSysRippleNeutralOnSubtle);
 
   auto icon_image_model = ui::ImageModel::FromVectorIcon(
       *vector_icon_, foreground_color, kIconSize);
@@ -303,6 +329,19 @@ void FeatureTile::SetSubLabelVisibility(bool visible) {
   // Only primary tiles have a sub-label.
   DCHECK(sub_label_);
   sub_label_->SetVisible(visible);
+}
+
+void FeatureTile::AddLayerToRegion(ui::Layer* layer,
+                                   views::LayerRegion region) {
+  // This routes background layers to `ink_drop_container_` instead of `this` to
+  // avoid painting effects underneath our background.
+  ink_drop_container_->AddLayerToRegion(layer, region);
+}
+
+void FeatureTile::RemoveLayerFromRegions(ui::Layer* layer) {
+  // This routes background layers to `ink_drop_container_` instead of `this` to
+  // avoid painting effects underneath our background.
+  ink_drop_container_->RemoveLayerFromRegions(layer);
 }
 
 ui::ColorId FeatureTile::GetIconColorId() const {

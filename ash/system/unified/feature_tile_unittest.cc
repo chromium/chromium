@@ -12,10 +12,12 @@
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_utils.h"
@@ -337,6 +339,21 @@ TEST_F(FeatureTileTest, CompactTile_Toggle) {
   // Ensure button toggles after clicking it again.
   LeftClickOn(tile);
   EXPECT_FALSE(tile->IsToggled());
+}
+
+TEST_F(FeatureTileTest, TogglingTileUpdatesInkDropColor) {
+  auto* tile = widget_->SetContentsView(
+      std::make_unique<FeatureTile>(base::DoNothing()));
+  auto* color_provider = tile->GetColorProvider();
+
+  tile->SetToggled(true);
+  EXPECT_EQ(views::InkDrop::Get(tile)->GetBaseColor(),
+            color_provider->GetColor(cros_tokens::kCrosSysRipplePrimary));
+
+  tile->SetToggled(false);
+  EXPECT_EQ(
+      views::InkDrop::Get(tile)->GetBaseColor(),
+      color_provider->GetColor(cros_tokens::kCrosSysRippleNeutralOnSubtle));
 }
 
 }  // namespace ash

@@ -20,6 +20,7 @@ namespace views {
 class FlexLayoutView;
 class ImageButton;
 class ImageView;
+class InkDropContainerView;
 class Label;
 }  // namespace views
 
@@ -126,6 +127,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   friend class BluetoothFeaturePodControllerTest;
   friend class NotificationCounterViewTest;
 
+  // views::View:
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
+
   // Returns the color id to use for the `icon_button_` and `drill_in_arrow_`
   // based on the tile's enabled and toggled state.
   ui::ColorId GetIconColorId() const;
@@ -138,6 +143,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
 
   // Updates the color of `drill_in_arrow_` for better visibility.
   void UpdateDrillInArrowColor();
+
+  // Ensures the ink drop is painted above the button's background.
+  raw_ptr<views::InkDropContainerView, ExperimentalAsh> ink_drop_container_ =
+      nullptr;
 
   // The vector icon for the tile, if one is set.
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_ = nullptr;
