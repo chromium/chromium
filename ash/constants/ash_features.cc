@@ -811,7 +811,7 @@ BASE_FEATURE(kExoLinuxDmabufV4,
 // effectively matching version 2 behavior more closely.
 BASE_FEATURE(kExoLinuxDmabufModifiers,
              "ExoLinuxDmabufModifiers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 BASE_FEATURE(kExoOrdinalMotion,
