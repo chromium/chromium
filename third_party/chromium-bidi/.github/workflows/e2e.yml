@@ -26,11 +26,14 @@ jobs:
       - uses: google/wireit@setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
-      - name: Install Chromium
-        shell: bash # force -eo pipefail
-        run: |
-          chromium_binary="$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')"
-          echo "chromium_binary=$chromium_binary" >> $GITHUB_ENV
+      - name: Setup cache for browser binaries
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/chromium-bidi
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
+      - name: Install pinned browser
+        id: browser
+        run: node install-browser.mjs ~/.cache/chromium-bidi
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -46,14 +49,14 @@ jobs:
           npm run e2e-${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
       - name: Run E2E tests
         if: matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
       - name: Upload artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3

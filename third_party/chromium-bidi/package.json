@@ -134,6 +134,7 @@
     "devtools-protocol": "*"
   },
   "devDependencies": {
+    "@actions/core": "1.10.0",
     "@puppeteer/browsers": "1.0.0",
     "@rollup/plugin-commonjs": "24.1.0",
     "@rollup/plugin-node-resolve": "15.0.2",

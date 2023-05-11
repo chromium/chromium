@@ -46,11 +46,14 @@ jobs:
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
-      - name: Install Chromium
-        shell: bash # force -eo pipefail
-        run: |
-          chromium_binary="$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')"
-          echo "chromium_binary=$chromium_binary" >> $GITHUB_ENV
+      - name: Setup cache for browser binaries
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/chromium-bidi
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
+      - name: Install pinned browser
+        id: browser
+        run: node install-browser.mjs ~/.cache/chromium-bidi
       - name: Run WPT tests (mapper, headful)
         if: matrix.head == 'headful' && matrix.kind == 'mapper'
         timeout-minutes: 60
@@ -59,7 +62,7 @@ jobs:
           xvfb-run --auto-servernum
           ./runWPT.sh webdriver/tests/bidi/
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: false
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
@@ -69,7 +72,7 @@ jobs:
         # For verbose logging, add --log-mach - --log-mach-level info
         run: ./runWPT.sh webdriver/tests/bidi/
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: true
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
@@ -79,7 +82,7 @@ jobs:
         # For verbose logging, add --log-mach - --log-mach-level info
         run: ./runWPT.sh webdriver/tests/bidi/
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
