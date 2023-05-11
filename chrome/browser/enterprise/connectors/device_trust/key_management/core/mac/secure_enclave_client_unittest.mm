@@ -9,8 +9,8 @@
 
 #include <memory>
 
+#include "base/apple/bridging.h"
 #include "base/containers/span.h"
-#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
@@ -67,7 +67,7 @@ class SecureEnclaveClientTest : public testing::Test {
     CFDictionarySetValue(test_attributes, kSecAttrKeyType,
                          kSecAttrKeyTypeECSECPrimeRandom);
     CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits,
-                         base::mac::NSToCFPtrCast(@256));
+                         base::apple::NSToCFPtrCast(@256));
     base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
@@ -121,7 +121,7 @@ TEST_F(SecureEnclaveClientTest, CreateKey_Success) {
         EXPECT_TRUE(CFEqual(kSecAttrTokenIDSecureEnclave,
                             base::mac::GetValueFromDictionary<CFStringRef>(
                                 attributes, kSecAttrTokenID)));
-        EXPECT_TRUE(CFEqual(base::mac::NSToCFPtrCast(@256),
+        EXPECT_TRUE(CFEqual(base::apple::NSToCFPtrCast(@256),
                             base::mac::GetValueFromDictionary<CFNumberRef>(
                                 attributes, kSecAttrKeySizeInBits)));
         auto* private_key_attributes =

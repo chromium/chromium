@@ -8,9 +8,9 @@
 
 #include <memory>
 
+#include "base/apple/bridging.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/mac/bridging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/run_loop.h"
@@ -77,7 +77,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
                                       attributes:attributes];
 
   base::ScopedCFTypeRef<CTLineRef> line(
-      CTLineCreateWithAttributedString(base::mac::NSToCFPtrCast(info)));
+      CTLineCreateWithAttributedString(base::apple::NSToCFPtrCast(info)));
 
   CGContextSetTextPosition(context, 10.0, height / 2.0);
   CTLineDraw(line, context);

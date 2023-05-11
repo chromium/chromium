@@ -34,8 +34,8 @@
 #import <AppKit/AppKit.h>
 #import <CoreText/CoreText.h>
 
+#include "base/apple/bridging.h"
 #include "base/location.h"
-#include "base/mac/bridging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -146,7 +146,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 
   const FontPlatformData& platform_data =
       font_data_to_substitute->PlatformData();
-  NSFont* ns_font = base::mac::CFToNSPtrCast(platform_data.CtFont());
+  NSFont* ns_font = base::apple::CFToNSPtrCast(platform_data.CtFont());
 
   NSString* string = [[NSString alloc]
       initWithCharacters:reinterpret_cast<UniChar*>(code_units)

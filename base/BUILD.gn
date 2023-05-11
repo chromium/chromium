@@ -2046,6 +2046,7 @@ component("base") {
   # Mac or iOS.
   if (is_apple) {
     sources += [
+      "apple/bridging.h",
       "file_version_info_mac.h",
       "file_version_info_mac.mm",
       "files/file_util_mac.mm",
@@ -2141,7 +2142,6 @@ component("base") {
       "ios/ns_range.h",
       "ios/scoped_critical_action.h",
       "ios/scoped_critical_action.mm",
-      "mac/bridging.h",
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",

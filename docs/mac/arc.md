@@ -341,7 +341,7 @@ particular order:
   ownership management as Objective-C object pointers.
 - `CFToNSCast` and `NSToCFCast`: These do not handle ARC ownership; switch to
   `CFToNSPtrCast`, `CFToNSOwnershipCast`, `NSToCFPtrCast`, and
-  `NSToCFOwnershipCast` from `base/mac/bridging.h`.
+  `NSToCFOwnershipCast` from `base/apple/bridging.h`.
 
 ## Further reading {#references}
 

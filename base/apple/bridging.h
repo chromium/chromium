@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_BRIDGING_H_
-#define BASE_MAC_BRIDGING_H_
+#ifndef BASE_APPLE_BRIDGING_H_
+#define BASE_APPLE_BRIDGING_H_
 
 #include <CoreText/CoreText.h>
 #import <Foundation/Foundation.h>
@@ -23,7 +23,7 @@
 #endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "base/mac/bridging.h requires ARC."
+#error "base/apple/bridging.h requires ARC."
 #endif
 
 // These functions convert pointers of bridged CFTypes to NSTypes and
@@ -58,7 +58,7 @@
 // works for this purpose.
 
 #define CF_TO_NS_CAST_IMPL(TypeCF, TypeNS)                                  \
-  namespace base::mac {                                                     \
+  namespace base::apple {                                                   \
   inline BASE_EXPORT TypeNS* _Nullable CFToNSOwnershipCast(                 \
       TypeCF##Ref CF_CONSUMED _Nullable cf_val) {                           \
     DCHECK(!cf_val || TypeCF##GetTypeID() == CFGetTypeID(cf_val));          \
@@ -85,7 +85,7 @@
 
 #define CF_TO_NS_MUTABLE_CAST_IMPL(name)                                 \
   CF_TO_NS_CAST_IMPL(CF##name, NS##name)                                 \
-  namespace base::mac {                                                  \
+  namespace base::apple {                                                \
   inline BASE_EXPORT NSMutable##name* _Nullable CFToNSOwnershipCast(     \
       CFMutable##name##Ref CF_CONSUMED _Nullable cf_val) {               \
     DCHECK(!cf_val || CF##name##GetTypeID() == CFGetTypeID(cf_val));     \
@@ -151,7 +151,7 @@ extern "C" {
 Boolean _CFIsObjC(CFTypeID typeID, _Nonnull CFTypeRef obj);
 }  // extern "C"
 
-namespace base::mac {
+namespace base::apple {
 
 inline BASE_EXPORT NSFont* _Nullable CFToNSOwnershipCast(
     CTFontRef CF_CONSUMED _Nullable cf_val) {
@@ -185,14 +185,14 @@ inline BASE_EXPORT _Nullable CTFontRef NSToCFPtrCast(NSFont* _Nullable ns_val) {
   return cf_val;
 }
 
-}  // namespace base::mac
+}  // namespace base::apple
 
 #endif  // BUILDFLAG(IS_IOS)
 
 #undef CF_TO_NS_CAST_IMPL
 #undef CF_TO_NS_MUTABLE_CAST_IMPL
 
-namespace base::mac {
+namespace base::apple {
 
 template <typename CFT>
 id _Nullable CFToNSOwnershipCast(base::ScopedCFTypeRef<CFT>) {
@@ -203,6 +203,6 @@ id _Nullable CFToNSOwnershipCast(base::ScopedCFTypeRef<CFT>) {
   return nil;
 }
 
-}  // namespace base::mac
+}  // namespace base::apple
 
-#endif  // BASE_MAC_BRIDGING_H_
+#endif  // BASE_APPLE_BRIDGING_H_

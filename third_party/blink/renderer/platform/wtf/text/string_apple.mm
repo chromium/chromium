@@ -22,7 +22,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,7 +35,7 @@ String::String(NSString* str) {
     return;
   }
 
-  CFStringRef cf_str = base::mac::NSToCFPtrCast(str);
+  CFStringRef cf_str = base::apple::NSToCFPtrCast(str);
 
   CFIndex size = CFStringGetLength(cf_str);
   if (size == 0) {

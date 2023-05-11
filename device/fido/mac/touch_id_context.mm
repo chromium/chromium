@@ -8,9 +8,9 @@
 #import <Foundation/Foundation.h>
 #include <Security/Security.h>
 
+#include "base/apple/bridging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
@@ -50,7 +50,7 @@ bool ExecutableHasKeychainAccessGroupEntitlement(
     return false;
   }
 
-  NSArray* entitlement_value_nsarray = base::mac::CFToNSPtrCast(
+  NSArray* entitlement_value_nsarray = base::apple::CFToNSPtrCast(
       base::mac::CFCast<CFArrayRef>(entitlement_value_cftype));
   if (!entitlement_value_nsarray) {
     return false;
@@ -73,7 +73,7 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(params, kSecAttrKeySizeInBits,
-                       base::mac::NSToCFPtrCast(@256));
+                       base::apple::NSToCFPtrCast(@256));
   CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
   CFDictionarySetValue(params, kSecAttrIsPermanent, kCFBooleanFalse);
 
@@ -195,7 +195,7 @@ void TouchIdContext::PromptTouchId(const std::u16string& reason,
                                 // were, it would have to be retained first.
                                 DCHECK(error != nil);
                                 DVLOG(1) << "Touch ID prompt failed: "
-                                         << base::mac::NSToCFPtrCast(error);
+                                         << base::apple::NSToCFPtrCast(error);
                               }
                               runner->PostTask(
                                   FROM_HERE,

@@ -11,12 +11,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
-#include "base/mac/bridging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
@@ -818,7 +818,7 @@ NSString* const kVersionKey = @"KSVersion";
 // tests can pick it up.
 + (BOOL)isValidSystemKeystone:(NSDictionary*)systemKeystonePlistContents
             comparedToBundled:(NSDictionary*)bundledKeystonePlistContents {
-  NSString* versionKey = base::mac::CFToNSPtrCast(kCFBundleVersionKey);
+  NSString* versionKey = base::apple::CFToNSPtrCast(kCFBundleVersionKey);
 
   // If the bundled version is missing or broken, this question is irrelevant.
   NSString* bundledKeystoneVersionString =
@@ -917,7 +917,7 @@ NSString* const kVersionKey = @"KSVersion";
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
   base::mac::ScopedAuthorizationRef authorization =
       base::mac::AuthorizationCreateToRunAsRoot(
-          base::mac::NSToCFPtrCast(prompt));
+          base::apple::NSToCFPtrCast(prompt));
   if (!authorization) {
     return;
   }

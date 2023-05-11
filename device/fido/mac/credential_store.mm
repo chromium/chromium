@@ -9,11 +9,11 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
+#include "base/apple/bridging.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -230,7 +230,7 @@ TouchIdCredentialStore::CreateCredential(
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(params, kSecAttrKeySizeInBits,
-                       base::mac::NSToCFPtrCast(@256));
+                       base::apple::NSToCFPtrCast(@256));
   CFDictionarySetValue(params, kSecAttrSynchronizable, kCFBooleanFalse);
   CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
 
@@ -242,15 +242,15 @@ TouchIdCredentialStore::CreateCredential(
           user, discoverable == kDiscoverable);
   const std::vector<uint8_t> sealed_metadata = SealCredentialMetadata(
       config_.metadata_secret, rp_id, credential_metadata);
-  CFDictionarySetValue(
-      params, kSecAttrApplicationTag,
-      base::mac::NSToCFPtrCast([NSData dataWithBytes:sealed_metadata.data()
-                                              length:sealed_metadata.size()]));
+  CFDictionarySetValue(params, kSecAttrApplicationTag,
+                       base::apple::NSToCFPtrCast([NSData
+                           dataWithBytes:sealed_metadata.data()
+                                  length:sealed_metadata.size()]));
   const std::vector<uint8_t> credential_id = GenerateRandomCredentialId();
   CFDictionarySetValue(
       params, kSecAttrApplicationLabel,
-      base::mac::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
-                                              length:credential_id.size()]));
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
@@ -323,7 +323,7 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(params, kSecAttrKeySizeInBits,
-                       base::mac::NSToCFPtrCast(@256));
+                       base::apple::NSToCFPtrCast(@256));
   CFDictionarySetValue(params, kSecAttrSynchronizable, kCFBooleanFalse);
   CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
 
@@ -335,8 +335,8 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
                            config_.metadata_secret, rp_id, user.id)));
   CFDictionarySetValue(
       params, kSecAttrApplicationLabel,
-      base::mac::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
-                                              length:credential_id.size()]));
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
@@ -654,8 +654,8 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(
       query, kSecAttrApplicationLabel,
-      base::mac::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
-                                              length:credential_id.size()]));
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   OSStatus status = Keychain::GetInstance().ItemDelete(query);
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
@@ -696,7 +696,7 @@ bool TouchIdCredentialStore::UpdateCredential(
       std::vector<uint8_t> sealed_metadata = SealCredentialMetadata(
           config_.metadata_secret, credential.rp_id, credential.metadata);
       CFDictionarySetValue(params, kSecAttrApplicationTag,
-                           base::mac::NSToCFPtrCast([NSData
+                           base::apple::NSToCFPtrCast([NSData
                                dataWithBytes:sealed_metadata.data()
                                       length:sealed_metadata.size()]));
       found_credential = true;
@@ -718,8 +718,8 @@ bool TouchIdCredentialStore::UpdateCredential(
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(
       query, kSecAttrApplicationLabel,
-      base::mac::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
-                                              length:credential_id.size()]));
+      base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
+                                                length:credential_id.size()]));
   OSStatus status = Keychain::GetInstance().ItemUpdate(query, params);
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemUpdate failed";

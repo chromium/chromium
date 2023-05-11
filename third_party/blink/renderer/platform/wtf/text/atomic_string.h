@@ -37,7 +37,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #ifdef __OBJC__
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #endif
 
 namespace WTF {
@@ -194,7 +194,7 @@ class WTF_EXPORT AtomicString {
   unsigned Hash() const { return string_.Impl()->ExistingHash(); }
 
 #ifdef __OBJC__
-  AtomicString(NSString* s) : string_(Add(base::mac::NSToCFPtrCast(s))) {}
+  AtomicString(NSString* s) : string_(Add(base::apple::NSToCFPtrCast(s))) {}
   operator NSString*() const { return string_; }
 #endif
   // AtomicString::fromUTF8 will return a null string if

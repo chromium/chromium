@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -65,7 +65,7 @@ void GamepadPlatformDataFetcherMac::OnAddedToProvider() {
     DeviceMatching(kGenericDesktopUsagePage, kMultiAxisUsageNumber),
   ];
   IOHIDManagerSetDeviceMatchingMultiple(hid_manager_ref_,
-                                        base::mac::NSToCFPtrCast(criteria));
+                                        base::apple::NSToCFPtrCast(criteria));
 
   RegisterForNotifications();
 }
@@ -143,8 +143,8 @@ GamepadDeviceMac* GamepadPlatformDataFetcherMac::GetGamepadFromHidDevice(
 }
 
 void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
+  using base::apple::CFToNSPtrCast;
   using base::mac::CFCastStrict;
-  using base::mac::CFToNSPtrCast;
 
   if (!enabled_) {
     return;

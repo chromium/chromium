@@ -33,7 +33,7 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -127,12 +127,12 @@ NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
   // searching for fonts with its value as their display name.
   NSString* desired_name = unique_font_name;
   NSDictionary* attributes = @{
-    base::mac::CFToNSPtrCast(kCTFontNameAttribute) : desired_name,
-    base::mac::CFToNSPtrCast(kCTFontSizeAttribute) : @(size)
+    base::apple::CFToNSPtrCast(kCTFontNameAttribute) : desired_name,
+    base::apple::CFToNSPtrCast(kCTFontSizeAttribute) : @(size)
   };
   base::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
       CTFontDescriptorCreateWithAttributes(
-          base::mac::NSToCFPtrCast(attributes)));
+          base::apple::NSToCFPtrCast(attributes)));
 
   base::ScopedCFTypeRef<CTFontRef> matched_font(
       CTFontCreateWithFontDescriptor(descriptor, 0, nullptr));
@@ -140,9 +140,9 @@ NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
 
   // CoreText will usually give us *something* but not always an exactly matched
   // font.
-  NSString* matched_postscript_name = base::mac::CFToNSOwnershipCast(
+  NSString* matched_postscript_name = base::apple::CFToNSOwnershipCast(
       CTFontCopyName(matched_font, kCTFontPostScriptNameKey));
-  NSString* matched_full_font_name = base::mac::CFToNSOwnershipCast(
+  NSString* matched_full_font_name = base::apple::CFToNSOwnershipCast(
       CTFontCopyName(matched_font, kCTFontFullNameKey));
   // If the found font does not match in PostScript name or full font name, it's
   // not the exact match that is required, so return nullptr.
@@ -153,7 +153,7 @@ NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
     return nullptr;
   }
 
-  return base::mac::CFToNSOwnershipCast(matched_font.release());
+  return base::apple::CFToNSOwnershipCast(matched_font.release());
 }
 
 // Family name is somewhat of a misnomer here.  We first attempt to find an

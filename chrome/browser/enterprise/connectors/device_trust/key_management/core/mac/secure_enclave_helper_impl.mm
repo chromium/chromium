@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #include "base/mac/scoped_cftyperef.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,7 +49,7 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CopyKey(
 bool SecureEnclaveHelperImpl::IsSecureEnclaveSupported() {
   TKTokenWatcher* token_watcher = [[TKTokenWatcher alloc] init];
   return ([token_watcher.tokenIDs
-      containsObject:base::mac::CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]);
+      containsObject:base::apple::CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]);
 }
 
 }  // namespace enterprise_connectors

@@ -723,7 +723,7 @@ _CONFIG = [
             'crash_reporter::.*CrashKey.*',
 
             # Useful for platform-specific code.
-            'base::mac::(CFToNSPtrCast|NSToCFPtrCast|CFToNSOwnershipCast|NSToCFOwnershipCast)',
+            'base::apple::(CFToNSPtrCast|NSToCFPtrCast|CFToNSOwnershipCast|NSToCFOwnershipCast)',
             'base::mac::Is(AtMost|AtLeast)?OS.+',
             'base::ScopedCFTypeRef',
         ],

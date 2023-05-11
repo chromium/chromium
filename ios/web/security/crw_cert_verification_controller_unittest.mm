@@ -4,7 +4,7 @@
 
 #import "ios/web/security/crw_cert_verification_controller.h"
 
-#import "base/mac/bridging.h"
+#import "base/apple/bridging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
@@ -48,10 +48,10 @@ class CRWCertVerificationControllerTest : public web::WebTest {
             cert_.get()));
     ASSERT_TRUE(chain);
     valid_trust_ = web::CreateServerTrustFromChain(
-        base::mac::CFToNSPtrCast(chain.get()), kHostName);
+        base::apple::CFToNSPtrCast(chain.get()), kHostName);
     web::EnsureFutureTrustEvaluationSucceeds(valid_trust_.get());
     invalid_trust_ = web::CreateServerTrustFromChain(
-        base::mac::CFToNSPtrCast(chain.get()), kHostName);
+        base::apple::CFToNSPtrCast(chain.get()), kHostName);
   }
 
   // Synchronously returns result of

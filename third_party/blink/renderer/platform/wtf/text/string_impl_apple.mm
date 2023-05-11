@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,7 +43,7 @@ base::ScopedCFTypeRef<CFStringRef> StringImpl::CreateCFString() {
 }
 
 StringImpl::operator NSString*() {
-  return base::mac::CFToNSOwnershipCast(CreateCFString().release());
+  return base::apple::CFToNSOwnershipCast(CreateCFString().release());
 }
 
 }  // namespace WTF

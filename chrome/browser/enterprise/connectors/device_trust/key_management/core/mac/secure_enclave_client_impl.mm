@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/containers/span.h"
-#include "base/mac/bridging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
@@ -103,7 +103,7 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
   CFDictionarySetValue(attributes, kSecAttrTokenID,
                        kSecAttrTokenIDSecureEnclave);
   CFDictionarySetValue(attributes, kSecAttrKeySizeInBits,
-                       base::mac::NSToCFPtrCast(@256));
+                       base::apple::NSToCFPtrCast(@256));
   CFDictionarySetValue(
       attributes, kSecAttrLabel,
       base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel));

@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
@@ -186,7 +186,7 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
             continue;
           }
           extensions_found = true;
-          for (NSString* extension in base::mac::CFToNSPtrCast(
+          for (NSString* extension in base::apple::CFToNSPtrCast(
                    extensions_list)) {
             extensions->insert(base::SysNSStringToUTF8(extension));
           }

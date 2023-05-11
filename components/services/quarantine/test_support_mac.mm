@@ -7,9 +7,9 @@
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -46,7 +46,7 @@ bool IsFileQuarantined(const base::FilePath& file,
 
   // The agent bundle id must always be set.
   NSString* bundle_id =
-      [properties valueForKey:base::mac::CFToNSPtrCast(
+      [properties valueForKey:base::apple::CFToNSPtrCast(
                                   kLSQuarantineAgentBundleIdentifierKey)];
   if (!bundle_id.length) {
     return false;
@@ -56,7 +56,7 @@ bool IsFileQuarantined(const base::FilePath& file,
   GURL expected_source_url =
       SanitizeUrlForQuarantine(expected_source_url_unsafe);
   NSString* source_url = [[properties
-      valueForKey:base::mac::CFToNSPtrCast(kLSQuarantineDataURLKey)]
+      valueForKey:base::apple::CFToNSPtrCast(kLSQuarantineDataURLKey)]
       description];
   if (expected_source_url.is_valid() && source_url.length) {
     if (![source_url isEqualToString:base::SysUTF8ToNSString(
@@ -68,7 +68,7 @@ bool IsFileQuarantined(const base::FilePath& file,
   GURL expected_referrer_url =
       SanitizeUrlForQuarantine(expected_referrer_url_unsafe);
   NSString* referrer_url = [[properties
-      valueForKey:base::mac::CFToNSPtrCast(kLSQuarantineOriginURLKey)]
+      valueForKey:base::apple::CFToNSPtrCast(kLSQuarantineOriginURLKey)]
       description];
   if (expected_referrer_url.is_valid() && referrer_url.length) {
     if (![referrer_url isEqualToString:base::SysUTF8ToNSString(

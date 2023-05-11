@@ -7,11 +7,11 @@
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/run_loop.h"
@@ -169,7 +169,7 @@ TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
   NSString* file_path = base::mac::FilePathToNSString(test_file_);
   ASSERT_NE(nullptr, file_path);
   base::ScopedCFTypeRef<MDItemRef> md_item(
-      MDItemCreate(kCFAllocatorDefault, base::mac::NSToCFPtrCast(file_path)));
+      MDItemCreate(kCFAllocatorDefault, base::apple::NSToCFPtrCast(file_path)));
   if (!md_item) {
     // The quarantine code ignores it if adding origin metadata fails. If for
     // some reason MDItemCreate fails (which it seems to do on the bots, not

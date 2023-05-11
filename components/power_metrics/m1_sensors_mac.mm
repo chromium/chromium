@@ -11,7 +11,7 @@
 
 #include <utility>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "components/power_metrics/m1_sensors_internal_types_mac.h"
@@ -66,7 +66,7 @@ std::unique_ptr<M1SensorsReader> M1SensorsReader::Create() {
     @kIOHIDPrimaryUsagePageKey : @(kHIDPage_AppleVendor),
     @kIOHIDPrimaryUsageKey : @(kHIDUsage_AppleVendor_TemperatureSensor),
   };
-  IOHIDEventSystemClientSetMatching(system, base::mac::NSToCFPtrCast(filter));
+  IOHIDEventSystemClientSetMatching(system, base::apple::NSToCFPtrCast(filter));
 
   return base::WrapUnique(new M1SensorsReader(std::move(system)));
 }

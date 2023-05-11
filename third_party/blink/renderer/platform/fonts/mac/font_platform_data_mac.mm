@@ -26,7 +26,7 @@
 #import <AppKit/AppKit.h>
 #import <AvailabilityMacros.h>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #import "base/mac/foundation_util.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
@@ -98,9 +98,9 @@ bool VariableAxisChangeEffective(SkTypeface* typeface,
 
 static bool CanLoadInProcess(NSFont* ns_font) {
   base::ScopedCFTypeRef<CGFontRef> cg_font(CTFontCopyGraphicsFont(
-      base::mac::NSToCFPtrCast(ns_font), /*attributes=*/nullptr));
+      base::apple::NSToCFPtrCast(ns_font), /*attributes=*/nullptr));
   NSString* font_name =
-      base::mac::CFToNSOwnershipCast(CGFontCopyPostScriptName(cg_font));
+      base::apple::CFToNSOwnershipCast(CGFontCopyPostScriptName(cg_font));
   return ![font_name isEqualToString:@"LastResort"];
 }
 
@@ -122,7 +122,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
   DCHECK(CanLoadInProcess(ns_font));
 
   sk_sp<SkTypeface> typeface =
-      SkMakeTypefaceFromCTFont(base::mac::NSToCFPtrCast(ns_font));
+      SkMakeTypefaceFromCTFont(base::apple::NSToCFPtrCast(ns_font));
 
   auto make_typeface_fontplatformdata = [&typeface, &size, &synthetic_bold,
                                          &synthetic_italic, &text_rendering,

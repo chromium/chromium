@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -203,21 +203,21 @@ ManagedPreferencePolicyManager::GetAppsWithPolicy() const {
 
 NSDictionary* ReadManagedPreferencePolicyDictionary() {
   base::ScopedCFTypeRef<CFPropertyListRef> policies(CFPreferencesCopyAppValue(
-      base::mac::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
-      base::mac::NSToCFPtrCast(kKeystoneSharedPreferenceSuite)));
+      base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
+      base::apple::NSToCFPtrCast(kKeystoneSharedPreferenceSuite)));
   if (!policies)
     return nil;
 
   if (!CFPreferencesAppValueIsForced(
-          base::mac::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
-          base::mac::NSToCFPtrCast(kKeystoneSharedPreferenceSuite))) {
+          base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
+          base::apple::NSToCFPtrCast(kKeystoneSharedPreferenceSuite))) {
     return nil;
   }
 
   if (CFGetTypeID(policies) != CFDictionaryGetTypeID())
     return nil;
 
-  return base::mac::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
+  return base::apple::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
 }
 
 scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager() {

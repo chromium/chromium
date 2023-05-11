@@ -9,9 +9,9 @@
 
 #include <set>
 
+#include "base/apple/bridging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/chrome_constants.h"
@@ -84,10 +84,10 @@ bool FindChromeBundle(NSString* bundle_id, base::FilePath* out_bundle) {
   // Retrieve the last-run Chrome bundle location.
   base::FilePath last_run_bundle_path;
   {
-    NSString* cr_bundle_path_ns = base::mac::CFToNSOwnershipCast(
+    NSString* cr_bundle_path_ns = base::apple::CFToNSOwnershipCast(
         base::mac::CFCastStrict<CFStringRef>(CFPreferencesCopyAppValue(
-            base::mac::NSToCFPtrCast(app_mode::kLastRunAppBundlePathPrefsKey),
-            base::mac::NSToCFPtrCast(bundle_id))));
+            base::apple::NSToCFPtrCast(app_mode::kLastRunAppBundlePathPrefsKey),
+            base::apple::NSToCFPtrCast(bundle_id))));
     last_run_bundle_path = base::mac::NSStringToFilePath(cr_bundle_path_ns);
   }
 

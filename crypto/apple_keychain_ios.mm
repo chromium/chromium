@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/bridging.h"
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 
@@ -74,7 +74,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> MakeKeychainData(
   // Set the password.
   NSData* password = [NSData dataWithBytes:passwordData length:passwordLength];
   CFDictionarySetValue(keychain_data, kSecValueData,
-                       base::mac::NSToCFPtrCast(password));
+                       base::apple::NSToCFPtrCast(password));
 
   // If this is not a creation, no structural information is needed.
   if (action != kKeychainActionCreate) {
