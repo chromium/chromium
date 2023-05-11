@@ -315,7 +315,7 @@ export class XfBulkPinningDialog extends XfBase {
       }
 
       a {
-        color: var(--cros-sys-on_error_container);
+        color: currentcolor;
       }
 
       files-spinner {
