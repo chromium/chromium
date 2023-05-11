@@ -214,8 +214,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   EXPECT_TRUE(client->GetAppListWindow());
 }
 
+// TODO(crbug.com/1444649): Test is flaky.
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
-                       HidingBubbleLauncherCancelsAppUninstall) {
+                       DISABLED_HidingBubbleLauncherCancelsAppUninstall) {
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   const extensions::Extension* app = InstallPlatformApp("minimal");
 
