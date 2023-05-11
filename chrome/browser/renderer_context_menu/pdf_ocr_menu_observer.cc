@@ -4,6 +4,7 @@
 
 #include "chrome/browser/renderer_context_menu/pdf_ocr_menu_observer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
@@ -25,6 +26,11 @@ namespace {
 bool ShouldShowPdfOcrMenuItem() {
   return accessibility_state_utils::IsScreenReaderEnabled() &&
          features::IsPdfOcrEnabled();
+}
+
+void RecordUserSelection(PdfOcrUserSelection user_selection) {
+  base::UmaHistogramEnumeration("Accessibility.PdfOcr.UserSelection",
+                                user_selection);
 }
 
 }  // namespace
@@ -87,6 +93,7 @@ void PdfOcrMenuObserver::ExecuteCommand(int command_id) {
       VLOG(2) << "Turning off PDF OCR from the context menu";
       profile->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
                                       false);
+      RecordUserSelection(PdfOcrUserSelection::kTurnOffFromContextMenu);
       break;
     case IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS:
       // When a user choose "Always" to run the PDF OCR, we save this
@@ -95,12 +102,14 @@ void PdfOcrMenuObserver::ExecuteCommand(int command_id) {
         VLOG(2) << "Setting PDF OCR to be always active from the context menu";
         profile->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
                                         true);
+        RecordUserSelection(PdfOcrUserSelection::kTurnOnAlwaysFromContextMenu);
       }
       break;
     case IDC_CONTENT_CONTEXT_PDF_OCR_ONCE:
       VLOG(2) << "Running PDF OCR only once from the context menu";
       screen_ai::PdfOcrControllerFactory::GetForProfile(profile)
           ->RunPdfOcrOnlyOnce(proxy_->GetWebContents());
+      RecordUserSelection(PdfOcrUserSelection::kTurnOnOnceFromContextMenu);
       break;
     default:
       NOTREACHED();

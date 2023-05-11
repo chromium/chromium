@@ -83,6 +83,7 @@
 <settings-toggle-button id="crosPdfOcrToggle"
     class="hr" hidden$="[[!showPdfOcrToggle_]]"
     pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
+    on-change="onPdfOcrToggleChange_"
     label="$i18n{pdfOcrTitle}"
     sub-label="[[getPdfOcrToggleSublabel_(pdfOcrStatus_, pdfOcrProgress_)]]">
 </settings-toggle-button>

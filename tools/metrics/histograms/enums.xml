@@ -81359,6 +81359,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Foreground XFA (XFAF)"/>
 </enum>
 
+<enum name="PdfOcrUserSelection">
+  <int value="0" label="Turned on once from the context menu"/>
+  <int value="1" label="Turned on always from the context menu"/>
+  <int value="2" label="Turned off from the context menu"/>
+  <int value="3" label="Turned on always from the more actions"/>
+  <int value="4" label="Turned off from the more actions"/>
+  <int value="5" label="Turned on always from the settings"/>
+  <int value="6" label="Turned off from the settings"/>
+</enum>
+
 <enum name="PDFVersion">
   <int value="0" label="Unknown"/>
   <int value="1" label="PDF 1.0"/>

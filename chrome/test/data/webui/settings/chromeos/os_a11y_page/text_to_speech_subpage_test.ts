@@ -4,12 +4,13 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SettingsTextToSpeechSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {PdfOcrUserSelection, SettingsTextToSpeechSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -113,4 +114,61 @@ suite('<settings-text-to-speech-subpage>', function() {
         assertTrue(pdfOcrToggle.checked);
         assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
       });
+
+  test('pdf ocr toggle on invokes uma metric', async function() {
+    // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
+    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
+
+    const metrics = fakeMetricsPrivate();
+
+    await initPage();
+    // Simulate enabling the ChromeVox.
+    page.hasScreenReader = true;
+
+    const pdfOcrToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosPdfOcrToggle');
+    assert(pdfOcrToggle);
+
+    // Turn on PDF OCR always.
+    pdfOcrToggle.click();
+    await waitAfterNextRender(pdfOcrToggle);
+    assertTrue(pdfOcrToggle.checked);
+    assertEquals(
+        1,
+        metrics.count(
+            'Accessibility.PdfOcr.UserSelection',
+            PdfOcrUserSelection.TURN_ON_ALWAYS_FROM_SETTINGS));
+  });
+
+  test('pdf ocr toggle off invokes uma metric', async function() {
+    // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
+    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
+
+    const metrics = fakeMetricsPrivate();
+
+    await initPage();
+    // Simulate enabling the ChromeVox.
+    page.hasScreenReader = true;
+
+    const pdfOcrToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosPdfOcrToggle');
+    assert(pdfOcrToggle);
+
+    // Turn on PDF OCR always.
+    pdfOcrToggle.click();
+    await waitAfterNextRender(pdfOcrToggle);
+    assertTrue(pdfOcrToggle.checked);
+
+    // Turn off PDF OCR.
+    pdfOcrToggle.click();
+    await waitAfterNextRender(pdfOcrToggle);
+    assertFalse(pdfOcrToggle.checked);
+    assertEquals(
+        1,
+        metrics.count(
+            'Accessibility.PdfOcr.UserSelection',
+            PdfOcrUserSelection.TURN_OFF_FROM_SETTINGS));
+  });
 });

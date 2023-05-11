@@ -22,7 +22,7 @@ import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elemen
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
-import {record, UserAction} from '../metrics.js';
+import {record, recordPdfOcrUserSelection, UserAction} from '../metrics.js';
 // <if expr="enable_screen_ai_service">
 import {PdfOcrPrefCallback, PdfViewerPrivateProxyImpl} from '../pdf_viewer_private_proxy.js';
 
@@ -402,7 +402,7 @@ export class ViewerToolbarElement extends PolymerElement {
         await PdfViewerPrivateProxyImpl.getInstance().setPdfOcrPref(valueToSet);
     if (success) {
       this.pdfOcrAlwaysActive_ = valueToSet;
-      // TODO(crbug.com/1393069): Start/stop PDF OCR accordingly.
+      recordPdfOcrUserSelection(this.pdfOcrAlwaysActive_);
     }
   }
 

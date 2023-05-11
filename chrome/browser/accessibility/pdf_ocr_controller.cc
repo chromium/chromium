@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pdf_util.h"
@@ -97,7 +98,10 @@ void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
   // TODO(crbug.com/1393069): Need to wait for the Screen AI library to be
   // installed if not ready yet. Then, set the AXMode for PDF OCR only when the
   // Screen AI library is downloaded and ready.
-  DCHECK(web_contents);
+  if (!web_contents) {
+    CHECK_IS_TEST();
+    return;
+  }
   // `web_contents` should be a PDF Viewer Mimehandler.
   DCHECK_EQ(web_contents->GetContentsMimeType(), kHtmlMimeType);
 

@@ -13,6 +13,20 @@
 
 class RenderViewContextMenuProxy;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Must be kept in sync with
+// PdfOcrUserSelection enum in //tools/metrics/histograms/enums.xml.
+enum class PdfOcrUserSelection {
+  kTurnOnOnceFromContextMenu = 0,
+  kTurnOnAlwaysFromContextMenu = 1,
+  kTurnOffFromContextMenu = 2,
+  kTurnOnAlwaysFromMoreActions = 3,
+  kTurnOffFromMoreActions = 4,
+  kTurnOnAlwaysFromSettings = 5,
+  kTurnOffFromSettings = 6,
+  kMaxValue = kTurnOffFromSettings,
+};
+
 // An observer that listens to events from the RenderViewContextMenu class and
 // shows the PDF OCR menu if a screen reader is enabled.
 class PdfOcrMenuObserver : public RenderViewContextMenuObserver {

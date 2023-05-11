@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType} from './constants.js';
+import {FittingType, PdfOcrUserSelection} from './constants.js';
 
 // Handles events specific to the PDF viewer and logs the corresponding metrics.
 
@@ -42,6 +42,29 @@ export function record(action: UserAction) {
       firstActionRecorded.add(firstAction);
     }
   }
+}
+
+/**
+ * Records when the user selects to turn on or off PDF OCR.
+ * @param userSelection the new UserSelection.
+ */
+export function recordPdfOcrUserSelection(pdfOcrAlwaysActive: boolean) {
+  // Need to divide Object.keys().length by 2 to get the enum size due to enum
+  // reverse mapping in TypeScript.
+  const enumSize = Object.keys(PdfOcrUserSelection).length / 2;
+  const enumValue = pdfOcrAlwaysActive ?
+      PdfOcrUserSelection.TURN_ON_ALWAYS_FROM_MORE_ACTIONS :
+      PdfOcrUserSelection.TURN_OFF_FROM_MORE_ACTIONS;
+  recordEnumeration('Accessibility.PdfOcr.UserSelection', enumValue, enumSize);
+}
+
+/** Records the given enumeration to chrome.metricsPrivate. */
+export function recordEnumeration(
+    enumKey: string, enumValue: number, enumSize: number) {
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+  chrome.metricsPrivate.recordEnumerationValue(enumKey, enumValue, enumSize);
 }
 
 export function resetForTesting() {

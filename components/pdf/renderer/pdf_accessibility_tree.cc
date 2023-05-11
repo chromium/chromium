@@ -1716,6 +1716,14 @@ void PdfAccessibilityTree::UnserializeNodes() {
 
   base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
                             did_get_a_text_run_);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (!did_get_a_text_run_) {
+    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+    base::UmaHistogramBoolean(
+        "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
+        ocr_service_ != nullptr);
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

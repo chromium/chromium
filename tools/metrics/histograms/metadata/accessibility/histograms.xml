@@ -1606,6 +1606,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened"
+    enum="BooleanExists" expires_after="2024-02-01">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When an inaccessible PDF is loaded, true if the PDF OCR feature was turned
+    on to extract text from images. Note that, as long as the PDF OCR is on, a
+    PDF containing images will record true even if the images contain no text.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfOcr.UserSelection" enum="PdfOcrUserSelection"
+    expires_after="2024-02-01">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the PDF OCR menu item that the user selects to turn on or off the PDF
+    OCR feature.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.AXTree.Destroy" units="ms"
     expires_after="2023-10-08">
   <owner>agarwaltushar@google.com</owner>
