@@ -1,9 +1,37 @@
+diff --git a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java
+index fb5cf5fb..31c9889e 100644
+--- a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java
++++ b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java
+@@ -168,13 +168,16 @@ public class Agent implements IAgent {
+ 
+ 	private String createSessionId() {
+ 		String host;
+-		try {
+-			host = InetAddress.getLocalHost().getHostName();
+-		} catch (final Exception e) {
+-			// Also catch platform specific exceptions (like on Android) to
+-			// avoid bailing out here
+-			host = "unknownhost";
+-		}
++		// Local modification: Do not try to get host address for StrictMode.
++		// See crbug.com/1401476.
++		// try {
++		//	host = InetAddress.getLocalHost().getHostName();
++		// } catch (final Exception e) {
++		// 	// Also catch platform specific exceptions (like on Android) to
++		// 	// avoid bailing out here
++		// 	host = "unknownhost";
++		//}
++		host = "unknownhost";
+ 		return host + "-" + AbstractRuntime.createRandomId();
+ 	}
+ 
 diff --git a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
-index 9020c2fc..7c3d4399 100644
+index 9020c2fc..35fc18df 100644
 --- a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
 +++ b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
 @@ -33,7 +33,10 @@ final class ConfigLoader {
-
+ 
  	static Properties load(final String resource, final Properties system) {
  		final Properties result = new Properties();
 -		loadResource(resource, result);
