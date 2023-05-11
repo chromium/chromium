@@ -2319,6 +2319,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V4Database.DirectoryCreationResult"
+    enum="PlatformFileError" expires_after="2023-09-10">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of trying to create the &quot;Safe Browsing&quot;
+    directory for storing the V4 database. Logged once on startup.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4Database.Size" units="KB"
     expires_after="2023-09-17">
   <owner>vakh@chromium.org</owner>

@@ -99,11 +99,16 @@ void V4Database::CreateOnTaskRunner(
   if (!g_store_factory.Get())
     g_store_factory.Get() = std::make_unique<V4StoreFactory>();
 
-  SCOPED_CRASH_KEY_STRING256("SafeBrowsing", "database-path",
-                             base_path.AsUTF8Unsafe());
-
-  if (!base::CreateDirectory(base_path))
+  // TODO(crbug/1434333): This is being used temporarily to investigate why this
+  // NOTREACHED is being triggered.
+  base::File::Error error = base::File::FILE_OK;
+  bool success = base::CreateDirectoryAndGetError(base_path, &error);
+  base::UmaHistogramExactLinear(
+      "SafeBrowsing.V4Database.DirectoryCreationResult", -error,
+      -base::File::FILE_ERROR_MAX);
+  if (!success) {
     NOTREACHED();
+  }
 
 #if BUILDFLAG(IS_APPLE)
   base::mac::SetBackupExclusion(base_path);
