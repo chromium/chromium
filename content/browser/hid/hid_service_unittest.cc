@@ -1388,8 +1388,6 @@ TEST_P(HidServiceTest, ConnectionFailedWithoutPermission) {
 
   CheckHidServiceConnectedState(service_creation_type, false);
 
-  base::RunLoop run_loop;
-  mojo::Remote<device::mojom::HidConnection> connection;
   TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
       pending_remote_future;
   EXPECT_CALL(hid_delegate(), GetDeviceInfo)
@@ -1398,7 +1396,6 @@ TEST_P(HidServiceTest, ConnectionFailedWithoutPermission) {
   service->Connect(kTestGuid, std::move(hid_connection_client),
                    pending_remote_future.GetCallback());
   EXPECT_FALSE(pending_remote_future.Take());
-  run_loop.RunUntilIdle();
   CheckHidServiceConnectedState(service_creation_type, false);
 }
 
