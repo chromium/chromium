@@ -344,16 +344,16 @@ void DevToolsSession::flushProtocolNotifications() {
 }
 
 void DevToolsSession::FlushProtocolNotifications() {
-  // https://linear.app/replay/issue/RUN-885
-  recordreplay::Assert("DevToolsSession::FlushProtocolNotifications");
+  recordreplay::Assert(
+      "[RUN-1515-1924] DevToolsSession::FlushProtocolNotifications A %d %d",
+      (int)agents_.size(), (int)notification_queue_.size());
 
   if (IsDetached())
     return;
   for (wtf_size_t i = 0; i < agents_.size(); i++)
     agents_[i]->FlushPendingProtocolNotifications();
 
-  // https://linear.app/replay/issue/RUN-885
-  recordreplay::Assert("DevToolsSession::FlushProtocolNotifications #1 %d",
+  recordreplay::Assert("[RUN-1515-1924] DevToolsSession::FlushProtocolNotifications B %d",
                        (int)notification_queue_.size());
 
   if (!notification_queue_.size())
