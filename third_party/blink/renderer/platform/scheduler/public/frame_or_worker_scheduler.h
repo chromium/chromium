@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 class FrameScheduler;
 class WebSchedulingTaskQueue;
@@ -56,7 +58,12 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     SchedulingAffectingFeatureHandle& operator=(
         SchedulingAffectingFeatureHandle&&);
 
-    inline ~SchedulingAffectingFeatureHandle() { reset(); }
+    inline ~SchedulingAffectingFeatureHandle() {
+      if (!recordreplay::IsRecordingOrReplaying("leak-references") || !recordreplay::AreEventsDisallowed()) {
+        // This might touch the recording stream during GC when using devtools.
+        reset();
+      }
+    }
 
     explicit operator bool() const { return scheduler_.get(); }
 
