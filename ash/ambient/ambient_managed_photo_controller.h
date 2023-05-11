@@ -62,15 +62,6 @@ class ASH_EXPORT AmbientManagedPhotoController
   void OnMarkerHit(AmbientPhotoConfig::Marker marker) override;
 
  private:
-  enum class State {
-    kStarted,
-    // The controller was started but we failed to load a sufficient number of
-    // images to continue even after trying to load all the provided images from
-    // disk.
-    kStartedPhotoLoadFailure,
-    kStopped
-  };
-
   // The controller `state_` is reset on dismissing the screensaver (when
   // StopScreenUpdate is called) so if the error states are not treated
   // differently they will be cleared on dismissing the screensaver and we will
@@ -81,7 +72,10 @@ class ASH_EXPORT AmbientManagedPhotoController
     kNone,
     // The controller was started with an insufficient number of images.
     kInsufficientImages,
-    // TODO(b/277727957) Move the `kStartedPhotoLoadFailure` to an error state.
+    // The controller was started but we failed to load a sufficient number of
+    // images to continue even after trying to load all the provided images from
+    // disk.
+    kPhotoLoadFailure,
   };
 
   // Load and decode images
@@ -113,8 +107,11 @@ class ASH_EXPORT AmbientManagedPhotoController
   // Current index of cached file to read and display.
   size_t current_image_index_ = 0;
 
-  // State used to determine whether the controller is active.
-  State state_ = State::kStopped;
+  // Flag used to determine whether the screen update is active. The screen
+  // update is considered to be active when the `StartScreenUpdate` method has
+  // been called. And it stops being active when the `StopScreenUpdate` method
+  // is called.
+  bool is_active_ = false;
 
   // State used to determine whether the controller has encountered any errors.
   // Note: This is sticky and cleared when sufficient new data is added to the

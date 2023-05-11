@@ -39,7 +39,7 @@ void AmbientManagedPhotoController::StartScreenUpdate() {
     return;
   }
 
-  state_ = State::kStarted;
+  is_active_ = true;
   image_attempt_no_ = 0;
 
   LoadImages();
@@ -64,10 +64,6 @@ void AmbientManagedPhotoController::UpdateImageFilePaths(
     weak_factory_.InvalidateWeakPtrs();
     current_image_index_ = 0;
 
-    // Transition back to started state as we have a fresh set of images to
-    // retry on.
-    state_ = State::kStarted;
-
     // Note: We do not clear the backend model here but rather just load
     // the next topic buffer size images from disk, this will automatically
     // fill the backend model with only the latest images.
@@ -90,7 +86,7 @@ void AmbientManagedPhotoController::SetErrorState(ErrorState error_state) {
 }
 
 void AmbientManagedPhotoController::StopScreenUpdate() {
-  state_ = State::kStopped;
+  is_active_ = false;
   images_file_paths_.clear();
   ambient_backend_model_.Clear();
   weak_factory_.InvalidateWeakPtrs();
@@ -99,7 +95,7 @@ void AmbientManagedPhotoController::StopScreenUpdate() {
 }
 
 bool AmbientManagedPhotoController::IsScreenUpdateActive() const {
-  return state_ != State::kStopped;
+  return is_active_;
 }
 
 void AmbientManagedPhotoController::OnMarkerHit(
@@ -110,14 +106,14 @@ void AmbientManagedPhotoController::OnMarkerHit(
              << " does not trigger a image refresh. Ignoring...";
     return;
   }
-  if (state_ == State::kStartedPhotoLoadFailure) {
+  if (error_state_ == ErrorState::kPhotoLoadFailure) {
     LOG(WARNING) << "Not loading the next image for the UI marker " << marker
                  << " as maximum photo loading attempts reached";
     return;
   }
 
   DVLOG(3) << "UI event " << marker << " triggering image load";
-  if (state_ != State::kStarted) {
+  if (!is_active_) {
     LOG(DFATAL) << "Received unexpected UI marker " << marker
                 << " while inactive";
     return;
@@ -172,7 +168,7 @@ void AmbientManagedPhotoController::HandlePhotoDecodingFailure(
     base::OnceCallback<void(bool success)> done_callback) {
   if (image_attempt_no_ >= GetMaxImageAttempts()) {
     LOG(ERROR) << "Image decoding failed, no valid image was decoded";
-    state_ = State::kStartedPhotoLoadFailure;
+    SetErrorState(ErrorState::kPhotoLoadFailure);
     std::move(done_callback).Run(false);
     return;
   }

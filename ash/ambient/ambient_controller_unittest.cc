@@ -33,6 +33,7 @@
 #include "ash/test/test_ash_web_view.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -1858,6 +1859,35 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   managed_policy_handler()->SetImagesForTesting({});
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
   FastForwardByLockScreenInactivityTimeout();
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ManagedScreensaverClosedWhenImageLoadingFails) {
+  TriggerLoginScreen();
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  ASSERT_TRUE(GetContainerView());
+  // Set invalid images ( i.e. either the paths are invalid or images themselves
+  // have been deleted).
+  std::vector<base::FilePath> invalid_image_paths = {
+      base::FilePath(FILE_PATH_LITERAL("invalid_path_1")),
+      base::FilePath(FILE_PATH_LITERAL("invalid_path_2"))};
+  managed_policy_handler()->SetImagesForTesting(invalid_image_paths);
+  // Fast forward a tiny amount to run any async tasks.
+  FastForwardTiny();
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+
+  // Simulate login
+  CreateUserSessions(/*session_count=*/1);
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+
+  SetAmbientModeManagedScreensaverEnabled(true);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
+  SimulateScreensaverStart();
+  EXPECT_TRUE(ambient_controller()->IsShowing());
+  managed_policy_handler()->SetImagesForTesting(invalid_image_paths);
+  // Fast forward a tiny amount to run any async tasks.
+  FastForwardTiny();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
