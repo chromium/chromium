@@ -49,11 +49,6 @@ std::unique_ptr<ComponentModelFiles> ComponentModelFiles::LoadComponentFiles() {
           ->get_component_binary_path());
 }
 
-bool ScreenAIServiceReady() {
-  return screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-         screen_ai::ScreenAIInstallState::State::kReady;
-}
-
 }  // namespace
 
 namespace screen_ai {
@@ -69,7 +64,7 @@ void ScreenAIServiceRouter::BindScreenAIAnnotator(
   // sending requests to it. Hence we keep the connections until we know library
   // is ready and bind them in `BindQueuedConnections`.
   // Also applies to other Bind* functions.
-  if (ScreenAIServiceReady()) {
+  if (service_is_ready_) {
     screen_ai_service_->BindAnnotator(std::move(receiver));
   } else {
     pending_annotators_.emplace_back(std::move(receiver));
@@ -80,7 +75,7 @@ void ScreenAIServiceRouter::BindScreenAIAnnotatorClient(
     mojo::PendingRemote<mojom::ScreenAIAnnotatorClient> remote) {
   LaunchIfNotRunning();
 
-  if (ScreenAIServiceReady()) {
+  if (service_is_ready_) {
     screen_ai_service_->BindAnnotatorClient(std::move(remote));
   } else {
     pending_clients_.emplace_back(std::move(remote));
@@ -91,7 +86,7 @@ void ScreenAIServiceRouter::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver) {
   LaunchIfNotRunning();
 
-  if (ScreenAIServiceReady()) {
+  if (service_is_ready_) {
     screen_ai_service_->BindMainContentExtractor(std::move(receiver));
   } else {
     pending_main_content_extractors_.emplace_back(std::move(receiver));
@@ -143,6 +138,7 @@ void ScreenAIServiceRouter::SetLibraryLoadState(bool successful) {
                  : screen_ai::ScreenAIInstallState::State::kFailed);
 
   if (successful) {
+    service_is_ready_ = true;
     BindQueuedConnections();
   }
 }

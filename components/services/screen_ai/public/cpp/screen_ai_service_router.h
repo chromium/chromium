@@ -58,6 +58,12 @@ class ScreenAIServiceRouter : public KeyedService {
   std::vector<mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>>
       pending_main_content_extractors_;
 
+  // Indicates that the service is created and the library is successfully
+  // loaded.
+  // TODO(crbug.com/1278249): Add a factory interface that returns an instance
+  // of `ScreenAIService` when library is initialized and remove this variable.
+  bool service_is_ready_{false};
+
   mojo::Remote<mojom::ScreenAIService> screen_ai_service_;
 
   base::WeakPtrFactory<ScreenAIServiceRouter> weak_ptr_factory_{this};
