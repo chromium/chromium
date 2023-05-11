@@ -929,6 +929,9 @@ void DisplayConfigurator::OnConfigurationChanged() {
 void DisplayConfigurator::OnDisplaySnapshotsInvalidated() {
   VLOG(1) << "Display snapshots invalidated.";
   cached_displays_.clear();
+  for (Observer& observer : observers_) {
+    observer.OnDisplaySnapshotsInvalidated();
+  }
 }
 
 void DisplayConfigurator::AddObserver(Observer* observer) {

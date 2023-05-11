@@ -51,7 +51,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called after the display mode has been changed. |display| contains the
     // just-applied configuration. Note that the X server is no longer grabbed
@@ -69,6 +69,9 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
     // Called after the power state has been changed. |power_state| contains
     // the just-applied power state.
     virtual void OnPowerStateChanged(chromeos::DisplayPowerState power_state) {}
+
+    // Called when the |cached_displays_| is cleared.
+    virtual void OnDisplaySnapshotsInvalidated() {}
   };
 
   // Interface for classes that make decisions about which display state
@@ -241,7 +244,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   void MaybeSetRefreshRateThrottleState(int64_t display_id,
                                         RefreshRateThrottleState state);
 
-  // NativeDisplayDelegate::Observer overrides:
+  // NativeDisplayObserver:
   void OnConfigurationChanged() override;
   void OnDisplaySnapshotsInvalidated() override;
 
