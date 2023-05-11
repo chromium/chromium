@@ -1295,7 +1295,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 // Executes Javascript in the given WebContents and waits until a string with
 // the given prefix is received. It will ignore values other than strings, and
 // strings without the given prefix. Since messages are broadcast to
-// DOMMessageQueues, this allows other functions that depend on ExecuteScript
+// DOMMessageQueues, this allows other functions that depend on ExecJs
 // (and thus trigger the broadcast of values) to run while this function is
 // waiting for a specific result.
 absl::optional<std::string> ExecuteScriptAndExtractPrefixedString(
