@@ -201,12 +201,14 @@ class CircularImageButton : public views::ImageButton {
                       const std::u16string& text,
                       int button_size = kCircularImageButtonSize,
                       bool has_background_color = false,
-                      bool show_border = false)
+                      bool show_border = false,
+                      SkColor themed_icon_color = SK_ColorTRANSPARENT)
       : ImageButton(std::move(callback)),
         icon_(icon),
         button_size_(button_size),
         has_background_color_(has_background_color),
-        show_border_(show_border) {
+        show_border_(show_border),
+        themed_icon_color_(themed_icon_color) {
     SetTooltipText(text);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
@@ -228,6 +230,8 @@ class CircularImageButton : public views::ImageButton {
       icon_color = color_provider->GetColor(ui::kColorSysOnTonalContainer);
       SetBackground(
           views::CreateRoundedRectBackground(background_color, kButtonRadius));
+    } else if (themed_icon_color_ != SK_ColorTRANSPARENT) {
+      icon_color = themed_icon_color_;
     }
     gfx::ImageSkia image = ImageForMenu(*icon_,
                                         features::IsChromeRefresh2023()
@@ -258,6 +262,13 @@ class CircularImageButton : public views::ImageButton {
   // of the menu, all backgrounds are transparent.
   bool has_background_color_;
   bool show_border_;
+  // In the Profile Menu previous to Chrome Refresh 2023, icons that appears on
+  // top of a background with the profile theme color (e.g. edit button) have a
+  // different color than the default icon color. For the default icons, this is
+  // set to transparent and not used.
+  // TODO(crbug.com/1422119): Remove this parameter after Chrome Refresh 2023 is
+  // launched.
+  SkColor themed_icon_color_;
 };
 
 BEGIN_METADATA(CircularImageButton, views::ImageButton)
@@ -627,7 +638,12 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
         base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                             base::Unretained(this),
                             std::move(edit_button_params->edit_action)),
-        *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text);
+        *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text,
+        kCircularImageButtonSize, /*has_background_color=*/false,
+        /*show_border=*/false,
+        avatar_header_art.empty()
+            ? GetProfileForegroundIconColor(profile_background_color)
+            : SK_ColorTRANSPARENT);
   }
 
   BuildProfileBackgroundContainer(
