@@ -528,6 +528,14 @@ const int kMaxBookmarksSearchResults = 50;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  if (!_browser.get()) {
+    // If `_browser` has been removed, the mediator can be disconnected and the
+    // event can be ignored. See http://crbug.com/1442174.
+    // TODO(crbug.com/1440937): This `if` is a workaround until this bug is
+    // fixed. This if should be remove when the bug will be closed.
+    [self disconnect];
+    return;
+  }
   // If user starts or stops syncing bookmarks, we may have to remove or add the
   // slashed cloud icon. Also, permanent nodes ("Bookmarks Bar", "Other
   // Bookmarks") at the root node might be added after syncing.  So we need to
