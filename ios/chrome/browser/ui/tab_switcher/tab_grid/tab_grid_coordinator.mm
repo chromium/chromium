@@ -563,7 +563,8 @@
       // complete, reset the tab grid mode.
       self.baseViewController.tabGridMode = TabGridModeNormal;
     }
-    if (!GetFirstResponder()) {
+    if (!GetFirstResponderInWindowScene(
+            self.baseViewController.view.window.windowScene)) {
       // It is possible to already have a first responder (for example the
       // omnibox). In that case, we don't want to mark BVC as first responder.
       [self.bvcContainer.currentBVC becomeFirstResponder];
