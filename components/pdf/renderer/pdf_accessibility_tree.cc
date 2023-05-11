@@ -528,7 +528,8 @@ class PdfAccessibilityTreeBuilder {
           node_id_to_annotation_info
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       ,
-      PdfOcrService* ocr_service
+      PdfOcrService* ocr_service,
+      bool has_accessible_text
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       )
       : pdf_accessibility_tree_(std::move(pdf_accessibility_tree)),
@@ -548,7 +549,8 @@ class PdfAccessibilityTreeBuilder {
         node_id_to_annotation_info_(node_id_to_annotation_info)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
         ,
-        ocr_service_(ocr_service)
+        ocr_service_(ocr_service),
+        has_accessible_text_(has_accessible_text)
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   {
     page_node_ = CreateAndAppendNode(ax::mojom::Role::kRegion,
@@ -1278,7 +1280,8 @@ class PdfAccessibilityTreeBuilder {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       // TODO(crbug.com/1278249): Consider moving images instead of copying
       // them.
-      if (ocr_available && !images_[i].image_data.drawsNothing()) {
+      if (!has_accessible_text_ && ocr_available &&
+          !images_[i].image_data.drawsNothing()) {
         ocr_requests.emplace(image_node->id, images_[i], para_node->id);
       }
 #endif
@@ -1347,6 +1350,7 @@ class PdfAccessibilityTreeBuilder {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   PdfOcrService* ocr_service_ = nullptr;
+  const bool has_accessible_text_;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
@@ -1675,7 +1679,7 @@ void PdfAccessibilityTree::AddPageContent(
       &node_id_to_page_char_index_, &node_id_to_annotation_info_
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       ,
-      ocr_service_.get()
+      ocr_service_.get(), did_get_a_text_run_
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   );
   tree_builder.BuildPageTree();
