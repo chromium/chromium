@@ -165,27 +165,67 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest,
 
 TEST_F(HistoryClustersModuleRankingModelHandlerTest,
        ModelExecutedMultipleInputs) {
-  new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
-  metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
-  metadata.add_signals(
-      new_tab_page::proto::
-          HISTORY_CLUSTERS_MODULE_RANKING_MINUTES_SINCE_MOST_RECENT_VISIT);
-  metadata.add_signals(
-      new_tab_page::proto::
-          HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_BOOSTED_CATEGORY);
-  PushModelFileToModelExecutor(metadata);
-
-  EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
-
   HistoryClustersModuleRankingSignals inputs1;
   inputs1.duration_since_most_recent_visit = base::Minutes(2);
   inputs1.belongs_to_boosted_category = false;
+  inputs1.num_visits_with_image = 3;
+  inputs1.num_total_visits = 4;
+  inputs1.num_unique_hosts = 2;
+  inputs1.num_abandoned_carts = 1;
 
   HistoryClustersModuleRankingSignals inputs2;
   inputs2.duration_since_most_recent_visit = base::Minutes(5);
   inputs2.belongs_to_boosted_category = true;
+  inputs2.num_visits_with_image = 2;
+  inputs2.num_total_visits = 10;
+  inputs2.num_unique_hosts = 3;
+  inputs2.num_abandoned_carts = 0;
 
-  EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(2, 5 + 1));
+  {
+    new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
+    metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_MINUTES_SINCE_MOST_RECENT_VISIT);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_BOOSTED_CATEGORY);
+    PushModelFileToModelExecutor(metadata);
+
+    EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
+
+    EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(2 + 0, 5 + 1));
+  }
+
+  {
+    new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
+    metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_NUM_VISITS_WITH_IMAGE);
+    metadata.add_signals(
+        new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TOTAL_VISITS);
+    PushModelFileToModelExecutor(metadata);
+
+    EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
+
+    EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(3 + 4, 2 + 10));
+  }
+
+  {
+    new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
+    metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
+    metadata.add_signals(
+        new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_UNIQUE_HOSTS);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_NUM_ABANDONED_CARTS);
+    PushModelFileToModelExecutor(metadata);
+
+    EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
+
+    EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(2 + 1, 3 + 0));
+  }
 }
 
 }  // namespace

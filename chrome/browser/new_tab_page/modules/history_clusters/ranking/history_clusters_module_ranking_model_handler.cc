@@ -31,6 +31,23 @@ std::vector<float> ConstructInputVector(
           HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_BOOSTED_CATEGORY:
         input_vector.push_back(signals.belongs_to_boosted_category ? 1 : 0);
         break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_NUM_VISITS_WITH_IMAGE:
+        input_vector.push_back(
+            static_cast<float>(signals.num_visits_with_image));
+        break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_NUM_TOTAL_VISITS:
+        input_vector.push_back(static_cast<float>(signals.num_total_visits));
+        break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_NUM_UNIQUE_HOSTS:
+        input_vector.push_back(static_cast<float>(signals.num_unique_hosts));
+        break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_NUM_ABANDONED_CARTS:
+        input_vector.push_back(static_cast<float>(signals.num_abandoned_carts));
+        break;
       default:
         NOTREACHED();
     }

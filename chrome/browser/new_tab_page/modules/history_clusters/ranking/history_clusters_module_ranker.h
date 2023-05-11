@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/cart/cart_db.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
@@ -18,6 +19,7 @@ namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
+class CartService;
 class HistoryClustersModuleRankingModelHandler;
 
 // An object that sorts a list of clusters by likelihood of re-engagement.
@@ -25,6 +27,7 @@ class HistoryClustersModuleRanker {
  public:
   HistoryClustersModuleRanker(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
+      CartService* cart_service,
       const base::flat_set<std::string>& category_boostlist);
   ~HistoryClustersModuleRanker();
 
@@ -42,10 +45,19 @@ class HistoryClustersModuleRanker {
 #endif
 
  private:
+  // Callback invoked when all signals for ranking are ready.
+  void OnAllSignalsReady(std::vector<history::Cluster> clusters,
+                         ClustersCallback callback,
+                         bool success,
+                         std::vector<CartDB::KeyAndValue> active_carts);
+
   // Runs the fallback heuristic if `model_handler_` is not instantiated or if
   // the model is not available.
   void RunFallbackHeuristic(std::vector<history::Cluster> clusters,
                             ClustersCallback callback);
+
+  // The cart service used to check for active carts.
+  raw_ptr<CartService> cart_service_;
 
   // The category boostlist to use.
   const base::flat_set<std::string> category_boostlist_;

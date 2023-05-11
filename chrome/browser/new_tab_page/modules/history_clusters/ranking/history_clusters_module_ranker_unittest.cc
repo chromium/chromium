@@ -5,13 +5,18 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h"
 
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search/ntp_features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +28,13 @@
 namespace {
 
 using ::testing::ElementsAre;
+
+class MockCartService : public CartService {
+ public:
+  explicit MockCartService(Profile* profile) : CartService(profile) {}
+
+  MOCK_METHOD1(LoadAllActiveCarts, void(CartDB::LoadCallback callback));
+};
 
 class HistoryClustersModuleRankerTest : public testing::Test {
  public:
@@ -54,7 +66,7 @@ class HistoryClustersModuleRankerTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(HistoryClustersModuleRankerTest, RecencyOnly) {
@@ -96,7 +108,8 @@ TEST_F(HistoryClustersModuleRankerTest, RecencyOnly) {
 
   base::flat_set<std::string> boost = {};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
-      /*optimization_guide_model_provider=*/nullptr, boost);
+      /*optimization_guide_model_provider=*/nullptr, /*cart_service=*/nullptr,
+      boost);
   std::vector<history::Cluster> clusters =
       RankClusters(module_ranker.get(), {cluster1, cluster2});
 
@@ -183,7 +196,8 @@ TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
 
   base::flat_set<std::string> boost = {"boosted", "boostedbuthidden"};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
-      /*optimization_guide_model_provider=*/nullptr, boost);
+      /*optimization_guide_model_provider=*/nullptr, /*cart_service=*/nullptr,
+      boost);
   std::vector<history::Cluster> clusters =
       RankClusters(module_ranker.get(), {cluster1, cluster2, cluster3});
 
@@ -238,8 +252,10 @@ class HistoryClustersModuleRankerWithModelTest
     : public HistoryClustersModuleRankerTest {
  public:
   HistoryClustersModuleRankerWithModelTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ntp_features::kNtpHistoryClustersModuleUseModelRanking);
+    scoped_feature_list_.InitWithFeatures(
+        {ntp_features::kNtpHistoryClustersModuleUseModelRanking,
+         ntp_features::kNtpChromeCartModule},
+        {});
   }
 
  private:
@@ -288,7 +304,7 @@ TEST_F(HistoryClustersModuleRankerWithModelTest,
       optimization_guide::TestOptimizationGuideModelProvider>();
   base::flat_set<std::string> boost = {};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
-      model_provider.get(), boost);
+      model_provider.get(), /*cart_service=*/nullptr, boost);
   std::vector<history::Cluster> clusters =
       RankClusters(module_ranker.get(), {cluster1, cluster2});
 
@@ -378,8 +394,19 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
   base::flat_set<std::string> boost = {"boosted", "boostedbuthidden"};
   auto model_provider = std::make_unique<
       optimization_guide::TestOptimizationGuideModelProvider>();
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  auto testing_profile = profile_builder.Build();
+  auto cart_service = std::make_unique<MockCartService>(testing_profile.get());
+  EXPECT_CALL(*cart_service,
+              LoadAllActiveCarts(base::test::IsNotNullCallback()))
+      .WillOnce(testing::WithArgs<0>(
+          testing::Invoke([&](CartDB::LoadCallback callback) -> void {
+            std::move(callback).Run(true, {});
+          })));
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
-      model_provider.get(), boost);
+      model_provider.get(), cart_service.get(), boost);
   auto model_handler = std::make_unique<FakeModelHandler>(model_provider.get());
   module_ranker->OverrideModelHandlerForTesting(std::move(model_handler));
   std::vector<history::Cluster> clusters =
