@@ -30,6 +30,9 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
+#include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
 
 namespace gpu {
 
@@ -159,6 +162,20 @@ base::expected<void, GLError> ConvertYUVACommon(
   return base::ok();
 }
 
+void InsertRecordingAndSubmit(SharedContextState* context,
+                              bool sync_cpu = false) {
+  CHECK(context->graphite_context());
+  auto recording = context->gpu_main_graphite_recorder()->snap();
+  if (recording) {
+    skgpu::graphite::InsertRecordingInfo info = {};
+    info.fRecording = recording.get();
+    context->graphite_context()->insertRecording(info);
+  }
+  context->graphite_context()->submit(sync_cpu
+                                          ? skgpu::graphite::SyncToCpu::kYes
+                                          : skgpu::graphite::SyncToCpu::kNo);
+}
+
 void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
   int num_planes = access->representation()->format().NumberOfPlanes();
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
@@ -177,6 +194,7 @@ void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
   // This will ensure that vulkan memory allocated on gpu main thread will be
   // cleaned up.
   if (!signal_semaphores.empty() || is_drdc_enabled) {
+    CHECK(context->gr_context());
     GrFlushInfo flush_info = {
         .fNumSemaphores = signal_semaphores.size(),
         .fSignalSemaphores = signal_semaphores.data(),
@@ -202,7 +220,12 @@ void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
       sync_cpu || !signal_semaphores.empty() || is_drdc_enabled;
 
   if (need_submit) {
+    CHECK(context->gr_context());
     context->gr_context()->submit(sync_cpu);
+  }
+
+  if (context->graphite_context()) {
+    InsertRecordingAndSubmit(context, sync_cpu);
   }
 }
 
@@ -452,12 +475,6 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
 
   bool drew_image = false;
   if (source_access_valid) {
-    std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> yuva_textures;
-    for (int i = 0; i < num_src_planes; ++i) {
-      yuva_textures[i] =
-          source_scoped_access[i]->promise_image_texture()->backendTexture();
-    }
-
     // Disable color space conversion if no source color space was specified.
     if (!src_rgb_color_space) {
       if (auto dest_color_space = dest_surface->imageInfo().refColorSpace()) {
@@ -465,15 +482,35 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
       }
     }
 
+    sk_sp<SkImage> result_image;
     SkISize dest_size =
         SkISize::Make(dest_surface->width(), dest_surface->height());
     SkYUVAInfo yuva_info(dest_size, src_plane_config, src_subsampling,
                          src_yuv_color_space);
-    GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),
-                                                kTopLeft_GrSurfaceOrigin);
-    auto result_image = SkImages::TextureFromYUVATextures(
-        shared_context_state_->gr_context(), yuva_backend_textures,
-        src_rgb_color_space);
+    if (auto* gr_context = shared_context_state_->gr_context()) {
+      std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> yuva_textures;
+      for (int i = 0; i < num_src_planes; ++i) {
+        yuva_textures[i] =
+            source_scoped_access[i]->promise_image_texture()->backendTexture();
+      }
+      GrYUVABackendTextures yuva_backend_textures(
+          yuva_info, yuva_textures.data(), kTopLeft_GrSurfaceOrigin);
+      result_image = SkImages::TextureFromYUVATextures(
+          gr_context, yuva_backend_textures, src_rgb_color_space);
+    } else {
+      CHECK(shared_context_state_->graphite_context());
+      auto* recorder = shared_context_state_->gpu_main_graphite_recorder();
+      std::array<skgpu::graphite::BackendTexture, SkYUVAInfo::kMaxPlanes>
+          yuva_textures;
+      for (int i = 0; i < num_src_planes; ++i) {
+        yuva_textures[i] = source_scoped_access[i]->graphite_texture();
+      }
+      skgpu::graphite::YUVABackendTextures yuva_backend_textures(
+          recorder, yuva_info, yuva_textures.data());
+      result_image = SkImage::MakeGraphiteFromYUVABackendTextures(
+          recorder, yuva_backend_textures, src_rgb_color_space);
+    }
+
     if (!result_image) {
       result = base::unexpected(
           GLError(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
@@ -706,6 +743,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
     GLsizei height,
     GLboolean flip_y,
     const volatile GLbyte* src_mailbox) {
+  CHECK(shared_context_state_->gr_context());
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(src_mailbox)[0]);
   DLOG_IF(ERROR, !source_mailbox.Verify())
