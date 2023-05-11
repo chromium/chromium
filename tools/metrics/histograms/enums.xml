@@ -82663,6 +82663,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="8" label="Pin Required"/>
   <int value="9" label="Pin Blocked"/>
   <int value="10" label="Invalid APN"/>
+  <int value="11" label="Internal Error"/>
 </enum>
 
 <enum name="PlatformFileError">
