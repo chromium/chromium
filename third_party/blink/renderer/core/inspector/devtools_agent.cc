@@ -101,7 +101,11 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
     io_task_runner_->DeleteSoon(FROM_HERE, this);
   }
 
-  ~IOAgent() override {}
+  ~IOAgent() override {
+    recordreplay::Assert(
+        "[RUN-1124-1902] DevToolsAgent::IOAgent::~IOAgent %d",
+        receiver_.internal_state()->RouterForTesting()->HasOneRef());
+  }
 
   // mojom::blink::DevToolsAgent implementation.
   void AttachDevToolsSession(
