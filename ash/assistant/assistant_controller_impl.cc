@@ -45,6 +45,7 @@ const AccountId& GetActiveUserAccountId() {
 }  // namespace
 
 AssistantControllerImpl::AssistantControllerImpl() {
+  Shell::Get()->AddShellObserver(this);
   assistant_state_controller_.AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
   AddObserver(this);
@@ -59,14 +60,7 @@ AssistantControllerImpl::AssistantControllerImpl() {
   NotifyConstructed();
 }
 
-AssistantControllerImpl::~AssistantControllerImpl() {
-  NotifyDestroying();
-
-  CrasAudioHandler::Get()->RemoveAudioObserver(this);
-  Shell::Get()->accessibility_controller()->RemoveObserver(this);
-  assistant_state_controller_.RemoveObserver(this);
-  RemoveObserver(this);
-}
+AssistantControllerImpl::~AssistantControllerImpl() = default;
 
 // static
 void AssistantControllerImpl::RegisterProfilePrefs(
@@ -302,6 +296,15 @@ void AssistantControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
   }
 
   assistant_->OnColorModeChanged(dark_mode_enabled);
+}
+
+void AssistantControllerImpl::OnShellDestroying() {
+  NotifyDestroying();
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  Shell::Get()->accessibility_controller()->RemoveObserver(this);
+  assistant_state_controller_.RemoveObserver(this);
+  Shell::Get()->RemoveShellObserver(this);
+  RemoveObserver(this);
 }
 
 bool AssistantControllerImpl::IsAssistantReady() const {
