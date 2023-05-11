@@ -13,13 +13,13 @@ source_set("password_checkup") {
   ]
   deps = [
     ":password_checkup_ui",
-    ":password_checkup_utils",
     "//base",
     "//components/password_manager/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -42,7 +42,6 @@ source_set("password_checkup_ui") {
   ]
   deps = [
     ":password_checkup_constants",
-    ":password_checkup_utils",
     "resources:password_checkup_header_background_color",
     "resources:password_checkup_header_green",
     "resources:password_checkup_header_loading",
@@ -54,26 +53,12 @@ source_set("password_checkup_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common/ui/colors",
-    "//ui/base",
-  ]
-}
-
-source_set("password_checkup_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "password_checkup_utils.h",
-    "password_checkup_utils.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/password_manager/core/browser",
-    "//components/password_manager/core/common:features",
-    "//ios/chrome/app/strings",
     "//ui/base",
   ]
 }
@@ -91,14 +76,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "password_checkup_mediator_unittest.mm",
-    "password_checkup_utils_unittest.mm",
     "password_checkup_view_controller_unittest.mm",
   ]
   deps = [
     ":password_checkup",
     ":password_checkup_constants",
     ":password_checkup_ui",
-    ":password_checkup_utils",
     "//base",
     "//base/test:test_support",
     "//components/keyed_service/core",
@@ -111,6 +94,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
