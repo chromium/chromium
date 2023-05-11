@@ -10,6 +10,8 @@
           android:title="@string/menu_reset_webview"/>
     <item android:id="@+id/menu_clear_cache"
           android:title="@string/menu_clear_cache"/>
+    <item android:id="@+id/menu_get_cookie"
+          android:title="@string/menu_get_cookie"/>
     <item android:id="@+id/menu_enable_tracing"
           android:checkable="true"
           android:title="@string/menu_enable_tracing"/>

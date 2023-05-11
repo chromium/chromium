@@ -259,6 +259,31 @@ public class CookieManagerTest {
         }
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testEmbedderCanSeePartitionedCookies() throws Throwable {
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            // Set a partitioned cookie and an unpartitioned cookie to ensure that they are all
+            // visible to CookieManager in the app.
+            String cookies[] = {"partitioned_cookie=foo; SameSite=None; Secure; Partitioned",
+                    "unpartitioned_cookie=bar; SameSite=None; Secure"};
+            List<Pair<String, String>> responseHeaders = new ArrayList<Pair<String, String>>();
+            for (String cookie : cookies) {
+                responseHeaders.add(Pair.create("Set-Cookie", cookie));
+            }
+            String url = webServer.setResponse("/", "test", responseHeaders);
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+            waitForCookie(url);
+            assertHasCookies(url);
+            validateCookies(url, "partitioned_cookie", "unpartitioned_cookie");
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
     private void setCookieWithDocumentCookieAPI(final String name, final String value)
             throws Throwable {
         JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),

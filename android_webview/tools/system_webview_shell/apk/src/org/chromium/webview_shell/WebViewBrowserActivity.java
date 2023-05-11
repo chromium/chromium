@@ -712,6 +712,10 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 mWebView.clearCache(true);
             }
             return true;
+        } else if (itemId == R.id.menu_get_cookie) {
+            String cookie = CookieManager.getInstance().getCookie(mWebView.getUrl());
+            Log.w(TAG, "GetCookie: " + cookie);
+            return true;
         } else if (itemId == R.id.menu_enable_tracing) {
             mEnableTracing = !mEnableTracing;
             item.setChecked(mEnableTracing);
