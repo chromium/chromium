@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {DataGridTestRunner} from 'data_grid_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests SegmentedRange\n`);
-  await TestRunner.loadTestModule('data_grid_test_runner');
 
   function testCase(testName, data, merge, expectSameBackwards) {
     TestRunner.addResult('Test case: ' + testName);
