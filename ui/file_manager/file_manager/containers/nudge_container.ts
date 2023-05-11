@@ -197,13 +197,11 @@ export class NudgeContainer {
     window.addEventListener(
         'resize', this.throttledRepositionCallback_.bind(this), config);
 
-    if (info.dismissText) {
-      // Self dismissable nudge only dismisses if the user clicks on the dismiss
-      // button.
+    if (info.selfDismiss) {
+      // Self dismissable nudge only dismisses if the user clicks on the nudge.
       this.nudge_.addEventListener(
-          XfNudge.events.DISMISS, () => this.closeNudge(this.currentNudgeType_),
-          config);
-      this.nudge_.dismissText = info.dismissText;
+          'pointerdown', () => this.closeNudge(this.currentNudgeType_), config);
+      // TODO(lucmult): Dismiss via keyboard.
     } else {
       // Otherwise the nudge dismisses when user clicks anywhere in the app.
       document.addEventListener('keydown', e => this.handleKeyDown_(e), config);
@@ -351,10 +349,10 @@ interface NudgeInfo {
   // will not appear.
   expiryDate: Date;
 
-  // When the nudge has a dismiss text, the user can dismiss by clicking the
-  // dismiss button. Otherwise the nudge is dismissed when clicking anywhere in
+  // When the using selfDimiss=true the user can dismiss by clicking in the
+  // nudge. Otherwise the nudge is dismissed when clicking anywhere in
   // the app/document.
-  dismissText?: string;
+  selfDismiss?: boolean;
 }
 
 /**
@@ -397,7 +395,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     content: () => str('ONE_DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.TRAILING_DOWNWARD,
     expiryDate: new Date(2999, 1, 1),
-    dismissText: str('OK_LABEL'),
+    selfDismiss: true,
   },
   [NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
@@ -411,7 +409,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     direction: NudgeDirection.TRAILING_DOWNWARD,
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
-    dismissText: str('OK_LABEL'),
+    selfDismiss: true,
   },
   [NudgeType['DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
@@ -425,7 +423,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     direction: NudgeDirection.TRAILING_DOWNWARD,
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
-    dismissText: str('OK_LABEL'),
+    selfDismiss: true,
   },
   [NudgeType['SEARCH_V2_EDUCATION_NUDGE']]: {
     anchor: () => document.querySelector<HTMLSpanElement>('#search-wrapper'),

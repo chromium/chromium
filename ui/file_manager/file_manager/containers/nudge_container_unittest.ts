@@ -136,7 +136,7 @@ export async function testShowWorksOnlyWhenAProperAnchorIsAvailable(
  * Tests that the enter key dismisses the nudge.
  */
 export async function testEnterKeyHidesNudge(done: () => void) {
-  nudgeInfo[NudgeType.TEST_NUDGE].dismissText = '';
+  nudgeInfo[NudgeType.TEST_NUDGE].selfDismiss = false;
   await createAndShowTestNudge();
 
   const keyDownEvent = new KeyboardEvent('keydown', {key: 'Enter'});
@@ -229,16 +229,11 @@ export async function testNudgeIsNotShownIfExpiryPeriodElapsed(
  * dismissText.
  */
 export async function testNudgeDismissButton(done: () => void) {
-  nudgeInfo[NudgeType.TEST_NUDGE].dismissText = 'Ok';
+  nudgeInfo[NudgeType.TEST_NUDGE].selfDismiss = true;
   await createAndShowTestNudge();
 
-  const button = nudgeElement?.shadowRoot!.getElementById('dismiss')!;
-  assertTrue(
-      button.getBoundingClientRect().width > 0,
-      'Dismiss button should be visible');
-
   // Click and wait it to dismiss.
-  button.click();
+  nudgeElement!.dispatchEvent(new PointerEvent('pointerdown'));
 
   // Reposition to hidden.
   await waitUntilRepositionsUninitialised();
