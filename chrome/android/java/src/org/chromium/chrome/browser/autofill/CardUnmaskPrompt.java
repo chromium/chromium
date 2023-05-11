@@ -82,7 +82,6 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
 
     private int mThisYear;
     private int mThisMonth;
-    private boolean mValidationWaitsForCalendarTask;
     private ModalDialogManager mModalDialogManager;
     private Context mContext;
 
@@ -286,7 +285,6 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
         protected void onPostExecute(Calendar result) {
             mThisYear = result.get(Calendar.YEAR);
             mThisMonth = result.get(Calendar.MONTH) + 1;
-            if (mValidationWaitsForCalendarTask) validate();
         }
     }
 
