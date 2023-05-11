@@ -53,6 +53,7 @@ extern const HatsConfig kHatsPhotosExperienceSurvey;
 extern const HatsConfig kHatsGeneralCameraSurvey;
 extern const HatsConfig kHatsBluetoothRevampSurvey;
 extern const HatsConfig kHatsBatteryLifeSurvey;
+extern const HatsConfig kHatsPeripheralsSurvey;
 extern const HatsConfig kPrivacyHubBaselineSurvey;
 extern const HatsConfig kHatsOsSettingsSearchSurvey;
 extern const HatsConfig kHatsBorealisGamesSurvey;

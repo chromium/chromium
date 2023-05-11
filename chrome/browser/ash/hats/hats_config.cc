@@ -186,6 +186,14 @@ const HatsConfig kHatsBatteryLifeSurvey = {
     prefs::kHatsBatteryLifeCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Peripherals experience survey -- shown after login.
+const HatsConfig kHatsPeripheralsSurvey = {
+    ::features::kHappinessTrackingSystemPeripherals,  // feature
+    base::Days(7),                                    // new_device_threshold
+    prefs::kHatsPeripheralsIsSelected,                // is_selected_pref_name
+    prefs::kHatsPeripheralsCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 // Privacy Hub Baseline experience survey -- shown 40 seconds after the user
 // leaves the Security and Privacy page.
 const HatsConfig kPrivacyHubBaselineSurvey = {

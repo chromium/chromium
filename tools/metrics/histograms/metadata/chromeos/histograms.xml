@@ -1319,6 +1319,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="General"/>
     <variant name="GeneralCamera"/>
     <variant name="Performance"/>
+    <variant name="Peripherals"/>
     <variant name="Stability"/>
   </token>
 </histogram>

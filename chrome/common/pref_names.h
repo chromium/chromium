@@ -253,6 +253,8 @@ extern const char kHatsBluetoothRevampCycleEndTs[];
 extern const char kHatsBluetoothRevampIsSelected[];
 extern const char kHatsBatteryLifeCycleEndTs[];
 extern const char kHatsBatteryLifeIsSelected[];
+extern const char kHatsPeripheralsCycleEndTs[];
+extern const char kHatsPeripheralsIsSelected[];
 extern const char kHatsLastInteractionTimestamp[];
 extern const char kHatsSurveyCycleEndTimestamp[];
 extern const char kHatsDeviceIsSelected[];
