@@ -41,13 +41,13 @@ luci.bucket(
                 "findit-for-me@appspot.gserviceaccount.com",
                 "tricium-prod@appspot.gserviceaccount.com",
             ],
-            projects = [
-                "angle",
-                "dawn",
-                "skia",
-                "swiftshader",
-                "v8",
-            ] if settings.is_main else None,
+            projects = [p for p in [
+                branches.value(branch_selector = branches.selector.MAIN, value = "angle"),
+                branches.value(branch_selector = branches.selector.DESKTOP_BRANCHES, value = "dawn"),
+                branches.value(branch_selector = branches.selector.MAIN, value = "skia"),
+                branches.value(branch_selector = branches.selector.MAIN, value = "swiftshader"),
+                branches.value(branch_selector = branches.selector.MAIN, value = "v8"),
+            ] if p != None],
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
