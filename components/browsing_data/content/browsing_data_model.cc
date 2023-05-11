@@ -12,6 +12,7 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
+#include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/core/features.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -88,6 +90,7 @@ std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
 
     case BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage:
     case BrowsingDataModel::StorageType::kSharedStorage:
+    case BrowsingDataModel::StorageType::kLocalStorage:
       return data_key.origin().host();
     default:
       NOTREACHED() << "Unexpected StorageType: "
@@ -118,11 +121,13 @@ struct StorageRemoverHelper {
   explicit StorageRemoverHelper(
       content::StoragePartition* storage_partition,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
+      scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       BrowsingDataModel::Delegate* delegate
       // TODO(crbug.com/1271155): Inject other dependencies.
       )
       : storage_partition_(storage_partition),
         quota_helper_(quota_helper),
+        local_storage_helper_(local_storage_helper),
         delegate_(delegate) {}
 
   void RemoveByPrimaryHost(
@@ -154,6 +159,7 @@ struct StorageRemoverHelper {
 
   raw_ptr<content::StoragePartition> storage_partition_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
+  scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
   raw_ptr<BrowsingDataModel::Delegate, DanglingUntriaged> delegate_;
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
@@ -219,6 +225,11 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
     for (auto type : quota_types) {
       helper->quota_helper_->DeleteHostData(storage_key.origin().host(), type);
     }
+  }
+
+  if (types.Has(BrowsingDataModel::StorageType::kLocalStorage)) {
+    helper->local_storage_helper_->DeleteStorageKey(
+        storage_key, helper->GetCompleteCallback());
   }
 }
 
@@ -331,6 +342,18 @@ void OnQuotaManagedDataLoaded(
         entry.storage_key,
         BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage,
         entry.syncable_usage + entry.temporary_usage);
+  }
+  std::move(loaded_callback).Run();
+}
+
+void OnLocalStorageLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    const std::list<content::StorageUsageInfo>& storage_usage_info) {
+  for (const auto& info : storage_usage_info) {
+    model->AddBrowsingData(info.storage_key,
+                           BrowsingDataModel::StorageType::kLocalStorage,
+                           info.total_size_bytes);
   }
   std::move(loaded_callback).Run();
 }
@@ -510,7 +533,8 @@ void BrowsingDataModel::RemoveBrowsingData(const DataOwner& data_owner,
 
   // Bind the lifetime of the helper to the lifetime of the callback.
   auto helper = std::make_unique<StorageRemoverHelper>(
-      storage_partition_, quota_helper_, delegate_.get());
+      storage_partition_, quota_helper_, local_storage_helper_,
+      delegate_.get());
   auto* helper_pointer = helper.get();
 
   base::OnceClosure wrapped_completed = base::BindOnce(
@@ -539,25 +563,10 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
       browsing_data::features::kDeprecateCookiesTreeModel);
 
-  // TODO(crbug.com/1271155): Derive this from the StorageTypeSet directly.
-  int storage_backend_count = 2;
-  if (is_shared_storage_enabled) {
-    storage_backend_count++;
-  }
-  if (is_interest_group_enabled) {
-    storage_backend_count++;
-  }
-
-  if (is_attribution_reporting_enabled) {
-    storage_backend_count++;
-  }
-
-  if (is_cookies_tree_model_deprecated) {
-    storage_backend_count++;
-  }
-
   base::RepeatingClosure completion =
-      base::BarrierClosure(storage_backend_count, std::move(finished_callback));
+      base::BindRepeating([](const base::OnceClosure&) {},
+                          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                              std::move(finished_callback)));
 
   // The public build interfaces for the model ensure that `this` remains valid
   // until `finished_callback` has been run. Thus, it's safe to pass raw `this`
@@ -588,6 +597,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   if (is_cookies_tree_model_deprecated) {
     quota_helper_->StartFetching(
         base::BindOnce(&OnQuotaManagedDataLoaded, this, completion));
+    local_storage_helper_->StartFetching(
+        base::BindOnce(&OnLocalStorageLoaded, this, completion));
   }
 
   // Data loaded from non-components storage types via the delegate.
@@ -603,5 +614,8 @@ BrowsingDataModel::BrowsingDataModel(
     : storage_partition_(storage_partition), delegate_(std::move(delegate)) {
   if (storage_partition_) {
     quota_helper_ = BrowsingDataQuotaHelper::Create(storage_partition_);
+    local_storage_helper_ =
+        base::MakeRefCounted<browsing_data::LocalStorageHelper>(
+            storage_partition_);
   }
 }

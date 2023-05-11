@@ -704,4 +704,51 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       LocalStorageHandledCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  // Ensure that there isn't any data fetched.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  SetDataForType("LocalStorage", web_contents());
+
+  // Ensure that local storage is fetched
+  browsing_data_model = BuildBrowsingDataModel();
+
+  bool is_cookies_tree_model_deprecated = GetParam();
+  if (is_cookies_tree_model_deprecated) {
+    // Validate that local storage is fetched to browsing data model.
+    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
+    ValidateBrowsingDataEntriesIgnoreUsage(
+        browsing_data_model.get(),
+        {{kTestHost,
+          data_key,
+          {BrowsingDataModel::StorageType::kLocalStorage,
+           /*storage_size=*/0, /*cookie_count=*/0}}});
+    ASSERT_EQ(browsing_data_model->size(), 1u);
+
+    // Remove local storage entry.
+    {
+      base::RunLoop run_loop;
+      browsing_data_model.get()->RemoveBrowsingData(kTestHost,
+                                                    run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
+    // Rebuild Browsing Data Model and verify entries are empty.
+    browsing_data_model = BuildBrowsingDataModel();
+    ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+    ASSERT_EQ(browsing_data_model->size(), 0u);
+  } else {
+    ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+    ASSERT_EQ(browsing_data_model->size(), 0u);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, BrowsingDataModelBrowserTest, ::testing::Bool());

@@ -43,8 +43,7 @@ LocalDataContainer::CreateFromStoragePartition(
         base::MakeRefCounted<browsing_data::CookieHelper>(
             storage_partition, is_cookie_deletion_disabled_callback),
         /*database_helper=*/nullptr,
-        base::MakeRefCounted<browsing_data::LocalStorageHelper>(
-            storage_partition),
+        /*local_storage_helper=*/nullptr,
         /*session_storage_helper=*/nullptr,
         /*indexed_db_helper=*/nullptr,
         /*file_system_helper=*/nullptr,
