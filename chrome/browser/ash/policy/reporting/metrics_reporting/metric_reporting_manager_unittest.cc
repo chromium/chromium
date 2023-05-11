@@ -496,10 +496,6 @@ TEST_P(MetricReportingManagerEventTest, Default) {
 
 TEST_F(MetricReportingManagerEventTest,
        ShouldNotCreateAppEventObserverWhenAppServiceUnavailable) {
-  // Enable app metrics reporting feature flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableAppMetricsReporting);
-
   // Setup appropriate mocks and stubs.
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
@@ -589,20 +585,6 @@ INSTANTIATE_TEST_SUITE_P(
          {"AppEvents_Default",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
-          /*is_affiliated=*/true, app_event_settings,
-          /*has_init_delay=*/false,
-          /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0},
-         {"AppEvents_FeatureFlagEnabled",
-          /*enabled_features=*/{kEnableAppMetricsReporting},
-          /*disabled_features=*/{},
-          /*is_affiliated=*/true, app_event_settings,
-          /*has_init_delay=*/false,
-          /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/1},
-         {"AppEvents_FeatureFlagDisabled",
-          /*enabled_features=*/{},
-          /*disabled_features=*/{kEnableAppMetricsReporting},
           /*is_affiliated=*/true, app_event_settings,
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
@@ -996,7 +978,7 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
   ON_CALL(*mock_delegate_, IsDeprovisioned).WillByDefault(Return(false));
   ON_CALL(*mock_delegate_, IsAffiliated).WillByDefault(Return(true));
   ON_CALL(*mock_delegate_, IsAppServiceAvailableForProfile)
-      .WillByDefault(Return(true));
+      .WillByDefault(Return(false));
 
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);

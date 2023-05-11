@@ -6,42 +6,30 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
-// static
-std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForProfile(
-    Profile* profile) {
-  DCHECK(profile);
-  auto app_platform_metrics_retriever =
-      std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr());
-  return base::WrapUnique(
-      new AppEventsObserver(std::move(app_platform_metrics_retriever)));
-}
-
-// static
-std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForTest(
-    std::unique_ptr<AppPlatformMetricsRetriever>
-        app_platform_metrics_retriever) {
-  return base::WrapUnique(
-      new AppEventsObserver(std::move(app_platform_metrics_retriever)));
-}
-
 AppEventsObserver::AppEventsObserver(
-    std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever)
+    std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever,
+    const ReportingSettings* reporting_settings)
     : app_platform_metrics_retriever_(
-          std::move(app_platform_metrics_retriever)) {
+          std::move(app_platform_metrics_retriever)),
+      reporting_settings_(reporting_settings) {
   DCHECK(app_platform_metrics_retriever_);
   app_platform_metrics_retriever_->GetAppPlatformMetrics(base::BindOnce(
       &AppEventsObserver::InitEventObserver, weak_ptr_factory_.GetWeakPtr()));
@@ -56,8 +44,8 @@ void AppEventsObserver::SetOnEventObservedCallback(
 }
 
 void AppEventsObserver::SetReportingEnabled(bool is_enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_enabled_ = is_enabled;
+  // Do nothing. We retrieve the reporting setting and validate the app type is
+  // allowed before we report observed events.
 }
 
 void AppEventsObserver::InitEventObserver(
@@ -80,7 +68,7 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
                                        ::apps::InstallReason app_install_reason,
                                        ::apps::InstallTime app_install_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_enabled_) {
+  if (!IsAppTypeAllowed(app_type)) {
     return;
   }
 
@@ -110,7 +98,7 @@ void AppEventsObserver::OnAppLaunched(const std::string& app_id,
                                       ::apps::AppType app_type,
                                       ::apps::LaunchSource app_launch_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_enabled_) {
+  if (!IsAppTypeAllowed(app_type)) {
     return;
   }
 
@@ -135,7 +123,7 @@ void AppEventsObserver::OnAppUninstalled(
     ::apps::AppType app_type,
     ::apps::UninstallSource app_uninstall_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_enabled_) {
+  if (!IsAppTypeAllowed(app_type)) {
     return;
   }
 
@@ -158,6 +146,22 @@ void AppEventsObserver::OnAppUninstalled(
 void AppEventsObserver::OnAppPlatformMetricsDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_.Reset();
+}
+
+bool AppEventsObserver::IsAppTypeAllowed(::apps::AppType app_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(reporting_settings_);
+  const base::Value::List* allowed_app_types = nullptr;
+  if (!reporting_settings_->GetList(::ash::reporting::kReportAppInventory,
+                                    &allowed_app_types)) {
+    // Policy likely not set. Disallow app inventory reporting regardless of app
+    // type.
+    return false;
+  }
+  const absl::optional<std::string> app_category =
+      ::ash::reporting::GetAppReportingCategoryForType(app_type);
+  return app_category.has_value() &&
+         base::Contains(*allowed_app_types, app_category.value());
 }
 
 }  // namespace reporting

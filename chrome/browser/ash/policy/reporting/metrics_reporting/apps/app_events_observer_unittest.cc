@@ -5,9 +5,10 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 
 #include <memory>
-#include <tuple>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
+#include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -79,8 +82,7 @@ class MockAppPlatformMetricsRetriever : public AppPlatformMetricsRetriever {
               (override));
 };
 
-class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
-                              public ::testing::WithParamInterface<bool> {
+class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
  protected:
   void SetUp() override {
     ::apps::AppPlatformMetricsServiceTestBase::SetUp();
@@ -98,9 +100,8 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
           std::move(callback).Run(
               app_platform_metrics_service()->AppPlatformMetrics());
         });
-    app_events_observer_ = AppEventsObserver::CreateForTest(
-        std::move(mock_app_platform_metrics_retriever));
-    app_events_observer_->SetReportingEnabled(IsReportingEnabled());
+    app_events_observer_ = std::make_unique<AppEventsObserver>(
+        std::move(mock_app_platform_metrics_retriever), &reporting_settings_);
   }
 
   void TearDown() override {
@@ -108,12 +109,25 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
     ::apps::AppPlatformMetricsServiceTestBase::TearDown();
   }
 
-  bool IsReportingEnabled() const { return GetParam(); }
+  void SetAllowedAppReportingTypes(const std::vector<std::string>& app_types) {
+    base::Value::List allowed_app_types;
+    for (const auto& app_type : app_types) {
+      allowed_app_types.Append(app_type);
+    }
+    reporting_settings_.SetList(::ash::reporting::kReportAppInventory,
+                                std::move(allowed_app_types));
 
+    // Simulate policy update.
+    bool is_app_reporting_enabled = !app_types.empty();
+    app_events_observer_->SetReportingEnabled(is_app_reporting_enabled);
+  }
+
+  test::FakeReportingSettings reporting_settings_;
   std::unique_ptr<AppEventsObserver> app_events_observer_;
 };
 
-TEST_P(AppEventsObserverTest, OnAppInstalled) {
+TEST_F(AppEventsObserverTest, OnAppInstalled) {
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryBrowser});
   test::TestEvent<MetricData> test_event;
   app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
 
@@ -123,37 +137,63 @@ TEST_P(AppEventsObserverTest, OnAppInstalled) {
                 /*publisher_id=*/"", ::apps::Readiness::kReady,
                 ::apps::InstallSource::kBrowser);
 
-  if (IsReportingEnabled()) {
-    // Verify data being reported.
-    const MetricData& result = test_event.result();
-    ASSERT_TRUE(result.has_event_data());
-    EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_INSTALLED));
-    ASSERT_TRUE(result.has_telemetry_data());
-    ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
-    ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_install_data());
+  // Verify data being reported.
+  const MetricData& result = test_event.result();
+  ASSERT_TRUE(result.has_event_data());
+  EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_INSTALLED));
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
+  ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_install_data());
 
-    const AppInstallData& app_install_data =
-        result.telemetry_data().app_telemetry().app_install_data();
-    EXPECT_THAT(app_install_data.app_id(), StrEq(app_id));
-    EXPECT_THAT(
-        app_install_data.app_type(),
-        Eq(::apps::ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER));
-    EXPECT_THAT(
-        app_install_data.app_install_reason(),
-        Eq(::apps::ApplicationInstallReason::APPLICATION_INSTALL_REASON_USER));
-    EXPECT_THAT(app_install_data.app_install_source(),
-                Eq(::apps::ApplicationInstallSource::
-                       APPLICATION_INSTALL_SOURCE_BROWSER));
-    EXPECT_THAT(
-        app_install_data.app_install_time(),
-        Eq(::apps::ApplicationInstallTime::APPLICATION_INSTALL_TIME_INIT));
-  } else {
-    // Should not report any data if reporting is disabled.
-    ASSERT_TRUE(test_event.no_result());
-  }
+  const AppInstallData& app_install_data =
+      result.telemetry_data().app_telemetry().app_install_data();
+  EXPECT_THAT(app_install_data.app_id(), StrEq(app_id));
+  EXPECT_THAT(app_install_data.app_type(),
+              Eq(::apps::ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER));
+  EXPECT_THAT(
+      app_install_data.app_install_reason(),
+      Eq(::apps::ApplicationInstallReason::APPLICATION_INSTALL_REASON_USER));
+  EXPECT_THAT(
+      app_install_data.app_install_source(),
+      Eq(::apps::ApplicationInstallSource::APPLICATION_INSTALL_SOURCE_BROWSER));
+  EXPECT_THAT(
+      app_install_data.app_install_time(),
+      Eq(::apps::ApplicationInstallTime::APPLICATION_INSTALL_TIME_INIT));
 }
 
-TEST_P(AppEventsObserverTest, OnAppLaunched) {
+TEST_F(AppEventsObserverTest, OnAppInstalled_UnsetPolicy) {
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Install new app.
+  static constexpr char app_id[] = "TestNewApp";
+  InstallOneApp(app_id, ::apps::AppType::kStandaloneBrowser,
+                /*publisher_id=*/"", ::apps::Readiness::kReady,
+                ::apps::InstallSource::kBrowser);
+
+  // Verify no data is being reported.
+  ASSERT_TRUE(test_event.no_result());
+}
+
+TEST_F(AppEventsObserverTest, OnAppInstalled_DisallowedAppType) {
+  // Set policy to enable reporting for a different app type than the one being
+  // tested.
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Install new app.
+  static constexpr char app_id[] = "TestNewApp";
+  InstallOneApp(app_id, ::apps::AppType::kStandaloneBrowser,
+                /*publisher_id=*/"", ::apps::Readiness::kReady,
+                ::apps::InstallSource::kBrowser);
+
+  // Verify no data is being reported.
+  ASSERT_TRUE(test_event.no_result());
+}
+
+TEST_F(AppEventsObserverTest, OnAppLaunched) {
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
   test::TestEvent<MetricData> test_event;
   app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
 
@@ -164,30 +204,59 @@ TEST_P(AppEventsObserverTest, OnAppLaunched) {
   proxy->Launch(kTestAppId, ui::EF_NONE, apps::LaunchSource::kFromCommandLine,
                 nullptr);
 
-  if (IsReportingEnabled()) {
-    // Verify data being reported.
-    const MetricData& result = test_event.result();
-    ASSERT_TRUE(result.has_event_data());
-    EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_LAUNCHED));
-    ASSERT_TRUE(result.has_telemetry_data());
-    ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
-    ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_launch_data());
+  // Verify data being reported.
+  const MetricData& result = test_event.result();
+  ASSERT_TRUE(result.has_event_data());
+  EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_LAUNCHED));
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
+  ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_launch_data());
 
-    const AppLaunchData& app_launch_data =
-        result.telemetry_data().app_telemetry().app_launch_data();
-    EXPECT_THAT(app_launch_data.app_id(), StrEq(kTestAppId));
-    EXPECT_THAT(app_launch_data.app_type(),
-                Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
-    EXPECT_THAT(app_launch_data.app_launch_source(),
-                Eq(::apps::ApplicationLaunchSource::
-                       APPLICATION_LAUNCH_SOURCE_COMMAND_LINE));
-  } else {
-    // Should not report any data if reporting is disabled.
-    ASSERT_TRUE(test_event.no_result());
-  }
+  const AppLaunchData& app_launch_data =
+      result.telemetry_data().app_telemetry().app_launch_data();
+  EXPECT_THAT(app_launch_data.app_id(), StrEq(kTestAppId));
+  EXPECT_THAT(app_launch_data.app_type(),
+              Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
+  EXPECT_THAT(app_launch_data.app_launch_source(),
+              Eq(::apps::ApplicationLaunchSource::
+                     APPLICATION_LAUNCH_SOURCE_COMMAND_LINE));
 }
 
-TEST_P(AppEventsObserverTest, OnAppUninstalled) {
+TEST_F(AppEventsObserverTest, OnAppLaunched_UnsetPolicy) {
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Simulate app launch for pre-installed app.
+  auto* const proxy = ::apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  FakePublisher fake_publisher(proxy, ::apps::AppType::kArc);
+  proxy->Launch(kTestAppId, ui::EF_NONE, apps::LaunchSource::kFromCommandLine,
+                nullptr);
+
+  // Verify no data is being reported.
+  ASSERT_TRUE(test_event.no_result());
+}
+
+TEST_F(AppEventsObserverTest, OnAppLaunched_DisallowedAppType) {
+  // Set policy to enable reporting for a different app type than the one being
+  // tested.
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryGames});
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Simulate app launch for pre-installed app.
+  auto* const proxy = ::apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  FakePublisher fake_publisher(proxy, ::apps::AppType::kArc);
+  proxy->Launch(kTestAppId, ui::EF_NONE, apps::LaunchSource::kFromCommandLine,
+                nullptr);
+
+  // Verify no data is being reported.
+  ASSERT_TRUE(test_event.no_result());
+}
+
+TEST_F(AppEventsObserverTest, OnAppUninstalled) {
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
   test::TestEvent<MetricData> test_event;
   app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
 
@@ -197,32 +266,57 @@ TEST_P(AppEventsObserverTest, OnAppUninstalled) {
   FakePublisher fake_publisher(proxy, ::apps::AppType::kArc);
   proxy->UninstallSilently(kTestAppId, ::apps::UninstallSource::kAppList);
 
-  if (IsReportingEnabled()) {
-    // Verify data being reported.
-    const MetricData& result = test_event.result();
-    ASSERT_TRUE(result.has_event_data());
-    EXPECT_THAT(result.event_data().type(),
-                Eq(MetricEventType::APP_UNINSTALLED));
-    ASSERT_TRUE(result.has_telemetry_data());
-    ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
-    ASSERT_TRUE(
-        result.telemetry_data().app_telemetry().has_app_uninstall_data());
+  // Verify data being reported.
+  const MetricData& result = test_event.result();
+  ASSERT_TRUE(result.has_event_data());
+  EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_UNINSTALLED));
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
+  ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_uninstall_data());
 
-    const AppUninstallData& app_uninstall_data =
-        result.telemetry_data().app_telemetry().app_uninstall_data();
-    EXPECT_THAT(app_uninstall_data.app_id(), StrEq(kTestAppId));
-    EXPECT_THAT(app_uninstall_data.app_type(),
-                Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
-    EXPECT_THAT(app_uninstall_data.app_uninstall_source(),
-                Eq(::apps::ApplicationUninstallSource::
-                       APPLICATION_UNINSTALL_SOURCE_APP_LIST));
-  } else {
-    // Should not report any data if reporting is disabled.
-    ASSERT_TRUE(test_event.no_result());
-  }
+  const AppUninstallData& app_uninstall_data =
+      result.telemetry_data().app_telemetry().app_uninstall_data();
+  EXPECT_THAT(app_uninstall_data.app_id(), StrEq(kTestAppId));
+  EXPECT_THAT(app_uninstall_data.app_type(),
+              Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
+  EXPECT_THAT(app_uninstall_data.app_uninstall_source(),
+              Eq(::apps::ApplicationUninstallSource::
+                     APPLICATION_UNINSTALL_SOURCE_APP_LIST));
 }
 
-TEST_P(AppEventsObserverTest, OnAppPlatformMetricsDestroyed) {
+TEST_F(AppEventsObserverTest, OnAppUninstalled_UnsetPolicy) {
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Simulate app uninstall for pre-installed app.
+  auto* const proxy = ::apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  FakePublisher fake_publisher(proxy, ::apps::AppType::kArc);
+  proxy->UninstallSilently(kTestAppId, ::apps::UninstallSource::kAppList);
+
+  // Verify no data is being reported.
+  ASSERT_TRUE(test_event.no_result());
+}
+
+TEST_F(AppEventsObserverTest, OnAppUninstalled_DisallowedAppType) {
+  // Set policy to enable reporting for a different app type than the one being
+  // tested.
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryGames});
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Simulate app uninstall for pre-installed app.
+  auto* const proxy = ::apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  FakePublisher fake_publisher(proxy, ::apps::AppType::kArc);
+  proxy->UninstallSilently(kTestAppId, ::apps::UninstallSource::kAppList);
+
+  // Verify no data is being reported.
+  ASSERT_TRUE(test_event.no_result());
+}
+
+TEST_F(AppEventsObserverTest, OnAppPlatformMetricsDestroyed) {
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryBrowser});
   test::TestEvent<MetricData> test_event;
   app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
 
@@ -238,10 +332,6 @@ TEST_P(AppEventsObserverTest, OnAppPlatformMetricsDestroyed) {
                 ::apps::InstallSource::kBrowser);
   ASSERT_TRUE(test_event.no_result());
 }
-
-INSTANTIATE_TEST_SUITE_P(AppEventsObserverTests,
-                         AppEventsObserverTest,
-                         ::testing::Bool() /* true - reporting enabled*/);
 
 }  // namespace
 }  // namespace reporting

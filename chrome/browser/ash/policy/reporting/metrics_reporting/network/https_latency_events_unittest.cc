@@ -85,6 +85,10 @@ class FakeMetricReportingManagerDelegate
 
   bool IsDeprovisioned() const override { return false; }
 
+  bool IsAppServiceAvailableForProfile(Profile* profile) const override {
+    return false;
+  }
+
   std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
       EventType event_type,
       Destination destination,

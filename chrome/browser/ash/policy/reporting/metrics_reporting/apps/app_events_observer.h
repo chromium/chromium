@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/metrics/metric_event_observer.h"
+#include "components/reporting/metrics/reporting_settings.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
@@ -26,16 +27,9 @@ namespace reporting {
 class AppEventsObserver : public MetricEventObserver,
                           public ::apps::AppPlatformMetrics::Observer {
  public:
-  // Static helper that instantiates the `AppEventsObserver` for the given
-  // profile.
-  static std::unique_ptr<AppEventsObserver> CreateForProfile(Profile* profile);
-
-  // Static test helper that instantiates the `AppEventsObserver` using the
-  // specified `AppPlatformMetricsRetriever`.
-  static std::unique_ptr<AppEventsObserver> CreateForTest(
-      std::unique_ptr<AppPlatformMetricsRetriever>
-          app_platform_metrics_retriever);
-
+  AppEventsObserver(std::unique_ptr<AppPlatformMetricsRetriever>
+                        app_platform_metrics_retriever,
+                    const ReportingSettings* reporting_settings);
   AppEventsObserver(const AppEventsObserver& other) = delete;
   AppEventsObserver& operator=(const AppEventsObserver& other) = delete;
   ~AppEventsObserver() override;
@@ -47,9 +41,6 @@ class AppEventsObserver : public MetricEventObserver,
   void SetReportingEnabled(bool is_enabled) override;
 
  private:
-  explicit AppEventsObserver(std::unique_ptr<AppPlatformMetricsRetriever>
-                                 app_platform_metrics_retriever);
-
   // Initializes events observer and starts observing app events tracked by the
   // `AppPlatformMetrics` component (if initialized).
   void InitEventObserver(::apps::AppPlatformMetrics* app_platform_metrics);
@@ -74,6 +65,10 @@ class AppEventsObserver : public MetricEventObserver,
   // ::apps::AppPlatformMetrics::Observer:
   void OnAppPlatformMetricsDestroyed() override;
 
+  // Helper that determines if the specified app type is allowlisted for app
+  // inventory event reporting.
+  bool IsAppTypeAllowed(::apps::AppType app_type) const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Retriever that retrieves the `AppPlatformMetrics` component so the
@@ -81,14 +76,16 @@ class AppEventsObserver : public MetricEventObserver,
   const std::unique_ptr<AppPlatformMetricsRetriever>
       app_platform_metrics_retriever_;
 
+  // Pointer to the reporting settings that controls app inventory event
+  // reporting. Guaranteed to outlive the observer because it is managed by the
+  // `MetricReportingManager`.
+  const raw_ptr<const ReportingSettings> reporting_settings_;
+
   // Observer for tracking app events. Will be reset if the `AppPlatformMetrics`
   // component gets destructed before the event observer.
   base::ScopedObservation<::apps::AppPlatformMetrics,
                           ::apps::AppPlatformMetrics::Observer>
       observer_ GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  // Boolean that controls app metric collection and reporting.
-  bool is_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Callback triggered when app metrics are collected and app metric
   // reporting is enabled.

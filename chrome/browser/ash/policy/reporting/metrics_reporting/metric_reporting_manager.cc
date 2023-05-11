@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_collector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_memory_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
@@ -306,20 +308,21 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
       /*init_delay=*/base::TimeDelta());
   InitPeripheralsCollectors();
 
-  // Start observing app events only if the feature flag is set and app service
-  // is available for the given profile.
-  if (base::FeatureList::IsEnabled(kEnableAppMetricsReporting) &&
-      delegate_->IsAppServiceAvailableForProfile(profile)) {
+  // Start observing app events only if the app service is available for the
+  // given profile.
+  if (delegate_->IsAppServiceAvailableForProfile(profile)) {
     // Initialize the `AppUsageCollector` so we can start tracking app usage
     // reports right away.
     app_usage_collector_ =
         AppUsageCollector::Create(profile, &reporting_settings_);
-    auto app_events_observer = AppEventsObserver::CreateForProfile(profile);
+    auto app_events_observer = std::make_unique<AppEventsObserver>(
+        std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr()),
+        user_reporting_settings_.get());
     InitEventObserverManager(
         std::move(app_events_observer), user_event_report_queue_.get(),
-        &reporting_settings_,
-        /*enable_setting_path=*/::ash::kReportDeviceAppInfo,
-        metrics::kReportDeviceAppInfoDefaultValue,
+        user_reporting_settings_.get(),
+        /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
+        metrics::kReportAppInventoryEnabledDefaultValue,
         /*init_delay=*/base::TimeDelta());
   }
 }

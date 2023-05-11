@@ -49,6 +49,11 @@ constexpr base::TimeDelta kInitialUploadDelay = base::Minutes(3);
 // Minimum usage time threshold for app usage reporting.
 constexpr base::TimeDelta kMinimumAppUsageTime = base::Milliseconds(1);
 
+// Default value that controls app inventory reporting. Set to false even though
+// the corresponding user policy is a list type to signify reporting is
+// disallowed by default.
+constexpr bool kReportAppInventoryEnabledDefaultValue = false;
+
 // Default value for reporting device activity heartbeats.
 constexpr bool kDeviceActivityHeartbeatEnabledDefaultValue = false;
 
