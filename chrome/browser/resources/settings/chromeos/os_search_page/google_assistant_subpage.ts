@@ -67,7 +67,7 @@ const SettingsGoogleAssistantSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(
         PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsGoogleAssistantSubpageElement extends
+export class SettingsGoogleAssistantSubpageElement extends
     SettingsGoogleAssistantSubpageElementBase {
   static get is() {
     return 'settings-google-assistant-subpage';

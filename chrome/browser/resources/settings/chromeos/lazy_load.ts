@@ -162,6 +162,6 @@ export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_p
 export {SettingsPrivacyHubSubpage} from './os_privacy_page/privacy_hub_subpage.js';
 export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
-export {GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
-export {ConsentStatus, DspHotwordState} from './os_search_page/google_assistant_subpage.js';
+export {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
+export {ConsentStatus, DspHotwordState, SettingsGoogleAssistantSubpageElement} from './os_search_page/google_assistant_subpage.js';
 export {SettingsSearchSubpageElement} from './os_search_page/search_subpage.js';

@@ -96,6 +96,7 @@ export {getContactManager, observeContactManager, setContactManagerForTesting} f
 export * as nearbyShareMojom from '/shared/nearby_share.mojom-webui.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
+export {ControlledButtonElement} from '/shared/settings/controls/controlled_button.js';
 export {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
 export {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';

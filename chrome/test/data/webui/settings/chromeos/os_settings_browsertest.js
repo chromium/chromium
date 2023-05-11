@@ -316,7 +316,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
  ['FingerprintListSubpage', 'fingerprint_list_subpage_test.js'],
- ['GoogleAssistantSubpage', 'google_assistant_subpage_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
@@ -562,6 +561,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_privacy_page/smart_privacy_subpage_test.js'
  ],
  ['OsSearchPage', 'os_search_page/os_search_page_test.js'],
+ [
+   'OsSearchPageGoogleAssistantSubpage',
+   'os_search_page/google_assistant_subpage_test.js'
+ ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  ['OsSettingsMenu', 'os_settings_menu/os_settings_menu_test.js'],

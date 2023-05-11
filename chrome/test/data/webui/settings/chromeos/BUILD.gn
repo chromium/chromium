@@ -50,7 +50,6 @@ build_webui_tests("build") {
     "hotspot_config_dialog_tests.js",
     "hotspot_subpage_tests.js",
     "hotspot_summary_item_tests.js",
-    "google_assistant_subpage_test.js",
     "input_page_test.js",
     "internet_config_test.js",
     "internet_detail_menu_test.js",
@@ -237,6 +236,7 @@ build_webui_tests("build") {
     "os_privacy_page/test_metrics_consent_browser_proxy.ts",
     "os_privacy_page/test_privacy_hub_browser_proxy.ts",
 
+    "os_search_page/google_assistant_subpage_test.ts",
     "os_search_page/os_search_page_test.ts",
     "os_search_page/search_subpage_test.ts",
 
