@@ -1,0 +1,32 @@
+# This workflow will update the version in .browser and open a PR
+
+name: 'Update the pinned browser version'
+
+on:
+  schedule:
+    # Run hourly at xx:30.
+    - cron: '30 * * * *'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - uses: google/wireit@setup-github-actions-caching/v1
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Download the latest version
+        run: |
+          browser_spec="$(npx @puppeteer/browsers install chrome@canary --path /tmp/browsers | cut -f 1 -d' ')"
+          echo "$browser_spec" > .browser
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
