@@ -134,6 +134,7 @@ void MockIMEInputContextHandler::ReplaceSurroundingText(
 SurroundingTextInfo MockIMEInputContextHandler::GetSurroundingTextInfo() {
   SurroundingTextInfo info;
   info.selection_range = cursor_range_;
+  info.offset = 0;
   return info;
 }
 
