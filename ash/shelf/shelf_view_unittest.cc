@@ -291,9 +291,16 @@ TEST_F(ShelfObserverIconTest, AddRemove) {
   observer()->Reset();
 }
 
+// Flaky on linux-chromeos-rel: https://crbug.com/1444582
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AddRemoveWithMultipleDisplays \
+  DISABLED_AddRemoveWithMultipleDisplays
+#else
+#define MAYBE_AddRemoveWithMultipleDisplays AddRemoveWithMultipleDisplays
+#endif
 // Make sure creating/deleting an window on one displays notifies a
 // shelf on external display as well as one on primary.
-TEST_F(ShelfObserverIconTest, AddRemoveWithMultipleDisplays) {
+TEST_F(ShelfObserverIconTest, MAYBE_AddRemoveWithMultipleDisplays) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
