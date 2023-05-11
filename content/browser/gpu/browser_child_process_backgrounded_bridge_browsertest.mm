@@ -126,8 +126,9 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
   EXPECT_TRUE(IsProcessBackgrounded(gpu_process_host->process_id()));
 }
 
+// Flaky: https://crbug.com/1443367
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
-                       OnBackgroundedStateChanged) {
+                       DISABLED_OnBackgroundedStateChanged) {
   // Wait until we receive the port for the GPU process.
   WaitForPort();
 
