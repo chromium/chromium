@@ -940,12 +940,22 @@ export class FileGrid extends Grid {
       return;
     }
 
-    const {syncStatus} = metadata;
+    let {syncStatus} = metadata;
     let progress = metadata.progress ?? 0;
     const inlineStatus = li.querySelector('.inline-status');
 
     if (!syncStatus || !inlineStatus) {
       return;
+    }
+
+    const {syncCompletedTime} = metadata;
+
+    // The UX spec determines completed sync status should be displayed
+    // for 300ms before transitioning to other statuses. Let's hold the
+    // "completed" state for at least 300ms.
+    if (syncCompletedTime && Date.now() - syncCompletedTime < 300) {
+      syncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
+      progress = 1.0;
     }
 
     switch (syncStatus) {
@@ -958,6 +968,20 @@ export class FileGrid extends Grid {
         inlineStatus.setAttribute(
             'aria-label',
             `${str('IN_PROGRESS_LABEL')} - ${(progress * 100).toFixed(0)}%`);
+        break;
+      case chrome.fileManagerPrivate.SyncStatus.NOT_FOUND:
+        // Files can have a sync status of "not_found" even though they
+        // are actually "queued". This can happen due to a delay in the
+        // "queued" status being communicated from DriveFS. In this case
+        // though, they would also be considered dirty (meaning they have
+        // unsynced changes so will eventually get queued for syncing).
+        // Hence, let's display a status "not_found" that is also "dirty"
+        // as "queued".
+        if (metadata.dirty) {
+          progress = 0;
+          syncStatus = chrome.fileManagerPrivate.SyncStatus.QUEUED;
+          inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
+        }
         break;
       default:
         break;

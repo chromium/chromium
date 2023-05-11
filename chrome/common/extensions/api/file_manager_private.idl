@@ -254,7 +254,8 @@ enum EntryPropertyName {
   isArbitrarySyncFolder,
   syncStatus,
   progress,
-  shortcut
+  shortcut,
+  syncCompletedTime
 };
 
 // Source of the volume data.
@@ -557,6 +558,10 @@ dictionary EntryProperties {
   // E.g., pasting, syncing. Note: currently, this is exclusively being used
   // for Drive syncing.
   double? progress;
+
+  // Time in milliseconds since the epoch when the file last received a
+  // "completed" sync status.
+  double? syncCompletedTime;
 
   // True if the entry is a shortcut.
   boolean? shortcut;

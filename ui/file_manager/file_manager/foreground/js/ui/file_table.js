@@ -1032,6 +1032,7 @@ export class FileTable extends Table {
                   'pinned',
                   'syncStatus',
                   'progress',
+                  'syncCompletedTime',
                   'shortcut',
                 ])[0],
             util.isTeamDriveRoot(entry));

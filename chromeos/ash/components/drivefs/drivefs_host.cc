@@ -10,10 +10,11 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -36,11 +37,6 @@
 namespace drivefs {
 
 namespace {
-
-// Time to accumulate individual sync status events after a SyncingStatusUpdate
-// is received from DriveFS. By the end of this interval, all events accumulated
-// so far are dispatched in batch to observers, excluding any redundant events.
-constexpr auto kIndividualSyncStatusIntervalMs = base::Milliseconds(100);
 
 constexpr char kDataPath[] = "GCache/v2";
 
@@ -65,8 +61,7 @@ class DriveFsHost::MountState : public DriveFsSession,
                        host->delegate_->GetMyFilesPath(),
                        host->GetDefaultMountDirName(),
                        host->mount_observer_),
-        host_(host),
-        sync_status_tracker_(std::make_unique<SyncStatusTracker>()) {
+        host_(host) {
     token_fetch_attempted_ =
         bool{host->account_token_delegate_->GetCachedAccessToken()};
     search_ = std::make_unique<DriveFsSearch>(
@@ -75,14 +70,6 @@ class DriveFsHost::MountState : public DriveFsSession,
       http_client_ = std::make_unique<DriveFsHttpClient>(
           host_->delegate_->GetURLLoaderFactory());
     }
-
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
-      sync_throttle_timer_ = std::make_unique<base::RetainingOneShotTimer>(
-          FROM_HERE, kIndividualSyncStatusIntervalMs,
-          base::BindRepeating(
-              &DriveFsHost::MountState::DispatchBatchIndividualSyncEvents,
-              base::Unretained(this)));
-    }
   }
 
   MountState(const MountState&) = delete;
@@ -90,9 +77,6 @@ class DriveFsHost::MountState : public DriveFsSession,
 
   ~MountState() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
-      sync_throttle_timer_->Stop();
-    }
     if (team_drives_fetched_) {
       host_->delegate_->GetDriveNotificationManager().ClearTeamDriveIds();
       host_->delegate_->GetDriveNotificationManager().RemoveObserver(this);
@@ -132,7 +116,11 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   SyncState GetSyncStateForPath(const base::FilePath& drive_path) {
-    return sync_status_tracker_->GetSyncState(drive_path);
+    const auto it = path_to_sync_state.find(drive_path.AsUTF8Unsafe());
+    if (it == path_to_sync_state.end()) {
+      return SyncState::CreateNotFound(drive_path);
+    }
+    return it->second;
   }
 
  private:
@@ -147,104 +135,50 @@ class DriveFsHost::MountState : public DriveFsSession,
     token_fetch_attempted_ = true;
   }
 
-  void DispatchBatchIndividualSyncEvents() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
-
+  void OnItemProgress(const mojom::ProgressEventPtr progress_event) override {
     if (!base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
       return;
     }
+    const std::string path = progress_event->path;
 
-    // Get all the syncing states for the paths that had any updates since the
-    // timer started running.
-    const auto sync_states = sync_status_tracker_->GetChangesAndClean();
-
-    if (sync_states.empty()) {
-      return;
+    SyncStatus status;
+    if (progress_event->progress == 0) {
+      status = SyncStatus::kQueued;
+    } else if (progress_event->progress == 100) {
+      status = SyncStatus::kCompleted;
+    } else {
+      status = SyncStatus::kInProgress;
     }
 
-    // Only send states with paths below the mount path.
     std::vector<const SyncState> filtered_states;
-    for (const auto& state : sync_states) {
-      if (mount_path().IsParent(state.path)) {
-        filtered_states.emplace_back(std::move(state));
+
+    filtered_states.emplace_back(
+        SyncState{status, static_cast<float>(progress_event->progress) / 100.0f,
+                  base::FilePath(path)});
+
+    if (status == SyncStatus::kCompleted) {
+      const auto previous_state_iter = path_to_sync_state.find(path);
+      const bool was_tracked = previous_state_iter != path_to_sync_state.end();
+      if (was_tracked) {
+        // Stop tracking completed events but push it to subscribers.
+        path_to_sync_state.erase(previous_state_iter);
+      } else {
+        // If path wasn't tracked in the first place, don't report its completed
+        // event to subscribers.
+        return;
       }
+    } else {
+      path_to_sync_state[path] = filtered_states.back();
     }
 
     for (auto& observer : host_->observers_) {
       observer.OnIndividualSyncingStatusesDelta(filtered_states);
     }
-
-    // If we still have files in the tracker, keep running, as we might have
-    // stale nodes that will eventually get removed.
-    if (sync_status_tracker_->GetFileCount()) {
-      sync_throttle_timer_->Reset();
-    }
   }
 
   void OnSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
-
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
-      ResetThrottleTimer();
-
-      // Keep track of the syncing paths.
-      bool has_invalid_progress = false;
-      for (const mojom::ItemEventPtr& event : status->item_events) {
-        // Currently, download syncing (AKA downsync) events are not reliably
-        // delivered by DriveFs. Therefore, let's not show inline sync status
-        // indicators for them until this is fixed on DriveFs/Cello.
-        // Also filter out invalid stable_ids (with value 0).
-        if (event->is_download || event->stable_id == 0) {
-          continue;
-        }
-
-        base::FilePath path = host_->GetMountPath();
-        if (!base::FilePath("/").AppendRelativePath(base::FilePath(event->path),
-                                                    &path)) {
-          LOG(ERROR) << "Failed to make path relative to drive root";
-          continue;
-        }
-        switch (event->state) {
-          case mojom::ItemEvent::State::kQueued:
-            sync_status_tracker_->SetQueued(event->stable_id, std::move(path),
-                                            event->bytes_to_transfer);
-            break;
-          case mojom::ItemEvent::State::kInProgress:
-            sync_status_tracker_->SetInProgress(
-                event->stable_id, std::move(path), event->bytes_transferred,
-                event->bytes_to_transfer);
-            break;
-          case mojom::ItemEvent::State::kFailed:
-            // This state only comes through for failed downloads of pinned
-            // files. Other transfer failures are reported through the OnError()
-            // event.
-            sync_status_tracker_->SetError(event->stable_id, std::move(path));
-            break;
-          case mojom::ItemEvent::State::kCompleted:
-            sync_status_tracker_->SetCompleted(event->stable_id,
-                                               std::move(path));
-            break;
-          default:
-            break;
-        }
-      }
-
-      LOG_IF(WARNING, has_invalid_progress)
-          << "Drive sync: received at least one item with invalid progress "
-             "data.";
-    }
-
     for (auto& observer : host_->observers_) {
       observer.OnSyncingStatusUpdate(*status);
-    }
-  }
-
-  // Reset the timer if it has finished. This will cause individual syncing
-  // status events to be dispatched as soon as the timer finishes again.
-  void ResetThrottleTimer() {
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus) &&
-        !sync_throttle_timer_->IsRunning()) {
-      sync_throttle_timer_->Reset();
     }
   }
 
@@ -266,18 +200,23 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void OnError(mojom::DriveErrorPtr error) override {
-    // Verify if we have a valid stable_id. It could be invalid because the
-    // DriveFs version that reports stable_id for DriveErrors hasn't been
-    // uprreved into ChromeOS yet, but it could be due to some actual error.
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus) &&
-        error->stable_id > 0) {
+    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
       base::FilePath path = host_->GetMountPath();
-      if (base::FilePath("/").AppendRelativePath(base::FilePath(error->path),
-                                                 &path)) {
-        ResetThrottleTimer();
-        sync_status_tracker_->SetError(error->stable_id, std::move(path));
-      } else {
+      if (!base::FilePath("/").AppendRelativePath(base::FilePath(error->path),
+                                                  &path)) {
         LOG(ERROR) << "Failed to make path relative to drive root";
+      }
+
+      // Immediately flip the file's status back to "queued" if it fails to
+      // sync and do the same for all its ancestors.
+      base::FilePath p = path;
+      while (p != mount_path()) {
+        if (const auto it = path_to_sync_state.find(p.AsUTF8Unsafe());
+            it != path_to_sync_state.end()) {
+          it->second.status = SyncStatus::kQueued;
+          it->second.progress = 0;
+        }
+        p = p.DirName();
       }
     }
 
@@ -382,14 +321,11 @@ class DriveFsHost::MountState : public DriveFsSession,
 
   std::unique_ptr<DriveFsSearch> search_;
   std::unique_ptr<DriveFsHttpClient> http_client_;
-  std::unique_ptr<SyncStatusTracker> sync_status_tracker_ = nullptr;
 
   bool token_fetch_attempted_ = false;
   bool team_drives_fetched_ = false;
 
-  // Used to dispatch individual sync status updates in a debounced manner, only
-  // sending the sync states that have changed since the last dispatched event.
-  std::unique_ptr<base::RetainingOneShotTimer> sync_throttle_timer_;
+  std::map<std::string, SyncState> path_to_sync_state;
 };
 
 DriveFsHost::DriveFsHost(
