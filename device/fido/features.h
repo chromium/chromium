@@ -67,6 +67,11 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPinRequiredMeansNotRecognized);
 
+// Advertise hybrid prelinking on Android even if the app doesn't have
+// notifications permission.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

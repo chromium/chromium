@@ -17,6 +17,8 @@ public class DeviceFeatureList {
     public static final String ASYNC_SENSOR_CALLS = "AsyncSensorCalls";
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
     public static final String WEBAUTHN_ANDROID_CRED_MAN = "WebAuthenticationAndroidCredMan";
+    public static final String WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS =
+            "WebAuthenticationHybridLinkWithoutNotifications";
 
     private DeviceFeatureList() {}
 
