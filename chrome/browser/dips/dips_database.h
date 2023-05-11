@@ -18,9 +18,6 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 
-// TODO(crbug.com/1342228): This is currently in-memory only. Add support for a
-// persistent SQLite database to be used for non-OTR profiles.
-//
 // Encapsulates an SQL database that holds DIPS info.
 class DIPSDatabase {
  public:
