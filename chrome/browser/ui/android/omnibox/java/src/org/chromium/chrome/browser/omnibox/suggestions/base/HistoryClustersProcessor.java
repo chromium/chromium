@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
@@ -21,6 +20,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -42,7 +42,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
 
     /**
      * See {@link BasicSuggestionProcessor#BasicSuggestionProcessor(Context, SuggestionHost,
-     * ActionChipsDelegate, UrlBarEditingTextStateProvider, FaviconFetcher, BookmarkState)}
+     * OmniboxActionDelegate, UrlBarEditingTextStateProvider, FaviconFetcher, BookmarkState)}
      */
     public HistoryClustersProcessor(OpenHistoryClustersDelegate openHistoryClustersDelegate,
             @NonNull Context context, @NonNull SuggestionHost suggestionHost,

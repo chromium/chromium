@@ -17,13 +17,13 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -48,7 +48,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param faviconFetcher A mechanism to use to retrieve favicons.
      */
     public BaseSuggestionViewProcessor(@NonNull Context context, @NonNull SuggestionHost host,
-            @Nullable ActionChipsDelegate actionChipsDelegate,
+            @Nullable OmniboxActionDelegate omniboxActionDelegate,
             @Nullable FaviconFetcher faviconFetcher) {
         mContext = context;
         mSuggestionHost = host;
@@ -60,8 +60,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 R.dimen.omnibox_suggestion_content_height);
         mFaviconFetcher = faviconFetcher;
 
-        if (actionChipsDelegate != null) {
-            mActionChipsProcessor = new ActionChipsProcessor(context, host, actionChipsDelegate);
+        if (omniboxActionDelegate != null) {
+            mActionChipsProcessor = new ActionChipsProcessor(context, host, omniboxActionDelegate);
         } else {
             mActionChipsProcessor = null;
         }

@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions;
-
-import org.chromium.components.omnibox.action.OmniboxAction;
+package org.chromium.components.omnibox.action;
 
 /**
  * An interface for handling interactions for Omnibox Action Chips.
  * TODO(crbug/1418077): repurpose as a OmniboxActionFactory.
  */
-public interface ActionChipsDelegate {
+public interface OmniboxActionDelegate {
     /**
      * Call this method when the pedal is clicked.
      *

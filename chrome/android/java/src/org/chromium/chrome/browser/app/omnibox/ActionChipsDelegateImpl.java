@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -20,6 +19,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
 import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  * TODO(crbug/1418077): repurpose as a OmniboxActionFactoryImpl, move `execute()` to OmniboxAction
  * instances.
  */
-public class ActionChipsDelegateImpl implements ActionChipsDelegate {
+public class ActionChipsDelegateImpl implements OmniboxActionDelegate {
     private final @NonNull Context mContext;
     private final @NonNull SettingsLauncher mSettingsLauncher;
     private final @NonNull Consumer<String> mOpenUrlInExistingTabElseNewTabCb;

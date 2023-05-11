@@ -26,6 +26,7 @@ specific_include_rules = {
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
     "+components/feature_engagement",
+    "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox/action/OmniboxActionDelegate.java",
   ],
   'ToolbarButtonInProductHelpController.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser",

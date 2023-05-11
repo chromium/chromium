@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.messages.MessageContainerObserver;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
-import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
@@ -165,6 +164,7 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -304,7 +304,7 @@ public class RootUiCoordinator
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
-    private final ActionChipsDelegate mActionChipsDelegate;
+    private final OmniboxActionDelegate mOmniboxActionDelegate;
     private final boolean mInitializeUiWithIncognitoColors;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -431,7 +431,7 @@ public class RootUiCoordinator
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mActivityTabProvider = tabProvider;
 
-        mActionChipsDelegate = new ActionChipsDelegateImpl(mActivity, mActivityTabProvider,
+        mOmniboxActionDelegate = new ActionChipsDelegateImpl(mActivity, mActivityTabProvider,
                 new SettingsLauncherImpl(),
                 // TODO(ender): phase out callbacks when the modules below are components.
                 // Open URL in an existing, else new regular tab.
@@ -1226,7 +1226,7 @@ public class RootUiCoordinator
                     mStartSurfaceParentTabSupplier, mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mSnackbarManagerSupplier.get(), getMerchantTrustSignalsCoordinatorSupplier(),
-                    mTabReparentingControllerSupplier, mActionChipsDelegate,
+                    mTabReparentingControllerSupplier, mOmniboxActionDelegate,
                     mEphemeralTabCoordinatorSupplier, mInitializeUiWithIncognitoColors,
                     mBackPressManager, openHistoryClustersDelegate);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {

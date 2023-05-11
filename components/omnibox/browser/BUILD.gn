@@ -518,6 +518,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/HistoryClustersAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxActionDelegate.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionInSuggest.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
       "android/java/src/org/chromium/components/omnibox/suggestions/OmniboxSuggestionUiType.java",
