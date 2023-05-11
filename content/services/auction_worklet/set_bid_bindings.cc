@@ -171,6 +171,7 @@ void SetBidBindings::Reset() {
   bid_.reset();
   // Make sure we don't keep any dangling references to auction input.
   bidder_worklet_non_shared_params_ = nullptr;
+  reject_reason_ = mojom::RejectReason::kNotAvailable;
   per_buyer_currency_ = absl::nullopt;
   is_ad_excluded_.Reset();
   is_component_ad_excluded_.Reset();
@@ -247,6 +248,7 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
       errors_out.push_back(
           base::StringPrintf("%sbidCurrency of '%s' is not a currency code.",
                              error_prefix.c_str(), bid_currency_str.c_str()));
+      reject_reason_ = mojom::RejectReason::kWrongGenerateBidCurrency;
       return false;
     }
     bid_currency = blink::AdCurrency::From(bid_currency_str);
@@ -257,6 +259,7 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
         "%sbidCurrency mismatch; returned '%s', expected '%s'.",
         error_prefix.c_str(), blink::PrintableAdCurrency(bid_currency).c_str(),
         blink::PrintableAdCurrency(per_buyer_currency_).c_str()));
+    reject_reason_ = mojom::RejectReason::kWrongGenerateBidCurrency;
     return false;
   }
 

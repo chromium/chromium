@@ -506,6 +506,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
         update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
+    mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs)
     : context_recycler_for_rerun(std::move(context_recycler_for_rerun)),
       bid(std::move(bid)),
@@ -516,6 +517,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
       update_priority_signals_overrides(
           std::move(update_priority_signals_overrides)),
       pa_requests(std::move(pa_requests)),
+      reject_reason(reject_reason),
       error_msgs(std::move(error_msgs)) {}
 
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
@@ -848,7 +850,7 @@ void BidderWorklet::V8State::GenerateBid(
                      std::move(result->pa_requests),
                      std::move(result->non_kanon_pa_requests),
                      /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
-                     std::move(result->error_msgs)));
+                     result->reject_reason, std::move(result->error_msgs)));
 }
 
 absl::optional<BidderWorklet::V8State::SingleGenerateBidResult>
@@ -939,7 +941,9 @@ BidderWorklet::V8State::GenerateSingleBid(
           /*debug_win_report_url=*/absl::nullopt,
           /*set_priority=*/absl::nullopt,
           /*update_priority_signals_overrides=*/{},
-          /*pa_requests=*/{}, std::move(errors_out)));
+          /*pa_requests=*/{},
+          /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+          std::move(errors_out)));
     }
 
     context_recycler = fresh_context_recycler.get();
@@ -1168,6 +1172,7 @@ BidderWorklet::V8State::GenerateSingleBid(
             ->TakeSetPrioritySignalsOverrides(),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
+        context_recycler->set_bid_bindings()->reject_reason(),
         std::move(errors_out)));
   }
 
@@ -1185,7 +1190,7 @@ BidderWorklet::V8State::GenerateSingleBid(
           ->TakeSetPrioritySignalsOverrides(),
       context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      std::move(errors_out)));
+      mojom::RejectReason::kNotAvailable, std::move(errors_out)));
 }
 
 std::unique_ptr<ContextRecycler>
@@ -1314,7 +1319,9 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>(),
           /*pa_requests=*/
           PrivateAggregationRequests(), std::move(non_kanon_pa_requests),
-          bidding_latency, std::move(error_msgs)));
+          bidding_latency,
+          /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+          std::move(error_msgs)));
 }
 
 void BidderWorklet::ResumeIfPaused() {
@@ -1764,6 +1771,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     PrivateAggregationRequests pa_requests,
     PrivateAggregationRequests non_kanon_pa_requests,
     base::TimeDelta bidding_latency,
+    mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -1787,7 +1795,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
           NullOptIfZero(task->wait_direct_from_seller_signals),
           /*trusted_bidding_signals_latency=*/
           NullOptIfZero(task->wait_trusted_signals)),
-      error_msgs);
+      reject_reason, error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }
 

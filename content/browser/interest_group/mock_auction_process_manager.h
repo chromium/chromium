@@ -141,7 +141,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
           pa_requests = {},
       auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
           dependency_latencies =
-              auction_worklet::mojom::GenerateBidDependencyLatenciesPtr());
+              auction_worklet::mojom::GenerateBidDependencyLatenciesPtr(),
+      auction_worklet::mojom::RejectReason reject_reason =
+          auction_worklet::mojom::RejectReason::kNotAvailable);
 
   // Waits for ReportWin() to be invoked.
   void WaitForReportWin();

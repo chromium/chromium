@@ -206,7 +206,8 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
         pa_requests,
     auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
-        dependency_latencies) {
+        dependency_latencies,
+    auction_worklet::mojom::RejectReason reject_reason) {
   WaitForGenerateBid();
 
   base::RunLoop run_loop;
@@ -241,6 +242,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         /*non_kanon_pa_requests=*/{},
         /*bidding_latency=*/bidding_latency_,
         /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
+        reject_reason,
         /*errors=*/std::vector<std::string>());
     return;
   }
@@ -263,6 +265,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       /*non_kanon_pa_requests=*/{},
       /*bidding_latency=*/bidding_latency_,
       /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
+      reject_reason,
       /*errors=*/std::vector<std::string>());
 }
 

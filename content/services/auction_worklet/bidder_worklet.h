@@ -330,6 +330,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         PrivateAggregationRequests pa_requests,
         PrivateAggregationRequests non_kanon_pa_requests,
         base::TimeDelta bidding_latency,
+        mojom::RejectReason reject_reason,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
         base::OnceCallback<void(absl::optional<GURL> report_url,
@@ -351,6 +352,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
               update_priority_signals_overrides,
           PrivateAggregationRequests pa_requests,
+          mojom::RejectReason reject_reason,
           std::vector<std::string> error_msgs);
 
       SingleGenerateBidResult(const SingleGenerateBidResult&) = delete;
@@ -374,6 +376,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           update_priority_signals_overrides;
       PrivateAggregationRequests pa_requests;
       PrivateAggregationRequests non_kanon_pa_requests;
+      mojom::RejectReason reject_reason;
       std::vector<std::string> error_msgs;
     };
 
@@ -592,6 +595,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
       base::TimeDelta bidding_latency,
+      mojom::RejectReason reject_reason,
       std::vector<std::string> error_msgs);
 
   // Removes `task` from `generate_bid_tasks_` only. Used in case where the

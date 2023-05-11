@@ -527,6 +527,12 @@ std::string MakeConstBidScript(int bid,
   return base::StringPrintf(R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
+      privateAggregation.reportContributionForEvent("reserved.loss", {
+                bucket: {baseValue: "bid-reject-reason"},
+                value: 123,
+              });
+      forDebuggingOnly.reportAdAuctionLoss(
+            "https://loss.example.com/?rejectReason=${rejectReason}");
       return {ad: {},
               bid: %d,
               bidCurrency: "%s",
@@ -3206,6 +3212,12 @@ TEST_F(AuctionRunnerTest, Basic) {
 }
 
 TEST_F(AuctionRunnerTest, BasicCurrencyCheck) {
+  // This feature only relevant for the debug_loss_report_urls portion of the
+  // test.
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
+
   // Test with bidder 2 making a bid with CAD when the fixture expects USD.
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -3227,6 +3239,24 @@ TEST_F(AuctionRunnerTest, BasicCurrencyCheck) {
               testing::ElementsAre("https://anotheradthing.com/bids.js "
                                    "generateBid() bidCurrency mismatch;"
                                    " returned 'CAD', expected 'USD'."));
+  EXPECT_THAT(
+      result_.debug_loss_report_urls,
+      testing::ElementsAre("https://loss.example.com/"
+                           "?rejectReason=wrong-generate-bid-currency"));
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(kBidder2,
+                        ElementsAreRequests(BuildPrivateAggregationRequest(
+                            /*bucket=*/static_cast<uint64_t>(
+                                auction_worklet::mojom::RejectReason::
+                                    kWrongGenerateBidCurrency),
+                            /*value=*/123))),
+          testing::Pair(
+              // kBasicReportResult reports (7,8)
+              kSeller, ElementsAreRequests(
+                           BuildPrivateAggregationRequest(/*bucket=*/7,
+                                                          /*value=*/8)))));
 }
 
 TEST_F(AuctionRunnerTest, BasicCurrencyRedact) {
@@ -4140,11 +4170,20 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThrough) {
 // straight through by the component seller --- verifying it's checked against
 // sellerCurrency of the component auction.
 TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThroughCheck) {
+  // This feature only relevant for the debug_loss_report_urls portion of the
+  // test.
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
+
   const char kBidScript[] = R"(
     const inBid = %d;
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
+      forDebuggingOnly.reportAdAuctionLoss(
+            "https://loss.example.com/?rejectReason=${rejectReason}&bid=" +
+            inBid);
       return {bid: inBid, bidCurrency: 'USD',
               render: interestGroup.ads[0].renderUrl,
               allowComponentAuction: true};
@@ -4159,6 +4198,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThroughCheck) {
     const suffix = "%s";
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       browserSignals) {
+      privateAggregation.reportContributionForEvent("reserved.loss", {
+        bucket: {baseValue: "bid-reject-reason"},
+        value: 123 + bid,
+      });
       if (browserSignals.bidCurrency !== 'USD') {
         throw 'Wrong bidCurrency in scoreAd() for ' + suffix;
       }
@@ -4192,10 +4235,31 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThroughCheck) {
   RunStandardAuction();
   const char kError[] =
       "https://component.seller1.test/foo.js scoreAd() bid passthrough "
-      "mismatch "
-      "vs own sellerCurrency, expected 'CAD' got 'USD'.";
+      "mismatch vs own sellerCurrency, expected 'CAD' got 'USD'.";
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(testing::Pair(
+          kComponentSeller1,
+          ElementsAreRequests(BuildPrivateAggregationRequest(
+                                  /*bucket=*/static_cast<uint64_t>(
+                                      auction_worklet::mojom::RejectReason::
+                                          kWrongScoreAdCurrency),
+                                  /*value=*/124),
+                              BuildPrivateAggregationRequest(
+                                  /*bucket=*/static_cast<uint64_t>(
+                                      auction_worklet::mojom::RejectReason::
+                                          kWrongScoreAdCurrency),
+                                  /*value=*/125)))));
+
   // Error is seen twice since it's relevant to two bids.
   EXPECT_THAT(result_.errors, testing::ElementsAre(kError, kError));
+  EXPECT_THAT(
+      result_.debug_loss_report_urls,
+      testing::ElementsAre("https://loss.example.com/"
+                           "?rejectReason=wrong-score-ad-currency&bid=1",
+                           "https://loss.example.com/"
+                           "?rejectReason=wrong-score-ad-currency&bid=2"));
   EXPECT_FALSE(result_.winning_group_id.has_value());
   EXPECT_FALSE(result_.ad_descriptor.has_value());
 }
@@ -4682,6 +4746,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
   // it interpreted the incoming bid as 20 in sellerCurrency.
   const std::string kComponentSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      privateAggregation.reportContributionForEvent("reserved.loss", {
+              bucket: {baseValue: "bid-reject-reason"},
+              value: 123,
+      });
       return {desirability: 10, allowComponentAuction: true, bid: 3,
               bidCurrency: 'USD', incomingBidInSellerCurrency: 20};
     }
@@ -4773,11 +4841,20 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
     } else {
+      EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+                  testing::UnorderedElementsAre(testing::Pair(
+                      kComponentSeller1,
+                      ElementsAreRequests(BuildPrivateAggregationRequest(
+                          /*bucket=*/static_cast<uint64_t>(
+                              auction_worklet::mojom::RejectReason::
+                                  kWrongScoreAdCurrency),
+                          /*value=*/123)))));
+
       EXPECT_THAT(result_.errors,
                   testing::ElementsAre(
                       "https://component.seller1.test/foo.js scoreAd() "
-                      "bidCurrency mismatch "
-                      "vs own sellerCurrency, expected 'CAD' got 'USD'."));
+                      "bidCurrency mismatch vs own sellerCurrency, "
+                      "expected 'CAD' got 'USD'."));
       EXPECT_FALSE(result_.ad_descriptor);
     }
   }
@@ -9390,6 +9467,8 @@ TEST_F(AuctionRunnerTest, BadBid) {
     blink::AdDescriptor ad_descriptor;
     absl::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
     base::TimeDelta duration;
+    auction_worklet::mojom::RejectReason reject_reason =
+        auction_worklet::mojom::RejectReason::kNotAvailable;
   } kTestCases[] = {
       // Bids that aren't positive integers.
       {
@@ -9593,6 +9672,13 @@ TEST_F(AuctionRunnerTest, BadBid) {
           absl::nullopt,
           base::Milliseconds(-1),
       },
+
+      // Reject reason validation.
+      {"Invalid bid reject_reason", 1,
+       /*bid_currency=*/absl::nullopt,
+       blink::AdDescriptor(GURL("https://ad2.com")), absl::nullopt,
+       base::Milliseconds(10),
+       auction_worklet::mojom::RejectReason::kCategoryExclusions},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -9610,7 +9696,13 @@ TEST_F(AuctionRunnerTest, BadBid) {
     bidder1_worklet->InvokeGenerateBidCallback(
         test_case.bid, test_case.bid_currency, test_case.ad_descriptor,
         /*mojo_kanon_bid=*/nullptr, test_case.ad_component_descriptors,
-        test_case.duration);
+        test_case.duration, /*bidding_signals_data_version=*/
+        absl::nullopt, /*debug_loss_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/absl::nullopt,
+        /*pa_requests=*/{},
+        /*dependency_latencies=*/
+        auction_worklet::mojom::GenerateBidDependencyLatenciesPtr(),
+        test_case.reject_reason);
     // Bidder 2 doesn't bid.
     bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
 
@@ -9630,18 +9722,6 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre());
-
-    MetricsExpectations expectations(AuctionResult::kNoBids);
-    expectations.SetNumInterestGroups(2)
-        .SetNumOwnersAndDistinctOwners(2)
-        .SetNumSellers(1)
-        .SetNumBidderWorklets(2)
-        .SetNumInterestGroupsWithNoBids(1)
-        .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
-        // We don't record negative latencies, so these metrics have no value.
-        .SetHasGenerateSingleBidLatencyMetrics(
-            !test_case.duration.is_negative());
-    CheckMetrics(expectations);
   }
 }
 

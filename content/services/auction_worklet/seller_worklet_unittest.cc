@@ -1145,7 +1145,27 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, "
       "bid:1.2, bidCurrency: 'USSD'}",
-      0, {"https://url.test/ scoreAd() returned an invalid bidCurrency."});
+      0, {"https://url.test/ scoreAd() returned an invalid bidCurrency."},
+      /*expected_component_auction_modified_bid_params=*/
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kWrongScoreAdCurrency);
+
+  // Special case: if there is a manually specified reject-reason, it goes in
+  // and not the currency mismatch.
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true, "
+      "bid:1.2, bidCurrency: 'USSD', rejectReason: 'category-exclusions'}",
+      0, {"https://url.test/ scoreAd() returned an invalid bidCurrency."},
+      /*expected_component_auction_modified_bid_params=*/
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kCategoryExclusions);
+
   auction_ad_config_non_shared_params_.seller_currency =
       blink::AdCurrency::From("CAD");
   RunScoreAdWithReturnValueExpectingResult(
@@ -1153,7 +1173,14 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "bid:1.2, bidCurrency: 'USD'}",
       0,
       {"https://url.test/ scoreAd() bidCurrency mismatch vs own sellerCurrency,"
-       " expected 'CAD' got 'USD'."});
+       " expected 'CAD' got 'USD'."},
+      /*expected_component_auction_modified_bid_params=*/
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kWrongScoreAdCurrency);
+
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, "
       "bid:1.2, bidCurrency: 'CAD'}",
@@ -1173,7 +1200,13 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "bid:1.2, bidCurrency: 'USD'}",
       0,
       {"https://url.test/ scoreAd() bidCurrency mismatch in component auction "
-       "vs parent auction bidderCurrency, expected 'EUR' got 'USD'."});
+       "vs parent auction bidderCurrency, expected 'EUR' got 'USD'."},
+      /*expected_component_auction_modified_bid_params=*/
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kWrongScoreAdCurrency);
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, "
       "bid:1.2, bidCurrency: 'EUR'}",
@@ -1189,6 +1222,29 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
   // case it is ignored.
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:0, allowComponentAuction:true, bid:0}", 0);
+}
+
+// Test currency checks when score ad does not modify bid.
+TEST_F(SellerWorkletTest, ScoreAdDoesNotModifyBidCurrency) {
+  // Set us up as component seller.
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.level.seller.test")));
+  bid_currency_ = blink::AdCurrency::From("CAD");
+  auction_ad_config_non_shared_params_.seller_currency =
+      blink::AdCurrency::From("USD");
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true}", 0,
+      {"https://url.test/ scoreAd() bid passthrough mismatch vs own "
+       "sellerCurrency, expected 'USD' got 'CAD'."},
+      /*expected_component_auction_modified_bid_params=*/
+      mojom::ComponentAuctionModifiedBidParams::New(
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*has_bid=*/false),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kWrongScoreAdCurrency);
 }
 
 // Test the `incomingBidInSellerCurrency` output field of scoreAd()

@@ -5,6 +5,7 @@
 module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
+import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -263,6 +264,11 @@ interface GenerateBidClient {
   // `generate_bid_dependency_latencies` The amount of time GenerateBid had to
   // wait for each of its dependencies to be fulfilled before it could be run.
   //
+  // `reject_reason` If there is a valid bid that can participate in the auction
+  // this is kNotAvailable. Otherwise, it's the reason this bid was not
+  // permitted to participate (only kWrongGenerateBidCurrency at this time),
+  // or kNotAvailable.
+  //
   // `errors` The various error messages to be used for debugging. These are too
   //  sensitive for the renderer to see. There may be errors even when a bid
   //  is offered, and there may be no errors when there's no bid. Includes
@@ -281,6 +287,7 @@ interface GenerateBidClient {
       array<PrivateAggregationRequest> non_kanon_pa_requests,
       mojo_base.mojom.TimeDelta bidding_latency,
       GenerateBidDependencyLatencies generate_bid_dependency_latencies,
+      RejectReason reject_reason,
       array<string> errors);
 };
 

@@ -720,6 +720,7 @@ class InterestGroupAuction::BuyerHelper
       base::TimeDelta bidding_latency,
       auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
+      auction_worklet::mojom::RejectReason reject_reason,
       const std::vector<std::string>& errors) override {
     BidState* state = generate_bid_client_receiver_set_.current_context();
     const blink::InterestGroup& interest_group = state->bidder->interest_group;
@@ -739,7 +740,8 @@ class InterestGroupAuction::BuyerHelper
         bidding_signals_data_version, has_bidding_signals_data_version,
         debug_loss_report_url, debug_win_report_url, set_priority,
         has_set_priority, std::move(update_priority_signals_overrides),
-        std::move(pa_requests), std::move(non_kanon_pa_requests), errors);
+        std::move(pa_requests), std::move(non_kanon_pa_requests), reject_reason,
+        errors);
   }
 
   // Closes all Mojo pipes, releases all weak pointers, and stops the timeout
@@ -1055,6 +1057,7 @@ class InterestGroupAuction::BuyerHelper
         /*update_priority_signals_overrides=*/{},
         /*pa_requests=*/{},
         /*non_kanon_pa_requests=*/{},
+        /*reject_reason=*/auction_worklet::mojom::RejectReason::kNotAvailable,
         /*errors=*/{});
   }
 
@@ -1227,6 +1230,7 @@ class InterestGroupAuction::BuyerHelper
           /*update_priority_signals_overrides=*/{},
           /*pa_requests=*/{},
           /*non_kanon_pa_requests=*/{},
+          /*reject_reason=*/auction_worklet::mojom::RejectReason::kNotAvailable,
           /*errors=*/{});
       // If this was the last bidder, and it was filtered out, there's nothing
       // else to do, and `this` may have already been deleted.
@@ -1322,6 +1326,7 @@ class InterestGroupAuction::BuyerHelper
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
+      auction_worklet::mojom::RejectReason reject_reason,
       const std::vector<std::string>& errors) {
     DCHECK(!state->made_bid);
     DCHECK_GT(num_outstanding_bids_, 0);
@@ -1416,6 +1421,22 @@ class InterestGroupAuction::BuyerHelper
     // Ignore invalid bids.
     std::unique_ptr<Bid> bid;
     std::string ad_metadata;
+
+    if (reject_reason != auction_worklet::mojom::RejectReason::kNotAvailable &&
+        reject_reason !=
+            auction_worklet::mojom::RejectReason::kWrongGenerateBidCurrency) {
+      // Only possible reject reason from generateBid(), besides the default
+      // "not available", is "wrong generate bid currency".
+      mojo_bid.reset();
+      mojo_kanon_bid.reset();
+      state->reject_reason =
+          auction_worklet::mojom::RejectReason::kNotAvailable;
+      generate_bid_client_receiver_set_.ReportBadMessage(
+          "Invalid bid reject_reason");
+    } else {
+      state->reject_reason = reject_reason;
+    }
+
     // `mojo_bid` is null if the worklet doesn't bid, or if the bidder worklet
     // fails to load / crashes.
     if (mojo_bid) {
@@ -2194,6 +2215,12 @@ base::StringPiece GetRejectReasonString(
       break;
     case auction_worklet::mojom::RejectReason::kBelowKAnonThreshold:
       reject_reason_str = "below-kanon-threshold";
+      break;
+    case auction_worklet::mojom::RejectReason::kWrongGenerateBidCurrency:
+      reject_reason_str = "wrong-generate-bid-currency";
+      break;
+    case auction_worklet::mojom::RejectReason::kWrongScoreAdCurrency:
+      reject_reason_str = "wrong-score-ad-currency";
       break;
   }
   return reject_reason_str;

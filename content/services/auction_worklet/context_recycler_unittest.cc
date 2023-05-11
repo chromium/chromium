@@ -343,6 +343,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     EXPECT_EQ("https://example.com/ad1", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(500), bid->bid_duration);
+    EXPECT_EQ(mojom::RejectReason::kNotAvailable,
+              context_recycler.set_bid_bindings()->reject_reason());
   }
 
   {
@@ -377,6 +379,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
                     "bid render URL 'https://example.com/ad1' isn't one of "
                     "the registered creative URLs."));
     EXPECT_FALSE(context_recycler.set_bid_bindings()->has_bid());
+    EXPECT_EQ(mojom::RejectReason::kNotAvailable,
+              context_recycler.set_bid_bindings()->reject_reason());
   }
 
   {
@@ -622,6 +626,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     EXPECT_EQ(10.0, bid->bid);
     ASSERT_TRUE(bid->bid_currency.has_value());
     EXPECT_EQ("USD", bid->bid_currency->currency_code());
+    EXPECT_EQ(mojom::RejectReason::kNotAvailable,
+              context_recycler.set_bid_bindings()->reject_reason());
   }
 
   {
@@ -655,6 +661,45 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
             "https://example.org/script.js:3 Uncaught TypeError: bidCurrency "
             "mismatch; returned 'USD', expected 'CAD'."));
     EXPECT_FALSE(context_recycler.set_bid_bindings()->has_bid());
+    EXPECT_EQ(mojom::RejectReason::kWrongGenerateBidCurrency,
+              context_recycler.set_bid_bindings()->reject_reason());
+  }
+
+  {
+    // Make sure the reject reason doesn't latch.
+    ContextRecyclerScope scope(context_recycler);
+    mojom::BidderWorkletNonSharedParamsPtr params =
+        mojom::BidderWorkletNonSharedParams::New();
+    params->ads.emplace();
+    params->ads.value().emplace_back(GURL("https://example.com/ad2"),
+                                     absl::nullopt);
+
+    context_recycler.set_bid_bindings()->ReInitialize(
+        base::TimeTicks::Now(),
+        /*has_top_level_seller_origin=*/false, params.get(),
+        blink::AdCurrency::From("CAD"),
+        /*is_ad_excluded=*/matches_ad1,
+        /*is_component_ad_excluded=*/matches_ad1);
+
+    gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    bid_dict.Set("render", std::string("https://example.com/ad2"));
+    bid_dict.Set("bid", 10.0);
+    bid_dict.Set("bidCurrency", std::string("CAD"));
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), bid_dict));
+
+    EXPECT_THAT(error_msgs, ElementsAre());
+    ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
+    mojom::BidderWorkletBidPtr bid =
+        context_recycler.set_bid_bindings()->TakeBid();
+    EXPECT_EQ("https://example.com/ad2", bid->ad_descriptor.url);
+    EXPECT_EQ(10.0, bid->bid);
+    ASSERT_TRUE(bid->bid_currency.has_value());
+    EXPECT_EQ("CAD", bid->bid_currency->currency_code());
+    EXPECT_EQ(mojom::RejectReason::kNotAvailable,
+              context_recycler.set_bid_bindings()->reject_reason());
   }
 }
 

@@ -1096,6 +1096,11 @@ void SellerWorklet::V8State::ScoreAd(
         }
         if (drop_for_invalid_currency) {
           score = 0;
+          // If scoreAd() didn't already specify a reject reason, note the
+          // currency mismatch.
+          if (reject_reason == mojom::RejectReason::kNotAvailable) {
+            reject_reason = mojom::RejectReason::kWrongScoreAdCurrency;
+          }
         }
       }
     }
@@ -1142,6 +1147,10 @@ void SellerWorklet::V8State::ScoreAd(
     return;
   }
 
+  // This bid got accepted by scoreAd(), so clear any reject reason it may have
+  // set.
+  reject_reason = mojom::RejectReason::kNotAvailable;
+
   // If this is a component auction that modified the bid, validate the bid. Do
   // this after checking the score to avoid validating modified bid values from
   // reporting errors when desirability is <= 0.
@@ -1162,7 +1171,6 @@ void SellerWorklet::V8State::ScoreAd(
     // This is a component auction that did not modify the bid; e.g. it's using
     // the bidder's bid as its own. Therefore, check it against our own
     // currency requirements.
-    // TODO(morlovich): One of the spots we want a new reject reason.
     if (!VerifySellerCurrency(
             /*provided_currency=*/bid_currency,
             /*expected_seller_currency=*/
@@ -1170,12 +1178,12 @@ void SellerWorklet::V8State::ScoreAd(
             /*component_expect_bid_currency=*/component_expect_bid_currency,
             decision_logic_url_, "bid passthrough", errors_out)) {
       score = 0;
+      reject_reason = mojom::RejectReason::kWrongScoreAdCurrency;
     }
   }
 
   PostScoreAdCallbackToUserThread(
-      std::move(callback), score,
-      /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+      std::move(callback), score, reject_reason,
       std::move(component_auction_modified_bid_params), bid_in_seller_currency,
       scoring_signals_data_version,
       context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),

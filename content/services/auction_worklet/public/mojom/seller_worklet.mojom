@@ -5,6 +5,7 @@
 module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
+import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -53,19 +54,6 @@ struct ComponentAuctionReportResultParams {
   // same value of the original bid or a different value).
   // TODO(https://crbug.com/657632): Update when optional doubles are supported.
   bool has_modified_bid;
-};
-
-// The reason a bid was rejected by an auction.
-enum RejectReason {
-  kNotAvailable = 0,
-  kInvalidBid = 1,
-  kBidBelowAuctionFloor = 2,
-  kPendingApprovalByExchange = 3,
-  kDisapprovedByExchange = 4,
-  kBlockedByPublisher = 5,
-  kLanguageExclusions = 6,
-  kCategoryExclusions = 7,
-  kBelowKAnonThreshold = 8,
 };
 
 // Interface for returning ScoreAd results. The advantage of having an interface
