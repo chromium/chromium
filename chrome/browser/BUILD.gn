@@ -6144,6 +6144,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/attestation/browser/attestation_switches.cc",
       "enterprise/connectors/device_trust/attestation/browser/attestation_switches.h",
       "enterprise/connectors/device_trust/attestation/browser/attester.h",
+      "enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.cc",
+      "enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.h",
       "enterprise/connectors/device_trust/attestation/browser/crypto_utility.cc",
       "enterprise/connectors/device_trust/attestation/browser/crypto_utility.h",
       "enterprise/connectors/device_trust/attestation/browser/device_attester.cc",
