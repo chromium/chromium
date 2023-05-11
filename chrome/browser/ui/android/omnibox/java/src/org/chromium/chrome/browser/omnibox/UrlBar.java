@@ -16,7 +16,6 @@ import android.text.Layout;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.text.style.ReplacementSpan;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -32,7 +31,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.text.BidiFormatter;
-import androidx.core.util.ObjectsCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -79,7 +77,6 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     private UrlBarDelegate mUrlBarDelegate;
     private UrlTextChangeListener mUrlTextChangeListener;
-    private TextWatcher mTextChangedListener;
     private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private Callback<Integer> mUrlDirectionListener;
 
@@ -272,7 +269,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         setOnFocusChangeListener(null);
         mTextContextMenuDelegate = null;
         mUrlTextChangeListener = null;
-        mTextChangedListener = null;
     }
 
     /**
@@ -562,21 +558,6 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     public void setUrlTextChangeListener(UrlTextChangeListener listener) {
         mUrlTextChangeListener = listener;
-    }
-
-    /**
-     * Set the listener to be notified when the view's text has changed.
-     * @param textChangedListener The listener to be notified.
-     */
-    public void setTextChangedListener(TextWatcher textChangedListener) {
-        if (ObjectsCompat.equals(mTextChangedListener, textChangedListener)) {
-            return;
-        } else if (mTextChangedListener != null) {
-            removeTextChangedListener(mTextChangedListener);
-        }
-
-        mTextChangedListener = textChangedListener;
-        addTextChangedListener(mTextChangedListener);
     }
 
     /**
