@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
 import android.util.SparseArray;
@@ -146,15 +145,13 @@ public class OmniboxResourceProvider {
      */
     public static @ColorInt int getUrlBarPrimaryTextColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        final Resources resources = context.getResources();
-        @ColorInt
-        int color;
+        final @ColorInt int color;
         if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
-            color = resources.getColor(R.color.branded_url_text_on_light_bg);
+            color = context.getColor(R.color.branded_url_text_on_light_bg);
         } else if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
-            color = resources.getColor(R.color.branded_url_text_on_dark_bg);
+            color = context.getColor(R.color.branded_url_text_on_dark_bg);
         } else if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            color = resources.getColor(R.color.url_bar_primary_text_incognito);
+            color = context.getColor(R.color.url_bar_primary_text_incognito);
         } else {
             color = MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
         }
@@ -170,15 +167,13 @@ public class OmniboxResourceProvider {
      */
     public static @ColorInt int getUrlBarSecondaryTextColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        final Resources resources = context.getResources();
-        @ColorInt
-        int color;
+        final @ColorInt int color;
         if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
-            color = resources.getColor(R.color.branded_url_text_variant_on_light_bg);
+            color = context.getColor(R.color.branded_url_text_variant_on_light_bg);
         } else if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
-            color = resources.getColor(R.color.branded_url_text_variant_on_dark_bg);
+            color = context.getColor(R.color.branded_url_text_variant_on_dark_bg);
         } else if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            color = resources.getColor(R.color.url_bar_secondary_text_incognito);
+            color = context.getColor(R.color.url_bar_secondary_text_incognito);
         } else {
             color = MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
         }
@@ -207,15 +202,16 @@ public class OmniboxResourceProvider {
     public static @ColorInt int getUrlBarDangerColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         // Danger color has semantic meaning and it doesn't change with dynamic colors.
-        @ColorRes
-        int colorId = R.color.default_red;
+        final @ColorRes int colorId;
         if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME
                 || brandedColorScheme == BrandedColorScheme.INCOGNITO) {
             colorId = R.color.default_red_light;
         } else if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
             colorId = R.color.default_red_dark;
+        } else {
+            colorId = R.color.default_red;
         }
-        return context.getResources().getColor(colorId);
+        return context.getColor(colorId);
     }
 
     /**
@@ -228,15 +224,16 @@ public class OmniboxResourceProvider {
     public static @ColorInt int getUrlBarSecureColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         // Secure color has semantic meaning and it doesn't change with dynamic colors.
-        @ColorRes
-        int colorId = R.color.default_green;
+        final @ColorRes int colorId;
         if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME
                 || brandedColorScheme == BrandedColorScheme.INCOGNITO) {
             colorId = R.color.default_green_light;
         } else if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
             colorId = R.color.default_green_dark;
+        } else {
+            colorId = R.color.default_green;
         }
-        return context.getResources().getColor(colorId);
+        return context.getColor(colorId);
     }
 
     /**
