@@ -158,7 +158,8 @@ void ArcRequirementChecker::StartRequirementChecks(
     VLOG(1) << "Use default negotiator.";
     terms_of_service_negotiator_ =
         std::make_unique<ArcTermsOfServiceDefaultNegotiator>(
-            profile_->GetPrefs(), support_host_);
+            profile_->GetPrefs(), support_host_,
+            g_browser_process->metrics_service());
   } else {
     DCHECK(!g_ui_enabled) << "Negotiator is not created on production.";
     return;

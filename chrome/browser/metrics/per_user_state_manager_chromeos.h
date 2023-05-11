@@ -92,8 +92,7 @@ class PerUserStateManagerChromeOS
   // has opted-into metrics collection during the session and False means that
   // the user has opted-out.
   //
-  // Note: Use this function over GetUserConsentIfApplicable() to retrieve user
-  // metrics reporting status.
+  // NOTE: If ownership status is not known, this will return absl::nullopt.
   absl::optional<bool> GetCurrentUserReportingConsentIfApplicable() const;
 
   // Sets the metric consent for the current logged in user. If no user is
@@ -156,8 +155,7 @@ class PerUserStateManagerChromeOS
   // Returns true if the reporting policy is managed.
   virtual bool IsReportingPolicyManaged() const;
 
-  // Returns the device metrics consent. If ownership has not been taken, will
-  // return false.
+  // Returns the device metrics consent.
   virtual bool GetDeviceMetricsConsent() const;
 
   // Returns true if user log store has been set to be used to persist metric
@@ -166,10 +164,16 @@ class PerUserStateManagerChromeOS
 
   // Returns true if the device is owned either by a policy or a local owner.
   //
+  // Does not guarantee that the ownership status is known and will return false
+  // if the status is unknown.
+  //
   // See //chrome/browser/ash/settings/device_settings_service.h for more
   // details as to when a device is considered owned and how a device becomes
   // owned.
   virtual bool IsDeviceOwned() const;
+
+  // Returns true if the device status is known.
+  virtual bool IsDeviceStatusKnown() const;
 
   // These methods are protected to avoid dependency on DeviceSettingsService
   // during testing.
@@ -180,6 +184,8 @@ class PerUserStateManagerChromeOS
 
   // Loads appropriate prefs from |current_user_| and creates new log storage
   // using profile prefs.
+  //
+  // Will only be called when OwnershipStatus is known.
   void InitializeProfileMetricsState(
       ash::DeviceSettingsService::OwnershipStatus status);
 
@@ -193,7 +199,9 @@ class PerUserStateManagerChromeOS
     // immediately created.
     USER_LOGIN = 1,
 
-    // User profile has been created and ready to use.
+    // User profile has been created and ready to use. Note that if ownership
+    // status is unknown, user log store will not be created until the ownership
+    // status is known.
     USER_PROFILE_READY = 2,
 
     // User log store has been initialized, if applicable. Per-user consent

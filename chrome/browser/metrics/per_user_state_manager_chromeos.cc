@@ -178,8 +178,9 @@ absl::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
 absl::optional<bool>
 PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
     const {
-  if (state_ != State::USER_LOG_STORE_HANDLED)
+  if (state_ != State::USER_LOG_STORE_HANDLED || !IsDeviceStatusKnown()) {
     return absl::nullopt;
+  }
 
   // Guest sessions with no device owner should use the guest's metrics
   // consent set during guest OOBE flow with no device owner.
@@ -227,6 +228,12 @@ void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
 bool PerUserStateManagerChromeOS::ShouldUseUserLogStore() const {
   DCHECK(state_ > State::CONSTRUCTED);
 
+  if (!IsDeviceStatusKnown()) {
+    LOG(ERROR) << "Device ownership status unknown. Cannot accurately "
+                  "determine whether per-user should be used or not.";
+    return false;
+  }
+
   if (user_manager_->IsCurrentUserCryptohomeDataEphemeral()) {
     // Sessions using ephemeral cryptohome should hold the logs if owner has
     // disabled metrics reporting. This way the recorded logs are deleted when
@@ -253,6 +260,15 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
   // Owner should not use per-user. Owner should use the device local pref.
   if (user->GetAccountId() == user_manager_->GetOwnerAccountId())
     return false;
+
+  // If the device status is not known yet, then the user should not be allowed
+  // to opt-in until the status is known.
+  DCHECK(IsDeviceStatusKnown());
+  if (!IsDeviceStatusKnown()) {
+    LOG(ERROR) << "Device ownership status unknown. Cannot accurately "
+                  "determine whether per-user should be used or not.";
+    return false;
+  }
 
   auto user_type = user->GetType();
 
@@ -325,12 +341,7 @@ bool PerUserStateManagerChromeOS::IsReportingPolicyManaged() const {
 }
 
 bool PerUserStateManagerChromeOS::GetDeviceMetricsConsent() const {
-  DCHECK_NE(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
-            ash::DeviceSettingsService::OWNERSHIP_UNKNOWN);
-
-  return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-             ash::DeviceSettingsService::OWNERSHIP_TAKEN &&
-         ash::StatsReportingController::Get()->IsEnabled();
+  return ash::StatsReportingController::Get()->IsEnabled();
 }
 
 bool PerUserStateManagerChromeOS::HasUserLogStore() const {
@@ -338,8 +349,15 @@ bool PerUserStateManagerChromeOS::HasUserLogStore() const {
 }
 
 bool PerUserStateManagerChromeOS::IsDeviceOwned() const {
+  DCHECK(IsDeviceStatusKnown());
+
   return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
          ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
+}
+
+bool PerUserStateManagerChromeOS::IsDeviceStatusKnown() const {
+  return ash::DeviceSettingsService::Get()->GetOwnershipStatus() !=
+         ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_UNKNOWN;
 }
 
 void PerUserStateManagerChromeOS::ActiveUserChanged(user_manager::User* user) {
@@ -407,6 +425,8 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState(
   // If a guest session is about to be started, the metrics reporting will
   // normally inherit from the device owner's setting. If there is no owner,
   // then the guest will set metrics reporting during ToS.
+  //
+  // Note that device status is guaranteed to be known.
   if (is_guest && !IsDeviceOwned()) {
     SetReportingState(
         local_state_->GetBoolean(ash::prefs::kOobeGuestMetricsEnabled));

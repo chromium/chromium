@@ -6,10 +6,15 @@
 #define CHROME_BROWSER_ASH_ARC_OPTIN_ARC_OPTIN_PREFERENCE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
+
+namespace metrics {
+class MetricsService;
+}
 
 namespace arc {
 
@@ -27,7 +32,8 @@ class ArcOptInPreferenceHandlerObserver;
 class ArcOptInPreferenceHandler {
  public:
   ArcOptInPreferenceHandler(ArcOptInPreferenceHandlerObserver* observer,
-                            PrefService* pref_serive);
+                            PrefService* pref_service,
+                            metrics::MetricsService* metrics_service);
 
   ArcOptInPreferenceHandler(const ArcOptInPreferenceHandler&) = delete;
   ArcOptInPreferenceHandler& operator=(const ArcOptInPreferenceHandler&) =
@@ -37,7 +43,9 @@ class ArcOptInPreferenceHandler {
 
   void Start();
 
-  void EnableMetrics(bool is_enabled);
+  // Enabling metrics happens asynchronously as it depends on device ownership.
+  // Once the update has been called, |callback| will be called.
+  void EnableMetrics(bool is_enabled, base::OnceClosure callback);
   void EnableBackupRestore(bool is_enabled);
   void EnableLocationService(bool is_enabled);
 
@@ -45,6 +53,16 @@ class ArcOptInPreferenceHandler {
   void OnMetricsPreferenceChanged();
   void OnBackupAndRestorePreferenceChanged();
   void OnLocationServicePreferenceChanged();
+
+  // Helper functions to retrieve user metrics consent.
+  bool ShouldUpdateUserConsent();
+  bool GetUserMetrics();
+  void EnableUserMetrics(bool is_enabled);
+
+  // Helper method to update metrics asynchronously. Updating the correct
+  // metrics prefs depends on knowing ownership status, which may not be ready
+  // immediately.
+  void EnableMetricsOnOwnershipKnown(bool metrics_enabled);
 
   // Utilities on preference update.
   void SendMetricsMode();
@@ -54,6 +72,9 @@ class ArcOptInPreferenceHandler {
   // Unowned pointers.
   const raw_ptr<ArcOptInPreferenceHandlerObserver, ExperimentalAsh> observer_;
   const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<metrics::MetricsService, ExperimentalAsh> metrics_service_;
+
+  base::OnceClosure enable_metrics_callback_;
 
   // Used to track metrics preference.
   PrefChangeRegistrar pref_local_change_registrar_;
@@ -61,6 +82,8 @@ class ArcOptInPreferenceHandler {
   PrefChangeRegistrar pref_change_registrar_;
   // Metrics consent observer.
   base::CallbackListSubscription reporting_consent_subscription_;
+
+  base::WeakPtrFactory<ArcOptInPreferenceHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

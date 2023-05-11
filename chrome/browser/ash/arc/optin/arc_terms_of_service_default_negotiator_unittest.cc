@@ -12,10 +12,15 @@
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
+#include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
@@ -24,7 +29,13 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/test/test_metrics_service_client.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -32,12 +43,15 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+using ::testing::_;
 using ::testing::Matches;
 using ::testing::Mock;
-using ::testing::_;
 
 using consent_auditor::ArcBackupAndRestoreConsentEq;
 using consent_auditor::ArcGoogleLocationServiceConsentEq;
@@ -51,12 +65,43 @@ using ArcPlayTermsOfServiceConsent =
     sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
 using sync_pb::UserConsentTypes;
 
+using OwnershipStatus = ash::DeviceSettingsService::OwnershipStatus;
+
+class TestUserMetricsServiceClient
+    : public ::metrics::TestMetricsServiceClient {
+ public:
+  absl::optional<bool> GetCurrentUserMetricsConsent() const override {
+    if (should_use_user_consent_) {
+      return current_user_metrics_consent_;
+    }
+    return absl::nullopt;
+  }
+
+  void UpdateCurrentUserMetricsConsent(bool metrics_consent) override {
+    current_user_metrics_consent_ = metrics_consent;
+  }
+
+  void SetShouldUseUserConsent(bool should_use_user_consent) {
+    should_use_user_consent_ = should_use_user_consent;
+  }
+
+ private:
+  bool should_use_user_consent_ = false;
+  bool current_user_metrics_consent_ = false;
+};
+
+}  // namespace
+
 namespace arc {
 
 class ArcTermsOfServiceDefaultNegotiatorTest
     : public BrowserWithTestWindowTest {
  public:
-  ArcTermsOfServiceDefaultNegotiatorTest() = default;
+  ArcTermsOfServiceDefaultNegotiatorTest()
+      : owner_key_util_(new ownership::MockOwnerKeyUtil()) {
+    ::ash::OwnerSettingsServiceAshFactory::GetInstance()
+        ->SetOwnerKeyUtilForTesting(owner_key_util_);
+  }
 
   ArcTermsOfServiceDefaultNegotiatorTest(
       const ArcTermsOfServiceDefaultNegotiatorTest&) = delete;
@@ -67,6 +112,27 @@ class ArcTermsOfServiceDefaultNegotiatorTest
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+
+    ::ash::DeviceSettingsService::Get()->SetSessionManager(
+        &session_manager_client_, owner_key_util_);
+
+    // MetricsService.
+    metrics::MetricsService::RegisterPrefs(local_state_.registry());
+    test_enabled_state_provider_ =
+        std::make_unique<metrics::TestEnabledStateProvider>(true, true);
+    test_metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        &local_state_, test_enabled_state_provider_.get(), std::wstring(),
+        base::FilePath());
+    test_metrics_service_client_ =
+        std::make_unique<TestUserMetricsServiceClient>();
+    test_metrics_service_ = std::make_unique<metrics::MetricsService>(
+        test_metrics_state_manager_.get(), test_metrics_service_client_.get(),
+        &local_state_);
+
+    // Needs to be set for metrics service.
+    base::SetRecordActionTaskRunner(
+        task_environment()->GetMainThreadTaskRunner());
+
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
     signin::MakePrimaryAccountAvailable(
@@ -80,7 +146,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     support_host_ = std::make_unique<ArcSupportHost>(profile());
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());
     negotiator_ = std::make_unique<ArcTermsOfServiceDefaultNegotiator>(
-        profile()->GetPrefs(), support_host());
+        profile()->GetPrefs(), support_host(), test_metrics_service_.get());
   }
 
   void TearDown() override {
@@ -88,14 +154,36 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     fake_arc_support_.reset();
     support_host_.reset();
     user_manager_enabler_.reset();
+    owner_key_util_->Clear();
 
+    test_metrics_service_.reset();
+    test_metrics_service_client_.reset();
+    test_metrics_state_manager_.reset();
+    test_enabled_state_provider_.reset();
+
+    ::ash::DeviceSettingsService::Get()->UnsetSessionManager();
     ash::StatsReportingController::Shutdown();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  void LoadOwnershipStatus() {
+    owner_key_util_->SetPublicKeyFromPrivateKey(
+        *device_policy_.GetSigningKey());
+
+    content::RunAllTasksUntilIdle();
   }
 
   ArcSupportHost* support_host() { return support_host_.get(); }
   FakeArcSupport* fake_arc_support() { return fake_arc_support_.get(); }
   ArcTermsOfServiceNegotiator* negotiator() { return negotiator_.get(); }
+  TestUserMetricsServiceClient* metrics_service_client() {
+    return test_metrics_service_client_.get();
+  }
+
+  ash::FakeChromeUserManager* user_manager() {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
 
   consent_auditor::FakeConsentAuditor* consent_auditor() {
     return static_cast<consent_auditor::FakeConsentAuditor*>(
@@ -108,18 +196,60 @@ class ArcTermsOfServiceDefaultNegotiatorTest
         .account_id;
   }
 
+  bool GetUserMetricsState() {
+    return *metrics_service_client()->GetCurrentUserMetricsConsent();
+  }
+
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {{ConsentAuditorFactory::GetInstance(),
              base::BindRepeating(&BuildFakeConsentAuditor)}};
   }
 
- private:
+ protected:
+  policy::DevicePolicyBuilder device_policy_;
+  scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
+  ::ash::FakeSessionManagerClient session_manager_client_;
+
   TestingPrefServiceSimple local_state_;
+
+  // MetricsService.
+  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
+  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
+  std::unique_ptr<metrics::TestEnabledStateProvider>
+      test_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsService> test_metrics_service_;
+
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
-  std::unique_ptr<ArcTermsOfServiceNegotiator> negotiator_;
+  std::unique_ptr<ArcTermsOfServiceDefaultNegotiator> negotiator_;
+};
+
+class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
+    : public ArcTermsOfServiceDefaultNegotiatorTest {
+ protected:
+  void SetUp() override {
+    device_policy_.SetDefaultNewSigningKey();
+    owner_key_util_->SetPublicKeyFromPrivateKey(
+        *device_policy_.GetNewSigningKey());
+
+    device_policy_.payload().mutable_metrics_enabled()->set_metrics_enabled(
+        true);
+    device_policy_.Build();
+    session_manager_client_.set_device_policy(device_policy_.GetBlob());
+
+    ArcTermsOfServiceDefaultNegotiatorTest::SetUp();
+  }
+
+  // BrowserWithTestWindowTest:
+  TestingProfile* CreateProfile() override {
+    const std::string name = "test2@example.com";
+    const AccountId account_id(AccountId::FromUserEmail(name));
+    user_manager()->AddUser(account_id);
+    user_manager()->LoginUser(account_id);
+    return profile_manager()->CreateTestingProfile(name);
+  }
 };
 
 namespace {
@@ -259,6 +389,10 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   // Click the "AGREE" button so that the callback should be invoked
   // with |agreed| = true.
   fake_arc_support()->ClickAgreeButton();
+
+  // Wait until async calls are all completed, which is triggered by ownership
+  // status being loaded.
+  LoadOwnershipStatus();
   EXPECT_EQ(status, Status::ACCEPTED);
 
   // Make sure preference values are now updated.
@@ -327,6 +461,10 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
   // Click the "AGREE" button so that the callback should be invoked
   // with |agreed| = true.
   fake_arc_support()->ClickAgreeButton();
+
+  // Wait until async calls are all completed, which is triggered by ownership
+  // status being loaded.
+  LoadOwnershipStatus();
   EXPECT_EQ(status, Status::ACCEPTED);
 
   // Make sure preference values are now updated.
@@ -334,6 +472,81 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcBackupRestoreEnabled));
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
+}
+
+TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptMetricsNoOwner) {
+  // Show Terms of service page.
+  Status status = Status::PENDING;
+  negotiator()->StartNegotiation(UpdateStatusCallback(&status));
+
+  // TERMS page should be shown.
+  EXPECT_EQ(status, Status::PENDING);
+  EXPECT_EQ(fake_arc_support()->ui_page(), ArcSupportHost::UIPage::TERMS);
+
+  // Emulate showing of a ToS page with a hard-coded ID.
+  fake_arc_support()->set_metrics_mode(false);
+
+  bool expected_metrics_state = true;
+
+  // Check the preference related checkboxes.
+  fake_arc_support()->set_metrics_mode(expected_metrics_state);
+
+  // Click the "AGREE" button so that the callback should be invoked
+  // with |agreed| = true.
+  fake_arc_support()->ClickAgreeButton();
+
+  // Owners status has not been loaded yet. Changes should not be propagated.
+  EXPECT_NE(expected_metrics_state,
+            ash::StatsReportingController::Get()->IsEnabled());
+
+  // Check owners opt-in once ownership status known.
+  LoadOwnershipStatus();
+  EXPECT_EQ(status, Status::ACCEPTED);
+  EXPECT_EQ(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
+            OwnershipStatus::OWNERSHIP_NONE);
+  EXPECT_EQ(expected_metrics_state,
+            ash::StatsReportingController::Get()->IsEnabled());
+}
+
+TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
+       AcceptMetricsUserOptIn) {
+  // Show Terms of service page.
+  Status status = Status::PENDING;
+  negotiator()->StartNegotiation(UpdateStatusCallback(&status));
+
+  // Setup metrics service to use user metrics.
+  metrics_service_client()->SetShouldUseUserConsent(true);
+
+  // TERMS page should be shown.
+  EXPECT_EQ(status, Status::PENDING);
+  EXPECT_EQ(fake_arc_support()->ui_page(), ArcSupportHost::UIPage::TERMS);
+
+  // Load ownership and enable metrics by the owner. If owner has opted out of
+  // metrics, per-user metrics opt-in is not allowed. Ensure that the ownership
+  // is probably setup.
+  LoadOwnershipStatus();
+  EXPECT_EQ(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
+            OwnershipStatus::OWNERSHIP_TAKEN);
+  EXPECT_TRUE(ash::StatsReportingController::Get()->IsEnabled());
+  EXPECT_FALSE(user_manager::UserManager::Get()->IsCurrentUserOwner());
+
+  // Emulate showing of a ToS page with a hard-coded ID.
+  fake_arc_support()->set_metrics_mode(false);
+
+  bool expected_metrics_state = true;
+
+  // Check the preference related checkboxes.
+  fake_arc_support()->set_metrics_mode(expected_metrics_state);
+
+  // Click the "AGREE" button so that the callback should be invoked
+  // with |agreed| = true.
+  fake_arc_support()->ClickAgreeButton();
+
+  // Wait for async calls to finish.
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(status, Status::ACCEPTED);
+  EXPECT_EQ(expected_metrics_state, GetUserMetricsState());
 }
 
 TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
@@ -380,9 +593,13 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
   // Click the "AGREE" button so that the callback should be invoked
   // with |agreed| = true.
   fake_arc_support()->ClickAgreeButton();
-  EXPECT_EQ(status, Status::ACCEPTED);
+
+  // Wait until async calls are all completed, which is triggered by ownership
+  // status being loaded.
+  LoadOwnershipStatus();
 
   // Make sure preference values are now updated.
+  EXPECT_EQ(status, Status::ACCEPTED);
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcBackupRestoreEnabled));
   EXPECT_TRUE(
