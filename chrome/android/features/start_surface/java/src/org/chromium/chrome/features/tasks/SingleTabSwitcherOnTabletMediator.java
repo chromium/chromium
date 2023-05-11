@@ -42,6 +42,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private Tab mMostRecentTab;
     private boolean mInitialized;
     private boolean mIsScrollableMvtEnabled;
+    private boolean mIsMultiFeedEnabled;
 
     SingleTabSwitcherOnTabletMediator(PropertyModel propertyModel, Resources resources,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -51,9 +52,10 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         mResources = resources;
         mTabListFaviconProvider = tabListFaviconProvider;
         mMostRecentTab = mostRecentTab;
+        mIsMultiFeedEnabled = isMultiColumnFeedEnabled;
         mIsScrollableMvtEnabled = isScrollableMvtEnabled;
 
-        if (isMultiColumnFeedEnabled) {
+        if (mIsMultiFeedEnabled) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
             mMarginDefaut = mResources.getDimensionPixelSize(
                     R.dimen.single_tab_card_lateral_margin_landscape_tablet);
@@ -80,12 +82,14 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // The margin doesn't change when 2 row MV tiles are shown.
-        if (mIsScrollableMvtEnabled) {
+        if (mIsScrollableMvtEnabled && mIsMultiFeedEnabled) {
             updateMargins(newConfig.orientation);
         }
     }
 
-    private void updateMargins(int orientation) {
+    void updateMargins(int orientation) {
+        if (!mIsMultiFeedEnabled) return;
+
         int lateralMargin =
                 mIsScrollableMvtEnabled && orientation == Configuration.ORIENTATION_PORTRAIT
                 ? mMarginSmallPortrait

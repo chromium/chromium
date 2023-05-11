@@ -13,5 +13,6 @@ found in the LICENSE file.
     <!-- Single Tab card on tablets -->
     <dimen name="single_tab_card_lateral_margin_landscape_tablet">62dp</dimen>
     <dimen name="single_tab_card_lateral_margin_portrait_tablet">14dp</dimen>
+    <dimen name="single_tab_card_lateral_margin">16dp</dimen>
     <dimen name="single_tab_card_start_padding">2dp</dimen>
 </resources>

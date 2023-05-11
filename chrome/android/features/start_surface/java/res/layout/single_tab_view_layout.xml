@@ -13,8 +13,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="24dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
+    android:layout_marginStart="@dimen/single_tab_card_lateral_margin"
+    android:layout_marginEnd="@dimen/single_tab_card_lateral_margin"
     android:background="@drawable/single_tab_background"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="horizontal">

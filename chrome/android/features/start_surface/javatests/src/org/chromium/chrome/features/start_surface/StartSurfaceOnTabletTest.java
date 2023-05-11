@@ -28,7 +28,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesGridLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -370,6 +370,38 @@ public class StartSurfaceOnTabletTest {
         Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
         Assert.assertEquals(expectedMarginTop, marginLayoutParams.topMargin);
         Assert.assertEquals(expectedMarginBottom, marginLayoutParams.bottomMargin);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    @DisableFeatures({ChromeFeatureList.FEED_MULTI_COLUMN})
+    // clang-format off
+    public void testDefaultSingleTabViewMargin() throws IOException {
+        // clang-format on
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+
+        // Verifies that a new NTP is created and set as the active Tab.
+        verifyTabCountAndActiveTabUrl(
+                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        View singleTabView = ntp.getView().findViewById(R.id.single_tab_view);
+
+        Resources res = cta.getResources();
+        int defaultLateralMargin =
+                res.getDimensionPixelSize(R.dimen.single_tab_card_lateral_margin);
+
+        // Verifies that the single Tab card has its original margins.
+        MarginLayoutParams marginLayoutParams =
+                (MarginLayoutParams) singleTabView.getLayoutParams();
+        Assert.assertEquals(defaultLateralMargin, marginLayoutParams.getMarginStart());
+        Assert.assertEquals(defaultLateralMargin, marginLayoutParams.getMarginEnd());
     }
 
     private void verifyTabCountAndActiveTabUrl(
