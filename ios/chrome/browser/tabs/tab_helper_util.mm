@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web/invalid_url_tab_helper.h"
@@ -267,7 +268,10 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     WebSelectionTabHelper::CreateForWebState(web_state);
   }
 
-  WebSessionStateTabHelper::CreateForWebState(web_state);
+  if (web::UseNativeSessionRestorationCache()) {
+    WebSessionStateTabHelper::CreateForWebState(web_state);
+  }
+
   WebPerformanceMetricsTabHelper::CreateForWebState(web_state);
 
   OfflinePageTabHelper::CreateForWebState(

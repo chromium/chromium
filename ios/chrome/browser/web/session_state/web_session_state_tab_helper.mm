@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 
-#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/logging.h"
@@ -75,21 +74,9 @@ const int64_t kMaxSessionState = 1024 * 5;  // 5MB
 
 @end
 
-// static
-bool WebSessionStateTabHelper::IsEnabled() {
-  if (!base::FeatureList::IsEnabled(web::kRestoreSessionFromCache)) {
-    return false;
-  }
-
-  // This API is only available on iOS 15.
-  if (@available(iOS 15, *)) {
-    return true;
-  }
-  return false;
-}
-
 WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
+  CHECK(web::UseNativeSessionRestorationCache());
   web_state_->AddObserver(this);
   web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
   if (web_state_->IsRealized()) {
@@ -104,9 +91,6 @@ ChromeBrowserState* WebSessionStateTabHelper::GetBrowserState() {
 }
 
 bool WebSessionStateTabHelper::RestoreSessionFromCache() {
-  if (!IsEnabled())
-    return false;
-
   WebSessionStateCache* cache =
       WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
   NSData* data = [cache sessionStateDataForWebState:web_state_];
@@ -131,9 +115,6 @@ void WebSessionStateTabHelper::SaveSessionStateIfStale() {
 }
 
 void WebSessionStateTabHelper::SaveSessionState() {
-  if (!IsEnabled())
-    return;
-
   stale_ = false;
 
   NSData* data = web_state_->SessionStateData();
@@ -224,9 +205,6 @@ void WebSessionStateTabHelper::OnScrollEvent() {
 }
 
 void WebSessionStateTabHelper::MarkStale() {
-  if (!IsEnabled())
-    return;
-
   web::NavigationManager* navigationManager =
       web_state_->GetNavigationManager();
   item_count_ = web_state_->GetNavigationItemCount();

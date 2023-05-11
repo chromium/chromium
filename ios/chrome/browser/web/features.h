@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_WEB_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "build/build_config.h"
 
 namespace web {
 
@@ -28,6 +27,9 @@ BASE_DECLARE_FEATURE(kWebPageTextZoomIPad);
 
 // Feature flag for to use native session restoration.
 BASE_DECLARE_FEATURE(kRestoreSessionFromCache);
+
+// Whether native session restoration cache is enabled.
+bool UseNativeSessionRestorationCache();
 
 }  // namespace web
 

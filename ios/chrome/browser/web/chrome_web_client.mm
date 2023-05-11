@@ -437,8 +437,9 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
 }
 
 bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {
-  return WebSessionStateTabHelper::FromWebState(web_state)
-      ->RestoreSessionFromCache();
+  return web::UseNativeSessionRestorationCache() &&
+         WebSessionStateTabHelper::FromWebState(web_state)
+             ->RestoreSessionFromCache();
 }
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {

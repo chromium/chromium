@@ -517,5 +517,8 @@ source_set("feature_flags") {
     "features.cc",
     "features.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/web/common:features",
+  ]
 }

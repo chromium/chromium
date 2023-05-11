@@ -32,9 +32,6 @@ class WebSessionStateTabHelper
 
   ~WebSessionStateTabHelper() override;
 
-  // Returns true if the feature is enabled and running iOS 15 or newer.
-  static bool IsEnabled();
-
   // If kRestoreSessionFromCache is enabled restore `web_state`'s WKWebView
   // using the previously saved sessionState data via the WebSessionStateCache.
   // Returns true if the session could be restored.

@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -112,7 +113,9 @@ class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
     NewTabPageTabHelper::FromWebState(web_state)->SetDelegate(delegate);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     SnapshotTabHelper::CreateForWebState(web_state);
-    WebSessionStateTabHelper::CreateForWebState(web_state);
+    if (web::UseNativeSessionRestorationCache()) {
+      WebSessionStateTabHelper::CreateForWebState(web_state);
+    }
   }
 };
 

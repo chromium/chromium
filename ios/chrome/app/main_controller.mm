@@ -117,6 +117,7 @@
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/certificate_policy_app_agent.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -972,10 +973,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kPurgeWebSessionStates
                   block:^{
-                    WebSessionStateCache* cache =
-                        WebSessionStateCacheFactory::GetForBrowserState(
-                            self.appState.mainBrowserState);
-                    [cache purgeUnassociatedData];
+                    if (web::UseNativeSessionRestorationCache()) {
+                      WebSessionStateCache* cache =
+                          WebSessionStateCacheFactory::GetForBrowserState(
+                              self.appState.mainBrowserState);
+                      [cache purgeUnassociatedData];
+                    }
                   }];
 }
 

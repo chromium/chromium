@@ -527,6 +527,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/variations:ios_chrome_ui_string_overrider_factory",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web/session_state",
     "//ios/chrome/common/app_group",
