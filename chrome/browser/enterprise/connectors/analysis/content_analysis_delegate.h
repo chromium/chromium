@@ -116,8 +116,14 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // Printer name of the page being sent to, empty for non-print actions.
     std::string printer_name;
 
+    // TODO(b/280457160): Set printer type once scan after printer preview
+    // is done.
+    // Printer type of the page being sent to, the default value is UNKNOWN.
+    ContentMetaData::PrintMetadata::PrinterType printer_type =
+        ContentMetaData::PrintMetadata::UNKNOWN;
+
     // The settings to use for the analysis of the data in this struct.
-    enterprise_connectors::AnalysisSettings settings;
+    AnalysisSettings settings;
   };
 
   // Result of deep scanning.  Each Result contains the verdicts of deep scans
@@ -200,7 +206,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   static bool IsEnabled(Profile* profile,
                         GURL url,
                         Data* data,
-                        enterprise_connectors::AnalysisConnector connector);
+                        AnalysisConnector connector);
 
   // Entry point for starting a deep scan, with the callback being called once
   // all results are available.  When the UI is enabled, a tab-modal dialog
@@ -242,15 +248,12 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // testing derived classes.
   // TODO(crbug.com/1324892): Adapt once TextRequestHandler and
   // PageRequestHandler are created and move reporting to the RequestHandlers.
-  void StringRequestCallback(
-      safe_browsing::BinaryUploadService::Result result,
-      enterprise_connectors::ContentAnalysisResponse response);
-  void ImageRequestCallback(
-      safe_browsing::BinaryUploadService::Result result,
-      enterprise_connectors::ContentAnalysisResponse response);
-  void PageRequestCallback(
-      safe_browsing::BinaryUploadService::Result result,
-      enterprise_connectors::ContentAnalysisResponse response);
+  void StringRequestCallback(safe_browsing::BinaryUploadService::Result result,
+                             ContentAnalysisResponse response);
+  void ImageRequestCallback(safe_browsing::BinaryUploadService::Result result,
+                            ContentAnalysisResponse response);
+  void PageRequestCallback(safe_browsing::BinaryUploadService::Result result,
+                           ContentAnalysisResponse response);
 
   // Callback called after all files are scanned by the FilesRequestHandler.
   void FilesRequestCallback(std::vector<RequestHandlerResult> results);
@@ -298,7 +301,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // service.
   // TODO(crbug.com/1324892): Remove once TextRequestHandler and
   // PageRequestHandler are created.
-  void PrepareRequest(enterprise_connectors::AnalysisConnector connector,
+  void PrepareRequest(AnalysisConnector connector,
                       safe_browsing::BinaryUploadService::Request* request);
 
   // Fills the arrays in `result_` with the given boolean status.
@@ -362,18 +365,18 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Set to true if the full text got a DLP warning verdict.
   bool text_warning_ = false;
-  enterprise_connectors::ContentAnalysisResponse text_response_;
+  ContentAnalysisResponse text_response_;
 
   // Set to true if the full image got a DLP warning verdict.
   bool image_warning_ = false;
-  enterprise_connectors::ContentAnalysisResponse image_response_;
+  ContentAnalysisResponse image_response_;
 
   // Indices of warned files.
   std::vector<size_t> warned_file_indices_;
 
   // Set to true if the printed page got a DLP warning verdict.
   bool page_warning_ = false;
-  enterprise_connectors::ContentAnalysisResponse page_response_;
+  ContentAnalysisResponse page_response_;
 
   // Stores the scanned page's size since it moves from `data_` to be uploaded.
   // TODO(crbug.com/1324892): Move to PageRequestHandler.

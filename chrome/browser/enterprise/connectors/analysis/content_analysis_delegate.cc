@@ -238,14 +238,11 @@ ContentAnalysisDelegate::OverrideCancelButtonText() const {
 }
 
 // static
-bool ContentAnalysisDelegate::IsEnabled(
-    Profile* profile,
-    GURL url,
-    Data* data,
-    enterprise_connectors::AnalysisConnector connector) {
-  auto* service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile);
+bool ContentAnalysisDelegate::IsEnabled(Profile* profile,
+                                        GURL url,
+                                        Data* data,
+                                        AnalysisConnector connector) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile);
   // If the corresponding Connector policy isn't set, don't perform scans.
   if (!service || !service->IsConnectorEnabled(connector))
     return false;
@@ -271,8 +268,8 @@ void ContentAnalysisDelegate::CreateForWebContents(
     CompletionCallback callback,
     safe_browsing::DeepScanAccessPoint access_point) {
   Factory* testing_factory = GetFactoryStorage();
-  bool wait_for_verdict = data.settings.block_until_verdict ==
-                          enterprise_connectors::BlockUntilVerdict::kBlock;
+  bool wait_for_verdict =
+      data.settings.block_until_verdict == BlockUntilVerdict::kBlock;
   // Using new instead of std::make_unique<> to access non public constructor.
   auto delegate = testing_factory->is_null()
                       ? base::WrapUnique(new ContentAnalysisDelegate(
@@ -370,7 +367,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
 
 void ContentAnalysisDelegate::StringRequestCallback(
     BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response) {
+    ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
     final_actions_[response.request_token()] = GetAckFinalAction(response);
@@ -414,7 +411,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
 
 void ContentAnalysisDelegate::ImageRequestCallback(
     BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response) {
+    ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS) {
     final_actions_[response.request_token()] = GetAckFinalAction(response);
@@ -497,7 +494,7 @@ bool ContentAnalysisDelegate::CancelDialog() {
 
 void ContentAnalysisDelegate::PageRequestCallback(
     BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response) {
+    ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
     final_actions_[response.request_token()] = GetAckFinalAction(response);
@@ -590,7 +587,7 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
         base::BindOnce(&ContentAnalysisDelegate::StringRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(enterprise_connectors::BULK_DATA_ENTRY, request.get());
+    PrepareRequest(BULK_DATA_ENTRY, request.get());
     UploadTextForDeepScanning(std::move(request));
   }
 }
@@ -617,7 +614,7 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
         base::BindOnce(&ContentAnalysisDelegate::ImageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(enterprise_connectors::BULK_DATA_ENTRY, request.get());
+    PrepareRequest(BULK_DATA_ENTRY, request.get());
     UploadImageForDeepScanning(std::move(request));
   }
 }
@@ -634,9 +631,10 @@ void ContentAnalysisDelegate::PreparePageRequest() {
         base::BindOnce(&ContentAnalysisDelegate::PageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(enterprise_connectors::PRINT, request.get());
+    PrepareRequest(PRINT, request.get());
     request->set_filename(title_);
     request->set_printer_name(data_.printer_name);
+    request->set_printer_type(data_.printer_type);
     if (!page_content_type_.empty()) {
       request->set_content_type(page_content_type_);
     }
@@ -648,7 +646,7 @@ void ContentAnalysisDelegate::PreparePageRequest() {
 // are handled by
 // chrome/browser/enterprise/connectors/analysis/files_request_handler.h
 void ContentAnalysisDelegate::PrepareRequest(
-    enterprise_connectors::AnalysisConnector connector,
+    AnalysisConnector connector,
     BinaryUploadService::Request* request) {
   if (data_.settings.cloud_or_local_settings.is_cloud_analysis()) {
     request->set_device_token(
