@@ -3,6 +3,9 @@
       `Tests that tracking and untracking CacheStorage for storage key works\n`);
   await dp.Page.enable();
 
+  // Remove the test cache to prevent leaking from other tests.
+  await session.evaluateAsync('caches.delete("test-cache")');
+
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
   const storageKey = (await dp.Storage.getStorageKeyForFrame({
                        frameId: frameId
