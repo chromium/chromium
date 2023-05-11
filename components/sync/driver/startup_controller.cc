@@ -48,11 +48,9 @@ base::TimeDelta GetDeferredInitDelay() {
 }  // namespace
 
 StartupController::StartupController(
-    base::RepeatingCallback<ModelTypeSet()> get_preferred_data_types,
     base::RepeatingCallback<bool()> should_start,
     base::OnceClosure start_engine)
-    : get_preferred_data_types_callback_(std::move(get_preferred_data_types)),
-      should_start_callback_(std::move(should_start)),
+    : should_start_callback_(std::move(should_start)),
       start_engine_callback_(std::move(start_engine)) {}
 
 StartupController::~StartupController() = default;
@@ -81,8 +79,7 @@ void StartupController::TryStartImpl(bool force_immediate) {
   // - a datatype has requested an immediate start of sync, or
   // - sync needs to start up the engine immediately to provide control state
   //   and encryption information to the UI.
-  if (!force_immediate && !bypass_deferred_startup_ &&
-      get_preferred_data_types_callback_.Run().Has(SESSIONS)) {
+  if (!force_immediate && !bypass_deferred_startup_) {
     if (first_start) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,

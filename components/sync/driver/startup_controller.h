@@ -28,10 +28,8 @@ class StartupController final {
     STARTED
   };
 
-  StartupController(
-      base::RepeatingCallback<ModelTypeSet()> get_preferred_data_types,
-      base::RepeatingCallback<bool()> should_start,
-      base::OnceClosure start_engine);
+  StartupController(base::RepeatingCallback<bool()> should_start,
+                    base::OnceClosure start_engine);
   ~StartupController();
 
   // Starts up sync if it is requested by the user and preconditions are met.
@@ -74,9 +72,6 @@ class StartupController final {
 
   // Records time spent in deferred state with UMA histograms.
   void RecordTimeDeferred(DeferredInitTrigger trigger);
-
-  const base::RepeatingCallback<ModelTypeSet()>
-      get_preferred_data_types_callback_;
 
   // A function that can be invoked repeatedly to determine whether sync should
   // be started. |start_engine_| should not be invoked unless this returns true.

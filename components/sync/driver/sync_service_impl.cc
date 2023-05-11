@@ -208,8 +208,6 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
   DCHECK(IsSyncAllowedByFlag());
 
   startup_controller_ = std::make_unique<StartupController>(
-      base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
-                          base::Unretained(this)),
       base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
                           base::Unretained(this)),
       base::BindOnce(&SyncServiceImpl::StartUpSlowEngineComponents,
@@ -601,8 +599,6 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
   sync_enabled_weak_factory_.InvalidateWeakPtrs();
 
   startup_controller_ = std::make_unique<StartupController>(
-      base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
-                          base::Unretained(this)),
       base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
                           base::Unretained(this)),
       base::BindOnce(&SyncServiceImpl::StartUpSlowEngineComponents,

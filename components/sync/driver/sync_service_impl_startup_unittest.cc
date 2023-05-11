@@ -241,7 +241,7 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
-  base::RunLoop().RunUntilIdle();
+  FastForwardUntilNoTasksRemain();
 
   // SyncServiceImpl should now be active, but of course not have an access
   // token.
@@ -275,9 +275,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetFirstSetupComplete();
 
-  // Note: Deferred startup is only enabled if SESSIONS is among the preferred
-  // data types.
-  CreateSyncService(SyncServiceImpl::MANUAL_START, {TYPED_URLS, SESSIONS});
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
 
   ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
@@ -358,7 +356,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
-  base::RunLoop().RunUntilIdle();
+  FastForwardUntilNoTasksRemain();
   // Simulate an auth error while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
 
@@ -426,7 +424,7 @@ TEST_F(SyncServiceImplStartupTest, StartNormal) {
   // configure the DataTypeManager. In this test, all of these operations are
   // synchronous.
   sync_service()->Initialize();
-  base::RunLoop().RunUntilIdle();
+  FastForwardUntilNoTasksRemain();
   EXPECT_NE(nullptr, data_type_manager());
   EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
@@ -440,7 +438,7 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
-  base::RunLoop().RunUntilIdle();
+  FastForwardUntilNoTasksRemain();
   ASSERT_TRUE(sync_service()->IsSyncFeatureActive());
   ASSERT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
@@ -553,10 +551,9 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
-  // Initialize() should be enough to kick off Sync startup (which is instant in
-  // this test).
+  // Initialize() and wait for deferred startup.
   sync_service()->Initialize();
-  base::RunLoop().RunUntilIdle();
+  FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::DisableReasonSet(),
             sync_service()->GetDisableReasons());
@@ -631,7 +628,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
-  base::RunLoop().RunUntilIdle();
+  FastForwardUntilNoTasksRemain();
 
   // Simulate a failure while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
@@ -652,10 +649,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
-  // Note: Deferred startup is only enabled if SESSIONS is among the preferred
-  // data types.
-  CreateSyncService(SyncServiceImpl::MANUAL_START,
-                    ModelTypeSet(SESSIONS, TYPED_URLS));
+  CreateSyncService(SyncServiceImpl::MANUAL_START, ModelTypeSet(SESSIONS));
   sync_service()->Initialize();
   ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
 
@@ -740,10 +734,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   sync_prefs()->SetFirstSetupComplete();
   sync_prefs()->SetSyncRequested(true);
 
-  // Note: Deferred startup is only enabled if SESSIONS is among the preferred
-  // data types.
-  CreateSyncService(SyncServiceImpl::MANUAL_START,
-                    ModelTypeSet(SESSIONS, TYPED_URLS));
+  CreateSyncService(SyncServiceImpl::MANUAL_START, ModelTypeSet(SESSIONS));
   sync_service()->Initialize();
   ASSERT_TRUE(sync_service()->CanSyncFeatureStart());
 

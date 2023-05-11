@@ -19,16 +19,10 @@ class StartupControllerTest : public testing::Test {
 
   void SetUp() override {
     controller_ = std::make_unique<StartupController>(
-        base::BindRepeating(&StartupControllerTest::GetPreferredDataTypes,
-                            base::Unretained(this)),
         base::BindRepeating(&StartupControllerTest::ShouldStart,
                             base::Unretained(this)),
         base::BindRepeating(&StartupControllerTest::FakeStartBackend,
                             base::Unretained(this)));
-  }
-
-  void SetPreferredDataTypes(const ModelTypeSet& types) {
-    preferred_types_ = types;
   }
 
   void SetShouldStart(bool should_start) { should_start_ = should_start; }
@@ -59,13 +53,11 @@ class StartupControllerTest : public testing::Test {
   void RunDeferredTasks() { task_environment_.FastForwardUntilNoTasksRemain(); }
 
  private:
-  ModelTypeSet GetPreferredDataTypes() { return preferred_types_; }
   bool ShouldStart() { return should_start_; }
   void FakeStartBackend() { started_ = true; }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ModelTypeSet preferred_types_ = UserTypes();
   bool should_start_ = false;
   bool started_ = false;
   std::unique_ptr<StartupController> controller_;
@@ -119,21 +111,6 @@ TEST_F(StartupControllerTest, FallbackTimer) {
   ExpectStartDeferred();
 
   RunDeferredTasks();
-  ExpectStarted();
-}
-
-// Test that we start immediately if sessions is disabled.
-TEST_F(StartupControllerTest, NoDeferralWithoutSessionsSync) {
-  ModelTypeSet types(UserTypes());
-  // Disabling sessions means disabling 4 types due to groupings.
-  types.Remove(SESSIONS);
-  types.Remove(PROXY_TABS);
-  types.Remove(TYPED_URLS);
-  types.Remove(SUPERVISED_USER_SETTINGS);
-  SetPreferredDataTypes(types);
-
-  SetShouldStart(true);
-  controller()->TryStart(/*force_immediate=*/false);
   ExpectStarted();
 }
 
