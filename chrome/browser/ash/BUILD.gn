@@ -1960,8 +1960,6 @@ source_set("ash") {
     "login/ui/webui_login_view.h",
     "login/user_board_view_mojo.cc",
     "login/user_board_view_mojo.h",
-    "login/user_flow.cc",
-    "login/user_flow.h",
     "login/user_online_signin_notifier.cc",
     "login/user_online_signin_notifier.h",
     "login/users/affiliation.cc",

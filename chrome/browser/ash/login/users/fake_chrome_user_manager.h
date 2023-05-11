@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
@@ -163,10 +162,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   MultiProfileUserController* GetMultiProfileUserController() override;
   UserImageManager* GetUserImageManager(const AccountId& account_id) override;
   SupervisedUserManager* GetSupervisedUserManager() override;
-  void SetUserFlow(const AccountId& account_id, UserFlow* flow) override;
-  UserFlow* GetCurrentUserFlow() const override;
-  UserFlow* GetUserFlow(const AccountId& account_id) const override;
-  void ResetUserFlow(const AccountId& account_id) override;
 
   // ChromeUserManager override.
   void SetUserAffiliation(
@@ -216,9 +211,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   using UserImageManagerMap =
       std::map<AccountId, std::unique_ptr<UserImageManager>>;
 
-  // Lazily creates default user flow.
-  UserFlow* GetDefaultUserFlow() const;
-
   // Returns the active user.
   user_manager::User* GetActiveUserInternal() const;
 
@@ -236,15 +228,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   AccountId active_account_id_ = EmptyAccountId();
 
   AccountId last_session_active_account_id_ = EmptyAccountId();
-
-  // Lazy-initialized default flow.
-  mutable std::unique_ptr<UserFlow> default_flow_;
-
-  using FlowMap = std::map<AccountId, UserFlow*>;
-
-  // Specific flows by user e-mail.
-  // Keys should be canonicalized before access.
-  FlowMap specific_flows_;
 
   // Whether the device is enterprise managed.
   bool is_enterprise_managed_ = false;

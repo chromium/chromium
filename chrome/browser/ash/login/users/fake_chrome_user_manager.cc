@@ -243,34 +243,6 @@ UserImageManager* FakeChromeUserManager::GetUserImageManager(
   return mgr_raw;
 }
 
-void FakeChromeUserManager::SetUserFlow(const AccountId& account_id,
-                                        UserFlow* flow) {
-  ResetUserFlow(account_id);
-  specific_flows_[account_id] = flow;
-}
-
-UserFlow* FakeChromeUserManager::GetCurrentUserFlow() const {
-  if (!IsUserLoggedIn())
-    return GetDefaultUserFlow();
-  return GetUserFlow(GetActiveUser()->GetAccountId());
-}
-
-UserFlow* FakeChromeUserManager::GetUserFlow(
-    const AccountId& account_id) const {
-  FlowMap::const_iterator it = specific_flows_.find(account_id);
-  if (it != specific_flows_.end())
-    return it->second;
-  return GetDefaultUserFlow();
-}
-
-void FakeChromeUserManager::ResetUserFlow(const AccountId& account_id) {
-  FlowMap::iterator it = specific_flows_.find(account_id);
-  if (it != specific_flows_.end()) {
-    delete it->second;
-    specific_flows_.erase(it);
-  }
-}
-
 void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
   active_account_id_ = account_id;
   active_user_ = nullptr;
@@ -334,12 +306,6 @@ user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
   }
 
   return result;
-}
-
-UserFlow* FakeChromeUserManager::GetDefaultUserFlow() const {
-  if (!default_flow_.get())
-    default_flow_ = std::make_unique<DefaultUserFlow>();
-  return default_flow_.get();
 }
 
 void FakeChromeUserManager::SetOwnerId(const AccountId& account_id) {

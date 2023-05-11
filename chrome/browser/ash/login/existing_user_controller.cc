@@ -58,7 +58,6 @@
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
-#include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -742,12 +741,6 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
 
   PerformLoginFinishedActions(false /* don't start auto login timer */);
 
-  if (ChromeUserManager::Get()
-          ->GetUserFlow(last_login_attempt_account_id_)
-          ->HandleLoginFailure(failure)) {
-    return;
-  }
-
   const bool is_known_user = user_manager::UserManager::Get()->IsKnownUser(
       last_login_attempt_account_id_);
   if (failure.reason() == AuthFailure::OWNER_REQUIRED) {
@@ -798,10 +791,6 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
     StartAutoLoginTimer();
   }
 
-  // Reset user flow to default, so that special flow will not affect next
-  // attempt.
-  ChromeUserManager::Get()->ResetUserFlow(last_login_attempt_account_id_);
-
   for (auto& auth_status_consumer : auth_status_consumers_)
     auth_status_consumer.OnAuthFailure(failure);
 
@@ -818,10 +807,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   CHECK(login_performer_);
   password_changed_ = login_performer_->password_changed();
   auth_mode_ = login_performer_->auth_mode();
-
-  ChromeUserManager::Get()
-      ->GetUserFlow(user_context.GetAccountId())
-      ->HandleLoginSuccess(user_context);
 
   StopAutoLoginTimer();
 

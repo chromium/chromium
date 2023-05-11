@@ -1081,38 +1081,6 @@ void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
   }
 }
 
-UserFlow* ChromeUserManagerImpl::GetCurrentUserFlow() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsUserLoggedIn())
-    return GetDefaultUserFlow();
-  return GetUserFlow(GetActiveUser()->GetAccountId());
-}
-
-UserFlow* ChromeUserManagerImpl::GetUserFlow(
-    const AccountId& account_id) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  FlowMap::const_iterator it = specific_flows_.find(account_id);
-  if (it != specific_flows_.end())
-    return it->second;
-  return GetDefaultUserFlow();
-}
-
-void ChromeUserManagerImpl::SetUserFlow(const AccountId& account_id,
-                                        UserFlow* flow) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ResetUserFlow(account_id);
-  specific_flows_[account_id] = flow;
-}
-
-void ChromeUserManagerImpl::ResetUserFlow(const AccountId& account_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  FlowMap::iterator it = specific_flows_.find(account_id);
-  if (it != specific_flows_.end()) {
-    delete it->second;
-    specific_flows_.erase(it);
-  }
-}
-
 bool ChromeUserManagerImpl::IsGuestSessionAllowed() const {
   // In tests CrosSettings might not be initialized.
   if (!cros_settings_)
@@ -1172,13 +1140,6 @@ bool ChromeUserManagerImpl::IsUserAllowed(
   return chrome_user_manager_util::IsUserAllowed(
       user, IsGuestSessionAllowed(),
       user.HasGaiaAccount() && IsGaiaUserAllowed(user));
-}
-
-UserFlow* ChromeUserManagerImpl::GetDefaultUserFlow() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!default_flow_.get())
-    default_flow_ = std::make_unique<DefaultUserFlow>();
-  return default_flow_.get();
 }
 
 void ChromeUserManagerImpl::NotifyUserAddedToSession(

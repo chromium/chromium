@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
-#include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -75,10 +74,6 @@ class ChromeUserManagerImpl
   MultiProfileUserController* GetMultiProfileUserController() override;
   UserImageManager* GetUserImageManager(const AccountId& account_id) override;
   SupervisedUserManager* GetSupervisedUserManager() override;
-  UserFlow* GetCurrentUserFlow() const override;
-  UserFlow* GetUserFlow(const AccountId& account_id) const override;
-  void SetUserFlow(const AccountId& account_id, UserFlow* flow) override;
-  void ResetUserFlow(const AccountId& account_id) override;
 
   // UserManager implementation:
   void Shutdown() override;
@@ -199,9 +194,6 @@ class ChromeUserManagerImpl
   // associated with that username.
   void UpdatePublicAccountDisplayName(const std::string& user_id);
 
-  // Lazily creates default user flow.
-  UserFlow* GetDefaultUserFlow() const;
-
   // MultiProfileUserControllerDelegate implementation:
   void OnUserNotAllowed(const std::string& user_email) override;
 
@@ -247,15 +239,6 @@ class ChromeUserManagerImpl
 
   // Session length limiter.
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;
-
-  using FlowMap = std::map<AccountId, UserFlow*>;
-
-  // Lazy-initialized default flow.
-  mutable std::unique_ptr<UserFlow> default_flow_;
-
-  // Specific flows by user e-mail. Keys should be canonicalized before
-  // access.
-  FlowMap specific_flows_;
 
   // Cros settings change subscriptions.
   base::CallbackListSubscription allow_guest_subscription_;
