@@ -55,6 +55,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -345,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       return true;
     })();
   )";
-  // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
+  // Use EvalJs instead of EvalJsInAppFrame because the script needs to
   // run in the same world as the page's code.
   EXPECT_EQ(true,
             content::EvalJs(
@@ -403,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       return true;
     })();
   )";
-  // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
+  // Use EvalJs instead of EvalJsInAppFrame because the script needs to
   // run in the same world as the page's code.
   EXPECT_EQ(true,
             content::EvalJs(
@@ -521,10 +522,10 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
       await window.customLaunchData.delegate.showParentalControls();
     })();
   )";
-  // Trigger the script, then wait for settings to open. Use ExecuteScript
+  // Trigger the script, then wait for settings to open. Use ExecJs
   // instead of EvalJsInAppFrame because the script needs to run in the same
   // world as the page's code.
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   navigation_observer.Wait();
 
@@ -563,11 +564,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
     })();
   )";
   // Trigger the script, then wait for the URL to open in a new tab. Use
-  // ExecuteScript instead of EvalJsInAppFrame because the script needs to run
+  // ExecJs instead of EvalJsInAppFrame because the script needs to run
   // in the same world as the page's code.
-  EXPECT_TRUE(content::ExecuteScript(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents),
-      content::JsReplace(kScript, test_url)));
+  EXPECT_TRUE(
+      content::ExecJs(SandboxedWebUiAppTestBase::GetAppFrame(web_contents),
+                      content::JsReplace(kScript, test_url),
+                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   navigation_observer.Wait();
 
   // There should still be two browser windows.
