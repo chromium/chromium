@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -58,6 +59,8 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndDisableFeature(features::kQsRevamp);
     network_config_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>();
     AshTestBase::SetUp();
@@ -143,6 +146,8 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   std::unique_ptr<UnifiedSystemTrayView> view_;
 
   int preferred_size_changed_count_ = 0;
+
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 class QsRevampUnifiedSystemTrayControllerTest : public AshTestBase {

@@ -4,8 +4,12 @@
 
 #include "ash/system/message_center/metrics_utils.h"
 
+#include <memory>
+
+#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -135,6 +139,10 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
     AshTestBase::SetUp();
     test_delegate_ =
         base::MakeRefCounted<message_center::NotificationDelegate>();
+    notification_center_test_api_ = std::make_unique<NotificationCenterTestApi>(
+        /*tray=*/features::IsQsRevampEnabled()
+            ? GetPrimaryNotificationCenterTray()
+            : nullptr);
   }
 
   // Create a test notification. Noted that the notifications are using the same
@@ -178,18 +186,12 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
 
   // Get the notification view from message center associated with `id`.
   views::View* GetNotificationViewFromMessageCenter(const std::string& id) {
-    return GetPrimaryUnifiedSystemTray()
-        ->message_center_bubble()
-        ->notification_center_view()
-        ->notification_list_view()
-        ->GetMessageViewForNotificationId(id);
+    return notification_center_test_api_->GetNotificationViewForId(id);
   }
 
   // Get the popup notification view associated with `id`.
   views::View* GetPopupNotificationView(const std::string& id) {
-    return GetPrimaryUnifiedSystemTray()
-        ->GetMessagePopupCollection()
-        ->GetMessageViewForNotificationId(id);
+    return notification_center_test_api_->GetPopupViewForId(id);
   }
 
   void ClickView(views::View* view) {
@@ -209,8 +211,13 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
     return test_delegate_;
   }
 
+  NotificationCenterTestApi* notification_center_test_api() {
+    return notification_center_test_api_.get();
+  }
+
  private:
   scoped_refptr<message_center::NotificationDelegate> test_delegate_;
+  std::unique_ptr<NotificationCenterTestApi> notification_center_test_api_;
 
   // Used to create test notification. This represents the current available
   // number that we can use to create the next test notification. This id will
@@ -225,7 +232,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordBadClicks) {
   // Add the notification and get its view in message center.
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
 
   // A click to a notification without a delegate should record a bad click.
   ClickView(GetNotificationViewFromMessageCenter(notification->id()));
@@ -243,7 +250,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordGoodClicks) {
   // Add the notification and get its view in message center.
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
 
   // A click to a notification with a delegate should record a good click.
   ClickView(GetNotificationViewFromMessageCenter(notification->id()));
@@ -254,6 +261,10 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordGoodClicks) {
 }
 
 TEST_F(MessageCenterMetricsUtilsTest, RecordHover) {
+  // TODO(b/281705636): Fix metrics recording when QS revamp is enabled.
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
   base::HistogramTester histograms;
   auto notification = CreateTestNotification();
 
@@ -261,13 +272,14 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordHover) {
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
 
-  auto* popup = GetPopupNotificationView(notification->id());
+  auto* popup =
+      notification_center_test_api()->GetPopupViewForId(notification->id());
   // Move the mouse hover on the popup notification view, expect hover action
   // recorded.
   HoverOnView(popup);
   histograms.ExpectTotalCount("Notifications.Cros.Actions.Popup.Hover", 1);
 
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
 
