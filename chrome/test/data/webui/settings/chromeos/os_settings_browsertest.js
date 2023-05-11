@@ -315,7 +315,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
- ['FingerprintListSubpage', 'fingerprint_list_subpage_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
@@ -552,6 +551,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPageAvailability', 'os_page_availability_test.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
+ [
+   'OsPeoplePageFingerprintListSubpage',
+   'os_people_page/fingerprint_list_subpage_test.js'
+ ],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],
  [

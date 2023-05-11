@@ -150,10 +150,11 @@ export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/
 export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
-export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
+export {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
+export {SettingsFingerprintListSubpageElement} from './os_people_page/fingerprint_list_subpage.js';
 export {SettingsLockScreenElement} from './os_people_page/lock_screen_subpage.js';
 export {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_people_page/os_sync_browser_proxy.js';
-export {FingerprintSetupStep} from './os_people_page/setup_fingerprint_dialog.js';
+export {FingerprintSetupStep, SettingsSetupFingerprintDialogElement} from './os_people_page/setup_fingerprint_dialog.js';
 export {PrinterType} from './os_printing_page/cups_printer_types.js';
 export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';

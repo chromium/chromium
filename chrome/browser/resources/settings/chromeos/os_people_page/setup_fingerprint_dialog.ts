@@ -53,14 +53,14 @@ const ONBOARDING_ANIMATION_LIGHT: string =
 const SettingsSetupFingerprintDialogElementBase =
     I18nMixin(WebUiListenerMixin(PolymerElement));
 
-interface SettingsSetupFingerprintDialogElement {
+export interface SettingsSetupFingerprintDialogElement {
   $: {
     dialog: CrDialogElement,
     arc: CrFingerprintProgressArcElement,
   };
 }
 
-class SettingsSetupFingerprintDialogElement extends
+export class SettingsSetupFingerprintDialogElement extends
     SettingsSetupFingerprintDialogElementBase {
   static get is() {
     return 'settings-setup-fingerprint-dialog' as const;

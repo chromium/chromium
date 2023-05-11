@@ -34,7 +34,7 @@ import {getTemplate} from './fingerprint_list_subpage.html.js';
 const SettingsFingerprintListSubpageElementBase = RouteObserverMixin(
     WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-class SettingsFingerprintListSubpageElement extends
+export class SettingsFingerprintListSubpageElement extends
     SettingsFingerprintListSubpageElementBase {
   static get is() {
     return 'settings-fingerprint-list-subpage' as const;

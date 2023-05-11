@@ -46,7 +46,6 @@ build_webui_tests("build") {
     "fake_system_display.js",
     "fake_user_action_recorder.js",
     "fake_users_private.js",
-    "fingerprint_list_subpage_test.js",
     "hotspot_config_dialog_tests.js",
     "hotspot_subpage_tests.js",
     "hotspot_summary_item_tests.js",
@@ -227,6 +226,8 @@ build_webui_tests("build") {
     "os_languages_page/smart_inputs_page_test.ts",
 
     "os_people_page/add_user_dialog_test.ts",
+    "os_people_page/fingerprint_list_subpage_test.ts",
+    "os_people_page/test_fingerprint_browser_proxy.ts",
 
     "os_printing_page/os_printing_page_test.ts",
 
