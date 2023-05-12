@@ -1422,8 +1422,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   sync_service_.SetHasSyncConsent(true);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kAutofill));
+      /*types=*/{syncer::UserSelectableType::kAutofill});
   EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
             personal_data_->GetSyncSigninState());
   ASSERT_TRUE(TurnOnSyncFeature());
@@ -5376,8 +5375,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, GetSyncSigninState) {
   ASSERT_FALSE(sync_service_.HasSyncConsent());
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kAutofill));
+      /*types=*/{syncer::UserSelectableType::kAutofill});
 
   EXPECT_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
             personal_data_->GetSyncSigninState());
@@ -5441,8 +5439,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
 
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kAutofill));
+      /*types=*/{syncer::UserSelectableType::kAutofill});
   // Make sure there are no opt-ins recorded yet.
   ASSERT_FALSE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
                                                        active_info.account_id));

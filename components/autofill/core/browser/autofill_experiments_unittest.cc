@@ -148,9 +148,8 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncDoesNotHaveAutofillProfileActiveType) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kAutofill));
-  sync_service_.SetFailedDataTypes(syncer::AUTOFILL_PROFILE);
+      /*types=*/{syncer::UserSelectableType::kAutofill});
+  sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
@@ -227,9 +226,8 @@ TEST_F(
 
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kAutofill));
-  sync_service_.SetFailedDataTypes(syncer::AUTOFILL_PROFILE);
+      /*types=*/{syncer::UserSelectableType::kAutofill});
+  sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
 
   EXPECT_TRUE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
