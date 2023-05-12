@@ -1245,6 +1245,26 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       ClickAXNodeGeneratedFromCSSContent) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+        <style>
+        a::before{
+            content: "Content";
+        }
+        </style>
+        <a href="https://www.google.com"><h1>Test</h1></a>
+      )HTML");
+
+  AccessibilityNotificationWaiter click_waiter(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  BrowserAccessibility* target_node =
+      FindNode(ax::mojom::Role::kStaticText, "Content");
+  ASSERT_NE(target_node, nullptr);
+  GetManager()->DoDefaultAction(*target_node);
+  ASSERT_TRUE(click_waiter.WaitForNotification());
+}
+
 // These tests only makes sense on platforms where the popup menu is implemented
 // internally as an HTML page in a popup, not where it's a native popup.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(USE_ATK)

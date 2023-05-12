@@ -346,6 +346,16 @@ Node* PseudoElement::InnerNodeForHitTesting() const {
   return parent;
 }
 
+void PseudoElement::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
+  // Even though pseudo elements can't use the accesskey attribute, assistive
+  // tech can still attempt to interact with pseudo elements if they are in
+  // the AX tree (usually due to their text/image content).
+  // Just pass this request to the originating element.
+  DCHECK(OriginatingElement());
+  OriginatingElement()->AccessKeyAction(creation_scope);
+}
+
 Element* PseudoElement::OriginatingElement() const {
   auto* parent = parentElement();
 
