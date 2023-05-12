@@ -617,8 +617,6 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
   views::View::SetVisible(GetEffectiveVisibility());
 }
 
-void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
-
 void TrayBackgroundView::OnAnyBubbleVisibilityChanged(
     views::Widget* bubble_widget,
     bool visible) {}

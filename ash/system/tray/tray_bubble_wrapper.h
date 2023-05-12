@@ -42,8 +42,6 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
 
   // views::WidgetObserver overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
 
   // ::wm::ActivationChangeObserver overrides:
   void OnWindowActivated(ActivationReason reason,

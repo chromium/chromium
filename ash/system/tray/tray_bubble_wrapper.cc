@@ -89,12 +89,6 @@ void TrayBubbleWrapper::OnWidgetDestroying(views::Widget* widget) {
   tray_->HideBubbleWithView(bubble_view_);  // May destroy |bubble_view_|
 }
 
-void TrayBubbleWrapper::OnWidgetBoundsChanged(views::Widget* widget,
-                                              const gfx::Rect& new_bounds) {
-  DCHECK_EQ(bubble_widget_, widget);
-  tray_->BubbleResized(bubble_view_);
-}
-
 void TrayBubbleWrapper::OnWindowActivated(ActivationReason reason,
                                           aura::Window* gained_active,
                                           aura::Window* lost_active) {

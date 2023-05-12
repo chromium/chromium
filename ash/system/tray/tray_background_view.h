@@ -140,9 +140,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // user logs in.
   virtual void HandleLocaleChange() = 0;
 
-  // Called when the bubble is resized.
-  virtual void BubbleResized(const TrayBubbleView* bubble_view);
-
   // Updates this bubble about visibility change of *ANY* tray bubble
   // including itself.
   // `bubble_widget` is the bubble with visibility change. Please note that it
