@@ -119,7 +119,7 @@ void MediaDocumentParser::Finish() {
 }
 
 MediaDocument::MediaDocument(const DocumentInit& initializer)
-    : HTMLDocument(initializer, DocumentClassFlags(DocumentClass::kMedia)) {
+    : HTMLDocument(initializer, {DocumentClass::kMedia}) {
   SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 

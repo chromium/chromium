@@ -31,7 +31,7 @@
 namespace blink {
 
 TextDocument::TextDocument(const DocumentInit& initializer)
-    : HTMLDocument(initializer, DocumentClassFlags(DocumentClass::kText)) {
+    : HTMLDocument(initializer, {DocumentClass::kText}) {
   SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 }

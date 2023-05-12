@@ -30,7 +30,7 @@ namespace blink {
 XMLDocument::XMLDocument(const DocumentInit& initializer,
                          DocumentClassFlags extended_document_classes)
     : Document(initializer,
-               base::Union(DocumentClassFlags(DocumentClass::kXML),
+               base::Union(DocumentClassFlags({DocumentClass::kXML}),
                            extended_document_classes)) {}
 
 }  // namespace blink
