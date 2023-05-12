@@ -211,6 +211,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Show OOBE WebUI if signal from javascript side never came.
   void OnShowWebUITimeout();
 
+  // Callback that is called once booting animation has finished running, but
+  // the last frame is still shown.
+  void BootingAnimationFinished();
+
   // Sign in screen controller.
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 

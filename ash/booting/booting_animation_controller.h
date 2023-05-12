@@ -6,33 +6,63 @@
 #define ASH_BOOTING_BOOTING_ANIMATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/display/manager/display_configurator.h"
+#include "ui/lottie/animation_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
-class ASH_EXPORT BootingAnimationController {
+class ASH_EXPORT BootingAnimationController
+    : public display::DisplayConfigurator::Observer,
+      public lottie::AnimationObserver {
  public:
   BootingAnimationController();
   BootingAnimationController(const BootingAnimationController&) = delete;
   BootingAnimationController& operator=(const BootingAnimationController&) =
       delete;
-  ~BootingAnimationController();
+  ~BootingAnimationController() override;
 
-  // Shows the widget and starts to play a booting animation.
-  void Show();
+  // Sets the `animation_played_callback_` that is fired when the animation
+  // finishes playing. Starts the animation if the GPU is ready, otherwise
+  // waits for it.
+  void ShowAnimationWithEndCallback(base::OnceClosure callback);
 
   // Cleans up the animation, resets the widget and the view.
   void Finish();
 
+  base::WeakPtr<BootingAnimationController> GetWeakPtr();
+
  private:
+  // display::DisplayConfigurator::Observer:
+  void OnDisplayModeChanged(
+      const display::DisplayConfigurator::DisplayStateList& displays) override;
+  void OnDisplaySnapshotsInvalidated() override;
+
+  // lottie::AnimationObserver:
+  void AnimationCycleEnded(const lottie::Animation* animation) override;
+
+  // Shows the widget and starts to play a booting animation.
+  void Show();
   void OnAnimationDataFetched(std::string data);
   void StartAnimation();
 
   std::string animation_data_;
   views::UniqueWidgetPtr widget_;
   bool start_once_ready_ = false;
+  bool was_shown_ = false;
+  bool is_gpu_ready_ = false;
+  base::OnceClosure animation_played_callback_;
+
+  base::ScopedObservation<display::DisplayConfigurator,
+                          display::DisplayConfigurator::Observer>
+      scoped_display_configurator_observer_{this};
+
+  base::ScopedObservation<lottie::Animation, lottie::AnimationObserver>
+      scoped_animation_observer_{this};
 
   base::WeakPtrFactory<BootingAnimationController> weak_factory_{this};
 };

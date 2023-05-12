@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/booting/booting_animation_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
@@ -35,6 +36,9 @@ std::string ReadFileToString(const base::FilePath& path) {
 }  // namespace
 
 BootingAnimationController::BootingAnimationController() {
+  CHECK(ash::Shell::Get()->display_configurator());
+  scoped_display_configurator_observer_.Observe(
+      ash::Shell::Get()->display_configurator());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -67,14 +71,59 @@ void BootingAnimationController::Show() {
   widget_->Init(std::move(params));
 
   if (animation_data_.empty()) {
+    LOG(ERROR) << "Booting animation isn't ready yet.";
     start_once_ready_ = true;
     return;
   }
   StartAnimation();
 }
 
+void BootingAnimationController::ShowAnimationWithEndCallback(
+    base::OnceClosure callback) {
+  animation_played_callback_ = std::move(callback);
+
+  if (!scoped_display_configurator_observer_.IsObserving()) {
+    Show();
+  }
+}
+
 void BootingAnimationController::Finish() {
   widget_.reset();
+  animation_played_callback_.Reset();
+}
+
+base::WeakPtr<BootingAnimationController>
+BootingAnimationController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void BootingAnimationController::OnDisplayModeChanged(
+    const display::DisplayConfigurator::DisplayStateList& displays) {
+  if (!is_gpu_ready_) {
+    return;
+  }
+
+  scoped_display_configurator_observer_.Reset();
+  if (!animation_played_callback_.is_null()) {
+    Show();
+  }
+}
+
+void BootingAnimationController::OnDisplaySnapshotsInvalidated() {
+  // This call represents that GPU has returned us valid display snapshots, but
+  // they are not still applied. Starting the animation before modeset happens
+  // is too early and we need to wait for the next `OnDisplayModeChanged` call.
+  is_gpu_ready_ = true;
+}
+
+void BootingAnimationController::AnimationCycleEnded(
+    const lottie::Animation* animation) {
+  // Once animation has finished playing we might delete it. Stop observation
+  // here explicitly.
+  scoped_animation_observer_.Reset();
+  if (!animation_played_callback_.is_null()) {
+    std::move(animation_played_callback_).Run();
+  }
 }
 
 void BootingAnimationController::OnAnimationDataFetched(std::string data) {
@@ -91,9 +140,17 @@ void BootingAnimationController::OnAnimationDataFetched(std::string data) {
 }
 
 void BootingAnimationController::StartAnimation() {
+  CHECK(!animation_played_callback_.is_null() && is_gpu_ready_);
+  if (was_shown_) {
+    return;
+  }
+
+  was_shown_ = true;
   start_once_ready_ = false;
   BootingAnimationView* view = widget_->SetContentsView(
       std::make_unique<BootingAnimationView>(animation_data_));
+  // Observe animation to know when it finishes playing.
+  scoped_animation_observer_.Observe(view->GetAnimatedImage());
   widget_->Show();
   view->Play();
 }

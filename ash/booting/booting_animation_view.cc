@@ -9,6 +9,7 @@
 #include "ash/public/cpp/image_util.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -74,6 +75,10 @@ BootingAnimationView::~BootingAnimationView() = default;
 void BootingAnimationView::Play() {
   animation_->Play(lottie::Animation::PlaybackConfig::CreateWithStyle(
       lottie::Animation::Style::kLinear, *animation_->animated_image()));
+}
+
+lottie::Animation* BootingAnimationView::GetAnimatedImage() {
+  return animation_->animated_image();
 }
 
 void BootingAnimationView::OnViewBoundsChanged(View* observed_view) {

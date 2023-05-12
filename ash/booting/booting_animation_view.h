@@ -28,6 +28,8 @@ class ASH_EXPORT BootingAnimationView : public views::View,
 
   void Play();
 
+  lottie::Animation* GetAnimatedImage();
+
  private:
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;

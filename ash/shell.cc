@@ -687,6 +687,7 @@ Shell::~Shell() {
     DCHECK(rwc->GetHost()->dispatcher()->in_shutdown());
   }
 #endif
+  booting_animation_controller_.reset();
   login_unlock_throughput_recorder_.reset();
 
   hud_display::HUDDisplayView::Destroy();
