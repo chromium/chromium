@@ -380,6 +380,7 @@ after discussions on the right group.
       <annotation id="gaia_auth_log_out"/>
       <annotation id="gaia_auth_merge_sessions"/>
       <annotation id="gaia_auth_revoke_token"/>
+      <annotation id="gaia_auth_rotate_bound_cookies"/>
       <annotation id="gaia_auth_multilogin"/>
       <annotation id="gaia_cookie_manager_external_cc_result"/>
       <annotation id="gaia_create_reauth_proof_token_for_parent"/>

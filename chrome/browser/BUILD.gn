@@ -6811,14 +6811,10 @@ static_library("browser") {
       "signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.cc",
       "signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h",
       "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h",
+      "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc",
+      "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h",
       "signin/bound_session_credentials/bound_session_request_throttled_listener_browser_impl.cc",
       "signin/bound_session_credentials/bound_session_request_throttled_listener_browser_impl.h",
-
-      # TODO(b/273920907): Move`fake_bound_session_refresh_cookie_fetcher.*`
-      # to test only once`bound_session_refresh_cookie_fetcher_impl.*` is
-      # implemented.
-      "signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.cc",
-      "signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h",
       "signin/bound_session_credentials/registration_token_helper.cc",
       "signin/bound_session_credentials/registration_token_helper.h",
       "signin/bound_session_credentials/unexportable_key_service_factory.cc",

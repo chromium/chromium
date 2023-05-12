@@ -415,4 +415,5 @@ Refer to README.md for content description and update process.
  <item id="promise_app_service" added_in_milestone="114" content_hash_code="07856112" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.cc" />
  <item id="safe_browsing_hashprefix_realtime_lookup_direct" added_in_milestone="114" content_hash_code="0764e462" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.cc" />
  <item id="safe_browsing_hashprefix_realtime_lookup_ohttp" added_in_milestone="114" content_hash_code="07d60eb8" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.cc" />
+ <item id="gaia_auth_rotate_bound_cookies" added_in_milestone="115" content_hash_code="06d1310c" os_list="linux" file_path="chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc" />
 </annotations>

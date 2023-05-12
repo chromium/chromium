@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 
+#include "base/functional/callback_forward.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

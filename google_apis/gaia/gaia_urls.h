@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& oauth2_token_info_url() const;
   const GURL& oauth2_revoke_url() const;
   const GURL& reauth_api_url() const;
-
+  const GURL& rotate_bound_cookies_url() const;
   const GURL& classroom_api_origin_url() const;
   const GURL& tasks_api_origin_url() const;
 
@@ -118,6 +118,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL oauth2_revoke_url_;
 
   GURL reauth_api_url_;
+  GURL rotate_bound_cookies_url_;
 };
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_URLS_H_

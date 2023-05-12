@@ -90,6 +90,8 @@ const char kOAuth2IssueTokenUrlSuffix[] = "v1/issuetoken";
 const char kAccountCapabilitiesBatchGetUrlSuffix[] =
     "v1/accountcapabilities:batchGet";
 
+const char kRotateBoundCookiesUrlSuffix[] = "RotateBoundCookies";
+
 GaiaUrls* g_instance_for_testing = nullptr;
 
 void GetSwitchValueWithDefault(base::StringPiece switch_value,
@@ -293,6 +295,10 @@ const GURL& GaiaUrls::reauth_api_url() const {
   return reauth_api_url_;
 }
 
+const GURL& GaiaUrls::rotate_bound_cookies_url() const {
+  return rotate_bound_cookies_url_;
+}
+
 const GURL& GaiaUrls::classroom_api_origin_url() const {
   return classroom_api_origin_url_;
 }
@@ -396,6 +402,8 @@ void GaiaUrls::InitializeDefault() {
   ResolveURLIfInvalid(&reauth_url_, gaia_url, kReauthSuffix);
   ResolveURLIfInvalid(&get_check_connection_info_url_, gaia_url,
                       kGetCheckConnectionInfoSuffix);
+  ResolveURLIfInvalid(&rotate_bound_cookies_url_, gaia_url,
+                      kRotateBoundCookiesUrlSuffix);
 
   // URLs from |lso_origin_url_|.
   ResolveURLIfInvalid(&oauth2_revoke_url_, lso_origin_url_,
@@ -469,4 +477,5 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_revoke_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_api_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(rotate_bound_cookies_url));
 }

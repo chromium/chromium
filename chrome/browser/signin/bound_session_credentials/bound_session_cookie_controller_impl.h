@@ -54,6 +54,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   std::unique_ptr<BoundSessionRefreshCookieFetcher> CreateRefreshCookieFetcher()
       const;
 
+  bool IsCookieFresh();
   void MaybeRefreshCookie();
   void SetCookieExpirationTimeAndNotify(base::Time expiration_time);
   void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
