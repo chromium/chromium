@@ -697,6 +697,7 @@ blink_core_tests_html = [
   "html_image_element_test.cc",
   "html_link_element_sizes_attribute_test.cc",
   "html_link_element_test.cc",
+  "html_dialog_element_test.cc",
   "html_meta_element_test.cc",
   "html_object_element_test.cc",
   "html_plugin_element_test.cc",

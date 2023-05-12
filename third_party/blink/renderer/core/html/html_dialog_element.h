@@ -74,8 +74,6 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   static void SetFocusForDialogLegacy(HTMLDialogElement* dialog);
 
  private:
-  void DefaultEventHandler(Event&) override;
-
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();
 

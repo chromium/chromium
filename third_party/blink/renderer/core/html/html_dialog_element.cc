@@ -327,16 +327,6 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
-void HTMLDialogElement::DefaultEventHandler(Event& event) {
-  if (!RuntimeEnabledFeatures::CloseWatcherEnabled() &&
-      event.type() == event_type_names::kCancel) {
-    close();
-    event.SetDefaultHandled();
-    return;
-  }
-  HTMLElement::DefaultEventHandler(event);
-}
-
 void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
   if (!RuntimeEnabledFeatures::CloseWatcherEnabled())
     return;
