@@ -17,7 +17,7 @@
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -913,9 +913,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, UndefinedAccepts) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       FileSystemAccessUsageDisablesBackForwardCache) {
-  BackForwardCacheDisabledTester tester;
-
+                       IsEligibleForBackForwardCache) {
   const base::FilePath test_file = CreateTestFile("file contents");
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
@@ -928,11 +926,20 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                    "  let [e] = await self.showOpenFilePicker();"
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
-  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
-      BackForwardCacheDisable::DisabledReason(
-          BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess)));
+
+  auto* initial_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // Navigate to another page and expect the previous RenderFrameHost to be
+  // in the BFCache.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(initial_rfh->IsInBackForwardCache());
+
+  // And then navigating back restores `initial_rfh` as the primary main frame.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(initial_rfh, static_cast<RenderFrameHostImpl*>(
+                             shell()->web_contents()->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
