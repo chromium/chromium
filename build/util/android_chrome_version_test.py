@@ -568,6 +568,69 @@ class _VersionGroupedTest(unittest.TestCase):
     self.assertEqual(arch_trichrome_64_version_code, '575000039')
     self.assertEqual(arch_trichrome_auto_64_32_version_code, '575000058')
 
+  def testGenerateVersionCodesAndroidArchRiscv64(self):
+    """Assert it handles different architectures correctly.
+
+    Version codes for different builds need to be distinct and maintain a
+    certain ordering.
+    See docs in android_chrome_version._ABIS_TO_BIT_MASK for
+    reasoning.
+    """
+    output = GenerateVersionCodes(EXAMPLE_GROUPED_VERSION_VALUES,
+                                  arch='riscv64',
+                                  is_next_build=False)
+    arch_chrome_version_code = output['CHROME_VERSION_CODE']
+
+    self.assertEqual(arch_chrome_version_code, '575000004')
+
+  def testGenerateVersionCodesAndroidArchRiscv64Variants(self):
+    """Assert it handles 64-bit-specific additional version codes correctly.
+
+    Some additional version codes are generated for 64-bit architectures.
+    See docstring on android_chrome_version.ARCH64_APK_VARIANTS for more info.
+    """
+    output = GenerateVersionCodes(EXAMPLE_GROUPED_VERSION_VALUES,
+                                  arch='riscv64',
+                                  is_next_build=False)
+    arch_chrome_version_code = output['CHROME_VERSION_CODE']
+    arch_chrome_modern_version_code = output['CHROME_MODERN_VERSION_CODE']
+    arch_monochrome_version_code = output['MONOCHROME_VERSION_CODE']
+    arch_trichrome_version_code = output['TRICHROME_VERSION_CODE']
+    arch_trichrome_beta_version_code = output['TRICHROME_BETA_VERSION_CODE']
+    arch_webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
+    arch_webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
+    arch_webview_dev_version_code = output['WEBVIEW_DEV_VERSION_CODE']
+
+    self.assertEqual(arch_chrome_version_code, '575000004')
+    self.assertEqual(arch_chrome_modern_version_code, '575000014')
+    self.assertEqual(arch_monochrome_version_code, '575000024')
+    self.assertFalse('MONOCHROME_32_VERSION_CODE' in output)
+    self.assertFalse('MONOCHROME_32_64_VERSION_CODE' in output)
+    self.assertFalse('MONOCHROME_64_32_VERSION_CODE' in output)
+    self.assertFalse('MONOCHROME_64_VERSION_CODE' in output)
+    self.assertEqual(arch_trichrome_version_code, '575000034')
+    self.assertFalse('TRICHROME_32_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_32_64_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_64_32_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_64_32_HIGH_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_AUTO_64_32_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_64_VERSION_CODE' in output)
+    self.assertEqual(arch_trichrome_beta_version_code, '575000044')
+    self.assertFalse('TRICHROME_32_BETA_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_32_64_BETA_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_64_32_BETA_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_64_32_HIGH_BETA_VERSION_CODE' in output)
+    self.assertFalse('TRICHROME_64_BETA_VERSION_CODE' in output)
+    self.assertEqual(arch_webview_stable_version_code, '575000004')
+    self.assertEqual(arch_webview_beta_version_code, '575000014')
+    self.assertEqual(arch_webview_dev_version_code, '575000024')
+    self.assertFalse('WEBVIEW_64_STABLE_VERSION_CODE' in output)
+    self.assertFalse('WEBVIEW_64_BETA_VERSION_CODE' in output)
+    self.assertFalse('WEBVIEW_64_DEV_VERSION_CODE' in output)
+    self.assertFalse('WEBVIEW_32_STABLE_VERSION_CODE' in output)
+    self.assertFalse('WEBVIEW_32_BETA_VERSION_CODE' in output)
+    self.assertFalse('WEBVIEW_32_DEV_VERSION_CODE' in output)
+
   def testGenerateVersionCodesAndroidArchOrderArm(self):
     """Assert it handles different architectures correctly.
 

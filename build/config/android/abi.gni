@@ -88,8 +88,10 @@ if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el" ||
   assert(false, "Unknown target CPU: $target_cpu")
 }
 
-# Intentionally do not define android_app_secondary_abi_cpu and
-# android_app_secondary_abi for 32-bit target_cpu, since they are not used.
+# Do not define android_app_secondary_abi_cpu or android_app_secondary_abi for
+# target_cpu's that are 32-bit-only or 64-bit-only, as they are not used. The
+# presence of this variable may be used in conjunction with android_64bit_target_cpu
+# to identify target_cpu's that are 32-bit-only or 64-bit-only.
 if (target_cpu == "arm64") {
   android_secondary_abi_cpu = "arm"
   android_app_secondary_abi = "armeabi-v7a"

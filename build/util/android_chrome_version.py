@@ -93,6 +93,16 @@ _APKS = {
     '64': [
         ('CHROME', 'CHROME', '64'),
         ('CHROME_MODERN', 'CHROME_MODERN', '64'),
+        ('MONOCHROME', 'MONOCHROME', '64'),
+        ('TRICHROME', 'TRICHROME', '64'),
+        ('TRICHROME_BETA', 'TRICHROME_BETA', '64'),
+        ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '64'),
+        ('WEBVIEW_BETA', 'WEBVIEW_BETA', '64'),
+        ('WEBVIEW_DEV', 'WEBVIEW_DEV', '64'),
+    ],
+    'hybrid': [
+        ('CHROME', 'CHROME', '64'),
+        ('CHROME_MODERN', 'CHROME_MODERN', '64'),
         ('MONOCHROME', 'MONOCHROME', '32_64'),
         ('MONOCHROME_32', 'MONOCHROME', '32'),
         ('MONOCHROME_32_64', 'MONOCHROME', '32_64'),
@@ -126,9 +136,12 @@ _APKS = {
 # Splits input build config architecture to manufacturer and bitness.
 _ARCH_TO_MFG_AND_BITNESS = {
     'arm': ('arm', '32'),
-    'arm64': ('arm', '64'),
+    'arm64': ('arm', 'hybrid'),
+    # Until riscv64 needs a unique version code to ship APKs to the store,
+    # point to the 'arm' bitmask.
+    'riscv64': ('arm', '64'),
     'x86': ('intel', '32'),
-    'x64': ('intel', '64'),
+    'x64': ('intel', 'hybrid'),
 }
 
 # Expose the available choices to other scripts.
