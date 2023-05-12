@@ -616,6 +616,17 @@ deps = {
     'condition': '(host_os == "linux")',
   },
 
+  'src/third_party/apache-windows-arm64': {
+    'packages': [
+        {
+            'package': 'infra/3pp/tools/httpd-php/windows-arm64',
+            'version': 'version:2@httpd2.4.55-php8.2.5.chromium.6.chromium.5',
+        }
+    ],
+    'dep_type': 'cipd',
+    'condition': '(host_os == "win")'
+  },
+
   'src/third_party/aosp_dalvik': {
       'packages': [
           {
