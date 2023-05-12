@@ -48,6 +48,10 @@ const char kGoogleUserInfoEmail[] =
 const char kGoogleUserInfoProfile[] =
     "https://www.googleapis.com/auth/userinfo.profile";
 
+// OAuth2 scope for IP protection proxy authentication
+const char kIpProtectionAuthScope[] =
+    "https://www.googleapis.com/auth/ip-protection";
+
 // OAuth2 scope for access to the parent approval widget.
 const char kParentApprovalOAuth2Scope[] =
     "https://www.googleapis.com/auth/kids.parentapproval";
