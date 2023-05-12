@@ -110,35 +110,20 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
     return;
   }
 
-  // If the group already has a local group open, then activate it.
+  // Activate the first tab in a group if it is already open.
   if (saved_group->local_group_id().has_value()) {
-    Browser* browser_for_activation =
-        SavedTabGroupUtils::GetBrowserWithTabGroupId(
-            saved_group->local_group_id().value());
-
-    // Only activate the tab group's first tab if it exists in any browser's
-    // tabstrip model.
-    if (browser_for_activation) {
-      absl::optional<int> first_tab =
-          browser_for_activation->tab_strip_model()
-              ->group_model()
-              ->GetTabGroup(saved_group->local_group_id().value())
-              ->GetFirstTab();
-      DCHECK(first_tab.has_value());
-      browser_for_activation->ActivateContents(
-          browser_for_activation->tab_strip_model()->GetWebContentsAt(
-              first_tab.value()));
-
-      base::RecordAction(
-          base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));
-      return;
-    }
+    FocusFirstTabInOpenGroup(saved_group->local_group_id().value());
+    return;
   }
 
   // If our tab group was not found in any tabstrip model, open the group in
   // this browser's tabstrip model.
   TabStripModel* tab_strip_model_for_creation = browser->tab_strip_model();
 
+  // TODO(crbug/1444508): Reduce logic / number of nested data structures to
+  // keep the webcontents and SavedTab Ids paired by using a mapping instead.
+  // Update the listeners to support this change. Then decouple the logic of the
+  // for loop below from this function to make crashes easier to parse.
   std::vector<content::WebContents*> opened_web_contents;
   std::vector<std::pair<content::WebContents*, base::Uuid>>
       local_and_saved_tab_mapping;
@@ -363,6 +348,28 @@ void SavedTabGroupKeyedService::SavedTabGroupRemovedFromSync(
 
   // Update the local group's contents to match the saved group's.
   listener_.RemoveLocalGroupFromSync(removed_group->local_group_id().value());
+}
+
+void SavedTabGroupKeyedService::FocusFirstTabInOpenGroup(
+    tab_groups::TabGroupId local_group_id) {
+  Browser* browser_for_activation =
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id);
+
+  // Only activate the tab group's first tab if it exists in any browser's
+  // tabstrip model.
+  CHECK(browser_for_activation);
+
+  absl::optional<int> first_tab = browser_for_activation->tab_strip_model()
+                                      ->group_model()
+                                      ->GetTabGroup(local_group_id)
+                                      ->GetFirstTab();
+  DCHECK(first_tab.has_value());
+  browser_for_activation->ActivateContents(
+      browser_for_activation->tab_strip_model()->GetWebContentsAt(
+          first_tab.value()));
+
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));
 }
 
 const TabStripModel* SavedTabGroupKeyedService::GetTabStripModelWithTabGroupId(

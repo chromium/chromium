@@ -238,6 +238,49 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, ResumeTrackingValidatesConsistency) {
                "");
 }
 
+TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
+  Browser* browser_1 = AddBrowser();
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+
+  // Add 2 tabs to the browser.
+  AddTabToBrowser(browser_1, 0);
+  AddTabToBrowser(browser_1, 0);
+  ASSERT_EQ(2, browser_1->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId tab_group_id_1 =
+      browser_1->tab_strip_model()->AddToNewGroup({0});
+
+  const base::Uuid guid_1 = base::Uuid::GenerateRandomV4();
+
+  // Store the guid to tab_group_id association in the keyed service. We should
+  // expect at the end of the test, `tab_group_id_3` has no association with the
+  // SavedTabGroupModel at all.
+  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+
+  // Populate the SavedTabGroupModel with some test data to simulate the browser
+  // loading in persisted data on startup.
+  std::vector<SavedTabGroupTab> group_1_tabs = {
+      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_1)};
+
+  SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
+                              std::move(group_1_tabs), guid_1);
+
+  service()->model()->Add(saved_group_1);
+
+  // Notify the KeyedService that the SavedTabGroupModel has loaded all local
+  // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
+  service()->model()->LoadStoredEntries({});
+
+  // Activate the second tab.
+  browser_1->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(1, browser_1->tab_strip_model()->active_index());
+
+  service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+
+  // Ensure the first tab in the saved group is activated.
+  EXPECT_EQ(0, browser_1->tab_strip_model()->active_index());
+}
+
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
        RestoredGroupWithoutSavedGuidIsDiscarded) {
   Browser* browser_1 = AddBrowser();

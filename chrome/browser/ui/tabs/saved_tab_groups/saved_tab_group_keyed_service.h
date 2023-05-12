@@ -61,6 +61,10 @@ class SavedTabGroupKeyedService : public KeyedService,
       const absl::optional<base::Uuid>& tab_guid) override;
 
  private:
+  // Activates the first tab in saved group that is already opened when its
+  // button is pressed.
+  void FocusFirstTabInOpenGroup(tab_groups::TabGroupId local_group_id);
+
   // Returns a pointer to the TabStripModel which contains `local_group_id`.
   const TabStripModel* GetTabStripModelWithTabGroupId(
       const tab_groups::TabGroupId& local_group_id);
