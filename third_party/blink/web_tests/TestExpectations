@@ -5191,7 +5191,6 @@ crbug.com/1249176 [ Mac11-arm64 ] css3/blending/svg-blend-multiply.html [ Failur
 crbug.com/1249176 [ Mac12-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]
 crbug.com/1249176 [ Mac13-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/image-src-change.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/images/document-policy-oversized-images-forced-layout.php [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure Pass ]
