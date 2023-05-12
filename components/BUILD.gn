@@ -665,7 +665,10 @@ test("components_unittests") {
       "//components/safe_browsing/core/common:unit_tests",
     ]
   } else if (safe_browsing_mode == 2) {
-    deps += [ "//components/safe_browsing/android:unit_tests_mobile" ]
+    deps += [
+      "//components/safe_browsing/android:native_java_unittests_java",
+      "//components/safe_browsing/android:unit_tests_mobile",
+    ]
   }
 
   if (safe_browsing_mode == 1) {

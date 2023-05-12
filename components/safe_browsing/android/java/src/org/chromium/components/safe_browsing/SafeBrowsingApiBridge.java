@@ -56,6 +56,18 @@ public final class SafeBrowsingApiBridge {
     }
 
     /**
+     * Clear the handler to prepare for the next run.
+     * This is needed for native to Java bridge test because the bridge is not destroyed between
+     * each tests.
+     */
+    public static void clearHandlerForTesting() {
+        synchronized (sLock) {
+            sHandlerInitCalled = false;
+            sHandler = null;
+        }
+    }
+
+    /**
      * Initializes the singleton SafeBrowsingApiHandler instance on the first call. On subsequent
      * calls it does nothing, returns the same value as returned on the first call.
      *
