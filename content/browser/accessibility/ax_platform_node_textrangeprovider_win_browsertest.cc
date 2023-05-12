@@ -1602,8 +1602,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   std::vector<std::wstring> paragraphs = {
       L"start",
-      L"text with [:before] and [:after]content, then a",
-      L"bold element with a [block]before content then a italic",
+      L"text with [:before] and [:after]content, then a\n\xFFFC",
+      L"bold element with a [block]before content then a italic\n\xFFFC",
       L"element with a [block] after content",
       L"end",
   };
@@ -1964,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(
 
   std::vector<std::wstring> paragraphs = {
       L"start",
-      L"text with [:before] and [:after]content, then a",
+      L"text with [:before] and [:after]content, then a\n\xFFFC",
       L"bold element",
   };
 
