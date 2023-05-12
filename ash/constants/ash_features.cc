@@ -2251,6 +2251,11 @@ BASE_FEATURE(kUserActivityPrediction,
 BASE_FEATURE(kVideoConference,
              "VideoConference",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Restricts the video conference feature to the intended
+// target population,
+BASE_FEATURE(kFeatureManagementVideoConference,
+             "FeatureManagementVideoConference",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the vc background replace is enabled.
 BASE_FEATURE(kVcBackgroundReplace,
@@ -3493,7 +3498,8 @@ bool IsUserEducationEnabled() {
 }
 
 bool IsVideoConferenceEnabled() {
-  return base::FeatureList::IsEnabled(kVideoConference) &&
+  return (base::FeatureList::IsEnabled(kVideoConference) ||
+          base::FeatureList::IsEnabled(kFeatureManagementVideoConference)) &&
          switches::IsCameraEffectsSupportedByHardware();
 }
 
