@@ -637,6 +637,14 @@ class TaskSchedulerV2 final : public TaskScheduler {
                       << hr;
           return false;
         }
+
+        if (!is_system) {
+          hr = logon_trigger->put_UserId(user_name.Get());
+          if (FAILED(hr)) {
+            PLOG(ERROR) << "Can't put 'UserId'. " << std::hex << hr;
+            return false;
+          }
+        }
       }
     }
 

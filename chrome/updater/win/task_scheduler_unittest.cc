@@ -462,18 +462,12 @@ TEST_F(TaskSchedulerTests, GetTaskInfoTriggerTypes) {
            TaskScheduler::TRIGGER_TYPE_HOURLY,
            TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS,
        }) {
-    if (expected_trigger_type == TaskScheduler::TRIGGER_TYPE_LOGON &&
-        !::IsUserAnAdmin()) {
-      continue;
-    }
-
     RunGetTaskInfoTriggerTypesTest(expected_trigger_type);
   }
 
-  RunGetTaskInfoTriggerTypesTest(
-      (::IsUserAnAdmin() ? TaskScheduler::TRIGGER_TYPE_LOGON : 0) |
-      TaskScheduler::TRIGGER_TYPE_HOURLY |
-      TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
+  RunGetTaskInfoTriggerTypesTest(TaskScheduler::TRIGGER_TYPE_LOGON |
+                                 TaskScheduler::TRIGGER_TYPE_HOURLY |
+                                 TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
 }
 
 TEST(TaskSchedulerTest, NoSubfolders) {

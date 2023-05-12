@@ -859,15 +859,19 @@ millisecond of each second).
 Background updates can be disabled entirely through policy.
 
 #### Windows Scheduling of Updates
-The update tasks are scheduled using the OS task scheduler.
+The update wake task is scheduled using the OS task scheduler.
 
-The time resolution for tasks is 1 minute. Tasks are set to run 5 minutes after
-they've been created. If a task execution is missed, it will run as soon as the
-system is able to.
+The time resolution for tasks is 1 minute. The update wake task is set to run 5
+minutes after creation. If a task execution is missed, it will run as soon as
+the system is able to.
+
+The updater runs the wake task at system startup for system installs, via the
+system service, which is set to Automatic Start.
 
 The updater also runs at user login. For system installs, this is done via a
-logon trigger on the scheduled task. For user installs, this is done via the
-"Run" registry entry in `HKCU`.
+logon trigger on the scheduled task. For user installs, this is done via both
+the logon trigger on the scheduled task, as well as the "Run" registry entry in
+`HKCU` for redundancy.
 
 ### On-Demand Updates
 The updater exposes an RPC interface for any user to trigger an update check.

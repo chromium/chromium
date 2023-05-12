@@ -292,9 +292,7 @@ void CheckInstallation(UpdaterScope scope,
 
     EXPECT_EQ(task_info.trigger_types,
               TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
-                  (IsSystemInstall(scope)
-                       ? TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON
-                       : 0));
+                  TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON);
   } else {
     task_scheduler->ForEachTaskWithPrefix(
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
