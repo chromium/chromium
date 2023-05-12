@@ -22,7 +22,7 @@
         </div>
       </div>
       <template is="dom-if" if="[[isCrostiniSupported_]]" restamp>
-        <template is="dom-if" if="[[!allowCrostini]]" restamp>
+        <template is="dom-if" if="[[!isCrostiniAllowed_]]" restamp>
           <cr-policy-indicator indicator-type="userPolicy">
           </cr-policy-indicator>
         </template>

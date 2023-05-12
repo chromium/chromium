@@ -17,6 +17,10 @@ export function isAccountManagerEnabled(): boolean {
   return loadTimeData.getBoolean('isAccountManagerEnabled');
 }
 
+export function isCrostiniAllowed(): boolean {
+  return loadTimeData.getBoolean('isCrostiniAllowed');
+}
+
 export function isCrostiniSupported(): boolean {
   return loadTimeData.getBoolean('isCrostiniSupported');
 }

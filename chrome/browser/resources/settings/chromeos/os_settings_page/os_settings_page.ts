@@ -77,8 +77,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       showPluginVm: Boolean,
 
-      allowCrostini_: Boolean,
-
       havePlayStoreApp: Boolean,
 
       androidAppsInfo: Object,
@@ -152,7 +150,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
   androidAppsInfo?: AndroidAppsInfo;
   pageAvailability: OsPageAvailability;
   advancedToggleExpanded: boolean;
-  private allowCrostini_: boolean;
   private hasExpandedSection_: boolean;
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;
@@ -180,9 +177,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
     super.connectedCallback();
 
     this.currentRoute_ = Router.getInstance().currentRoute;
-
-    this.allowCrostini_ = loadTimeData.valueExists('allowCrostini') &&
-        loadTimeData.getBoolean('allowCrostini');
 
     this.addWebUiListener(
         'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));

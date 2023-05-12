@@ -455,7 +455,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   // Should we actually enable the button to install it?
   html_source->AddBoolean(
-      "allowCrostini",
+      "isCrostiniAllowed",
       crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_));
 
   // Should Bruschetta be displayed in the settings at all?
