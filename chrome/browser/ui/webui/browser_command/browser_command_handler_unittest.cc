@@ -81,8 +81,9 @@ class TestCommandHandler : public BrowserCommandHandler {
   ui::ElementContext GetUiElementContext() override { return kTestContext1; }
 
   CommandUpdater* GetCommandUpdater() override {
-    if (command_updater_)
+    if (command_updater_) {
       return command_updater_.get();
+    }
     return BrowserCommandHandler::GetCommandUpdater();
   }
 
@@ -171,13 +172,15 @@ class MockTutorialService : public TestTutorialService {
       : TestTutorialService(tutorial_registry, help_bubble_factory_registry) {}
   ~MockTutorialService() override = default;
 
-  MOCK_METHOD4(StartTutorial,
-               void(user_education::TutorialIdentifier,
-                    ui::ElementContext,
-                    base::OnceClosure,
-                    base::OnceClosure));
-  MOCK_METHOD2(LogStartedFromWhatsNewPage,
-               void(user_education::TutorialIdentifier, bool));
+  MOCK_METHOD(void,
+              StartTutorial,
+              (user_education::TutorialIdentifier,
+               ui::ElementContext,
+               base::OnceClosure,
+               base::OnceClosure));
+  MOCK_METHOD(void,
+              LogStartedFromWhatsNewPage,
+              (user_education::TutorialIdentifier, bool));
   MOCK_CONST_METHOD0(IsRunningTutorial, bool());
 };
 
@@ -186,9 +189,9 @@ class MockCommandHandler : public TestCommandHandler {
   explicit MockCommandHandler(Profile* profile) : TestCommandHandler(profile) {}
   ~MockCommandHandler() override = default;
 
-  MOCK_METHOD2(NavigateToURL, void(const GURL&, WindowOpenDisposition));
+  MOCK_METHOD(void, NavigateToURL, (const GURL&, WindowOpenDisposition));
 
-  MOCK_METHOD0(OpenFeedbackForm, void());
+  MOCK_METHOD(void, OpenFeedbackForm, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
