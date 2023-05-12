@@ -1635,22 +1635,22 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
         known_user.ClearPasswordSyncToken(account_id);
       }
     }
-    if (user->using_saml()) {
-      PasswordSyncTokenVerifier* password_sync_token_verifier =
-          PasswordSyncTokenVerifierFactory::GetForProfile(profile);
-      if (password_sync_token_verifier) {
-        if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
-          // Update local sync token after online SAML login.
-          password_sync_token_verifier->FetchSyncTokenOnReauth();
-        } else if (auth_flow == UserContext::AUTH_FLOW_OFFLINE) {
-          // Verify local sync token to check whether the local password is out
-          // of sync.
-          password_sync_token_verifier->RecordTokenPollingStart();
-          password_sync_token_verifier->CheckForPasswordNotInSync();
-        } else {
-          // SAML user is not expected to go through other authentication flows.
-          NOTREACHED();
-        }
+    PasswordSyncTokenVerifier* password_sync_token_verifier =
+        PasswordSyncTokenVerifierFactory::GetForProfile(profile);
+    // PasswordSyncTokenVerifier can be created only for SAML users.
+    if (password_sync_token_verifier) {
+      CHECK(user->using_saml());
+      if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
+        // Update local sync token after online SAML login.
+        password_sync_token_verifier->FetchSyncTokenOnReauth();
+      } else if (auth_flow == UserContext::AUTH_FLOW_OFFLINE) {
+        // Verify local sync token to check whether the local password is out
+        // of sync.
+        password_sync_token_verifier->RecordTokenPollingStart();
+        password_sync_token_verifier->CheckForPasswordNotInSync();
+      } else {
+        // SAML user is not expected to go through other authentication flows.
+        NOTREACHED();
       }
     }
 
