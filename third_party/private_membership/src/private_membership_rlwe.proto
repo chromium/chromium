@@ -120,6 +120,9 @@ enum RlweUseCase {
   CROS_FRESNEL_CHURN_MONTHLY_COHORT = 19;
   CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION = 20;
 
+  // Use-case for Cellular Carrier Lock (SimLock)
+  CROS_SIM_LOCK = 18;
+
   reserved 4, 6, 7, 8, 9, 10, 11;
 }
 
