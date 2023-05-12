@@ -41,12 +41,13 @@ TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForBrowsingDataLifetime) {
   syncer::UserSelectableTypeSet sync_types =
       browsing_data::GetSyncTypesForBrowsingDataLifetime(
           browsing_data_lifetime_value);
-  syncer::UserSelectableTypeSet expected_types = syncer::UserSelectableTypeSet(
+  const syncer::UserSelectableTypeSet expected_types = {
       syncer::UserSelectableType::kAutofill,
       syncer::UserSelectableType::kPreferences,
       syncer::UserSelectableType::kPasswords,
-      syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
-      syncer::UserSelectableType::kSavedTabGroups);
+      syncer::UserSelectableType::kHistory,
+      syncer::UserSelectableType::kTabs,
+      syncer::UserSelectableType::kSavedTabGroups};
   EXPECT_EQ(sync_types, expected_types);
 }
 
@@ -74,12 +75,13 @@ TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForClearBrowsingDataOnExit) {
   syncer::UserSelectableTypeSet sync_types =
       browsing_data::GetSyncTypesForClearBrowsingData(
           clear_browsing_data_on_exit_value);
-  syncer::UserSelectableTypeSet expected_types = syncer::UserSelectableTypeSet(
+  const syncer::UserSelectableTypeSet expected_types = {
       syncer::UserSelectableType::kAutofill,
       syncer::UserSelectableType::kPreferences,
       syncer::UserSelectableType::kPasswords,
-      syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
-      syncer::UserSelectableType::kSavedTabGroups);
+      syncer::UserSelectableType::kHistory,
+      syncer::UserSelectableType::kTabs,
+      syncer::UserSelectableType::kSavedTabGroups};
   EXPECT_EQ(sync_types, expected_types);
 }
 #endif
