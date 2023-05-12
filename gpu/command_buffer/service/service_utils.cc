@@ -269,8 +269,8 @@ WebGPUAdapterName ParseWebGPUAdapterName(
     auto value = command_line->GetSwitchValueASCII(switches::kUseWebGPUAdapter);
     if (value.empty()) {
       return WebGPUAdapterName::kDefault;
-    } else if (value == "compat") {
-      return WebGPUAdapterName::kCompat;
+    } else if (value == "opengles") {
+      return WebGPUAdapterName::kOpenGLES;
     } else if (value == "swiftshader") {
       return WebGPUAdapterName::kSwiftShader;
     } else if (value == "default") {

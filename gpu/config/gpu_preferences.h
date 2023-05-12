@@ -41,7 +41,7 @@ enum class VulkanImplementationName : uint32_t {
 
 enum class WebGPUAdapterName : uint32_t {
   kDefault = 0,
-  kCompat = 1,
+  kOpenGLES = 1,
   kSwiftShader = 2,
 };
 

@@ -103,8 +103,8 @@ struct GPU_EXPORT
     switch (input) {
       case gpu::WebGPUAdapterName::kDefault:
         return gpu::mojom::WebGPUAdapterName::kDefault;
-      case gpu::WebGPUAdapterName::kCompat:
-        return gpu::mojom::WebGPUAdapterName::kCompat;
+      case gpu::WebGPUAdapterName::kOpenGLES:
+        return gpu::mojom::WebGPUAdapterName::kOpenGLES;
       case gpu::WebGPUAdapterName::kSwiftShader:
         return gpu::mojom::WebGPUAdapterName::kSwiftShader;
     }
@@ -117,8 +117,8 @@ struct GPU_EXPORT
       case gpu::mojom::WebGPUAdapterName::kDefault:
         *out = gpu::WebGPUAdapterName::kDefault;
         return true;
-      case gpu::mojom::WebGPUAdapterName::kCompat:
-        *out = gpu::WebGPUAdapterName::kCompat;
+      case gpu::mojom::WebGPUAdapterName::kOpenGLES:
+        *out = gpu::WebGPUAdapterName::kOpenGLES;
         return true;
       case gpu::mojom::WebGPUAdapterName::kSwiftShader:
         *out = gpu::WebGPUAdapterName::kSwiftShader;

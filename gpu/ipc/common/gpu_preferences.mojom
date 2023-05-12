@@ -22,7 +22,7 @@ enum VulkanImplementationName {
 // Corresponds to gpu::WebGPUAdapterName.
 enum WebGPUAdapterName {
   kDefault = 0,
-  kCompat = 1,
+  kOpenGLES = 1,
   kSwiftShader = 2,
 };
 

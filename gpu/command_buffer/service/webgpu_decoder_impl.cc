@@ -1238,7 +1238,7 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
   }
 
   if (gr_context_type_ != GrContextType::kVulkan &&
-      use_webgpu_adapter_ != WebGPUAdapterName::kCompat) {
+      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
 #if BUILDFLAG(IS_LINUX)
     callback(WGPURequestAdapterStatus_Unavailable, nullptr,
              "WebGPU on Linux requires command-line flag "
@@ -1534,8 +1534,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   swiftShaderOptions.forceSwiftShader = true;
   dawn_instance_->DiscoverAdapters(&swiftShaderOptions);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-  if (use_webgpu_adapter_ == WebGPUAdapterName::kCompat) {
-    // On compat, discover default adapters to also discover the compat adapter.
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
+    // Discover default adapters to also discover the OpenGLES adapter.
     // TODO(senorblanco): This may incorrectly discover a compat adapter that
     // does not match the one ANGLE is using.
     dawn_instance_->DiscoverDefaultAdapters();
@@ -1574,7 +1574,7 @@ WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
       continue;
     }
 
-    if (use_webgpu_adapter_ == WebGPUAdapterName::kCompat) {
+    if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
       if (adapterProperties.backendType == WGPUBackendType_OpenGLES) {
         adapters.push_back(adapter);
       }
