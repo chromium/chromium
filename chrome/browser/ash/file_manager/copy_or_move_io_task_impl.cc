@@ -188,6 +188,15 @@ void CopyOrMoveIOTaskImpl::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
+  if (progress_->sources.size() == 0) {
+    Complete(State::kSuccess);
+    return;
+  }
+
+  VerifyTransfer();
+}
+
+void CopyOrMoveIOTaskImpl::VerifyTransfer() {
   // TODO(b/280947989) remove this code once Multi-user sign-in is deprecated.
   // Prevent files being copied or moved to ODFS if there is a managed user
   // present amongst other logged in users. Ensures managed user's files can't
@@ -205,16 +214,6 @@ void CopyOrMoveIOTaskImpl::Execute(IOTask::ProgressCallback progress_callback,
     }
   }
 
-  if (progress_->sources.size() == 0) {
-    Complete(State::kSuccess);
-    return;
-  }
-
-  VerifyTransfer();
-}
-
-void CopyOrMoveIOTaskImpl::VerifyTransfer() {
-  // No checks, just start the transfer.
   StartTransfer();
 }
 
