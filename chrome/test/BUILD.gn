@@ -555,6 +555,10 @@ static_library("test_support") {
     public_deps += [ "//components/crash/core/app" ]
   }
 
+  if (use_aura) {
+    deps += [ "//ui/events:test_support" ]
+  }
+
   if (is_win) {
     sources += [
       "../browser/webshare/win/fake_buffer.cc",

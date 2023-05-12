@@ -9,9 +9,15 @@
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/aura/test/ui_controls_factory_aura.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_switches.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/client/cursor_client.h"
+#include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"  // nogncheck
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+#endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -36,16 +42,27 @@ std::string NameFromTestCase() {
                                          : name.substr(underscore + 1);
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-void InstallUIControlsAura() {
-#if BUILDFLAG(IS_WIN)
-  ui_controls::InstallUIControlsAura(aura::test::CreateUIControlsAura(nullptr));
-#else
-  ui_controls::EnableUIControls();
-#endif
-}
+#if defined(USE_AURA)
+class ScopedMouseDisabler {
+ public:
+  explicit ScopedMouseDisabler(views::View* view)
+      : cursor_client_(aura::client::GetCursorClient(
+            view->GetWidget()->GetNativeWindow()->GetRootWindow())) {
+    // Generate a mouse move event to remove any effects caused by mouse enter
+    // (e.g. hover). This is necessary as hiding cursor may not emit mouse exit
+    // event. (crbug.com/723535).
+    ui::test::EventGenerator generator(
+        view->GetWidget()->GetNativeWindow()->GetRootWindow());
+    generator.MoveMouseTo({0, 0});
+    cursor_client_->DisableMouseEvents();
+  }
+  ScopedMouseDisabler(const ScopedMouseDisabler&) = delete;
+  const ScopedMouseDisabler operator=(const ScopedMouseDisabler&) = delete;
+  ~ScopedMouseDisabler() { cursor_client_->EnableMouseEvents(); }
+
+ private:
+  base::raw_ptr<aura::client::CursorClient> cursor_client_;
+};
 #endif
 
 }  // namespace
@@ -87,13 +104,9 @@ bool TestBrowserUi::VerifyPixelUi(views::View* view,
           "browser-ui-tests-verify-pixels"))
     return true;
 
-  // Move the mouse away from the dialog to prvent any interference with the
+  // Disable and hide cursor to prvent any interference with the
   // screenshots.
-  InstallUIControlsAura();
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  EXPECT_TRUE(
-      ui_controls::SendMouseMoveNotifyWhenDone(0, 0, run_loop.QuitClosure()));
-  run_loop.Run();
+  ScopedMouseDisabler disable(view);
 
   // Clear widget focus to avoid flakiness caused by some widgets having focus
   // and some not due to tests being run in parallel.
