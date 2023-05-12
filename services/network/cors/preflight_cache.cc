@@ -172,7 +172,7 @@ void PreflightCache::ClearCache(mojom::ClearDataFilterPtr url_filter) {
 
   for (auto it = cache_.begin(); it != cache_.end();) {
     auto next_it = std::next(it);
-    auto cached_url = get<0>(it->first).GetURL();
+    auto cached_url = std::get<0>(it->first).GetURL();
     if (network::DoesUrlMatchFilter(url_filter->type, origins, domains,
                                     cached_url)) {
       cache_.erase(it);

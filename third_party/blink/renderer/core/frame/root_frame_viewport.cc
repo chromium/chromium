@@ -52,7 +52,7 @@ gfx::RectF GetUserScrollableRect(const ScrollableArea& area) {
 static base::RepeatingCallback<void(ScrollableArea::ScrollCompletionMode)>
 MakeViewportScrollCompletion(ScrollableArea::ScrollCallback callback) {
   return callback
-             ? BarrierCallback<ScrollableArea::ScrollCompletionMode>(
+             ? base::BarrierCallback<ScrollableArea::ScrollCompletionMode>(
                    2, WTF::BindOnce(
                           [](ScrollableArea::ScrollCallback on_finish,
                              const std::vector<

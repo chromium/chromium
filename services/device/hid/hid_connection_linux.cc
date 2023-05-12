@@ -212,7 +212,8 @@ void HidConnectionLinux::PlatformGetFeatureReport(uint8_t report_id,
   auto callback_wrapper = base::BindOnce(
       [](ReadCallback callback,
          std::tuple<bool, scoped_refptr<base::RefCountedBytes>, int> result) {
-        std::move(callback).Run(get<0>(result), get<1>(result), get<2>(result));
+        std::move(callback).Run(std::get<0>(result), std::get<1>(result),
+                                std::get<2>(result));
       },
       std::move(callback));
 

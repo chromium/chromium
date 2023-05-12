@@ -169,6 +169,7 @@ _CONFIG = [
 
             # //base/functional/callback.h is allowed, but you need to use
             # WTF::Bind or WTF::BindRepeating to create callbacks in Blink.
+            'base::BarrierCallback',
             'base::BarrierClosure',
             'base::NullCallback',
             'base::OnceCallback',
