@@ -1042,6 +1042,40 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
   frame.navigation_listener().RunUntilUrlAndTitleEquals(page1_url, kPage1Title);
 }
 
+IN_PROC_BROWSER_TEST_F(FrameImplTest, CreateViewMissingArgs) {
+  auto frame = FrameForTest::Create(context(), {});
+
+  // Close the NavigationEventListener to avoid a test failure resulting, when
+  // it is disconnected as a result of the Frame closing.
+  frame.navigation_listener_binding().Close(ZX_OK);
+
+  // Create a view with GFX, without supplying a valid view token.
+  base::test::TestFuture<zx_status_t> frame_status;
+  frame.ptr().set_error_handler(
+      CallbackToFitFunction(frame_status.GetCallback()));
+
+  frame->CreateView({});
+
+  EXPECT_EQ(frame_status.Get(), ZX_ERR_INVALID_ARGS);
+}
+
+IN_PROC_BROWSER_TEST_F(FrameImplTest, CreateView2MissingArgs) {
+  auto frame = FrameForTest::Create(context(), {});
+
+  // Close the NavigationEventListener to avoid a test failure resulting, when
+  // it is disconnected as a result of the Frame closing.
+  frame.navigation_listener_binding().Close(ZX_OK);
+
+  // Create a view with GFX, without supplying a valid view token.
+  base::test::TestFuture<zx_status_t> frame_status;
+  frame.ptr().set_error_handler(
+      CallbackToFitFunction(frame_status.GetCallback()));
+
+  frame->CreateView2({});
+
+  EXPECT_EQ(frame_status.Get(), ZX_ERR_INVALID_ARGS);
+}
+
 IN_PROC_BROWSER_TEST_F(FrameImplTest, ChildFrameNavigationIgnored) {
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
