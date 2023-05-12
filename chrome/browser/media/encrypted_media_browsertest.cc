@@ -39,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -323,6 +324,19 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       // capabilities can be checked.
       command_line->AppendSwitchASCII(
           switches::kOverrideHardwareSecureCodecsForTesting, "avc1,mp4a");
+
+      // To enable MediaFoundation playback, tests should run on a hardware GPU
+      // other than use a software OpenGL implementation. This can be configured
+      // via `switches::kUseGpuInTests` or `--use-gpu-in-tests`.
+      if (command_line->HasSwitch(switches::kUseGpuInTests)) {
+        // TODO(crbug.com/1421444): Investigate why the video playback doesn't
+        // work with `switches::kDisableGpu` and remove this line if possible.
+        // For now, `switches::kDisableGpu` should not be set. Otherwise,
+        // the video playback will not work with software rendering. Note that
+        // this switch is appended to browser_tests.exe by force as a workaround
+        // of http://crbug.com/687387.
+        command_line->RemoveSwitch(switches::kDisableGpu);
+      }
     }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -1068,24 +1082,42 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
   }
 
   bool IsMediaFoundationEncryptedPlaybackSupported() {
-    static bool is_mediafoundation_encrypted_playback_supported =
+    bool is_mediafoundation_encrypted_playback_supported =
         media::SupportMediaFoundationEncryptedPlayback();
+    bool use_gpu_in_tests = base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kUseGpuInTests);
+    bool disable_gpu = base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kDisableGpu);
+    bool is_playback_supported =
+        is_mediafoundation_encrypted_playback_supported && use_gpu_in_tests &&
+        !disable_gpu;
     DLOG(INFO) << "is_mediafoundation_encrypted_playback_supported="
-               << is_mediafoundation_encrypted_playback_supported;
+               << is_mediafoundation_encrypted_playback_supported
+               << ", use_gpu_in_tests=" << use_gpu_in_tests
+               << ", disable_gpu=" << disable_gpu;
 
     // Run test only if the test machine supports MediaFoundation playback.
-    // Otherwise, NotSupportedError is expected.
-    if (!is_mediafoundation_encrypted_playback_supported) {
-      auto os_version = static_cast<int>(base::win::GetVersion());
+    // Otherwise, NotSupportedError or the failure to create D3D11 device is
+    // expected.
+    if (!is_playback_supported) {
       DLOG(WARNING)
           << "Test method "
           << ::testing::UnitTest::GetInstance()->current_test_info()->name()
-          << " is inconclusive since MediaFoundation "
-             "playback is not supported. "
-          << "os_version=" << os_version;
+          << " is inconclusive since MediaFoundation playback is not "
+             "supported.";
+
+      if (!is_mediafoundation_encrypted_playback_supported) {
+        auto os_version = static_cast<int>(base::win::GetVersion());
+        DLOG(WARNING) << "os_version=" << os_version;
+      }
+
+      if (!use_gpu_in_tests) {
+        DLOG(WARNING) << "MediaFoundation playback will not work without a "
+                         "hardware GPU. Use `--use-gpu-in-tests` flag.";
+      }
     }
 
-    return is_mediafoundation_encrypted_playback_supported;
+    return is_playback_supported;
   }
 };
 

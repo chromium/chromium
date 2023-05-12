@@ -588,60 +588,53 @@ STDMETHODIMP MediaFoundationClearKeyDecryptor::ProcessOutput(
     DVLOG_FUNC(3) << "Clear sample detected!";
 
     output_samples[0].pSample = sample_.Detach();
-  } else {
-    // Convert the Media Foundation sample to a DecoderBuffer.
-    scoped_refptr<DecoderBuffer> encrypted_buffer;
-    RETURN_IF_FAILED(GenerateDecoderBufferFromSample(
-        sample_.Detach(), &key_id_guid, &encrypted_buffer));
-    DVLOG_FUNC(3) << "encrypted_buffer=" +
-                         encrypted_buffer->AsHumanReadableString(true);
-
-    // Decrypt the protected content.
-    Decryptor::Status decryptor_status = Decryptor::kError;
-
-    // TODO(crbug.com/1442373): We may remove the tracking code of stream type
-    // if two decryptors get created for audio and video respectively.
-    CHECK(stream_type_ != StreamType::kUnknown);
-    Decryptor::StreamType stream_type = stream_type_ == StreamType::kVideo
-                                            ? Decryptor::kVideo
-                                            : Decryptor::kAudio;
-    scoped_refptr<DecoderBuffer> decrypted_buffer;
-    bool is_decrypt_completed = false;
-    aes_decryptor_->Decrypt(
-        stream_type, encrypted_buffer,
-        base::BindOnce(
-            [](Decryptor::Status* status_copy,
-               scoped_refptr<DecoderBuffer>* buffer_copy,
-               bool* is_decrypt_completed, Decryptor::Status status,
-               scoped_refptr<DecoderBuffer> buffer) {
-              *status_copy = status;
-              *buffer_copy = std::move(buffer);
-              *is_decrypt_completed = true;
-            },
-            &decryptor_status, &decrypted_buffer, &is_decrypt_completed));
-
-    // Ensure the decryption is done synchronously.
-    CHECK(is_decrypt_completed);
-
-    // Convert the DecoderBuffer back to a Media Foundation sample.
-    ComPtr<IMFSample> sample_decrypted = nullptr;
-    GUID last_key_id = GUID_NULL;
-    RETURN_IF_FAILED(GenerateSampleFromDecoderBuffer(
-        decrypted_buffer.get(), &sample_decrypted, &last_key_id,
-        base::NullCallback()));
-    DVLOG_FUNC(3) << "decrypted_buffer=" +
-                         decrypted_buffer->AsHumanReadableString(true);
-
-    output_samples[0].pSample = sample_decrypted.Detach();
+    return S_OK;
   }
 
-  // TODO(crbug.com/1421444): Playback never ends with a sync Media Foundation
-  // MFT decryptor. Nothing will be rendered but it is sufficient for initial
-  // testing. Remove this block after fixing the bug.
-  {
-    output_samples[0].pSample->Release();
-    output_samples[0].pSample = nullptr;
-  }
+  // Convert the Media Foundation sample to a DecoderBuffer.
+  scoped_refptr<DecoderBuffer> encrypted_buffer;
+  RETURN_IF_FAILED(GenerateDecoderBufferFromSample(
+      sample_.Detach(), &key_id_guid, &encrypted_buffer));
+  DVLOG_FUNC(3) << "encrypted_buffer=" +
+                       encrypted_buffer->AsHumanReadableString(true);
+
+  // Decrypt the protected content.
+  Decryptor::Status decryptor_status = Decryptor::kError;
+
+  // TODO(crbug.com/1442373): We may remove the tracking code of stream type
+  // if two decryptors get created for audio and video respectively.
+  CHECK(stream_type_ != StreamType::kUnknown);
+  Decryptor::StreamType stream_type = stream_type_ == StreamType::kVideo
+                                          ? Decryptor::kVideo
+                                          : Decryptor::kAudio;
+  scoped_refptr<DecoderBuffer> decrypted_buffer;
+  bool is_decrypt_completed = false;
+  aes_decryptor_->Decrypt(
+      stream_type, encrypted_buffer,
+      base::BindOnce(
+          [](Decryptor::Status* status_copy,
+             scoped_refptr<DecoderBuffer>* buffer_copy,
+             bool* is_decrypt_completed, Decryptor::Status status,
+             scoped_refptr<DecoderBuffer> buffer) {
+            *status_copy = status;
+            *buffer_copy = std::move(buffer);
+            *is_decrypt_completed = true;
+          },
+          &decryptor_status, &decrypted_buffer, &is_decrypt_completed));
+
+  // Ensure the decryption is done synchronously.
+  CHECK(is_decrypt_completed);
+
+  // Convert the DecoderBuffer back to a Media Foundation sample.
+  ComPtr<IMFSample> sample_decrypted = nullptr;
+  GUID last_key_id = GUID_NULL;
+  RETURN_IF_FAILED(
+      GenerateSampleFromDecoderBuffer(decrypted_buffer.get(), &sample_decrypted,
+                                      &last_key_id, base::NullCallback()));
+  DVLOG_FUNC(3) << "decrypted_buffer=" +
+                       decrypted_buffer->AsHumanReadableString(true);
+
+  output_samples[0].pSample = sample_decrypted.Detach();
 
   return S_OK;
 }
