@@ -163,6 +163,9 @@ BASE_DECLARE_FEATURE(kInspireMe);
 // Data driven feature; flag helps tune behavior.
 BASE_DECLARE_FEATURE(kActionsInSuggest);
 
+// Adds support for categorical suggestion type.
+BASE_DECLARE_FEATURE(kCategoricalSuggestions);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

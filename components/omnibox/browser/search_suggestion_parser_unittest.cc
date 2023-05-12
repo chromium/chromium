@@ -5,12 +5,14 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -723,6 +725,68 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
     ASSERT_EQ(u"the midnight club", results.suggest_results[2].suggestion());
     ASSERT_TRUE(ProtosAreEqual(results.suggest_results[2].entity_info(),
                                omnibox::EntityInfo::default_instance()));
+  }
+}
+
+TEST(SearchSuggestionParserTest, ParseValidTypes) {
+  std::string json_data = R"([
+      "",
+      ["one", "two", "three", "four", "five"],
+      ["", "", "", "", ""],
+      [],
+      {
+        "google:clientdata": { "bpc": false, "tlw": false },
+        "google:suggestsubtypes": [[], [], [], [], []],
+        "google:suggestrelevance": [607, 606, 605, 604, 603, 602],
+        "google:suggesttype": ["QUERY", "ENTITY", "CATEGORICAL_QUERY", 1, "UNKNOWN"]
+      }])";
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
+  ASSERT_TRUE(root_val.value().is_list());
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
+                          scheme_classifier);
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      root_val->GetList(), input, scheme_classifier,
+      /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
+
+  ASSERT_EQ(5u, results.suggest_results.size());
+  {
+    const auto& suggestion_result = results.suggest_results[0];
+    ASSERT_EQ(u"one", suggestion_result.suggestion());
+    ASSERT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, suggestion_result.type());
+    ASSERT_EQ(omnibox::TYPE_QUERY, suggestion_result.suggest_type());
+  }
+  {
+    const auto& suggestion_result = results.suggest_results[1];
+    ASSERT_EQ(u"two", suggestion_result.suggestion());
+    ASSERT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+              suggestion_result.type());
+    ASSERT_EQ(omnibox::TYPE_ENTITY, suggestion_result.suggest_type());
+  }
+  {
+    const auto& suggestion_result = results.suggest_results[2];
+    ASSERT_EQ(u"three", suggestion_result.suggestion());
+    ASSERT_EQ(base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)
+                  ? AutocompleteMatchType::SEARCH_SUGGEST_ENTITY
+                  : AutocompleteMatchType::SEARCH_SUGGEST,
+              suggestion_result.type());
+    ASSERT_EQ(omnibox::TYPE_CATEGORICAL_QUERY,
+              suggestion_result.suggest_type());
+  }
+  {
+    const auto& suggestion_result = results.suggest_results[3];
+    ASSERT_EQ(u"four", suggestion_result.suggestion());
+    ASSERT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, suggestion_result.type());
+    ASSERT_EQ(omnibox::TYPE_QUERY, suggestion_result.suggest_type());
+  }
+  {
+    const auto& suggestion_result = results.suggest_results[4];
+    ASSERT_EQ(u"five", suggestion_result.suggestion());
+    ASSERT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, suggestion_result.type());
+    ASSERT_EQ(omnibox::TYPE_QUERY, suggestion_result.suggest_type());
   }
 }
 

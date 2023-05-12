@@ -240,6 +240,14 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
       return;
     }
     case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY: {
+      // Map `ACMatchType::SEARCH_SUGGEST_ENTITY` back to
+      // `omnibox::TYPE_CATEGORICAL_QUERY` depending on the original suggestion
+      // type.
+      if (match.suggest_type == omnibox::TYPE_CATEGORICAL_QUERY &&
+          base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
+        *type = omnibox::TYPE_CATEGORICAL_QUERY;
+        return;
+      }
       *type = omnibox::TYPE_ENTITY;
       return;
     }

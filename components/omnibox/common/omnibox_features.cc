@@ -686,4 +686,11 @@ BASE_FEATURE(kInspireMe, "OmniboxInspireMe", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActionsInSuggest,
              "OmniboxActionsInSuggest",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, treats categorical suggestions just like the entity suggestions
+// by reusing the `ACMatchType::SEARCH_SUGGEST_ENTITY` and reports the original
+// `omnibox::TYPE_CATEGORICAL_QUERY` to the server.
+BASE_FEATURE(kCategoricalSuggestions,
+             "CategoricalSuggestions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace omnibox

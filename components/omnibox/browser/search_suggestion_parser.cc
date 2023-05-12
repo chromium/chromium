@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -30,6 +31,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -96,8 +98,14 @@ AutocompleteMatchType::Type GetAutocompleteMatchType(
       return AutocompleteMatchType::NAVSUGGEST;
     case omnibox::TYPE_PERSONALIZED_NAVIGATION:
       return AutocompleteMatchType::NAVSUGGEST_PERSONALIZED;
-    default:
+    default: {
+      // Use `ACMatchType::SEARCH_SUGGEST_ENTITY` for categorical suggestions.
+      if (suggest_type == omnibox::TYPE_CATEGORICAL_QUERY &&
+          base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
+        return AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+      }
       return AutocompleteMatchType::SEARCH_SUGGEST;
+    }
   }
 }
 

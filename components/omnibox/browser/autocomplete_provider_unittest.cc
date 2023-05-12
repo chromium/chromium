@@ -1014,6 +1014,9 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
 TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
   ResetControllerWithTestProviders(false, nullptr, nullptr);
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kCategoricalSuggestions);
+
   {
     omnibox::metrics::ChromeSearchboxStats searchbox_stats;
     AssistedQueryStatsTestData test_data[] = {
@@ -1084,7 +1087,7 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     available_suggestion->add_subtypes(omnibox::SUBTYPE_TRENDS);
     available_suggestion = searchbox_stats.add_available_suggestions();
     available_suggestion->set_index(2);
-    available_suggestion->set_type(omnibox::TYPE_ENTITY);
+    available_suggestion->set_type(omnibox::TYPE_CATEGORICAL_QUERY);
     available_suggestion->add_subtypes(omnibox::SUBTYPE_PERSONAL);
     available_suggestion->add_subtypes(omnibox::SUBTYPE_TRENDS);
     available_suggestion = searchbox_stats.add_available_suggestions();
@@ -1128,7 +1131,7 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     // properly handled and reported as the same suggestion type.
     AssistedQueryStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.0.0i39i143i362j46i39i143l2j46i39i143i362j46i39i143",
+         "chrome.0.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_0,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS,
@@ -1136,20 +1139,20 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
         // The next two matches should be detected as the same type, despite
         // repeated subtype match.
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
-         "chrome.1.0i39i143i362j46i39i143l2j46i39i143i362j46i39i143",
+         "chrome.1.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_1,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS}},
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
-         "chrome.2.0i39i143i362j46i39i143l2j46i39i143i362j46i39i143",
+         "chrome.2.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_2,
-         omnibox::TYPE_ENTITY,
+         omnibox::TYPE_CATEGORICAL_QUERY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS,
           omnibox::SUBTYPE_PERSONAL}},
         // This match should not be bundled together with previous two, because
         // it comes with additional subtype information (42).
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
-         "chrome.3.0i39i143i362j46i39i143l2j46i39i143i362j46i39i143",
+         "chrome.3.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_3,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS,
@@ -1157,7 +1160,7 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
         // This match should not be bundled together with the group before,
         // because these items are not adjacent.
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
-         "chrome.4.0i39i143i362j46i39i143l2j46i39i143i362j46i39i143",
+         "chrome.4.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_4,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS}},
