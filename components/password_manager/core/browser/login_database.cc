@@ -1667,14 +1667,83 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   return DatabaseCleanupResult::kSuccess;
 }
 
-// TODO(crbug.com/1444700): Reorder the methods to match the order in the header
-// file.
+bool LoginDatabase::BeginTransaction() {
+  TRACE_EVENT0("passwords", "LoginDatabase::BeginTransaction");
+  return db_.BeginTransaction();
+}
+
+void LoginDatabase::RollbackTransaction() {
+  TRACE_EVENT0("passwords", "LoginDatabase::RollbackTransaction");
+  db_.RollbackTransaction();
+}
+
+bool LoginDatabase::CommitTransaction() {
+  TRACE_EVENT0("passwords", "LoginDatabase::CommitTransaction");
+  return db_.CommitTransaction();
+}
+
 LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
     : db_(db) {
   CHECK(db);
 }
 
 LoginDatabase::SyncMetadataStore::~SyncMetadataStore() = default;
+
+std::unique_ptr<syncer::MetadataBatch>
+LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata() {
+  auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE,
+                                           "SELECT storage_key, metadata FROM "
+                                           "sync_entities_metadata"));
+
+  while (s.Step()) {
+    int storage_key_int = s.ColumnInt(0);
+    std::string storage_key = base::NumberToString(storage_key_int);
+    std::string encrypted_serialized_metadata = s.ColumnString(1);
+    std::string decrypted_serialized_metadata;
+    if (!OSCrypt::DecryptString(encrypted_serialized_metadata,
+                                &decrypted_serialized_metadata)) {
+      DLOG(WARNING) << "Failed to decrypt PASSWORD model type "
+                       "sync_pb::EntityMetadata.";
+      return nullptr;
+    }
+
+    auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
+    if (entity_metadata->ParseFromString(decrypted_serialized_metadata)) {
+      metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
+    } else {
+      DLOG(WARNING) << "Failed to deserialize PASSWORD model type "
+                       "sync_pb::EntityMetadata.";
+      return nullptr;
+    }
+  }
+  if (!s.Succeeded()) {
+    return nullptr;
+  }
+  return metadata_batch;
+}
+
+std::unique_ptr<sync_pb::ModelTypeState>
+LoginDatabase::SyncMetadataStore::GetModelTypeState() {
+  auto state = std::make_unique<sync_pb::ModelTypeState>();
+  sql::Statement s(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT model_metadata FROM sync_model_metadata WHERE id=1"));
+
+  if (!s.Step()) {
+    if (s.Succeeded()) {
+      return state;
+    } else {
+      return nullptr;
+    }
+  }
+
+  std::string serialized_state = s.ColumnString(0);
+  if (state->ParseFromString(serialized_state)) {
+    return state;
+  }
+  return nullptr;
+}
 
 std::unique_ptr<syncer::MetadataBatch>
 LoginDatabase::SyncMetadataStore::GetAllSyncMetadata() {
@@ -1824,21 +1893,6 @@ bool LoginDatabase::SyncMetadataStore::HasUnsyncedDeletions() {
   return false;
 }
 
-bool LoginDatabase::BeginTransaction() {
-  TRACE_EVENT0("passwords", "LoginDatabase::BeginTransaction");
-  return db_.BeginTransaction();
-}
-
-void LoginDatabase::RollbackTransaction() {
-  TRACE_EVENT0("passwords", "LoginDatabase::RollbackTransaction");
-  db_.RollbackTransaction();
-}
-
-bool LoginDatabase::CommitTransaction() {
-  TRACE_EVENT0("passwords", "LoginDatabase::CommitTransaction");
-  return db_.CommitTransaction();
-}
-
 LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(
     const PasswordForm& form) const {
   DCHECK(!id_and_password_statement_.empty());
@@ -1862,62 +1916,6 @@ LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(
     return result;
   }
   return {-1, std::string(), std::u16string()};
-}
-
-std::unique_ptr<syncer::MetadataBatch>
-LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata() {
-  auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE,
-                                           "SELECT storage_key, metadata FROM "
-                                           "sync_entities_metadata"));
-
-  while (s.Step()) {
-    int storage_key_int = s.ColumnInt(0);
-    std::string storage_key = base::NumberToString(storage_key_int);
-    std::string encrypted_serialized_metadata = s.ColumnString(1);
-    std::string decrypted_serialized_metadata;
-    if (!OSCrypt::DecryptString(encrypted_serialized_metadata,
-                                &decrypted_serialized_metadata)) {
-      DLOG(WARNING) << "Failed to decrypt PASSWORD model type "
-                       "sync_pb::EntityMetadata.";
-      return nullptr;
-    }
-
-    auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
-    if (entity_metadata->ParseFromString(decrypted_serialized_metadata)) {
-      metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
-    } else {
-      DLOG(WARNING) << "Failed to deserialize PASSWORD model type "
-                       "sync_pb::EntityMetadata.";
-      return nullptr;
-    }
-  }
-  if (!s.Succeeded()) {
-    return nullptr;
-  }
-  return metadata_batch;
-}
-
-std::unique_ptr<sync_pb::ModelTypeState>
-LoginDatabase::SyncMetadataStore::GetModelTypeState() {
-  auto state = std::make_unique<sync_pb::ModelTypeState>();
-  sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT model_metadata FROM sync_model_metadata WHERE id=1"));
-
-  if (!s.Step()) {
-    if (s.Succeeded()) {
-      return state;
-    } else {
-      return nullptr;
-    }
-  }
-
-  std::string serialized_state = s.ColumnString(0);
-  if (state->ParseFromString(serialized_state)) {
-    return state;
-  }
-  return nullptr;
 }
 
 FormRetrievalResult LoginDatabase::StatementToForms(
