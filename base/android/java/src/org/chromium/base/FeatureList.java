@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import android.util.ArrayMap;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -26,7 +28,7 @@ public class FeatureList {
      */
     public static class TestValues {
         private Map<String, Boolean> mFeatureFlags = new HashMap<>();
-        private Map<String, String> mFieldTrialParams = new HashMap<>();
+        private Map<String, Map<String, String>> mFieldTrialParams = new HashMap<>();
 
         /**
          * Constructor.
@@ -52,7 +54,12 @@ public class FeatureList {
          */
         public void addFieldTrialParamOverride(
                 String featureName, String paramName, String testValue) {
-            mFieldTrialParams.put(makeKey(featureName, paramName), testValue);
+            Map<String, String> featureParams = mFieldTrialParams.get(featureName);
+            if (featureParams == null) {
+                featureParams = new ArrayMap<>();
+                mFieldTrialParams.put(featureName, featureParams);
+            }
+            featureParams.put(paramName, testValue);
         }
 
         Boolean getFeatureFlagOverride(String featureName) {
@@ -60,11 +67,13 @@ public class FeatureList {
         }
 
         String getFieldTrialParamOverride(String featureName, String paramName) {
-            return mFieldTrialParams.get(makeKey(featureName, paramName));
+            Map<String, String> featureParams = mFieldTrialParams.get(featureName);
+            if (featureParams == null) return null;
+            return featureParams.get(paramName);
         }
 
-        private static String makeKey(String featureName, String paramName) {
-            return featureName + ":" + paramName;
+        Map<String, String> getAllFieldTrialParamOverridesForFeature(String featureName) {
+            return mFieldTrialParams.get(featureName);
         }
     }
 
@@ -188,14 +197,25 @@ public class FeatureList {
      * @param featureName The name of the feature to query.
      * @param paramName The name of the field trial parameter to query.
      * @return The test value set for the parameter, or null if no test value has been set.
-     * @throws IllegalArgumentException if no test value was set and default values aren't allowed.
      */
     public static String getTestValueForFieldTrialParam(String featureName, String paramName) {
         if (hasTestFeatures()) {
-            String override = sTestFeatures.getFieldTrialParamOverride(featureName, paramName);
-            if (override != null) {
-                return override;
-            }
+            return sTestFeatures.getFieldTrialParamOverride(featureName, paramName);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the test value of the all field trial parameters of a given feature.
+     *
+     * @param featureName The name of the feature to query all parameters.
+     * @return The test values set for the parameter, or null if no test values have been set (if
+     *      test values were set for other features, an empty Map will be returned, not null).
+     */
+    public static Map<String, String> getTestValuesForAllFieldTrialParamsForFeature(
+            String featureName) {
+        if (hasTestFeatures()) {
+            return sTestFeatures.getAllFieldTrialParamOverridesForFeature(featureName);
         }
         return null;
     }

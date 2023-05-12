@@ -8,6 +8,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,8 +128,13 @@ public abstract class ChromeFeatureList {
      * Returns all the field trial parameters for the specified feature.
      */
     public static Map<String, String> getFieldTrialParamsForFeature(String featureName) {
+        Map<String, String> testValues =
+                FeatureList.getTestValuesForAllFieldTrialParamsForFeature(featureName);
+        if (testValues != null) return testValues;
+        if (FeatureList.hasTestFeatures()) return Collections.emptyMap();
+
         assert FeatureList.isInitialized();
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         String[] flattenedParams =
                 ChromeFeatureListJni.get().getFlattedFieldTrialParamsForFeature(featureName);
         for (int i = 0; i < flattenedParams.length; i += 2) {

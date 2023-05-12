@@ -5,21 +5,16 @@
 package org.chromium.chrome.browser.flags;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 import java.util.List;
 import java.util.Map;
@@ -29,12 +24,6 @@ import java.util.Map;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFieldTrialParameterUnitTest {
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
-
-    @Mock
-    public ChromeFeatureList.Natives mChromeFeatureListNativesMock;
-
     private static final String FEATURE_A = "FeatureA";
 
     private static final String STRING_PARAM_NAME = "ParamString";
@@ -90,16 +79,6 @@ public class CachedFieldTrialParameterUnitTest {
     private static final String FEATURE_B = "FeatureB";
 
     // clang-format off
-    private static final String[] ALL_PARAMS_NATIVE = new String[] {
-            STRING_PARAM_NAME,
-            STRING_PARAM_NATIVE,
-            BOOLEAN_PARAM_NAME,
-            BOOLEAN_PARAM_NATIVE_STRING,
-            INT_PARAM_NAME,
-            INT_PARAM_NATIVE_STRING,
-            DOUBLE_PARAM_NAME,
-            DOUBLE_PARAM_NATIVE_STRING,
-    };
     private static final Map<String, String> ALL_PARAM_TEST_OVERRIDE = Map.of(
             STRING_PARAM_NAME, STRING_PARAM_TEST_OVERRIDE,
             BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_TEST_OVERRIDE_STRING,
@@ -116,12 +95,12 @@ public class CachedFieldTrialParameterUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        jniMocker.mock(ChromeFeatureListJni.TEST_HOOKS, mChromeFeatureListNativesMock);
 
         CachedFeatureFlags.resetFlagsForTesting();
         CachedFeatureFlags.resetDiskForTesting();
 
         TestValues testValues = new TestValues();
+
         testValues.addFieldTrialParamOverride(FEATURE_A, STRING_PARAM_NAME, STRING_PARAM_NATIVE);
         testValues.addFieldTrialParamOverride(
                 FEATURE_A, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_NATIVE_STRING);
@@ -129,10 +108,15 @@ public class CachedFieldTrialParameterUnitTest {
         testValues.addFieldTrialParamOverride(
                 FEATURE_A, DOUBLE_PARAM_NAME, DOUBLE_PARAM_NATIVE_STRING);
         testValues.addFieldTrialParamOverride(FEATURE_A, STRING2_PARAM_NAME, STRING2_PARAM_NATIVE);
-        FeatureList.setTestValues(testValues);
 
-        when(mChromeFeatureListNativesMock.getFlattedFieldTrialParamsForFeature(eq(FEATURE_B)))
-                .thenReturn(ALL_PARAMS_NATIVE);
+        testValues.addFieldTrialParamOverride(FEATURE_B, STRING_PARAM_NAME, STRING_PARAM_NATIVE);
+        testValues.addFieldTrialParamOverride(
+                FEATURE_B, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_NATIVE_STRING);
+        testValues.addFieldTrialParamOverride(FEATURE_B, INT_PARAM_NAME, INT_PARAM_NATIVE_STRING);
+        testValues.addFieldTrialParamOverride(
+                FEATURE_B, DOUBLE_PARAM_NAME, DOUBLE_PARAM_NATIVE_STRING);
+
+        FeatureList.setTestValues(testValues);
     }
 
     @After
@@ -172,11 +156,18 @@ public class CachedFieldTrialParameterUnitTest {
 
         // Set different values in native which shouldn't be used
         TestValues testValues = new TestValues();
+
         testValues.addFieldTrialParamOverride(FEATURE_A, STRING_PARAM_NAME, STRING_PARAM_BAD);
         testValues.addFieldTrialParamOverride(FEATURE_A, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_BAD);
         testValues.addFieldTrialParamOverride(FEATURE_A, INT_PARAM_NAME, INT_PARAM_BAD);
         testValues.addFieldTrialParamOverride(FEATURE_A, DOUBLE_PARAM_NAME, DOUBLE_PARAM_BAD);
         testValues.addFieldTrialParamOverride(FEATURE_A, STRING2_PARAM_NAME, STRING2_PARAM_BAD);
+
+        testValues.addFieldTrialParamOverride(FEATURE_B, STRING_PARAM_NAME, STRING_PARAM_BAD);
+        testValues.addFieldTrialParamOverride(FEATURE_B, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_BAD);
+        testValues.addFieldTrialParamOverride(FEATURE_B, INT_PARAM_NAME, INT_PARAM_BAD);
+        testValues.addFieldTrialParamOverride(FEATURE_B, DOUBLE_PARAM_NAME, DOUBLE_PARAM_BAD);
+
         FeatureList.setTestValues(testValues);
 
         // In the second run, should get cached values and not the new ones since
