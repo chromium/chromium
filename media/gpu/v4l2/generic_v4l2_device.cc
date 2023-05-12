@@ -29,7 +29,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/generic_v4l2_device.h"
-#include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/egl_util.h"
@@ -313,8 +312,8 @@ std::vector<uint32_t> GenericV4L2Device::GetSupportedImageProcessorPixelformats(
       continue;
     }
 
-    const auto pixelformats = EnumerateSupportedPixFmts(
-        base::BindRepeating(&V4L2Device::Ioctl, this), buf_type);
+    std::vector<uint32_t> pixelformats =
+        EnumerateSupportedPixelformats(buf_type);
 
     supported_pixelformats.insert(supported_pixelformats.end(),
                                   pixelformats.begin(), pixelformats.end());
@@ -471,9 +470,9 @@ void GenericV4L2Device::EnumerateDevicesForType(Type type) {
   for (const auto& path : candidate_paths) {
     if (!OpenDevicePath(path, type))
       continue;
-    const auto supported_pixelformats = EnumerateSupportedPixFmts(
-        base::BindRepeating(&V4L2Device::Ioctl, this), buf_type);
 
+    const auto& supported_pixelformats =
+        EnumerateSupportedPixelformats(buf_type);
     if (!supported_pixelformats.empty()) {
       DVLOGF(3) << "Found device: " << path;
       devices.push_back(std::make_pair(path, supported_pixelformats));

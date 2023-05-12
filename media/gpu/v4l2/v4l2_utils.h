@@ -42,13 +42,6 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
     base::RepeatingCallback<int(int, void*)> ioctl_cb,
     uint32_t codec_as_pix_fmt);
 
-// Enumerates all supported pixel formats for a given device (accessed via
-// |ioctl_cb|) and for |buf_type|; these will be the supported video codecs
-// (e.g. V4L2_PIX_FMT_VP9) for V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE.
-std::vector<uint32_t> EnumerateSupportedPixFmts(
-    base::RepeatingCallback<int(int, void*)> ioctl_cb,
-    v4l2_buf_type buf_type);
-
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_UTILS_H_

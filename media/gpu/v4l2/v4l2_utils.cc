@@ -55,9 +55,6 @@
 
 namespace media {
 
-// Numerical value of ioctl() OK return value;
-constexpr int kIoctlOk = 0;
-
 const char* V4L2MemoryToString(const v4l2_memory memory) {
   switch (memory) {
     case V4L2_MEMORY_MMAP:
@@ -255,6 +252,7 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
   }
   const auto profile_cid = kV4L2CodecPixFmtToProfileCID.at(codec_as_pix_fmt);
 
+  constexpr int kIoctlOk = 0;
   v4l2_queryctrl query_ctrl = {.id = static_cast<__u32>(profile_cid)};
   if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
     // This happens for example for VP8 on Hana MTK8173, or for HEVC on Trogdor
@@ -293,27 +291,6 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
   base::ranges::sort(profiles);
   profiles.erase(base::ranges::unique(profiles), profiles.end());
   return profiles;
-}
-
-std::vector<uint32_t> EnumerateSupportedPixFmts(
-    base::RepeatingCallback<int(int, void*)> ioctl_cb,
-    v4l2_buf_type buf_type) {
-  DCHECK(buf_type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE ||
-         buf_type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
-
-  std::vector<v4l2_enum_type> pix_fmts;
-  v4l2_fmtdesc fmtdesc = {.type = buf_type};
-  for (; ioctl_cb.Run(VIDIOC_ENUM_FMT, &fmtdesc) == kIoctlOk; ++fmtdesc.index) {
-    DVLOGF(4) << "Enumerated "
-              << (buf_type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE
-                      ? "codec: "
-                      : "pixel format: ")
-              << FourccToString(fmtdesc.pixelformat) << " ("
-              << fmtdesc.description << ")";
-    pix_fmts.push_back(fmtdesc.pixelformat);
-  }
-
-  return pix_fmts;
 }
 
 }  // namespace media
