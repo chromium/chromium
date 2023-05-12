@@ -10,6 +10,8 @@ import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../../externs/ts/state.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {constants} from '../../foreground/js/constants.js';
 import {clearSearch, updateSearch} from '../../state/actions/search.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
@@ -153,6 +155,24 @@ export function testHiddenForFiles() {
 }
 
 /**
+ * Tests that no files message will be hidden if the volume is ODFS
+ * but the scan finished with no error.
+ * @suppress {accessControls} access private method in test.
+ */
+export function testHiddenForODFS() {
+  // Set ODFS as the volume.
+  directoryModel.getCurrentVolumeInfo = function() {
+    return /** @type {!VolumeInfo} */ ({
+      providerId: constants.ODFS_EXTENSION_ID,
+    });
+  };
+
+  emptyFolderController.onScanFinished_();
+  assertTrue(element.hidden);
+  assertEquals('', emptyFolderController.label_.innerText);
+}
+
+/**
  * Tests that the empty state image shows up when root type is Trash.
  * @suppress {accessControls} access private method in test.
  */
@@ -162,6 +182,31 @@ export function testShownForTrash() {
   assertFalse(element.hidden);
   const text = emptyFolderController.label_.innerText;
   assertTrue(text.includes(str('EMPTY_TRASH_FOLDER_TITLE')));
+}
+
+/**
+ * Tests that the reauthentication required image shows up when the volume is
+ * ODFS and the scan failed from a NO_MODIFICATION_ALLOWED_ERR.
+ * @suppress {accessControls} access private method in test.
+ */
+export function testShownForODFS() {
+  // Set ODFS as the volume.
+  directoryModel.getCurrentVolumeInfo = function() {
+    return /** @type {!VolumeInfo} */ ({
+      providerId: constants.ODFS_EXTENSION_ID,
+    });
+  };
+
+  // Pass a NO_MODIFICATION_ALLOWED_ERR error (implies reauthentication
+  // required).
+  const event = new Event('scan-failed');
+  event.error = {name: util.FileError.NO_MODIFICATION_ALLOWED_ERR};
+  emptyFolderController.onScanFailed_(event);
+
+  assertFalse(element.hidden);
+  const text = emptyFolderController.label_.innerText;
+  // TODO(b/254586358): use the i18n version of this string.
+  assertTrue(text.includes('You\'ve been logged out'));
 }
 
 /**

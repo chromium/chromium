@@ -38,6 +38,16 @@ const TRASH_EMPTY_FOLDER =
     'foreground/images/files/ui/empty_trash_folder.svg#empty_trash_folder';
 
 /**
+ * The reauthentication required image for ODFS. There are no files when
+ * reauthentication is required (scan fails).
+ * TODO(b/279109210): fix light/dark colours.
+ * @type {string}
+ * @const
+ */
+const ODFS_REAUTHENTICATION_REQUIRED = 'foreground/images/files/ui/' +
+    'odfs_reauthentication_required.svg#odfs_reauthentication_required';
+
+/**
  * Empty folder controller which controls the empty folder element inside
  * the file list container.
  */
@@ -82,7 +92,7 @@ export class EmptyFolderController {
     this.directoryModel_.addEventListener(
         'scan-started', this.onScanStarted_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-failed', this.onScanFinished_.bind(this));
+        'scan-failed', this.onScanFailed_.bind(this));
     this.directoryModel_.addEventListener(
         'scan-cancelled', this.onScanFinished_.bind(this));
     this.directoryModel_.addEventListener(
@@ -98,6 +108,24 @@ export class EmptyFolderController {
   onScanStarted_() {
     this.isScanning_ = true;
     this.updateUI_();
+  }
+
+  /**
+   * Handles scan fail.
+   * @private
+   */
+  onScanFailed_(event) {
+    this.isScanning_ = false;
+    let odfsAndReauthenticationRequired = false;
+    // Check if ODFS is the volume and reauthentication is required.
+    // NO_MODIFICATION_ALLOWED_ERR is equivalent to the ACCESS_DENIED error
+    // thrown by ODFS.
+    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    if (util.isOneDrive(currentVolumeInfo) &&
+        event.error.name == util.FileError.NO_MODIFICATION_ALLOWED_ERR) {
+      odfsAndReauthenticationRequired = true;
+    }
+    this.updateUI_(odfsAndReauthenticationRequired);
   }
 
   /**
@@ -133,10 +161,12 @@ export class EmptyFolderController {
   }
 
   /**
-   * Updates visibility of empty folder UI.
+   * Updates visibility of empty folder UI. `odfsAndReauthenticationRequired` is
+   * true when the volume is ODFS and reauthentication is required.
+   * @param {boolean} odfsAndReauthenticationRequired
    * @private
    */
-  updateUI_() {
+  updateUI_(odfsAndReauthenticationRequired = false) {
     const currentRootType = this.directoryModel_.getCurrentRootType();
 
     let svgRef = null;
@@ -144,6 +174,8 @@ export class EmptyFolderController {
       svgRef = RECENTS_EMPTY_FOLDER;
     } else if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;
+    } else if (odfsAndReauthenticationRequired) {
+      svgRef = ODFS_REAUTHENTICATION_REQUIRED;
     } else {
       if (util.isSearchV2Enabled()) {
         const {search} = getStore().getState();
@@ -169,6 +201,15 @@ export class EmptyFolderController {
     if (svgRef === TRASH_EMPTY_FOLDER) {
       this.showMessage_(
           str('EMPTY_TRASH_FOLDER_TITLE'), str('EMPTY_TRASH_FOLDER_DESC'));
+      return;
+    }
+
+    if (svgRef == ODFS_REAUTHENTICATION_REQUIRED) {
+      // TODO(b/254586358): i18n these strings.
+      this.showMessage_(
+          'You\'ve been logged out',
+          'Sign in to your OneDrive account to open Office files' +
+              '\nstored on your Chromebook or go to Settings');
       return;
     }
 
