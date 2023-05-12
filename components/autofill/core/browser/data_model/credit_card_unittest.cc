@@ -914,6 +914,35 @@ TEST(CreditCardTest, MatchingCardDetails) {
   EXPECT_FALSE(b.MatchingCardDetails(a));
 }
 
+TEST(CreditCardTest, IsVerified) {
+  CreditCard card;
+  EXPECT_FALSE(card.IsVerified());
+
+  card.set_origin("http://www.example.com");
+  EXPECT_FALSE(card.IsVerified());
+
+  card.set_origin("https://www.example.com");
+  EXPECT_FALSE(card.IsVerified());
+
+  card.set_origin("file:///tmp/example.txt");
+  EXPECT_FALSE(card.IsVerified());
+
+  card.set_origin("data:text/plain;charset=utf-8;base64,ZXhhbXBsZQ==");
+  EXPECT_FALSE(card.IsVerified());
+
+  card.set_origin("chrome://settings/autofill");
+  EXPECT_FALSE(card.IsVerified());
+
+  card.set_origin(kSettingsOrigin);
+  EXPECT_TRUE(card.IsVerified());
+
+  card.set_origin("Some gibberish string");
+  EXPECT_TRUE(card.IsVerified());
+
+  card.set_origin(std::string());
+  EXPECT_FALSE(card.IsVerified());
+}
+
 TEST(CreditCardTest, Compare) {
   CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                std::string());

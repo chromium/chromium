@@ -212,7 +212,7 @@ AutofillProfile::AutofillProfile()
     : AutofillProfile(Source::kLocalOrSyncable) {}
 
 AutofillProfile::AutofillProfile(const std::string& guid, Source source)
-    : AutofillDataModel(guid, /*origin=*/""),
+    : AutofillDataModel(guid),
       phone_number_(this),
       record_type_(LOCAL_PROFILE),
       has_converted_(false),
@@ -226,8 +226,7 @@ AutofillProfile::AutofillProfile(Source source)
 
 // TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
-    : AutofillDataModel(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                        /*origin=*/""),
+    : AutofillDataModel(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       phone_number_(this),
       server_id_(server_id),
       record_type_(type),
@@ -237,7 +236,7 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
 }
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
-    : AutofillDataModel(/*guid=*/"", /*origin=*/""), phone_number_(this) {
+    : AutofillDataModel(/*guid=*/""), phone_number_(this) {
   operator=(profile);
 }
 
@@ -255,7 +254,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   set_modification_date(profile.modification_date());
 
   set_guid(profile.guid());
-  set_origin(profile.origin());
 
   set_profile_label(profile.profile_label());
 
@@ -620,9 +618,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
     return false;
   }
 
-  // TODO(rogerm): As implemented, "origin" really denotes "domain of last use".
-  // Find a better merge heuristic. Ditto for language code.
-  set_origin(profile.origin());
   set_language_code(profile.language_code());
 
   // Update the use-count to be the max of the two merge-counts. Alternatively,
@@ -1028,8 +1023,7 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
              ? profile.guid()
              : base::HexEncode(profile.server_id().data(),
                                profile.server_id().size()))
-     << " " << profile.origin() << " "
-     << "label: " << profile.profile_label() << " " << profile.has_converted()
+     << " label: " << profile.profile_label() << " " << profile.has_converted()
      << " " << profile.use_count() << " " << profile.use_date() << " "
      << profile.language_code() << std::endl;
 

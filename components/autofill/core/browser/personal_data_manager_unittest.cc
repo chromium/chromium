@@ -4827,40 +4827,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-// Tests that all the non settings origins of autofill profiles are cleared even
-// if sync is disabled.
-TEST_F(
-    PersonalDataManagerTest,
-    SyncServiceInitializedWithAutofillDisabled_ClearProfileNonSettingsOrigins) {
-  // Create a profile with a non-settings, non-empty origin.
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion0", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  AddProfileToPersonalDataManager(profile);
-
-  // Turn off autofill profile sync.
-  syncer::UserSelectableTypeSet user_selectable_type_set =
-      sync_service_.GetUserSettings()->GetSelectedTypes();
-  user_selectable_type_set.Remove(syncer::UserSelectableType::kAutofill);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/user_selectable_type_set);
-
-  // The data should still exist.
-  ASSERT_EQ(1U, personal_data_->GetProfiles().size());
-
-  // Reload the personal data manager.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-
-  // The profile should still exist.
-  ASSERT_EQ(1U, personal_data_->GetProfiles().size());
-
-  // The profile's origin should be cleared
-  EXPECT_TRUE(personal_data_->GetProfiles()[0]->origin().empty());
-}
-
 // Tests that all the non settings origins of autofill credit cards are cleared
 // even if sync is disabled.
 TEST_F(

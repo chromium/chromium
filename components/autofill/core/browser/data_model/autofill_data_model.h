@@ -41,22 +41,15 @@ class AutofillDataModel : public FormGroup {
     SERVER = 1,
   };
 
-  AutofillDataModel(const std::string& guid, const std::string& origin);
+  explicit AutofillDataModel(const std::string& guid);
   ~AutofillDataModel() override;
 
   // Calculates the number of days since the model was last used by subtracting
   // the model's last recent |use_date_| from the |current_time|.
   int GetDaysSinceLastUse(base::Time current_time) const;
 
-  // Returns true if the data in this model was entered directly by the user,
-  // rather than automatically aggregated.
-  bool IsVerified() const;
-
   std::string guid() const { return guid_; }
   void set_guid(const std::string& guid) { guid_ = guid; }
-
-  std::string origin() const { return origin_; }
-  void set_origin(const std::string& origin) { origin_ = origin; }
 
   size_t use_count() const { return use_count_; }
   void set_use_count(size_t count) { use_count_ = count; }
@@ -106,14 +99,6 @@ class AutofillDataModel : public FormGroup {
  private:
   // A globally unique ID for this object.
   std::string guid_;
-
-  // The origin of this data.  This should be
-  //   (a) a web URL for the domain of the form from which the data was
-  //       automatically aggregated, e.g. https://www.example.com/register,
-  //   (b) some other non-empty string, which cannot be interpreted as a web
-  //       URL, identifying the origin for non-aggregated data, or
-  //   (c) an empty string, indicating that the origin for this data is unknown.
-  std::string origin_;
 
   // The number of times this model has been used.
   size_t use_count_;

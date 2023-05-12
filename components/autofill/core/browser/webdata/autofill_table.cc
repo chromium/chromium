@@ -578,7 +578,7 @@ void BindAutofillProfileToStatement(const AutofillProfile& profile,
   s->BindInt64(index++, profile.use_count());
   s->BindInt64(index++, profile.use_date().ToTimeT());
   s->BindInt64(index++, modification_date.ToTimeT());
-  s->BindString(index++, profile.origin());
+  s->BindString(index++, "");  // Origin is deprecated
   s->BindString(index++, profile.language_code());
   s->BindString(index++, profile.profile_label());
   s->BindBool(index++, profile.disallow_settings_visible_updates());
@@ -1748,7 +1748,6 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
 
   auto profile = std::make_unique<AutofillProfile>(
       guid, AutofillProfile::Source::kLocalOrSyncable);
-  profile->set_origin(s.ColumnString(0));
   DCHECK(base::Uuid::ParseCaseInsensitive(profile->guid()).is_valid());
 
   // Get associated name info using guid.

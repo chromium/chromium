@@ -93,7 +93,6 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
     return false;
   if (!profile_to_edit_) {
     // Add the profile (will not add a duplicate).
-    profile.set_origin(autofill::kSettingsOrigin);
     if (!is_incognito())
       state()->GetPersonalDataManager()->AddProfile(profile);
     std::move(on_added_).Run(profile);
@@ -115,7 +114,6 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
     bool success = SaveFieldsToProfile(profile_to_edit_,
                                        /*ignore_errors=*/false);
     DCHECK(success);
-    profile_to_edit_->set_origin(autofill::kSettingsOrigin);
     if (!is_incognito())
       state()->GetPersonalDataManager()->UpdateProfile(*profile_to_edit_);
     state()->profile_comparator()->Invalidate(*profile_to_edit_);

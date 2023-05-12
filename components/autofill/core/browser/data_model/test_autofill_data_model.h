@@ -13,7 +13,7 @@ namespace autofill {
 
 class TestAutofillDataModel : public AutofillDataModel {
  public:
-  TestAutofillDataModel(const std::string& guid, const std::string& origin);
+  explicit TestAutofillDataModel(const std::string& guid);
   TestAutofillDataModel(const std::string& guid,
                         size_t use_count,
                         base::Time use_date);

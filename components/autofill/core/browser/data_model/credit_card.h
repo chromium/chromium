@@ -124,6 +124,9 @@ class CreditCard : public AutofillDataModel {
   CreditCard& operator=(CreditCard&& credit_card);
   ~CreditCard() override;
 
+  std::string origin() const { return origin_; }
+  void set_origin(const std::string& origin) { origin_ = origin; }
+
   // Returns a version of |number| that has any separator characters removed.
   static const std::u16string StripSeparators(const std::u16string& number);
 
@@ -249,6 +252,10 @@ class CreditCard : public AutofillDataModel {
   // Usage metadata (use count, use date, modification date) are NOT compared.
   bool operator==(const CreditCard& credit_card) const;
   bool operator!=(const CreditCard& credit_card) const;
+
+  // Returns true if the data in this model was entered directly by the user,
+  // rather than automatically aggregated.
+  bool IsVerified() const;
 
   // How this card is stored.
   RecordType record_type() const { return record_type_; }
@@ -450,6 +457,14 @@ class CreditCard : public AutofillDataModel {
 
   // Sets the name_on_card_ value based on the saved name parts.
   void SetNameOnCardFromSeparateParts();
+
+  // The origin of this data.  This should be
+  //   (a) a web URL for the domain of the form from which the data was
+  //       automatically aggregated, e.g. https://www.example.com/register,
+  //   (b) some other non-empty string, which cannot be interpreted as a web
+  //       URL, identifying the origin for non-aggregated data, or
+  //   (c) an empty string, indicating that the origin for this data is unknown.
+  std::string origin_;
 
   // See enum definition above.
   RecordType record_type_;

@@ -181,9 +181,7 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     // filtering.
     source = autofill::AutofillProfile::Source::kLocalOrSyncable;
   }
-  autofill::AutofillProfile profile(source);
-  profile.set_origin(kSettingsOrigin);
-  return profile;
+  return autofill::AutofillProfile(source);
 }
 
 }  // namespace
@@ -327,7 +325,6 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     profile.set_language_code(*address->language_code);
 
   if (use_existing_profile) {
-    profile.set_origin(kSettingsOrigin);
     personal_data->UpdateProfile(profile);
   } else {
     profile.FinalizeAfterImport();

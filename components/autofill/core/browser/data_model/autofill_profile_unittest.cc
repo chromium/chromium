@@ -46,7 +46,6 @@ std::u16string GetSuggestionLabel(AutofillProfile* profile) {
 
 void SetupTestProfile(AutofillProfile& profile) {
   profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  profile.set_origin(kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1031,14 +1030,12 @@ TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   SetupTestProfile(a);
 
   // Create an identical profile except that the new profile:
-  //   (1) Has a different origin,
-  //   (2) Has a different address line 2,
-  //   (3) Lacks a company name,
-  //   (4) Has a different full name, and
-  //   (5) Has a language code.
+  //   (1) Has a different address line 2,
+  //   (2) Lacks a company name,
+  //   (3) Has a different full name, and
+  //   (4) Has a language code.
   AutofillProfile b = a;
   b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  b.set_origin(kSettingsOrigin);
   b.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LINE2, u"Unit 5, area 51",
                                      VerificationStatus::kObserved);
   b.SetRawInfoWithVerificationStatus(COMPANY_NAME, std::u16string(),
@@ -1052,7 +1049,6 @@ TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
 
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
   // Merge has modified profile a, the validation is not updated.
-  EXPECT_EQ(kSettingsOrigin, a.origin());
   EXPECT_EQ("Unit 5, area 51",
             base::UTF16ToUTF8(a.GetRawInfo(ADDRESS_HOME_LINE2)));
   EXPECT_EQ(u"Fox", a.GetRawInfo(COMPANY_NAME));

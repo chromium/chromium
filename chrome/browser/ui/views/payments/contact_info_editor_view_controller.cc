@@ -146,7 +146,6 @@ void ContactInfoEditorViewController::PopulateProfile(
         state()->GetApplicationLocale(),
         autofill::VerificationStatus::kUserVerified);
   }
-  profile->set_origin(autofill::kSettingsOrigin);
 }
 
 bool ContactInfoEditorViewController::GetSheetId(DialogViewID* sheet_id) {
