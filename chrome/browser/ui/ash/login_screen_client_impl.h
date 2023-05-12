@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
@@ -24,7 +25,8 @@ class LoginAuthRecorder;
 
 // Handles method calls sent from ash to chrome. Also sends messages from chrome
 // to ash.
-class LoginScreenClientImpl : public ash::LoginScreenClient {
+class LoginScreenClientImpl : public ash::LoginScreenClient,
+                              public user_manager::UserManager::Observer {
  public:
   // Handles method calls coming from ash into chrome.
   class Delegate {
@@ -130,6 +132,9 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   void OnSystemTrayBubbleShown() override;
   void OnLoginScreenShown() override;
   views::Widget* GetLoginWindowWidget() override;
+
+  // user_manager::UserManager::Observer:
+  void OnUserImageChanged(const user_manager::User& user) override;
 
  private:
   void SetPublicSessionKeyboardLayout(const AccountId& account_id,

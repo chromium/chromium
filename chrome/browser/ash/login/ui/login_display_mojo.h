@@ -6,15 +6,13 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_MOJO_H_
 
 #include "chrome/browser/ash/login/ui/login_display.h"
-#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
 // Interface used by UI-agnostic code to send messages to views-based login
 // screen.
 // TODO(estade): rename to LoginDisplayAsh.
-class LoginDisplayMojo : public LoginDisplay,
-                         public user_manager::UserManager::Observer {
+class LoginDisplayMojo : public LoginDisplay {
  public:
   LoginDisplayMojo();
 
@@ -22,9 +20,6 @@ class LoginDisplayMojo : public LoginDisplay,
   LoginDisplayMojo& operator=(const LoginDisplayMojo&) = delete;
 
   ~LoginDisplayMojo() override;
-
-  // user_manager::UserManager::Observer:
-  void OnUserImageChanged(const user_manager::User& user) override;
 };
 
 }  // namespace ash
