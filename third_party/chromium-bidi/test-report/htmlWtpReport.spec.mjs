@@ -96,6 +96,10 @@ describe('HTML WPT reporter', () => {
                   status: 'FAIL',
                   message: 'some failure',
                 },
+                {
+                  name: 'sub_3&<>\'"/',
+                  status: 'PASS',
+                },
               ],
               status: 'OK',
             },
@@ -119,6 +123,12 @@ describe('HTML WPT reporter', () => {
           path: '/a/b/c.py/sub_2',
           name: 'sub_2',
           status: 'FAIL',
+        },
+        {
+          message: null,
+          name: 'sub_3&<>\'"/',
+          path: '/a/b/c.py/sub_3&amp;&lt;&gt;&#39;&quot;&#47;',
+          status: 'PASS',
         },
         {
           message: null,
@@ -146,6 +156,12 @@ describe('HTML WPT reporter', () => {
         },
         {
           message: null,
+          path: '/a/b/c/d.py/sub_3&amp;&lt;&gt;&#39;&quot;&#47;',
+          name: 'sub_3&<>\'"/',
+          status: 'PASS',
+        },
+        {
+          message: null,
           path: '/a/b/c/e.py',
           name: null,
           status: 'PASS',
@@ -163,8 +179,8 @@ describe('HTML WPT reporter', () => {
         name: null,
         status: null,
         stat: {
-          all: 4,
-          pass: 2,
+          all: 5,
+          pass: 3,
         },
         children: [
           {
@@ -173,8 +189,8 @@ describe('HTML WPT reporter', () => {
             name: null,
             status: null,
             stat: {
-              all: 3,
-              pass: 2,
+              all: 4,
+              pass: 3,
             },
             children: [
               {
@@ -183,8 +199,8 @@ describe('HTML WPT reporter', () => {
                 name: null,
                 status: null,
                 stat: {
-                  all: 2,
-                  pass: 1,
+                  all: 3,
+                  pass: 2,
                 },
                 children: [
                   {
@@ -198,6 +214,12 @@ describe('HTML WPT reporter', () => {
                     path: '/a/b/c/d.py/sub_2',
                     name: 'sub_2',
                     status: 'FAIL',
+                  },
+                  {
+                    message: null,
+                    path: '/a/b/c/d.py/sub_3&amp;&lt;&gt;&#39;&quot;&#47;',
+                    name: 'sub_3&<>\'"/',
+                    status: 'PASS',
                   },
                 ],
               },

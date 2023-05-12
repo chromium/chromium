@@ -36,7 +36,7 @@ export function flattenSingleTest(test) {
     ];
   }
   return test.subtests.map((sub) => ({
-    path: `${test.test}/${sub.name}`,
+    path: `${test.test}/${escapeHtml(sub.name)}`,
     name: sub.name,
     status: sub.status,
     message: sub.message ?? null,
