@@ -951,6 +951,21 @@
             ]
         }
     ],
+    "AutoDisableAccessibilityV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutoDisableAccessibilityV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutocorrectByDefault": [
         {
             "platforms": [
