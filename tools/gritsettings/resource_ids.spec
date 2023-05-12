@@ -602,7 +602,7 @@
     "structures": [2800],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/test/data/webui/resources.grd": {
-    "META": {"sizes": {"includes": [1400],}},
+    "META": {"sizes": {"includes": [1500],}},
     "includes": [2810],
   },
   # END chrome/ miscellaneous section.
