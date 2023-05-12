@@ -141,6 +141,7 @@ public class FeatureList {
     @VisibleForTesting
     public static void setTestValues(TestValues testFeatures) {
         sTestFeatures = testFeatures;
+        ResettersForTesting.register(() -> sTestFeatures = null);
     }
 
     /**
