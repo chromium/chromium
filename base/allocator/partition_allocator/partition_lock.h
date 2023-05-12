@@ -66,6 +66,9 @@ class PA_LOCKABLE Lock {
 
   void Release() PA_UNLOCK_FUNCTION() {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    LiftThreadIsolationScope lift_thread_isolation_restrictions;
+#endif
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
