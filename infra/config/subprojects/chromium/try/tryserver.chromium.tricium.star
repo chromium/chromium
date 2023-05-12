@@ -62,6 +62,7 @@ try_.builder(
 try_.builder(
     name = "linux-chromeos-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    builderless = False,
     os = os.LINUX_DEFAULT,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -69,6 +70,7 @@ try_.builder(
 try_.builder(
     name = "linux-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    builderless = False,
     os = os.LINUX_DEFAULT,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
