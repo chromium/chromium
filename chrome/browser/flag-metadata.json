@@ -4343,7 +4343,7 @@
   {
     "name": "hidden-network-migration",
     "owners": [ "chadduffin", "hsuregan", "cros-connectivity@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 116
   },
   {
     "name": "hide-non-displayable-account-email",
