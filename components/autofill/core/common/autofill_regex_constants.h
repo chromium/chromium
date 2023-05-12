@@ -179,6 +179,10 @@ inline constexpr char16_t kStateRe[] =
     u"|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))"  // tr
     u"|^시[·・]?도"                                                   // ko-KR
     u"|provinci";                                                     // id
+inline constexpr char16_t kLandmarkRe[] =
+    u"landmark"
+    u"|(?:ponto|complemento).*referência"  // pt-BR, pt-PT
+    u"|punto.*referencia";                 // es
 
 /////////////////////////////////////////////////////////////////////////////
 // search_field.cc
