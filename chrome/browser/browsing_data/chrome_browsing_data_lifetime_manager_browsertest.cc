@@ -89,7 +89,7 @@ class ChromeBrowsingDataLifetimeManagerTest
 
   void SetUpOnMainThread() override {
     BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();
-    GetProfile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+    GetProfile()->GetPrefs()->Set(syncer::prefs::internal::kSyncManaged,
                                   base::Value(true));
   }
 
@@ -139,7 +139,7 @@ class ChromeBrowsingDataLifetimeManagerScheduledRemovalTest
     if (GetParam() == BrowserType::Incognito)
       UseIncognitoBrowser();
 #endif
-    GetProfile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+    GetProfile()->GetPrefs()->Set(syncer::prefs::internal::kSyncManaged,
                                   base::Value(true));
   }
 };

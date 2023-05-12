@@ -456,7 +456,7 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
 // therefore being left unset.
 TEST_F(SyncServiceImplStartupTest, StartRecoverDatatypePrefs) {
   // Clear the datatype preference fields (simulating bug 154940).
-  pref_service()->ClearPref(prefs::kSyncKeepEverythingSynced);
+  pref_service()->ClearPref(prefs::internal::kSyncKeepEverythingSynced);
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     pref_service()->ClearPref(SyncPrefs::GetPrefNameForTypeForTesting(type));
   }
@@ -492,7 +492,7 @@ TEST_F(SyncServiceImplStartupTest, StartDontRecoverDatatypePrefs) {
 TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   // Sync was previously enabled, but a policy was set while Chrome wasn't
   // running.
-  pref_service()->SetBoolean(prefs::kSyncManaged, true);
+  pref_service()->SetBoolean(prefs::internal::kSyncManaged, true);
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
 
@@ -550,7 +550,7 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 
   // The service should stop when switching to managed mode.
-  pref_service()->SetBoolean(prefs::kSyncManaged, true);
+  pref_service()->SetBoolean(prefs::internal::kSyncManaged, true);
   // Give re-startup a chance to happen (it shouldn't!).
   base::RunLoop().RunUntilIdle();
   // Sync was disabled due to the policy, setting SyncRequested to false and
@@ -569,7 +569,7 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   // When switching back to unmanaged, Sync-the-transport should start up
   // automatically, which causes (re)creation of SyncEngine and
   // DataTypeManager.
-  pref_service()->SetBoolean(prefs::kSyncManaged, false);
+  pref_service()->SetBoolean(prefs::internal::kSyncManaged, false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(sync_service()->IsEngineInitialized());

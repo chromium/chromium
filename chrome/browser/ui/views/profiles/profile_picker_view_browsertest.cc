@@ -1630,8 +1630,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   Profile* profile_being_created = StartDiceSignIn();
 
   // Set the device as managed in prefs.
-  profile_being_created->GetPrefs()->SetBoolean(syncer::prefs::kSyncManaged,
-                                                true);
+  profile_being_created->GetPrefs()->SetBoolean(
+      syncer::prefs::internal::kSyncManaged, true);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
 

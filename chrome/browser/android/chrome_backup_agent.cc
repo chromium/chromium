@@ -22,15 +22,15 @@ static_assert(46 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it here");
 const char* backed_up_preferences_[] = {
     autofill::prefs::kAutofillWalletImportEnabled,
-    syncer::prefs::kSyncKeepEverythingSynced,
-    syncer::prefs::kSyncAutofill,
-    syncer::prefs::kSyncBookmarks,
-    syncer::prefs::kSyncPasswords,
-    syncer::prefs::kSyncPreferences,
-    syncer::prefs::kSyncReadingList,
-    syncer::prefs::kSyncSavedTabGroups,
-    syncer::prefs::kSyncTabs,
-    syncer::prefs::kSyncTypedUrls,
+    syncer::prefs::internal::kSyncKeepEverythingSynced,
+    syncer::prefs::internal::kSyncAutofill,
+    syncer::prefs::internal::kSyncBookmarks,
+    syncer::prefs::internal::kSyncPasswords,
+    syncer::prefs::internal::kSyncPreferences,
+    syncer::prefs::internal::kSyncReadingList,
+    syncer::prefs::internal::kSyncSavedTabGroups,
+    syncer::prefs::internal::kSyncTabs,
+    syncer::prefs::internal::kSyncTypedUrls,
 };
 
 }  // namespace

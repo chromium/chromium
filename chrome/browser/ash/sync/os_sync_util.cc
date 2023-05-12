@@ -19,25 +19,28 @@ bool MaybeMigratePreferencesForSyncSettingsCategorization(PrefService* prefs) {
   bool migrated_this_time = false;
 
   // Don't migrate more than once.
-  if (!prefs->GetBoolean(syncer::prefs::kOsSyncPrefsMigrated)) {
+  if (!prefs->GetBoolean(syncer::prefs::internal::kOsSyncPrefsMigrated)) {
     // OS sync model types get their initial state from the corresponding
     // browser model types.
-    bool sync_all = prefs->GetBoolean(syncer::prefs::kSyncKeepEverythingSynced);
-    prefs->SetBoolean(syncer::prefs::kSyncAllOsTypes, sync_all);
+    bool sync_all =
+        prefs->GetBoolean(syncer::prefs::internal::kSyncKeepEverythingSynced);
+    prefs->SetBoolean(syncer::prefs::internal::kSyncAllOsTypes, sync_all);
 
-    bool sync_apps = prefs->GetBoolean(syncer::prefs::kSyncApps);
-    prefs->SetBoolean(syncer::prefs::kSyncOsApps, sync_apps);
+    bool sync_apps = prefs->GetBoolean(syncer::prefs::internal::kSyncApps);
+    prefs->SetBoolean(syncer::prefs::internal::kSyncOsApps, sync_apps);
 
-    bool sync_preferences = prefs->GetBoolean(syncer::prefs::kSyncPreferences);
-    prefs->SetBoolean(syncer::prefs::kSyncOsPreferences, sync_preferences);
+    bool sync_preferences =
+        prefs->GetBoolean(syncer::prefs::internal::kSyncPreferences);
+    prefs->SetBoolean(syncer::prefs::internal::kSyncOsPreferences,
+                      sync_preferences);
 
     // Wallpaper requires both theme sync (called "Themes & Wallpaper" in sync
     // settings) and app sync (to actually sync the data from the wallpaper
     // app).
     bool sync_wallpaper =
-        sync_apps && prefs->GetBoolean(syncer::prefs::kSyncThemes);
+        sync_apps && prefs->GetBoolean(syncer::prefs::internal::kSyncThemes);
     prefs->SetBoolean(ash::settings::prefs::kSyncOsWallpaper, sync_wallpaper);
-    prefs->SetBoolean(syncer::prefs::kOsSyncPrefsMigrated, true);
+    prefs->SetBoolean(syncer::prefs::internal::kOsSyncPrefsMigrated, true);
     migrated_this_time = true;
   }
 

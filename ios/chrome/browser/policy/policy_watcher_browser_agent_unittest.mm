@@ -380,7 +380,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, false);
+      syncer::prefs::internal::kSyncManaged, false);
 
   // Browser Agent under test.
   // Set up the test browser and attach the browser agents.
@@ -409,7 +409,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
 
     // Update the pref.
     browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-        syncer::prefs::kSyncManaged, true);
+        syncer::prefs::internal::kSyncManaged, true);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
     EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
@@ -418,7 +418,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
 
     // Update the pref.
     browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-        syncer::prefs::kSyncManaged, false);
+        syncer::prefs::internal::kSyncManaged, false);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
     EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
@@ -431,7 +431,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, true);
+      syncer::prefs::internal::kSyncManaged, true);
 
   // Browser Agent under test.
   // Set up the test browser and attach the browser agents.
@@ -467,7 +467,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
 
     // Update the pref.
     browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-        syncer::prefs::kSyncManaged, false);
+        syncer::prefs::internal::kSyncManaged, false);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
     EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);

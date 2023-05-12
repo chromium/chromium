@@ -312,14 +312,14 @@ TEST_F(SigninUtilsTest,
   authentication_service->GrantSyncConsent(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
   chrome_browser_state_->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncFirstSetupComplete, true);
+      syncer::prefs::internal::kSyncFirstSetupComplete, true);
 
   IdentitySigninState state =
       signin::GetPrimaryIdentitySigninState(chrome_browser_state_.get());
   EXPECT_EQ(IdentitySigninStateSignedInWithSyncEnabled, state);
 
   chrome_browser_state_->GetPrefs()->ClearPref(
-      syncer::prefs::kSyncFirstSetupComplete);
+      syncer::prefs::internal::kSyncFirstSetupComplete);
 }
 
 // Regression test for crbug.com/1248042.

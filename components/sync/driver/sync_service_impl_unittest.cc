@@ -339,7 +339,7 @@ TEST_F(SyncServiceImplTest, SetupInProgress) {
 
 // Verify that disable by enterprise policy works.
 TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInit) {
-  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
   InitializeForNthSync();
@@ -372,7 +372,7 @@ class SyncServiceImplTestWithIgnoreSyncRequestedFeature
 
 TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
        DisabledByPolicyBeforeInitThenPolicyRemoved) {
-  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignIn();
 
   // To make this test more realistic, the StartBehavior is chosen depending on
@@ -394,7 +394,7 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
             service()->GetTransportState());
 
   // Remove the policy.
-  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(false));
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
   base::RunLoop().RunUntilIdle();
 
   // The transport becomes active, but sync-the-feature remains off until the
@@ -453,7 +453,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
 
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
@@ -1128,7 +1128,7 @@ TEST_F(SyncServiceImplTest,
 
 // Verify a that local sync mode isn't impacted by sync being disabled.
 TEST_F(SyncServiceImplTest, LocalBackendUnimpactedByPolicy) {
-  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(false));
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
   CreateServiceWithLocalSyncBackend();
   InitializeForNthSync();
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
@@ -1136,14 +1136,14 @@ TEST_F(SyncServiceImplTest, LocalBackendUnimpactedByPolicy) {
             service()->GetTransportState());
 
   // The transport should continue active even if kSyncManaged becomes true.
-  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
 
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
   // Setting kSyncManaged back to false should also make no difference.
-  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(false));
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
 
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,

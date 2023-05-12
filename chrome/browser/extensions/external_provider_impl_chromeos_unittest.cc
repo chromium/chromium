@@ -239,7 +239,7 @@ TEST_F(ExternalProviderImplChromeOSTest, PolicyDisabled) {
                                     signin::ConsentLevel::kSync);
 
   // Sync is dsabled by policy.
-  profile_->GetPrefs()->SetBoolean(syncer::prefs::kSyncManaged, true);
+  profile_->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
 
   TestExtensionRegistryObserver observer(registry());
 

@@ -443,12 +443,12 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
       browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
       true);
   // Start with sync prefs enabled so we can sense that they have changed.
-  prefs().SetBoolean(syncer::prefs::kSyncAutofill, true);
-  prefs().SetBoolean(syncer::prefs::kSyncPreferences, true);
-  prefs().SetBoolean(syncer::prefs::kSyncTypedUrls, true);
-  prefs().SetBoolean(syncer::prefs::kSyncTabs, true);
-  prefs().SetBoolean(syncer::prefs::kSyncSavedTabGroups, true);
-  prefs().SetBoolean(syncer::prefs::kSyncPasswords, true);
+  prefs().SetBoolean(syncer::prefs::internal::kSyncAutofill, true);
+  prefs().SetBoolean(syncer::prefs::internal::kSyncPreferences, true);
+  prefs().SetBoolean(syncer::prefs::internal::kSyncTypedUrls, true);
+  prefs().SetBoolean(syncer::prefs::internal::kSyncTabs, true);
+  prefs().SetBoolean(syncer::prefs::internal::kSyncSavedTabGroups, true);
+  prefs().SetBoolean(syncer::prefs::internal::kSyncPasswords, true);
 
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
   SetPolicyValue(policy::key::kSyncDisabled, base::Value(false));
@@ -503,17 +503,22 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
                   static_cast<int>(ActionType::kReloadPages)));
 
   bool enabled;
-  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncPreferences, &enabled));
+  ASSERT_TRUE(
+      prefs().GetBoolean(syncer::prefs::internal::kSyncPreferences, &enabled));
   EXPECT_FALSE(enabled);
-  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncTypedUrls, &enabled));
+  ASSERT_TRUE(
+      prefs().GetBoolean(syncer::prefs::internal::kSyncTypedUrls, &enabled));
   EXPECT_FALSE(enabled);
-  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncTabs, &enabled));
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::internal::kSyncTabs, &enabled));
   EXPECT_FALSE(enabled);
-  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncSavedTabGroups, &enabled));
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::internal::kSyncSavedTabGroups,
+                                 &enabled));
   EXPECT_FALSE(enabled);
-  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncAutofill, &enabled));
+  ASSERT_TRUE(
+      prefs().GetBoolean(syncer::prefs::internal::kSyncAutofill, &enabled));
   EXPECT_FALSE(enabled);
-  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncPasswords, &enabled));
+  ASSERT_TRUE(
+      prefs().GetBoolean(syncer::prefs::internal::kSyncPasswords, &enabled));
   EXPECT_FALSE(enabled);
 }
 }  // namespace enterprise_idle

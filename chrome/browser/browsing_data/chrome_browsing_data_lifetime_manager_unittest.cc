@@ -33,7 +33,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
   TestingProfile::Builder builder;
   builder.SetIsNewProfile(true);
   auto testing_profile = builder.Build();
-  testing_profile->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+  testing_profile->GetPrefs()->Set(syncer::prefs::internal::kSyncManaged,
                                    base::Value(true));
 
   content::MockBrowsingDataRemoverDelegate delegate;
@@ -131,7 +131,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   delegate.VerifyAndClearExpectations();
 
   // If sync gets disabled, the scheduled deletions should proceed as usual.
-  testing_profile->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+  testing_profile->GetPrefs()->Set(syncer::prefs::internal::kSyncManaged,
                                    base::Value(true));
 
   // Each scheduled removal is called once every lowest time_to_live_in_hours,

@@ -50,7 +50,7 @@ void SyncPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
   const base::Value* disable_sync_value =
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (disable_sync_value && disable_sync_value->GetBool()) {
-    prefs->SetValue(prefs::kSyncManaged, disable_sync_value->Clone());
+    prefs->SetValue(prefs::internal::kSyncManaged, disable_sync_value->Clone());
   }
 
   const base::Value* disabled_sync_types_value = policies.GetValue(

@@ -41,8 +41,8 @@ ChromeBookmarkClient::ChromeBookmarkClient(
     PrefService* pref_service = profile->GetPrefs();
     base::UmaHistogramBoolean(
         "ReadingList.SyncStateMatchesBookmarks",
-        pref_service->GetBoolean(syncer::prefs::kSyncReadingList) ==
-            pref_service->GetBoolean(syncer::prefs::kSyncBookmarks));
+        pref_service->GetBoolean(syncer::prefs::internal::kSyncReadingList) ==
+            pref_service->GetBoolean(syncer::prefs::internal::kSyncBookmarks));
   }
 }
 

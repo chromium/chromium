@@ -12,7 +12,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace sp = syncer::prefs;
+namespace sp = syncer::prefs::internal;
 namespace csp = ::ash::settings::prefs;
 
 class OsSyncUtilTest : public testing::Test {

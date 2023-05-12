@@ -76,8 +76,10 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   // done after the handler is set to make sure the UI can be displayed.
   ForceSignOutIfSigninDisabled();
 
+  // TODO(crbug.com/1435427): Instead of directly accessing internal sync prefs,
+  // go through proper APIs (SyncService/SyncUserSettings).
   browser_prefs_change_observer_.Add(
-      syncer::prefs::kSyncManaged,
+      syncer::prefs::internal::kSyncManaged,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
           base::Unretained(this)));
@@ -133,9 +135,11 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   BOOL syncDisabledAlertShown =
       [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
+  // TODO(crbug.com/1435427): Instead of directly accessing internal sync prefs,
+  // go through proper APIs (SyncService/SyncUserSettings).
   BOOL isSyncDisabledByAdministrator =
       browser_->GetBrowserState()->GetPrefs()->GetBoolean(
-          syncer::prefs::kSyncManaged);
+          syncer::prefs::internal::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
     SceneState* scene_state =
