@@ -17,7 +17,7 @@
 #define TRACE_RENDERER_EXTENSION_EVENT(event_name, extension_id)              \
   TRACE_EVENT("extensions", event_name,                                       \
               perfetto::protos::pbzero::ChromeTrackEvent::kRenderProcessHost, \
-              *content::RenderThread::Get(),                                  \
+              content::RenderThread::Get(),                                   \
               perfetto::protos::pbzero::ChromeTrackEvent::kChromeExtensionId, \
               ExtensionIdForTracing(extension_id))
 
