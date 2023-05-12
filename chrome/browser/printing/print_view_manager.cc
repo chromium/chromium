@@ -27,14 +27,15 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/printing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#endif
 
 using content::BrowserThread;
 
@@ -276,17 +277,15 @@ void PrintViewManager::OnDlpPrintingRestrictionsChecked(
 void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
     content::GlobalRenderFrameHostId rfh_id,
     base::OnceCallback<void(bool should_proceed)> callback) {
-  enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
+  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+      scanning_data = enterprise_connectors::ShouldAnalyzeBeforePrintPreview(
+          web_contents());
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
-  if (rfh &&
-      enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          web_contents()->GetOutermostWebContents()->GetLastCommittedURL(),
-          &scanning_data, enterprise_connectors::AnalysisConnector::PRINT)) {
+  if (rfh && scanning_data) {
     set_snapshotting_for_content_analysis();
     GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(
         &PrintViewManager::OnGotSnapshotCallback, weak_factory_.GetWeakPtr(),
-        std::move(callback), std::move(scanning_data), rfh_id));
+        std::move(callback), std::move(*scanning_data), rfh_id));
     return;
   }
 

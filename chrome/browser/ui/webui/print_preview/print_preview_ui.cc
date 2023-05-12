@@ -478,6 +478,10 @@ void PrintPreviewUI::ClearPreviewUIId() {
   id_.reset();
 }
 
+base::WeakPtr<PrintPreviewUI> PrintPreviewUI::GetWeakPointer() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PrintPreviewUI::GetPrintPreviewDataForIndex(
     int index,
     scoped_refptr<base::RefCountedMemory>* data) const {

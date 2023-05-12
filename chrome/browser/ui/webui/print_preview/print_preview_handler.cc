@@ -70,6 +70,10 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
@@ -751,8 +755,49 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   }
   ReportUserActionHistogram(user_action);
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  auto on_verdict =
+      base::BindOnce(&PrintPreviewHandler::OnVerdictByEnterprisePolicy,
+                     weak_factory_.GetWeakPtr(), user_action,
+                     std::move(settings), data, callback_id);
+
+  auto hide_preview = base::BindOnce(&PrintPreviewUI::OnHidePreviewDialog,
+                                     print_preview_ui()->GetWeakPointer());
+
+  enterprise_connectors::PrintIfAllowedByPolicy(
+      data, GetInitiator(), std::move(on_verdict), std::move(hide_preview));
+
+#else
+  FinishHandlePrint(user_action, std::move(settings), data, callback_id);
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+}
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+void PrintPreviewHandler::OnVerdictByEnterprisePolicy(
+    UserActionBuckets user_action,
+    base::Value::Dict settings,
+    scoped_refptr<base::RefCountedMemory> data,
+    const std::string& callback_id,
+    bool allowed) {
+  if (allowed) {
+    FinishHandlePrint(user_action, std::move(settings), data, callback_id);
+  } else {
+    OnPrintResult(callback_id, base::Value("NOT_ALLOWED"));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+
+void PrintPreviewHandler::FinishHandlePrint(
+    UserActionBuckets user_action,
+    base::Value::Dict settings,
+    scoped_refptr<base::RefCountedMemory> data,
+    const std::string& callback_id) {
   PrinterHandler* handler =
       GetPrinterHandler(GetPrinterTypeForUserAction(user_action));
+  if (!handler) {
+    RejectJavascriptCallback(base::Value(callback_id), base::Value());
+    return;
+  }
   handler->StartPrint(print_preview_ui()->initiator_title(),
                       std::move(settings), data,
                       base::BindOnce(&PrintPreviewHandler::OnPrintResult,

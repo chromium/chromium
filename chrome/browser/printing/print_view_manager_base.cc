@@ -75,6 +75,10 @@
 #include "chrome/browser/printing/print_job_utils_lacros.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -751,13 +755,11 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
     return;
   }
 #endif
-
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
-  if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          web_contents()->GetOutermostWebContents()->GetLastCommittedURL(),
-          &scanning_data, enterprise_connectors::AnalysisConnector::PRINT)) {
+  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+      scanning_data = enterprise_connectors::ShouldAnalyzeBeforePrintPreview(
+          web_contents());
+  if (scanning_data) {
     auto scanning_done_callback = base::BindOnce(
         &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
         weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(callback));
@@ -766,7 +768,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
         ->SnapshotForContentAnalysis(base::BindOnce(
             &PrintViewManagerBase::OnGotSnapshotCallback,
             weak_ptr_factory_.GetWeakPtr(), std::move(scanning_done_callback),
-            std::move(scanning_data), render_frame_host->GetGlobalId()));
+            std::move(*scanning_data), render_frame_host->GetGlobalId()));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
