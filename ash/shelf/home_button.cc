@@ -33,6 +33,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -432,8 +433,10 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
     cc::PaintFlags fg_flags;
     fg_flags.setAntiAlias(true);
     fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    fg_flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor));
+    fg_flags.setColor(GetColorProvider()->GetColor(
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+            : kColorAshButtonIconColor));
 
     if (controller_.IsAssistantAvailable()) {
       // active: 100% alpha, inactive: 54% alpha

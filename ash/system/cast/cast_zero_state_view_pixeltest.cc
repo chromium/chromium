@@ -50,7 +50,7 @@ TEST_F(CastZeroStateViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "cast_zero_state_view",
-      /*revision_number=*/3, detailed_view));
+      /*revision_number=*/4, detailed_view));
 }
 
 }  // namespace ash

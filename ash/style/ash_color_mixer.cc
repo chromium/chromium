@@ -155,7 +155,7 @@ void AddContentColors(ui::ColorMixer& mixer,
   mixer[kColorAshAppStateIndicatorColor] = {kColorAshTextColorPrimary};
   mixer[kColorAshAppStateIndicatorColorInactive] =
       ui::SetAlpha(kColorAshAppStateIndicatorColor, kDisabledColorOpacity);
-  mixer[kColorAshShelfHandleColor] = {cros_tokens::kIconColorSecondary};
+  mixer[kColorAshShelfHandleColor] = {cros_tokens::kCrosSysOnSurface};
   mixer[kColorAshShelfTooltipBackgroundColor] = {
       chromeos::features::IsJellyEnabled()
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)

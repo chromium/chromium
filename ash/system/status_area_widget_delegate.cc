@@ -8,6 +8,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -36,6 +37,7 @@ namespace ash {
 namespace {
 
 constexpr int kPaddingBetweenTrayItems = 8;
+constexpr int kPaddingBetweenTrayItemsTabletMode = 6;
 constexpr int kPaddingBetweenPrimaryTraySetItems = kPaddingBetweenTrayItems - 4;
 
 class StatusAreaWidgetDelegateAnimationSettings
@@ -83,6 +85,18 @@ class OverflowGradientBackground : public views::Background {
  private:
   raw_ptr<Shelf, ExperimentalAsh> shelf_;
 };
+
+int PaddingBetweenTrayItems(const bool is_in_primary_tray_set) {
+  if (is_in_primary_tray_set) {
+    return kPaddingBetweenPrimaryTraySetItems;
+  }
+
+  if (ShelfConfig::Get()->in_tablet_mode()) {
+    return kPaddingBetweenTrayItemsTabletMode;
+  }
+
+  return kPaddingBetweenTrayItems;
+}
 
 }  // namespace
 
@@ -274,8 +288,7 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
         child->GetID() == VIEW_ID_SA_DATE_TRAY ||
         child->GetID() == VIEW_ID_SA_NOTIFICATION_TRAY;
 
-    right_edge = is_in_primary_tray_set ? kPaddingBetweenPrimaryTraySetItems
-                                        : kPaddingBetweenTrayItems;
+    right_edge = PaddingBetweenTrayItems(is_in_primary_tray_set);
   }
 
   // Swap edges if alignment is not horizontal (bottom-to-top).

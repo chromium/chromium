@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dot_indicator.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -21,12 +22,14 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "skia/ext/image_operations.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -52,6 +55,8 @@ constexpr int kStatusIndicatorRadiusDip = 2;
 constexpr int kStatusIndicatorMaxSize = 10;
 constexpr int kStatusIndicatorActiveSize = 8;
 constexpr int kStatusIndicatorRunningSize = 4;
+constexpr int kStatusIndicatorActiveSizeJellyEnabled = 12;
+constexpr int kStatusIndicatorRunningSizeJellyEnabled = 6;
 constexpr int kStatusIndicatorThickness = 2;
 
 // The size of the notification indicator circle over the size of the icon.
@@ -188,8 +193,10 @@ class ShelfAppButton::AppStatusIndicatorView
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
     // Active and running indicators look a little different in the new UI.
-    flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kAppStateIndicatorColor));
+    flags.setColor(GetColorProvider()->GetColor(
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+            : kColorAshAppStateIndicatorColor));
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
     flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);
@@ -214,12 +221,21 @@ class ShelfAppButton::AppStatusIndicatorView
   }
 
   float GetStrokeLength() {
+    bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+    int status_indicator_active_size =
+        is_jelly_enabled ? kStatusIndicatorActiveSizeJellyEnabled
+                         : kStatusIndicatorActiveSize;
+    int status_indicator_running_size =
+        is_jelly_enabled ? kStatusIndicatorRunningSizeJellyEnabled
+                         : kStatusIndicatorRunningSize;
+
     if (status_change_animation_->is_animating()) {
       return status_change_animation_->CurrentValueBetween(
-          kStatusIndicatorRunningSize, kStatusIndicatorActiveSize);
+          status_indicator_running_size, status_indicator_active_size);
     }
 
-    return active_ ? kStatusIndicatorActiveSize : kStatusIndicatorRunningSize;
+    return active_ ? status_indicator_active_size
+                   : status_indicator_running_size;
   }
 
   SkAlpha GetAlpha() {

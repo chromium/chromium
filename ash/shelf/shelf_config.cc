@@ -474,7 +474,9 @@ SkColor ShelfConfig::GetShelfControlButtonColor(
     return is_in_app_ ? SK_ColorTRANSPARENT : GetDefaultShelfColor(widget);
   }
   return widget->GetColorProvider()->GetColor(
-      kColorAshControlBackgroundColorInactive);
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
+          : kColorAshControlBackgroundColorInactive);
 }
 
 SkColor ShelfConfig::GetMaximizedShelfColor(const views::Widget* widget) const {
