@@ -2917,15 +2917,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="EnterpriseCheck.NetGetJoinInformationAddress"
-    enum="BooleanEnabled" expires_after="2020-06-18">
-  <owner>rogerta@chromium.org</owner>
-  <summary>
-    Whether we could obtain the address of the NetGetJoinInformation function.
-    This check is performed once at start-up on Windows.
-  </summary>
-</histogram>
-
 <histogram name="EnterpriseCheck.OSType" enum="OsSuite"
     expires_after="2024-01-10">
   <owner>ydago@chromium.org</owner>
