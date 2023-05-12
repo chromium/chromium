@@ -133,7 +133,7 @@ source_set("unit_tests_mobile") {
   testonly = true
   sources = [
     "remote_database_manager_unittest.cc",
-    "safe_browsing_api_handler_unittest.cc",
+    "safe_browsing_api_handler_util_unittest.cc",
   ]
   deps = [
     ":remote_database_manager",

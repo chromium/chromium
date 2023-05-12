@@ -126,8 +126,9 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
         }]
       })";
     auto put_kv = [](const char* k, const char* v) {
-      if (!v)
+      if (!v) {
         return std::string();
+      }
       return base::StringPrintf(",\"%s\":\"%s\"", k, v);
     };
     json = base::StringPrintf(json.c_str(),
