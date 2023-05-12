@@ -110,7 +110,11 @@ PaintPropertyTreeBuilderFragmentContext::
 }
 
 PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
-    : composited_scrolling_preference(
+    : force_subtree_update_reasons(0),
+      has_svg_hidden_container_ancestor(false),
+      was_layout_shift_root(false),
+      global_main_thread_scrolling_reasons(0),
+      composited_scrolling_preference(
           static_cast<unsigned>(CompositedScrollingPreference::kDefault)) {}
 
 PaintPropertyTreeBuilderContext::~PaintPropertyTreeBuilderContext() {
