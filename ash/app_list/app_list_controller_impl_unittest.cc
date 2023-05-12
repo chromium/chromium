@@ -24,8 +24,10 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -50,6 +52,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -133,7 +136,8 @@ class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
 
 }  // namespace
 
-class AppListControllerImplTest : public AshTestBase {
+class AppListControllerImplTest : public AshTestBase,
+                                  public testing::WithParamInterface<bool> {
  public:
   AppListControllerImplTest() = default;
 
@@ -144,9 +148,16 @@ class AppListControllerImplTest : public AshTestBase {
   ~AppListControllerImplTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        app_list_features::kDragAndDropRefactor, GetParam());
     AshTestBase::SetUp();
     shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
     ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());
+    // Disable nested loops to avoid blocking during drag and drop sequences.
+    if (GetParam()) {
+      ShellTestApi().drag_drop_controller()->SetDisableNestedLoopForTesting(
+          true);
+    }
   }
 
   void TearDown() override {
@@ -180,12 +191,20 @@ class AppListControllerImplTest : public AshTestBase {
   int populated_item_count_ = 0;
 
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Instantiate the values in the parameterized tests. The boolean
+// determines whether to run the test with or without drag and
+// drop refactor feature enabled.
+INSTANTIATE_TEST_SUITE_P(All, AppListControllerImplTest, testing::Bool());
 
 // Tests that the AppList hides when shelf alignment changes. This necessary
 // because the AppList is shown with certain assumptions based on shelf
 // orientation.
-TEST_F(AppListControllerImplTest, AppListHiddenWhenShelfAlignmentChanges) {
+TEST_P(AppListControllerImplTest, AppListHiddenWhenShelfAlignmentChanges) {
   Shelf* const shelf = AshTestBase::GetPrimaryShelf();
   shelf->SetAlignment(ShelfAlignment::kBottom);
 
@@ -204,7 +223,7 @@ TEST_F(AppListControllerImplTest, AppListHiddenWhenShelfAlignmentChanges) {
 
 // Verifies that the dragged item has the correct focusable siblings after drag
 // (https://crbug.com/990071).
-TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
+TEST_P(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
   // Adds three items to AppsGridView.
   PopulateItem(3);
 
@@ -234,7 +253,9 @@ TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
   item2->FireMouseDragTimerForTest();
   GetEventGenerator()->MoveMouseTo(
       shelf_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(GetAppsGridView()->FireDragToShelfTimerForTest());
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    ASSERT_TRUE(GetAppsGridView()->FireDragToShelfTimerForTest());
+  }
   GetEventGenerator()->ReleaseLeftButton();
   ASSERT_EQ(1u, shelf_view->view_model()->view_size());
 
@@ -244,7 +265,7 @@ TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
   EXPECT_EQ(item3, item2->GetNextFocusableView());
 }
 
-TEST_F(AppListControllerImplTest, PageResetByTimerInTabletMode) {
+TEST_P(AppListControllerImplTest, PageResetByTimerInTabletMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   PopulateItem(30);
 
@@ -275,7 +296,7 @@ TEST_F(AppListControllerImplTest, PageResetByTimerInTabletMode) {
   EXPECT_EQ(0, apps_grid_view->pagination_model()->selected_page());
 }
 
-TEST_F(AppListControllerImplTest, PagePersistanceTabletModeTest) {
+TEST_P(AppListControllerImplTest, PagePersistanceTabletModeTest) {
   PopulateItem(30);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
@@ -297,7 +318,7 @@ TEST_F(AppListControllerImplTest, PagePersistanceTabletModeTest) {
 // Verifies that the the virtual keyboard does not get shown if the search box
 // is activated by user typing when the app list in the fullscreen state in
 // tablet mode.
-TEST_F(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
+TEST_P(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
   Shell::Get()->keyboard_controller()->SetEnableFlag(
       keyboard::KeyboardEnableFlag::kShelfEnabled);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -334,7 +355,7 @@ TEST_F(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
 // Verifies that closing notification by gesture should not dismiss the AppList.
 // (see https://crbug.com/948344)
 // TODO(crbug.com/1120501): Test is flaky on ASAN builds.
-TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
+TEST_P(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
 
   // Add one notification.
@@ -375,7 +396,7 @@ TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
 // Verifiy that when showing the launcher, the virtual keyboard dismissed before
 // will not show automatically due to the feature called "transient blur" (see
 // https://crbug.com/1057320).
-TEST_F(AppListControllerImplTest,
+TEST_P(AppListControllerImplTest,
        TransientBlurIsNotTriggeredWhenShowingLauncher) {
   // Enable animation.
   ui::ScopedAnimationDurationScaleMode non_zero_duration(
@@ -438,7 +459,7 @@ TEST_F(AppListControllerImplTest,
 // Regression test for https://crbug.com/1073548
 // Verifies that app list shown from overview after toggling tablet mode can be
 // closed.
-TEST_F(AppListControllerImplTest,
+TEST_P(AppListControllerImplTest,
        CloseAppListShownFromOverviewAfterTabletExit) {
   auto* shell = Shell::Get();
   auto* tablet_mode_controller = shell->tablet_mode_controller();
@@ -468,7 +489,7 @@ TEST_F(AppListControllerImplTest,
 // Tests that swapping out an AppListModel (simulating a profile swap with
 // multiprofile enabled) drops all references to previous folders (see
 // https://crbug.com/1130901).
-TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
+TEST_P(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
   // Add a folder, whose AppListItemList the AppListModel will observe.
   AppListModel* model = GetAppListModel();
   const std::string folder_id("folder_1");
@@ -514,9 +535,13 @@ class AppListControllerImplTestWithNotificationBadging
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppListControllerImplTestWithNotificationBadging,
+                         testing::Bool());
+
 // Tests that when an app has an update to its notification badge, the change
 // gets propagated to the corresponding AppListItemView.
-TEST_F(AppListControllerImplTestWithNotificationBadging,
+TEST_P(AppListControllerImplTestWithNotificationBadging,
        NotificationBadgeUpdateTest) {
   PopulateItem(1);
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
@@ -537,7 +562,7 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
   EXPECT_FALSE(item_view->IsNotificationIndicatorShownForTest());
 }
 
-TEST_F(AppListControllerImplTestWithNotificationBadging,
+TEST_P(AppListControllerImplTestWithNotificationBadging,
        NotificationBadgeUpdateForFolderTest) {
   std::string folder_id = "folder_1";
   AppListModel* model = GetAppListModel();
@@ -567,7 +592,7 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
   EXPECT_FALSE(folder_view->IsNotificationIndicatorShownForTest());
 }
 
-TEST_F(AppListControllerImplTestWithNotificationBadging,
+TEST_P(AppListControllerImplTestWithNotificationBadging,
        NotificationBadgeUpdateAfterAddingRemovingAppTest) {
   std::string folder_id = "folder_1";
   AppListModel* model = GetAppListModel();
@@ -600,7 +625,7 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
 
 // Verifies that the pinned app should still show after canceling the drag from
 // AppsGridView to Shelf (https://crbug.com/1021768).
-TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
+TEST_P(AppListControllerImplTest, DragItemFromAppsGridView) {
   // Turn on the tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_TRUE(IsTabletMode());
@@ -647,7 +672,7 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   EXPECT_EQ(1.0f, shelf_icon_view->layer()->opacity());
 }
 
-TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
+TEST_P(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
   std::unique_ptr<aura::Window> w2(CreateTestWindow(
       gfx::Rect(0, 0, 400, 400), aura::client::WINDOW_TYPE_POPUP));
@@ -662,7 +687,7 @@ TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
 
 // Tests that the home screen is visible after rotating the screen in overview
 // mode.
-TEST_F(AppListControllerImplTest,
+TEST_P(AppListControllerImplTest,
        HomeScreenVisibleAfterDisplayUpdateInOverview) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EnterOverview();
@@ -679,7 +704,7 @@ TEST_F(AppListControllerImplTest,
       Shell::Get()->app_list_controller()->GetHomeScreenWindow()->IsVisible());
 }
 
-TEST_F(AppListControllerImplTest, CreatePage) {
+TEST_P(AppListControllerImplTest, CreatePage) {
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
   PagedAppsGridView* apps_grid_view = GetAppsGridView();
   test::AppsGridViewTestApi test_api(apps_grid_view);
@@ -691,7 +716,7 @@ TEST_F(AppListControllerImplTest, CreatePage) {
   EXPECT_EQ(2, apps_grid_view->pagination_model()->total_pages());
 }
 
-TEST_F(AppListControllerImplTest, ShowAppListOpensBubble) {
+TEST_P(AppListControllerImplTest, ShowAppListOpensBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList(AppListShowSource::kSearchKey);
 
@@ -699,7 +724,7 @@ TEST_F(AppListControllerImplTest, ShowAppListOpensBubble) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplTest, ToggleAppListOpensBubble) {
+TEST_P(AppListControllerImplTest, ToggleAppListOpensBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ToggleAppList(GetPrimaryDisplay().id(),
                             AppListShowSource::kShelfButton,
@@ -709,7 +734,7 @@ TEST_F(AppListControllerImplTest, ToggleAppListOpensBubble) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplTest, DismissAppListClosesBubble) {
+TEST_P(AppListControllerImplTest, DismissAppListClosesBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList(AppListShowSource::kSearchKey);
 
@@ -719,7 +744,7 @@ TEST_F(AppListControllerImplTest, DismissAppListClosesBubble) {
   EXPECT_FALSE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplTest, ShowAppListDoesNotOpenBubbleInTabletMode) {
+TEST_P(AppListControllerImplTest, ShowAppListDoesNotOpenBubbleInTabletMode) {
   EnableTabletMode();
 
   auto* controller = Shell::Get()->app_list_controller();
@@ -729,7 +754,7 @@ TEST_F(AppListControllerImplTest, ShowAppListDoesNotOpenBubbleInTabletMode) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplTest, ToggleAppListDoesNotOpenBubbleInTabletMode) {
+TEST_P(AppListControllerImplTest, ToggleAppListDoesNotOpenBubbleInTabletMode) {
   EnableTabletMode();
 
   auto* controller = Shell::Get()->app_list_controller();
@@ -741,7 +766,7 @@ TEST_F(AppListControllerImplTest, ToggleAppListDoesNotOpenBubbleInTabletMode) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplTest, EnteringTabletModeClosesBubble) {
+TEST_P(AppListControllerImplTest, EnteringTabletModeClosesBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList(AppListShowSource::kSearchKey);
 
@@ -750,7 +775,7 @@ TEST_F(AppListControllerImplTest, EnteringTabletModeClosesBubble) {
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
-TEST_F(AppListControllerImplTest, WallpaperColorChangeDoesNotCrash) {
+TEST_P(AppListControllerImplTest, WallpaperColorChangeDoesNotCrash) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList(AppListShowSource::kSearchKey);
   // Simulate synced wallpaper update while bubble is open.
@@ -758,7 +783,7 @@ TEST_F(AppListControllerImplTest, WallpaperColorChangeDoesNotCrash) {
   // No crash.
 }
 
-TEST_F(AppListControllerImplTest, HideContinueSectionUpdatesPref) {
+TEST_P(AppListControllerImplTest, HideContinueSectionUpdatesPref) {
   auto* controller = Shell::Get()->app_list_controller();
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -795,8 +820,11 @@ class AppListControllerImplNotLoggedInTest : public AppListControllerImplTest {
     Shell::Get()->session_controller()->SetSessionInfo(info);
   }
 };
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppListControllerImplNotLoggedInTest,
+                         testing::Bool());
 
-TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListOnLoginScreen) {
+TEST_P(AppListControllerImplNotLoggedInTest, ToggleAppListOnLoginScreen) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ToggleAppList(GetPrimaryDisplay().id(),
                             AppListShowSource::kSearchKey,
@@ -827,7 +855,7 @@ TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListOnLoginScreen) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListOnLoginScreen) {
+TEST_P(AppListControllerImplNotLoggedInTest, ShowAppListOnLoginScreen) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList(AppListShowSource::kSearchKey);
 
@@ -852,7 +880,7 @@ TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListOnLoginScreen) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListInOobe) {
+TEST_P(AppListControllerImplNotLoggedInTest, ToggleAppListInOobe) {
   SetSessionState(session_manager::SessionState::OOBE);
   auto* controller = Shell::Get()->app_list_controller();
   controller->ToggleAppList(GetPrimaryDisplay().id(),
@@ -883,7 +911,7 @@ TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListInOobe) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListInOobe) {
+TEST_P(AppListControllerImplNotLoggedInTest, ShowAppListInOobe) {
   SetSessionState(session_manager::SessionState::OOBE);
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList(AppListShowSource::kSearchKey);
@@ -909,7 +937,7 @@ TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListInOobe) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListOnLockScreen) {
+TEST_P(AppListControllerImplNotLoggedInTest, ToggleAppListOnLockScreen) {
   SetSessionState(session_manager::SessionState::ACTIVE);
 
   auto* controller = Shell::Get()->app_list_controller();
@@ -944,7 +972,7 @@ TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListOnLockScreen) {
   EXPECT_FALSE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListOnLockScreen) {
+TEST_P(AppListControllerImplNotLoggedInTest, ShowAppListOnLockScreen) {
   SetSessionState(session_manager::SessionState::ACTIVE);
 
   auto* controller = Shell::Get()->app_list_controller();
@@ -981,7 +1009,7 @@ TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListOnLockScreen) {
   EXPECT_FALSE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListWhenInTabletMode) {
+TEST_P(AppListControllerImplNotLoggedInTest, ShowAppListWhenInTabletMode) {
   // Enable tablet mode while on login screen.
   EnableTabletMode();
 
@@ -1004,7 +1032,7 @@ TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListWhenInTabletMode) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest,
+TEST_P(AppListControllerImplNotLoggedInTest,
        FullscreenLauncherInTabletModeWhenLocked) {
   auto* controller = Shell::Get()->app_list_controller();
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
@@ -1027,7 +1055,7 @@ TEST_F(AppListControllerImplNotLoggedInTest,
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplNotLoggedInTest,
+TEST_P(AppListControllerImplNotLoggedInTest,
        FullscreenLauncherShownWhenEnteringTabletModeOnLockScreen) {
   auto* controller = Shell::Get()->app_list_controller();
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
@@ -1065,15 +1093,16 @@ class AppListControllerImplKioskTest : public AppListControllerImplTest {
     Shell::Get()->session_controller()->SetSessionInfo(info);
   }
 };
+INSTANTIATE_TEST_SUITE_P(All, AppListControllerImplKioskTest, testing::Bool());
 
-TEST_F(AppListControllerImplKioskTest, ShouldNotShowLauncherInTabletMode) {
+TEST_P(AppListControllerImplKioskTest, ShouldNotShowLauncherInTabletMode) {
   EnableTabletMode();
   auto* controller = Shell::Get()->app_list_controller();
 
   EXPECT_FALSE(controller->ShouldHomeLauncherBeVisible());
 }
 
-TEST_F(AppListControllerImplKioskTest,
+TEST_P(AppListControllerImplKioskTest,
        DoNotShowAnyAppListInClamshellModeWhenShowAppListCalled) {
   auto* controller = Shell::Get()->app_list_controller();
 
@@ -1083,7 +1112,7 @@ TEST_F(AppListControllerImplKioskTest,
   EXPECT_FALSE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplKioskTest,
+TEST_P(AppListControllerImplKioskTest,
        DoNotShowAnyAppListInTabletModeWhenShowAppListCalled) {
   EnableTabletMode();
   auto* controller = Shell::Get()->app_list_controller();
@@ -1094,7 +1123,7 @@ TEST_F(AppListControllerImplKioskTest,
   EXPECT_FALSE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplKioskTest,
+TEST_P(AppListControllerImplKioskTest,
        DoNotShowHomeLauncherInTabletModeWhenOnSessionStateChangedCalled) {
   EnableTabletMode();
   auto* controller = Shell::Get()->app_list_controller();
@@ -1104,7 +1133,7 @@ TEST_F(AppListControllerImplKioskTest,
   EXPECT_FALSE(controller->ShouldHomeLauncherBeVisible());
 }
 
-TEST_F(AppListControllerImplKioskTest,
+TEST_P(AppListControllerImplKioskTest,
        DoNotMinimizeAppWindowInTabletModeWhenGoHomeCalled) {
   // Emulation of a Kiosk app window.
   std::unique_ptr<aura::Window> w(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
@@ -1116,7 +1145,7 @@ TEST_F(AppListControllerImplKioskTest,
   EXPECT_TRUE(w->IsVisible());
 }
 
-TEST_F(AppListControllerImplKioskTest,
+TEST_P(AppListControllerImplKioskTest,
        DoNotShowAppListInTabletModeWhenPressHomeButton) {
   // Emulation of a Kiosk app window.
   std::unique_ptr<aura::Window> w(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
@@ -1129,7 +1158,7 @@ TEST_F(AppListControllerImplKioskTest,
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
 }
 
-TEST_F(AppListControllerImplKioskTest,
+TEST_P(AppListControllerImplKioskTest,
        DoNotOpenAnyAppListAfterSwitchingFromTabletMode) {
   auto* controller = Shell::Get()->app_list_controller();
   EnableTabletMode();
@@ -1179,10 +1208,13 @@ class AppListControllerWithAssistantTest : public AppListControllerImplTest {
 
   std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppListControllerWithAssistantTest,
+                         testing::Bool());
 
 // Verifies the scenario that the Assistant shortcut is triggered when the app
 // list close animation is running.
-TEST_F(AppListControllerWithAssistantTest,
+TEST_P(AppListControllerWithAssistantTest,
        TriggerAssistantKeyWhenAppListClosing) {
   // Show the Assistant and verify the app list state.
   ToggleAssistantUiWithAccelerator();
@@ -1231,7 +1263,7 @@ TEST_F(AppListControllerWithAssistantTest,
 
 // Verifies the scenario that the search key is triggered when the app list
 // close animation is running.
-TEST_F(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
+TEST_P(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
   ToggleAssistantUiWithAccelerator();
   auto* app_list_controller = Shell::Get()->app_list_controller();
   EXPECT_TRUE(app_list_controller->IsVisible());
@@ -1254,7 +1286,7 @@ TEST_F(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
   EXPECT_EQ(AssistantVisibility::kClosed, GetAssistantVisibility());
 }
 
-TEST_F(AppListControllerWithAssistantTest,
+TEST_P(AppListControllerWithAssistantTest,
        AppListWindowIsNotShowingOnTopOfOtherApps) {
   CreateAppWindow();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);

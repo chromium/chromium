@@ -297,6 +297,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     auto disabled_features = std::vector<base::test::FeatureRef>();
     if (use_drag_drop_refactor_) {
       enabled_features.push_back(app_list_features::kDragAndDropRefactor);
+    } else {
+      disabled_features.push_back(app_list_features::kDragAndDropRefactor);
     }
 
     if (folder_icon_refresh_) {
@@ -307,6 +309,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
     if (enable_shelf_party_) {
       enabled_features.push_back(features::kShelfParty);
+    } else {
+      disabled_features.push_back(features::kShelfParty);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
