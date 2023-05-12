@@ -20,4 +20,10 @@ RenderFrameHost* BrowserPluginGuestDelegate::GetProspectiveOuterDocument() {
   return nullptr;
 }
 
+base::WeakPtr<BrowserPluginGuestDelegate>
+BrowserPluginGuestDelegate::GetGuestDelegateWeakPtr() {
+  NOTREACHED();
+  return nullptr;
+}
+
 }  // namespace content

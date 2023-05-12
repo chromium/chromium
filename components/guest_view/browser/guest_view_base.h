@@ -353,6 +353,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   std::unique_ptr<content::WebContents> CreateNewGuestWindow(
       const content::WebContents::CreateParams& create_params) final;
   content::WebContents* GetOwnerWebContents() final;
+  base::WeakPtr<content::BrowserPluginGuestDelegate> GetGuestDelegateWeakPtr()
+      final;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
