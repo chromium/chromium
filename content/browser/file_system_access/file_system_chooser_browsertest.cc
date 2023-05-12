@@ -57,6 +57,10 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+#if BUILDFLAG(IS_WIN)
+    // Convert path to long format to avoid mixing long and 8.3 formats in test.
+    ASSERT_TRUE(temp_dir_.Set(base::MakeLongFilePath(temp_dir_.Take())));
+#endif  // BUILDFLAG(IS_WIN)
 
     // Register an external mount point to test support for virtual paths.
     // This maps the virtual path a native local path to make these tests work
