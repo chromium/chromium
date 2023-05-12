@@ -46,6 +46,16 @@ namespace content {
 
 namespace {
 
+// Kill-switch controlled by the field trial. When this feature is enabled,
+// PrerenderHostRegistry doesn't cancel prerendering even if query about the
+// current memory footprint fails. Now this is enabled by default as the query
+// frequently fails. Without the memory footprint check, the limit on the number
+// of ongoing prerendering requests and memory pressure events should prevent
+// excessive memory usage. See https://crbug.com/1444521 for details.
+BASE_FEATURE(kPrerender2IgnoreFailureOnMemoryFootprintQuery,
+             "Prerender2IgnoreFailureOnMemoryFootprintQuery",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsBackground(Visibility visibility) {
   // PrerenderHostRegistry treats HIDDEN and OCCLUDED as background.
   switch (visibility) {
@@ -1367,8 +1377,13 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
     return;
   }
 
-  // Stop a prerendering when we can't get the current memory usage.
+  // Stop a prerendering or give up checking the memory consumption depending on
+  // the feature flag when we can't get the current memory usage.
   if (!success) {
+    if (base::FeatureList::IsEnabled(
+            kPrerender2IgnoreFailureOnMemoryFootprintQuery)) {
+      return;
+    }
     CancelHost(frame_tree_node_id, PrerenderFinalStatus::kFailToGetMemoryUsage);
     return;
   }
