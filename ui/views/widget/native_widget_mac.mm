@@ -608,7 +608,7 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
   if (show_state == ui::SHOW_STATE_INACTIVE) {
     window_state = WindowVisibilityState::kShowInactive;
   } else if (show_state == ui::SHOW_STATE_MINIMIZED) {
-    window_state = WindowVisibilityState::kHideWindow;
+    window_state = WindowVisibilityState::kMiniaturizeWindow;
   } else if (show_state == ui::SHOW_STATE_DEFAULT) {
     window_state = delegate_->CanActivate()
                        ? window_state

@@ -721,7 +721,8 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   //  - A parent changing visibility updates child window visibility.
   //    * But only when changed via this function - ignore changes via the
   //      NSWindow API, or changes propagating out from here.
-  wants_to_be_visible_ = new_state != WindowVisibilityState::kHideWindow;
+  wants_to_be_visible_ = new_state != WindowVisibilityState::kHideWindow &&
+                         new_state != WindowVisibilityState::kMiniaturizeWindow;
 
   [show_animation_ stopAnimation];  // If set, calls OnShowAnimationComplete().
   CHECK(!show_animation_);
@@ -742,6 +743,9 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
 
     [window_ orderOut:nil];
     DCHECK(!window_visible_);
+    return;
+  } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
+    [window_ miniaturize:nil];
     return;
   }
 

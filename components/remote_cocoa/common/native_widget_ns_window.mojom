@@ -53,7 +53,9 @@ enum WindowVisibilityState {
   kShowAndActivateWindow,
   // Shows with -[NSWindow orderWindow:..]. Orders the window above its parent
   // if it has one.
-  kShowInactive
+  kShowInactive,
+  // Miniaturizes with -[NSWindow miniaturize:].
+  kMiniaturizeWindow
 };
 
 // Window transitions to animate, mirrors views::Widget::VisibilityTransition.
