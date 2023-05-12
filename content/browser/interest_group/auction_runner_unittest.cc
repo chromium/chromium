@@ -520,7 +520,8 @@ std::string MakeFilteringBidScript(int bid) {
                             bid);
 }
 
-// A bid script that always bids the same value + URL.
+// A bid script that always bids the same value + URL. If bid_currency is not
+// an empty string, it will be returned, too.
 std::string MakeConstBidScript(int bid,
                                const std::string& url,
                                const std::string& bid_currency = "USD") {
@@ -533,13 +534,19 @@ std::string MakeConstBidScript(int bid,
               });
       forDebuggingOnly.reportAdAuctionLoss(
             "https://loss.example.com/?rejectReason=${rejectReason}");
-      return {ad: {},
-              bid: %d,
-              bidCurrency: "%s",
-              render: "%s",
-              allowComponentAuction: true};
+      const bidCurrency = "%s";
+      let result = {
+        ad: {},
+        bid: %d,
+        render: "%s",
+        allowComponentAuction: true
+      };
+      if (bidCurrency.length !== 0) {
+        result.bidCurrency = bidCurrency;
+      }
+      return result;
     })",
-                            bid, bid_currency.c_str(), url.c_str());
+                            bid_currency.c_str(), bid, url.c_str());
 }
 
 // This can be appended to the standard script to override the function.
@@ -3309,6 +3316,40 @@ TEST_F(AuctionRunnerTest, BasicCurrencyRedact) {
                       /*made_highest_scoring_other_bid=*/false)));
 }
 
+TEST_F(AuctionRunnerTest, BasicCurrencyRedact2) {
+  // Make sure that if buyer currency is specified in AuctionConfig but not
+  // given by generateBid, the config currency is given to reportWin().
+  specify_all_buyer_currency_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeConstBidScript(/*bid=*/1, /*url=*/"https://ad1.com",
+                         /*bid_currency=*/"") +
+          kSimpleReportWin);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeConstBidScript(/*bid=*/2, /*url=*/"https://ad2.com",
+                         /*bid_currency=*/"") +
+          kSimpleReportWin);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      std::string(kMinimumDecisionScript) + kBasicReportResult);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  EXPECT_THAT(
+      result_.report_urls,
+      testing::UnorderedElementsAre(
+          GURL("https://reporting.example.com/2"),
+          ReportWinUrl(
+              /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
+              /*highest_scoring_other_bid=*/1,
+              /*highest_scoring_other_bid_currency=*/absl::nullopt,
+              /*made_highest_scoring_other_bid=*/false)));
+}
+
 TEST_F(AuctionRunnerTest, BasicDebug) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -3857,7 +3898,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
                "bidCurrency=USD&bid=20"),
           GURL("https://buyer-reporting.example.com/"
                "?highestScoringOtherBid=10&highestScoringOtherBidCurrency=USD&"
-               "bidCurrency=???&bid=2")));
+               "bidCurrency=USD&bid=2")));
 
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
@@ -4039,7 +4080,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
                "bidCurrency=MXN&bid=20"),
           GURL("https://buyer-reporting.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=MXN&"
-               "bidCurrency=???&bid=2")));
+               "bidCurrency=USD&bid=2")));
 
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
@@ -16526,7 +16567,7 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
 
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(ReportWinUrl(
-            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/absl::nullopt,
             /*made_highest_scoring_other_bid=*/false));
@@ -16588,7 +16629,7 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/1");
         expected_report_urls.push_back(ReportWinUrl(
-            /*bid=*/1, /*bid_currency=*/absl::nullopt,
+            /*bid=*/1, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/0,
             /*highest_scoring_other_bid_currency=*/absl::nullopt,
             /*made_highest_scoring_other_bid=*/false));
@@ -16651,7 +16692,7 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(ReportWinUrl(
-            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/absl::nullopt,
             /*made_highest_scoring_other_bid=*/false));
@@ -16793,7 +16834,7 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(ReportWinUrl(
-            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/absl::nullopt,
             /*made_highest_scoring_other_bid=*/false));
@@ -16845,7 +16886,7 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/1");
         expected_report_urls.push_back(ReportWinUrl(
-            /*bid=*/1, /*bid_currency=*/absl::nullopt,
+            /*bid=*/1, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/0,
             /*highest_scoring_other_bid_currency=*/absl::nullopt,
             /*made_highest_scoring_other_bid=*/false));
@@ -16902,7 +16943,7 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(ReportWinUrl(
-            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/absl::nullopt,
             /*made_highest_scoring_other_bid=*/false));
@@ -17023,7 +17064,7 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
       expected_report_urls.push_back(ReportWinUrl(
-          /*bid=*/2, /*bid_currency=*/absl::nullopt,
+          /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
           /*highest_scoring_other_bid=*/1,
           /*highest_scoring_other_bid_currency=*/absl::nullopt,
           /*made_highest_scoring_other_bid=*/false));
@@ -17050,7 +17091,7 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
       expected_report_urls.push_back(ReportWinUrl(
-          /*bid=*/2, /*bid_currency=*/absl::nullopt,
+          /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
           /*highest_scoring_other_bid=*/0,
           /*highest_scoring_other_bid_currency=*/absl::nullopt,
           /*made_highest_scoring_other_bid=*/false));
@@ -17078,7 +17119,7 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
       expected_report_urls.push_back(ReportWinUrl(
-          /*bid=*/2, /*bid_currency=*/absl::nullopt,
+          /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
           /*highest_scoring_other_bid=*/1,
           /*highest_scoring_other_bid_currency=*/absl::nullopt,
           /*made_highest_scoring_other_bid=*/false));

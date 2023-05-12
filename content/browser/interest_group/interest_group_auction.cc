@@ -2003,15 +2003,11 @@ InterestGroupAuction::CreateReporter(
   const InterestGroupAuction::Bid* bidder_bid =
       winner->bid->auction->top_bid()->bid.get();
   winning_bid_info.bid = bidder_bid->bid;
-  winning_bid_info.bid_currency = bidder_bid->bid_currency;
-  // We redact the bid currency if it's not a concrete currency from the config,
-  // to avoid the bidder being able to leak ~14 bits of information if the
-  // bidder currency configuration is not restrictive.
-  absl::optional<blink::AdCurrency> config_currency = PerBuyerCurrency(
+  // We redact the bid currency to just be the concrete currency from the
+  // config; passing in the currency from actual bid would permit leakage of
+  // information, if only via its absence.
+  winning_bid_info.bid_currency = PerBuyerCurrency(
       bidder_bid->interest_group->owner, *bidder_bid->auction->config_);
-  if (!config_currency.has_value()) {
-    winning_bid_info.bid_currency = absl::nullopt;
-  }
 
   winning_bid_info.ad_cost = bidder_bid->ad_cost;
   winning_bid_info.modeling_signals = bidder_bid->modeling_signals;
