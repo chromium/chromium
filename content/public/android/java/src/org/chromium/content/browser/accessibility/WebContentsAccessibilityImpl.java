@@ -655,6 +655,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     return;
                 }
 
+                // The C++ and Java instances are not fully connected until the root manager has
+                // been connected, which will happen asynchronously. Accessibility cannot be auto
+                // disabled and re-enabled when there is no root manager. See note in
+                // {@link web_contents_accessibility_android.h}.
+                if (!isRootManagerConnected()) return;
+
                 if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) {
                     mAutoDisableAccessibilityHandler.cancelDisableTimer();
                     mAutoDisableAccessibilityHandler.startDisableTimer(
