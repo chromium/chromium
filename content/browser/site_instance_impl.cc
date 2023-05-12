@@ -537,8 +537,10 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   // BrowsingInstance can script each other.
   browsing_instance_->RegisterSiteInstance(this);
 
-  if (site_info_.requires_origin_keyed_process()) {
-    // Track this origin's isolation in the current BrowsingInstance.  This is
+  if (site_info_.requires_origin_keyed_process() &&
+      !site_info_.requires_origin_keyed_process_by_default()) {
+    // Track this origin's isolation in the current BrowsingInstance, if it has
+    // received an origin-keyed process due to an explicit opt-in. This is
     // needed to consistently isolate future navigations to this origin in this
     // BrowsingInstance, even if its opt-in status changes later.
     ChildProcessSecurityPolicyImpl* policy =

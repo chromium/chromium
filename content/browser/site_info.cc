@@ -84,6 +84,7 @@ SiteInfo SiteInfo::CreateForErrorPage(
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
   return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
                   false /* requires_origin_keyed_process */,
+                  false /* requires_origin_keyed_process_by_default */,
                   false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
                   storage_partition_config, web_exposed_isolation_info,
                   is_guest,
@@ -103,14 +104,16 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
 
-  return SiteInfo(
-      SiteInstanceImpl::GetDefaultSiteURL(),
-      SiteInstanceImpl::GetDefaultSiteURL(),
-      false /* requires_origin_keyed_process */, false /* is_sandboxed */,
-      UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
-      web_exposed_isolation_info, isolation_context.is_guest(),
-      false /* does_site_request_dedicated_process_for_coop */, is_jit_disabled,
-      false /* is_pdf */, isolation_context.is_fenced());
+  return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
+                  SiteInstanceImpl::GetDefaultSiteURL(),
+                  /*requires_origin_keyed_process=*/false,
+                  /*requires_origin_keyed_process_by_default=*/false,
+                  /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
+                  storage_partition_config, web_exposed_isolation_info,
+                  isolation_context.is_guest(),
+                  /*does_site_request_dedicated_process_for_coop=*/false,
+                  is_jit_disabled, /*is_pdf=*/false,
+                  isolation_context.is_fenced());
 }
 
 // static
@@ -125,12 +128,13 @@ SiteInfo SiteInfo::CreateForGuest(
   // the guest will follow the normal process selection paths and use
   // SiteInstances with real site and lock URLs.
   return SiteInfo(
-      GURL(), GURL(), false /* requires_origin_keyed_process */,
-      false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
+      GURL(), GURL(), /*requires_origin_keyed_process=*/false,
+      /*requires_origin_keyed_process_by_default=*/false,
+      /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       partition_config, WebExposedIsolationInfo::CreateNonIsolated(),
-      true /* is_guest */,
-      false /* does_site_request_dedicated_process_for_coop */,
-      false /* is_jit_disabled */, false /* is_pdf */, false /*is_fenced*/);
+      /*is_guest=*/true,
+      /*does_site_request_dedicated_process_for_coop=*/false,
+      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
 }
 
 // static
@@ -227,6 +231,15 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
                 requested_isolation_state)
             .requires_origin_keyed_process();
   }
+  // If after the call to `DetermineOriginAgentClusterIsolation` the returned
+  // isolation state has `requires_origin_keyed_process() == true`, and if the
+  // requested `url_info` was for default isolation, then we know that
+  // `requires_origin_keyed_process` is true by default; we track that in
+  // `requires_origin_keyed_process_by_default` so that later we know not to
+  // add the isolation state to the per-BrowsingInstance tracking.
+  bool requires_origin_keyed_process_by_default =
+      requires_origin_keyed_process &&
+      url_info.requests_default_origin_agent_cluster_isolation();
 
   // If there is a COOP isolation request, propagate it to SiteInfo.
   // This will be used later when determining a suitable SiteInstance
@@ -247,6 +260,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // appropriate to disregard WebExposedIsolationInfo and override it manually
   // to what they expect the other value to be.
   return SiteInfo(site_url, lock_url, requires_origin_keyed_process,
+                  requires_origin_keyed_process_by_default,
                   url_info.is_sandboxed, url_info.unique_sandbox_id,
                   storage_partition_config.value(),
                   url_info.web_exposed_isolation_info.value_or(
@@ -265,6 +279,7 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
 SiteInfo::SiteInfo(const GURL& site_url,
                    const GURL& process_lock_url,
                    bool requires_origin_keyed_process,
+                   bool requires_origin_keyed_process_by_default,
                    bool is_sandboxed,
                    int unique_sandbox_id,
                    const StoragePartitionConfig storage_partition_config,
@@ -277,6 +292,8 @@ SiteInfo::SiteInfo(const GURL& site_url,
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       requires_origin_keyed_process_(requires_origin_keyed_process),
+      requires_origin_keyed_process_by_default_(
+          requires_origin_keyed_process_by_default),
       is_sandboxed_(is_sandboxed),
       unique_sandbox_id_(unique_sandbox_id),
       storage_partition_config_(storage_partition_config),
@@ -289,6 +306,8 @@ SiteInfo::SiteInfo(const GURL& site_url,
       is_fenced_(is_fenced) {
   DCHECK(is_sandboxed_ ||
          unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
+  DCHECK(!requires_origin_keyed_process_by_default_ ||
+         requires_origin_keyed_process_);
 }
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
 
@@ -299,6 +318,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
           /*site_url=*/GURL(),
           /*process_lock_url=*/GURL(),
           /*requires_origin_keyed_process=*/false,
+          /*requires_origin_keyed_process_by_default=*/false,
           /*is_sandboxed*/ false,
           UrlInfo::kInvalidUniqueSandboxId,
           StoragePartitionConfig::CreateDefault(browser_context),

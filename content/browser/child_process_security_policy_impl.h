@@ -549,6 +549,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   void ClearRegisteredSchemeForTesting(const std::string& scheme);
 
+  // Exposes LookupOriginIsolationState() for tests.
+  OriginAgentClusterIsolationState* LookupOriginIsolationStateForTesting(
+      const BrowsingInstanceId& browsing_instance_id,
+      const url::Origin& origin);
+
  private:
   friend class ChildProcessSecurityPolicyInProcessBrowserTest;
   friend class ChildProcessSecurityPolicyTest;

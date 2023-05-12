@@ -889,13 +889,14 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_EQ(
       ProcessLock::FromSiteInfo(SiteInfo(
           GURL("https://a.test"), GURL("https://a.test"),
-          false /* requires_origin_keyed_process */, false /* is_sandboxed */,
-          UrlInfo::kInvalidUniqueSandboxId,
+          /*requires_origin_keyed_process=*/false,
+          /*requires_origin_keyed_process_by_default=*/false,
+          /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
           StoragePartitionConfig::CreateDefault(browser_context),
-          WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
-          false /* does_site_request_dedicated_process_for_coop */,
-          false /* is_jit_disabled */, false /* is_pdf */,
-          false /*is_fenced */)),
+          WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+          /*does_site_request_dedicated_process_for_coop=*/false,
+          /*is_jit_disabled=*/false, /*is_pdf=*/false,
+          /*is_fenced=*/false)),
       policy->GetProcessLock(process2->GetID()));
 
   // Ensure also that the regular url process didn't change midway through the

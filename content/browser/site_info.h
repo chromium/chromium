@@ -137,6 +137,7 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
            bool requires_origin_keyed_process,
+           bool requires_origin_keyed_process_by_default,
            bool is_sandboxed,
            int unique_sandbox_id,
            const StoragePartitionConfig storage_partition_config,
@@ -201,6 +202,13 @@ class CONTENT_EXPORT SiteInfo {
   // in their site urls.
   bool requires_origin_keyed_process() const {
     return requires_origin_keyed_process_;
+  }
+
+  // If requires_origin_keyed_process() is true, this function indicates if the
+  // origin-keyed process is being used by default (e.g., via
+  // kOriginKeyedProcessesByDefault), rather than due to an opt-in OAC header.
+  bool requires_origin_keyed_process_by_default() const {
+    return requires_origin_keyed_process_by_default_;
   }
 
   // The following accessor is for the `is_sandboxed` flag, which is true when
@@ -357,6 +365,15 @@ class CONTENT_EXPORT SiteInfo {
   // site-level URLs that are typically used in SiteInfo include subdomains, as
   // do command-line isolated origins.
   bool requires_origin_keyed_process_ = false;
+
+  // When true, indicates that `requires_origin_keyed_process_` is true because
+  // this SiteInfo was created using origin-keyed processes by default, and not
+  // due to an opt-in header.
+  // Note: This is stored as a separate boolean instead of making
+  // requires_origin_keyed_process_ an enum due to complexity from std::tie
+  // comparisons, since we want two SiteInfos to be considered equivalent even
+  // if they differ in this boolean.
+  bool requires_origin_keyed_process_by_default_ = false;
 
   // When true, indicates this SiteInfo is for a origin-restricted-sandboxed
   // iframe.

@@ -3411,12 +3411,18 @@ void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
 
 void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
     const IsolationContext& isolation_context) {
-  // In this function we only handle opt-in requests for the cases where OAC
-  // process isolation is not enabled. Otherwise it will be handled when the
-  // origin's SiteInstance is created.
-  bool is_opt_in_requested =
-      IsOriginAgentClusterOptInRequested() &&
-      !SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
+  // Normally for explicit opt-ins the origin is tracked when we create the
+  // SiteInstance, but there are two cases where that fails. (1) If process-
+  // isolation for OAC is not enabled we need to track opt-in here (used for
+  // origin-agent-cluster-by-default), and (2) if origin-keyed processes by
+  // default is enabled, then it's possible we got here due to using a
+  // speculative RenderFrameHost. In this latter case, the opt-in header had not
+  // arrived when the SiteInstance was created, so the origin was not tracked
+  // earlier.
+  bool is_opt_in_requested = IsOriginAgentClusterOptInRequested();
+  bool explicitly_requests_origin_keyed_process =
+      is_opt_in_requested &&
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
 
   // Since opt-outs are asking not to have OAC or requires_origin_keyed_process,
   // they don't get their own SiteInstance, and so we must register their
@@ -3450,7 +3456,7 @@ void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
   policy->AddOriginIsolationStateForBrowsingInstance(
       isolation_context, origin,
       should_isolate_origin /* is_origin_agent_cluster */,
-      false /* requires_origin_keyed_process */);
+      explicitly_requests_origin_keyed_process);
 }
 
 bool NavigationRequest::IsOriginAgentClusterOptInRequested() {

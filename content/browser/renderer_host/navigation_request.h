@@ -1004,13 +1004,19 @@ class CONTENT_EXPORT NavigationRequest
   // 3) If the origin opts-out of OAC using a header, it will use a site-keyed
   // SiteInstance.
   //
+  // 4)If the origin opts-in to OAC using a header, but it is first placed in a
+  // speculative RenderFrameHost before the header is received, it creates a
+  // SiteInfo with default isolation and an origin-keyed process (by default).
+  // In this case, the origin was not tracked when the SiteInstance was created,
+  // and needs to be tracked later when the opt-in header is observed.
+  //
   // In all of these cases, this function updates the BrowsingInstance to keep
   // track of the OAC state for this NavigationRequest's origin.
   //
   // TODO(wjmaclean): Cases 1 and 2 will not be necessary once we use
   // origin-keyed SiteInstances within a site-keyed process, via
-  // SiteInstanceGroup. Case 3 will still be needed at that point, but might
-  // become simpler.
+  // SiteInstanceGroup. Cases 3 and 4 will still be needed at that point, but
+  // might become simpler.
   void AddOriginAgentClusterStateIfNecessary(
       const IsolationContext& isolation_context);
 
