@@ -645,8 +645,7 @@ function registerTest(testName, module, featureList) {
   // AboutPage has a test suite that can only succeed on official builds where
   // the is_chrome_branded build flag is enabled.
   if (testName === 'AboutPage') {
-    // TODO(b/282120688): Fix this test since it fails on "chrome/ci/linux-chromeos-chrome".
-    TEST_F(className, 'DISABLED_AllBuilds' || 'DISABLED_All', () => {
+    TEST_F(className, 'AllBuilds' || 'All', () => {
       mocha.grep('/^(?!AboutPageTest_OfficialBuild).*$/').run();
     });
 
