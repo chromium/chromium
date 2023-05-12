@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/customization/customization_document.h"
@@ -570,23 +569,6 @@ void ExistingUserController::PerformLogin(
     login_performer_ =
         std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
   }
-  if (user_context.GetAccountId().GetAccountType() ==
-          AccountType::ACTIVE_DIRECTORY &&
-      user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE &&
-      user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
-    // Try to get kerberos TGT while we have user's password typed on the pod
-    // screen. Failure to get TGT here is OK - that could mean e.g. Active
-    // Directory server is not reachable. We don't want to have user wait for
-    // the Active Directory Authentication on the pod screen.
-    // AuthPolicyCredentialsManager will be created inside the user session
-    // which would get status about last authentication and handle possible
-    // failures.
-    AuthPolicyHelper::TryAuthenticateUser(
-        user_context.GetAccountId().GetUserEmail(),
-        user_context.GetAccountId().GetObjGuid(),
-        user_context.GetKey()->GetSecret());
-  }
-
   // If plain text password is available, computes its salt, hash, and length,
   // and saves them in `user_context`. They will be saved to prefs when user
   // profile is ready.
@@ -1711,8 +1693,6 @@ void ExistingUserController::ClearActiveDirectoryState() {
       AccountType::ACTIVE_DIRECTORY) {
     return;
   }
-  // Clear authpolicyd state so nothing could leak from one user to another.
-  AuthPolicyHelper::Restart();
 }
 
 AccountId ExistingUserController::GetLastLoginAttemptAccountId() const {

@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/views_screen_locker.h"
@@ -501,18 +500,6 @@ void ScreenLocker::OnPinAttemptDone(std::unique_ptr<UserContext> user_context,
 void ScreenLocker::ContinueAuthenticate(
     std::unique_ptr<UserContext> user_context) {
   DCHECK(!user_context->IsUsingPin());
-  if (user_context->GetAccountId().GetAccountType() ==
-          AccountType::ACTIVE_DIRECTORY &&
-      user_context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
-    // Try to get kerberos TGT while we have user's password typed on the lock
-    // screen. Failure to get TGT here is OK - that could mean e.g. Active
-    // Directory server is not reachable. AuthPolicyCredentialsManager regularly
-    // checks TGT status inside the user session.
-    AuthPolicyHelper::TryAuthenticateUser(
-        user_context->GetAccountId().GetUserEmail(),
-        user_context->GetAccountId().GetObjGuid(),
-        user_context->GetKey()->GetSecret());
-  }
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ScreenLocker::AttemptUnlock, weak_factory_.GetWeakPtr(),

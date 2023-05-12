@@ -33,7 +33,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
