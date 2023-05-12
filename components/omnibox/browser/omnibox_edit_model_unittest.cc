@@ -41,6 +41,10 @@
 using metrics::OmniboxEventProto;
 using Selection = OmniboxPopupSelection;
 
+namespace ui {
+struct AXNodeData;
+}
+
 namespace {
 
 class TestOmniboxPopupView : public OmniboxPopupView {
@@ -52,6 +56,11 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void ProvideButtonFocusHint(size_t line) override {}
   void OnMatchIconUpdated(size_t match_index) override {}
   void OnDragCanceled() override {}
+  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override {}
+  void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) override {}
+  std::u16string GetAccessibleButtonTextForResult(size_t line) override {
+    return u"";
+  }
 };
 
 void OpenUrlFromEditBox(TestOmniboxEditModel* model,

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include <string>
+
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
@@ -35,6 +37,9 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void ProvideButtonFocusHint(size_t line) override {}
   void OnMatchIconUpdated(size_t match_index) override {}
   void OnDragCanceled() override {}
+  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override {}
+  void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) override {}
+  std::u16string GetAccessibleButtonTextForResult(size_t line) override;
 
   // OmniboxPopupProvider implemetation.
   void SetTextAlignment(NSTextAlignment alignment) override;

@@ -58,6 +58,11 @@ bool OmniboxPopupViewIOS::IsOpen() const {
   return [mediator_ hasResults];
 }
 
+std::u16string OmniboxPopupViewIOS::GetAccessibleButtonTextForResult(
+    size_t line) {
+  return u"";
+}
+
 OmniboxEditModel* OmniboxPopupViewIOS::model() const {
   return edit_model_;
 }
