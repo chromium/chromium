@@ -263,7 +263,7 @@ std::string SyncInvalidationsInstanceIdTokenForSuffix(int suffix) {
 }
 
 ModelTypeSet SyncInvalidationsInterestedDataTypes() {
-  return ModelTypeSet(BOOKMARKS);
+  return {BOOKMARKS};
 }
 
 DataTypeActivationRequest TestDataTypeActivationRequest(SyncMode sync_mode) {
@@ -1480,7 +1480,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   const std::string guid = local_device()->GetLocalDeviceInfo()->guid();
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
 
-  EXPECT_CALL(callback, Run(ModelTypeSet(syncer::SESSIONS)));
+  EXPECT_CALL(callback, Run(ModelTypeSet({syncer::SESSIONS})));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         EntityChangeList());
 }
