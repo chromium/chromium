@@ -47,15 +47,14 @@ export class SettingsPrivacySandboxPageElement extends
         notify: true,
       },
 
-      isPrivacySandboxRestrictedNoticeEnabled_: {
+      isPrivacySandboxRestricted_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
+        value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
     };
   }
 
-  private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
+  private isPrivacySandboxRestricted_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

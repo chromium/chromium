@@ -741,9 +741,9 @@ TEST_F(
     });
 
 TEST_F(
-    'CrSettingsPrivacySandboxPageTest',
-    'PrivacySandboxNoticeRestrictedEnabledTests', function() {
-      runMochaSuite('PrivacySandboxNoticeRestrictedEnabledTests');
+    'CrSettingsPrivacySandboxPageTest', 'PrivacySandboxRestrictedEnabledTests',
+    function() {
+      runMochaSuite('PrivacySandboxRestrictedEnabledTests');
     });
 
 TEST_F('CrSettingsPrivacySandboxPageTest', 'TopicsSubpageTests', function() {

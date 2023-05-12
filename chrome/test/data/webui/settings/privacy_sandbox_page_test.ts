@@ -140,7 +140,7 @@ suite('PrivacySandboxPageTests', function() {
   });
 });
 
-suite('PrivacySandboxNoticeRestrictedEnabledTests', function() {
+suite('PrivacySandboxRestrictedEnabledTests', function() {
   let page: SettingsPrivacySandboxPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -148,7 +148,6 @@ suite('PrivacySandboxNoticeRestrictedEnabledTests', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
-      isPrivacySandboxRestrictedNoticeEnabled: true,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -166,7 +165,7 @@ suite('PrivacySandboxNoticeRestrictedEnabledTests', function() {
     return flushTasks();
   });
 
-  // When the restricted notice is configured, ensure only measurement is shown.
+  // When the privacy sandbox is restricted, ensure only measurement is shown.
   test('privacySandboxLinkRowsNotVisible', function() {
     assertFalse(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
     assertFalse(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
