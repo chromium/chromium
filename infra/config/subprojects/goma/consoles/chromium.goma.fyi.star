@@ -61,11 +61,6 @@ luci.console_view(
             category = "rbe|win|rel",
         ),
         luci.console_view_entry(
-            builder = "goma/Win Builder Goma RBE Canary (clobber)",
-            category = "rbe|win|rel",
-            short_name = "clb",
-        ),
-        luci.console_view_entry(
             builder = "goma/Win Builder (dbg) Goma RBE Canary",
             category = "rbe|win|dbg",
         ),

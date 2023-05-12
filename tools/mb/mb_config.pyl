@@ -504,18 +504,13 @@
       # TODO(b/167942918): re-enable java goma?
 
       'Chromium Linux Goma RBE Staging': 'release_bot',
-      'Chromium Linux Goma RBE Staging (clobber)': 'release_bot',
       'Chromium Linux Goma RBE Staging (dbg)': 'debug_bot',
-      'Chromium Linux Goma RBE Staging (dbg) (clobber)': 'debug_bot',
 
       'Chromium Mac Goma RBE Staging': 'release_bot',
-      'Chromium Mac Goma RBE Staging (clobber)': 'release_bot',
       'Chromium Mac Goma RBE Staging (dbg)': 'debug_bot',
 
       'Chromium Win Goma RBE ATS Staging': 'release_bot_x86_minimal_symbols',
-      'Chromium Win Goma RBE ATS Staging (clobber)': 'release_bot_x86_minimal_symbols',
       'Chromium Win Goma RBE Staging': 'release_bot_x86_minimal_symbols',
-      'Chromium Win Goma RBE Staging (clobber)': 'release_bot_x86_minimal_symbols',
 
       'chromeos-amd64-generic-rel-goma-rbe-staging': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma',
     },
@@ -535,7 +530,6 @@
       'Win Builder Goma RBE ATS Canary': 'gpu_tests_release_bot_x86_minimal_symbols',
       'Win Builder Goma RBE ATS Latest Client': 'gpu_tests_release_bot_x86_minimal_symbols',
       'Win Builder Goma RBE Canary': 'gpu_tests_release_bot_x86_minimal_symbols',
-      'Win Builder Goma RBE Canary (clobber)': 'gpu_tests_release_bot_x86_minimal_symbols',
       'Win Builder Goma RBE Latest Client': 'gpu_tests_release_bot_x86_minimal_symbols',
 
       'android-archive-dbg-goma-rbe-ats-canary': 'android_without_codecs_debug_bot',

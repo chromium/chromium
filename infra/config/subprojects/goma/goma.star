@@ -300,27 +300,6 @@ fyi_goma_rbe_canary_builder(
 )
 
 fyi_goma_rbe_canary_builder(
-    name = "Win Builder Goma RBE Canary (clobber)",
-    builder_spec = builder_config.copy_from(
-        "ci/Win Builder",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                    "goma_use_local",
-                    "clobber",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    os = os.WINDOWS_DEFAULT,
-    goma_enable_ats = False,
-)
-
-fyi_goma_rbe_canary_builder(
     name = "Win Builder (dbg) Goma RBE ATS Canary",
     builder_spec = builder_config.copy_from(
         "ci/Win Builder (dbg)",
@@ -678,23 +657,6 @@ goma_builder(
 )
 
 goma_builder(
-    name = "Chromium Linux Goma RBE Staging (clobber)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "clobber",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-)
-
-goma_builder(
     name = "Chromium Linux Goma RBE Staging (dbg)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -703,23 +665,6 @@ goma_builder(
             apply_configs = [
                 "mb",
                 "goma_failfast",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-)
-
-goma_builder(
-    name = "Chromium Linux Goma RBE Staging (dbg) (clobber)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "clobber",
             ],
             target_bits = 64,
         ),
@@ -755,23 +700,6 @@ goma_mac_builder(
             apply_configs = [
                 "mb",
                 "goma_failfast",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-)
-
-goma_mac_builder(
-    name = "Chromium Mac Goma RBE Staging (clobber)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "clobber",
             ],
             target_bits = 64,
         ),
@@ -826,24 +754,6 @@ goma_windows_builder(
 )
 
 goma_windows_builder(
-    name = "Chromium Win Goma RBE Staging (clobber)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "clobber",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-    goma_enable_ats = False,
-)
-
-goma_windows_builder(
     name = "Chromium Win Goma RBE ATS Staging",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -852,24 +762,6 @@ goma_windows_builder(
             apply_configs = [
                 "mb",
                 "goma_failfast",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-    goma_enable_ats = True,
-)
-
-goma_windows_builder(
-    name = "Chromium Win Goma RBE ATS Staging (clobber)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "clobber",
             ],
             target_bits = 64,
         ),

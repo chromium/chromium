@@ -21,14 +21,6 @@
       "use_goma": true
     }
   },
-  "Chromium Linux Goma RBE Staging (clobber)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
   "Chromium Linux Goma RBE Staging (dbg)": {
     "gn_args": {
       "is_component_build": true,
@@ -37,23 +29,7 @@
       "use_goma": true
     }
   },
-  "Chromium Linux Goma RBE Staging (dbg) (clobber)": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "Chromium Mac Goma RBE Staging": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "Chromium Mac Goma RBE Staging (clobber)": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
@@ -79,27 +55,7 @@
       "use_goma": true
     }
   },
-  "Chromium Win Goma RBE ATS Staging (clobber)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
   "Chromium Win Goma RBE Staging": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Chromium Win Goma RBE Staging (clobber)": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,

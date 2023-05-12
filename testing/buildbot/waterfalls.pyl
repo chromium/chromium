@@ -3971,29 +3971,7 @@
           'gtest_tests': 'goma_gtests',
         },
       },
-      'Chromium Linux Goma RBE Staging (clobber)': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
       'Chromium Linux Goma RBE Staging (dbg)': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Chromium Linux Goma RBE Staging (dbg) (clobber)': {
         'mixins': [
           'linux-bionic',
         ],
@@ -4007,17 +3985,6 @@
       # Due to disk shortage on Mac, we build 'chrome' instead of 'all'.
       # See crbug.com/899425
       'Chromium Mac Goma RBE Staging': {
-        'mixins': [
-          'mac_x64',
-        ],
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Chromium Mac Goma RBE Staging (clobber)': {
         'mixins': [
           'mac_x64',
         ],
