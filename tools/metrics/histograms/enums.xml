@@ -36364,6 +36364,14 @@ Called by update_extension_histograms.py.-->
   <int value="6" label="History"/>
 </enum>
 
+<enum name="ExtensionNavigationScheme">
+  <int value="0" label="HttpOrHttps"/>
+  <int value="1" label="Chrome"/>
+  <int value="2" label="FileWithPermission"/>
+  <int value="3" label="FileWithoutPermission"/>
+  <int value="4" label="Other"/>
+</enum>
+
 <enum name="ExtensionNotificationType">
   <int value="0" label="NOTIFICATION_TYPE_SIMPLE"/>
   <int value="1" label="NOTIFICATION_TYPE_BASE_FORMAT"/>

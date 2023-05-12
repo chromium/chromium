@@ -3528,7 +3528,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.Navigation.Scheme" enum="NavigationScheme"
+<histogram name="Extensions.Navigation.Scheme" enum="ExtensionNavigationScheme"
     expires_after="2024-01-01">
   <owner>jkokatsu@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
