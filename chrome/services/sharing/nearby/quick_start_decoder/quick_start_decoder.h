@@ -45,6 +45,10 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
   void DecodeNotifySourceOfUpdateResponse(
       const std::vector<uint8_t>& data,
       DecodeNotifySourceOfUpdateResponseCallback callback) override;
+
+  void DecodeUserVerificationResult(
+      const std::vector<uint8_t>& data,
+      DecodeUserVerificationResultCallback callback) override;
   // mojom::QuickStartDecoder:
 
  private:

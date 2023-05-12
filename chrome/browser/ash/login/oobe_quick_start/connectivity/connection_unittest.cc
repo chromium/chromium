@@ -452,4 +452,34 @@ TEST_F(ConnectionTest, InitiateHandshake) {
   }
 }
 
+TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {
+  fake_quick_start_decoder_->SetUserVerificationResponse(
+      mojom::UserVerificationResult::kUserVerified, true);
+
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
+      future;
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  authenticated_connection_->WaitForUserVerification(future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(mojom::UserVerificationResult::kUserVerified, future.Get()->result);
+  EXPECT_TRUE(future.Get()->is_first_user_verification);
+}
+
+TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsEmptyIfError) {
+  fake_quick_start_decoder_->SetDecoderError(
+      mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
+      future;
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  authenticated_connection_->WaitForUserVerification(future.GetCallback());
+
+  EXPECT_FALSE(future.Get().has_value());
+}
+
 }  // namespace ash::quick_start

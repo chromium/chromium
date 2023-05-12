@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -57,6 +58,13 @@ constexpr char kWifiNetworkIsHiddenKey[] = "wifi_hidden_ssid";
 // Key in Notify Source of Update response containing bool acknowledging the
 // message.
 constexpr char kNotifySourceOfUpdateAckKey[] = "forced_update_acknowledged";
+
+// Key in UserVerificationResult containing the result
+constexpr char kUserVerificationResultKey[] = "user_verification_result";
+
+// Key in UserVerificationResult indicating if this is the first user
+// verification
+constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
 
 std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
     base::span<const uint8_t> response) {
@@ -229,6 +237,57 @@ void QuickStartDecoder::DecodeWifiCredentialsResponse(
     const std::vector<uint8_t>& data,
     DecodeWifiCredentialsResponseCallback callback) {
   DoDecodeWifiCredentialsResponse(data, std::move(callback));
+}
+
+void QuickStartDecoder::DecodeUserVerificationResult(
+    const std::vector<uint8_t>& data,
+    DecodeUserVerificationResultCallback callback) {
+  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
+      QuickStartMessage::ReadMessage(data,
+                                     QuickStartMessageType::kQuickStartPayload);
+
+  if (!message) {
+    LOG(ERROR) << "Failed to read UserVerificationResult as QuickStartMessage";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
+  }
+
+  absl::optional<int> user_verification_result_code =
+      message->GetPayload()->FindInt(kUserVerificationResultKey);
+
+  if (!user_verification_result_code.has_value()) {
+    LOG(ERROR) << "User Verification Result was not include in verification "
+                  "result message";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  mojom::UserVerificationResult user_verification_result =
+      static_cast<mojom::UserVerificationResult>(
+          user_verification_result_code.value());
+
+  if (!mojom::IsKnownEnumValue(user_verification_result)) {
+    LOG(ERROR) << "User Verification Result is an unknown status code";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  absl::optional<bool> is_first_user_verification =
+      message->GetPayload()->FindBool(kIsFirstUserVerificationKey);
+  if (!is_first_user_verification.has_value()) {
+    LOG(ERROR) << "Message does not contain key is_first_user_verification";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::UserVerificationResponse::New(user_verification_result,
+                                           is_first_user_verification.value()),
+      absl::nullopt);
 }
 
 void QuickStartDecoder::DoDecodeWifiCredentialsResponse(

@@ -40,4 +40,8 @@ interface QuickStartDecoder {
   // codes from the CBOR decoding step and from the phone.
   DecodeGetAssertionResponse(array<uint8> data) => (
     GetAssertionResponse response);
+
+  // Decode the UserVerificationResult sent from the target device.
+  DecodeUserVerificationResult(array<uint8> data) => (
+    UserVerificationResponse? response, QuickStartDecoderError? error);
 };

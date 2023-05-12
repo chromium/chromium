@@ -18,6 +18,18 @@ enum WifiSecurityType {
   kSAE = 5,
 };
 
+// These values are directly taken from Android, and reported back.
+enum UserVerificationResult {
+  kUserVerified = 0,
+  kUserNotVerified = 1,
+  kLSKFNotSet = 2,
+};
+
+struct UserVerificationResponse {
+  UserVerificationResult result;
+  bool is_first_user_verification;
+};
+
 enum QuickStartDecoderError {
   kEmptyMessage = 0,
   kUnableToReadAsJSON = 1,

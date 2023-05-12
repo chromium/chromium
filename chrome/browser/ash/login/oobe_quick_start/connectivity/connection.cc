@@ -239,6 +239,24 @@ void Connection::InitiateHandshake(const std::string& authentication_token,
   // TODO(b/234655072): Read response from phone and run callback.
 }
 
+void Connection::WaitForUserVerification(
+    AwaitUserVerificationCallback callback) {
+  // TODO(b/280604365): Only wait for user verification result if a user
+  // verification requested message was sent
+  OnUserVerificationRequested(std::move(callback));
+}
+
+void Connection::OnUserVerificationRequested(
+    AwaitUserVerificationCallback callback) {
+  ConnectionResponseCallback on_response_received =
+      base::BindOnce(&Connection::DecodeData<mojom::UserVerificationResponse>,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     &mojom::QuickStartDecoder::DecodeUserVerificationResult,
+                     std::move(callback));
+
+  nearby_connection_->Read(std::move(on_response_received));
+}
+
 template <typename T>
 void Connection::DecodeData(DecoderMethod<T> decoder_method,
                             OnDecodingCompleteCallback<T> on_decoding_complete,

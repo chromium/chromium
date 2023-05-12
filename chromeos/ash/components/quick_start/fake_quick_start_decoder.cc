@@ -5,6 +5,8 @@
 #include "fake_quick_start_decoder.h"
 
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_start {
@@ -31,6 +33,17 @@ void FakeQuickStartDecoder::DecodeWifiCredentialsResponse(
   std::move(callback).Run(std::move(credentials_), error_);
 }
 
+void FakeQuickStartDecoder::DecodeUserVerificationResult(
+    const std::vector<uint8_t>& data,
+    DecodeUserVerificationResultCallback callback) {
+  if (error_ != absl::nullopt) {
+    std::move(callback).Run(nullptr, error_);
+  } else {
+    std::move(callback).Run(std::move(user_verification_response_),
+                            absl::nullopt);
+  }
+}
+
 void FakeQuickStartDecoder::DecodeGetAssertionResponse(
     const std::vector<uint8_t>& data,
     DecodeGetAssertionResponseCallback callback) {
@@ -50,6 +63,18 @@ void FakeQuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
 void FakeQuickStartDecoder::SetExpectedData(
     std::vector<uint8_t> expected_data) {
   expected_data_ = expected_data;
+}
+
+void FakeQuickStartDecoder::SetDecoderError(
+    mojom::QuickStartDecoderError error) {
+  error_ = error;
+}
+
+void FakeQuickStartDecoder::SetUserVerificationResponse(
+    mojom::UserVerificationResult result,
+    bool is_first_user_verification) {
+  user_verification_response_ =
+      mojom::UserVerificationResponse::New(result, is_first_user_verification);
 }
 
 void FakeQuickStartDecoder::SetAssertionResponse(

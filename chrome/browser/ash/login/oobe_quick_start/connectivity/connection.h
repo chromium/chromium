@@ -128,6 +128,9 @@ class Connection
   void RequestAccountTransferAssertion(
       const std::string& challenge_b64url,
       RequestAccountTransferAssertionCallback callback) override;
+  void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
+
+  void OnUserVerificationRequested(AwaitUserVerificationCallback callback);
 
   void OnNotifySourceOfUpdateResponse(
       NotifySourceOfUpdateCallback callback,

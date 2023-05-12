@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,6 +59,8 @@ class TargetDeviceConnectionBroker {
         base::OnceCallback<void(/*ack_successful=*/bool)>;
     using RequestAccountTransferAssertionCallback =
         base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
+    using AwaitUserVerificationCallback = base::OnceCallback<void(
+        absl::optional<mojom::UserVerificationResponse>)>;
 
     // Close the connection.
     virtual void Close(
@@ -85,6 +88,10 @@ class TargetDeviceConnectionBroker {
     virtual void RequestAccountTransferAssertion(
         const std::string& challenge_b64url,
         RequestAccountTransferAssertionCallback callback) = 0;
+
+    // Wait for the user to perform verification, and return if it succeeded
+    virtual void WaitForUserVerification(
+        AwaitUserVerificationCallback callback) = 0;
 
    protected:
     AuthenticatedConnection() = default;
