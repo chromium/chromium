@@ -49,9 +49,6 @@ const CGFloat kHeaderMenuButtonInsetSides = 2;
 const CGFloat kDiscoverFeedHeaderHeight = 40;
 const CGFloat kCustomSearchEngineLabelHeight = 18;
 // * Values below are exclusive to Web Channels.
-// The width of the segmented control to toggle between feeds.
-// TODO(crbug.com/1277974): See how segments react to longer words.
-const CGFloat kHeaderSegmentWidth = 300;
 // The height and width of the header menu button. Based on the default
 // UISegmentedControl height.
 const CGFloat kButtonSize = 28;
@@ -599,8 +596,6 @@ NSInteger kFeedSymbolPointSize = 17;
     [self.segmentedControl.leadingAnchor
         constraintEqualToAnchor:self.sortButton.trailingAnchor
                        constant:kButtonHorizontalMargin],
-    [self.segmentedControl.widthAnchor
-        constraintLessThanOrEqualToConstant:kHeaderSegmentWidth],
   ]];
 
   // Set Following segment dot size.
