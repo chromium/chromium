@@ -623,6 +623,11 @@ bool ChromeUserManagerImpl::IsUserNonCryptohomeDataEphemeral(
 
 bool ChromeUserManagerImpl::IsEphemeralAccountId(
     const AccountId& account_id) const {
+  // Owner account should never be ephemeral.
+  if (account_id == GetOwnerAccountId()) {
+    return false;
+  }
+
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return GetEphemeralModeConfig().IsAccountIdIncluded(account_id) &&

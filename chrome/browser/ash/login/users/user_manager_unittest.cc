@@ -59,9 +59,12 @@ AccountId CreateDeviceLocalKioskAppAccountId(const std::string& account_id) {
       kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP));
 }
 
-}  // namespace
+constexpr char kOwnerEmail[] = "owner@example.com";
 
-static constexpr char kEmail[] = "user@example.com";
+const AccountId kOwnerAccountId =
+    AccountId::FromUserEmailGaiaId(kOwnerEmail, "1234567890");
+
+}  // namespace
 
 class UserManagerObserverTest : public user_manager::UserManager::Observer {
  public:
@@ -279,6 +282,19 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
 
   EXPECT_EQ(GetUserManagerOwnerId(), owner_account_id_at_invalid_domain_);
+}
+
+// Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
+// is a device owner account id.
+TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForOwnerAccountId) {
+  EXPECT_FALSE(IsEphemeralAccountId(kOwnerAccountId));
+
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ kOwnerAccountId.GetUserEmail());
+  RetrieveTrustedDevicePolicies();
+
+  EXPECT_FALSE(IsEphemeralAccountId(kOwnerAccountId));
 }
 
 // Tests that `UserManager` correctly parses device-wide ephemeral users policy
@@ -563,12 +579,12 @@ TEST_F(UserManagerTest, RecordOwner) {
 
   // Save a user as an owner.
   user_manager::UserManager::Get()->RecordOwner(
-      AccountId::FromUserEmail(kEmail));
+      AccountId::FromUserEmail(kOwnerEmail));
 
   // Now `GetOwnerEmail` should return the email of the user above.
   owner = user_manager::UserManager::Get()->GetOwnerEmail();
   ASSERT_TRUE(owner.has_value());
-  EXPECT_EQ(owner.value(), kEmail);
+  EXPECT_EQ(owner.value(), kOwnerEmail);
 }
 
 }  // namespace ash
