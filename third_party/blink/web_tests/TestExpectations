@@ -1845,8 +1845,10 @@ crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/popup-menu-with-scroll
 crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 
-# Popover test timeout
+# Popover test timeout/flakiness
 crbug.com/1416284 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
+crbug.com/626703 external/wpt/html/semantics/popovers/popover-hide-crash.html [ Timeout ]
+crbug.com/1443372 external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Pass Failure ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
@@ -2943,7 +2945,6 @@ crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame
 crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=RelativeUrlForCandidate [ Timeout ]
 crbug.com/626703 external/wpt/css/css-nesting/conditional-rules.html [ Failure ]
-crbug.com/626703 external/wpt/html/semantics/popovers/popover-hide-crash.html [ Timeout ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
@@ -6812,7 +6813,6 @@ crbug.com/1444049 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prere
 
 # Sheriff 2023-05-11
 crbug.com/1444592 [ Linux ] external/wpt/js-self-profiling/function-anonymous-names.https.html [ Failure ]
-crbug.com/1444626 [ Mac ] external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Failure ]
 
 # Fails on win-10-rel (only) with no stack trace or other help
 crbug.com/1444368 [ Win ] fast/selectors/specificity-overflow.html [ Crash Pass ]
