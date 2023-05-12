@@ -7339,6 +7339,12 @@
       runtime_flag: "CSSScrollSnap2",
     },
     {
+      name: "scroll-start-target",
+      longhands: ["scroll-start-target-block", "scroll-start-target-inline"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSScrollSnap2",
+    },
+    {
       name: "scroll-timeline",
       longhands: ["scroll-timeline-name", "scroll-timeline-axis", "scroll-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

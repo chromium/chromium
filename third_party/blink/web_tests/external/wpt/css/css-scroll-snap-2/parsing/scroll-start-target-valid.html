@@ -12,6 +12,11 @@
 
 <body>
   <script>
+    test_valid_value("scroll-start-target", "none");
+    test_valid_value("scroll-start-target", "auto");
+    test_valid_value("scroll-start-target", "none auto");
+    test_valid_value("scroll-start-target", "auto none", "auto");
+
     test_valid_value("scroll-start-target-block", "none");
     test_valid_value("scroll-start-target-block", "auto");
 

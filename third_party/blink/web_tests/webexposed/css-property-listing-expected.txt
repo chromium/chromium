@@ -785,6 +785,9 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-start
         scroll-start-block
         scroll-start-inline
+    scroll-start-target
+        scroll-start-target-block
+        scroll-start-target-inline
     scroll-timeline
         scroll-timeline-attachment
         scroll-timeline-axis

@@ -3349,6 +3349,46 @@ const CSSValue* ScrollStart::CSSValueFromComputedStyleInternal(
   return block_value;
 }
 
+bool ScrollStartTarget::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  CSSValue* block_value = css_parsing_utils::ConsumeScrollStartTarget(range);
+  if (!block_value) {
+    return false;
+  }
+  CSSValue* inline_value = css_parsing_utils::ConsumeScrollStartTarget(range);
+  if (!inline_value) {
+    inline_value = CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  AddProperty(scrollStartTargetShorthand().properties()[0]->PropertyID(),
+              scrollStartTargetShorthand().id(), *block_value, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(scrollStartTargetShorthand().properties()[1]->PropertyID(),
+              scrollStartTargetShorthand().id(), *inline_value, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return range.AtEnd();
+}
+
+const CSSValue* ScrollStartTarget::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  const CSSValue* block_value =
+      scrollStartTargetShorthand().properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  const CSSValue* inline_value =
+      scrollStartTargetShorthand().properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  if (To<CSSIdentifierValue>(*inline_value).GetValueID() != CSSValueID::kNone) {
+    return MakeGarbageCollected<CSSValuePair>(
+        block_value, inline_value, CSSValuePair::kDropIdenticalValues);
+  }
+  return block_value;
+}
+
 bool ScrollTimeline::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,

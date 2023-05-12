@@ -10,6 +10,12 @@
 </head>
 <body>
   <script>
+    test_invalid_value("scroll-start-target", "invalid_keyword");
+    test_invalid_value("scroll-start-target", "100px");
+    test_invalid_value("scroll-start-target", "none none none");
+    test_invalid_value("scroll-start-target", "invalid_keyword1 invalid_keyword2");
+    test_invalid_value("scroll-start-target", "100px 100px");
+
     test_invalid_value("scroll-start-target-block", "invalid_keyword");
     test_invalid_value("scroll-start-target-block", "100px");
     test_invalid_value("scroll-start-target-block", "none none");

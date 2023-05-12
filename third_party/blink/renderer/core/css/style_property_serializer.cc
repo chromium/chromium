@@ -697,6 +697,8 @@ String StylePropertySerializer::SerializeShorthand(
       return String();
     case CSSPropertyID::kScrollStart:
       return ScrollStartValue();
+    case CSSPropertyID::kScrollStartTarget:
+      return ScrollStartTargetValue();
     default:
       NOTREACHED()
           << "Shorthand property "
@@ -2256,6 +2258,31 @@ String StylePropertySerializer::ScrollStartValue() const {
   if (!(IsA<CSSIdentifierValue>(inline_value) &&
         To<CSSIdentifierValue>(*inline_value).GetValueID() ==
             CSSValueID::kStart)) {
+    list->Append(*inline_value);
+  }
+
+  return list->CssText();
+}
+
+String StylePropertySerializer::ScrollStartTargetValue() const {
+  CHECK_EQ(scrollStartTargetShorthand().length(), 2u);
+  CHECK_EQ(scrollStartTargetShorthand().properties()[0],
+           &GetCSSPropertyScrollStartTargetBlock());
+  CHECK_EQ(scrollStartTargetShorthand().properties()[1],
+           &GetCSSPropertyScrollStartTargetInline());
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  const CSSValue* block_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyScrollStartTargetBlock());
+  const CSSValue* inline_value = property_set_.GetPropertyCSSValue(
+      GetCSSPropertyScrollStartTargetInline());
+
+  DCHECK(block_value);
+  DCHECK(inline_value);
+
+  list->Append(*block_value);
+
+  if (To<CSSIdentifierValue>(*inline_value).GetValueID() != CSSValueID::kNone) {
     list->Append(*inline_value);
   }
 
