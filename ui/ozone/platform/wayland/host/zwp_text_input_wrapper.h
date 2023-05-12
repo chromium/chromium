@@ -128,6 +128,8 @@ class ZWPTextInputWrapper {
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
   virtual void SetSurroundingText(const std::string& text,
                                   const gfx::Range& selection_range) = 0;
+  virtual bool HasOffsetSupport() const = 0;
+  virtual void SetSurroundingTextOffsetUtf16(uint32_t offset_utf16) = 0;
   virtual void SetContentType(ui::TextInputType type,
                               ui::TextInputMode mode,
                               uint32_t flags,

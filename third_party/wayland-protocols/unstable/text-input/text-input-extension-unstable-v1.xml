@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="9">
+  <interface name="zcr_text_input_extension_v1" version="10">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="9">
+  <interface name="zcr_extended_text_input_v1" version="10">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -371,6 +371,25 @@
         By default, the server will assume surrounding text is supported.
       </description>
       <arg name="support" type="uint" enum="surrounding_text_support" />
+    </request>
+
+    <!-- Version 10 -->
+
+    <request name="set_surrounding_text_offset_utf16" since="10">
+      <description summary="Sets surrounding text's offset">
+        This updates UTF-16 offset of the immediately following
+        text_input::set_surrounding_text.
+
+        The value will be invalidated when the next set_surrounding_text
+        comes (i.e., if two consecutive set_surrounding_text is called,
+        the second set_surrounding_text's offset should be reset to 0).
+
+        Note: unlike other APIs, this is in "UTF-16" unit for Chrome's purpose,
+        because there's no way to convert UTF-8 offset to UTF-16 without
+        the original text, while sending whole text would cause performance
+        concerns.
+      </description>
+      <arg name="offset_utf16" type="uint"/>
     </request>
 
   </interface>

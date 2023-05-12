@@ -49,6 +49,8 @@ class MockZcrExtendedTextInput : public ServerObject {
               (const gfx::Range& range, const gfx::Rect& bounds));
   MOCK_METHOD(void, FinalizeVirtualKeyboardChanges, ());
   MOCK_METHOD(void, SetFocusReason, (uint32_t reason));
+  MOCK_METHOD(void, SetSurroundingTextSupport, (uint32_t support));
+  MOCK_METHOD(void, SetSurroundingTextOffsetUtf16, (uint32_t offset));
 };
 
 }  // namespace wl

@@ -249,6 +249,10 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
     SetUpInternal();
   }
 
+  wl::TestZcrTextInputExtensionV1::Version GetApiVersion() {
+    return GetParam().text_input_extension_version;
+  }
+
  protected:
   void SetUpInternal() {
     input_method_context_delegate_ =
@@ -289,8 +293,20 @@ using WaylandInputMethodContextOldServerTest =
 INSTANTIATE_TEST_SUITE_P(
     TextInputExtensionLatestVersion,
     WaylandInputMethodContextTest,
-    ::testing::Values(wl::ServerConfig{.use_ime_keep_selection_fix = true},
-                      wl::ServerConfig{.use_ime_keep_selection_fix = false}));
+    ::testing::Values(
+        wl::ServerConfig{
+            .text_input_extension_version =
+                wl::TestZcrTextInputExtensionV1::Version::kV8,
+            .use_ime_keep_selection_fix = true,
+        },
+        wl::ServerConfig{
+            .text_input_extension_version =
+                wl::TestZcrTextInputExtensionV1::Version::kV8,
+            .use_ime_keep_selection_fix = false,
+        },
+        wl::ServerConfig{.use_ime_keep_selection_fix = true},
+        wl::ServerConfig{.use_ime_keep_selection_fix = false}));
+
 INSTANTIATE_TEST_SUITE_P(
     TextInputExtensionV7,
     WaylandInputMethodContextOldServerTest,
@@ -513,17 +529,25 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(2800, 3200);
 
-  // The text sent as wayland protocol must be at most 4000 byte and long
-  // enough in the limitation.
-  const std::string kExpectedSentText(
-      base::UTF16ToUTF8(std::u16string(1332, u'あ')));
-  // The selection range must be relocated accordingly to the sent text.
-  constexpr gfx::Range kExpectedSentRange(1398, 2598);
+  std::string expected_sent_text;
+  gfx::Range expected_sent_range;
+  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
+    // In the old protocol, the text sent as wayland protocol must be at most
+    // 4000 byte and long enough in the limitation.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(1332, u'あ'));
+    // The selection range must be relocated accordingly to the sent text.
+    expected_sent_range = gfx::Range(1398, 2598);
+  } else {
+    // In the new protocol, the whole selection text with 500 bytes buffers are
+    // sent.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(732, u'あ'));
+    expected_sent_range = gfx::Range(498, 1698);
+  }
 
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+  PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(kExpectedSentText, kExpectedSentRange))
+                SetSurroundingText(expected_sent_text, expected_sent_range))
         .Times(1);
   });
 
@@ -537,14 +561,14 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
   connection_->Flush();
 
   PostToServerAndWait(
-      [kExpectedSentRange](wl::TestWaylandServerThread* server) {
+      [expected_sent_range](wl::TestWaylandServerThread* server) {
         auto* text_input = server->text_input_manager_v1()->text_input();
         Mock::VerifyAndClearExpectations(text_input);
 
         // Test OnDeleteSurroundingText with this input.
         zwp_text_input_v1_send_delete_surrounding_text(
-            text_input->resource(), kExpectedSentRange.start(),
-            kExpectedSentRange.length());
+            text_input->resource(), expected_sent_range.start(),
+            expected_sent_range.length());
       });
 
   EXPECT_EQ(
@@ -561,17 +585,25 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(0, 500);
 
-  // The text sent as wayland protocol must be at most 4000 byte and large
-  // enough in the limitation.
-  const std::string kExpectedSentText(
-      base::UTF16ToUTF8(std::u16string(1333, u'あ')));
-  // The selection range must be relocated accordingly to the sent text.
-  constexpr gfx::Range kExpectedSentRange(0, 1500);
+  std::string expected_sent_text;
+  gfx::Range expected_sent_range;
+  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
+    // In old protocol, the text sent as wayland protocol must be at most 4000
+    // byte and large enough in the limitation.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(1333, u'あ'));
+    // The selection range must be relocated accordingly to the sent text.
+    expected_sent_range = gfx::Range(0, 1500);
+  } else {
+    // In the new protocol, whole selection range + at most 500 bytes buffers
+    // are sent.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(666, u'あ'));
+    expected_sent_range = gfx::Range(0, 1500);
+  }
 
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+  PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(kExpectedSentText, kExpectedSentRange))
+                SetSurroundingText(expected_sent_text, expected_sent_range))
         .Times(1);
   });
 
@@ -585,14 +617,14 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
   connection_->Flush();
 
   PostToServerAndWait(
-      [kExpectedSentRange](wl::TestWaylandServerThread* server) {
+      [expected_sent_range](wl::TestWaylandServerThread* server) {
         auto* text_input = server->text_input_manager_v1()->text_input();
         Mock::VerifyAndClearExpectations(text_input);
 
         // Test OnDeleteSurroundingText with this input.
         zwp_text_input_v1_send_delete_surrounding_text(
-            text_input->resource(), kExpectedSentRange.start(),
-            kExpectedSentRange.length());
+            text_input->resource(), expected_sent_range.start(),
+            expected_sent_range.length());
       });
 
   EXPECT_EQ(
@@ -610,17 +642,25 @@ TEST_P(WaylandInputMethodContextTest,
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(4500, 5000);
 
-  // The text sent as wayland protocol must be at most 4000 byte and large
-  // enough in the limitation.
-  const std::string kExpectedSentText(
-      base::UTF16ToUTF8(std::u16string(1333, u'あ')));
-  // The selection range must be relocated accordingly to the sent text.
-  constexpr gfx::Range kExpectedSentRange(2499, 3999);
+  std::string expected_sent_text;
+  gfx::Range expected_sent_range;
+  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
+    // In the old protocol, the text sent as wayland protocol must be at most
+    // 4000 byte and large enough in the limitation.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(1333, u'あ'));
+    // The selection range must be relocated accordingly to the sent text.
+    expected_sent_range = gfx::Range(2499, 3999);
+  } else {
+    // In the new protocol, whole selection + at most 500 bytes buffers are
+    // sent.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(666, u'あ'));
+    expected_sent_range = gfx::Range(498, 1998);
+  }
 
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+  PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(kExpectedSentText, kExpectedSentRange))
+                SetSurroundingText(expected_sent_text, expected_sent_range))
         .Times(1);
   });
 
@@ -634,14 +674,14 @@ TEST_P(WaylandInputMethodContextTest,
   connection_->Flush();
 
   PostToServerAndWait(
-      [kExpectedSentRange](wl::TestWaylandServerThread* server) {
+      [expected_sent_range](wl::TestWaylandServerThread* server) {
         auto* text_input = server->text_input_manager_v1()->text_input();
         Mock::VerifyAndClearExpectations(text_input);
 
         // Test OnDeleteSurroundingText with this input.
         zwp_text_input_v1_send_delete_surrounding_text(
-            text_input->resource(), kExpectedSentRange.start(),
-            kExpectedSentRange.length());
+            text_input->resource(), expected_sent_range.start(),
+            expected_sent_range.length());
       });
 
   EXPECT_EQ(
@@ -658,29 +698,57 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(1000, 4000);
 
-  // set_surrounding_text request should be skipped when the selection range in
-  // UTF8 form is longer than 4000 byte.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(_, _))
-        .Times(0);
-  });
+  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
+    // set_surrounding_text request should be skipped when the selection range
+    // in UTF8 form is longer than 4000 byte.
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
+                  SetSurroundingText(_, _))
+          .Times(0);
+    });
 
-  input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000), range,
-                                            absl::nullopt, absl::nullopt);
-  // Predicted state in SurroundingTextTracker is reset when the range is longer
-  // than wayland message size maximum.
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      u"");
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            gfx::Range(0));
-  connection_->Flush();
+    input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000), range,
+                                              absl::nullopt, absl::nullopt);
+    // Predicted state in SurroundingTextTracker is reset when the range is
+    // longer than wayland message size maximum.
+    EXPECT_EQ(
+        input_method_context_->predicted_state_for_testing().surrounding_text,
+        u"");
+    EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+              gfx::Range(0));
+    connection_->Flush();
 
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_manager_v1()->text_input());
-  });
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      Mock::VerifyAndClearExpectations(
+          server->text_input_manager_v1()->text_input());
+    });
+  } else {
+    // In the new protocol, we can send large selection range.
+    const std::string kExpectedSentText =
+        base::UTF16ToUTF8(std::u16string(3332, u'あ'));
+    constexpr gfx::Range kExpectedSentRange(498, 9498);
+
+    PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+                            wl::TestWaylandServerThread* server) {
+      EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
+                  SetSurroundingText(kExpectedSentText, kExpectedSentRange))
+          .Times(1);
+    });
+
+    input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000), range,
+                                              absl::nullopt, absl::nullopt);
+    EXPECT_EQ(
+        input_method_context_->predicted_state_for_testing().surrounding_text,
+        text);
+    EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+              range);
+    connection_->Flush();
+
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      Mock::VerifyAndClearExpectations(
+          server->text_input_manager_v1()->text_input());
+    });
+  }
 }
 
 TEST_P(WaylandInputMethodContextTest,
@@ -719,25 +787,37 @@ TEST_P(WaylandInputMethodContextTest,
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(2800, 3200);
 
-  // The text sent as wayland protocol must be at most 4000 byte and long
-  // enough in the limitation.
-  const std::string kExpectedSentText(
-      base::UTF16ToUTF8(std::u16string(1332, u'あ')));
-  // The selection range must be relocated accordingly to the sent text.
-  constexpr gfx::Range kExpectedSentRange(1398, 2598);
+  std::string expected_sent_text;
+  gfx::Range expected_sent_range;
+  gfx::Range expected_fragment_range;
+  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
+    // In the old protocol, the text sent as wayland protocol must be at
+    // most 4000 byte and long enough in the limitation.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(1332, u'あ'));
+    // The selection range must be relocated accordingly to the sent text.
+    expected_sent_range = gfx::Range(1398, 2598);
+    expected_fragment_range = gfx::Range(1098, 1128);
+  } else {
+    // In the new protocol, whole selection range and grammar fragment are
+    // sent with at most 500 bytes buffer.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(832, u'あ'));
+    expected_sent_range = gfx::Range(798, 1998);
+    expected_fragment_range = gfx::Range(498, 528);
+  }
 
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
-                          wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(kExpectedSentText, kExpectedSentRange))
-        .Times(1);
-    EXPECT_CALL(*server->text_input_extension_v1()->extended_text_input(),
-                SetGrammarFragmentAtCursor(gfx::Range(1098, 1128), "abc"))
-        .Times(1);
-  });
+  PostToServerAndWait(
+      [expected_sent_text, expected_sent_range,
+       expected_fragment_range](wl::TestWaylandServerThread* server) {
+        EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
+                    SetSurroundingText(expected_sent_text, expected_sent_range))
+            .Times(1);
+        EXPECT_CALL(*server->text_input_extension_v1()->extended_text_input(),
+                    SetGrammarFragmentAtCursor(expected_fragment_range, "abc"))
+            .Times(1);
+      });
 
   input_method_context_->SetSurroundingText(
-      text, gfx::Range(0, 50), range,
+      text, gfx::Range(0, 5000), range,
       GrammarFragment(gfx::Range(2700, 2710), "abc"), absl::nullopt);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
@@ -755,16 +835,24 @@ TEST_P(WaylandInputMethodContextTest,
   const std::string kExpectedSentText(base::UTF16ToUTF8(text));
   constexpr gfx::Range kExpectedSentRange(60, 90);
 
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+  PostToServerAndWait([this, kExpectedSentText, kExpectedSentRange](
                           wl::TestWaylandServerThread* server) {
     // The text and range sent as wayland protocol must be same to the original
     // text and range where the original text is shorter than 4000 byte.
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
                 SetSurroundingText(kExpectedSentText, kExpectedSentRange))
         .Times(1);
-    // Note: No conversion of range for autocorrect now.
+    gfx::Range autocorrect_range;
+    if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
+      // In older protocol, the autocorrection range is not converted.
+      autocorrect_range = gfx::Range(15, 18);
+    } else {
+      // In new protocol, it is byte offsets within the surrounding text.
+      autocorrect_range = gfx::Range(45, 54);
+    }
+
     EXPECT_CALL(*server->text_input_extension_v1()->extended_text_input(),
-                SetAutocorrectInfo(gfx::Range(15, 18), gfx::Rect(10, 20)));
+                SetAutocorrectInfo(autocorrect_range, gfx::Rect(10, 20)));
   });
 
   input_method_context_->SetSurroundingText(
@@ -1132,17 +1220,27 @@ TEST_P(WaylandInputMethodContextTest,
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(4000, 4500);
 
-  // Text longer than 4000 bytes is trimmed to meet the limitation.
-  // Selection range is also adjusted by the trimmed text before sendin to Exo.
-  const std::string kExpectedSentText(
-      base::UTF16ToUTF8(std::u16string(1332, u'あ')));
-  constexpr gfx::Range kExpectedSentRange(1248, 2748);
+  std::string expected_sent_text;
+  gfx::Range expected_sent_range;
+  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
+    // In old protocol, even if the range covers, the surrounding text
+    // longer than 4000 bytes is trimmed to meet the limitation.
+    // Selection range is also adjusted by the trimmed text before sendin to
+    // Exo.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(1332, u'あ'));
+    expected_sent_range = gfx::Range(1248, 2748);
+  } else {
+    // In new protocol, the surrounding text is trimmed around selection with
+    // at most 500 bytes buffer.
+    expected_sent_text = base::UTF16ToUTF8(std::u16string(832, u'あ'));
+    expected_sent_range = gfx::Range(498, 1998);
+  }
 
   // SetSurroundingText should be called in UTF-8.
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+  PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(kExpectedSentText, kExpectedSentRange));
+                SetSurroundingText(expected_sent_text, expected_sent_range));
   });
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000), range,
                                             absl::nullopt, absl::nullopt);
@@ -1153,20 +1251,21 @@ TEST_P(WaylandInputMethodContextTest,
             range);
   connection_->Flush();
 
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+  PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    const auto expected_sent_range =
-        GetParam().use_ime_keep_selection_fix
-            ? gfx::Range(kExpectedSentRange.end(), kExpectedSentRange.start())
-            : kExpectedSentRange;
+    gfx::Range range = expected_sent_range;
+    if (GetParam().use_ime_keep_selection_fix) {
+      range =
+          gfx::Range(expected_sent_range.end(), expected_sent_range.start());
+    }
+
     zwp_text_input_v1_send_cursor_position(text_input->resource(),
-                                           expected_sent_range.start(),
-                                           expected_sent_range.end());
+                                           range.start(), range.end());
     zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
-                                         kExpectedSentText.c_str());
+                                         expected_sent_text.c_str());
   });
 
   EXPECT_TRUE(

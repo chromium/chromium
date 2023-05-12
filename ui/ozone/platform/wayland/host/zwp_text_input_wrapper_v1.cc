@@ -219,6 +219,20 @@ void ZWPTextInputWrapperV1::SetSurroundingText(
       obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
 }
 
+bool ZWPTextInputWrapperV1::HasOffsetSupport() const {
+  return extended_obj_.get() &&
+         wl::get_version_of_object(extended_obj_.get()) >=
+             ZCR_EXTENDED_TEXT_INPUT_V1_SET_SURROUNDING_TEXT_OFFSET_UTF16_SINCE_VERSION;
+}
+
+void ZWPTextInputWrapperV1::SetSurroundingTextOffsetUtf16(
+    uint32_t offset_utf16) {
+  if (HasOffsetSupport()) {
+    zcr_extended_text_input_v1_set_surrounding_text_offset_utf16(
+        extended_obj_.get(), offset_utf16);
+  }
+}
+
 void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
                                            ui::TextInputMode mode,
                                            uint32_t flags,
