@@ -402,10 +402,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_SUBTEXT},
       {"noMicrophoneConnectedText",
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_MICROPHONE_CONNECTED_TEXT},
-      {"speakOnMuteDetectionToggleTitle",
-       IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_TITLE},
-      {"speakOnMuteDetectionToggleSubtext",
-       IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_SUBTEXT},
       {"geolocationToggleTitle",
        IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_TITLE},
       {"geolocationToggleDesc",
@@ -430,8 +426,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           ash::features::IsCrosPrivacyHubV1Enabled());
   html_source->AddBoolean("showPrivacyHubFuturePage",
                           ash::features::IsCrosPrivacyHubV2Enabled());
-  html_source->AddBoolean("showSpeakOnMuteDetectionPage",
-                          ash::features::IsSpeakOnMuteEnabled());
 
   html_source->AddString(
       "smartPrivacyDesc",
@@ -448,9 +442,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("peripheralDataAccessLearnMoreURL",
                          chrome::kPeripheralDataAccessHelpURL);
-
-  html_source->AddString("speakOnMuteDetectionLearnMoreURL",
-                         chrome::kSpeakOnMuteDetectionLearnMoreURL);
 
   html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
@@ -574,8 +565,7 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(
       mojom::Subpage::kPrivacyHub,
       {{mojom::Setting::kCameraOnOff, mojom::Setting::kMicrophoneOnOff,
-        mojom::Setting::kGeolocationOnOff,
-        mojom::Setting::kSpeakOnMuteDetectionOnOff}},
+        mojom::Setting::kGeolocationOnOff}},
       generator);
 }
 

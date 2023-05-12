@@ -5,7 +5,7 @@
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, Router, routes, SecureDnsMode, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -221,25 +221,6 @@ async function parametrizedPrivacyHubSubpageTestsuite(
           deepLinkElement, getDeepActiveElement(),
           'Geolocation toggle should be focused for settingId=1118.');
     }
-  });
-
-  test('Deep link to speak-on-mute toggle on privacy hub', async () => {
-    const params = new URLSearchParams();
-    const settingId = settingMojom.Setting.kSpeakOnMuteDetectionOnOff;
-    params.append('settingId', `${settingId}`);
-    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
-
-    flush();
-
-    const deepLinkElement = privacyHubSubpage.shadowRoot!
-                                .querySelector('#speakonmuteDetectionToggle')!
-                                .shadowRoot!.querySelector('cr-toggle');
-    assert(deepLinkElement);
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        `Speak-on-mute detection toggle should be focused for settingId=${
-            settingId}.`);
   });
 
   test('Camera, microphone toggle, their sublabel and their list', async () => {

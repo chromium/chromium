@@ -470,9 +470,6 @@ const char kSmartPrivacySettingsLearnMoreURL[] =
 const char kSmbSharesLearnMoreURL[] =
     "https://support.google.com/chromebook?p=network_file_shares";
 
-const char kSpeakOnMuteDetectionLearnMoreURL[] =
-    "https://support.google.com/chromebook?p=mic-mute";
-
 const char kSuggestedContentLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=explorecontent";
 

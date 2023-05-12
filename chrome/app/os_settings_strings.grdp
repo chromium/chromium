@@ -5282,12 +5282,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_HW_MICROPHONE_TOGGLE_TOOLTIP" desc="Tooltip to display in the Privacy Hub subpage when the hardware microphone switch is engaged.">
     To turn on microphone access, turn on the physical microphone switch on your device
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable microphone from the privacy hub.">
-    Mute nudge
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    You'll get notified if you talk while your mic is muted when using certain apps, like video chat apps. Audio never leaves your device.
-  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
     Location access
   </message>
