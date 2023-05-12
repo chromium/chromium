@@ -685,7 +685,7 @@ bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(device_);
   if (supported_profiles_.empty()) {
-    constexpr uint32_t kSupportedInputFourccs[] = {
+    const std::vector<uint32_t> kSupportedInputFourccs = {
       V4L2_PIX_FMT_H264_SLICE,
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       V4L2_PIX_FMT_HEVC_SLICE,
@@ -696,8 +696,7 @@ bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(
     };
     scoped_refptr<V4L2Device> device = V4L2Device::Create();
     VideoDecodeAccelerator::SupportedProfiles profiles =
-        device->GetSupportedDecodeProfiles(std::size(kSupportedInputFourccs),
-                                           kSupportedInputFourccs);
+        device->GetSupportedDecodeProfiles(kSupportedInputFourccs);
     for (const auto& entry : profiles)
       supported_profiles_.push_back(entry.profile);
   }

@@ -620,9 +620,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // The logical dimensions of EGLImage buffer in pixels.
   gfx::Size egl_image_size_;
 
-  // Input format V4L2 fourccs this class supports.
-  static const uint32_t supported_input_fourccs_[];
-
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<V4L2VideoDecodeAccelerator> weak_this_factory_;
 };

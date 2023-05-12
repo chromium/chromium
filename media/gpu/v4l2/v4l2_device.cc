@@ -1946,8 +1946,8 @@ V4L2Device::GetSupportedRateControlMode() {
 }
 
 VideoDecodeAccelerator::SupportedProfiles
-V4L2Device::EnumerateSupportedDecodeProfiles(const size_t num_formats,
-                                             const uint32_t pixelformats[]) {
+V4L2Device::EnumerateSupportedDecodeProfiles(
+    const std::vector<uint32_t>& pixelformats) {
   VideoDecodeAccelerator::SupportedProfiles profiles;
 
   const auto v4l2_codecs_as_pix_fmts =
@@ -1955,9 +1955,9 @@ V4L2Device::EnumerateSupportedDecodeProfiles(const size_t num_formats,
                                 V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 
   for (uint32_t pixelformat : v4l2_codecs_as_pix_fmts) {
-    if (std::find(pixelformats, pixelformats + num_formats, pixelformat) ==
-        pixelformats + num_formats)
+    if (!base::Contains(pixelformats, pixelformat)) {
       continue;
+    }
 
     // Skip AV1 decoder profiles if kChromeOSHWAV1Decoder is disabled.
     if ((pixelformat == V4L2_PIX_FMT_AV1 ||

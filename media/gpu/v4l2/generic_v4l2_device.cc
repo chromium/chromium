@@ -325,8 +325,8 @@ std::vector<uint32_t> GenericV4L2Device::GetSupportedImageProcessorPixelformats(
 }
 
 VideoDecodeAccelerator::SupportedProfiles
-GenericV4L2Device::GetSupportedDecodeProfiles(const size_t num_formats,
-                                              const uint32_t pixelformats[]) {
+GenericV4L2Device::GetSupportedDecodeProfiles(
+    const std::vector<uint32_t>& pixelformats) {
   VideoDecodeAccelerator::SupportedProfiles supported_profiles;
 
   Type type = Type::kDecoder;
@@ -337,8 +337,7 @@ GenericV4L2Device::GetSupportedDecodeProfiles(const size_t num_formats,
       continue;
     }
 
-    const auto& profiles =
-        EnumerateSupportedDecodeProfiles(num_formats, pixelformats);
+    const auto& profiles = EnumerateSupportedDecodeProfiles(pixelformats);
     supported_profiles.insert(supported_profiles.end(), profiles.begin(),
                               profiles.end());
     CloseDevice();

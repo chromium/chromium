@@ -167,15 +167,15 @@ SupportResolutionChecker::CreateIfNeeded(V4L2Device::Type device_type,
   if (strcmp(reinterpret_cast<const char*>(caps.driver), go2001))
     return nullptr;
 
-  constexpr uint32_t supported_input_fourccs[] = {
+  const std::vector<uint32_t> supported_input_fourccs = {
       V4L2_PIX_FMT_VP8,
   };
 
   // Recreate the V4L2 device in order to close the opened decoder, since
   // we are about to query the supported decode profiles.
   device = V4L2Device::Create();
-  auto supported_profiles = device->GetSupportedDecodeProfiles(
-      std::size(supported_input_fourccs), supported_input_fourccs);
+  auto supported_profiles =
+      device->GetSupportedDecodeProfiles(supported_input_fourccs);
   SupportedProfileMap supported_profile_map;
   for (const auto& entry : supported_profiles)
     supported_profile_map[entry.profile] = entry;

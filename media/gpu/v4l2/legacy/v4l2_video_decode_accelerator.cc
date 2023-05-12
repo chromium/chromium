@@ -84,9 +84,10 @@ bool IsVp9KSVCStream(uint32_t input_format_fourcc,
 
 }  // namespace
 
-// static
-const uint32_t V4L2VideoDecodeAccelerator::supported_input_fourccs_[] = {
-    V4L2_PIX_FMT_H264, V4L2_PIX_FMT_VP8, V4L2_PIX_FMT_VP9,
+static const std::vector<uint32_t> kSupportedInputFourCCs = {
+    V4L2_PIX_FMT_H264,
+    V4L2_PIX_FMT_VP8,
+    V4L2_PIX_FMT_VP9,
 };
 
 // static
@@ -854,8 +855,7 @@ V4L2VideoDecodeAccelerator::GetSupportedProfiles() {
   if (!device)
     return SupportedProfiles();
 
-  return device->GetSupportedDecodeProfiles(std::size(supported_input_fourccs_),
-                                            supported_input_fourccs_);
+  return device->GetSupportedDecodeProfiles(kSupportedInputFourCCs);
 }
 
 void V4L2VideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,

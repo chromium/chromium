@@ -45,7 +45,7 @@ constexpr size_t kInputBufferMaxSizeFor1080p = 1024 * 1024;
 constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
 
 // Input format V4L2 fourccs this class supports.
-constexpr uint32_t kSupportedInputFourccs[] = {
+const std::vector<uint32_t> kSupportedInputFourccs = {
     // V4L2 stateless formats
     V4L2_PIX_FMT_H264_SLICE,
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -95,9 +95,7 @@ V4L2VideoDecoder::GetSupportedConfigs() {
   if (!device)
     return absl::nullopt;
 
-  auto configs = device->GetSupportedDecodeProfiles(
-      std::size(kSupportedInputFourccs), kSupportedInputFourccs);
-
+  auto configs = device->GetSupportedDecodeProfiles(kSupportedInputFourccs);
   if (configs.empty())
     return absl::nullopt;
 

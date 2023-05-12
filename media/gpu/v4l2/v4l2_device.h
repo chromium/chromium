@@ -820,8 +820,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Return supported profiles for decoder, including only profiles for given
   // fourcc |pixelformats|.
   virtual VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
-      const size_t num_formats,
-      const uint32_t pixelformats[]) = 0;
+      const std::vector<uint32_t>& pixelformats) = 0;
 
   // Return supported profiles for encoder.
   virtual VideoEncodeAccelerator::SupportedProfiles
@@ -877,8 +876,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   virtual ~V4L2Device();
 
   VideoDecodeAccelerator::SupportedProfiles EnumerateSupportedDecodeProfiles(
-      const size_t num_formats,
-      const uint32_t pixelformats[]);
+      const std::vector<uint32_t>& pixelformats);
 
   VideoEncodeAccelerator::SupportedProfiles EnumerateSupportedEncodeProfiles();
 
