@@ -22,27 +22,8 @@ SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
 std::unique_ptr<SharedDictionary>
 SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
-  auto it = dictionary_info_map_.find(url::SchemeHostPort(url));
-  if (it == dictionary_info_map_.end()) {
-    return nullptr;
-  }
-  const DictionaryInfo* info = nullptr;
-  size_t mached_path_size = 0;
-  // TODO(crbug.com/1413922): If there are multiple matching dictionaries, this
-  // method currently returns the dictionary with the longest path pattern. But
-  // we should have a detailed description about `best-matching` in the spec.
-  for (const auto& item : it->second) {
-    // TODO(crbug.com/1413922): base::MatchPattern() is treating '?' in the
-    // pattern as an wildcard. We need to introduce a new flag in
-    // base::MatchPattern() to treat '?' as a normal character.
-    // TODO(crbug.com/1413922): Need to check the expiration of the dictionary.
-    // TODO(crbug.com/1413922): Need support path expansion for relative paths.
-    if ((item.first.size() > mached_path_size) &&
-        base::MatchPattern(url.path(), item.first)) {
-      mached_path_size = item.first.size();
-      info = &item.second;
-    }
-  }
+  const DictionaryInfo* info =
+      GetMatchingDictionaryFromDictionaryInfoMap(dictionary_info_map_, url);
 
   if (!info) {
     return nullptr;

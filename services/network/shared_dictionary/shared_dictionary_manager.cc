@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
 #include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
+#include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 
 namespace network {
@@ -13,6 +14,23 @@ namespace network {
 std::unique_ptr<SharedDictionaryManager>
 SharedDictionaryManager::CreateInMemory() {
   return std::make_unique<SharedDictionaryManagerInMemory>();
+}
+
+// static
+std::unique_ptr<SharedDictionaryManager> SharedDictionaryManager::CreateOnDisk(
+    const base::FilePath& database_path,
+    const base::FilePath& cache_directory_path,
+#if BUILDFLAG(IS_ANDROID)
+    base::android::ApplicationStatusListener* app_status_listener,
+#endif  // BUILDFLAG(IS_ANDROID)
+    scoped_refptr<disk_cache::BackendFileOperationsFactory>
+        file_operations_factory) {
+  return std::make_unique<SharedDictionaryManagerOnDisk>(
+      database_path, cache_directory_path,
+#if BUILDFLAG(IS_ANDROID)
+      app_status_listener,
+#endif  // BUILDFLAG(IS_ANDROID)
+      std::move(file_operations_factory));
 }
 
 SharedDictionaryManager::SharedDictionaryManager() = default;
@@ -26,6 +44,7 @@ scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
     return it->second.get();
   }
   scoped_refptr<SharedDictionaryStorage> storage = CreateStorage(isolation_key);
+  CHECK(storage);
   storages_.emplace(isolation_key, storage.get());
   return storage;
 }

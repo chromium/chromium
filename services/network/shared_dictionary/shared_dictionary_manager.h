@@ -12,6 +12,17 @@
 #include "base/memory/weak_ptr.h"
 #include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
 
+namespace base {
+namespace android {
+class ApplicationStatusListener;
+}  // namespace android
+class FilePath;
+}  //  namespace base
+
+namespace disk_cache {
+class BackendFileOperationsFactory;
+}  // namespace disk_cache
+
 namespace network {
 
 class SharedDictionaryStorage;
@@ -23,6 +34,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   // Returns a SharedDictionaryManager which keeps the whole dictionary
   // information in memory.
   static std::unique_ptr<SharedDictionaryManager> CreateInMemory();
+
+  // Returns a SharedDictionaryManager which keeps the dictionary information
+  // on disk.
+  static std::unique_ptr<SharedDictionaryManager> CreateOnDisk(
+      const base::FilePath& database_path,
+      const base::FilePath& cache_directory_path,
+#if BUILDFLAG(IS_ANDROID)
+      base::android::ApplicationStatusListener* app_status_listener,
+#endif  // BUILDFLAG(IS_ANDROID)
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>
+          file_operations_factory);
 
   // TODO(crbug.com/1413922): Implement a manager which supports persistence
   // and use if for non-incognito mode. Also, if preventing incognito mode

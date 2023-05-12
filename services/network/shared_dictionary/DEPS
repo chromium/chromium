@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "shared_dictionary_manager_on_disk_unittest\.cc": [
+    "+sql/test/test_helpers.h",
+  ],
+}
