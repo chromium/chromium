@@ -104,11 +104,16 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
                    << ", inputFrames=" << input_bus_length
                    << ", fifoLength=" << fifo_length_ << ")";
     }
+    TRACE_EVENT_INSTANT2("webaudio", "PushPullFIFO overrun",
+                         TRACE_EVENT_SCOPE_THREAD, "extra frames",
+                         input_bus_length + frames_available_ - fifo_length_,
+                         "overflow_count_", overflow_count_);
   }
 
   // Update the number of frames available in FIFO.
   frames_available_ =
       std::min(frames_available_ + input_bus_length, fifo_length_);
+  TRACE_COUNTER_ID1("webaudio", "PushPullFIFO frames", this, frames_available_);
   DCHECK_EQ((index_read_ + frames_available_) % fifo_length_, index_write_);
 }
 
@@ -178,8 +183,6 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
     // The frames available was not enough to fulfill the requested frames. Fill
     // the rest of the channel with silence.
     if (frames_requested > frames_to_fill) {
-      TRACE_EVENT1("webaudio", "PushPullFIFO::Pull underrun", "missing frames",
-                   frames_requested - frames_to_fill);
       memset(output_bus_channel + frames_to_fill, 0,
              (frames_requested - frames_to_fill) * sizeof(*output_bus_channel));
     }
@@ -198,10 +201,16 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
                    << ", requestedFrames=" << frames_requested
                    << ", fifoLength=" << fifo_length_ << ")";
     }
+    TRACE_EVENT_INSTANT2("webaudio", "PushPullFIFO::Pull underrun",
+                         TRACE_EVENT_SCOPE_THREAD, "missing frames",
+                         frames_requested - frames_to_fill, "underflow_count_",
+                         underflow_count_);
   }
 
   // Update the number of frames in FIFO.
   frames_available_ -= frames_to_fill;
+  TRACE_COUNTER_ID1("webaudio", "PushPullFIFO frames", this, frames_available_);
+
   DCHECK_EQ((index_read_ + frames_available_) % fifo_length_, index_write_);
 
   pull_count_++;
@@ -242,10 +251,10 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
                    << ", fifoLength=" << fifo_length_ << ")";
     }
 
-    TRACE_EVENT2("webaudio",
-                 "PushPullFIFO::PullAndUpdateEarmark (underrun)",
-                 "missing frames", missing_frames,
-                 "underflow_count_", underflow_count_);
+    TRACE_EVENT_INSTANT2("webaudio",
+                         "PushPullFIFO::PullAndUpdateEarmark underrun",
+                         TRACE_EVENT_SCOPE_THREAD, "missing frames",
+                         missing_frames, "underflow_count_", underflow_count_);
 
     // We assume that the next |frames_requested| from |AudioOutputDevice| will
     // be the same.
@@ -297,6 +306,7 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
   // Update the number of frames in FIFO.
   frames_available_ -= frames_to_fill;
   DCHECK_EQ((index_read_ + frames_available_) % fifo_length_, index_write_);
+  TRACE_COUNTER_ID1("webaudio", "PushPullFIFO frames", this, frames_available_);
 
   pull_count_++;
 
