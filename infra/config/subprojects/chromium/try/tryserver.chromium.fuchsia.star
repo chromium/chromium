@@ -141,7 +141,9 @@ try_.orchestrator_builder(
     },
     main_list_view = "try",
     # TODO(crbug.com/1445005): Restore when runhooks is fixed.
-    #tryjob = try_.job(),
+    tryjob = try_.job(
+        experiment_percentage = 100,
+    ),
     use_clang_coverage = True,
 )
 
