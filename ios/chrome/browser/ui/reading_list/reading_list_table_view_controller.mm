@@ -959,13 +959,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   if ([model hasSectionForSectionIdentifier:sectionID])
     return NSIntegerMax;
 
-  // There are at most two sections in the table.  The only time this creation
-  // will result in the index of 1 is while creating the read section when there
-  // are also unread items.
-  BOOL hasUnreadItems = [self hasItemInSection:kSectionIdentifierUnread];
-  BOOL creatingReadSection = (sectionID == kSectionIdentifierRead);
-  NSInteger sectionIndex = (hasUnreadItems && creatingReadSection) ? 1 : 0;
-
+  NSInteger sectionIndex = [self newSectionIndexForId:sectionID];
   void (^updates)(void) = ^{
     [model insertSectionWithIdentifier:sectionID atIndex:sectionIndex];
     [model setHeader:[self headerForSectionIndex:sectionID]
@@ -1197,6 +1191,25 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   } else {
     [self setEmptyViewTopOffset:0.0];
   }
+}
+
+// Computes the index of the section to be created, given the sections that
+// already exist.
+- (NSInteger)newSectionIndexForId:(ReadingListSectionIdentifier)newSectionID {
+  ReadingListSectionIdentifier sections[] = {kSectionIdentifierSignInPromo,
+                                             kSectionIdentifierUnread,
+                                             kSectionIdentifierRead};
+  NSInteger sectionIndex = 0;
+  for (ReadingListSectionIdentifier section : sections) {
+    if (newSectionID == section) {
+      return sectionIndex;
+    }
+    if ([self hasItemInSection:section]) {
+      sectionIndex++;
+    }
+  }
+  NOTREACHED();
+  return 0;
 }
 
 @end
