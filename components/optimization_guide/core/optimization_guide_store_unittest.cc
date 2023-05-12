@@ -210,7 +210,7 @@ class OptimizationGuideStoreTest : public testing::Test {
     db_ = db.get();
 
     guide_store_ = std::make_unique<OptimizationGuideStore>(
-        std::move(db), task_environment_.GetMainThreadTaskRunner(),
+        std::move(db), temp_dir(), task_environment_.GetMainThreadTaskRunner(),
         pref_service_.get());
   }
 

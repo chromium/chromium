@@ -105,6 +105,23 @@ bool KeySetFilter(const base::flat_set<std::string>& key_set,
   return key_set.find(key) != key_set.end();
 }
 
+// Returns the relative filepath for |child| w.r.t. parent. For example, with
+// child="/foo/bar/baz/abc.txt"  and parent="/foo/bar/", this returns the
+// relative path "baz/abc.txt".
+base::FilePath ConvertToRelativePath(const base::FilePath& parent,
+                                     const base::FilePath& child) {
+  DCHECK(parent.IsAbsolute());
+  DCHECK(child.IsAbsolute());
+  DCHECK(parent.IsParent(child));
+  const auto parent_components = parent.GetComponents();
+  const auto child_components = child.GetComponents();
+  base::FilePath relative_path;
+  for (size_t i = parent_components.size(); i < child_components.size(); i++) {
+    relative_path = relative_path.Append(child_components[i]);
+  }
+  return relative_path;
+}
+
 }  // namespace
 
 OptimizationGuideStore::OptimizationGuideStore(
@@ -112,7 +129,21 @@ OptimizationGuideStore::OptimizationGuideStore(
     const base::FilePath& database_dir,
     scoped_refptr<base::SequencedTaskRunner> store_task_runner,
     PrefService* pref_service)
-    : store_task_runner_(store_task_runner), pref_service_(pref_service) {
+    : OptimizationGuideStore(database_provider,
+                             database_dir,
+                             /*base_model_store_dir=*/base::FilePath(),
+                             store_task_runner,
+                             pref_service) {}
+
+OptimizationGuideStore::OptimizationGuideStore(
+    leveldb_proto::ProtoDatabaseProvider* database_provider,
+    const base::FilePath& database_dir,
+    const base::FilePath& base_model_store_dir,
+    scoped_refptr<base::SequencedTaskRunner> store_task_runner,
+    PrefService* pref_service)
+    : base_model_store_dir_(base_model_store_dir),
+      store_task_runner_(store_task_runner),
+      pref_service_(pref_service) {
   database_ = database_provider->GetDB<proto::StoreEntry>(
       leveldb_proto::ProtoDbType::HINT_CACHE_STORE, database_dir,
       store_task_runner_);
@@ -125,9 +156,11 @@ OptimizationGuideStore::OptimizationGuideStore(
 
 OptimizationGuideStore::OptimizationGuideStore(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::StoreEntry>> database,
+    const base::FilePath& base_model_store_dir,
     scoped_refptr<base::SequencedTaskRunner> store_task_runner,
     PrefService* pref_service)
     : database_(std::move(database)),
+      base_model_store_dir_(base_model_store_dir),
       store_task_runner_(store_task_runner),
       pref_service_(pref_service) {
   RecordStatusChange(status_);
@@ -880,6 +913,7 @@ void OptimizationGuideStore::UpdatePredictionModels(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(prediction_models_update_data);
+  DCHECK(!base_model_store_dir_.empty());
 
   if (!IsAvailable()) {
     std::move(callback).Run();
@@ -888,6 +922,22 @@ void OptimizationGuideStore::UpdatePredictionModels(
 
   std::unique_ptr<EntryVector> entry_vector =
       prediction_models_update_data->TakeUpdateEntries();
+
+  if (base::FeatureList::IsEnabled(features::kModelStoreUseRelativePath)) {
+    for (auto& entry : *entry_vector) {
+      proto::PredictionModel* prediction_model =
+          entry.second.mutable_prediction_model();
+      if (!prediction_model) {
+        continue;
+      }
+      absl::optional<base::FilePath> model_file_path =
+          StringToFilePath(prediction_model->model().download_url());
+      if (model_file_path) {
+        prediction_model->mutable_model()->set_download_url(FilePathToString(
+            ConvertToRelativePath(base_model_store_dir_, *model_file_path)));
+      }
+    }
+  }
 
   EntryKeySet keys_to_update;
   for (const auto& entry : *entry_vector)
@@ -914,6 +964,7 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
     base::OnceClosure callback,
     bool success,
     std::unique_ptr<EntryMap> entries) {
+  DCHECK(!base_model_store_dir_.empty());
   if (!success || !entries) {
     std::move(callback).Run();
     return;
@@ -977,6 +1028,11 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
       base::FilePath model_file_path =
           StringToFilePath(*delete_download_file).value();
       base::FilePath path_to_delete;
+      if (!model_file_path.IsAbsolute()) {
+        // |kModelStoreUseRelativePath| will save the relative path in the
+        // store. Convert it to absolute path using base model store dir.
+        model_file_path = base_model_store_dir_.Append(model_file_path);
+      }
 
       // Backwards compatibility: Once upon a time (<M93), model files were
       // stored as
@@ -1080,6 +1136,7 @@ void OptimizationGuideStore::OnLoadPredictionModel(
     bool success,
     std::unique_ptr<proto::StoreEntry> entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!base_model_store_dir_.empty());
 
   // If either the request failed or the store was set to unavailable after the
   // request was started, then the loaded model should not be considered valid.
@@ -1118,14 +1175,39 @@ void OptimizationGuideStore::OnLoadPredictionModel(
   absl::optional<base::FilePath> model_file_path =
       StringToFilePath(loaded_prediction_model->model().download_url());
   if (model_file_path) {
-    file_paths_to_check.emplace_back(*model_file_path);
+    if (!model_file_path->IsAbsolute()) {
+      // |kModelStoreUseRelativePath| will save the relative path in the store.
+      // Create the absolute path using base model store dir.
+      base::FilePath absolute_model_path =
+          base_model_store_dir_.Append(*model_file_path);
+      loaded_prediction_model->mutable_model()->set_download_url(
+          FilePathToString(absolute_model_path));
+      file_paths_to_check.emplace_back(absolute_model_path);
+    } else {
+      file_paths_to_check.emplace_back(*model_file_path);
+    }
   }
-  for (const proto::AdditionalModelFile& additional_file :
-       loaded_prediction_model->model_info().additional_files()) {
+  for (int i = 0;
+       i <
+       loaded_prediction_model->mutable_model_info()->additional_files_size();
+       i++) {
+    proto::AdditionalModelFile* additional_file =
+        loaded_prediction_model->mutable_model_info()->mutable_additional_files(
+            i);
     absl::optional<base::FilePath> additional_file_path =
-        StringToFilePath(additional_file.file_path());
+        StringToFilePath(additional_file->file_path());
     if (additional_file_path) {
-      file_paths_to_check.emplace_back(*additional_file_path);
+      if (!additional_file_path->IsAbsolute()) {
+        // |kModelStoreUseRelativePath| will save the relative path in the
+        // store. Create the absolute path using base model store dir.
+        base::FilePath absolute_additional_path =
+            base_model_store_dir_.Append(*additional_file_path);
+        additional_file->set_file_path(
+            FilePathToString(absolute_additional_path));
+        file_paths_to_check.emplace_back(absolute_additional_path);
+      } else {
+        file_paths_to_check.emplace_back(*additional_file_path);
+      }
     }
   }
 

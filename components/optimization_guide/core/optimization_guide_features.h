@@ -46,6 +46,7 @@ BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
 BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
+BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.

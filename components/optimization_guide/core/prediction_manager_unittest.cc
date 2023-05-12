@@ -295,8 +295,10 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
  public:
   TestOptimizationGuideStore(
       std::unique_ptr<StoreEntryProtoDatabase> database,
+      const base::FilePath& base_model_store_dir,
       scoped_refptr<base::SequencedTaskRunner> store_task_runner)
       : OptimizationGuideStore(std::move(database),
+                               base_model_store_dir,
                                store_task_runner,
                                nullptr) {}
 
@@ -438,7 +440,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
     auto db = std::make_unique<FakeDB<StoreEntry>>(&db_store_);
 
     return std::make_unique<TestOptimizationGuideStore>(
-        std::move(db), task_environment_.GetMainThreadTaskRunner());
+        std::move(db), temp_dir(), task_environment_.GetMainThreadTaskRunner());
   }
 
   TestPredictionManager* prediction_manager() const {

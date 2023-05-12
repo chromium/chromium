@@ -201,6 +201,19 @@ BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
              "PageContentAnnotationsPersistSalientImageMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the model store to save relative paths computed from the base model
+// store dir. Storing as relative path in the model store is needed for IOS,
+// since the directories could change after Chrome upgrade. This feature is
+// expected to be enabled only for IOS.
+BASE_FEATURE(kModelStoreUseRelativePath,
+             "ModelStoreUseRelativePath",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
