@@ -29,6 +29,10 @@ class BottomSheetTabHelper
 
   ~BottomSheetTabHelper() override;
 
+  // Returns the maximum number of times the password bottom sheet can be
+  // dismissed before it gets disabled.
+  static int PasswordBottomSheetMaxDismissCount();
+
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
 

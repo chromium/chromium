@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_account_storage_notice_handler.h"
@@ -21,12 +22,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// The maximum number of times the password bottom sheet can be dismissed before
-// it gets disabled.
-constexpr int kIosPasswordBottomSheetMaxDismissCount = 3;
-}  // namespace
-
 BottomSheetTabHelper::~BottomSheetTabHelper() = default;
 
 BottomSheetTabHelper::BottomSheetTabHelper(
@@ -41,6 +36,12 @@ BottomSheetTabHelper::BottomSheetTabHelper(
 }
 
 // Public methods
+
+int BottomSheetTabHelper::PasswordBottomSheetMaxDismissCount() {
+  // The maximum number of times the password bottom sheet can be dismissed
+  // before it gets disabled.
+  return 3;
+}
 
 void BottomSheetTabHelper::SetPasswordBottomSheetHandler(
     id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler) {
@@ -133,8 +134,12 @@ bool BottomSheetTabHelper::HasReachedDismissLimit() {
   PrefService* const pref_service =
       ChromeBrowserState ::FromBrowserState(web_state_->GetBrowserState())
           ->GetPrefs();
-  return pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
-         kIosPasswordBottomSheetMaxDismissCount;
+  bool dimissLimitReached =
+      pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
+      PasswordBottomSheetMaxDismissCount();
+  base::UmaHistogramBoolean("IOS.IsEnabled.Password.BottomSheet",
+                            !dimissLimitReached);
+  return dimissLimitReached;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(BottomSheetTabHelper)

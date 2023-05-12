@@ -368,10 +368,13 @@ using ReauthenticationEvent::kSuccess;
 // Increments the dismiss count preference.
 - (void)incrementDismissCount {
   if (_prefService) {
-    _prefService->SetInteger(
-        prefs::kIosPasswordBottomSheetDismissCount,
+    int newDismissCount =
         _prefService->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) +
-            1);
+        1;
+    CHECK(newDismissCount <=
+          BottomSheetTabHelper::PasswordBottomSheetMaxDismissCount());
+    _prefService->SetInteger(prefs::kIosPasswordBottomSheetDismissCount,
+                             newDismissCount);
   }
 }
 

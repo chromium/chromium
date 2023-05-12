@@ -1129,6 +1129,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.IsEnabled.Password.BottomSheet" enum="Boolean"
+    expires_after="2024-05-08">
+  <owner>sugoi@chromium.org</owner>
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    At the moment of trying to enable the bottom sheet at page load time, track
+    whether the bottom sheet is enabled or whether it has been disabled due to
+    the number of dismisses.
+  </summary>
+</histogram>
+
 <histogram name="IOS.JavascriptContentBlockFailure"
     enum="IOSJavascriptContentBlockType" expires_after="2020-12-31">
   <owner>rkgibson@google.com</owner>
@@ -1960,6 +1972,17 @@ chromium-metrics-reviews@google.com.
     on startup when it is detected that EULA pref is not set but First run
     sentinel is set. There is no base event (false) as this should be an
     exceptional case and should tend to 0 occurence.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ResetDismissCount.Password.BottomSheet" units="dismisses"
+    expires_after="2024-05-08">
+  <owner>sugoi@chromium.org</owner>
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Tracks the number of times in a row the Password Bottom Sheet had been
+    dismissed at the moment the dismiss count was reset to 0 (between 1 and 3).
   </summary>
 </histogram>
 
