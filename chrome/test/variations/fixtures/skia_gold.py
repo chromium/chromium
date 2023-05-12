@@ -84,7 +84,7 @@ def skia_gold_util(
 
   skia_gold_properties = sgp.SkiaGoldProperties(
     args=_get_skia_gold_args())
-  skia_gold_session_manager = SkiaGoldSessionManager(
+  skia_gold_session_manager = sgsm.SkiaGoldSessionManager(
     skia_tmp_dir,
     skia_gold_properties
   )
