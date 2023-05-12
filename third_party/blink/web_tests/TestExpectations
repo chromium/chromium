@@ -543,8 +543,6 @@ crbug.com/1058244 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scr
 
 crbug.com/915926 fast/events/touch/multi-touch-user-gesture.html [ Failure Pass ]
 
-crbug.com/1303091 [ Linux ] compositing/overflow/paint-neg-z-order-descendants-into-scrolling-contents-layer.html [ Failure Pass ]
-
 # New OffscreenCanvas Tests that are breaking LayoutTest
 
 crbug.com/980969 http/tests/input/discard-events-to-unstable-iframe.html [ Failure Pass ]
