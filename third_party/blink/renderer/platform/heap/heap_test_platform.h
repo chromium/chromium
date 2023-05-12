@@ -52,25 +52,25 @@ class HeapTestingPlatformAdapter final : public v8::Platform {
     // mode.
     return task_runner_;
   }
-  void CallOnWorkerThread(std::unique_ptr<v8::Task> task) final {
+  void PostTaskOnWorkerThreadImpl(v8::TaskPriority priority,
+                                  std::unique_ptr<v8::Task> task,
+                                  const v8::SourceLocation& location) final {
     platform_->CallOnWorkerThread(std::move(task));
   }
-  void CallBlockingTaskOnWorkerThread(std::unique_ptr<v8::Task> task) final {
-    platform_->CallBlockingTaskOnWorkerThread(std::move(task));
-  }
-  void CallLowPriorityTaskOnWorkerThread(std::unique_ptr<v8::Task> task) final {
-    platform_->CallLowPriorityTaskOnWorkerThread(std::move(task));
-  }
-  void CallDelayedOnWorkerThread(std::unique_ptr<v8::Task> task,
-                                 double delay_in_seconds) final {
+  void PostDelayedTaskOnWorkerThreadImpl(
+      v8::TaskPriority priority,
+      std::unique_ptr<v8::Task> task,
+      double delay_in_seconds,
+      const v8::SourceLocation& location) final {
     platform_->CallDelayedOnWorkerThread(std::move(task), delay_in_seconds);
   }
   bool IdleTasksEnabled(v8::Isolate* isolate) final {
     return platform_->IdleTasksEnabled(isolate);
   }
-  std::unique_ptr<v8::JobHandle> CreateJob(
+  std::unique_ptr<v8::JobHandle> CreateJobImpl(
       v8::TaskPriority priority,
-      std::unique_ptr<v8::JobTask> job_task) final {
+      std::unique_ptr<v8::JobTask> job_task,
+      const v8::SourceLocation& location) final {
     return platform_->CreateJob(priority, std::move(job_task));
   }
   double MonotonicallyIncreasingTime() final {
