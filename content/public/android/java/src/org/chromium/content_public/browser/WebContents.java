@@ -200,6 +200,12 @@ public interface WebContents extends Parcelable {
     int getVisibility();
 
     /**
+     * Updates WebContents Visibility and notifies all the observers about Visibility change event.
+     * See native WebContents::UpdateWebContentsVisibility.
+     */
+    void updateWebContentsVisibility(@Visibility int visibility);
+
+    /**
      * @return The title for the current visible page.
      */
     String getTitle();

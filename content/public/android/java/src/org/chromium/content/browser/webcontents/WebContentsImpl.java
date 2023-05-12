@@ -492,6 +492,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public void updateWebContentsVisibility(@Visibility int visibility) {
+        checkNotDestroyed();
+        WebContentsImplJni.get().updateWebContentsVisibility(mNativeWebContentsAndroid, visibility);
+    }
+
+    @Override
     public String getTitle() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getTitle(mNativeWebContentsAndroid);
@@ -1181,6 +1187,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         WebContentsImpl[] getInnerWebContents(long nativeWebContentsAndroid);
         @Visibility
         int getVisibility(long nativeWebContentsAndroid);
+        void updateWebContentsVisibility(long nativeWebContentsAndroid, int visibility);
         String getTitle(long nativeWebContentsAndroid);
         GURL getVisibleURL(long nativeWebContentsAndroid);
         int getVirtualKeyboardMode(long nativeWebContentsAndroid);

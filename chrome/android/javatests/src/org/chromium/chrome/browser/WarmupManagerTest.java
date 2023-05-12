@@ -55,6 +55,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,8 +76,8 @@ public class WarmupManagerTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     public enum ProfileType { REGULAR_PROFILE, PRIMARY_OTR_PROFILE, NON_PRIMARY_OTR_PROFILE }
-
     private static final String HISTOGRAM_SPARE_TAB_FINAL_STATUS = "Android.SpareTab.FinalStatus";
+    private static final String MAIN_FRAME_FILE = "/main_frame.html";
 
     /** Provides parameter for testPreconnect to run it with both regular and incognito profiles.*/
     public static class ProfileParams implements ParameterProvider {
@@ -100,6 +101,7 @@ public class WarmupManagerTest {
     private WarmupManager mWarmupManager;
     private Context mContext;
 
+    private TestWebServer mWebServer;
     private TabModel mTabModel;
     private TabGroupModelFilter mTabGroupModelFilter;
 
@@ -126,6 +128,7 @@ public class WarmupManagerTest {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
             mWarmupManager = WarmupManager.getInstance();
         });
+        mWebServer = TestWebServer.start();
     }
 
     @After
@@ -133,6 +136,7 @@ public class WarmupManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mWarmupManager.destroySpareWebContents());
         TestThreadUtils.runOnUiThreadBlocking(() -> mWarmupManager.destroySpareTab());
         WarmupManager.deInitForTesting();
+        mWebServer.shutdown();
     }
 
     private void assertOrderValid(boolean expectedState) {
@@ -160,13 +164,16 @@ public class WarmupManagerTest {
     }
 
     private Tab addTabAt(int index, Tab parent) {
+        final String data = "<html><head></head><body><p>Hello World</p></body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
+
         Tab tab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             @TabLaunchType
             int type =
                     parent != null ? TabLaunchType.FROM_TAB_GROUP_UI : TabLaunchType.FROM_CHROME_UI;
             TabCreator tabCreator =
                     mActivityTestRule.getActivity().getTabCreator(/*incognito=*/false);
-            return tabCreator.createNewTab(new LoadUrlParams("about:blank"), type, parent, index);
+            return tabCreator.createNewTab(new LoadUrlParams(url), type, parent, index);
         });
         return tab;
     }
@@ -498,6 +505,43 @@ public class WarmupManagerTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT, () -> { Assert.assertFalse(mWarmupManager.hasSpareTab()); });
         histogramWatcher.assertExpected();
+    }
+
+    /** Tests that page load metrics are recorded when the spare tab is used for navigation */
+    @Test
+    @MediumTest
+    @Feature({"SpareTab"})
+    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    public void testMetricsRecordedWithSpareTab() {
+        Assert.assertNotNull(mActivityTestRule.getActivity().getCurrentTabCreator());
+
+        // Create spare tab so that it can be used for navigation from TAB_GROUP_UI.
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
+            mWarmupManager.createSpareTab(mActivityTestRule.getActivity().getCurrentTabCreator(),
+                    TabLaunchType.FROM_TAB_GROUP_UI);
+            Assert.assertTrue(mWarmupManager.hasSpareTab());
+        });
+
+        prepareTabs(Arrays.asList(new Integer[] {1, 1}));
+        List<Tab> tabs = getCurrentTabs();
+
+        // Check that the First Paint (FP) and First Contentful Paint (FCP) metrics are recorded
+        // correctly when using the SpareTab feature.
+        var pageLoadHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes("PageLoad.PaintTiming.NavigationToFirstPaint", 1)
+                        .expectAnyRecordTimes(
+                                "PageLoad.PaintTiming.NavigationToFirstContentfulPaint", 1)
+                        .build();
+
+        // Navigate and this should record PageLoadMetrics.
+        Tab tab = addTabAt(/*index=*/0, /*parent=*/tabs.get(1));
+        tabs.add(1, tab);
+
+        // PageLoadMetrics should be recorded when SpareTab is used for navigation.
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> { Assert.assertFalse(mWarmupManager.hasSpareTab()); });
+        pageLoadHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     /**

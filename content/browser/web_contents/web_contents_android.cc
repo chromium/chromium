@@ -432,6 +432,12 @@ jint WebContentsAndroid::GetVisibility(JNIEnv* env) {
   return static_cast<jint>(web_contents_->GetVisibility());
 }
 
+void WebContentsAndroid::UpdateWebContentsVisibility(JNIEnv* env,
+                                                     jint visibiity) {
+  web_contents_->UpdateWebContentsVisibility(
+      static_cast<Visibility>(visibiity));
+}
+
 RenderWidgetHostViewAndroid*
     WebContentsAndroid::GetRenderWidgetHostViewAndroid() {
   RenderWidgetHostView* rwhv = NULL;

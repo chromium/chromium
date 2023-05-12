@@ -125,6 +125,9 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public void updateWebContentsVisibility(@Visibility int visibility) {}
+
+    @Override
     public String getTitle() {
         return null;
     }
