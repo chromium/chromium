@@ -215,11 +215,6 @@ const char kEnableBenchmarkingDescription[] =
     "after 3 restarts. On the third restart, the flag will appear to be off "
     "but the effect is still active.";
 
-extern const char kPPAPISharedImagesSwapChainName[] =
-    "Use SharedImages for PPAPI swapchain";
-extern const char kPPAPISharedImagesSwapChainDescription[] =
-    "Switches legacy swap chain code to SharedImages";
-
 extern const char kSupportPepperVideoDecoderDevAPIName[] =
     "Controls whether the Pepper PPB_VideoDecoder(Dev) API is supported";
 extern const char kSupportPepperVideoDecoderDevAPIDescription[] =

@@ -46,17 +46,8 @@ gpu::CommandBuffer::State GetErrorState() {
 
 }  // namespace
 
-Graphics3D::Graphics3D(const HostResource& resource,
-                       const gfx::Size& size,
-                       const bool single_buffer,
-                       bool use_shared_images_swapchain)
-    : PPB_Graphics3D_Shared(resource, size, use_shared_images_swapchain),
-      single_buffer(single_buffer) {
-  // This log is to make diagnosing any outages for Enterprise customers
-  // easier.
-  LOG(WARNING) << "Graphics3D initialized. use_shared_images_swapchain: "
-               << use_shared_images_swapchain_;
-}
+Graphics3D::Graphics3D(const HostResource& resource, const gfx::Size& size)
+    : PPB_Graphics3D_Shared(resource, size) {}
 
 Graphics3D::~Graphics3D() {
   DestroyGLES2Impl();
@@ -115,10 +106,6 @@ void Graphics3D::EnsureWorkVisible() {
   NOTREACHED();
 }
 
-void Graphics3D::TakeFrontBuffer() {
-  NOTREACHED();
-}
-
 void Graphics3D::ResolveAndDetachFramebuffer() {
   NOTREACHED();
 }
@@ -138,23 +125,13 @@ int32_t Graphics3D::DoSwapBuffers(const gpu::SyncToken& sync_token,
 
   gpu::gles2::GLES2Implementation* gl = gles2_impl();
 
-  if (use_shared_images_swapchain_) {
-    // Flush current GL commands.
-    gl->ShallowFlushCHROMIUM();
+  // Flush current GL commands.
+  gl->ShallowFlushCHROMIUM();
 
-    // Make sure we resolved and detached our frame buffer
-    PluginDispatcher::GetForResource(this)->Send(
-        new PpapiHostMsg_PPBGraphics3D_ResolveAndDetachFramebuffer(
-            API_ID_PPB_GRAPHICS_3D, host_resource()));
-  } else {
-    gl->SwapBuffers(swap_id_++);
-
-    if (!single_buffer || swap_id_ == 1) {
-      PluginDispatcher::GetForResource(this)->Send(
-          new PpapiHostMsg_PPBGraphics3D_TakeFrontBuffer(API_ID_PPB_GRAPHICS_3D,
-                                                         host_resource()));
-    }
-  }
+  // Make sure we resolved and detached our frame buffer
+  PluginDispatcher::GetForResource(this)->Send(
+      new PpapiHostMsg_PPBGraphics3D_ResolveAndDetachFramebuffer(
+          API_ID_PPB_GRAPHICS_3D, host_resource()));
 
   gpu::SyncToken new_sync_token;
   gl->GenSyncTokenCHROMIUM(new_sync_token.GetData());
@@ -168,7 +145,6 @@ int32_t Graphics3D::DoSwapBuffers(const gpu::SyncToken& sync_token,
 }
 
 void Graphics3D::DoResize(gfx::Size size) {
-  DCHECK(use_shared_images_swapchain_);
   // Flush current GL commands.
   gles2_impl()->ShallowFlushCHROMIUM();
   PluginDispatcher::GetForResource(this)->Send(
@@ -275,9 +251,7 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
     return 0;
 
   scoped_refptr<Graphics3D> graphics_3d(
-      new Graphics3D(result, attrib_helper.offscreen_framebuffer_size,
-                     attrib_helper.single_buffer,
-                     capabilities.use_shared_images_swapchain_for_ppapi));
+      new Graphics3D(result, attrib_helper.offscreen_framebuffer_size));
   if (!graphics_3d->Init(share_gles2, capabilities, std::move(shared_state),
                          command_buffer_id)) {
     return 0;
@@ -304,8 +278,6 @@ bool PPB_Graphics3D_Proxy::OnMessageReceived(const IPC::Message& msg) {
                         OnMsgDestroyTransferBuffer)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBGraphics3D_SwapBuffers,
                         OnMsgSwapBuffers)
-    IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBGraphics3D_TakeFrontBuffer,
-                        OnMsgTakeFrontBuffer)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBGraphics3D_ResolveAndDetachFramebuffer,
                         OnMsgResolveAndDetachFramebuffer)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBGraphics3D_Resize, OnMsgResize)
@@ -436,12 +408,6 @@ void PPB_Graphics3D_Proxy::OnMsgSwapBuffers(const HostResource& context,
   if (enter.succeeded())
     enter.SetResult(enter.object()->SwapBuffersWithSyncToken(
         enter.callback(), sync_token, size));
-}
-
-void PPB_Graphics3D_Proxy::OnMsgTakeFrontBuffer(const HostResource& context) {
-  EnterHostFromHostResource<PPB_Graphics3D_API> enter(context);
-  if (enter.succeeded())
-    enter.object()->TakeFrontBuffer();
 }
 
 void PPB_Graphics3D_Proxy::OnMsgResolveAndDetachFramebuffer(

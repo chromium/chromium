@@ -69,7 +69,6 @@ class PPAPI_THUNK_EXPORT PPB_Graphics3D_API {
   virtual void UnmapTexSubImage2DCHROMIUM(const void* mem) = 0;
 
   virtual void EnsureWorkVisible() = 0;
-  virtual void TakeFrontBuffer() = 0;
   virtual void ResolveAndDetachFramebuffer() = 0;
 };
 

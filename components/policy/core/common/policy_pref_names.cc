@@ -122,11 +122,6 @@ const char kOffsetParentNewSpecBehaviorEnabled[] =
 const char kSendMouseEventsDisabledFormControlsEnabled[] =
     "policy.send_mouse_events_disabled_form_controls_enabled";
 
-// If true the feature PPAPISharedImagesSwapChain will be allowed, otherwise
-// feature will be forced off.
-const char kPPAPISharedImagesSwapChainAllowed[] =
-    "policy.ppapi_shared_images_swap_chain_allowed";
-
 // If true then support for the PPB_VideoDecoder(Dev) API will be enabled;
 // otherwise the browser will decide whether the API is supported.
 const char kForceEnablePepperVideoDecoderDevAPI[] =

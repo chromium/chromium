@@ -9799,13 +9799,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
-    {"ppapi-shared-images-swapchain",
-     flag_descriptions::kPPAPISharedImagesSwapChainName,
-     flag_descriptions::kPPAPISharedImagesSwapChainDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPPAPISharedImagesSwapChain)},
-#endif
-
-#if BUILDFLAG(ENABLE_NACL)
     {"support-pepper-video-decoder-dev-api",
      flag_descriptions::kSupportPepperVideoDecoderDevAPIName,
      flag_descriptions::kSupportPepperVideoDecoderDevAPIDescription, kOsDesktop,

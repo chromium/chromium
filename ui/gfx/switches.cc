@@ -18,11 +18,6 @@ const char kAnimationDurationScale[] = "animation-duration-scale";
 const char kDisableFontSubpixelPositioning[] =
     "disable-font-subpixel-positioning";
 
-// Disables new code to run SharedImages for NaCL swapchain. This overrides
-// value of kPPAPISharedImagesSwapChain feature flag.
-const char kDisablePPAPISharedImagesSwapChain[] =
-    "disable-ppapi-shared-images-swapchain";
-
 // Enable native CPU-mappable GPU memory buffer support on Linux.
 const char kEnableNativeGpuMemoryBuffers[] = "enable-native-gpu-memory-buffers";
 
@@ -61,10 +56,6 @@ BASE_FEATURE(kOddWidthMultiPlanarBuffers,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-BASE_FEATURE(kPPAPISharedImagesSwapChain,
-             "PPAPISharedImagesSwapChain",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kVariableGoogleSansFont,

@@ -819,6 +819,10 @@ const char kVideoTutorialsLastUpdatedTimeKey[] =
 const char kUseMojoVideoDecoderForPepperAllowed[] =
     "policy.use_mojo_video_decoder_for_pepper_allowed";
 
+// Deprecated 05/2023.
+const char kPPAPISharedImagesSwapChainAllowed[] =
+    "policy.ppapi_shared_images_swap_chain_allowed";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -911,6 +915,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 05/2023.
   registry->RegisterBooleanPref(kUseMojoVideoDecoderForPepperAllowed, true);
+
+  // Deprecated 05/2023.
+  registry->RegisterBooleanPref(kPPAPISharedImagesSwapChainAllowed, true);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1894,6 +1901,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 05/2023.
   local_state->ClearPref(kUseMojoVideoDecoderForPepperAllowed);
+
+  // Added 05/2023
+  local_state->ClearPref(kPPAPISharedImagesSwapChainAllowed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

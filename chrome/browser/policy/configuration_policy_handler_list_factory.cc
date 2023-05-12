@@ -1879,9 +1879,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(ENABLE_PPAPI)
-  { key::kPPAPISharedImagesSwapChainAllowed,
-    policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed,
-    base::Value::Type::BOOLEAN },
   { key::kForceEnablePepperVideoDecoderDevAPI,
     policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI,
     base::Value::Type::BOOLEAN },

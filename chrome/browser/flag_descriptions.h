@@ -158,9 +158,6 @@ extern const char kPasspointARCSupportDescription[];
 extern const char kPasspointSettingsName[];
 extern const char kPasspointSettingsDescription[];
 
-extern const char kPPAPISharedImagesSwapChainName[];
-extern const char kPPAPISharedImagesSwapChainDescription[];
-
 extern const char kSupportPepperVideoDecoderDevAPIName[];
 extern const char kSupportPepperVideoDecoderDevAPIDescription[];
 
