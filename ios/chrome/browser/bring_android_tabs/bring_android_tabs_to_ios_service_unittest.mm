@@ -264,8 +264,7 @@ TEST_F(BringAndroidTabsToIOSServiceTest, UserNotSynced) {
   // Set something other than `kTabs` as the selected type.
   test_sync_service_->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
+      /*types=*/{syncer::UserSelectableType::kPasswords});
   EXPECT_EQ(NumberOfTabsLoaded(/*is_android_switcher=*/true,
                                /*tabs_recently_active=*/true),
             0);

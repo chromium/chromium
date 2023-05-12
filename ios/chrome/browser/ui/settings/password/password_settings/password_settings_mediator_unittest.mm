@@ -48,9 +48,11 @@ void SetSyncStatus(SyncServiceForPasswordTests* sync_service,
                               ? syncer::SyncService::TransportState::ACTIVE
                               : syncer::SyncService::TransportState::DISABLED));
   ON_CALL(*sync_service, GetActiveDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*(sync_service->GetMockUserSettings()), GetEncryptedDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*(sync_service->GetMockUserSettings()), GetPassphraseType())
       .WillByDefault(testing::Return(passphrase_type));
 }
