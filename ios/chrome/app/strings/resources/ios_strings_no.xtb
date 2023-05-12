@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Bytt til åpent vindu</translation>
 <translation id="1112015203684611006">Utskriften mislyktes.</translation>
+<translation id="1113057722807951993">Kryptering med passordfrase inkluderer ikke betalingsmåter og adresser fra Google Pay.
+
+For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Åpne en ny fane.</translation>
 <translation id="1126809382673880764">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Du får fremdeles beskyttelse fra Safe Browsing der dette er tilgjengelig, på andre Google-tjenester, som Gmail og Søk.</translation>
 <translation id="1145536944570833626">Slett eksisterende data.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Bla gjennom</translation>
 <translation id="1990820278544963435">Finn</translation>
 <translation id="199425419756152024">Vis passordet</translation>
+<translation id="2008357574463816229">Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Last inn på nytt</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="2021670401941426298">Se eventuelt instruksjonene fra søkemotoren din om hvordan du sletter søkeloggen din.</translation>
@@ -707,6 +711,9 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5745916533876677730">Gå til forrige fane</translation>
 <translation id="5755162682436943950">Logget av. Åpner dialogboksen for å logge på og slå på synkronisering.</translation>
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
+<translation id="5762370665605786758">Kryptering med passordfrase inkluderer ikke betalingsmåter og adresser fra Google Pay.
+
+Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Meny → Innstillinger → Standardnettleser</translation>
 <translation id="5777888488419460501">Lagre i konto</translation>
 <translation id="5782227691023083829">Oversetter</translation>
@@ -848,6 +855,9 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="648164694371393720">Autentiseringsfeil</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementer slettet</translation>
+<translation id="6484712497741564393">Logget på som <ph name="EMAIL" />.
+
+Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
 <translation id="6497772452874122664">Hvis du stoler på <ph name="TIME" />, kan du bruke lagrede passord for andre nettsteder.
 
 Prøv å bruke unike passord for hvert nettsted.</translation>
@@ -894,6 +904,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6730682669179532099">Kan ikke eksportere passordene</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6748108480210050150">Fra</translation>
+<translation id="6753469262000681876">Låsingsmodus</translation>
 <translation id="6760509555861141183">Gå tilbake til nylig fane</translation>
 <translation id="6762812039470893796">Velg bort alle</translation>
 <translation id="6780034285637185932">Postnummer</translation>
@@ -1120,6 +1131,9 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8299417921174340354">For å bruke passord må du først angi en adgangskode på enheten din.</translation>
 <translation id="8299613349954694191">Åpne en inkognitofane for å surfe privat på nettet.</translation>
 <translation id="8316944564970119719">Skriv inn nettsted og passord, og lagre deretter</translation>
+<translation id="8317835149433843300">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome lagres ikke i Google-kontoen din.
+
+Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nytt søk</translation>
 <translation id="8323906514956095947">Trykk og hold inne for flere fanealternativer</translation>
 <translation id="8328777765163860529">Lukk alle</translation>
@@ -1142,6 +1156,9 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="8488923644885757471">Nytt vindu</translation>
 <translation id="8490978609246021741">Lagre endringene</translation>
+<translation id="8491300088149538575">Logget på som <ph name="EMAIL" />.
+
+Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="850600235656508448">Åpne i inkognitomodus</translation>
 <translation id="8517375800490286174">Lisenser for åpen kildekode</translation>
