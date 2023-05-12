@@ -240,6 +240,7 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
         Destination.WEBSITE: "Website",
         Destination.GOOGLE_OWNED_SERVICE: "Google",
         Destination.LOCAL: "Local",
+        Destination.PROXIED_GOOGLE_OWNED_SERVICE: "Proxied to Google",
         Destination.OTHER: "Other",
     }
     if (semantics.destination == Destination.OTHER
@@ -248,7 +249,9 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
     elif semantics.destination in destination_names:
       line += "\t{}".format(destination_names[semantics.destination])
     else:
-      raise ValueError("Invalid value for the semantics.destination field")
+      raise ValueError(
+          "Invalid value for the semantics.destination field: {}".format(
+              semantics.destination))
 
     # Policy.
     policy = annotation.proto.policy
