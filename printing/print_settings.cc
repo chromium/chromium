@@ -4,6 +4,8 @@
 
 #include "printing/print_settings.h"
 
+#include <tuple>
+
 #include "base/atomic_sequence_num.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -267,7 +269,10 @@ absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
 }
 
 bool PrintSettings::RequestedMedia::operator==(
-    const PrintSettings::RequestedMedia& other) const = default;
+    const PrintSettings::RequestedMedia& other) const {
+  return std::tie(size_microns, vendor_id) ==
+         std::tie(other.size_microns, other.vendor_id);
+}
 
 // Global SequenceNumber used for generating unique cookie values.
 static base::AtomicSequenceNumber cookie_seq;
@@ -325,7 +330,54 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
 
 PrintSettings::~PrintSettings() = default;
 
-bool PrintSettings::operator==(const PrintSettings& other) const = default;
+bool PrintSettings::operator==(const PrintSettings& other) const {
+  return std::tie(ranges_, selection_only_, margin_type_, title_, url_,
+                  display_header_footer_, should_print_backgrounds_, collate_,
+                  color_, copies_, duplex_mode_, device_name_, requested_media_,
+                  page_setup_device_units_, dpi_, scale_factor_, rasterize_pdf_,
+                  rasterize_pdf_dpi_, landscape_, supports_alpha_blend_,
+#if BUILDFLAG(IS_WIN)
+                  printer_language_type_,
+#endif
+                  is_modifiable_, requested_custom_margins_in_points_,
+                  pages_per_sheet_
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                  ,
+                  advanced_settings_
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+                  ,
+                  send_user_info_, username_, oauth_token_, pin_value_,
+                  client_infos_, printer_manually_selected_,
+                  printer_status_reason_
+#endif
+                  ) ==
+         std::tie(other.ranges_, other.selection_only_, other.margin_type_,
+                  other.title_, other.url_, other.display_header_footer_,
+                  other.should_print_backgrounds_, other.collate_, other.color_,
+                  other.copies_, other.duplex_mode_, other.device_name_,
+                  other.requested_media_, other.page_setup_device_units_,
+                  other.dpi_, other.scale_factor_, other.rasterize_pdf_,
+                  other.rasterize_pdf_dpi_, other.landscape_,
+                  other.supports_alpha_blend_,
+#if BUILDFLAG(IS_WIN)
+                  other.printer_language_type_,
+#endif
+                  other.is_modifiable_,
+                  other.requested_custom_margins_in_points_,
+                  other.pages_per_sheet_
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                  ,
+                  other.advanced_settings_
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+                  ,
+                  other.send_user_info_, other.username_, other.oauth_token_,
+                  other.pin_value_, other.client_infos_,
+                  other.printer_manually_selected_, other.printer_status_reason_
+#endif
+         );
+}
 
 void PrintSettings::Clear() {
   ranges_.clear();

@@ -5,6 +5,7 @@
 #include "printing/page_setup.h"
 
 #include <algorithm>
+#include <tuple>
 
 #include "base/check_op.h"
 
@@ -49,7 +50,11 @@ PageMargins::PageMargins(int header,
       top(top),
       bottom(bottom) {}
 
-bool PageMargins::operator==(const PageMargins& other) const = default;
+bool PageMargins::operator==(const PageMargins& other) const {
+  return std::tie(header, footer, left, right, top, bottom) ==
+         std::tie(other.header, other.footer, other.left, other.right,
+                  other.top, other.bottom);
+}
 
 void PageMargins::Clear() {
   header = 0;
@@ -77,7 +82,15 @@ PageSetup::PageSetup(const PageSetup& other) = default;
 
 PageSetup::~PageSetup() = default;
 
-bool PageSetup::operator==(const PageSetup& other) const = default;
+bool PageSetup::operator==(const PageSetup& other) const {
+  return std::tie(physical_size_, printable_area_, overlay_area_, content_area_,
+                  effective_margins_, requested_margins_, forced_margins_,
+                  text_height_) ==
+         std::tie(other.physical_size_, other.printable_area_,
+                  other.overlay_area_, other.content_area_,
+                  other.effective_margins_, other.requested_margins_,
+                  other.forced_margins_, other.text_height_);
+}
 
 // static
 gfx::Rect PageSetup::GetSymmetricalPrintableArea(
