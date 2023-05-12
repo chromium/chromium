@@ -29,8 +29,6 @@ import org.chromium.ui.resources.ResourceManager;
  */
 @JNINamespace("android")
 public class TabStripSceneLayer extends SceneOverlayLayer {
-    private final boolean mTabStripRedesignEnabled =
-            ChromeFeatureList.sTabStripRedesign.isEnabled();
     private static boolean sTestFlag;
     private long mNativePtr;
     private final float mDpToPx;
@@ -47,7 +45,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     protected void initializeNative() {
         if (mNativePtr == 0) {
             mNativePtr = TabStripSceneLayerJni.get().init(
-                    TabStripSceneLayer.this, mTabStripRedesignEnabled);
+                    TabStripSceneLayer.this, ChromeFeatureList.sTabStripRedesign.isEnabled());
         }
         // Set flag for testing
         if (!sTestFlag) {
@@ -108,7 +106,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 newTabButton.getTint(), newTabButton.getBackgroundTint(), newTabButton.getOpacity(),
                 resourceManager);
 
-        if (!mTabStripRedesignEnabled) {
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             TabStripSceneLayerJni.get().updateModelSelectorButton(mNativePtr,
                     TabStripSceneLayer.this, modelSelectorButton.getResourceId(),
                     modelSelectorButton.getX() * mDpToPx, modelSelectorButton.getY() * mDpToPx,
@@ -128,9 +126,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     modelSelectorButton.getOpacity(), resourceManager);
         }
 
+        boolean tabStripRedesignEnabled = ChromeFeatureList.sTabStripRedesign.isEnabled();
         boolean isLayoutRtl = LocalizationUtils.isLayoutRtl();
-        boolean showLeftTabStripFade = mTabStripRedesignEnabled || isLayoutRtl;
-        boolean showRightTabStripFade = mTabStripRedesignEnabled || !isLayoutRtl;
+        boolean showLeftTabStripFade = tabStripRedesignEnabled || isLayoutRtl;
+        boolean showRightTabStripFade = tabStripRedesignEnabled || !isLayoutRtl;
 
         if (showLeftTabStripFade) {
             int leftFadeDrawable = layoutHelper.getLeftFadeDrawable();
