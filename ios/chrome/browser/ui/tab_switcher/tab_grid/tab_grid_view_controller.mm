@@ -314,12 +314,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [super viewDidLayoutSubviews];
   // Modify Incognito and Regular Tabs Insets.
   [self setInsetForGridViews];
-  // Reset bottom message width after bottom toolbar is updated after an
-  // orientation change. As this depends on
-  // `regularTabsViewController.gridView.contentOffset.x`, this should not be
-  // done in `-traitCollectionDidChange` when the updated layout has not been
-  // finalized.
-  [self updateRegularTabsBottomMessageConstraintsIfExists];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -355,6 +349,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsPinnedTabsEnabled()) {
     [self updatePinnedTabsViewControllerConstraints];
   }
+  [self updateRegularTabsBottomMessageConstraintsIfExists];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -3179,6 +3174,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.regularTabsBottomMessageConstraints = nil;
 
   UIView* bottomMessageView = self.regularTabsBottomMessage.view;
+  [bottomMessageView invalidateIntrinsicContentSize];
   NSMutableArray<NSLayoutConstraint*>* constraints =
       [[NSMutableArray alloc] init];
   // left and right anchors.
@@ -3223,7 +3219,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [bottomMessageView.bottomAnchor constraintEqualToAnchor:bottomAnchor],
     [bottomMessageView.topAnchor
         constraintGreaterThanOrEqualToAnchor:self.view.topAnchor
-                                    constant:topLayoutAnchorConstant]
+                                    constant:topLayoutAnchorConstant],
+    [bottomMessageView.heightAnchor
+        constraintLessThanOrEqualToConstant:bottomMessageView
+                                                .intrinsicContentSize.height],
   ]];
   self.regularTabsBottomMessageConstraints = constraints;
   [NSLayoutConstraint
