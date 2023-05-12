@@ -456,11 +456,11 @@ class ComplexOutlinePainter {
       return;
     }
 
-    bool use_alpha_layer = color_.HasTransparency() &&
+    bool use_alpha_layer = !color_.IsOpaque() &&
                            outline_style_ != EBorderStyle::kSolid &&
                            outline_style_ != EBorderStyle::kDouble;
     if (use_alpha_layer) {
-      context_.BeginLayer(color_.AlphaAsInteger() / 255.0);
+      context_.BeginLayer(color_.Alpha());
       color_ = Color::FromRGB(color_.Red(), color_.Green(), color_.Blue());
     }
 

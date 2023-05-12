@@ -150,8 +150,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
   bool has_border_radius = style.HasBorderRadius();
   bool has_opaque_background =
       !background_is_skipped &&
-      style.VisitedDependentColor(GetCSSPropertyBackgroundColor())
-              .AlphaAsInteger() == 255;
+      style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).IsOpaque();
 
   GraphicsContextStateSaver state_saver(context, false);
 
@@ -443,7 +442,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
     // Note that we can't reuse this variable below because the bgColor might
     // be changed.
     bool should_paint_background_color =
-        is_bottom_layer && color.AlphaAsInteger();
+        is_bottom_layer && !color.IsFullyTransparent();
     if (image || should_paint_background_color) {
       color = Color::kWhite;
       image = nullptr;
@@ -478,7 +477,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   // artifacts in order to run the animation on the compositor.
   should_paint_color =
       is_bottom_layer &&
-      (color.AlphaAsInteger() || composite_bgcolor_animation) &&
+      (!color.IsFullyTransparent() || composite_bgcolor_animation) &&
       (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
   should_paint_color_with_paint_worklet_image =
       should_paint_color && composite_bgcolor_animation;

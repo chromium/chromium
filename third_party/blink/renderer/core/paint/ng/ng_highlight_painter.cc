@@ -75,7 +75,7 @@ void PaintRect(GraphicsContext& context,
                const PhysicalRect& rect,
                const Color color,
                const AutoDarkMode& auto_dark_mode) {
-  if (!color.AlphaAsInteger()) {
+  if (color.IsFullyTransparent()) {
     return;
   }
   if (rect.size.IsEmpty())
@@ -100,7 +100,7 @@ Color SelectionBackgroundColor(const Document& document,
                                Color text_color) {
   const Color color = HighlightPaintingUtils::HighlightBackgroundColor(
       document, style, node, absl::nullopt, kPseudoIdSelection);
-  if (!color.AlphaAsInteger()) {
+  if (color.IsFullyTransparent()) {
     return Color();
   }
 
@@ -195,10 +195,10 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
     if (pseudo_style->TextStrokeWidth() != originating_style.TextStrokeWidth())
       return true;
     // If there is a background color.
-    if (HighlightPaintingUtils::ResolveColor(
-            document, originating_style, pseudo_style.get(), pseudo,
-            GetCSSPropertyBackgroundColor(), {})
-            .AlphaAsInteger() > 0) {
+    if (!HighlightPaintingUtils::ResolveColor(
+             document, originating_style, pseudo_style.get(), pseudo,
+             GetCSSPropertyBackgroundColor(), {})
+             .IsFullyTransparent()) {
       return true;
     }
     // If the ‘text-shadow’ is not ‘none’.

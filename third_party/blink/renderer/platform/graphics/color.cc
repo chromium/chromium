@@ -761,7 +761,7 @@ int DifferenceSquared(const Color& c1, const Color& c2) {
 }
 
 bool Color::SetFromString(const String& name) {
-  // TODO(https://crbug.com/1333988): Implement CSS Color level 4 parsing.
+  // TODO(https://crbug.com/1434423): Implement CSS Color level 4 parsing.
   if (name[0] != '#')
     return SetNamedColor(name);
   if (name.Is8Bit())
@@ -900,7 +900,7 @@ String Color::NameForLayoutTreeAsText() const {
     return SerializeAsCSSColor();
   }
 
-  if (HasTransparency()) {
+  if (!IsOpaque()) {
     return String::Format("#%02X%02X%02X%02X", Red(), Green(), Blue(),
                           AlphaAsInteger());
   }
@@ -962,33 +962,36 @@ Color Color::Dark() const {
 }
 
 Color Color::Blend(const Color& source) const {
-  // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending.
+  // TODO(https://crbug.com/1434423): CSS Color level 4 blending is implemented.
+  // Remove this function.
   if (IsFullyTransparent() || source.IsOpaque()) {
     return source;
   }
 
-  if (!source.AlphaAsInteger()) {
+  if (source.IsFullyTransparent()) {
     return *this;
   }
 
-  int d = 255 * (AlphaAsInteger() + source.AlphaAsInteger()) -
-          AlphaAsInteger() * source.AlphaAsInteger();
+  int source_alpha = source.AlphaAsInteger();
+  int alpha = AlphaAsInteger();
+
+  int d = 255 * (alpha + source_alpha) - alpha * source_alpha;
   int a = d / 255;
-  int r = (Red() * AlphaAsInteger() * (255 - source.AlphaAsInteger()) +
-           255 * source.AlphaAsInteger() * source.Red()) /
+  int r = (Red() * alpha * (255 - source_alpha) +
+           255 * source_alpha * source.Red()) /
           d;
-  int g = (Green() * AlphaAsInteger() * (255 - source.AlphaAsInteger()) +
-           255 * source.AlphaAsInteger() * source.Green()) /
+  int g = (Green() * alpha * (255 - source_alpha) +
+           255 * source_alpha * source.Green()) /
           d;
-  int b = (Blue() * AlphaAsInteger() * (255 - source.AlphaAsInteger()) +
-           255 * source.AlphaAsInteger() * source.Blue()) /
+  int b = (Blue() * alpha * (255 - source_alpha) +
+           255 * source_alpha * source.Blue()) /
           d;
   return Color(r, g, b, a);
 }
 
 Color Color::BlendWithWhite() const {
   // If the color contains alpha already, we leave it alone.
-  if (HasTransparency()) {
+  if (!IsOpaque()) {
     return *this;
   }
 
@@ -1011,17 +1014,19 @@ Color Color::BlendWithWhite() const {
 }
 
 void Color::GetRGBA(float& r, float& g, float& b, float& a) const {
+  // TODO(crbug.com/1399566): Check for colorspace.
   r = Red() / 255.0f;
   g = Green() / 255.0f;
   b = Blue() / 255.0f;
-  a = AlphaAsInteger() / 255.0f;
+  a = Alpha();
 }
 
 void Color::GetRGBA(double& r, double& g, double& b, double& a) const {
+  // TODO(crbug.com/1399566): Check for colorspace.
   r = Red() / 255.0;
   g = Green() / 255.0;
   b = Blue() / 255.0;
-  a = AlphaAsInteger() / 255.0;
+  a = Alpha();
 }
 
 // Hue, max and min are returned in range of 0.0 to 1.0.

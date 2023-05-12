@@ -252,7 +252,7 @@ void ViewPainter::PaintRootElementGroup(
   const LocalFrameView& frame_view = *layout_view_.GetFrameView();
   bool paints_base_background =
       frame_view.ShouldPaintBaseBackgroundColor() &&
-      (frame_view.BaseBackgroundColor().AlphaAsInteger() > 0);
+      !frame_view.BaseBackgroundColor().IsFullyTransparent();
   Color base_background_color =
       paints_base_background ? frame_view.BaseBackgroundColor() : Color();
   if (document.Printing() && base_background_color == Color::kWhite) {
@@ -324,7 +324,7 @@ void ViewPainter::PaintRootElementGroup(
 
   if (!background_renderable) {
     if (!painted_separate_backdrop) {
-      if (base_background_color.AlphaAsInteger()) {
+      if (!base_background_color.IsFullyTransparent()) {
         context.FillRect(
             pixel_snapped_background_rect, base_background_color,
             auto_dark_mode,
@@ -357,7 +357,7 @@ void ViewPainter::PaintRootElementGroup(
 
     // We are going to clear the canvas with transparent pixels, isolation group
     // can be skipped.
-    if (!base_background_color.AlphaAsInteger() && should_clear_canvas) {
+    if (base_background_color.IsFullyTransparent() && should_clear_canvas) {
       should_draw_background_in_separate_buffer = false;
     }
   }
@@ -368,7 +368,7 @@ void ViewPainter::PaintRootElementGroup(
   // mode. An extra BeginLayer will result in incorrect blend isolation if
   // it is added on top of any effect on the root element.
   if (should_draw_background_in_separate_buffer && !painted_separate_effect) {
-    if (base_background_color.AlphaAsInteger()) {
+    if (!base_background_color.IsFullyTransparent()) {
       context.FillRect(
           paint_rect, base_background_color, auto_dark_mode,
           should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
@@ -384,7 +384,7 @@ void ViewPainter::PaintRootElementGroup(
   if (combined_background_color != frame_view.BaseBackgroundColor())
     context.GetPaintController().SetFirstPainted();
 
-  if (combined_background_color.AlphaAsInteger()) {
+  if (!combined_background_color.IsFullyTransparent()) {
     context.FillRect(
         paint_rect, combined_background_color, auto_dark_mode,
         (should_draw_background_in_separate_buffer || should_clear_canvas)

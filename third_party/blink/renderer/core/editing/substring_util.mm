@@ -147,14 +147,15 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
     }
     attrs[NSFontAttributeName] = font;
 
-    if (style->VisitedDependentColor(GetCSSPropertyColor()).AlphaAsInteger()) {
+    if (!style->VisitedDependentColor(GetCSSPropertyColor())
+             .IsFullyTransparent()) {
       attrs[NSForegroundColorAttributeName] =
           NsColor(style->VisitedDependentColor(GetCSSPropertyColor()));
     } else {
       [attrs removeObjectForKey:NSForegroundColorAttributeName];
     }
-    if (style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
-            .AlphaAsInteger()) {
+    if (!style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+             .IsFullyTransparent()) {
       attrs[NSBackgroundColorAttributeName] = NsColor(
           style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
     } else {

@@ -1082,7 +1082,7 @@ void BoxBorderPainter::ComputeBorderProperties() {
     visible_edge_count_++;
     visible_edge_set_ |= EdgeFlagForSide(static_cast<BoxSide>(i));
 
-    if (edge.GetColor().HasTransparency()) {
+    if (!edge.GetColor().IsOpaque()) {
       has_transparency_ = true;
     }
 

@@ -264,7 +264,6 @@ class PLATFORM_EXPORT Color {
 
   bool IsFullyTransparent() const { return Alpha() <= 0.0f; }
   bool IsOpaque() const { return Alpha() >= 1.0f; }
-  bool HasTransparency() const { return !IsOpaque(); }
 
   float Param0() const { return param0_; }
   float Param1() const { return param1_; }

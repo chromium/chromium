@@ -62,7 +62,7 @@ void LinkHighlight::SetTapHighlight(Node* node) {
   // Safari documentation for -webkit-tap-highlight-color says if the
   // specified color has 0 alpha, then tap highlighting is disabled.
   // http://developer.apple.com/library/safari/#documentation/appleapplications/reference/safaricssref/articles/standardcssproperties.html
-  if (!highlight_color.AlphaAsInteger()) {
+  if (highlight_color.IsFullyTransparent()) {
     return;
   }
 

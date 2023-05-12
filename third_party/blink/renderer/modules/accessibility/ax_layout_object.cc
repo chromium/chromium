@@ -1177,7 +1177,7 @@ bool AXLayoutObject::IsDataTable() const {
       Color cell_color = computed_style->VisitedDependentColor(
           GetCSSPropertyBackgroundColor());
       if (has_cell_spacing && table_bg_color != cell_color &&
-          cell_color.AlphaAsInteger() != 1) {
+          !cell_color.IsFullyTransparent()) {
         background_difference_cell_count++;
       }
 

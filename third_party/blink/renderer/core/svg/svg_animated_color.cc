@@ -101,6 +101,7 @@ void SVGColorProperty::CalculateAnimatedValue(
   Color to_at_end_of_duration_color =
       to_at_end_of_duration_style_color.Resolve(fallback_color, color_scheme);
 
+  // TODO(crbug.com/1399566): Use float color and don't clobber colorspace.
   float animated_red = ComputeAnimatedNumber(
       parameters, percentage, repeat_count, from_color.Red(), to_color.Red(),
       to_at_end_of_duration_color.Red());

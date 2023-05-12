@@ -310,7 +310,7 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
   // FIXME: the normal Aura theme doesn't care about this, so we should
   // investigate if we really need fillContentArea.
   extra_params.menu_list.fill_content_area =
-      !style.HasBackgroundImage() && background_color.AlphaAsInteger();
+      !style.HasBackgroundImage() && !background_color.IsFullyTransparent();
 
   SetupMenuListArrow(document, style, rect, extra_params);
 

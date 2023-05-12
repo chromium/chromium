@@ -1568,7 +1568,7 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
       // Ignore invisible background layers for kBackgroundPaintedExtent.
       DCHECK_EQ(rect_type, kBackgroundPaintedExtent);
       if (!cur->GetImage() &&
-          (cur->Next() || background_color.AlphaAsInteger() == 0)) {
+          (cur->Next() || background_color.IsFullyTransparent())) {
         continue;
       }
       // A content-box clipped fill layer can be scrolled into the padding box
@@ -6157,22 +6157,22 @@ bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
   }
 
   if (StyleRef().BorderTopWidth() &&
-      (ResolveColor(GetCSSPropertyBorderTopColor()).HasTransparency() ||
+      (!ResolveColor(GetCSSPropertyBorderTopColor()).IsOpaque() ||
        StyleRef().BorderTopStyle() != EBorderStyle::kSolid)) {
     return false;
   }
   if (StyleRef().BorderRightWidth() &&
-      (ResolveColor(GetCSSPropertyBorderRightColor()).HasTransparency() ||
+      (!ResolveColor(GetCSSPropertyBorderRightColor()).IsOpaque() ||
        StyleRef().BorderRightStyle() != EBorderStyle::kSolid)) {
     return false;
   }
   if (StyleRef().BorderBottomWidth() &&
-      (ResolveColor(GetCSSPropertyBorderBottomColor()).HasTransparency() ||
+      (!ResolveColor(GetCSSPropertyBorderBottomColor()).IsOpaque() ||
        StyleRef().BorderBottomStyle() != EBorderStyle::kSolid)) {
     return false;
   }
   if (StyleRef().BorderLeftWidth() &&
-      (ResolveColor(GetCSSPropertyBorderLeftColor()).HasTransparency() ||
+      (!ResolveColor(GetCSSPropertyBorderLeftColor()).IsOpaque() ||
        StyleRef().BorderLeftStyle() != EBorderStyle::kSolid)) {
     return false;
   }
@@ -6217,7 +6217,7 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
     // bottommost value from the background property (see final-bg-layer in
     // https://drafts.csswg.org/css-backgrounds/#the-background).
     if (!layer->GetImage() && !layer->Next() &&
-        background_color.AlphaAsInteger() > 0 &&
+        !background_color.IsFullyTransparent() &&
         StyleRef().IsScrollbarGutterAuto()) {
       // Solid color layers with an effective background clip of the padding box
       // can be treated as local.
