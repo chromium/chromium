@@ -3450,6 +3450,11 @@
       },
     }
   },
+  'services_webnn_unittests': {
+    'remove_from': [
+      'Win10 FYI x64 Release (AMD RX 5500 XT)', # crbug.com/1445060
+    ],
+  },
   'snapshot_unittests': {
     'modifications': {
       'fuchsia-fyi-arm64-dbg': {
