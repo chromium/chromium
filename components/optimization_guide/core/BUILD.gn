@@ -376,6 +376,7 @@ source_set("unit_tests") {
     "hints_processing_util_unittest.cc",
     "insertion_ordered_set_unittest.cc",
     "model_handler_unittest.cc",
+    "model_store_metadata_entry_unittest.cc",
     "model_util_unittest.cc",
     "noisy_metrics_recorder_unittest.cc",
     "optimization_filter_unittest.cc",

@@ -167,6 +167,7 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
     PrefService* local_state) {
   ScopedDictPrefUpdate updater(local_state,
                                prefs::localstate::kModelStoreMetadata);
+  std::vector<std::pair<std::string, std::string>> entries_to_remove;
   std::vector<base::FilePath> inactive_model_dirs;
   for (auto optimization_target_entry : *updater) {
     if (!optimization_target_entry.second.is_dict()) {
@@ -195,8 +196,13 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
         if (base_model_dir) {
           inactive_model_dirs.emplace_back(*base_model_dir);
         }
-        optimization_target_entry.second.GetDict().Remove(
-            model_cache_key_hash.first);
+        entries_to_remove.emplace_back(optimization_target_entry.first,
+                                       model_cache_key_hash.first);
+      }
+    }
+    for (const auto& entry : entries_to_remove) {
+      if (auto* optimization_target_dict = updater->FindDict(entry.first)) {
+        optimization_target_dict->Remove(entry.second);
       }
     }
   }
