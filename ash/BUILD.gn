@@ -358,6 +358,8 @@ component("ash") {
     "capture_mode/capture_window_observer.h",
     "capture_mode/folder_selection_dialog_controller.cc",
     "capture_mode/folder_selection_dialog_controller.h",
+    "capture_mode/game_capture_bar_view.cc",
+    "capture_mode/game_capture_bar_view.h",
     "capture_mode/key_combo_view.cc",
     "capture_mode/key_combo_view.h",
     "capture_mode/key_item_view.cc",

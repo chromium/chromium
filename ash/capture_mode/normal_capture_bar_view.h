@@ -17,10 +17,11 @@ class CaptureModeBehavior;
 class CaptureModeSourceView;
 class CaptureModeTypeView;
 
-// A view that acts as the content view of the capture mode bar widget. It has
-// a set of buttons to toggle between image and video capture, and another set
-// of buttons to toggle between fullscreen, region, and window capture sources.
-// It also contains a settings button. The structure looks like this:
+// A view that acts as the content view of the capture mode bar widget for a
+// normal capture session. It has a set of buttons to toggle between image and
+// video capture, and another set of buttons to toggle between fullscreen,
+// region, and window capture sources. It also contains a settings button. The
+// structure looks like this:
 //
 //   +---------------------------------------------------------------+
 //   |  +----------------+  |                       |                |

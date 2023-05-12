@@ -235,12 +235,6 @@ class CaptureModeTest : public AshTestBase {
     demo_tools_enabled_ = features::AreCaptureModeDemoToolsEnabled();
   }
 
-  views::Widget* GetCaptureModeBarWidget() const {
-    auto* session = CaptureModeController::Get()->capture_mode_session();
-    DCHECK(session);
-    return session->capture_mode_bar_widget();
-  }
-
   views::Widget* GetCaptureModeLabelWidget() const {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
@@ -269,32 +263,6 @@ class CaptureModeTest : public AshTestBase {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
     return CaptureModeSessionTestApi(session).IsAllUisVisible();
-  }
-
-  IconButton* GetImageToggleButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()->capture_type_view()->image_toggle_button();
-  }
-
-  IconButton* GetVideoToggleButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()->capture_type_view()->video_toggle_button();
-  }
-
-  IconButton* GetWindowToggleButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()
-        ->capture_source_view()
-        ->window_toggle_button();
-  }
-
-  IconButton* GetCloseButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()->close_button();
   }
 
   aura::Window* GetDimensionsLabelWindow() const {
@@ -4724,6 +4692,7 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
   EXPECT_TRUE(GetFullscreenToggleButton());
   EXPECT_TRUE(GetRegionToggleButton());
   EXPECT_TRUE(GetWindowToggleButton());
+  EXPECT_FALSE(GetStartRecordingButton());
   EXPECT_TRUE(GetSettingsButton());
   EXPECT_TRUE(GetCloseButton());
 
@@ -5811,6 +5780,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
   EXPECT_TRUE(GetFullscreenToggleButton());
   EXPECT_TRUE(GetRegionToggleButton());
   EXPECT_TRUE(GetWindowToggleButton());
+  EXPECT_FALSE(GetStartRecordingButton());
   EXPECT_TRUE(GetSettingsButton());
   EXPECT_TRUE(GetCloseButton());
 

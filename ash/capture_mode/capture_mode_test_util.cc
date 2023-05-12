@@ -9,8 +9,10 @@
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
+#include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -19,6 +21,7 @@
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
@@ -173,30 +176,16 @@ void ClickOrTapView(const views::View* view,
     ClickOnView(view, event_generator);
 }
 
+views::Widget* GetCaptureModeBarWidget() {
+  auto* session = CaptureModeController::Get()->capture_mode_session();
+  DCHECK(session);
+  return session->capture_mode_bar_widget();
+}
+
 CaptureModeBarView* GetCaptureModeBarView() {
   auto* session = CaptureModeController::Get()->capture_mode_session();
   DCHECK(session);
   return CaptureModeSessionTestApi(session).GetCaptureModeBarView();
-}
-
-IconButton* GetSettingsButton() {
-  auto* controller = CaptureModeController::Get();
-  DCHECK(controller->IsActive());
-  return GetCaptureModeBarView()->settings_button();
-}
-
-IconButton* GetFullscreenToggleButton() {
-  auto* controller = CaptureModeController::Get();
-  DCHECK(controller->IsActive());
-  return GetCaptureModeBarView()
-      ->capture_source_view()
-      ->fullscreen_toggle_button();
-}
-
-IconButton* GetRegionToggleButton() {
-  auto* controller = CaptureModeController::Get();
-  DCHECK(controller->IsActive());
-  return GetCaptureModeBarView()->capture_source_view()->region_toggle_button();
 }
 
 UserNudgeController* GetUserNudgeController() {
@@ -290,6 +279,62 @@ gfx::Image ReadAndDecodeImageFile(const base::FilePath& image_path) {
   }
 
   return image;
+}
+
+IconButton* GetImageToggleButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  auto* capture_type_view = GetCaptureModeBarView()->capture_type_view();
+  return capture_type_view ? capture_type_view->image_toggle_button() : nullptr;
+}
+
+IconButton* GetVideoToggleButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  auto* capture_type_view = GetCaptureModeBarView()->capture_type_view();
+  return capture_type_view ? capture_type_view->video_toggle_button() : nullptr;
+}
+
+IconButton* GetFullscreenToggleButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  auto* capture_source_view = GetCaptureModeBarView()->capture_source_view();
+  return capture_source_view ? capture_source_view->fullscreen_toggle_button()
+                             : nullptr;
+}
+
+IconButton* GetRegionToggleButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  auto* capture_source_view = GetCaptureModeBarView()->capture_source_view();
+  return capture_source_view ? capture_source_view->region_toggle_button()
+                             : nullptr;
+}
+
+IconButton* GetWindowToggleButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  auto* capture_source_view = GetCaptureModeBarView()->capture_source_view();
+  return capture_source_view ? capture_source_view->window_toggle_button()
+                             : nullptr;
+}
+
+PillButton* GetStartRecordingButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  return GetCaptureModeBarView()->GetStartRecordingButton();
+}
+
+IconButton* GetSettingsButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  return GetCaptureModeBarView()->settings_button();
+}
+
+IconButton* GetCloseButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  return GetCaptureModeBarView()->close_button();
 }
 
 // -----------------------------------------------------------------------------

@@ -23,6 +23,8 @@ class Rect;
 
 namespace ash {
 
+class CaptureModeBarView;
+
 // Contains the cached capture mode configurations that will be used for
 // configurations restoration when initiating the corresponding capture mode
 // session.
@@ -88,6 +90,10 @@ class CaptureModeBehavior {
   // in order to differentiate the metrics for example "Projector." is used to
   // indicate the histogram is for a projector-initiated capture mode session.
   virtual const char* GetClientMetricComponent() const;
+
+  // Creates the capture mode bar view, which might look different depending on
+  // the actual type of the behavior.
+  virtual std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView();
 
   // Gets the bounds in screen coordinates of the capture bar in the given
   // `root` window. The returned bounds of the bar will vary depending on the

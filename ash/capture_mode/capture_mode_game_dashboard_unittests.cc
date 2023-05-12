@@ -81,4 +81,21 @@ TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
   EXPECT_TRUE(active_behavior->ShouldAutoSelectFirstCamera());
 }
 
+TEST_F(GameDashboardCaptureModeTest, CaptureBar) {
+  StartGameCaptureModeSession();
+  views::Widget* bar_widget = GetCaptureModeBarWidget();
+  ASSERT_TRUE(bar_widget);
+
+  // Checks that the game capture bar only includes the start recording button,
+  // settings button and close button.
+  EXPECT_TRUE(GetStartRecordingButton());
+  EXPECT_FALSE(GetImageToggleButton());
+  EXPECT_FALSE(GetVideoToggleButton());
+  EXPECT_FALSE(GetFullscreenToggleButton());
+  EXPECT_FALSE(GetRegionToggleButton());
+  EXPECT_FALSE(GetWindowToggleButton());
+  EXPECT_TRUE(GetSettingsButton());
+  EXPECT_TRUE(GetCloseButton());
+}
+
 }  // namespace ash

@@ -584,8 +584,10 @@ bool CaptureModeSessionFocusCycler::OnSpacePressed() {
   // currently has focus and we are already in region mode, as we still want to
   // create a default region in this case.
   CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
-  if (view->GetView() ==
-          bar_view->capture_source_view()->region_toggle_button() &&
+  if (const CaptureModeSourceView* capture_source_view =
+          bar_view->capture_source_view();
+      capture_source_view &&
+      view->GetView() == capture_source_view->region_toggle_button() &&
       CaptureModeController::Get()->source() == CaptureModeSource::kRegion) {
     return false;
   }
@@ -804,6 +806,9 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
       CaptureModeTypeView* type_view = bar_view->capture_type_view();
       CaptureModeSourceView* source_view = bar_view->capture_source_view();
+      if (!type_view || !source_view) {
+        break;
+      }
       for (auto* button :
            {type_view->image_toggle_button(), type_view->video_toggle_button(),
             source_view->fullscreen_toggle_button(),

@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_session.h"
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -499,7 +500,7 @@ void CaptureModeSession::Initialize() {
       parent, active_behavior_->GetCaptureBarBounds(current_root_),
       "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
-      std::make_unique<NormalCaptureBarView>(active_behavior_));
+      active_behavior_->CreateCaptureModeBarView());
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
   capture_mode_bar_widget_->Show();
@@ -532,11 +533,10 @@ void CaptureModeSession::Initialize() {
   // `OnCaptureTypeChanged` may trigger `ShowCaptureToast` which depends on the
   // capture bar.
   // Also please note we should call `OnCaptureTypeChanged` in
-  // `CaptureModeTypeView` instead of `CaptureModeSession`, since this is during
+  // `CaptureModeBarView` instead of `CaptureModeSession`, since this is during
   // the initialization of the capture session, the type change is not triggered
   // by the user.
-  capture_mode_bar_view_->capture_type_view()->OnCaptureTypeChanged(
-      controller_->type());
+  capture_mode_bar_view_->OnCaptureTypeChanged(controller_->type());
   MaybeCreateUserNudge();
 
   if (active_behavior_->ShouldAutoSelectFirstCamera()) {

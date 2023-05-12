@@ -39,11 +39,17 @@ constexpr int kBorderRadius = 20;
 
 }  // namespace
 
+CaptureModeBarView::~CaptureModeBarView() = default;
+
 CaptureModeTypeView* CaptureModeBarView::capture_type_view() const {
   return nullptr;
 }
 
 CaptureModeSourceView* CaptureModeBarView::capture_source_view() const {
+  return nullptr;
+}
+
+PillButton* CaptureModeBarView::GetStartRecordingButton() const {
   return nullptr;
 }
 
@@ -84,8 +90,6 @@ CaptureModeBarView::CaptureModeBarView()
 
   shadow_->SetRoundedCornerRadius(kBorderRadius);
 }
-
-CaptureModeBarView::~CaptureModeBarView() = default;
 
 void CaptureModeBarView::AppendCommonElements() {
   settings_button_ = AddChildView(std::make_unique<IconButton>(

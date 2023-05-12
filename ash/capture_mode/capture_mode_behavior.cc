@@ -12,6 +12,8 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/game_capture_bar_view.h"
+#include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -29,6 +31,9 @@ namespace {
 // Full size of capture mode bar view, the width of which will be
 // adjusted based on the current active behavior.
 constexpr gfx::Size kFullBarSize{376, 64};
+
+// Size of the game capture bar.
+constexpr gfx::Size kGameCaptureBarSize{260, 64};
 
 // Distance from the bottom of the capture bar to the bottom of the display, top
 // of the hotseat or top of the shelf depending on the shelf alignment or
@@ -184,6 +189,14 @@ class GameDashboardBehavior : public CaptureModeBehavior {
   bool ShouldGifBeSupported() const override { return false; }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldAutoSelectFirstCamera() const override { return true; }
+  std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
+    return std::make_unique<GameCaptureBarView>();
+  }
+
+ protected:
+  int GetCaptureBarWidth() const override {
+    return kGameCaptureBarSize.width();
+  }
 };
 
 }  // namespace
@@ -301,6 +314,11 @@ std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
 
 const char* CaptureModeBehavior::GetClientMetricComponent() const {
   return "";
+}
+
+std::unique_ptr<CaptureModeBarView>
+CaptureModeBehavior::CreateCaptureModeBarView() {
+  return std::make_unique<NormalCaptureBarView>(this);
 }
 
 gfx::Rect CaptureModeBehavior::GetCaptureBarBounds(aura::Window* root) const {
