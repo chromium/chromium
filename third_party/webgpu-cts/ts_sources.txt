@@ -62,14 +62,15 @@ src/demo/a/b/d.spec.ts
 src/demo/file_depth_2/in_single_child_dir/r.spec.ts
 src/stress/listing.ts
 src/webgpu/constants.ts
+src/webgpu/capability_info.ts
+src/stress/adapter/device_allocation.spec.ts
 src/webgpu/util/constants.ts
 src/webgpu/util/conversion.ts
 src/webgpu/util/math.ts
 src/webgpu/util/unions.ts
 src/webgpu/util/texture/base.ts
 src/webgpu/util/texture/layout.ts
-src/webgpu/capability_info.ts
-src/stress/adapter/device_allocation.spec.ts
+src/webgpu/format_info.ts
 src/webgpu/util/buffer.ts
 src/webgpu/util/pretty_diff_tables.ts
 src/webgpu/util/check_contents.ts
