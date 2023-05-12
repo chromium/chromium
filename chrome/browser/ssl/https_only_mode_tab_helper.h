@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_TAB_HELPER_H_
 #define CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_TAB_HELPER_H_
 
+#include "base/containers/contains.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -44,7 +45,7 @@ class HttpsOnlyModeTabHelper
   GURL fallback_url() const { return fallback_url_; }
 
   bool has_failed_upgrade(const GURL& url) {
-    return failed_upgrade_urls_.contains(url);
+    return base::Contains(failed_upgrade_urls_, url);
   }
   void add_failed_upgrade(const GURL& url) { failed_upgrade_urls_.insert(url); }
 
