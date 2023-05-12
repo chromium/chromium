@@ -453,6 +453,7 @@ TEST_F(ConnectionTest, InitiateHandshake) {
 }
 
 TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {
+  fake_quick_start_decoder_->SetUserVerificationRequested(true);
   fake_quick_start_decoder_->SetUserVerificationResponse(
       mojom::UserVerificationResult::kUserVerified, true);
 
@@ -460,24 +461,62 @@ TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {
 
   base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
       future;
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(mojom::UserVerificationResult::kUserVerified, future.Get()->result);
   EXPECT_TRUE(future.Get()->is_first_user_verification);
 }
 
-TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsEmptyIfError) {
+TEST_F(ConnectionTest,
+       TestUserVerificationRequested_ReturnsEmptyIfRequestIsEmpty) {
   fake_quick_start_decoder_->SetDecoderError(
       mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  fake_quick_start_decoder_->SetUserVerificationResponse(
+      mojom::UserVerificationResult::kUserVerified, true);
 
   MarkConnectionAuthenticated();
 
   base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
       future;
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(
+    ConnectionTest,
+    TestUserVerificationRequested_ReturnsEmptyIfAwaitingUserVerificationIsFalse) {
+  fake_quick_start_decoder_->SetUserVerificationRequested(false);
+  fake_quick_start_decoder_->SetUserVerificationResponse(
+      mojom::UserVerificationResult::kUserVerified, true);
+
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
+      future;
+  authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ConnectionTest,
+       TestUserVerificationRequested_ReturnsEmptyIfResponseReturnsError) {
+  fake_quick_start_decoder_->SetUserVerificationRequested(true);
+
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
+      future;
+  authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_quick_start_decoder_->SetDecoderError(
+      mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
 
   EXPECT_FALSE(future.Get().has_value());
 }

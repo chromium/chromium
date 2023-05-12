@@ -60,6 +60,12 @@ class MockQuickStartDecoder
                DecodeUserVerificationResultCallback callback),
               (override));
 
+  MOCK_METHOD(void,
+              DecodeUserVerificationRequested,
+              (const std::vector<uint8_t>& data,
+               DecodeUserVerificationRequestedCallback callback),
+              (override));
+
  private:
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
   mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder> shared_remote_;

@@ -241,13 +241,37 @@ void Connection::InitiateHandshake(const std::string& authentication_token,
 
 void Connection::WaitForUserVerification(
     AwaitUserVerificationCallback callback) {
-  // TODO(b/280604365): Only wait for user verification result if a user
-  // verification requested message was sent
-  OnUserVerificationRequested(std::move(callback));
+  auto on_decoding_completed =
+      base::BindOnce(&Connection::OnUserVerificationRequested,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  ConnectionResponseCallback on_message_received =
+      base::BindOnce(&Connection::DecodeData<mojom::UserVerificationRequested>,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     &mojom::QuickStartDecoder::DecodeUserVerificationRequested,
+                     std::move(on_decoding_completed));
+
+  nearby_connection_->Read(std::move(on_message_received));
 }
 
 void Connection::OnUserVerificationRequested(
-    AwaitUserVerificationCallback callback) {
+    AwaitUserVerificationCallback callback,
+    absl::optional<mojom::UserVerificationRequested>
+        user_verification_request) {
+  if (!user_verification_request.has_value()) {
+    QS_LOG(ERROR) << "No user verification request received from phone.";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  if (!user_verification_request->is_awaiting_user_verification) {
+    QS_LOG(ERROR) << "User verification request received from phone, but "
+                     "is_awaiting_user_verification is false.";
+
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   ConnectionResponseCallback on_response_received =
       base::BindOnce(&Connection::DecodeData<mojom::UserVerificationResponse>,
                      weak_ptr_factory_.GetWeakPtr(),

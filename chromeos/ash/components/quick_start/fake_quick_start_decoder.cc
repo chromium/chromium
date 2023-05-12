@@ -33,6 +33,17 @@ void FakeQuickStartDecoder::DecodeWifiCredentialsResponse(
   std::move(callback).Run(std::move(credentials_), error_);
 }
 
+void FakeQuickStartDecoder::DecodeUserVerificationRequested(
+    const std::vector<uint8_t>& data,
+    DecodeUserVerificationRequestedCallback callback) {
+  if (error_ != absl::nullopt) {
+    std::move(callback).Run(nullptr, error_);
+  } else {
+    std::move(callback).Run(std::move(user_verification_request_),
+                            absl::nullopt);
+  }
+}
+
 void FakeQuickStartDecoder::DecodeUserVerificationResult(
     const std::vector<uint8_t>& data,
     DecodeUserVerificationResultCallback callback) {
@@ -58,6 +69,12 @@ void FakeQuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
     const std::vector<uint8_t>& data,
     DecodeNotifySourceOfUpdateResponseCallback callback) {
   std::move(callback).Run(/*ack_received=*/notify_source_of_update_response_);
+}
+
+void FakeQuickStartDecoder::SetUserVerificationRequested(
+    bool is_awaiting_user_verification) {
+  user_verification_request_ =
+      mojom::UserVerificationRequested::New(is_awaiting_user_verification);
 }
 
 void FakeQuickStartDecoder::SetExpectedData(

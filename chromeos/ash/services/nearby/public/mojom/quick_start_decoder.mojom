@@ -41,6 +41,11 @@ interface QuickStartDecoder {
   DecodeGetAssertionResponse(array<uint8> data) => (
     GetAssertionResponse response);
 
+  // Decode UserVerificationRequested message, indicating we are waiting
+  // for the user to pass a verification prompt.
+  DecodeUserVerificationRequested(array<uint8> data) => (
+    UserVerificationRequested? response, QuickStartDecoderError? error);
+
   // Decode the UserVerificationResult sent from the target device.
   DecodeUserVerificationResult(array<uint8> data) => (
     UserVerificationResponse? response, QuickStartDecoderError? error);

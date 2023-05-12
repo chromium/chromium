@@ -129,8 +129,10 @@ class Connection
       const std::string& challenge_b64url,
       RequestAccountTransferAssertionCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
-
-  void OnUserVerificationRequested(AwaitUserVerificationCallback callback);
+  void OnUserVerificationRequested(
+      AwaitUserVerificationCallback callback,
+      absl::optional<mojom::UserVerificationRequested>
+          user_verification_request);
 
   void OnNotifySourceOfUpdateResponse(
       NotifySourceOfUpdateCallback callback,

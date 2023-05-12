@@ -30,6 +30,10 @@ struct UserVerificationResponse {
   bool is_first_user_verification;
 };
 
+struct UserVerificationRequested {
+  bool is_awaiting_user_verification;
+};
+
 enum QuickStartDecoderError {
   kEmptyMessage = 0,
   kUnableToReadAsJSON = 1,

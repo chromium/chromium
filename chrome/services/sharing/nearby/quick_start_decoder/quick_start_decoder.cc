@@ -66,6 +66,10 @@ constexpr char kUserVerificationResultKey[] = "user_verification_result";
 // verification
 constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
 
+// Key in UserVerificationRequested indicating if user verification was
+// requested
+constexpr char kAwaitingUserVerificationKey[] = "awaiting_user_verification";
+
 std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
     base::span<const uint8_t> response) {
   cbor::Reader::DecoderError error;
@@ -237,6 +241,35 @@ void QuickStartDecoder::DecodeWifiCredentialsResponse(
     const std::vector<uint8_t>& data,
     DecodeWifiCredentialsResponseCallback callback) {
   DoDecodeWifiCredentialsResponse(data, std::move(callback));
+}
+
+void QuickStartDecoder::DecodeUserVerificationRequested(
+    const std::vector<uint8_t>& data,
+    DecodeUserVerificationRequestedCallback callback) {
+  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
+      QuickStartMessage::ReadMessage(data,
+                                     QuickStartMessageType::kQuickStartPayload);
+  if (!message) {
+    LOG(ERROR)
+        << "Failed to read UserVerificationRequested as QuickStartMessage";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
+  }
+
+  absl::optional<bool> is_awaiting_user_verification =
+      message->GetPayload()->FindBool(kAwaitingUserVerificationKey);
+  if (!is_awaiting_user_verification.has_value()) {
+    LOG(ERROR) << "UserVerificationRequested message does not include "
+                  "await_user_verification.";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  std::move(callback).Run(mojom::UserVerificationRequested::New(
+                              is_awaiting_user_verification.value()),
+                          absl::nullopt);
 }
 
 void QuickStartDecoder::DecodeUserVerificationResult(

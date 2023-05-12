@@ -64,6 +64,10 @@ constexpr char kUserVerificationResultKey[] = "user_verification_result";
 // verification
 constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
 
+// Key in UserVerificationRequested indicating if user verification was
+// requestedait
+constexpr char kAwaitingUserVerificationKey[] = "awaiting_user_verification";
+
 constexpr int kUserVerifiedStatusCode = 0;
 
 const std::vector<uint8_t> kValidCredentialId = {0x01, 0x02, 0x03};
@@ -703,6 +707,41 @@ TEST_F(QuickStartDecoderTest,
 
   decoder()->DecodeUserVerificationResult(ConvertMessageToBytes(&message),
                                           future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
+TEST_F(QuickStartDecoderTest, DecodeUserVerificationRequestSucceeds) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kAwaitingUserVerificationKey, true);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationRequestedPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationRequested(ConvertMessageToBytes(&message),
+                                             future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  ASSERT_FALSE(future.Get<0>().is_null());
+  EXPECT_TRUE(future.Get<0>().get()->is_awaiting_user_verification);
+  EXPECT_EQ(future.Get<1>(), absl::nullopt);
+}
+
+TEST_F(QuickStartDecoderTest, DecodeUserVerificationRequestFailsIfKeyMissing) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationRequestedPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationRequested(ConvertMessageToBytes(&message),
+                                             future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get<0>().is_null());

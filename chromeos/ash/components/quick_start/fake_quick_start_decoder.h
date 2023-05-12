@@ -36,6 +36,9 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   void DecodeNotifySourceOfUpdateResponse(
       const std::vector<uint8_t>& data,
       DecodeNotifySourceOfUpdateResponseCallback callback) override;
+  void DecodeUserVerificationRequested(
+      const std::vector<uint8_t>& data,
+      DecodeUserVerificationRequestedCallback callback) override;
   void DecodeUserVerificationResult(
       const std::vector<uint8_t>& data,
       DecodeUserVerificationResultCallback callback) override;
@@ -52,6 +55,8 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
 
   void SetUserVerificationResponse(mojom::UserVerificationResult result,
                                    bool is_first_user_verification);
+
+  void SetUserVerificationRequested(bool is_awaiting_user_verification);
 
   void SetDecoderError(mojom::QuickStartDecoderError error);
 
@@ -73,6 +78,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
   absl::optional<bool> notify_source_of_update_response_;
   mojom::WifiCredentialsPtr credentials_;
+  mojom::UserVerificationRequestedPtr user_verification_request_;
   mojom::UserVerificationResponsePtr user_verification_response_;
   absl::optional<mojom::QuickStartDecoderError> error_;
 };

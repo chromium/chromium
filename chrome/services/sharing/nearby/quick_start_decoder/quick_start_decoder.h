@@ -49,6 +49,10 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
   void DecodeUserVerificationResult(
       const std::vector<uint8_t>& data,
       DecodeUserVerificationResultCallback callback) override;
+
+  void DecodeUserVerificationRequested(
+      const std::vector<uint8_t>& data,
+      DecodeUserVerificationRequestedCallback callback) override;
   // mojom::QuickStartDecoder:
 
  private:
