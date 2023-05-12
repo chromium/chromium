@@ -408,12 +408,6 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     const gfx::Transform& parent_target_transform,
     const Surface* surface,
     size_t* overlay_damage_index) {
-  // If we have damage from a surface animation, then we shouldn't have an
-  // overlay candidate from the root render pass, since that's an interpolated
-  // pass with "artificial" damage.
-  if (surface->HasSurfaceAnimationDamage())
-    return nullptr;
-
   // Only process the damage rect at the root render pass, once per surface.
   const CompositorFrame& frame = surface->GetActiveFrame();
   bool is_last_pass_on_src_surface =
@@ -572,8 +566,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     // If there is a new CompositorFrame for `surface` compute resolved frame
     // data for the new resolved CompositorFrame.
     if (resolved_frame.previous_frame_index() !=
-            surface->GetActiveFrameIndex() ||
-        surface->HasSurfaceAnimationDamage()) {
+        surface->GetActiveFrameIndex()) {
       base::ElapsedTimer timer;
       ProcessResolvedFrame(resolved_frame);
       stats_->declare_resources_time += timer.Elapsed();
@@ -931,7 +924,6 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   referenced_surfaces_.erase(surface_id);
-  surface->DidAggregate();
 }
 
 void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
