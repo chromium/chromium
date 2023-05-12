@@ -100,7 +100,7 @@ bool UkmTestHelper::HasUnsentLogs() {
 
 void UkmTestHelper::SetMsbbConsent() {
   DCHECK(ukm_service_);
-  ukm_service_->UpdateRecording(ukm::MSBB);
+  ukm_service_->UpdateRecording({ukm::MSBB});
 }
 
 }  // namespace ukm
