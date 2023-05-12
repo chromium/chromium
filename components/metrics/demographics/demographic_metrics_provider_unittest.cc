@@ -64,7 +64,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         // Set an arbitrary disable reason to mimic sync feature being unable to
         // start.
         sync_service_->SetDisableReasons(
-            syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
+            {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
         break;
 
       case SYNC_FEATURE_ENABLED:
@@ -88,8 +88,8 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
       case SYNC_FEATURE_DISABLED_ON_CHROMEOS_ASH_VIA_DASHBOARD:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
-        sync_service_->SetDisableReasons(syncer::SyncService::DisableReasonSet(
-            syncer::SyncService::DISABLE_REASON_USER_CHOICE));
+        sync_service_->SetDisableReasons(
+            {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
 
         // On ChromeOS Ash, IsFirstSetupComplete gets cleared temporarily but
         // immediately afterwards, it gets set again with
