@@ -112,7 +112,7 @@ class TaskSchedulerTests : public ::testing::Test {
     // Check that the created task matches the trigger it was created with.
     TaskScheduler::TaskInfo info;
     EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
-    EXPECT_EQ(info.trigger_type, trigger_type);
+    EXPECT_EQ(info.trigger_types, trigger_type);
 
     if (trigger_type != TaskScheduler::TRIGGER_TYPE_NOW) {
       EXPECT_TRUE(task_scheduler_->StartTask(kTaskName1));
@@ -138,17 +138,16 @@ class TaskSchedulerTests : public ::testing::Test {
     test::PrintLog(GetTestScope());
   }
 
-  void RunGetTaskInfoTriggerTypeTest(
-      TaskScheduler::TriggerType expected_trigger_type) {
+  void RunGetTaskInfoTriggerTypesTest(int expected_trigger_types) {
     base::CommandLine command_line =
         GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
     EXPECT_TRUE(task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1,
                                               command_line,
-                                              expected_trigger_type, false));
+                                              expected_trigger_types, false));
     TaskScheduler::TaskInfo info;
     EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
-    EXPECT_EQ(info.trigger_type, expected_trigger_type);
+    EXPECT_EQ(info.trigger_types, expected_trigger_types);
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   }
 
@@ -210,7 +209,7 @@ TEST_F(TaskSchedulerTests, Hourly) {
   // Check that the task has a hourly trigger.
   TaskScheduler::TaskInfo info;
   EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
-  EXPECT_EQ(info.trigger_type, TaskScheduler::TRIGGER_TYPE_HOURLY);
+  EXPECT_EQ(info.trigger_types, TaskScheduler::TRIGGER_TYPE_HOURLY);
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName1));
@@ -237,7 +236,7 @@ TEST_F(TaskSchedulerTests, EveryFiveHours) {
   // Check that the task has a five hour trigger.
   TaskScheduler::TaskInfo info;
   EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
-  EXPECT_EQ(info.trigger_type, TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
+  EXPECT_EQ(info.trigger_types, TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName1));
@@ -457,7 +456,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
                              base::CompareCase::INSENSITIVE_ASCII));
 }
 
-TEST_F(TaskSchedulerTests, GetTaskInfoTriggerType) {
+TEST_F(TaskSchedulerTests, GetTaskInfoTriggerTypes) {
   for (const TaskScheduler::TriggerType expected_trigger_type : {
            TaskScheduler::TRIGGER_TYPE_POST_REBOOT,
            TaskScheduler::TRIGGER_TYPE_HOURLY,
@@ -468,8 +467,12 @@ TEST_F(TaskSchedulerTests, GetTaskInfoTriggerType) {
       continue;
     }
 
-    RunGetTaskInfoTriggerTypeTest(expected_trigger_type);
+    RunGetTaskInfoTriggerTypesTest(expected_trigger_type);
   }
+
+  RunGetTaskInfoTriggerTypesTest(TaskScheduler::TRIGGER_TYPE_POST_REBOOT |
+                                 TaskScheduler::TRIGGER_TYPE_HOURLY |
+                                 TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
 }
 
 TEST(TaskSchedulerTest, NoSubfolders) {

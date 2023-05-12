@@ -289,6 +289,12 @@ void CheckInstallation(UpdaterScope scope,
                       L"*/components/update_client/*=2,"
                       L"*/chrome/updater/*=2"})
             .c_str());
+
+    EXPECT_EQ(task_info.trigger_types,
+              TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
+                  (IsSystemInstall(scope)
+                       ? TaskScheduler::TriggerType::TRIGGER_TYPE_POST_REBOOT
+                       : 0));
   } else {
     task_scheduler->ForEachTaskWithPrefix(
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING),

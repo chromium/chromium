@@ -865,7 +865,9 @@ The time resolution for tasks is 1 minute. Tasks are set to run 5 minutes after
 they've been created. If a task execution is missed, it will run as soon as the
 system is able to.
 
-The updater also runs at user login.
+The updater also runs at user login. For system installs, this is done via a
+logon trigger on the scheduled task. For user installs, this is done via the
+"Run" registry entry in `HKCU`.
 
 ### On-Demand Updates
 The updater exposes an RPC interface for any user to trigger an update check.
