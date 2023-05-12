@@ -32,6 +32,13 @@ var PasswordManagerUIFocusTest = class extends PasswordManagerUITest {
   }
 };
 
-TEST_F('PasswordManagerUIFocusTest', 'All', function() {
+// https://crbug.com/1444623: Flaky on Mac.
+GEN('#if BUILDFLAG(IS_MAC)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+
+TEST_F('PasswordManagerUIFocusTest', 'MAYBE_All', function() {
   mocha.run();
 });
