@@ -12,11 +12,15 @@
   }
 
   .title-container {
+    /* TODO(crbug.com/1441029): dedupe with |--tangible-sync-style-banner-width|
+     * from |tangible_sync_style_shared.css| */
+    --banner-width: 17vw;
+
     flex: 0 1 auto;
     margin: 30px auto 0 auto;
     max-width: 490px;
-    padding-inline-end: calc(var(--banner-img-width) - 10px);
-    padding-inline-start: calc(var(--banner-img-width) - 10px);
+    padding-inline-end: var(--banner-width);
+    padding-inline-start: var(--banner-width);
     text-align: center;
   }
 
@@ -137,7 +141,7 @@
 </style>
 
 <div class="flex-container">
-  <div class$="title-container [[getTangibleSyncStyleClass_()]]">
+  <div class="title-container">
     <img id="product-logo" on-click="onProductLogoClick_"
         srcset="chrome://theme/current-channel-logo@1x 1x,
                 chrome://theme/current-channel-logo@2x 2x"

@@ -10,8 +10,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --banner-img-height: 400px;
-  --banner-img-width: 169px;
   --profile-card-avatar-icon-size: 74px;
   --text-font-size: 1.16em;
   --scrollbar-width: 4px;

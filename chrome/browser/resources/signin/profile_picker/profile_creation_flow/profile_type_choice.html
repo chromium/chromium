@@ -51,15 +51,10 @@
   }
 
   cr-button {
-    font-size: 1em;
-    font-weight: normal;
-    min-width: 210px;
-  }
-
-  /* Tangible sync style details are found in go/tangible-sync-ui */
-  .tangible-sync-style cr-button {
     --cr-button-height: 36px;
     font-size: 0.75rem;
+    font-weight: normal;
+    min-width: 210px;
   }
 
   #notNowButton {
@@ -72,14 +67,14 @@
     text-align: center;
   }
 
-  .tangible-sync-style .title {
+  .title {
     font-size: 2.25rem;
     font-weight: 500;
     line-height: 43px;
     margin-bottom: 16px;
   }
 
-  .tangible-sync-style .subtitle {
+  .subtitle {
     font-size: 1.25rem;
     line-height: 24px;
   }
@@ -95,21 +90,22 @@
     }
   }
 
-@media screen and ((max-width: 780px) or (max-height: 600px)) {
-  .tangible-sync-style .title {
-    font-size: 1.5rem;
-    line-height: 32px;
-  }
+  @media screen and ((max-width: 780px) or (max-height: 600px)) {
+    .title {
+      font-size: 1.5rem;
+      line-height: 32px;
+    }
 
-  .tangible-sync-style .subtitle {
-    font-size: 0.94rem;
+    .subtitle {
+      font-size: 0.94rem;
+    }
   }
-}
 </style>
 
 <div id="headerContainer"
     style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
+  <!-- TODO(crbug.com/1442940): remove theme info across the profile picker -->
   <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
       on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]"
       title$="[[getBackButtonAriaLabel_()]]"
@@ -119,11 +115,11 @@
     <img class="avatar" alt="" src="[[profileThemeInfo.themeGenericAvatar]]">
   </div>
 </div>
-<div class$="title-container [[getTangibleSyncStyleClass_()]]">
+<div class="title-container">
   <h1 class="title">$i18n{profileTypeChoiceTitle}</h1>
   <div class="subtitle">$i18n{profileTypeChoiceSubtitle}</div>
 </div>
-<div id="actionContainer" class$="[[getTangibleSyncStyleClass_()]]">
+<div id="actionContainer">
   <cr-button id="signInButton" class="action-button" on-click="onSignInClick_"
       disabled="[[profileCreationInProgress]]">
     $i18n{signInButtonLabel}

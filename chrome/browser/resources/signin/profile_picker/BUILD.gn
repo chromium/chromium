@@ -11,13 +11,7 @@ assert(!is_chromeos_ash)
 build_webui("build") {
   grd_prefix = "profile_picker"
 
-  static_files = [
-    "profile_picker.html",
-    "images/left_banner_image.svg",
-    "images/right_banner_image.svg",
-    "images/dark_mode_left_banner_image.svg",
-    "images/dark_mode_right_banner_image.svg",
-  ]
+  static_files = [ "profile_picker.html" ]
 
   web_component_files = [
     "profile_card_menu.ts",
