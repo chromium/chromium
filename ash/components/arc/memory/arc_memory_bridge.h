@@ -41,6 +41,8 @@ class ArcMemoryBridge : public KeyedService {
   using ReclaimCallback = base::OnceCallback<void(mojom::ReclaimResultPtr)>;
   void Reclaim(mojom::ReclaimRequestPtr, ReclaimCallback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   THREAD_CHECKER(thread_checker_);
 

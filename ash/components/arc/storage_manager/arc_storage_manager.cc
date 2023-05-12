@@ -72,4 +72,9 @@ bool ArcStorageManager::GetApplicationsSize(
   return true;
 }
 
+// static
+void ArcStorageManager::EnsureFactoryBuilt() {
+  ArcStorageManagerFactory::GetInstance();
+}
+
 }  // namespace arc

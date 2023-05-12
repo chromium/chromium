@@ -20,6 +20,7 @@
 #include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "ash/components/arc/lock_screen/arc_lock_screen_bridge.h"
 #include "ash/components/arc/media_session/arc_media_session_bridge.h"
+#include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "ash/components/arc/memory_pressure/arc_memory_pressure_bridge.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/midis/arc_midis_bridge.h"
@@ -443,6 +444,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcKioskBridge::EnsureFactoryBuilt();
   ArcLockScreenBridge::EnsureFactoryBuilt();
   ArcMediaSessionBridge::EnsureFactoryBuilt();
+  ArcMemoryBridge::EnsureFactoryBuilt();
   ArcMemoryPressureBridge::EnsureFactoryBuilt();
   ArcMetricsServiceFactory::GetInstance();
   ArcMetricsServiceProxy::EnsureFactoryBuilt();
@@ -465,6 +467,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcRotationLockBridge::EnsureFactoryBuilt();
   ArcScreenCaptureBridge::EnsureFactoryBuilt();
   ArcSettingsService::EnsureFactoryBuilt();
+  ArcStorageManager::EnsureFactoryBuilt();
   ArcSharesheetBridge::EnsureFactoryBuilt();
   ArcSurveyService::EnsureFactoryBuilt();
   ArcSystemUIBridge::EnsureFactoryBuilt();

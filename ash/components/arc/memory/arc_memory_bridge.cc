@@ -79,4 +79,9 @@ void ArcMemoryBridge::Reclaim(mojom::ReclaimRequestPtr request,
   memory_instance->Reclaim(std::move(request), std::move(callback));
 }
 
+// static
+void ArcMemoryBridge::EnsureFactoryBuilt() {
+  ArcMemoryBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

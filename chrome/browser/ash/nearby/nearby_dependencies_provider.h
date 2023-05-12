@@ -39,6 +39,8 @@ class NearbyDependenciesProvider : public KeyedService {
 
   virtual void PrepareForShutdown();
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class NearbyProcessManagerImplTest;
 
@@ -48,7 +50,7 @@ class NearbyDependenciesProvider : public KeyedService {
   // Test-only constructor.
   NearbyDependenciesProvider();
 
-  mojo::PendingRemote<bluetooth::mojom::Adapter>
+  mojo::PendingRemote<::bluetooth::mojom::Adapter>
   GetBluetoothAdapterPendingRemote();
 
   sharing::mojom::WebRtcDependenciesPtr GetWebRtcDependencies();
