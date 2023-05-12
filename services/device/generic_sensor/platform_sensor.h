@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -145,10 +144,6 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   bool UpdateSharedBuffer(const SensorReading& reading,
                           bool do_significance_check)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // Check if multiple instances of PlatformSensor can exist at once. It weas
-  // first suggested in crbug.com/1383180.
-  static base::flat_set<mojom::SensorType>& GetInitializedSensors();
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 

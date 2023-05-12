@@ -10,7 +10,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
@@ -28,16 +27,12 @@ PlatformSensor::PlatformSensor(mojom::SensorType type,
       type_(type),
       provider_(provider),
       is_active_(false) {
-  CHECK(!PlatformSensor::GetInitializedSensors().contains(type));
-  PlatformSensor::GetInitializedSensors().insert(type);
   VLOG(1) << "Platform sensor created. Type " << type_ << ".";
 }
 
 PlatformSensor::~PlatformSensor() {
   if (provider_)
     provider_->RemoveSensor(GetType(), this);
-  CHECK(PlatformSensor::GetInitializedSensors().contains(type_));
-  PlatformSensor::GetInitializedSensors().erase(type_);
   VLOG(1) << "Platform sensor released. Type " << type_ << ".";
 }
 
@@ -237,12 +232,6 @@ bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {
     is_active_ = started;
     return is_active_;
   }
-}
-
-base::flat_set<mojom::SensorType>& PlatformSensor::GetInitializedSensors() {
-  static base::NoDestructor<base::flat_set<mojom::SensorType>>
-      initialized_sensors;
-  return *initialized_sensors;
 }
 
 bool PlatformSensor::IsActiveForTesting() const {
