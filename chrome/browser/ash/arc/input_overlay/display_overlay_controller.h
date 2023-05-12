@@ -24,6 +24,7 @@ namespace arc::input_overlay {
 class Action;
 class ActionEditMenu;
 class ActionView;
+class ButtonOptionsMenu;
 class EditFinishView;
 class EditingList;
 class EducationalView;
@@ -102,6 +103,7 @@ class DisplayOverlayController : public ui::EventHandler,
 
  private:
   friend class ArcInputOverlayManagerTest;
+  friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
   friend class EditingList;
   friend class EducationalView;
@@ -144,6 +146,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
+  bool HasButtonOptionsMenu() const;
+  void RemoveButtonOptionsMenu();
+
   void AddEditingList();
   void RemoveEditingList();
 
@@ -184,6 +189,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
   raw_ptr<InputMenuView> input_menu_view_ = nullptr;
+  raw_ptr<ButtonOptionsMenu> button_options_menu_ = nullptr;
   raw_ptr<MenuEntryView> menu_entry_ = nullptr;
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
   raw_ptr<EditFinishView> edit_finish_view_ = nullptr;

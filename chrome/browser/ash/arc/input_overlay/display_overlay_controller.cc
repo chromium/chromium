@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/educational_view.h"
@@ -158,6 +159,18 @@ void DisplayOverlayController::OnNudgeDismissed() {
   RemoveNudgeView();
   DCHECK(touch_injector_);
   touch_injector_->set_show_nudge(false);
+}
+
+bool DisplayOverlayController::HasButtonOptionsMenu() const {
+  return button_options_menu_ != nullptr;
+}
+
+void DisplayOverlayController::RemoveButtonOptionsMenu() {
+  if (!IsBeta() || !button_options_menu_) {
+    return;
+  }
+  button_options_menu_->parent()->RemoveChildViewT(button_options_menu_);
+  button_options_menu_ = nullptr;
 }
 
 void DisplayOverlayController::AddEditingList() {
@@ -372,6 +385,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveInputMappingView();
       RemoveEducationalView();
       RemoveEditFinishView();
+      RemoveButtonOptionsMenu();
       RemoveNudgeView();
       break;
     case DisplayMode::kEducation:
@@ -388,6 +402,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveEditFinishView();
       RemoveEducationalView();
       RemoveNudgeView();
+      RemoveButtonOptionsMenu();
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
       if (touch_injector_->show_nudge()) {
