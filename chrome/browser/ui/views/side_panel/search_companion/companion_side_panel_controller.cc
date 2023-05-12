@@ -144,7 +144,8 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   if (new_tab_web_contents && !open_in_current_tab) {
     BrowserView::GetBrowserViewForBrowser(browser)
         ->side_panel_coordinator()
-        ->Show(SidePanelEntry::Id::kSearchCompanion);
+        ->Show(SidePanelEntry::Id::kSearchCompanion,
+               SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
   }
 }
 

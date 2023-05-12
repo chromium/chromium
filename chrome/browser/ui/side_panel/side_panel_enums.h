@@ -24,7 +24,8 @@ enum class SidePanelOpenTrigger {
   kBookmarkBar = 11,
   kPinnedEntryToolbarButton = 12,
   kAppMenu = 13,
-  kMaxValue = kAppMenu,
+  kOpenedInNewTabFromSidePanel = 14,
+  kMaxValue = kOpenedInNewTabFromSidePanel,
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
