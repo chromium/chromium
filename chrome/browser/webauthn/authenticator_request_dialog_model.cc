@@ -145,6 +145,7 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
     case device::AuthenticatorType::kPhone:
       return password_manager::PasskeyCredential::Source::kAndroidPhone;
     case device::AuthenticatorType::kChromeOS:
+    case device::AuthenticatorType::kICloudKeychain:
     case device::AuthenticatorType::kOther:
       return password_manager::PasskeyCredential::Source::kOther;
   }

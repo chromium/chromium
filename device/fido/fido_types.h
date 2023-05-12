@@ -93,10 +93,11 @@ enum class LargeBlobSupportType {
 // AuthenticatorType enumerates the different types of authenticators that this
 // code handles.
 enum class AuthenticatorType {
-  kWinNative,  // i.e. webauthn.dll
-  kTouchID,    // the Chrome-native Touch ID integration on macOS
-  kChromeOS,   // the platform authenticator on Chrome OS
-  kPhone,      // the credential can be exercised via hybrid CTAP
+  kWinNative,       // i.e. webauthn.dll
+  kTouchID,         // the Chrome-native Touch ID integration on macOS
+  kChromeOS,        // the platform authenticator on Chrome OS
+  kPhone,           // the credential can be exercised via hybrid CTAP
+  kICloudKeychain,  // iCloud Keychain on macOS
   kOther,
 };
 

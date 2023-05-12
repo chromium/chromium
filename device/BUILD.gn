@@ -27,7 +27,9 @@ if (is_mac) {
       "fido/mac/authenticator_unittest.mm",
       "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_store_unittest.mm",
+      "fido/mac/fake_icloud_keychain_sys.mm",
       "fido/mac/get_assertion_operation_unittest_mac.mm",
+      "fido/mac/icloud_keychain_unittest.mm",
       "fido/mac/make_credential_operation_unittest_mac.mm",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -380,6 +382,7 @@ test("device_unittests") {
     frameworks += [
       "IOBluetooth.framework",
       "Security.framework",
+      "AuthenticationServices.framework",
     ]
   }
 
