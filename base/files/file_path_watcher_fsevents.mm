@@ -18,6 +18,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base {
 
 namespace {
@@ -30,8 +34,8 @@ FilePath ResolvePath(const FilePath& path) {
   const unsigned kMaxLinksToResolve = 255;
 
   std::vector<FilePath::StringType> component_vector = path.GetComponents();
-  std::list<FilePath::StringType>
-      components(component_vector.begin(), component_vector.end());
+  std::list<FilePath::StringType> components(component_vector.begin(),
+                                             component_vector.end());
 
   FilePath result;
   unsigned resolve_count = 0;
@@ -48,8 +52,9 @@ FilePath ResolvePath(const FilePath& path) {
 
     FilePath target;
     if (ReadSymbolicLink(current, &target)) {
-      if (target.IsAbsolute())
+      if (target.IsAbsolute()) {
         result.clear();
+      }
       std::vector<FilePath::StringType> target_components =
           target.GetComponents();
       components.insert(components.begin(), target_components.begin(),
@@ -60,18 +65,25 @@ FilePath ResolvePath(const FilePath& path) {
     }
   }
 
-  if (resolve_count >= kMaxLinksToResolve)
+  if (resolve_count >= kMaxLinksToResolve) {
     result.clear();
+  }
   return result;
 }
 
 }  // namespace
 
+struct FilePathWatcherFSEvents::ObjCStorage {
+  // The dispatch queue on which the event stream is scheduled.
+  dispatch_queue_t __strong queue;
+};
+
 FilePathWatcherFSEvents::FilePathWatcherFSEvents()
-    : queue_(dispatch_queue_create(
-          base::StringPrintf("org.chromium.base.FilePathWatcher.%p", this)
-              .c_str(),
-          DISPATCH_QUEUE_SERIAL)) {}
+    : objc_storage_(std::make_unique<ObjCStorage>()) {
+  objc_storage_->queue = dispatch_queue_create(
+      base::StringPrintf("org.chromium.base.FilePathWatcher.%p", this).c_str(),
+      DISPATCH_QUEUE_SERIAL);
+}
 
 FilePathWatcherFSEvents::~FilePathWatcherFSEvents() {
   DCHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence());
@@ -87,8 +99,9 @@ bool FilePathWatcherFSEvents::Watch(const FilePath& path,
 
   // This class could support non-recursive watches, but that is currently
   // left to FilePathWatcherKQueue.
-  if (type != Type::kRecursive)
+  if (type != Type::kRecursive) {
     return false;
+  }
 
   set_task_runner(SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
@@ -99,8 +112,8 @@ bool FilePathWatcherFSEvents::Watch(const FilePath& path,
   // captured by the block's scope.
   const FilePath path_copy(path);
 
-  dispatch_async(queue_, ^{
-      StartEventStream(start_event, path_copy);
+  dispatch_async(objc_storage_->queue, ^{
+    StartEventStream(start_event, path_copy);
   });
   return true;
 }
@@ -113,7 +126,7 @@ void FilePathWatcherFSEvents::Cancel() {
   // Switch to the dispatch queue to tear down the event stream. As the queue is
   // owned by |this|, and this method is called from the destructor, execute the
   // block synchronously.
-  dispatch_sync(queue_, ^{
+  dispatch_sync(objc_storage_->queue, ^{
     if (fsevent_stream_) {
       DestroyEventStream();
       target_.clear();
@@ -136,12 +149,14 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   std::vector<FilePath> paths;
   FSEventStreamEventId root_change_at = FSEventStreamGetLatestEventId(stream);
   for (size_t i = 0; i < num_events; i++) {
-    if (flags[i] & kFSEventStreamEventFlagRootChanged)
+    if (flags[i] & kFSEventStreamEventFlagRootChanged) {
       root_changed = true;
-    if (event_ids[i])
+    }
+    if (event_ids[i]) {
       root_change_at = std::min(root_change_at, event_ids[i]);
-    paths.push_back(FilePath(
-        reinterpret_cast<char**>(event_paths)[i]).StripTrailingSeparators());
+    }
+    paths.push_back(FilePath(reinterpret_cast<char**>(event_paths)[i])
+                        .StripTrailingSeparators());
   }
 
   // Reinitialize the event stream if we find changes to the root. This is
@@ -163,10 +178,11 @@ void FilePathWatcherFSEvents::FSEventsCallback(
         FROM_HERE, BindOnce(
                        [](WeakPtr<FilePathWatcherFSEvents> weak_watcher,
                           FSEventStreamEventId root_change_at) {
-                         if (!weak_watcher)
+                         if (!weak_watcher) {
                            return;
+                         }
                          FilePathWatcherFSEvents* watcher = weak_watcher.get();
-                         dispatch_async(watcher->queue_, ^{
+                         dispatch_async(watcher->objc_storage_->queue, ^{
                            watcher->UpdateEventStream(root_change_at);
                          });
                        },
@@ -207,35 +223,35 @@ void FilePathWatcherFSEvents::UpdateEventStream(
     FSEventStreamEventId start_event) {
   // It can happen that the watcher gets canceled while tasks that call this
   // function are still in flight, so abort if this situation is detected.
-  if (resolved_target_.empty())
+  if (resolved_target_.empty()) {
     return;
+  }
 
-  if (fsevent_stream_)
+  if (fsevent_stream_) {
     DestroyEventStream();
+  }
 
   ScopedCFTypeRef<CFStringRef> cf_path(CFStringCreateWithCString(
-      NULL, resolved_target_.value().c_str(), kCFStringEncodingMacHFS));
+      nullptr, resolved_target_.value().c_str(), kCFStringEncodingMacHFS));
   ScopedCFTypeRef<CFStringRef> cf_dir_path(CFStringCreateWithCString(
-      NULL, resolved_target_.DirName().value().c_str(),
+      nullptr, resolved_target_.DirName().value().c_str(),
       kCFStringEncodingMacHFS));
-  CFStringRef paths_array[] = { cf_path.get(), cf_dir_path.get() };
+  CFStringRef paths_array[] = {cf_path.get(), cf_dir_path.get()};
   ScopedCFTypeRef<CFArrayRef> watched_paths(
-      CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
+      CFArrayCreate(nullptr, reinterpret_cast<const void**>(paths_array),
                     std::size(paths_array), &kCFTypeArrayCallBacks));
 
   FSEventStreamContext context;
   context.version = 0;
   context.info = this;
-  context.retain = NULL;
-  context.release = NULL;
-  context.copyDescription = NULL;
+  context.retain = nullptr;
+  context.release = nullptr;
+  context.copyDescription = nullptr;
 
-  fsevent_stream_ = FSEventStreamCreate(NULL, &FSEventsCallback, &context,
-                                        watched_paths,
-                                        start_event,
-                                        kEventLatencySeconds,
-                                        kFSEventStreamCreateFlagWatchRoot);
-  FSEventStreamSetDispatchQueue(fsevent_stream_, queue_);
+  fsevent_stream_ = FSEventStreamCreate(
+      nullptr, &FSEventsCallback, &context, watched_paths, start_event,
+      kEventLatencySeconds, kFSEventStreamCreateFlagWatchRoot);
+  FSEventStreamSetDispatchQueue(fsevent_stream_, objc_storage_->queue);
 
   if (!FSEventStreamStart(fsevent_stream_)) {
     task_runner()->PostTask(FROM_HERE,
@@ -267,7 +283,7 @@ void FilePathWatcherFSEvents::DestroyEventStream() {
   FSEventStreamStop(fsevent_stream_);
   FSEventStreamInvalidate(fsevent_stream_);
   FSEventStreamRelease(fsevent_stream_);
-  fsevent_stream_ = NULL;
+  fsevent_stream_ = nullptr;
 }
 
 void FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,

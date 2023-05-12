@@ -30,9 +30,10 @@ source_set("memory_pressure") {
 
   if (is_apple) {
     sources += [
-      "system_memory_pressure_evaluator_mac.cc",
       "system_memory_pressure_evaluator_mac.h",
+      "system_memory_pressure_evaluator_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_fuchsia) {
