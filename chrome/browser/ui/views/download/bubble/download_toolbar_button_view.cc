@@ -453,6 +453,11 @@ void DownloadToolbarButtonView::ResizeDialog() {
     bubble_delegate_->SizeToContents();
 }
 
+base::WeakPtr<DownloadBubbleNavigationHandler>
+DownloadToolbarButtonView::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   bubble_delegate_ = nullptr;
   primary_view_ = nullptr;
@@ -483,11 +488,12 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   switcher_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   primary_view_ = switcher_view->AddChildView(std::move(bubble_contents_view));
-  // raw ptr for this and member fields are safe as Toolbar Button view owns the
-  // Bubble.
+  // raw ptr for this bubble_delegate is safe as it owns the
+  // DownloadBubbleSecurityView.
   security_view_ =
       switcher_view->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-          bubble_controller_.get(), this, bubble_delegate.get()));
+          bubble_controller_->GetWeakPtr(), GetWeakPtr(),
+          bubble_delegate.get()));
   security_view_->SetVisible(false);
   bubble_delegate->set_margins(GetPrimaryViewMargin());
   bubble_delegate->SetEnableArrowKeyTraversal(true);

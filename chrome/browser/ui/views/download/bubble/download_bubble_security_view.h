@@ -31,8 +31,8 @@ class DownloadBubbleSecurityView : public views::View {
  public:
   METADATA_HEADER(DownloadBubbleSecurityView);
   DownloadBubbleSecurityView(
-      DownloadBubbleUIController* bubble_controller,
-      DownloadBubbleNavigationHandler* navigation_handler,
+      base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+      base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       views::BubbleDialogDelegate* bubble_delegate);
   DownloadBubbleSecurityView(const DownloadBubbleSecurityView&) = delete;
   DownloadBubbleSecurityView& operator=(const DownloadBubbleSecurityView&) =
@@ -74,8 +74,8 @@ class DownloadBubbleSecurityView : public views::View {
 
   raw_ptr<DownloadBubbleRowView> download_row_view_;
   DownloadUIModel::DownloadUIModelPtr model_;
-  raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
-  raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
+  base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;
+  base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
       nullptr;
   // The secondary button is the one that may be protected by the checkbox.

@@ -103,6 +103,8 @@ class DownloadBubbleUIController {
 
   DownloadBubbleUpdateService* update_service() { return update_service_; }
 
+  base::WeakPtr<DownloadBubbleUIController> GetWeakPtr();
+
  private:
   friend class DownloadBubbleUIControllerTest;
   friend class DownloadBubbleUIControllerIncognitoTest;

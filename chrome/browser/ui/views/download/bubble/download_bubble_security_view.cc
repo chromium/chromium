@@ -230,9 +230,12 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
   // First open primary dialog, and then execute the command. If a deletion
   // happens leading to closure of the bubble, it will be called after primary
   // dialog is opened.
-  navigation_handler_->OpenPrimaryDialog();
-  bubble_controller_->ProcessDownloadButtonPress(model_.get(), command,
-                                                 /*is_main_view=*/false);
+  if (navigation_handler_ && bubble_controller_) {
+    navigation_handler_->OpenPrimaryDialog();
+    bubble_controller_->ProcessDownloadButtonPress(model_.get(), command,
+                                                   /*is_main_view=*/false);
+  }
+
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
@@ -339,11 +342,11 @@ void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
 }
 
 DownloadBubbleSecurityView::DownloadBubbleSecurityView(
-    DownloadBubbleUIController* bubble_controller,
-    DownloadBubbleNavigationHandler* navigation_handler,
+    base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     views::BubbleDialogDelegate* bubble_delegate)
-    : bubble_controller_(bubble_controller),
-      navigation_handler_(navigation_handler),
+    : bubble_controller_(std::move(bubble_controller)),
+      navigation_handler_(std::move(navigation_handler)),
       bubble_delegate_(bubble_delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);

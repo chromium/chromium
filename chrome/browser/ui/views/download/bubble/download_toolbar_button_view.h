@@ -33,6 +33,7 @@ class DownloadBubbleNavigationHandler {
   virtual void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) = 0;
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
   virtual void ResizeDialog() = 0;
+  virtual base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() = 0;
 };
 
 // Download icon shown in the trusted area of the toolbar. Its lifetime is tied
@@ -74,6 +75,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
+  base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override;
 
   // Deactivates the automatic closing of the partial bubble.
   void DeactivateAutoClose();

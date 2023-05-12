@@ -311,3 +311,8 @@ void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {
           browser_->profile());
   tracker->NotifyEvent("download_bubble_interaction");
 }
+
+base::WeakPtr<DownloadBubbleUIController>
+DownloadBubbleUIController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
