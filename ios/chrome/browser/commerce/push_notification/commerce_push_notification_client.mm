@@ -118,25 +118,28 @@ Browser* CommercePushNotificationClient::GetActiveBrowser() {
       BrowserListFactory::GetForBrowserState(GetLastUsedBrowserState());
   // Ideally we want a foregrounded active browser, but in the event we can't
   // find one (e.g. notification was tapped when app was closed and app is
-  // currently opening), we fallback to the first active browser seen.
-  Browser* fallback_active_browser = nullptr;
+  // currently opening), we fallback to the foreground inactive browser.
+  Browser* fallback_scene_foreground_inactive = nullptr;
   for (Browser* browser : browser_list->AllRegularBrowsers()) {
     if (!browser->IsInactive()) {
-      if (!fallback_active_browser) {
-        fallback_active_browser = browser;
-      }
       SceneStateBrowserAgent* scene_state_browser_agent =
           SceneStateBrowserAgent::FromBrowser(browser);
       if (scene_state_browser_agent &&
-          scene_state_browser_agent->GetSceneState() &&
-          scene_state_browser_agent->GetSceneState().activationLevel ==
-              SceneActivationLevelForegroundActive) {
-        return browser;
+          scene_state_browser_agent->GetSceneState()) {
+        if (scene_state_browser_agent->GetSceneState().activationLevel ==
+            SceneActivationLevelForegroundInactive) {
+          fallback_scene_foreground_inactive = browser;
+        }
+
+        if (scene_state_browser_agent->GetSceneState().activationLevel ==
+            SceneActivationLevelForegroundActive) {
+          return browser;
+        }
       }
     }
   }
-  if (fallback_active_browser) {
-    return fallback_active_browser;
+  if (fallback_scene_foreground_inactive) {
+    return fallback_scene_foreground_inactive;
   }
   return nullptr;
 }
