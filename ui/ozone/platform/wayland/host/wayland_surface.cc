@@ -20,6 +20,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -938,6 +939,12 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
 void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
   if (!connection_->zcr_color_manager()) {
     return;
+  }
+  if (!color_space.IsValid() && pending_state_.contains_video) {
+    // Not all video content contains colorspace information.
+    // In this case, default to Rec709.
+    // Maybe use Rec601 for SD video if it becomes an issue.
+    color_space = gfx::ColorSpace::CreateREC709();
   }
   if (!color_space.IsValid()) {
     return;
