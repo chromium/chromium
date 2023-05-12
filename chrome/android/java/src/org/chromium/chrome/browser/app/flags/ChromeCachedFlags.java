@@ -149,6 +149,7 @@ public class ChromeCachedFlags {
                 OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN,
                 OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS,
                 OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS,
+                OmniboxFeatures.TAB_STRIP_REDESIGN_DISABLE_TOOLBAR_REORDERING,
                 CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
                 CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
                 CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
