@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/rgba_to_yuva.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -304,6 +305,19 @@ bool TryCopySubTextureINTERNALMemory(
   }
 
   return true;
+}
+
+struct ReadPixelsContext {
+  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
+  bool finished = false;
+};
+
+void OnReadPixelsDone(
+    void* raw_ctx,
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+  ReadPixelsContext* context = reinterpret_cast<ReadPixelsContext*>(raw_ctx);
+  context->async_result = std::move(async_result);
+  context->finished = true;
 }
 
 }  // namespace
@@ -880,10 +894,12 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                                     "Source shared image is not accessible"));
   }
 
+  auto* gr_context = shared_context_state_->gr_context();
   if (!begin_semaphores.empty()) {
-    bool wait_result = shared_context_state_->gr_context()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
+    CHECK(gr_context);
+    bool wait_result =
+        gr_context->wait(begin_semaphores.size(), begin_semaphores.data(),
+                         /*deleteSemaphoresAfterWait=*/false);
     DCHECK(wait_result);
   }
 
@@ -898,22 +914,49 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
         plane_index, shared_context_state_);
   }
 
-  base::expected<void, GLError> result = base::ok();
   if (!sk_image) {
-    result =
-        base::unexpected(GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                                 "Couldn't create SkImage for reading."));
-  } else if (!sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x,
-                                   src_y)) {
-    result =
-        base::unexpected(GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                                 "Failed to read pixels from SkImage"));
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                      is_drdc_enabled_);
+    return base::unexpected(GLError(GL_INVALID_OPERATION,
+                                    "glReadbackImagePixels",
+                                    "Couldn't create SkImage for reading."));
+  }
+
+  bool success = false;
+  if (gr_context) {
+    success = sk_image->readPixels(gr_context, dst_info, pixel_address,
+                                   row_bytes, src_x, src_y);
+  } else {
+    CHECK(shared_context_state_->graphite_context());
+    ReadPixelsContext context;
+    shared_context_state_->graphite_context()->asyncReadPixels(
+        sk_image.get(), dst_info.colorInfo(),
+        SkIRect::MakeXYWH(src_x, src_y, dst_info.width(), dst_info.height()),
+        &OnReadPixelsDone, &context);
+    InsertRecordingAndSubmit(shared_context_state_, /*sync_cpu=*/true);
+    CHECK(context.finished);
+    if (context.async_result) {
+      success = true;
+      libyuv::CopyPlane(
+          static_cast<const uint8_t*>(context.async_result->data(0)),
+          context.async_result->rowBytes(0),
+          static_cast<uint8_t*>(pixel_address), row_bytes,
+          dst_info.width() * dst_info.bytesPerPixel(), dst_info.height());
+    } else {
+      success = false;
+    }
   }
 
   source_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
-  return result;
+  if (!success) {
+    return base::unexpected(GLError(GL_INVALID_OPERATION,
+                                    "glReadbackImagePixels",
+                                    "Failed to read pixels from SkImage"));
+  }
+  return base::ok();
 }
 
 }  // namespace gpu

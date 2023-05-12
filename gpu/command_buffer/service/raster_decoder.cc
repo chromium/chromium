@@ -2416,9 +2416,10 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
           &begin_semaphores, &end_semaphores);
 
   if (!begin_semaphores.empty()) {
-    bool result = shared_context_state_->gr_context()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
+    CHECK(gr_context());
+    bool result =
+        gr_context()->wait(begin_semaphores.size(), begin_semaphores.data(),
+                           /*deleteSemaphoresAfterWait=*/false);
     DCHECK(result);
   }
 
@@ -2527,20 +2528,20 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
 
   source_scoped_access->ApplyBackendSurfaceEndState();
   if (!end_semaphores.empty()) {
+    CHECK(gr_context());
     GrFlushInfo flush_info = {
         .fNumSemaphores = end_semaphores.size(),
         .fSignalSemaphores = end_semaphores.data(),
     };
     AddVulkanCleanupTaskForSkiaFlush(
         shared_context_state_->vk_context_provider(), &flush_info);
-    auto flush_result = shared_context_state_->gr_context()->flush(flush_info);
-    DCHECK(flush_result == GrSemaphoresSubmitted::kYes);
+    gr_context()->flush(flush_info);
   }
 
   // TODO(crbug.com/1023262): Eventually we should make this function truly
   // asynchronous by removing this flush and implementing a query that can
   // signal back to client process.
-  gr_context()->flushAndSubmit(true);
+  DoFinish();
 
   // The call above will sync up gpu and CPU, resulting in callback being run
   // during flushAndSubmit. To prevent UAF make sure it indeed happened.
@@ -3031,8 +3032,8 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
         "Attempt to use OOP transfer cache on a context without OOP raster.");
     return;
   }
-  DCHECK(gr_context());
-  DCHECK(transfer_cache());
+  CHECK(gr_context() || graphite_recorder());
+  CHECK(transfer_cache());
 
   // Validate the type we are about to create.
   cc::TransferCacheEntryType entry_type;
