@@ -117,7 +117,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="364817392622123556">{COUNT,plural, =0{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3651803019964686660">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
 <translation id="3685209450716071127">Chromium kan ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
-<translation id="3702352323269013324">Få flere oplysninger om annoncetilpasning i Chromium</translation>
+<translation id="3702352323269013324">Få flere oplysninger om personlig annoncetilpasning i Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering}=1{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3713809861844741608">Åbn linket på en ny Chromium-&amp;fane</translation>
 <translation id="378917192836375108">Med Chromium kan du klikke på et telefonnummer på nettet og ringe op til det via Skype!</translation>
@@ -206,7 +206,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5972142260211327093">Hvis Chromium har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chromium dine interesser en gang om måneden. Interesserne opdateres, medmindre du fjerner dem.</translation>
 <translation id="5987687638152509985">Opdater Chromium for at starte synkronisering</translation>
-<translation id="5988505247484123880">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse tilpasses. Websites kan også gemme oplysninger med Chromium om dine interesser.</translation>
+<translation id="5988505247484123880">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse personligt tilpasses. Websites kan også gemme oplysninger med Chromium om dine interesser.</translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6055895534982063517">Der findes en ny version af Chromium, som er hurtigere end nogensinde før.</translation>
@@ -241,7 +241,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6334986366598267305">Det er nu blevet nemmere at bruge Chromium med din Google-konto og på delte computere.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i 1 minut. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}one{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i # minut. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}other{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i # minutter. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}}</translation>
 <translation id="6373523479360886564">Er du sikker på, at du vil afinstallere Chromium?</translation>
-<translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chromium kan estimere dine interesser. Senere kan et website, du besøger, anmode Chromium om at se dine interesser med henblik på at tilpasse de annoncer, du ser.</translation>
+<translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chromium kan estimere dine interesser. Senere kan et website, du besøger, anmode Chromium om at se dine interesser med henblik på at personligt tilpasse de annoncer, du ser.</translation>
 <translation id="6403826409255603130">Chromium er en webbrowser, der kører websider og apps med lynets hast. Den er hurtig, stabil og brugervenlig. Beskyttelse mod malware og phishing er indbygget i Chromium, så du kan søge mere sikkert på internettet.</translation>
 <translation id="6442900851116057561">Genstart Chromium OS</translation>
 <translation id="6455857529632101747">Velkommen til Chromium-profiler</translation>
@@ -274,7 +274,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="691026815377248078">Chromium skal have adgang til Bluetooth for at fortsætte 
  parringen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6929417474050522668">Når prøver er aktiveret, giver Ad measurement de websites, du besøger, mulighed for at anmode om oplysninger fra Chromium, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.</translation>
-<translation id="6940431691900807093">Et website, du besøger, kan på et senere tidspunkt anmode Chromium om at se dine interesser med henblik på at tilpasse de annoncer, du får vist. Chromium kan dele op til 3 interesser.</translation>
+<translation id="6940431691900807093">Et website, du besøger, kan på et senere tidspunkt anmode Chromium om at se dine interesser med henblik på at personligt tilpasse de annoncer, du får vist. Chromium kan dele op til 3 interesser.</translation>
 <translation id="6964305034639999644">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="6978145336957848883">Svage adgangskoder er nemme at gætte. Få Chromium <ph name="BEGIN_LINK" />til at oprette og huske stærke adgangskoder for dig<ph name="END_LINK" />.</translation>
 <translation id="6981396265751285733">Når denne indstilling er aktiveret, frigør Chromium hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chromium hurtigere. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem.</translation>
@@ -305,7 +305,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7483335560992089831">Kan ikke installere den samme version af Chromium som den, der kører i øjeblikket. Luk Chromium, og prøv igen.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium genstarter om 1 minut}one{Chromium genstarter om # minut}other{Chromium genstarter om # minutter}}</translation>
 <translation id="7561906087460245826">Ryd også data fra Chromium (<ph name="URL" />)</translation>
-<translation id="7582945390259497898">Chromium kan estimere dine interesser. Senere kan et website, du besøger, anmode Chromium om at se dine interesser med henblik på at tilpasse de annoncer, du ser.</translation>
+<translation id="7582945390259497898">Chromium kan estimere dine interesser. Senere kan et website, du besøger, anmode Chromium om at se dine interesser med henblik på at personligt tilpasse de annoncer, du ser.</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium bruger dit kamera og din mikrofon.</translation>
 <translation id="7617377681829253106">Chromium er blevet bedre</translation>

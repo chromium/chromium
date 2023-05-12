@@ -1273,7 +1273,7 @@
 <translation id="7864208933699511058">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK_1" />사이트 추천 광고<ph name="END_LINK_1" />, 나의 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 시청 중인 사이트에서 광고를 개인 최적화하는지 여부에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
 <translation id="7866213166286285359">여기에 페이지 번역하기</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" />에서 기기에 연결하려면 근처 기기 권한이 필요합니다.</translation>
-<translation id="7875915731392087153">이메일 만들기</translation>
+<translation id="7875915731392087153">이메일 작성</translation>
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />개 있습니다.}other{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />개 있습니다.}}</translation>
 <translation id="7886917304091689118">Chrome에서 실행 중</translation>

@@ -345,7 +345,7 @@
 <translation id="1732445923934584865">Анын ордуна өзүнөн суроо</translation>
 <translation id="1733064249834771892">ариптер</translation>
 <translation id="1734864079702812349">Amex</translation>
-<translation id="1734878702283171397">Тутум администраторуна кайрылып көрүңүз.</translation>
+<translation id="1734878702283171397">Система администраторуна кайрылып көрүңүз.</translation>
 <translation id="1736420071277903564">Компьютер</translation>
 <translation id="1740951997222943430">Мөөнөтү аяктоочу айды туура киргизиңиз</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> деп жана мааниси туура көрсөтүлүшү керек.</translation>
@@ -999,7 +999,7 @@
 <translation id="3414952576877147120">Өлчөм:</translation>
 <translation id="3422248202833853650">Эстутумду бошотуу үчүн башка программаларды жаап көрүңүз.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> сайты учурда жеткиликсиз.</translation>
-<translation id="3423742043356668186">Тутум белгиленди</translation>
+<translation id="3423742043356668186">Система белгиленди</translation>
 <translation id="3427092606871434483">Уруксат берүү (демейки)</translation>
 <translation id="3427342743765426898">Түзөтүүнү &amp;кайталоо</translation>
 <translation id="342781501876943858">Сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chromium аны өзгөртүүнү сунуштайт.</translation>
@@ -1445,7 +1445,7 @@
 <translation id="4494323206460475851">Параметрлерден жарнама темаларын көрүп, сайттар менен бөлүшкүңүз келбегендерин жашыра аласыз. Ошондой эле, Chrome 4 апта мурун пайда болгон жарнама темаларын автоматтык түрдө өчүрүп турат.</translation>
 <translation id="4500587658229086076">кооптуу мазмун</translation>
 <translation id="4506176782989081258">Жарактуулугун текшерүү катасы: <ph name="VALIDATION_ERROR" /></translation>
-<translation id="4506599922270137252">Тутум администраторуна кайрылып көрүңүз</translation>
+<translation id="4506599922270137252">Система администраторуна кайрылып көрүңүз</translation>
 <translation id="450710068430902550">Администратор менен бөлүшүү</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бул баракты Google Котормочу менен которуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="4514308731478712184">Саякаттарды өчүрүү</translation>
@@ -1850,7 +1850,7 @@
 <translation id="5490432419156082418">Даректер жана башкалар</translation>
 <translation id="5492298309214877701">Ишкана, уюм же университеттин интранетиндеги бул сайттын URL дареги тышкы вебсайттыкына окшош.
     <ph name="LINE_BREAK" />
-    Тутум администраторуңузга кайрылып көрүңүз.</translation>
+    Система администраторуңузга кайрылып көрүңүз.</translation>
 <translation id="549333378215107354">Өлчөмү: 3</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Башкарылган кыстармалар</translation>

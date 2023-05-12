@@ -12,7 +12,7 @@
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">Billederne på denne side er blevet optimeret af Google, så du sparer data.</translation>
 <translation id="129382876167171263">Filer, der gemmes af websites, vises her</translation>
-<translation id="131112695174432497">Data, der påvirker annoncetilpasning, slettes</translation>
+<translation id="131112695174432497">Data, der påvirker personlig annoncetilpasning, slettes</translation>
 <translation id="1317194122196776028">Glem dette website</translation>
 <translation id="1343356790768851700">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites</translation>
 <translation id="1369915414381695676">Websitet <ph name="SITE_NAME" /> blev tilføjet</translation>
@@ -207,7 +207,7 @@
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
-<translation id="4955223779495905865">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Ethvert af disse websites kan gemme cookies og andre data for at tilpasse din oplevelse.</translation>
+<translation id="4955223779495905865">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Ethvert af disse websites kan gemme cookies og andre data for at personligt tilpasse din oplevelse.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
@@ -248,7 +248,7 @@
 <translation id="5505264765875738116">Websites kan ikke spørge dig, om de må sende dig notifikationer</translation>
 <translation id="5516455585884385570">Åbn indstillinger for notifikationer</translation>
 <translation id="5527111080432883924">Spørg, før websites får adgang til at læse tekst og billeder fra udklipsholderen (anbefales)</translation>
-<translation id="5545693483061321551">Websites kan ikke bruge dine cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
+<translation id="5545693483061321551">Websites kan ikke bruge dine cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="5553374991681107062">Seneste</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
