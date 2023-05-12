@@ -4173,6 +4173,13 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
       GetParam() == SSLPrerenderTestErrorBlockType::kClientCertRequested
           ? PrerenderFinalStatus::kClientCertRequested
           : PrerenderFinalStatus::kNavigationRequestNetworkError);
+  if (GetParam() == SSLPrerenderTestErrorBlockType::kClientCertRequested) {
+    return;
+  }
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderNavigationRequestNetworkErrorCode."
+      "SpeculationRule",
+      std::abs(net::Error::ERR_FAILED), 1);
 }
 
 // Tests that prerendering will be cancelled if the server asks for client
