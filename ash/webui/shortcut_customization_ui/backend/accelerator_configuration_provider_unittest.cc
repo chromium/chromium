@@ -2067,6 +2067,56 @@ TEST_F(AcceleratorConfigurationProviderTest,
   EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos2[1]->type);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest,
+       VerifyAllAcceleratorsHaveKeyString) {
+  // The following is a set of VKEYs that are ignored in this test. If there is
+  // a keycode that should be ignored, please add it to the following set. Only
+  // do this if the keycode does not require an icon, otherwise there is a risk
+  // that the shortcut app will display an empty icon for the accelerator.
+  std::set<ui::KeyboardCode> ignore_list = {
+      ui::KeyboardCode::VKEY_LSHIFT,  // kDisableCapsLock
+      ui::KeyboardCode::VKEY_RSHIFT,  // kDisableCapsLock
+  };
+
+  AshAcceleratorConfiguration* ash_config =
+      Shell::Get()->ash_accelerator_configuration();
+  ash_config->Initialize();
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorConfigurationProvider::AcceleratorConfigurationMap config =
+      provider_->GetAcceleratorConfig();
+  // Iterate through the entire config and check that all accelerators have a
+  // non-empty key string.
+  for (const auto& [source, id_to_accelerator_info] : config) {
+    for (const auto& [action_id, accelerators] : id_to_accelerator_info) {
+      for (const auto& accelerator : accelerators) {
+        if (!accelerator->layout_properties->is_standard_accelerator()) {
+          continue;
+        }
+
+        ui::KeyboardCode key_code =
+            accelerator->layout_properties->get_standard_accelerator()
+                ->accelerator.key_code();
+        // Ignore accelerators that have ignored keycodes or are disabled.
+        if (ignore_list.contains(key_code) ||
+            accelerator->state ==
+                mojom::AcceleratorState::kDisabledByUnavailableKeys) {
+          continue;
+        }
+
+        EXPECT_FALSE(ash::GetKeyDisplay(key_code).empty())
+            << "Missing display string for the keycode: " << key_code
+            << " if you are adding a new accelerator, "
+            << "please add a new mapping to `GetKeyDisplayMap()` in "
+            << "ash/webui/shortcut_customization_ui/backend/"
+            << "accelerator_layout_table.h along with the corresponding icon. "
+            << "See examples at "
+            << "ash/webui/shortcut_customization_ui/resources/js/input_key.ts.";
+      }
+    }
+  }
+}
+
 using FlagsKeyboardCodesVariant =
     std::variant<ui::EventFlags, ui::KeyboardCode, TextAcceleratorDelimiter>;
 using FlagsKeyboardCodeStringVariant = std::variant<ui::EventFlags,
