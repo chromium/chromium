@@ -1114,7 +1114,7 @@ bool AddAutofillProfileToContactInfoTable(sql::Database* db,
     return false;
   for (ServerFieldType type : GetStoredContactInfoTypes()) {
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForExtraSettingsVisibleFields) &&
+            features::kAutofillEnableNewStreetLevelFieldTypes) &&
         type == ADDRESS_HOME_LANDMARK) {
       continue;
     }

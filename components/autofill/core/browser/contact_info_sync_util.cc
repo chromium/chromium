@@ -196,7 +196,7 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForExtraSettingsVisibleFields)) {
+          features::kAutofillEnableNewStreetLevelFieldTypes)) {
     s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
   }
 
@@ -298,7 +298,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForExtraSettingsVisibleFields)) {
+          features::kAutofillEnableNewStreetLevelFieldTypes)) {
     s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
   }
 
