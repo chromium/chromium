@@ -20,7 +20,9 @@ enum SuggestType {
   TYPE_PROFILE = 44;
   TYPE_ENTITY = 46;
   TYPE_NATIVE_CHROME = 69;
+  TYPE_PERSONALIZED_NAVIGATION = 83;
   TYPE_CHROME_QUERY_TILES = 171;
+  TYPE_CATEGORICAL_QUERY = 185;
 }
 
 // Suggestion subtypes supported by the Chrome Omnibox.
