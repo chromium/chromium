@@ -272,14 +272,6 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     browser = Browser::Create(params);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* init_params = chromeos::BrowserParamsProxy::Get();
-  bool from_arc =
-      init_params->InitialBrowserAction() ==
-          crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls &&
-      init_params->StartupUrlsFrom() == crosapi::mojom::OpenUrlFrom::kArc;
-#endif
-
   bool first_tab = true;
   custom_handlers::ProtocolHandlerRegistry* registry =
       profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
@@ -325,19 +317,6 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
     Navigate(&params);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (from_arc) {
-      auto* contents = params.navigated_or_inserted_contents;
-      if (contents) {
-        // Add a flag to remember this tab originated in the ARC context.
-        contents->SetUserData(
-            &arc::ArcWebContentsData::kArcTransitionFlag,
-            std::make_unique<arc::ArcWebContentsData>(contents));
-      }
-    }
-#endif
-
     first_tab = false;
   }
   if (!browser->tab_strip_model()->GetActiveWebContents()) {
@@ -514,15 +493,6 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool welcome_enabled,
     bool whats_new_enabled,
     bool privacy_sandbox_dialog_required) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  {
-    // If URLs are passed via crosapi, forcibly opens those tabs.
-    StartupTabs crosapi_tabs = provider.GetCrosapiTabs();
-    if (!crosapi_tabs.empty())
-      return {std::move(crosapi_tabs), LaunchResult::kWithGivenUrls};
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   StartupTabs tabs =
       provider.GetCommandLineTabs(*command_line_, cur_dir_, profile_);
   LaunchResult launch_result =

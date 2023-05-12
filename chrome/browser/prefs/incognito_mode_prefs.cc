@@ -165,12 +165,6 @@ bool IncognitoModePrefs::ShouldLaunchIncognitoInternal(
       forced_by_switch ||
       GetAvailabilityInternal(prefs, DONT_CHECK_PARENTAL_CONTROLS) ==
           IncognitoModeAvailability::kForced;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* init_params = chromeos::BrowserParamsProxy::Get();
-  should_use_incognito |=
-      init_params->InitialBrowserAction() ==
-      crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
-#endif
   return should_use_incognito &&
          GetAvailabilityInternal(prefs, CHECK_PARENTAL_CONTROLS) !=
              IncognitoModeAvailability::kDisabled;

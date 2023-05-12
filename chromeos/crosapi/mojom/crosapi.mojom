@@ -871,28 +871,25 @@ enum InitialBrowserAction {
   // Uses the Lacros preference SessionStartupPref.
   [Default] kUseStartupPreference = 0,
 
-  // TODO(hidehiko): This should be kOpenNTPIncognitoWindow
-  kOpenIncognitoWindow = 1,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  kOpenIncognitoWindowDeprecated = 1,
 
-  // TODO(hidehiko): This should be kRestoreLastTab.
-  kRestoreLastSession = 2,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  kRestoreLastSessionDeprecated = 2,
 
   // Lacros will launch but will not show any windows. It will continue running
   // in the background until a browser window is shown. At that point it will no
   // longer run in the background and will close when all windows are closed.
   [MinVersion=1] kDoNotOpenWindow = 3,
 
-  // Opens a new window with a new tab, regardless of users' preference.
-  [MinVersion=2] kOpenNewTabPageWindow = 4,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  [MinVersion=2] kOpenNewTabPageWindowDeprecated = 4,
 
-  // Opens a new window with specified URLs with the main profile.
-  // The URLs should be set with BrowserInitParams::startup_urls.
-  // Added in M96.
-  [MinVersion=3] kOpenWindowWithUrls = 5,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  [MinVersion=3] kOpenWindowWithUrlsDeprecated = 5,
 
-  // Opens a new Guest mode window.
-  // Added in M100.
-  [MinVersion=4] kOpenGuestWindow = 6,
+  // Deprecated in M114. No longer handled by Lacros, do not use.
+  [MinVersion=4] kOpenGuestWindowDeprecated = 6,
 };
 
 // Whether / how mlservice on-device handwriting is supported.
@@ -1109,7 +1106,7 @@ struct BrowserInitParams {
   // initial_browser_action == OpenWindowWithUrls.
   // Added in M96.
   [MinVersion=24]
-  array<url.mojom.Url>? startup_urls@24;
+  array<url.mojom.Url>? REMOVED_24@24;
 
   // The set of device settings for Lacros. Lacros should *NOT* use this data,
   // but rely on DeviceSettingsLacros::GetDeviceSettings instead.
@@ -1419,7 +1416,7 @@ struct BrowserPostLoginParams {
   // URLs to be opened at the beginning. This works only when
   // initial_browser_action == OpenWindowWithUrls.
   // Added in M96.
-  array<url.mojom.Url>? startup_urls@11;
+  array<url.mojom.Url>? REMOVED_11@11;
 
   // When this flag is |true|, Lacros is the only browser.
   bool standalone_browser_is_only_browser@12;

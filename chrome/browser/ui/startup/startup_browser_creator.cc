@@ -397,15 +397,6 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
   bool open_guest_profile = profiles::IsGuestModeRequested(
       command_line, g_browser_process->local_state(),
       /* show_warning= */ true);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (profiles::IsGuestModeEnabled()) {
-    const auto* init_params = chromeos::BrowserParamsProxy::Get();
-    open_guest_profile =
-        open_guest_profile ||
-        init_params->InitialBrowserAction() ==
-            crosapi::mojom::InitialBrowserAction::kOpenGuestWindow;
-  }
-#endif
   if (open_guest_profile) {
     Profile* profile = g_browser_process->profile_manager()->GetProfile(
         ProfileManager::GetGuestProfilePath());
@@ -424,12 +415,6 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     bool expect_incognito = command_line.HasSwitch(switches::kIncognito);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* init_params = chromeos::BrowserParamsProxy::Get();
-    expect_incognito |=
-        init_params->InitialBrowserAction() ==
-        crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
-#endif
     LOG_IF(WARNING, expect_incognito)
         << "Incognito mode disabled by policy, launching a normal "
         << "browser session.";
@@ -845,19 +830,6 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
   // those as there is nothing to restore.
   bool restore_last_session =
       command_line.HasSwitch(switches::kRestoreLastSession);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* init_params = chromeos::BrowserParamsProxy::Get();
-  if (init_params->InitialBrowserAction() ==
-          crosapi::mojom::InitialBrowserAction::kOpenNewTabPageWindow ||
-      init_params->InitialBrowserAction() ==
-          crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls) {
-    pref.type = SessionStartupPref::DEFAULT;
-    return pref;
-  }
-  restore_last_session |=
-      init_params->InitialBrowserAction() ==
-      crosapi::mojom::InitialBrowserAction::kRestoreLastSession;
-#endif
   if ((restore_last_session || did_restart) && !profile->IsNewProfile()) {
     pref.type = SessionStartupPref::LAST;
   }

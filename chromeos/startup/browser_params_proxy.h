@@ -65,8 +65,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   crosapi::mojom::OpenUrlFrom StartupUrlsFrom() const;
 
-  const absl::optional<std::vector<GURL>>& StartupUrls() const;
-
   const crosapi::mojom::DeviceSettingsPtr& DeviceSettings() const;
 
   const absl::optional<std::string>& MetricsServiceClientId() const;

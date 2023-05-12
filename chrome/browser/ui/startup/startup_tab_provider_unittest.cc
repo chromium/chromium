@@ -20,11 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/values.h"
 #include "extensions/browser/extension_registry.h"
@@ -518,89 +513,6 @@ TEST(StartupTabProviderTest, MAYBE_GetCommandLineTabsFileUrl) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST(StartupTabProviderTest, GetCrosapiTabs) {
-  base::test::TaskEnvironment task_environment;
-
-  // Non kOpenWindowWithUrls case.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kUseStartupPreference;
-    // The given URLs should be ignored.
-    params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    EXPECT_TRUE(output.empty());
-  }
-
-  // Simple use. Pass google.com URL.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    // The given URLs should be ignored.
-    params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("https://google.com"), output[0].url);
-  }
-
-  // Two URL case.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls = std::vector<GURL>{GURL("https://google.com"),
-                                             GURL("https://gmail.com")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(2u, output.size());
-    EXPECT_EQ(GURL("https://google.com"), output[0].url);
-    EXPECT_EQ(GURL("https://gmail.com"), output[1].url);
-  }
-
-  // chrome:// scheme should be allowed on Lacros because calls from
-  // untrustworthy applications are filtered before StartupTabProvider.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls = std::vector<GURL>{GURL("chrome://flags")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("chrome://flags"), output[0].url);
-  }
-
-  // Exceptional settings page.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls =
-        std::vector<GURL>{GURL("chrome://settings/resetProfileSettings")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("chrome://settings/resetProfileSettings"), output[0].url);
-  }
-
-  // about:blank URL.
-  {
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->initial_browser_action =
-        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
-    params->startup_urls = std::vector<GURL>{GURL("about:blank")};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    ASSERT_EQ(1u, output.size());
-    EXPECT_EQ(GURL("about:blank"), output[0].url);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
 

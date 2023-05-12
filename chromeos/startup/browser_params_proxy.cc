@@ -137,13 +137,6 @@ crosapi::mojom::OpenUrlFrom BrowserParamsProxy::StartupUrlsFrom() const {
   return BrowserInitParams::Get()->startup_urls_from;
 }
 
-const absl::optional<std::vector<GURL>>& BrowserParamsProxy::StartupUrls()
-    const {
-  if (IsLaunchedWithPostLoginParams())
-    return BrowserPostLoginParams::Get()->startup_urls;
-  return BrowserInitParams::Get()->startup_urls;
-}
-
 const crosapi::mojom::DeviceSettingsPtr& BrowserParamsProxy::DeviceSettings()
     const {
   return BrowserInitParams::Get()->device_settings;
