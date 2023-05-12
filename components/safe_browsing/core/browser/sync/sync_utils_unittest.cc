@@ -121,8 +121,7 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
   // return true.
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kHistory));
+      /*types=*/{syncer::UserSelectableType::kHistory});
 
   EXPECT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
@@ -134,8 +133,7 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
   // History is not being synced.
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kAutofill));
+      /*types=*/{syncer::UserSelectableType::kAutofill});
   EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
   sync_service.GetUserSettings()->SetSelectedTypes(

@@ -18,7 +18,7 @@ class SafeBrowsingSyncObserverImplTest : public PlatformTest {
 
   void SetUp() override {
     sync_service_.SetDisableReasons(
-        syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+        {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
   }
 
  protected:
@@ -29,7 +29,7 @@ class SafeBrowsingSyncObserverImplTest : public PlatformTest {
 
   void DisableSync() {
     sync_service_.SetDisableReasons(
-        syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+        {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
     sync_service_.FireStateChanged();
   }
 
