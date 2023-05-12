@@ -31,6 +31,7 @@ function createClipboardEvent(name: string): ClipboardEvent {
 function createAutocompleteMatch(): AutocompleteMatch {
   return {
     a11yLabel: mojoString16(''),
+    actions: [],
     allowedToBeDefaultMatch: false,
     isSearchType: false,
     swapContentsAndDescription: false,
@@ -1823,12 +1824,12 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createSearchMatch({
-      action: {
+      actions: [{
         a11yLabel: mojoString16(''),
         hint: mojoString16('Clear Browsing History'),
         suggestionContents: mojoString16(''),
         iconUrl: 'chrome://theme/current-channel-logo',
-      },
+      }],
       fillIntoEdit: mojoString16('clear browsing history'),
       supportsDeletion: true,
     })];
@@ -2459,12 +2460,12 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'Clear Browsing History';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
     const matches = [createSearchMatch({
-      action: {
+      actions: [{
         a11yLabel: mojoString16(''),
         hint: mojoString16('Clear Browsing History'),
         suggestionContents: mojoString16(''),
         iconUrl: 'chrome://theme/current-channel-logo',
-      },
+      }],
     })];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimStart()),
@@ -2509,12 +2510,20 @@ suite('NewTabPageRealboxTest', () => {
     const matches = [
       createSearchMatch({contents: mojoString16('Clear Bro')}),
       createSearchMatch({
-        action: {
-          a11yLabel: mojoString16(''),
-          hint: mojoString16('Clear Browsing History'),
-          suggestionContents: mojoString16(''),
-          iconUrl: 'chrome://theme/current-channel-logo',
-        },
+        actions: [
+          {
+            a11yLabel: mojoString16(''),
+            hint: mojoString16('Clear Browsing History'),
+            suggestionContents: mojoString16(''),
+            iconUrl: 'chrome://theme/current-channel-logo',
+          },
+          {
+            a11yLabel: mojoString16(''),
+            hint: mojoString16('Tab Switch'),
+            suggestionContents: mojoString16(''),
+            iconUrl: 'chrome://theme/current-channel-logo',
+          },
+        ],
       }),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -2530,10 +2539,11 @@ suite('NewTabPageRealboxTest', () => {
     verifyMatch(matches[0]!, matchEls[0]!);
     verifyMatch(matches[1]!, matchEls[1]!);
 
-    const pedalEl = $$($$(matchEls[1]!, 'cr-realbox-action')!, '.contents')!;
+    const pedalElClear =
+        $$($$(matchEls[1]!, 'cr-realbox-action')!, '.contents')!;
 
     assertEquals(
-        pedalEl.querySelector<HTMLImageElement>('#action-icon')!.src,
+        pedalElClear.querySelector<HTMLImageElement>('#action-icon')!.src,
         'chrome://theme/current-channel-logo');  // Default Pedal Icon
 
     const leftClick = new MouseEvent('click', {
@@ -2543,7 +2553,7 @@ suite('NewTabPageRealboxTest', () => {
       composed: true,  // So it propagates across shadow DOM boundary.
     });
 
-    pedalEl.dispatchEvent(leftClick);
+    pedalElClear.dispatchEvent(leftClick);
     assertTrue(leftClick.defaultPrevented);
 
     await testProxy.handler.whenCalled('executeAction').then((args) => {
@@ -2552,6 +2562,20 @@ suite('NewTabPageRealboxTest', () => {
       assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
     });
     assertEquals(1, testProxy.handler.getCallCount('executeAction'));
+
+    const pedalElTab =
+        $$(matchEls[1]!.shadowRoot!.querySelectorAll('cr-realbox-action')![1]!,
+           '.contents')!;
+
+    pedalElTab.dispatchEvent(leftClick);
+    assertTrue(leftClick.defaultPrevented);
+
+    await testProxy.handler.whenCalled('executeAction').then((args) => {
+      assertEquals(1, args.line);
+      assertEquals(args.mouseButton, 0);
+      assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
+    });
+    assertEquals(2, testProxy.handler.getCallCount('executeAction'));
   });
 
   //============================================================================

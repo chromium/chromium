@@ -37,11 +37,12 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   }
 
   executeAction(
-      line: number, url: Url, matchSelectionTimestamp: TimeTicks,
-      mouseButton: number, altKey: boolean, ctrlKey: boolean, metaKey: boolean,
-      shiftKey: boolean) {
+      line: number, actionIndex: number, url: Url,
+      matchSelectionTimestamp: TimeTicks, mouseButton: number, altKey: boolean,
+      ctrlKey: boolean, metaKey: boolean, shiftKey: boolean) {
     this.methodCalled('executeAction', {
       line,
+      actionIndex,
       url,
       matchSelectionTimestamp,
       mouseButton,

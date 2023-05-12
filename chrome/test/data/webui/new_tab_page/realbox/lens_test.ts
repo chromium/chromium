@@ -18,6 +18,7 @@ import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
 function createAutocompleteMatch(): AutocompleteMatch {
   return {
     a11yLabel: mojoString16(''),
+    actions: [],
     allowedToBeDefaultMatch: false,
     isSearchType: false,
     swapContentsAndDescription: false,

@@ -39,7 +39,7 @@ struct SuggestionAnswer {
 struct AutocompleteMatch {
   mojo_base.mojom.String16 a11y_label;
   bool allowed_to_be_default_match;
-  Action? action;
+  array<Action> actions;
   SuggestionAnswer? answer;
   mojo_base.mojom.String16 contents;
   array<ACMatchClassification> contents_class;
@@ -139,6 +139,7 @@ interface PageHandler {
   // microseconds since Jan. 1, 1970 (ECMAScript epoch).
   // |url| is only used to confirm the match |line| selection.
   ExecuteAction(uint8 line,
+                uint8 action_index,
                 url.mojom.Url url,
                 mojo_base.mojom.TimeTicks match_selection_timestamp,
                 uint8 mouse_button,

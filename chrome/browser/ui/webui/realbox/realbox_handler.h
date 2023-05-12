@@ -84,6 +84,7 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id) override;
   void ExecuteAction(uint8_t line,
+                     uint8_t action_index,
                      const GURL& url,
                      base::TimeTicks match_selection_timestamp,
                      uint8_t mouse_button,

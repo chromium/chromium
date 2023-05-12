@@ -312,26 +312,16 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value());
-
-    // The realbox only supports one action and priority is given to the actions
-    // instead of the switch to tab button.
-    if (match.has_tab_match.value_or(false) &&
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
-      mojom_match->action = omnibox::mojom::Action::New(
-          l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_BUTTON),
-          l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
-          std::u16string(), kTabIconResourceName);
-    }
-
-    const OmniboxAction* action = match.GetActionAt(0u);
-    if (action && base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
-      const OmniboxAction::LabelStrings& label_strings =
-          action->GetLabelStrings();
-      mojom_match->action = omnibox::mojom::Action::New(
-          label_strings.accessibility_hint, label_strings.hint,
-          label_strings.suggestion_contents,
-          RealboxHandler::PedalVectorIconToResourceName(
-              action->GetVectorIcon()));
+    if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+      for (const auto& action : match.actions) {
+        const OmniboxAction::LabelStrings& label_strings =
+            action->GetLabelStrings();
+        mojom_match->actions.emplace_back(omnibox::mojom::Action::New(
+            label_strings.accessibility_hint, label_strings.hint,
+            label_strings.suggestion_contents,
+            RealboxHandler::PedalVectorIconToResourceName(
+                action->GetVectorIcon())));
+      }
     }
     mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
         match, match.contents, line, 0,
@@ -812,6 +802,7 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
 }
 
 void RealboxHandler::ExecuteAction(uint8_t line,
+                                   uint8_t action_index,
                                    const GURL& url,
                                    base::TimeTicks match_selection_timestamp,
                                    uint8_t mouse_button,
@@ -825,11 +816,15 @@ void RealboxHandler::ExecuteAction(uint8_t line,
     // the web UI is referencing a stale match.
     return;
   }
+  if (action_index >= match->actions.size()) {
+    return;
+  }
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
   OmniboxPopupSelection selection(
-      line, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION);
+      line, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
+      action_index);
   edit_model()->OpenSelection(selection, match_selection_timestamp,
                               disposition);
 }

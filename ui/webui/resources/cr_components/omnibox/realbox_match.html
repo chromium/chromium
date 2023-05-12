@@ -5,7 +5,7 @@
   }
 
   #action {
-    margin-inline-start: 40px; /* icon width + text padding */
+    margin-inline-end: 8px;
   }
 
   .container {
@@ -21,6 +21,8 @@
   }
 
   .container + .container {
+    flex-direction: row;
+    margin-inline-start: 40px; /* icon width + text padding */
     padding-bottom: 12px;
     padding-top: 0;
   }
@@ -219,11 +221,10 @@
     tabindex="2">
   </cr-icon-button>
 </div>
-<template is="dom-if" if="[[actionIsVisible_]]">
-  <div class="container" aria-hidden="true">
-    <cr-realbox-action id="action" action="[[match.action]]"
-                     tabindex="1" on-click="onActionClick_"
-                     on-keydown="onActionKeyDown_">
+<div class="container" aria-hidden="true">
+  <template is="dom-repeat" items="[[match.actions]]">
+    <cr-realbox-action id="action" action="[[item]]" action-index="[[actionIndex_(item)]]" on-execute-action="onExecuteAction_"
+                     tabindex="1">
     </cr-realbox-action>
-  </div>
-</template>
+  </template>
+</div>
