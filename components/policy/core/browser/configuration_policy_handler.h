@@ -536,6 +536,19 @@ class POLICY_EXPORT SimpleDeprecatingPolicyHandler
   std::unique_ptr<NamedPolicyHandler> new_policy_handler_;
 };
 
+// A schema policy handler for complex policies that only accept cloud sources.
+class POLICY_EXPORT CloudOnlyPolicyHandler
+    : public SchemaValidatingPolicyHandler {
+ public:
+  CloudOnlyPolicyHandler(const char* policy_name,
+                         Schema schema,
+                         SchemaOnErrorStrategy strategy);
+  ~CloudOnlyPolicyHandler() override;
+
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+};
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_BROWSER_CONFIGURATION_POLICY_HANDLER_H_

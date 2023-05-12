@@ -30,7 +30,7 @@ EnterpriseConnectorsPolicyHandler::EnterpriseConnectorsPolicyHandler(
     const char* pref_path,
     const char* pref_scope_path,
     policy::Schema schema)
-    : SchemaValidatingPolicyHandler(
+    : policy::CloudOnlyPolicyHandler(
           policy_name,
           schema.GetKnownProperty(policy_name),
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN),
@@ -39,23 +39,6 @@ EnterpriseConnectorsPolicyHandler::EnterpriseConnectorsPolicyHandler(
 
 EnterpriseConnectorsPolicyHandler::~EnterpriseConnectorsPolicyHandler() =
     default;
-
-bool EnterpriseConnectorsPolicyHandler::CheckPolicySettings(
-    const policy::PolicyMap& policies,
-    policy::PolicyErrorMap* errors) {
-  const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
-
-  if (!policy)
-    return true;
-
-  if (policy->source != policy::POLICY_SOURCE_CLOUD &&
-      policy->source != policy::POLICY_SOURCE_CLOUD_FROM_ASH) {
-    errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
-    return false;
-  }
-
-  return SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors);
-}
 
 void EnterpriseConnectorsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,

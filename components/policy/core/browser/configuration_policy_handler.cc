@@ -753,4 +753,30 @@ void SimpleDeprecatingPolicyHandler::ApplyPolicySettings(
   NOTREACHED();
 }
 
+// CloudOnlyPolicyHandler implementation ---------------------------------------
+
+CloudOnlyPolicyHandler::CloudOnlyPolicyHandler(const char* policy_name,
+                                               Schema schema,
+                                               SchemaOnErrorStrategy strategy)
+    : SchemaValidatingPolicyHandler(policy_name, schema, strategy) {}
+
+CloudOnlyPolicyHandler::~CloudOnlyPolicyHandler() = default;
+
+bool CloudOnlyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
+                                                 PolicyErrorMap* errors) {
+  const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
+
+  if (!policy) {
+    return true;
+  }
+
+  if (policy->source != policy::POLICY_SOURCE_CLOUD &&
+      policy->source != policy::POLICY_SOURCE_CLOUD_FROM_ASH) {
+    errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+    return false;
+  }
+
+  return SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors);
+}
+
 }  // namespace policy
