@@ -14,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.PassphraseType;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Date;
 import java.util.Set;
@@ -162,6 +163,8 @@ public abstract class SyncService {
     public abstract Set<Integer> getSelectedTypes();
 
     public abstract boolean hasKeepEverythingSynced();
+
+    public abstract boolean isTypeManagedByPolicy(@UserSelectableType int type);
 
     /**
      * Enables syncing for the passed types.
