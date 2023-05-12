@@ -253,6 +253,12 @@ $ ninja -n -d keeprsp -v base_unittests
 This will print a command line. It will also write a file called `base_unittests.rsp`, which
 contains additional parameters to be passed.
 
+### Remove ThinLTO cache flags
+
+ThinLTO uses a cache to avoid compilation in some cases. This can be confusing
+when debugging, so make sure to remove the various cache flags like
+`-Wl,--thinlto-cache-dir`.
+
 ### Expand Thin Archives on Command Line
 
 Expand thin archives mentioned in the command line to their individual object files.
@@ -337,9 +343,12 @@ in the directory where lock.o is (obj/base/base).
 These can be fed to `llvm-dis` to produce textual LLVM IR. They show
 how the code is transformed as it progresses through ThinLTO stages.
 Of particular interest are:
- - .3.import.bc, which shows the IR after definitions have been imported from other
-   modules, but before optimizations.
- - .5.precodegen.bc, which shows the IR just before it is transformed to native code.
+ - .3.import.bc, which shows the IR after definitions have been imported from
+   other modules, but before optimizations. Running this through LLVM's `opt`
+   tool with the right optimization level can often reproduce issues.
+ - .5.precodegen.bc, which shows the IR just before it is transformed to native
+   code. Running this through LLVM's `llc` tool with the right optimization level
+   can often reproduce issues.
 
 The same `-save-temps` command also produces `base_unittests.resolution.txt`, which
 shows symbol resolutions. These look like:
@@ -355,32 +364,27 @@ The possible flags are:
  - r: redefined by the linker.
  - x: visible to regular (that is, non-LTO) objects.
 
-### Code Generation for a Single File
+### Code Generation for a Single Module
 
-In other cases, it may be interesting to take a closer look at the
-code generation for a single file. This can be done using LLD's
-support for distributed ThinLTO. The linker takes a `--thinlto-index-only`
-option that does whole program analysis and writes index files:
+To speed up debugging, it may be helpful to limit code generation to a single
+module if you know the name of the module (e.g. the module name is in a crash
+dump).
 
-```sh
-$ clang++ -fuse-ld=lld -Wl,--thinlto-index-only -o ./base_unittests @base_unittests.expanded.rsp
-```
-
-This creates `.thinlto.bc` files next to object files used by the link (e.g.
-`obj/base/base/lock.o.thinlto.bc`).
-
-Using the index files, you can perform code generation for individual object files:
+`-Wl,--thinlto-single-module=foo` tells ThinLTO to only run
+optimizations/codegen on files matching the pattern and skip linking. This is
+helpful especially in combination with `-Wl,-save-temps`.
 
 ```sh
-$ clang++ -c -fthinlto-index=obj/base/base/lock.o.thinlto.bc -x ir obj/base/base/lock.o -o obj/base/base/lock.o.native
+$ clang++ -fuse-ld=lld -Wl,--thinlto-single-module=obj/base/base/lock.o -o ./base_unittests @base_unittests.expanded.rsp
 ```
 
-The result of individual passes can be seen by adding `-mllvm -print-after-all`:
-   
-```
-$ clang++ -c -mllvm -print-after-all -fthinlto-index=obj/base/base/lock.o.thinlto.bc -x ir obj/base/base/lock.o -o obj/base/base/lock.o.native
+You should see
+
+```sh
+[ThinLTO] Selecting obj/base/base/lock.o to compile
 ```
 
+being printed.
 
 ## Tips and tricks
 
