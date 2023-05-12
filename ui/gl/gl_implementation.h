@@ -75,13 +75,22 @@ struct GL_EXPORT GLImplementationParts {
   constexpr bool operator==(const GLImplementationParts& other) const {
     return (gl == other.gl && angle == other.angle);
   }
+  constexpr bool operator!=(const GLImplementationParts& other) const {
+    return !operator==(other);
+  }
 
   constexpr bool operator==(const ANGLEImplementation angle_impl) const {
     return operator==(GLImplementationParts(angle_impl));
   }
+  constexpr bool operator!=(const ANGLEImplementation angle_impl) const {
+    return !operator==(angle_impl);
+  }
 
   constexpr bool operator==(const GLImplementation gl_impl) const {
     return operator==(GLImplementationParts(gl_impl));
+  }
+  constexpr bool operator!=(const GLImplementation gl_impl) const {
+    return !operator==(gl_impl);
   }
 
   bool IsValid() const;
