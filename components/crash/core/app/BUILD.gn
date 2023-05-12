@@ -130,6 +130,10 @@ static_library("app") {
     ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [ "crashpad_mac.mm" ]
     deps += [

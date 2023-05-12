@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -19,6 +20,10 @@
 #include "third_party/crashpad/crashpad/minidump/minidump_simple_string_dictionary_writer.h"
 #include "third_party/crashpad/crashpad/util/misc/metrics.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace crash_reporter {
 
 namespace {
@@ -31,8 +36,9 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       process_annotations["prod"] = "Chrome_iOS";
 #else
-      NSString* product = base::mac::ObjCCast<NSString>([outer_bundle
-          objectForInfoDictionaryKey:base::mac::CFToNSCast(kCFBundleNameKey)]);
+      NSString* product = base::mac::ObjCCast<NSString>(
+          [outer_bundle objectForInfoDictionaryKey:base::apple::CFToNSPtrCast(
+                                                       kCFBundleNameKey)]);
       process_annotations["prod"] =
           base::SysNSStringToUTF8(product).append("_iOS");
 #endif
