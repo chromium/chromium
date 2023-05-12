@@ -24,7 +24,9 @@ class BookmarkNode;
 class HistoryClientImpl : public history::HistoryClient,
                           public bookmarks::BaseBookmarkModelObserver {
  public:
-  explicit HistoryClientImpl(bookmarks::BookmarkModel* bookmark_model);
+  explicit HistoryClientImpl(
+      bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
+      bookmarks::BookmarkModel* account_bookmark_model);
 
   HistoryClientImpl(const HistoryClientImpl&) = delete;
   HistoryClientImpl& operator=(const HistoryClientImpl&) = delete;
@@ -58,7 +60,7 @@ class HistoryClientImpl : public history::HistoryClient,
 
   // BookmarkModel instance providing access to bookmarks. May be null during
   // testing, and is null while shutting down.
-  bookmarks::BookmarkModel* bookmark_model_;
+  bookmarks::BookmarkModel* local_or_syncable_bookmark_model_;
 
   // Callback invoked when URLs are removed from BookmarkModel.
   base::RepeatingCallback<void(const std::set<GURL>&)> on_bookmarks_removed_;
