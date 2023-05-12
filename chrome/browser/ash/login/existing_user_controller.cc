@@ -898,7 +898,7 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
     bool privacy_warnings_enabled =
         g_browser_process->local_state()->GetBoolean(
             prefs::kManagedGuestSessionPrivacyWarningsEnabled);
-    if (ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker) &&
+    if (ash::login::IsFullManagementDisclosureNeeded(broker) &&
         privacy_warnings_enabled) {
       ShowAutoLaunchManagedGuestSessionNotification();
     }

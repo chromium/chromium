@@ -50,13 +50,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
       const AccountId& account_id,
       const base::flat_set<std::string>& user_affiliation_ids) = 0;
 
-  // Checks whether full management disclosure is needed for the public/managed
-  // session login screen UI. Full disclosure is needed if the session is
-  // managed and any risky extensions or network certificates are forced
-  // through the policies.
-  virtual bool IsFullManagementDisclosureNeeded(
-      policy::DeviceLocalAccountPolicyBroker* broker) const = 0;
-
  private:
   LoginState::LoggedInUserType GetLoggedInUserType(
       const user_manager::User& active_user,

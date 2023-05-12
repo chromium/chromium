@@ -685,11 +685,6 @@ void FakeChromeUserManager::SetUserAffiliationForTesting(
   NotifyUserAffiliationUpdated(*user);
 }
 
-bool FakeChromeUserManager::IsFullManagementDisclosureNeeded(
-    policy::DeviceLocalAccountPolicyBroker* broker) const {
-  return true;
-}
-
 user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
   if (active_user_ != nullptr)
     return active_user_;
