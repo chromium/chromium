@@ -32,7 +32,7 @@ const syncer::SyncUserSettings* FakeSyncService::GetUserSettings() const {
 
 syncer::SyncService::DisableReasonSet FakeSyncService::GetDisableReasons()
     const {
-  return DISABLE_REASON_NOT_SIGNED_IN;
+  return {DISABLE_REASON_NOT_SIGNED_IN};
 }
 
 syncer::SyncService::TransportState FakeSyncService::GetTransportState() const {

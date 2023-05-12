@@ -346,8 +346,8 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInit) {
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                SyncService::DISABLE_REASON_USER_CHOICE),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
+                 SyncService::DISABLE_REASON_USER_CHOICE}),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -387,8 +387,8 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                SyncService::DISABLE_REASON_USER_CHOICE),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
+                 SyncService::DISABLE_REASON_USER_CHOICE}),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -415,7 +415,7 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
   // It can be resolved by invoking SetSyncFeatureRequested().
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
       service()->GetDisableReasons());
   service()->SetSyncFeatureRequested();
 
@@ -458,8 +458,8 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                SyncService::DISABLE_REASON_USER_CHOICE),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
+                 SyncService::DISABLE_REASON_USER_CHOICE}),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -504,8 +504,8 @@ TEST_F(SyncServiceImplTest, EarlySignOut) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                    SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+                                     SyncService::DISABLE_REASON_USER_CHOICE}),
       service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -537,8 +537,8 @@ TEST_F(SyncServiceImplTest, SignOutDisablesSyncTransportAndSyncFeature) {
   base::RunLoop().RunUntilIdle();
   // SyncRequested was set to false, causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                    SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+                                     SyncService::DISABLE_REASON_USER_CHOICE}),
       service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -568,8 +568,8 @@ TEST_F(SyncServiceImplTest,
   EXPECT_FALSE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                    SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+                                     SyncService::DISABLE_REASON_USER_CHOICE}),
       service()->GetDisableReasons());
   EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
 #if BUILDFLAG(IS_IOS)
@@ -1034,7 +1034,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
       service()->GetDisableReasons());
   // Since ChromeOS doesn't support signout and so the account is still there
   // and available, Sync will restart in standalone transport mode.
@@ -1050,8 +1050,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 #endif
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                    SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+                                     SyncService::DISABLE_REASON_USER_CHOICE}),
       service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());

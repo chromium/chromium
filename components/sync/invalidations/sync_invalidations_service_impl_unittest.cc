@@ -45,19 +45,19 @@ class SyncInvalidationsServiceImplTest : public testing::Test {
 
 TEST_F(SyncInvalidationsServiceImplTest, ShouldReturnGivenDataTypes) {
   sync_invalidations_service_impl_.SetInterestedDataTypes(
-      ModelTypeSet(BOOKMARKS, PREFERENCES));
-  EXPECT_EQ(ModelTypeSet(BOOKMARKS, PREFERENCES),
+      {BOOKMARKS, PREFERENCES});
+  EXPECT_EQ(ModelTypeSet({BOOKMARKS, PREFERENCES}),
             sync_invalidations_service_impl_.GetInterestedDataTypes());
   sync_invalidations_service_impl_.SetInterestedDataTypes(
-      ModelTypeSet(PREFERENCES, PASSWORDS));
-  EXPECT_EQ(ModelTypeSet(PREFERENCES, PASSWORDS),
+      {PREFERENCES, PASSWORDS});
+  EXPECT_EQ(ModelTypeSet({PREFERENCES, PASSWORDS}),
             sync_invalidations_service_impl_.GetInterestedDataTypes());
 }
 
 TEST_F(SyncInvalidationsServiceImplTest, ShouldNotifyOnChange) {
   EXPECT_CALL(handler_, OnInterestedDataTypesChanged);
   sync_invalidations_service_impl_.SetInterestedDataTypes(
-      ModelTypeSet(PASSWORDS, AUTOFILL));
+      {PASSWORDS, AUTOFILL});
 }
 
 TEST_F(SyncInvalidationsServiceImplTest,
@@ -65,11 +65,11 @@ TEST_F(SyncInvalidationsServiceImplTest,
   EXPECT_FALSE(
       sync_invalidations_service_impl_.GetInterestedDataTypes().has_value());
   sync_invalidations_service_impl_.SetInterestedDataTypes(
-      ModelTypeSet(BOOKMARKS, PREFERENCES));
+      {BOOKMARKS, PREFERENCES});
   EXPECT_TRUE(
       sync_invalidations_service_impl_.GetInterestedDataTypes().has_value());
   sync_invalidations_service_impl_.SetInterestedDataTypes(
-      ModelTypeSet(BOOKMARKS, PREFERENCES, NIGORI));
+      {BOOKMARKS, PREFERENCES, NIGORI});
   EXPECT_TRUE(
       sync_invalidations_service_impl_.GetInterestedDataTypes().has_value());
 }

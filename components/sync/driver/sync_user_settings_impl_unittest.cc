@@ -196,7 +196,7 @@ TEST_F(SyncUserSettingsImplTest, DeviceInfo) {
       /*types=*/all_registered_types);
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(DEVICE_INFO));
 
-  sync_user_settings = MakeSyncUserSettings(ModelTypeSet(DEVICE_INFO));
+  sync_user_settings = MakeSyncUserSettings({DEVICE_INFO});
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/UserSelectableTypeSet());
@@ -221,7 +221,7 @@ TEST_F(SyncUserSettingsImplTest, UserConsents) {
       /*types=*/all_registered_types);
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(USER_CONSENTS));
 
-  sync_user_settings = MakeSyncUserSettings(ModelTypeSet(USER_CONSENTS));
+  sync_user_settings = MakeSyncUserSettings({USER_CONSENTS});
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/UserSelectableTypeSet());
@@ -355,8 +355,8 @@ TEST_F(SyncUserSettingsImplTest,
       /*types=*/{UserSelectableType::kHistory, UserSelectableType::kTabs});
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
-                  ModelTypeSet(TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES,
-                               SESSIONS, PROXY_TABS, USER_EVENTS)));
+                  {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS,
+                   PROXY_TABS, USER_EVENTS}));
 
   // History only: PROXY_TABS is gone, but SESSIONS is still enabled since it's
   // needed for history.
@@ -365,17 +365,16 @@ TEST_F(SyncUserSettingsImplTest,
       /*types=*/{UserSelectableType::kHistory});
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
-                  ModelTypeSet(TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES,
-                               SESSIONS, USER_EVENTS)));
+                  {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS,
+                   USER_EVENTS}));
 
   // OpenTabs only: SESSIONS (the actual data) and PROXY_TABS (as a "flag"
   // indicating OpenTabs is enabled).
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kTabs});
-  EXPECT_EQ(
-      GetPreferredUserTypes(*sync_user_settings),
-      Union(AlwaysPreferredUserTypes(), ModelTypeSet(SESSIONS, PROXY_TABS)));
+  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
+            Union(AlwaysPreferredUserTypes(), {SESSIONS, PROXY_TABS}));
 }
 
 TEST_F(SyncUserSettingsImplTest,
@@ -409,26 +408,25 @@ TEST_F(SyncUserSettingsImplTest,
       /*types=*/{UserSelectableType::kHistory, UserSelectableType::kTabs});
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
-                  ModelTypeSet(TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES,
-                               SESSIONS, PROXY_TABS, USER_EVENTS)));
+                  {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS,
+                   PROXY_TABS, USER_EVENTS}));
 
   // History only: PROXY_TABS and SESSIONS are gone.
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kHistory});
-  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
-            Union(AlwaysPreferredUserTypes(),
-                  ModelTypeSet(TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES,
-                               USER_EVENTS)));
+  EXPECT_EQ(
+      GetPreferredUserTypes(*sync_user_settings),
+      Union(AlwaysPreferredUserTypes(),
+            {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS}));
 
   // OpenTabs only: SESSIONS (the actual data) and PROXY_TABS (as a "flag"
   // indicating OpenTabs is enabled).
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kTabs});
-  EXPECT_EQ(
-      GetPreferredUserTypes(*sync_user_settings),
-      Union(AlwaysPreferredUserTypes(), ModelTypeSet(SESSIONS, PROXY_TABS)));
+  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
+            Union(AlwaysPreferredUserTypes(), {SESSIONS, PROXY_TABS}));
 }
 
 TEST_F(SyncUserSettingsImplTest, ShouldMutePassphrasePrompt) {

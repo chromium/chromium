@@ -387,7 +387,7 @@ TEST_F(SyncEngineImplTest, FirstTimeSync) {
 
   ModelTypeSet ready_types = ConfigureDataTypes();
   // Nigori is always downloaded so won't be ready.
-  EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
+  EXPECT_EQ(Difference(ControlTypes(), {NIGORI}), ready_types);
   EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().HasAll(
       Difference(enabled_types_, ControlTypes())));
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
@@ -413,12 +413,12 @@ TEST_F(SyncEngineImplTest, DisableTypes) {
   InitializeBackend();
   ModelTypeSet ready_types = ConfigureDataTypes();
   // Nigori is always downloaded so won't be ready.
-  EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
+  EXPECT_EQ(Difference(ControlTypes(), {NIGORI}), ready_types);
   EXPECT_EQ(enabled_types_, fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 
   // Then disable two datatypes.
-  ModelTypeSet disabled_types(BOOKMARKS, SEARCH_ENGINES);
+  ModelTypeSet disabled_types = {BOOKMARKS, SEARCH_ENGINES};
   enabled_types_.RemoveAll(disabled_types);
   ready_types = ConfigureDataTypes();
 
@@ -433,12 +433,12 @@ TEST_F(SyncEngineImplTest, AddTypes) {
   InitializeBackend();
   ModelTypeSet ready_types = ConfigureDataTypes();
   // Nigori is always downloaded so won't be ready.
-  EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
+  EXPECT_EQ(Difference(ControlTypes(), {NIGORI}), ready_types);
   EXPECT_EQ(enabled_types_, fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 
   // Then add two datatypes.
-  ModelTypeSet new_types(EXTENSIONS, APPS);
+  ModelTypeSet new_types = {EXTENSIONS, APPS};
   enabled_types_.PutAll(new_types);
   ready_types = ConfigureDataTypes();
 
@@ -456,13 +456,13 @@ TEST_F(SyncEngineImplTest, AddDisableTypes) {
   InitializeBackend();
   ModelTypeSet ready_types = ConfigureDataTypes();
   // Nigori is always downloaded so won't be ready.
-  EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
+  EXPECT_EQ(Difference(ControlTypes(), {NIGORI}), ready_types);
   EXPECT_EQ(enabled_types_, fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 
   // Then add two datatypes.
-  ModelTypeSet disabled_types(BOOKMARKS, SEARCH_ENGINES);
-  ModelTypeSet new_types(EXTENSIONS, APPS);
+  ModelTypeSet disabled_types = {BOOKMARKS, SEARCH_ENGINES};
+  ModelTypeSet new_types = {EXTENSIONS, APPS};
   enabled_types_.PutAll(new_types);
   enabled_types_.RemoveAll(disabled_types);
   ready_types = ConfigureDataTypes();
@@ -482,7 +482,7 @@ TEST_F(SyncEngineImplTest, NewlySupportedTypes) {
   ModelTypeSet old_types = enabled_types_;
   fake_manager_factory_->set_progress_marker_types(old_types);
   fake_manager_factory_->set_initial_sync_ended_types(old_types);
-  ModelTypeSet new_types(APP_SETTINGS, EXTENSION_SETTINGS);
+  ModelTypeSet new_types = {APP_SETTINGS, EXTENSION_SETTINGS};
   enabled_types_.PutAll(new_types);
 
   // Does nothing.
@@ -494,7 +494,7 @@ TEST_F(SyncEngineImplTest, NewlySupportedTypes) {
   ModelTypeSet ready_types = ConfigureDataTypes();
 
   new_types.Put(NIGORI);
-  EXPECT_EQ(Difference(old_types, ModelTypeSet(NIGORI)), ready_types);
+  EXPECT_EQ(Difference(old_types, {NIGORI}), ready_types);
   EXPECT_EQ(new_types, fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 }
@@ -505,7 +505,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypes) {
   // Set sync manager behavior before passing it down. Experiments and device
   // info are new types without progress markers or initial sync ended, while
   // all other types have been fully downloaded and applied.
-  ModelTypeSet new_types(NIGORI);
+  ModelTypeSet new_types = {NIGORI};
   ModelTypeSet old_types = Difference(enabled_types_, new_types);
   fake_manager_factory_->set_progress_marker_types(old_types);
   fake_manager_factory_->set_initial_sync_ended_types(old_types);
@@ -533,12 +533,12 @@ TEST_F(SyncEngineImplTest, SilentlyFailToDownloadControlTypes) {
 TEST_F(SyncEngineImplTest, ForwardLocalRefreshRequest) {
   InitializeBackend();
 
-  ModelTypeSet set1 = ModelTypeSet::All();
+  const ModelTypeSet set1 = ModelTypeSet::All();
   backend_->TriggerRefresh(set1);
   fake_manager_->WaitForSyncThread();
   EXPECT_EQ(set1, fake_manager_->GetLastRefreshRequestTypes());
 
-  ModelTypeSet set2 = ModelTypeSet(SESSIONS);
+  const ModelTypeSet set2 = {SESSIONS};
   backend_->TriggerRefresh(set2);
   fake_manager_->WaitForSyncThread();
   EXPECT_EQ(set2, fake_manager_->GetLastRefreshRequestTypes());
@@ -565,7 +565,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
 // SyncEngine needs to tell the manager to purge the type, even though
 // it's already disabled (crbug.com/386778).
 TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
-  ModelTypeSet error_types(BOOKMARKS);
+  const ModelTypeSet error_types = {BOOKMARKS};
 
   InitializeBackend();
 
@@ -573,7 +573,7 @@ TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
   ModelTypeSet ready_types = ConfigureDataTypes();
 
   // Nigori is always downloaded so won't be ready.
-  EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
+  EXPECT_EQ(Difference(ControlTypes(), {NIGORI}), ready_types);
 
   // Then mark the error types as unready (disables without purging).
   ready_types = ConfigureDataTypesWithUnready(error_types);

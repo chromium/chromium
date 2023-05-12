@@ -26,7 +26,8 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   SyncSessionDurationsMetricsRecorderTest()
       : identity_test_env_(&test_url_loader_factory_) {
     sync_service_.SetHasSyncConsent(false);
-    sync_service_.SetDisableReasons(SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+    sync_service_.SetDisableReasons(
+        {SyncService::DISABLE_REASON_NOT_SIGNED_IN});
   }
 
   SyncSessionDurationsMetricsRecorderTest(
@@ -160,7 +161,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        OptedInToSync_SyncDisabledByUser) {
   EnableSync();
-  sync_service_.SetDisableReasons(SyncService::DISABLE_REASON_USER_CHOICE);
+  sync_service_.SetDisableReasons({SyncService::DISABLE_REASON_USER_CHOICE});
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
@@ -194,7 +195,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
        SyncDisabled_PrimaryAccountInAuthError) {
   EnableSync();
   SetInvalidCredentialsAuthError();
-  sync_service_.SetDisableReasons(SyncService::DISABLE_REASON_USER_CHOICE);
+  sync_service_.SetDisableReasons({SyncService::DISABLE_REASON_USER_CHOICE});
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);

@@ -726,7 +726,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
 
   TriggerUpdateFromServer(10, kTag1, kValue1);
   EXPECT_EQ(status_controller()->get_updated_types(),
-            ModelTypeSet{worker()->GetModelType()});
+            ModelTypeSet({worker()->GetModelType()}));
 
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
   std::vector<const UpdateResponseData*> updates_list =

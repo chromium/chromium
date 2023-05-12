@@ -17,7 +17,7 @@ namespace {
 TEST(SyncUIUtilTestAbout, ConstructAboutInformationWithUnrecoverableErrorTest) {
   TestSyncService service;
   service.SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
+      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
 
   base::Value::Dict strings = ConstructAboutInformation(
       IncludeSensitiveData(true), &service, std::string());

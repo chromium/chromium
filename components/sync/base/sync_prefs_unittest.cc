@@ -155,7 +155,7 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
         /*keep_everything_synced=*/false,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(UserSelectableTypeSet{type}, sync_prefs_->GetSelectedTypes());
+    EXPECT_EQ(UserSelectableTypeSet({type}), sync_prefs_->GetSelectedTypes());
   }
 }
 
@@ -174,7 +174,7 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
         /*keep_everything_synced=*/false,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    UserSelectableTypeSet expected_type_set = UserSelectableTypeSet{type};
+    UserSelectableTypeSet expected_type_set = {type};
     expected_type_set.Remove(UserSelectableType::kPreferences);
     EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypes());
   }
@@ -260,7 +260,8 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
         /*sync_all_os_types=*/false,
         /*registered_types=*/UserSelectableOsTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(UserSelectableOsTypeSet{type}, sync_prefs_->GetSelectedOsTypes());
+    EXPECT_EQ(UserSelectableOsTypeSet({type}),
+              sync_prefs_->GetSelectedOsTypes());
     // Browser types are not changed.
     EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes());
   }
@@ -292,7 +293,7 @@ TEST_F(SyncPrefsTest,
         /*sync_all_os_types=*/false,
         /*registered_types=*/UserSelectableOsTypeSet::All(),
         /*selected_types=*/{type});
-    UserSelectableOsTypeSet expected_type_set = UserSelectableOsTypeSet{type};
+    UserSelectableOsTypeSet expected_type_set = {type};
     expected_type_set.Remove(UserSelectableOsType::kOsPreferences);
     EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedOsTypes());
   }
@@ -469,8 +470,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithAllTypes) {
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithSomeTypes) {
-  const UserSelectableTypeSet enabled_types{UserSelectableType::kBookmarks,
-                                            UserSelectableType::kPreferences};
+  const UserSelectableTypeSet enabled_types = {
+      UserSelectableType::kBookmarks, UserSelectableType::kPreferences};
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, true);
   pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
@@ -526,8 +527,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithNoTypes) {
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithSomeTypes) {
-  const UserSelectableTypeSet enabled_types{UserSelectableType::kBookmarks,
-                                            UserSelectableType::kPreferences};
+  const UserSelectableTypeSet enabled_types = {
+      UserSelectableType::kBookmarks, UserSelectableType::kPreferences};
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, false);
   pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
@@ -549,8 +550,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithSomeTypes) {
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithAllTypes) {
-  const UserSelectableTypeSet enabled_types{UserSelectableType::kBookmarks,
-                                            UserSelectableType::kPreferences};
+  const UserSelectableTypeSet enabled_types = {
+      UserSelectableType::kBookmarks, UserSelectableType::kPreferences};
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, false);
   pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, true);

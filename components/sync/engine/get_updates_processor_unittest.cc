@@ -220,7 +220,7 @@ TEST_F(GetUpdatesProcessorTest, InitialSyncRequest) {
   nudge_tracker.RecordInitialSyncRequired(AUTOFILL);
   nudge_tracker.RecordInitialSyncRequired(PREFERENCES);
 
-  ModelTypeSet initial_sync_types = ModelTypeSet(AUTOFILL, PREFERENCES);
+  const ModelTypeSet initial_sync_types = {AUTOFILL, PREFERENCES};
 
   sync_pb::ClientToServerMessage message;
   NormalGetUpdatesDelegate normal_delegate(nudge_tracker);
@@ -417,7 +417,7 @@ class GetUpdatesProcessorApplyUpdatesTest : public GetUpdatesProcessorTest {
     autofill_handler_ = AddUpdateHandler(AUTOFILL);
   }
 
-  ModelTypeSet GetGuTypes() { return ModelTypeSet(AUTOFILL); }
+  ModelTypeSet GetGuTypes() { return {AUTOFILL}; }
 
   MockUpdateHandler* GetNonAppliedHandler() { return bookmarks_handler_; }
 

@@ -55,9 +55,8 @@ class SyncServiceImplStartupTest : public testing::Test {
 
   ~SyncServiceImplStartupTest() override { sync_service_->Shutdown(); }
 
-  void CreateSyncService(
-      SyncServiceImpl::StartBehavior start_behavior,
-      ModelTypeSet registered_types = ModelTypeSet(BOOKMARKS)) {
+  void CreateSyncService(SyncServiceImpl::StartBehavior start_behavior,
+                         ModelTypeSet registered_types = {BOOKMARKS}) {
     DataTypeController::TypeVector controllers;
     for (ModelType type : registered_types) {
       auto controller = std::make_unique<FakeDataTypeController>(type);
@@ -178,8 +177,8 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // to be enabled.
   sync_service()->Initialize();
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                    SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+                                     SyncService::DISABLE_REASON_USER_CHOICE}),
       sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             sync_service()->GetTransportState());
@@ -370,7 +369,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
   // get out of this.
   EXPECT_TRUE(sync_service()->HasUnrecoverableError());
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR),
+                {SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR}),
             sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             sync_service()->GetTransportState());
@@ -503,8 +502,8 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                SyncService::DISABLE_REASON_USER_CHOICE),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
+                 SyncService::DISABLE_REASON_USER_CHOICE}),
             sync_service()->GetDisableReasons());
   // Service should not be started by Initialize() since it's managed.
   EXPECT_EQ(nullptr, data_type_manager());
@@ -556,8 +555,8 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
   ASSERT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                SyncService::DISABLE_REASON_USER_CHOICE),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
+                 SyncService::DISABLE_REASON_USER_CHOICE}),
             sync_service()->GetDisableReasons());
   EXPECT_FALSE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
@@ -582,16 +581,16 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   // It can be resolved by invoking SetSyncFeatureRequested().
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
       sync_service()->GetDisableReasons());
 #else
   if (GetParam()) {
     EXPECT_EQ(SyncService::DisableReasonSet(),
               sync_service()->GetDisableReasons());
   } else {
-    EXPECT_EQ(
-        SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
-        sync_service()->GetDisableReasons());
+    EXPECT_EQ(SyncService::DisableReasonSet(
+                  {SyncService::DISABLE_REASON_USER_CHOICE}),
+              sync_service()->GetDisableReasons());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -624,7 +623,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
       sync_service()->GetSetupInProgressHandle();
   sync_blocker.reset();
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR),
+                {SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR}),
             sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             sync_service()->GetTransportState());
@@ -636,15 +635,15 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 
-  CreateSyncService(SyncServiceImpl::MANUAL_START, ModelTypeSet(SESSIONS));
+  CreateSyncService(SyncServiceImpl::MANUAL_START, {SESSIONS});
   sync_service()->Initialize();
   ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
 
   // There is no signed-in user, so also nobody has decided that Sync should be
   // started.
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                    SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+                                     SyncService::DISABLE_REASON_USER_CHOICE}),
       sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             sync_service()->GetTransportState());
@@ -656,7 +655,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   SimulateTestUserSigninWithoutSyncFeature();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
+      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
       sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
             sync_service()->GetTransportState());
@@ -723,7 +722,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   sync_prefs()->SetFirstSetupComplete();
   sync_prefs()->SetSyncRequested(true);
   component_factory()->AllowFakeEngineInitCompletion(false);
-  CreateSyncService(SyncServiceImpl::MANUAL_START, ModelTypeSet(SESSIONS));
+  CreateSyncService(SyncServiceImpl::MANUAL_START, {SESSIONS});
   get_controller(SESSIONS)->model()->EnableManualModelStart();
 
   // Kick off.
