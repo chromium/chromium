@@ -1058,7 +1058,7 @@ int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
   state_->IncrementNumNonLocalResolves();
 
   const RuleResolver::RuleResultOrError& result = rule_resolver_.Resolve(
-      request.request_endpoint(), request.parameters().dns_query_type,
+      request.request_endpoint(), {request.parameters().dns_query_type},
       request.parameters().source);
 
   int error = ERR_UNEXPECTED;

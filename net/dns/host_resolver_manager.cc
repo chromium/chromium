@@ -588,9 +588,8 @@ struct HostResolverManager::JobKey {
       // that differ only in their (non-singleton) `query_types` fields. When we
       // enable new query types, this behavior could lead to subtle bugs. That
       // is why the following DCHECK restricts the allowable query types.
-      DCHECK(Difference(query_types,
-                        DnsQueryTypeSet(DnsQueryType::A, DnsQueryType::AAAA,
-                                        DnsQueryType::HTTPS))
+      DCHECK(Difference(query_types, {DnsQueryType::A, DnsQueryType::AAAA,
+                                      DnsQueryType::HTTPS})
                  .Empty());
     }
     const DnsQueryType query_type_for_key = query_types.Size() == 1
@@ -3867,11 +3866,11 @@ void HostResolverManager::GetEffectiveParametersForRequest(
   *out_effective_flags = flags | additional_resolver_flags_;
 
   if (dns_query_type != DnsQueryType::UNSPECIFIED) {
-    *out_effective_types = dns_query_type;
+    *out_effective_types = {dns_query_type};
     return;
   }
 
-  DnsQueryTypeSet effective_types(DnsQueryType::A, DnsQueryType::AAAA);
+  DnsQueryTypeSet effective_types = {DnsQueryType::A, DnsQueryType::AAAA};
 
   // Disable AAAA queries when we cannot do anything with the results.
   bool use_local_ipv6 = true;
