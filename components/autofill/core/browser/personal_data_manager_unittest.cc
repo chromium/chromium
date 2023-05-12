@@ -352,6 +352,13 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     WaitForOnPersonalDataChanged();
   }
 
+  // Wallet address conversion is deprecated by the CONTACT_INFO type.
+  // TODO(crbug.com/1423319): Cleanup
+  bool IsWalletAddressConversionDeprecated() const {
+    return base::FeatureList::IsEnabled(
+        features::kAutofillAccountProfilesUnionView);
+  }
+
   void AddOfferDataForTest(AutofillOfferData offer_data) {
     personal_data_->AddOfferDataForTest(
         std::make_unique<AutofillOfferData>(offer_data));
@@ -2377,17 +2384,18 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfileAutofillDisabled) {
                        "Orlando", "FL", "32801", "US", "19482937549");
   AddProfileToPersonalDataManager(local_profile);
 
-  // Add a different server profile.
-  std::vector<AutofillProfile> server_profiles;
-  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
-                               kServerAddressId);
-  test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "",
-                       "ACME Corp", "500 Oak View", "Apt 8", "Houston", "TX",
-                       "77401", "US", "");
-  // Wallet only provides a full name, so the above first and last names
-  // will be ignored when the profile is written to the DB.
-  server_profiles.back().SetRawInfo(NAME_FULL, u"John Doe");
-  SetServerProfiles(server_profiles);
+  if (!IsWalletAddressConversionDeprecated()) {
+    std::vector<AutofillProfile> server_profiles;
+    server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                                 kServerAddressId);
+    test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "",
+                         "ACME Corp", "500 Oak View", "Apt 8", "Houston", "TX",
+                         "77401", "US", "");
+    // Wallet only provides a full name, so the above first and last names
+    // will be ignored when the profile is written to the DB.
+    server_profiles.back().SetRawInfo(NAME_FULL, u"John Doe");
+    SetServerProfiles(server_profiles);
+  }
 
   // Disable Profile autofill.
   prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
@@ -2395,7 +2403,8 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfileAutofillDisabled) {
   ConvertWalletAddressesAndUpdateWalletCards();
 
   // Check that profiles were saved.
-  EXPECT_EQ(2U, personal_data_->GetProfiles().size());
+  const size_t expected_profiles = 1 + !IsWalletAddressConversionDeprecated();
+  EXPECT_EQ(expected_profiles, personal_data_->GetProfiles().size());
   // Expect no autofilled values or suggestions.
   EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
 
@@ -2423,25 +2432,27 @@ TEST_F(PersonalDataManagerTest,
                        "Orlando", "FL", "32801", "US", "19482937549");
   AddProfileToPersonalDataManager(local_profile);
 
-  // Add a different server profile.
-  std::vector<AutofillProfile> server_profiles;
-  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
-                               kServerAddressId);
-  test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "",
-                       "ACME Corp", "500 Oak View", "Apt 8", "Houston", "TX",
-                       "77401", "US", "");
-  // Wallet only provides a full name, so the above first and last names
-  // will be ignored when the profile is written to the DB.
-  server_profiles.back().SetRawInfo(NAME_FULL, u"John Doe");
-  SetServerProfiles(server_profiles);
+  if (!IsWalletAddressConversionDeprecated()) {
+    std::vector<AutofillProfile> server_profiles;
+    server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                                 kServerAddressId);
+    test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "",
+                         "ACME Corp", "500 Oak View", "Apt 8", "Houston", "TX",
+                         "77401", "US", "");
+    // Wallet only provides a full name, so the above first and last names
+    // will be ignored when the profile is written to the DB.
+    server_profiles.back().SetRawInfo(NAME_FULL, u"John Doe");
+    SetServerProfiles(server_profiles);
+  }
 
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
   ConvertWalletAddressesAndUpdateWalletCards();
 
-  // Expect 2 autofilled values or suggestions.
-  EXPECT_EQ(2U, personal_data_->GetProfiles().size());
-  EXPECT_EQ(2U, personal_data_->GetProfilesToSuggest().size());
+  // Expect that all profiles are suggested.
+  const size_t expected_profiles = 1 + !IsWalletAddressConversionDeprecated();
+  EXPECT_EQ(expected_profiles, personal_data_->GetProfiles().size());
+  EXPECT_EQ(expected_profiles, personal_data_->GetProfilesToSuggest().size());
 
   // Disable Profile autofill.
   prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
@@ -4018,6 +4029,9 @@ TEST_F(PersonalDataManagerTest, DeleteLocalCreditCards) {
 // transferred to the converted address.
 TEST_F(PersonalDataManagerTest,
        ConvertWalletAddressesAndUpdateWalletCards_NewProfile) {
+  if (IsWalletAddressConversionDeprecated()) {
+    return;
+  }
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
@@ -4111,6 +4125,9 @@ TEST_F(PersonalDataManagerTest,
 // address relationship was transferred to the converted address.
 TEST_F(PersonalDataManagerTest,
        ConvertWalletAddressesAndUpdateWalletCards_MergedProfile) {
+  if (IsWalletAddressConversionDeprecated()) {
+    return;
+  }
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
@@ -4203,6 +4220,9 @@ TEST_F(PersonalDataManagerTest,
 // a second time.
 TEST_F(PersonalDataManagerTest,
        ConvertWalletAddressesAndUpdateWalletCards_AlreadyConverted) {
+  if (IsWalletAddressConversionDeprecated()) {
+    return;
+  }
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
@@ -4245,6 +4265,9 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(
     PersonalDataManagerTest,
     ConvertWalletAddressesAndUpdateWalletCards_MultipleSimilarWalletAddresses) {
+  if (IsWalletAddressConversionDeprecated()) {
+    return;
+  }
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
@@ -4356,6 +4379,9 @@ TEST_F(
 TEST_F(
     PersonalDataManagerTest,
     ConvertWalletAddressesAndUpdateWalletCards_NewCrd_AddressAlreadyConverted) {
+  if (IsWalletAddressConversionDeprecated()) {
+    return;
+  }
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////

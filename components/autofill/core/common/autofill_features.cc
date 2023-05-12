@@ -34,7 +34,7 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
 // TODO(crbug.com/1348294): Remove once launched.
 BASE_FEATURE(kAutofillAccountProfilesUnionView,
              "AutofillAccountProfilesUnionView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Account profiles are not considered for regular updates on import, but if
 // this parameter is enabled, they are considered for silent updates.
 const base::FeatureParam<bool> kAutofillEnableSilentUpdatesForAccountProfiles{
