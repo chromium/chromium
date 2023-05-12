@@ -71740,6 +71740,12 @@ Called by update_use_counter_css.py.-->
       label="Histogram active sample wrapped 2^31 during accumulation."/>
 </enum>
 
+<enum name="NegotiatedHttpDatagramVersion">
+  <int value="0" label="Not supported"/>
+  <int value="1" label="draft-04"/>
+  <int value="2" label="rfc"/>
+</enum>
+
 <enum name="NeighborLinkMonitorFailureType">
   <int value="0" label="Unknown type of failure"/>
   <int value="1" label="IPv4 gateway neighbor lost"/>

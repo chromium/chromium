@@ -5559,6 +5559,16 @@ chromium-metrics-reviews@google.com.
   <summary>All HTTP status codes seen during WebSocket handshakes.</summary>
 </histogram>
 
+<histogram name="Net.WebTransport.NegotiatedHttpDatagramVersion"
+    enum="NegotiatedHttpDatagramVersion" expires_after="2023-11-12">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Negotiated HTTP Datagram version. Recorded when a WebTransport session
+    becomes ready.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

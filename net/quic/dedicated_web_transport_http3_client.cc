@@ -253,6 +253,35 @@ bool IsTerminalState(WebTransportState state) {
          state == WebTransportState::FAILED;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NegotiatedHttpDatagramVersion {
+  kNone = 0,
+  kDraft04 = 1,
+  kRfc = 2,
+  kMaxValue = kRfc,
+};
+
+void RecordNegotiatedHttpDatagramSupport(quic::HttpDatagramSupport support) {
+  NegotiatedHttpDatagramVersion negotiated;
+  switch (support) {
+    case quic::HttpDatagramSupport::kNone:
+      negotiated = NegotiatedHttpDatagramVersion::kNone;
+      break;
+    case quic::HttpDatagramSupport::kDraft04:
+      negotiated = NegotiatedHttpDatagramVersion::kDraft04;
+      break;
+    case quic::HttpDatagramSupport::kRfc:
+      negotiated = NegotiatedHttpDatagramVersion::kRfc;
+      break;
+    case quic::HttpDatagramSupport::kRfcAndDraft04:
+      NOTREACHED();
+      return;
+  }
+  base::UmaHistogramEnumeration(
+      "Net.WebTransport.NegotiatedHttpDatagramVersion", negotiated);
+}
+
 }  // namespace
 
 DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
@@ -727,6 +756,7 @@ void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(
 void DedicatedWebTransportHttp3Client::OnSessionReady(
     const spdy::Http2HeaderBlock& /*spdy_headers*/) {
   session_ready_ = true;
+  RecordNegotiatedHttpDatagramSupport(session_->http_datagram_support());
 }
 
 void DedicatedWebTransportHttp3Client::OnSessionClosed(
