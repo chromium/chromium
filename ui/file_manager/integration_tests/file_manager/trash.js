@@ -1200,7 +1200,7 @@ testcase.trashAllActionsDisabledForBlankSpaceInTrashRoot = async () => {
   // Click blank space.
   await remoteCall.rightClickFileListBlankSpace(appId);
 
-  // Ensure the context menu is hidden.
+  // Ensure the context menu is not hidden.
   const contextMenuSelector = '#file-context-menu:not([hidden])';
   await remoteCall.waitForElement(appId, contextMenuSelector);
   // Ensure each infeasible action is disabled and hidden.
