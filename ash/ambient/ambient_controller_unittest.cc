@@ -22,6 +22,7 @@
 #include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -34,6 +35,7 @@
 #include "ash/test/test_ash_web_view.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -47,6 +49,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
@@ -1580,6 +1583,14 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
 
 class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
  public:
+  AmbientControllerForManagedScreensaverTest() {
+    CreateTestData();
+    // Required as otherwise the PathService::CheckedGet fails in the
+    // screensaver images policy handler.
+    device_policy_screensaver_folder_override_ =
+        std::make_unique<base::ScopedPathOverride>(
+            ash::DIR_DEVICE_POLICY_SCREENSAVER_DATA, temp_dir_.GetPath());
+  }
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
@@ -1587,11 +1598,9 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
     // Disable consumer ambient mode
     SetAmbientModeEnabled(false);
     GetSessionControllerClient()->set_show_lock_screen_views(true);
-    CreateTestData();
   }
 
   void TearDown() override {
-    ASSERT_TRUE(temp_dir_.Delete());
     image_file_paths_.clear();
     AmbientAshTestBase::TearDown();
   }
@@ -1621,6 +1630,8 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   InProcessImageDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<base::ScopedPathOverride>
+      device_policy_screensaver_folder_override_;
 };
 
 TEST_F(AmbientControllerForManagedScreensaverTest,
@@ -1776,9 +1787,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
 }
 
-// TODO(b/271093537): Enable this tests once `ScreensaverImagesPolicyHandler`
-// supports the sign-in screen
-class DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest
+class AmbientControllerForManagedScreensaverLoginScreenTest
     : public AmbientControllerForManagedScreensaverTest {
  public:
   void SetUp() override {
@@ -1800,7 +1809,7 @@ class DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest
   }
 };
 
-TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ShownOnLoginScreen) {
   TriggerLoginScreen();
 
@@ -1814,7 +1823,7 @@ TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
 }
 
-TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ShownOnLoginWhenPrefUpdatedLater) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
@@ -1827,14 +1836,14 @@ TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 }
 
-TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        NotShownOnLoginScreenWhenDisabled) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
   FastForwardByLockScreenInactivityTimeout();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
-TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        UserLogsInAmbientModeDisabledAndManagedAmbientModeEnabled) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
@@ -1860,7 +1869,7 @@ TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 }
 
-TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        UserLogsInAmbientModeEnabled) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
@@ -1879,7 +1888,7 @@ TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 }
 
-TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ManagedScreensaverClosedWhenImagesCleared) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
@@ -1908,7 +1917,7 @@ TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
-TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ManagedScreensaverClosedWhenImageLoadingFails) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());

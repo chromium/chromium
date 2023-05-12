@@ -26,9 +26,13 @@ namespace ash {
 class ASH_EXPORT ScreensaverImagesPolicyHandler
     : public AmbientManagedPhotoSource {
  public:
+  enum HandlerType { kSignin, kUser, kManagedGuest };
+
+  static ScreensaverImagesPolicyHandler Create(PrefService* pref_service);
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  explicit ScreensaverImagesPolicyHandler(PrefService* pref_service);
+  ScreensaverImagesPolicyHandler(PrefService* pref_service, HandlerType state);
   ~ScreensaverImagesPolicyHandler() override;
 
   // AmbientManagedPhotoSource overrides
@@ -46,7 +50,7 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
 
   void OnDownloadedImageListUpdated(const std::vector<base::FilePath>& images);
 
-  raw_ptr<PrefService> user_pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

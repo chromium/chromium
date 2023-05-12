@@ -11,8 +11,12 @@
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/test/test_ambient_client.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/session/test_session_controller_client.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/base_paths.h"
@@ -24,6 +28,7 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_path_override.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/user_type.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,8 +43,8 @@ constexpr char kFakeFilePath1[] = "/path/to/file1";
 constexpr char kFakeFilePath2[] = "/path/to/file2";
 
 constexpr char kCacheDirectoryName[] = "managed_screensaver";
-constexpr char kManagedGuestsCacheDirectoryPath[] =
-    "/var/cache/managed_screensaver/guest";
+constexpr char kSigninDirectoryName[] = "signin";
+constexpr char kManagedGuestDirectoryName[] = "guest";
 constexpr char kCacheFileExt[] = ".cache";
 
 constexpr char kImageUrl1[] = "https://example.com/1.jpg";
@@ -51,6 +56,12 @@ constexpr char kFileContents2[] = "file contents 2";
 constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
 
 }  // namespace
+
+struct ScreensaverImagesPolicyHandlerTestCase {
+  std::string test_name;
+  ScreensaverImagesPolicyHandler::HandlerType handle_type;
+  std::string base_directory;
+};
 
 class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
  public:
@@ -68,8 +79,11 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    scoped_path_override_ = std::make_unique<base::ScopedPathOverride>(
+    home_dir_override_ = std::make_unique<base::ScopedPathOverride>(
         base::DIR_HOME, temp_dir_.GetPath());
+    managed_screensaver_dir_override_ =
+        std::make_unique<base::ScopedPathOverride>(
+            ash::DIR_DEVICE_POLICY_SCREENSAVER_DATA, temp_dir_.GetPath());
   }
 
   void TearDown() override {
@@ -89,7 +103,7 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
   }
 
   void VerifyPrivateImageDownloaderDownloadFolder(
-      const ScreensaverImagesPolicyHandler& policy_handler,
+      ScreensaverImagesPolicyHandler& policy_handler,
       const base::FilePath& expected_path) {
     ASSERT_TRUE(policy_handler.image_downloader_.get());
     EXPECT_EQ(expected_path,
@@ -103,7 +117,7 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
     RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
 
     // Keep a raw pointer to the user prefs before transferring ownership.
-    user_prefs_ = user_prefs.get();
+    active_prefs_ = user_prefs.get();
 
     GetSessionControllerClient()->Reset();
     GetSessionControllerClient()->AddUserSession(
@@ -116,31 +130,9 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
         session_manager::SessionState::ACTIVE);
   }
 
-  void CreateHandlerInstanceWithUserProfile() {
-    RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
-                              user_manager::USER_TYPE_REGULAR);
-
-    policy_handler_ =
-        std::make_unique<ScreensaverImagesPolicyHandler>(user_prefs_);
-
-    // Verify that the policy handler detected the new user and created a new
-    // image downloader instance.
-    ASSERT_TRUE(GetPrivateImageDownloader(*policy_handler_));
-    VerifyPrivateImageDownloaderDownloadFolder(
-        *policy_handler_, temp_dir_.GetPath().AppendASCII(kCacheDirectoryName));
-  }
-
-  base::FilePath GetExpectedFilePath(const std::string url) {
-    const std::string hash = base::SHA1HashString(url);
-    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
-    return temp_dir_.GetPath()
-        .AppendASCII(kCacheDirectoryName)
-        .AppendASCII(encoded_hash + kCacheFileExt);
-  }
-
-  TestingPrefServiceSimple* user_prefs() {
-    CHECK(user_prefs_);
-    return user_prefs_;
+  TestingPrefServiceSimple* active_prefs() {
+    CHECK(active_prefs_);
+    return active_prefs_;
   }
 
   network::TestURLLoaderFactory& url_loader_factory() {
@@ -153,37 +145,152 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
     return policy_handler_.get();
   }
 
- private:
-  // Temp directory to simulate user home directory.
+ protected:
+  // Temp directory to simulate the download directory.
   base::ScopedTempDir temp_dir_;
 
-  // Used to override the user home dir to |temp_dir_|
-  std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
+  // Used to override the base download path to |temp_dir_|
+  std::unique_ptr<base::ScopedPathOverride> home_dir_override_;
+  std::unique_ptr<base::ScopedPathOverride> managed_screensaver_dir_override_;
 
   // Ownership of this pref service is transferred to the session controller
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> active_prefs_ = nullptr;
 
   // Class under test
   std::unique_ptr<ScreensaverImagesPolicyHandler> policy_handler_;
 };
 
-TEST_F(ScreensaverImagesPolicyHandlerTest,
-       SharedDirectoryForManagedGuestSessions) {
-  // Register the user profile with its own pref service.
-  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
-                            user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestSignin) {
+  // Signin
 
-  ScreensaverImagesPolicyHandler policy_handler(user_prefs());
-
+  ScreensaverImagesPolicyHandler handler =
+      ScreensaverImagesPolicyHandler::Create(
+          Shell::Get()->session_controller()->GetSigninScreenPrefService());
   // Verify that the policy handler detected the new user and created a new
   // image downloader instance.
-  ASSERT_TRUE(GetPrivateImageDownloader(policy_handler));
+  EXPECT_TRUE(GetPrivateImageDownloader(handler));
   VerifyPrivateImageDownloaderDownloadFolder(
-      policy_handler, base::FilePath(kManagedGuestsCacheDirectoryPath));
+      handler, temp_dir_.GetPath().AppendASCII(kSigninDirectoryName));
+}
+TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestUser) {
+  // User
+
+  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
+                            user_manager::USER_TYPE_REGULAR);
+  auto handler = ScreensaverImagesPolicyHandler::Create(active_prefs());
+  // Verify that the policy handler detected the new user and created a new
+  // image downloader instance.
+  EXPECT_TRUE(GetPrivateImageDownloader(handler));
+  VerifyPrivateImageDownloaderDownloadFolder(
+      handler, temp_dir_.GetPath().AppendASCII(kCacheDirectoryName));
+}
+TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestManagedGuest) {
+  // Managed Guest
+
+  GetSessionControllerClient()->RequestSignOut();
+  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
+                            user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  auto handler = ScreensaverImagesPolicyHandler::Create(
+      Shell::Get()->session_controller()->GetActivePrefService());
+  // Verify that the policy handler detected the new user and created a new
+  // image downloader instance.
+  EXPECT_TRUE(GetPrivateImageDownloader(handler));
+  VerifyPrivateImageDownloaderDownloadFolder(
+      handler, temp_dir_.GetPath().AppendASCII(kManagedGuestDirectoryName));
 }
 
-TEST_F(ScreensaverImagesPolicyHandlerTest, ShouldRunCallbackIfImagesUpdated) {
-  CreateHandlerInstanceWithUserProfile();
+class ScreensaverImagesPolicyHandlerForAnySessionTest
+    : public ScreensaverImagesPolicyHandlerTest,
+      public ::testing::WithParamInterface<
+          ScreensaverImagesPolicyHandlerTestCase> {
+ public:
+  ScreensaverImagesPolicyHandlerForAnySessionTest() {
+    TestSessionControllerClient::DisableAutomaticallyProvideSigninPref();
+  }
+  // ScreensaverImagesPolicyHandlerTest:
+  void SetUp() override {
+    ScreensaverImagesPolicyHandlerTest::SetUp();
+    ScreensaverImagesPolicyHandlerTestCase test_case = GetParam();
+    switch (test_case.handle_type) {
+      case ScreensaverImagesPolicyHandler::HandlerType::kUser:
+        CreateHandlerInstanceForUserProfile();
+        break;
+      case ScreensaverImagesPolicyHandler::HandlerType::kSignin:
+        CreateHandlerInstanceForSigninScreen();
+        break;
+      case ScreensaverImagesPolicyHandler::HandlerType::kManagedGuest:
+        CreateHandlerInstanceForManagedGuestProfile();
+        break;
+    }
+  }
+
+  base::FilePath GetExpectedFilePath(const std::string url) {
+    const std::string hash = base::SHA1HashString(url);
+    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+    return temp_dir_.GetPath()
+        .AppendASCII(GetParam().base_directory)
+        .AppendASCII(encoded_hash + kCacheFileExt);
+  }
+
+  void CreateHandlerInstanceForSigninScreen() {
+    auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+    active_prefs_ = pref_service.get();
+    RegisterSigninProfilePrefs(pref_service->registry(), /*for_test=*/true);
+    TestSessionControllerClient* client = GetSessionControllerClient();
+    client->SetSigninScreenPrefService(std::move(pref_service));
+    policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>(
+        active_prefs_, ScreensaverImagesPolicyHandler::HandlerType::kSignin);
+
+    VerifyPrivateImageDownloaderDownloadFolder(
+        *policy_handler_,
+        temp_dir_.GetPath().AppendASCII(kSigninDirectoryName));
+  }
+
+  void CreateHandlerInstanceForUserProfile() {
+    RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
+                              user_manager::USER_TYPE_REGULAR);
+    policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>(
+        active_prefs_, ScreensaverImagesPolicyHandler::HandlerType::kUser);
+  }
+
+  void CreateHandlerInstanceForManagedGuestProfile() {
+    RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
+                              user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+    policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>(
+        active_prefs_,
+        ScreensaverImagesPolicyHandler::HandlerType::kManagedGuest);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ScreensaverImagesPolicyHandlerForAnySessionTests,
+    ScreensaverImagesPolicyHandlerForAnySessionTest,
+    ::testing::ValuesIn<ScreensaverImagesPolicyHandlerTestCase>({
+        {"Signin", ScreensaverImagesPolicyHandler::HandlerType::kSignin,
+         kSigninDirectoryName},
+        {"User", ScreensaverImagesPolicyHandler::HandlerType::kUser,
+         kCacheDirectoryName},
+        {"ManagedGuest",
+         ScreensaverImagesPolicyHandler::HandlerType::kManagedGuest,
+         kManagedGuestDirectoryName},
+
+    }),
+    [](const ::testing::TestParamInfo<
+        ScreensaverImagesPolicyHandlerForAnySessionTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, DirectoryTest) {
+  // Verify that the policy handler creates the new
+  // image downloader instance.
+  ASSERT_TRUE(GetPrivateImageDownloader(*policy_handler_));
+  VerifyPrivateImageDownloaderDownloadFolder(
+      *policy_handler_,
+      temp_dir_.GetPath().AppendASCII(GetParam().base_directory));
+}
+
+TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest,
+       ShouldRunCallbackIfImagesUpdated) {
   base::test::RepeatingTestFuture<std::vector<base::FilePath>> test_future;
   policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetCallback<const std::vector<base::FilePath>&>());
@@ -212,8 +319,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, ShouldRunCallbackIfImagesUpdated) {
   EXPECT_TRUE(test_future.IsEmpty());
 }
 
-TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
-  CreateHandlerInstanceWithUserProfile();
+TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, DownloadImagesTest) {
   base::test::RepeatingTestFuture<std::vector<base::FilePath>> test_future;
   policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetCallback<const std::vector<base::FilePath>&>());
@@ -227,7 +333,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
   image_urls.Append(kImageUrl2);
 
   // Fill the pref service to trigger the logic under test.
-  user_prefs()->SetManagedPref(
+  active_prefs()->SetManagedPref(
       ambient::prefs::kAmbientModeManagedScreensaverImages, image_urls.Clone());
 
   // Verify that request 1 is resolved
@@ -261,8 +367,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
   }
 }
 
-TEST_F(ScreensaverImagesPolicyHandlerTest, VerifyPolicyLimit) {
-  CreateHandlerInstanceWithUserProfile();
+TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, VerifyPolicyLimit) {
   base::test::RepeatingTestFuture<std::vector<base::FilePath>> test_future;
   policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetCallback<const std::vector<base::FilePath>&>());
@@ -281,7 +386,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, VerifyPolicyLimit) {
   url_loader_factory().AddResponse(image_urls[1].GetString(), kFileContents2);
 
   // Fill the pref service to trigger the logic under test.
-  user_prefs()->SetManagedPref(
+  active_prefs()->SetManagedPref(
       ambient::prefs::kAmbientModeManagedScreensaverImages, image_urls.Clone());
 
   const base::FilePath expected_file_path = GetExpectedFilePath(kImageUrl1);

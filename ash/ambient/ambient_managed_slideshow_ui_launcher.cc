@@ -23,7 +23,8 @@ AmbientManagedSlideshowUiLauncher::AmbientManagedSlideshowUiLauncher(
     : photo_controller_(*view_delegate,
                         CreateAmbientManagedSlideshowPhotoConfig()),
       delegate_(view_delegate),
-      screensaver_images_policy_handler_(active_pref_service) {
+      screensaver_images_policy_handler_(
+          ScreensaverImagesPolicyHandler::Create(active_pref_service)) {
   ambient_backend_model_observer_.Observe(
       photo_controller_.ambient_backend_model());
   photo_controller_.SetObserver(this);
