@@ -1845,7 +1845,6 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 
 # Popover test timeout/flakiness
 crbug.com/1416284 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
-crbug.com/626703 external/wpt/html/semantics/popovers/popover-hide-crash.html [ Timeout ]
 crbug.com/1443372 external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Pass Failure ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
