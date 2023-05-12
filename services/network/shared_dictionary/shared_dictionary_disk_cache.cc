@@ -10,7 +10,7 @@
 namespace network {
 namespace {
 
-void RunTaksAndCallback(
+void RunTaskAndCallback(
     base::OnceCallback<int(net::CompletionOnceCallback)> task,
     net::CompletionOnceCallback callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -123,7 +123,7 @@ int SharedDictionaryDiskCache::DoomEntry(const std::string& key,
       // `SharedDictionaryDiskCache::DoomEntry()` will be called only when
       // `this` is available.
       pending_disk_cache_tasks_.push_back(
-          base::BindOnce(&RunTaksAndCallback,
+          base::BindOnce(&RunTaskAndCallback,
                          base::BindOnce(&SharedDictionaryDiskCache::DoomEntry,
                                         base::Unretained(this), key),
                          std::move(callback)));
@@ -147,7 +147,7 @@ int SharedDictionaryDiskCache::ClearAll(net::CompletionOnceCallback callback) {
       // `SharedDictionaryDiskCache::ClearAll()` will be called only when `this`
       // is available.
       pending_disk_cache_tasks_.push_back(
-          base::BindOnce(&RunTaksAndCallback,
+          base::BindOnce(&RunTaskAndCallback,
                          base::BindOnce(&SharedDictionaryDiskCache::ClearAll,
                                         base::Unretained(this)),
                          std::move(callback)));
