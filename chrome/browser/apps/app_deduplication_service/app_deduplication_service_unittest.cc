@@ -506,7 +506,11 @@ TEST_F(AppDeduplicationServiceAlmanacTest, DeduplicateDataToEntries) {
   auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
   EXPECT_NE(nullptr, service);
 
+  // This function is called to populate the duplicate map, or else IsServiceOn
+  // will return false.
   service->DeduplicateDataToEntries(data);
+
+  EXPECT_TRUE(service->IsServiceOn());
 
   uint32_t skype_test_index = 1;
 
@@ -598,4 +602,42 @@ TEST_F(AppDeduplicationServiceAlmanacTest, PrefSetAfterServerSuccess) {
   EXPECT_TRUE(time_before < time_after);
 }
 
+TEST_F(AppDeduplicationServiceAlmanacTest, ValidServiceNoDuplicates) {
+  proto::DeduplicateData data;
+
+  auto* viber_group = data.add_app_group();
+  viber_group->set_app_group_uuid("af45163b-111d-4d43-b191-01a9f8aece4c");
+  viber_group->add_package_id();
+  viber_group->set_package_id(0, "android:com.viber.voip");
+
+  std::string viber_arc_app_id = "com.viber.voip";
+
+  TestingProfile profile;
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
+
+  EXPECT_NE(nullptr, service);
+
+  // This function is called to populate the duplicate map, or else IsServiceOn
+  // will return false.
+  service->DeduplicateDataToEntries(data);
+
+  EXPECT_TRUE(service->IsServiceOn());
+
+  EntryId viber_arc_entry_id(viber_arc_app_id, apps::AppType::kArc);
+
+  EXPECT_TRUE(service->GetDuplicates(viber_arc_entry_id).empty());
+}
+
+TEST_F(AppDeduplicationServiceAlmanacTest, InvalidServiceNoDuplicates) {
+  TestingProfile profile;
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
+
+  EXPECT_NE(nullptr, service);
+
+  EXPECT_FALSE(service->IsServiceOn());
+}
 }  // namespace apps::deduplication

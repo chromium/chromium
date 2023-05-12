@@ -40,6 +40,10 @@ class AppDeduplicationService : public KeyedService,
   AppDeduplicationService(const AppDeduplicationService&) = delete;
   AppDeduplicationService& operator=(const AppDeduplicationService&) = delete;
 
+  // Call this function before using any other function.
+  // This function returns true if the Deduplication Service has been
+  // properly initialised, ensuring the correctness of method responses.
+  bool IsServiceOn();
   std::vector<Entry> GetDuplicates(const EntryId& entry_id);
   bool AreDuplicates(const EntryId& entry_id_1, const EntryId& entry_id_2);
 
@@ -62,6 +66,10 @@ class AppDeduplicationService : public KeyedService,
                            PrefUnchangedAfterServerError);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            PrefSetAfterServerSuccess);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+                           ValidServiceNoDuplicates);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+                           ValidServiceWithDuplicates);
 
   enum class EntryStatus {
     // This entry is not an app entry (could be website, phonehub, etc.).

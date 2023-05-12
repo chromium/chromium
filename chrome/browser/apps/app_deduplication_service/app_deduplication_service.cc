@@ -55,6 +55,10 @@ AppDeduplicationService::AppDeduplicationService(Profile* profile)
 
 AppDeduplicationService::~AppDeduplicationService() = default;
 
+bool AppDeduplicationService::IsServiceOn() {
+  return !duplication_map_.empty();
+}
+
 void AppDeduplicationService::StartLoginFlow() {
   const int hours_diff =
       std::abs((GetServerPref() - base::Time::Now()).InHours());
