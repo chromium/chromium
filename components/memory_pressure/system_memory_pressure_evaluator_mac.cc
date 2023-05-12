@@ -19,10 +19,6 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/task/sequenced_task_runner.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace memory_pressure::mac {
 
 namespace {
@@ -47,28 +43,22 @@ SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
-struct SystemMemoryPressureEvaluator::ObjCStorage {
-  // The dispatch source that generates memory pressure change notifications.
-  dispatch_source_t __strong memory_level_event_source;
-};
-
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
     : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
+      memory_level_event_source_(dispatch_source_create(
+          DISPATCH_SOURCE_TYPE_MEMORYPRESSURE,
+          0,
+          DISPATCH_MEMORYPRESSURE_WARN | DISPATCH_MEMORYPRESSURE_CRITICAL |
+              DISPATCH_MEMORYPRESSURE_NORMAL,
+          dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0))),
       renotify_current_vote_timer_(
           FROM_HERE,
           kRenotifyVotePeriod,
           base::BindRepeating(&SystemMemoryPressureEvaluator::SendCurrentVote,
                               base::Unretained(this),
                               /*notify=*/true)),
-      objc_storage_(std::make_unique<ObjCStorage>()),
       weak_ptr_factory_(this) {
-  objc_storage_->memory_level_event_source = dispatch_source_create(
-      DISPATCH_SOURCE_TYPE_MEMORYPRESSURE, /*handle=*/0,
-      DISPATCH_MEMORYPRESSURE_WARN | DISPATCH_MEMORYPRESSURE_CRITICAL |
-          DISPATCH_MEMORYPRESSURE_NORMAL,
-      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, /*flags=*/0));
-
   // WeakPtr needed because there is no guarantee that |this| is still be alive
   // when the task posted to the TaskRunner or event handler runs.
   base::WeakPtr<SystemMemoryPressureEvaluator> weak_this =
@@ -77,25 +67,24 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
       base::SequencedTaskRunner::GetCurrentDefault();
 
   // Attach an event handler to the memory pressure event source.
-  if (objc_storage_->memory_level_event_source) {
-    dispatch_source_set_event_handler(
-        objc_storage_->memory_level_event_source, ^{
-          task_runner->PostTask(
-              FROM_HERE,
-              base::BindRepeating(
-                  &SystemMemoryPressureEvaluator::OnMemoryPressureChanged,
-                  weak_this));
-        });
+  if (memory_level_event_source_.get()) {
+    dispatch_source_set_event_handler(memory_level_event_source_, ^{
+      task_runner->PostTask(
+          FROM_HERE,
+          base::BindRepeating(
+              &SystemMemoryPressureEvaluator::OnMemoryPressureChanged,
+              weak_this));
+    });
 
     // Start monitoring the event source.
-    dispatch_resume(objc_storage_->memory_level_event_source);
+    dispatch_resume(memory_level_event_source_);
   }
 }
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
   // Remove the memory pressure event source.
-  if (objc_storage_->memory_level_event_source) {
-    dispatch_source_cancel(objc_storage_->memory_level_event_source);
+  if (memory_level_event_source_.get()) {
+    dispatch_source_cancel(memory_level_event_source_);
   }
 }
 
@@ -126,7 +115,7 @@ void SystemMemoryPressureEvaluator::OnMemoryPressureChanged() {
   UpdatePressureLevel();
 
   // Run the callback that's waiting on memory pressure change notifications.
-  // The convention is to not send notifications on memory pressure returning to
+  // The convention is to not send notifiations on memory pressure returning to
   // normal.
   bool notify = current_vote() !=
                 base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;

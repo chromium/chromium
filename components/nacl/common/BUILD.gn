@@ -41,10 +41,6 @@ if (enable_nacl) {
       "//native_client/src/trusted/error_code",
       "//services/service_manager/public/cpp",
     ]
-
-    if (is_apple) {
-      deps += [ "//base:base_arc" ]
-    }
   }
 
   # This exists just to make 'gn check' happy with :minimal.  It can't

@@ -16,6 +16,7 @@
 
 #include "base/base_export.h"
 #include "base/mac/dispatch_source_mach.h"
+#include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -107,6 +108,19 @@ class BASE_EXPORT MachPortRendezvousServer {
   friend class MachPortRendezvousServerTest;
   friend struct MachPortRendezvousFuzzer;
 
+  struct ClientData {
+    ClientData(ScopedDispatchObject<dispatch_source_t> exit_watcher,
+               MachPortsForRendezvous ports);
+    ClientData(ClientData&&);
+    ~ClientData();
+
+    // A DISPATCH_SOURCE_TYPE_PROC / DISPATCH_PROC_EXIT dispatch source. When
+    // the source is triggered, it calls OnClientExited().
+    ScopedDispatchObject<dispatch_source_t> exit_watcher;
+
+    MachPortsForRendezvous ports;
+  };
+
   MachPortRendezvousServer();
   ~MachPortRendezvousServer();
 
@@ -138,7 +152,6 @@ class BASE_EXPORT MachPortRendezvousServer {
   // Mach message dispatch source for |server_port_|.
   std::unique_ptr<DispatchSourceMach> dispatch_source_;
 
-  struct ClientData;
   Lock lock_;
   // Association of pid-to-ports.
   std::map<pid_t, ClientData> client_data_ GUARDED_BY(lock_);

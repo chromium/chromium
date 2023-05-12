@@ -9,13 +9,15 @@
 #include <dispatch/dispatch.h>
 
 #include "base/mac/scoped_cftyperef.h"
+#include "base/mac/scoped_dispatch_object.h"
 #include "base/message_loop/message_pump_mac.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
-namespace memory_pressure::mac {
+namespace memory_pressure {
+namespace mac {
 
 class TestSystemMemoryPressureEvaluator;
 
@@ -48,17 +50,18 @@ class SystemMemoryPressureEvaluator
   // Run |dispatch_callback| on memory pressure notifications from the OS.
   void OnMemoryPressureChanged();
 
+  // The dispatch source that generates memory pressure change notifications.
+  base::ScopedDispatchObject<dispatch_source_t> memory_level_event_source_;
+
   // Timer that will re-notify with the current vote at regular interval.
   base::RepeatingTimer renotify_current_vote_timer_;
-
-  struct ObjCStorage;
-  std::unique_ptr<ObjCStorage> objc_storage_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SystemMemoryPressureEvaluator> weak_ptr_factory_;
 };
 
-}  // namespace memory_pressure::mac
+}  // namespace mac
+}  // namespace memory_pressure
 
 #endif  // COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_

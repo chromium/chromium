@@ -176,7 +176,6 @@ blink_platform_sources("loader") {
   deps = [
     ":make_platform_loader_generated_delivery_type_names",
     ":make_platform_loader_generated_fetch_initiator_type_names",
-    "//base",
     "//components/link_header_util",
     "//components/variations/net:net",
     "//net",
@@ -198,10 +197,6 @@ blink_platform_sources("loader") {
   ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/platform/network:network" ]
-
-  if (is_apple) {
-    deps += [ "//base:base_arc" ]
-  }
 }
 
 source_set("unit_tests") {

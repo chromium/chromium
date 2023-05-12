@@ -205,40 +205,6 @@ buildflag_header("message_pump_buildflags") {
   flags = [ "ENABLE_MESSAGE_PUMP_EPOLL=$enable_message_pump_epoll" ]
 }
 
-if (is_apple) {
-  # TODO(https://crbug.com/1280317): Merge back into the `base` target once all
-  # .mm files are ARCed.
-  source_set("base_arc") {
-    sources = [
-      "mac/dispatch_source_mach.h",
-      "mac/dispatch_source_mach.mm",
-    ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      ":base_static",
-      "//third_party/abseil-cpp:absl",
-    ]
-
-    if (is_mac) {
-      sources += [
-        "files/file_path_watcher_fsevents.h",
-        "files/file_path_watcher_fsevents.mm",
-        "mac/mach_port_rendezvous.h",
-        "mac/mach_port_rendezvous.mm",
-        "synchronization/waitable_event_watcher_mac.mm",
-      ]
-      libs = [ "bsm" ]
-      frameworks = [
-        "AppKit.framework",
-        "CoreServices.framework",
-      ]
-    }
-    if (is_ios) {
-      frameworks = [ "UIKit.framework" ]
-    }
-  }
-}
-
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
 # small parts of it are used in many different contexts. This combined with a
@@ -2001,6 +1967,8 @@ component("base") {
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
+      "files/file_path_watcher_fsevents.cc",
+      "files/file_path_watcher_fsevents.h",
       "files/file_path_watcher_kqueue.cc",
       "files/file_path_watcher_kqueue.h",
       "files/file_path_watcher_mac.cc",
@@ -2013,6 +1981,8 @@ component("base") {
       "mac/launchd.h",
       "mac/mac_util.h",
       "mac/mac_util.mm",
+      "mac/mach_port_rendezvous.cc",
+      "mac/mach_port_rendezvous.h",
       "mac/os_crash_dumps.cc",
       "mac/os_crash_dumps.h",
       "mac/scoped_aedesc.h",
@@ -2020,6 +1990,7 @@ component("base") {
       "mac/scoped_authorizationref.mm",
       "mac/scoped_cffiledescriptorref.h",
       "mac/scoped_cftyperef.h",
+      "mac/scoped_dispatch_object.h",
       "mac/scoped_ionotificationportref.h",
       "mac/scoped_ioobject.h",
       "mac/scoped_ioplugininterface.h",
@@ -2053,6 +2024,7 @@ component("base") {
       "profiler/stack_sampler_mac.cc",
       "profiler/suspendable_thread_delegate_mac.cc",
       "profiler/suspendable_thread_delegate_mac.h",
+      "synchronization/waitable_event_watcher_mac.cc",
       "system/sys_info_mac.mm",
       "time/time_exploded_posix.cc",
     ]
@@ -2073,7 +2045,6 @@ component("base") {
 
   # Mac or iOS.
   if (is_apple) {
-    allow_circular_includes_from = [ ":base_arc" ]
     sources += [
       "apple/backup_util.h",
       "apple/backup_util.mm",
@@ -2086,6 +2057,8 @@ component("base") {
       "mac/call_with_eh_frame.cc",
       "mac/call_with_eh_frame.h",
       "mac/call_with_eh_frame_asm.S",
+      "mac/dispatch_source_mach.cc",
+      "mac/dispatch_source_mach.h",
       "mac/foundation_util.h",
       "mac/foundation_util.mm",
       "mac/mac_logging.h",
@@ -2115,7 +2088,6 @@ component("base") {
       "time/time_mac.mm",
     ]
     frameworks += [ "Security.framework" ]
-    public_deps += [ ":base_arc" ]
   }
 
   # Linux.
@@ -3492,10 +3464,7 @@ test("base_unittests") {
   if (is_apple) {
     public_deps = [ ":base_unittests_bundle_data" ]
 
-    deps += [
-      ":base_arc",
-      ":base_unittests_arc",
-    ]
+    deps += [ ":base_unittests_arc" ]
   }
 
   if (!is_ios) {

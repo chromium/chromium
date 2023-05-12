@@ -17,10 +17,6 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #if BUILDFLAG(IS_IOS)
 #include "base/ios/sim_header_shims.h"
 #else
@@ -107,19 +103,6 @@ void MachRendezvousPort::Destroy() {
   disposition_ = 0;
 }
 
-struct MachPortRendezvousServer::ClientData {
-  ClientData(dispatch_source_t exit_watcher, MachPortsForRendezvous ports)
-      : exit_watcher(exit_watcher), ports(ports) {}
-  ClientData(ClientData&&) = default;
-  ~ClientData() = default;
-
-  // A DISPATCH_SOURCE_TYPE_PROC / DISPATCH_PROC_EXIT dispatch source. When
-  // the source is triggered, it calls OnClientExited().
-  dispatch_source_t __strong exit_watcher;
-
-  MachPortsForRendezvous ports;
-};
-
 // static
 MachPortRendezvousServer* MachPortRendezvousServer::GetInstance() {
   static auto* instance = new MachPortRendezvousServer();
@@ -133,9 +116,9 @@ void MachPortRendezvousServer::RegisterPortsForPid(
   DCHECK_LT(ports.size(), kMaximumRendezvousPorts);
   DCHECK(!ports.empty());
 
-  dispatch_source_t exit_watcher = dispatch_source_create(
+  ScopedDispatchObject<dispatch_source_t> exit_watcher(dispatch_source_create(
       DISPATCH_SOURCE_TYPE_PROC, static_cast<uintptr_t>(pid),
-      DISPATCH_PROC_EXIT, dispatch_source_->queue());
+      DISPATCH_PROC_EXIT, dispatch_source_->queue()));
   dispatch_source_set_event_handler(exit_watcher, ^{
     OnClientExited(pid);
   });
@@ -145,6 +128,15 @@ void MachPortRendezvousServer::RegisterPortsForPid(
       client_data_.emplace(pid, ClientData{std::move(exit_watcher), ports});
   DCHECK(it.second);
 }
+
+MachPortRendezvousServer::ClientData::ClientData(
+    ScopedDispatchObject<dispatch_source_t> exit_watcher,
+    MachPortsForRendezvous ports)
+    : exit_watcher(exit_watcher), ports(ports) {}
+
+MachPortRendezvousServer::ClientData::ClientData(ClientData&&) = default;
+
+MachPortRendezvousServer::ClientData::~ClientData() = default;
 
 MachPortRendezvousServer::MachPortRendezvousServer() {
   std::string bootstrap_name =
@@ -162,7 +154,7 @@ MachPortRendezvousServer::MachPortRendezvousServer() {
   dispatch_source_->Resume();
 }
 
-MachPortRendezvousServer::~MachPortRendezvousServer() = default;
+MachPortRendezvousServer::~MachPortRendezvousServer() {}
 
 void MachPortRendezvousServer::HandleRequest() {
   // Receive the request message, using the kernel audit token to ascertain the
@@ -280,7 +272,8 @@ MachPortRendezvousClient* MachPortRendezvousClient::GetInstance() {
       client = nullptr;
     }
     return client;
-  }();
+  }
+  ();
   return client;
 }
 

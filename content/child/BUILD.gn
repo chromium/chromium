@@ -142,10 +142,6 @@ target(link_target_type, "child") {
     libs = [ "dwrite.lib" ]
   }
 
-  if (is_apple) {
-    deps += [ "//base:base_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "child_process_sandbox_support_impl_mac.cc",

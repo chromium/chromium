@@ -99,9 +99,7 @@ component("ipc") {
     "//services/tracing/public/cpp",
   ]
 
-  if (is_apple) {
-    public_deps += [ "//base:base_arc" ]
-  }
+  deps = [ "//base" ]
 
   if (enable_ipc_fuzzer) {
     public_configs = [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]

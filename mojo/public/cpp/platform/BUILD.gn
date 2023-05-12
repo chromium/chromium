@@ -58,10 +58,6 @@ component("platform") {
     deps += [ "//net" ]
   }
 
-  if (is_apple) {
-    public_deps += [ "//base:base_arc" ]
-  }
-
   if (is_mac) {
     sources += [ "named_platform_channel_mac.cc" ]
   }

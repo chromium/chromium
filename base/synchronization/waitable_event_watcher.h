@@ -16,8 +16,7 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <dispatch/dispatch.h>
 
-#include <memory>
-
+#include "base/mac/scoped_dispatch_object.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #else
@@ -132,8 +131,10 @@ class BASE_EXPORT WaitableEventWatcher
   // is waiting. Null if no event is being watched.
   scoped_refptr<WaitableEvent::ReceiveRight> receive_right_;
 
-  struct ObjCStorage;
-  std::unique_ptr<ObjCStorage> objc_storage_;
+  // A TYPE_MACH_RECV dispatch source on |receive_right_|. When a receive event
+  // is delivered, the message queue will be peeked and the bound |callback_|
+  // may be run. This will be null if nothing is currently being watched.
+  ScopedDispatchObject<dispatch_source_t> source_;
 
   // Used to vend a weak pointer for calling InvokeCallback() from the
   // |source_| event handler.

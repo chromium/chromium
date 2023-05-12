@@ -65,10 +65,6 @@ source_set("service_manager") {
       "//mojo/core/embedder",
       "//services/service_manager/public/cpp/service_executable:switches",
     ]
-
-    if (is_mac) {
-      public_deps += [ "//base:base_arc" ]
-    }
   }
 
   if (is_linux || is_chromeos) {
