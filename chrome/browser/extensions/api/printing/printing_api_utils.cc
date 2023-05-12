@@ -54,7 +54,7 @@ bool ValidateVendorItem(const cloud_devices::printer::VendorItem& vendor_item) {
   static const base::NoDestructor<
       base::flat_map<base::StringPiece, base::flat_set<base::StringPiece>>>
       kVendorItemAllowList({
-          {"label-mode-configured", {"cutter", "tear-off"}},
+          {"finishings", {"none", "trim"}},
       });
 
   const auto& item = kVendorItemAllowList->find(vendor_item.id);

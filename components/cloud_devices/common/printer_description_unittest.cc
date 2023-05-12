@@ -544,8 +544,8 @@ const char kCjt[] = R"(
         },
         "vendor_ticket_item": [
           {
-            "id": "label-mode-configured",
-            "value": "cutter"
+            "id": "finishings",
+            "value": "trim"
           }
         ],
         "color": {
@@ -1304,7 +1304,7 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   custom_raster.reverse_order_streaming = true;
   custom_raster.rotate_all_pages = false;
   pwg_raster_config.set_value(custom_raster);
-  VendorItem label_cutter("label-mode-configured", "cutter");
+  VendorItem label_cutter("finishings", "trim");
   vendor_items.AddOption(std::move(label_cutter));
   color.set_value(Color(ColorType::STANDARD_MONOCHROME));
   duplex.set_value(DuplexType::NO_DUPLEX);
@@ -1378,8 +1378,8 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   EXPECT_TRUE(pwg_raster_config.value().reverse_order_streaming);
   EXPECT_FALSE(pwg_raster_config.value().rotate_all_pages);
   ASSERT_EQ(vendor_items.size(), 1u);
-  EXPECT_EQ(vendor_items[0].id, "label-mode-configured");
-  EXPECT_EQ(vendor_items[0].value, "cutter");
+  EXPECT_EQ(vendor_items[0].id, "finishings");
+  EXPECT_EQ(vendor_items[0].value, "trim");
   EXPECT_EQ(color.value(), Color(ColorType::STANDARD_MONOCHROME));
   EXPECT_EQ(duplex.value(), DuplexType::NO_DUPLEX);
   EXPECT_EQ(orientation.value(), OrientationType::LANDSCAPE);

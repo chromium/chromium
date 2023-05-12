@@ -33,8 +33,8 @@ constexpr int kVerticalDpi = 400;
 constexpr int kMediaSizeWidth = 210000;
 constexpr int kMediaSizeHeight = 297000;
 constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
-constexpr char kVendorItemId[] = "label-mode-configured";
-constexpr char kVendorItemValue[] = "cutter";
+constexpr char kVendorItemId[] = "finishings";
+constexpr char kVendorItemValue[] = "trim";
 
 constexpr char kCjt[] = R"(
     {
@@ -63,8 +63,8 @@ constexpr char kCjt[] = R"(
         },
         "vendor_ticket_item": [
           {
-            "id": "label-mode-configured",
-            "value": "cutter"
+            "id": "finishings",
+            "value": "trim"
           }
         ],
         "collate": {
