@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 
-#include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
@@ -41,6 +39,10 @@ class WebAuthnCredManDelegate : public base::SupportsUserData::Data {
 
   bool HasResults();
 
+  void CleanUpConditionalRequest();
+
+  static bool IsCredManEnabled();
+
   // Returns a delegate associated with the |web_contents|. It creates one if
   // one does not already exist.
   // The delegate is destroyed along with the WebContents and so should not be
@@ -50,7 +52,7 @@ class WebAuthnCredManDelegate : public base::SupportsUserData::Data {
 
  private:
   bool has_results_;
-  base::RepeatingClosure full_assertion_request_;
+  absl::optional<base::RepeatingClosure> full_assertion_request_;
 };
 
 #endif  // COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_

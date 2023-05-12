@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents.h"
+#include "device/fido/features.h"
 
 namespace content {
 class RenderFrameHost;
@@ -32,11 +33,23 @@ void WebAuthnCredManDelegate::OnCredManConditionalRequestPending(
 }
 
 void WebAuthnCredManDelegate::TriggerFullRequest() {
-  std::move(full_assertion_request_).Run();
+  if (full_assertion_request_.has_value()) {
+    full_assertion_request_->Run();
+  }
 }
 
 bool WebAuthnCredManDelegate::HasResults() {
   return has_results_;
+}
+
+void WebAuthnCredManDelegate::CleanUpConditionalRequest() {
+  full_assertion_request_ = absl::nullopt;
+  has_results_ = false;
+}
+
+// static
+bool WebAuthnCredManDelegate::IsCredManEnabled() {
+  return base::FeatureList::IsEnabled(device::kWebAuthnAndroidCredMan);
 }
 
 // static

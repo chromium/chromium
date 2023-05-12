@@ -528,6 +528,7 @@ test("components_unittests") {
       "//components/variations/android:variations_java",
       "//components/webapps/browser/android:java",
       "//components/webapps/browser/android:unit_tests",
+      "//components/webauthn/android:unit_tests",
       "//content/public/android:content_java",
       "//content/public/browser",
       "//gin:v8_snapshot_assets",

@@ -140,6 +140,7 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_autofill_delegate.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "ui/base/ui_base_features.h"
 #else
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -959,6 +960,18 @@ ChromePasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
   return ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
       ->GetDelegateForFrame(frame_host);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+WebAuthnCredManDelegate*
+ChromePasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
+    PasswordManagerDriver* driver) {
+  auto* frame_host =
+      static_cast<password_manager::ContentPasswordManagerDriver*>(driver)
+          ->render_frame_host();
+  return WebAuthnCredManDelegate::GetRequestDelegate(
+      content::WebContents::FromRenderFrameHost(frame_host));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 version_info::Channel ChromePasswordManagerClient::GetChannel() const {
   return chrome::GetChannel();

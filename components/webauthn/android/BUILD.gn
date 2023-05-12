@@ -97,3 +97,14 @@ source_set("android") {
     "//third_party/boringssl",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "webauthn_cred_man_delegate_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
