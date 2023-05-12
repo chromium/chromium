@@ -6054,14 +6054,11 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE" desc="Body for Steam (noun, name of app) installer while Steam is installing.">
     This may take a few minutes
   </message>
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_PERCENTAGE" desc="Message containing the progress percentage of the ongoing Steam (noun, name of app) installation.">
+    <ph name="PERCENTAGE_COMPLETE">$1<ex>42</ex></ph>% completed
+  </message>
   <message name="IDS_BOREALIS_INSTALLER_ONGOING_INACTIVE" desc="Message shown while the steam installer is initializing.">
     Starting installation
-  </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_DLC" desc="Message shown while the steam installer is downloading its content.">
-    Downloading
-  </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_DRYRUN" desc="Message shown while the steam installer is performing a post-installation trial.">
-    Performing setup
   </message>
   <message name="IDS_BOREALIS_INSTALLER_FINISHED_TITLE" desc="Title for installer when installation for Steam (noun, name of app) completes succesfully.">
     You’re all set!

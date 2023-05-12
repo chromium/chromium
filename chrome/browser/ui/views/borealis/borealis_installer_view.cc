@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -14,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -35,6 +37,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -47,6 +50,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -54,8 +58,6 @@ namespace {
 BorealisInstallerView* g_borealis_installer_view = nullptr;
 
 constexpr auto kButtonRowInsets = gfx::Insets::TLBR(0, 64, 32, 64);
-constexpr int kWindowWidth = 768;
-constexpr int kWindowHeight = 636;
 
 void ShowBorealisInstallerViewIfAllowed(
     Profile* profile,
@@ -76,6 +78,23 @@ void ShowBorealisInstallerViewIfAllowed(
   g_borealis_installer_view->SetButtonRowInsets(kButtonRowInsets);
 
   g_borealis_installer_view->GetWidget()->Show();
+}
+
+// Returns the text to be used for a predicted completion time, which is
+// something like "starting up" or "3 mins remaining" depending on how
+// accurately we can predict.
+std::u16string GetInstallationPredictionText(const base::Time& start_time,
+                                             double completion_proportion) {
+  base::TimeDelta duration = base::Time::Now() - start_time;
+  // We have no confidence in the prediction for the first second or for
+  // too-small proportions.
+  if (completion_proportion < 0.001 || duration < base::Seconds(1)) {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_INACTIVE);
+  }
+  // Linear-interpolation to predict remaining time.
+  base::TimeDelta remaining = (duration / completion_proportion) - duration;
+  return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
+                                ui::TimeFormat::LENGTH_SHORT, remaining);
 }
 
 }  // namespace
@@ -110,91 +129,94 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
     : app_name_(l10n_util::GetStringUTF16(IDS_BOREALIS_APP_NAME)),
       profile_(profile),
       observation_(this) {
-  // Layout constants from the spec used for the plugin vm installer.
-  constexpr auto kDialogInsets = gfx::Insets::TLBR(60, 64, 0, 64);
-  const int kPrimaryMessageHeight = views::style::GetLineHeight(
-      CONTEXT_HEADLINE, views::style::STYLE_PRIMARY);
-  const int kSecondaryMessageHeight = views::style::GetLineHeight(
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
-  const int kInstallationProgressMessageHeight = views::style::GetLineHeight(
-      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
-  constexpr int kProgressBarHeight = 5;
-  constexpr int kProgressBarTopMargin = 32;
-
   SetCanMinimize(true);
   set_draggable(true);
-  // Removed margins so dialog insets specify it instead.
-  set_margins(gfx::Insets());
+  set_margins(gfx::Insets::TLBR(80, 40, 40, 40));
+  set_corner_radius(12);
 
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, kDialogInsets));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
 
-  views::View* upper_container_view =
+  views::View* left_container_view =
       AddChildView(std::make_unique<views::View>());
-  upper_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets()));
-  AddChildView(upper_container_view);
+  views::BoxLayout* left_layout =
+      left_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets()));
+  left_layout->set_inside_border_insets(gfx::Insets::TLBR(0, 0, 0, 80));
+  AddChildView(left_container_view);
 
-  views::View* lower_container_view =
-      AddChildView(std::make_unique<views::View>());
-  lower_container_layout_ =
-      lower_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  AddChildView(lower_container_view);
+  views::ImageView* flair =
+      left_container_view->AddChildView(std::make_unique<views::ImageView>());
+  gfx::ImageSkia* s = ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      IDR_LOGO_BOREALIS_FLAIR);
+  flair->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
+  flair->SetImageSize({32, 32});
+  flair->SetImage(s);
 
-  primary_message_label_ = new TitleLabel(GetPrimaryMessage(), CONTEXT_HEADLINE,
-                                          views::style::STYLE_PRIMARY);
-  primary_message_label_->SetProperty(
-      views::kMarginsKey, gfx::Insets::TLBR(kPrimaryMessageHeight, 0, 0, 0));
-  primary_message_label_->SetMultiLine(false);
+  primary_message_label_ =
+      new TitleLabel(GetPrimaryMessage(), ash::CONTEXT_HEADLINE_OVERSIZED,
+                     views::style::STYLE_PRIMARY);
+  primary_message_label_->SetProperty(views::kMarginsKey,
+                                      gfx::Insets::TLBR(40, 0, 0, 0));
+  primary_message_label_->SetMultiLine(true);
   primary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(primary_message_label_.get());
+  primary_message_label_->SetMaximumWidth(264);
+  left_container_view->AddChildView(primary_message_label_.get());
 
-  views::View* secondary_message_container_view =
-      AddChildView(std::make_unique<views::View>());
-  secondary_message_container_view->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical,
-          gfx::Insets::TLBR(kSecondaryMessageHeight, 0, 0, 0)));
-  upper_container_view->AddChildView(secondary_message_container_view);
   secondary_message_label_ = new views::Label(
       GetSecondaryMessage(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
+  secondary_message_label_->SetProperty(views::kMarginsKey,
+                                        gfx::Insets::TLBR(16, 0, 0, 0));
   secondary_message_label_->SetMultiLine(true);
   secondary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  secondary_message_container_view->AddChildView(
-      secondary_message_label_.get());
+  left_container_view->AddChildView(secondary_message_label_.get());
 
-  progress_bar_ = new views::ProgressBar(kProgressBarHeight);
-  progress_bar_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
-  upper_container_view->AddChildView(progress_bar_.get());
+  views::View* progress_container =
+      left_container_view->AddChildView(std::make_unique<views::View>());
+  progress_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets::TLBR(32, 0, 0, 0)));
+  installation_progress_percentage_label_ =
+      progress_container->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+  installation_progress_separator_ =
+      progress_container->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+  installation_progress_separator_->SetText(u"|");
+  installation_progress_separator_->SetProperty(views::kMarginsKey,
+                                                gfx::Insets::TLBR(0, 8, 0, 8));
+  installation_progress_eta_label_ =
+      progress_container->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
 
-  installation_progress_message_label_ =
-      new views::Label(std::u16string(), CONTEXT_DIALOG_BODY_TEXT_SMALL,
-                       views::style::STYLE_SECONDARY);
-  installation_progress_message_label_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(kInstallationProgressMessageHeight, 0, 0, 0));
-  installation_progress_message_label_->SetMultiLine(false);
-  installation_progress_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(
-      installation_progress_message_label_.get());
+  progress_bar_ = new views::ProgressBar();
+  progress_bar_->SetProperty(views::kMarginsKey,
+                             gfx::Insets::TLBR(16, 0, 0, 0));
+  left_container_view->AddChildView(progress_bar_.get());
+
+  views::View* right_container_view =
+      AddChildView(std::make_unique<views::View>());
+  right_container_layout_ =
+      right_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  right_container_layout_->set_inside_border_insets(
+      gfx::Insets::TLBR(64, 0, 64, 0));
+  AddChildView(right_container_view);
 
   big_image_ = new views::ImageView();
-  lower_container_view->AddChildView(big_image_.get());
-
-  // Make sure the lower_container_view is pinned to the bottom of the dialog.
-  lower_container_layout_->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-  layout->SetFlexForView(lower_container_view, 1, true);
+  big_image_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  big_image_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+  right_container_view->AddChildView(big_image_.get());
 
   ash::DarkLightModeController* dark_light_controller =
       ash::DarkLightModeController::Get();
-  if (dark_light_controller)
+  if (dark_light_controller) {
     dark_light_controller->AddObserver(this);
+  }
 }
 
 BorealisInstallerView::~BorealisInstallerView() {
@@ -205,8 +227,9 @@ BorealisInstallerView::~BorealisInstallerView() {
   }
   ash::DarkLightModeController* dark_light_controller =
       ash::DarkLightModeController::Get();
-  if (dark_light_controller)
+  if (dark_light_controller) {
     dark_light_controller->RemoveObserver(this);
+  }
 
   g_borealis_installer_view = nullptr;
 }
@@ -235,8 +258,9 @@ bool BorealisInstallerView::Accept() {
     borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
         borealis::kClientAppId,
         base::BindOnce([](borealis::BorealisAppLauncher::LaunchResult result) {
-          if (result == borealis::BorealisAppLauncher::LaunchResult::kSuccess)
+          if (result == borealis::BorealisAppLauncher::LaunchResult::kSuccess) {
             return;
+          }
           LOG(ERROR) << "Failed to launch borealis after install: code="
                      << static_cast<int>(result);
         }));
@@ -254,8 +278,9 @@ bool BorealisInstallerView::Cancel() {
         ->ContextManager()
         .ShutDownBorealis(
             base::BindOnce([](borealis::BorealisShutdownResult result) {
-              if (result == borealis::BorealisShutdownResult::kSuccess)
+              if (result == borealis::BorealisShutdownResult::kSuccess) {
                 return;
+              }
               LOG(ERROR) << "Failed to shutdown borealis after install: code="
                          << static_cast<int>(result);
             }));
@@ -273,6 +298,7 @@ void BorealisInstallerView::OnStateUpdated(InstallingState new_state) {
 
 void BorealisInstallerView::OnProgressUpdated(double fraction_complete) {
   progress_bar_->SetValue(fraction_complete);
+  SetProgressMessageLabel();
 }
 
 void BorealisInstallerView::OnInstallationEnded(
@@ -291,10 +317,6 @@ void BorealisInstallerView::OnInstallationEnded(
   }
   installing_state_ = InstallingState::kInactive;
   OnStateUpdated();
-}
-
-gfx::Size BorealisInstallerView::CalculatePreferredSize() const {
-  return gfx::Size(kWindowWidth, kWindowHeight);
 }
 
 std::u16string BorealisInstallerView::GetPrimaryMessage() const {
@@ -320,21 +342,6 @@ std::u16string BorealisInstallerView::GetSecondaryMessage() const {
 
     case State::kCompleted:
       return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_FINISHED_MESSAGE);
-  }
-}
-
-std::u16string BorealisInstallerView::GetProgressMessage() const {
-  if (state_ != State::kInstalling)
-    return {};
-  switch (installing_state_) {
-    case InstallingState::kInactive:
-    case InstallingState::kCheckingIfAllowed:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_INACTIVE);
-    case InstallingState::kInstallingDlc:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_DLC);
-    case InstallingState::kStartingUp:
-    case InstallingState::kAwaitingApplications:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_DRYRUN);
   }
 }
 
@@ -438,11 +445,25 @@ void BorealisInstallerView::SetSecondaryMessageLabel() {
 }
 
 void BorealisInstallerView::SetProgressMessageLabel() {
-  std::u16string message = GetProgressMessage();
-  installation_progress_message_label_->SetText(message);
-  installation_progress_message_label_->SetVisible(!message.empty());
-  installation_progress_message_label_->NotifyAccessibilityEvent(
+  bool in_progress = state_ == State::kInstalling;
+  installation_progress_percentage_label_->SetVisible(in_progress);
+  installation_progress_separator_->SetVisible(in_progress);
+  installation_progress_eta_label_->SetVisible(in_progress);
+  if (!in_progress) {
+    return;
+  }
+
+  int percentage = progress_bar_->GetValue() * 100;
+  installation_progress_percentage_label_->SetText(
+      l10n_util::GetStringFUTF16Int(IDS_BOREALIS_INSTALLER_ONGOING_PERCENTAGE,
+                                    percentage));
+  installation_progress_percentage_label_->SetVisible(true);
+  installation_progress_percentage_label_->NotifyAccessibilityEvent(
       ax::mojom::Event::kTextChanged, true);
+
+  installation_progress_eta_label_->SetText(GetInstallationPredictionText(
+      install_start_time_, progress_bar_->GetValue()));
+  installation_progress_eta_label_->SetVisible(true);
 }
 
 void BorealisInstallerView::SetImage() {
@@ -452,8 +473,6 @@ void BorealisInstallerView::SetImage() {
   constexpr int kCompleteBottomInsetDp = 64;
 
   auto set_image = [this](int image_id, int bottom_inset_dp) {
-    lower_container_layout_->set_inside_border_insets(
-        gfx::Insets::TLBR(0, 0, bottom_inset_dp, 0));
     gfx::ImageSkia* s =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id);
     // The image assets are sized so that we can display them at half their
@@ -484,10 +503,13 @@ void BorealisInstallerView::StartInstallation() {
 
   borealis::BorealisInstaller& installer =
       borealis::BorealisService::GetForProfile(profile_)->Installer();
-  if (observation_.IsObserving())
+  if (observation_.IsObserving()) {
     observation_.Reset();
+  }
   observation_.Observe(&installer);
   installer.Start();
+
+  install_start_time_ = base::Time::Now();
 
   OnStateUpdated();
 }
