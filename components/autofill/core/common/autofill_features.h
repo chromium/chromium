@@ -48,7 +48,7 @@ BASE_DECLARE_FEATURE(kAutofillDontPreserveAutofillState);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSelectMenu);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableSupportForExtraSettingsVisibleFields);
+BASE_DECLARE_FEATURE(kAutofillEnableNewStreetLevelFieldTypes);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableWithinFencedFrame);
 COMPONENT_EXPORT(AUTOFILL)
