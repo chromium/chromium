@@ -391,7 +391,7 @@
 
     /* Effects */
     'hover-on-prominent': {
-      light: 'rgba($cros.ref.neutral10.rgb, 0.10)',
+      light: 'rgba($cros.ref.neutral99.rgb, 0.10)',
       dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
     },
     'hover-on-subtle': {
