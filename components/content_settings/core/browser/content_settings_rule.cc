@@ -30,9 +30,8 @@ Rule::~Rule() = default;
 RuleIterator::~RuleIterator() = default;
 
 ConcatenationIterator::ConcatenationIterator(
-    std::vector<std::unique_ptr<RuleIterator>> iterators,
-    base::AutoLock* auto_lock)
-    : iterators_(std::move(iterators)), auto_lock_(auto_lock) {
+    std::vector<std::unique_ptr<RuleIterator>> iterators)
+    : iterators_(std::move(iterators)) {
   auto it = iterators_.begin();
   while (it != iterators_.end()) {
     if (!(*it)->HasNext())

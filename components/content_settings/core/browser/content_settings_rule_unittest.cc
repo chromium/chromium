@@ -61,7 +61,7 @@ TEST(RuleTest, ConcatenationIterator) {
   std::vector<std::unique_ptr<RuleIterator>> iterators;
   iterators.push_back(std::make_unique<ListIterator>(std::move(rules1)));
   iterators.push_back(std::make_unique<ListIterator>(std::move(rules2)));
-  ConcatenationIterator concatenation_iterator(std::move(iterators), nullptr);
+  ConcatenationIterator concatenation_iterator(std::move(iterators));
 
   Rule rule;
   ASSERT_TRUE(concatenation_iterator.HasNext());

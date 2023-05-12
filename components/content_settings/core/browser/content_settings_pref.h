@@ -114,9 +114,6 @@ class ContentSettingsPref {
 
   NotifyObserversCallback notify_callback_;
 
-  // Used around accesses to the value map objects to guarantee thread safety.
-  mutable base::Lock lock_;
-
   base::ThreadChecker thread_checker_;
 };
 

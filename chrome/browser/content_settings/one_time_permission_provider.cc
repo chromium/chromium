@@ -34,7 +34,7 @@ OneTimePermissionProvider::GetRuleIterator(ContentSettingsType content_type,
   if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
     return nullptr;
   }
-  return value_map_.GetRuleIterator(content_type, nullptr);
+  return value_map_.GetRuleIterator(content_type);
 }
 
 bool OneTimePermissionProvider::SetWebsiteSetting(
@@ -48,6 +48,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     return false;
   }
 
+  base::AutoLock lock(value_map_.GetLock());
   // This block handles transitions from Allow Once to Ask/Block by clearing
   // the one time grant and letting the pref provider handle the permission as
   // usual.
@@ -104,6 +105,7 @@ void OneTimePermissionProvider::ClearAllContentSettingsRules(
   if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
     return;
   }
+  base::AutoLock lock(value_map_.GetLock());
   value_map_.DeleteValues(content_type);
 }
 
@@ -166,7 +168,7 @@ void OneTimePermissionProvider::DeleteValuesMatchingGurl(
   std::set<content_settings::OriginIdentifierValueMap::PatternPair>
       patterns_to_delete;
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      value_map_.GetRuleIterator(content_setting_type, nullptr));
+      value_map_.GetRuleIterator(content_setting_type));
 
   while (rule_iterator && rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
@@ -181,6 +183,7 @@ void OneTimePermissionProvider::DeleteValuesMatchingGurl(
   }
   rule_iterator.reset();
 
+  base::AutoLock lock(value_map_.GetLock());
   for (const auto& pattern : patterns_to_delete) {
     value_map_.DeleteValue(pattern.primary_pattern, pattern.secondary_pattern,
                            content_setting_type);

@@ -15,6 +15,7 @@
 
 TEST(OriginIdentifierValueMapTest, SetGetValue) {
   content_settings::OriginIdentifierValueMap map;
+  base::AutoLock lock(map.GetLock());
 
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
                                   GURL("http://www.google.com"),
@@ -45,6 +46,7 @@ TEST(OriginIdentifierValueMapTest, SetGetValue) {
 
 TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
   content_settings::OriginIdentifierValueMap map;
+  base::AutoLock lock(map.GetLock());
 
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
                                   GURL("http://www.google.com"),
@@ -92,6 +94,7 @@ TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
 
 TEST(OriginIdentifierValueMapTest, Clear) {
   content_settings::OriginIdentifierValueMap map;
+  base::AutoLock lock(map.GetLock());
   EXPECT_TRUE(map.empty());
 
   // Set two values.
@@ -118,6 +121,7 @@ TEST(OriginIdentifierValueMapTest, Clear) {
 
 TEST(OriginIdentifierValueMapTest, ListEntryPrecedences) {
   content_settings::OriginIdentifierValueMap map;
+  base::AutoLock lock(map.GetLock());
 
   map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsPattern::FromString("[*.]google.com"),
@@ -147,13 +151,15 @@ TEST(OriginIdentifierValueMapTest, ListEntryPrecedences) {
 TEST(OriginIdentifierValueMapTest, IterateEmpty) {
   content_settings::OriginIdentifierValueMap map;
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      map.GetRuleIterator(ContentSettingsType::COOKIES, nullptr));
+      map.GetRuleIterator(ContentSettingsType::COOKIES));
   EXPECT_FALSE(rule_iterator);
 }
 
 TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   // Verify the precedence order.
   content_settings::OriginIdentifierValueMap map;
+
+  map.GetLock().Acquire();
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromString("[*.]google.com");
   ContentSettingsPattern sub_pattern =
@@ -167,8 +173,9 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
                ContentSettingsType::COOKIES, base::Value(2),
                {.last_modified = t2});
 
+  map.GetLock().Release();
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      map.GetRuleIterator(ContentSettingsType::COOKIES, nullptr));
+      map.GetRuleIterator(ContentSettingsType::COOKIES));
   ASSERT_TRUE(rule_iterator->HasNext());
   content_settings::Rule rule = rule_iterator->Next();
   EXPECT_EQ(sub_pattern, rule.primary_pattern);
@@ -185,6 +192,7 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
 TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
   // Verify that the last_modified timestamp is updated.
   content_settings::OriginIdentifierValueMap map;
+  map.GetLock().Acquire();
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromString("[*.]google.com");
   ContentSettingsPattern sub_pattern =
@@ -202,10 +210,11 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
                 .expiration = content_settings::GetConstraintExpiration(
                     base::Seconds(100)),
                 .session_model = content_settings::SessionModel::UserSession});
+  map.GetLock().Release();
 
   {
     std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-        map.GetRuleIterator(ContentSettingsType::COOKIES, nullptr));
+        map.GetRuleIterator(ContentSettingsType::COOKIES));
     ASSERT_TRUE(rule_iterator->HasNext());
     content_settings::Rule rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule.primary_pattern);
@@ -225,14 +234,15 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
               content_settings::SessionModel::Durable);
     ASSERT_FALSE(rule_iterator->HasNext());
   }
+  map.GetLock().Acquire();
   base::Time t2 = t1 + base::Seconds(1);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, base::Value(3),
                {.last_modified = t2});
-
+  map.GetLock().Release();
   {
     std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-        map.GetRuleIterator(ContentSettingsType::COOKIES, nullptr);
+        map.GetRuleIterator(ContentSettingsType::COOKIES);
     ASSERT_TRUE(rule_iterator->HasNext());
     content_settings::Rule rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule.primary_pattern);

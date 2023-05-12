@@ -275,11 +275,10 @@ PolicyProvider::~PolicyProvider() {
 std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
     ContentSettingsType content_type,
     bool incognito) const {
-  return value_map_.GetRuleIterator(content_type, &lock_);
+  return value_map_.GetRuleIterator(content_type);
 }
 
-void PolicyProvider::GetContentSettingsFromPreferences(
-    OriginIdentifierValueMap* value_map) {
+void PolicyProvider::GetContentSettingsFromPreferences() {
   for (const auto& entry : kPrefsForManagedContentSettingsMap) {
     // Skip unset policies.
     if (!prefs_->HasPrefPath(entry.pref_name)) {
@@ -338,14 +337,13 @@ void PolicyProvider::GetContentSettingsFromPreferences(
       }
 
       // Don't set a timestamp for policy settings.
-      value_map->SetValue(pattern_pair.first, secondary_pattern,
+      value_map_.SetValue(pattern_pair.first, secondary_pattern,
                           entry.content_type, base::Value(entry.setting), {});
     }
   }
 }
 
-void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
-    OriginIdentifierValueMap* value_map) {
+void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
   constexpr const char* pref_name = prefs::kManagedAutoSelectCertificateForUrls;
   if (!prefs_->HasPrefPath(pref_name)) {
     VLOG(2) << "Skipping unset preference: " << pref_name;
@@ -428,7 +426,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
       continue;
     }
 
-    value_map->SetValue(pattern, ContentSettingsPattern::Wildcard(),
+    value_map_.SetValue(pattern, ContentSettingsPattern::Wildcard(),
                         ContentSettingsType::AUTO_SELECT_CERTIFICATE,
                         base::Value(setting.Clone()), {});
   }
@@ -456,8 +454,8 @@ void PolicyProvider::UpdateManagedDefaultSetting(
   // MUST be managed.
   DCHECK(!prefs_->HasPrefPath(entry.pref_name) ||
          prefs_->IsManagedPreference(entry.pref_name));
-  base::AutoLock auto_lock(lock_);
   int setting = prefs_->GetInteger(entry.pref_name);
+  base::AutoLock lock(value_map_.GetLock());
   if (setting == CONTENT_SETTING_DEFAULT) {
     value_map_.DeleteValue(ContentSettingsPattern::Wildcard(),
                            ContentSettingsPattern::Wildcard(),
@@ -471,11 +469,11 @@ void PolicyProvider::UpdateManagedDefaultSetting(
 }
 
 void PolicyProvider::ReadManagedContentSettings(bool overwrite) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock lock(value_map_.GetLock());
   if (overwrite)
     value_map_.clear();
-  GetContentSettingsFromPreferences(&value_map_);
-  GetAutoSelectCertificateSettingsFromPreferences(&value_map_);
+  GetContentSettingsFromPreferences();
+  GetAutoSelectCertificateSettingsFromPreferences();
 }
 
 // Since the PolicyProvider is a read only content settings provider, all

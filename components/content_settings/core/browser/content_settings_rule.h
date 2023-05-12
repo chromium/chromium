@@ -50,16 +50,14 @@ class RuleIterator {
 
 class ConcatenationIterator : public RuleIterator {
  public:
-  // |auto_lock| can be null if no locking is needed.
-  ConcatenationIterator(std::vector<std::unique_ptr<RuleIterator>> iterators,
-                        base::AutoLock* auto_lock);
+  explicit ConcatenationIterator(
+      std::vector<std::unique_ptr<RuleIterator>> iterators);
   ~ConcatenationIterator() override;
   bool HasNext() const override;
   Rule Next() override;
 
  private:
   std::vector<std::unique_ptr<RuleIterator>> iterators_;
-  std::unique_ptr<base::AutoLock> auto_lock_;
 };
 
 }  // namespace content_settings
