@@ -646,6 +646,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 }
 
 - (void)resetContentView {
+  if (!_inSwipe) {
+    return;
+  }
   CGRect frame = [_swipeDelegate sideSwipeContentView].frame;
   frame.origin.x = 0;
   [_swipeDelegate sideSwipeContentView].frame = frame;

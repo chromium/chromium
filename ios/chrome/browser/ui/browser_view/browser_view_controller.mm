@@ -1335,10 +1335,7 @@ enum HeaderBehaviour {
       };
     }
   }
-
-  if ([_sideSwipeController inSwipe]) {
-    [_sideSwipeController resetContentView];
-  }
+  [_sideSwipeController resetContentView];
 
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
