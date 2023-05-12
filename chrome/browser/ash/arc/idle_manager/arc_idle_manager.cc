@@ -106,6 +106,11 @@ ArcIdleManager::ArcIdleManager(content::BrowserContext* context,
 // cleanup in Shutdown();
 ArcIdleManager::~ArcIdleManager() = default;
 
+// static
+void ArcIdleManager::EnsureFactoryBuilt() {
+  ArcIdleManagerFactory::GetInstance();
+}
+
 void ArcIdleManager::Shutdown() {
   // After this is done, we will no longer get connection notifications.
   bridge_->power()->RemoveObserver(this);

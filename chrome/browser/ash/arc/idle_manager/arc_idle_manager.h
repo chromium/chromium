@@ -53,6 +53,8 @@ class ArcIdleManager : public KeyedService,
   static ArcIdleManager* GetForBrowserContextForTesting(
       content::BrowserContext* context);
 
+  static void EnsureFactoryBuilt();
+
   // KeyedService:
   void Shutdown() override;
 
