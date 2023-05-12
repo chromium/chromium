@@ -2140,8 +2140,16 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
   }
 };
 
+// https://crbug.com/1444953
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ValidLensRegionSearchWithUnifiedSidePanel \
+  DISABLED_ValidLensRegionSearchWithUnifiedSidePanel
+#else
+#define MAYBE_ValidLensRegionSearchWithUnifiedSidePanel \
+  ValidLensRegionSearchWithUnifiedSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
-                       ValidLensRegionSearchWithUnifiedSidePanel) {
+                       MAYBE_ValidLensRegionSearchWithUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.
@@ -2185,8 +2193,17 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
                                    ".*ep=crs&re=df&s=4&st=\\d+&lm=.+"));
 }
 
-IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
-                       ValidFullscreenLensRegionSearchWithUnifiedSidePanel) {
+// https://crbug.com/1444953
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ValidFullscreenLensRegionSearchWithUnifiedSidePanel \
+  DISABLED_ValidFullscreenLensRegionSearchWithUnifiedSidePanel
+#else
+#define MAYBE_ValidFullscreenLensRegionSearchWithUnifiedSidePanel \
+  ValidFullscreenLensRegionSearchWithUnifiedSidePanel
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SearchByRegionWithUnifiedSidePanelBrowserTest,
+    MAYBE_ValidFullscreenLensRegionSearchWithUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.
