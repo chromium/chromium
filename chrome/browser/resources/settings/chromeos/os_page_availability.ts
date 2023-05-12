@@ -15,7 +15,7 @@
  * visible page.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
 
 export interface OsPageAvailability {
   a11y: boolean;
@@ -29,10 +29,7 @@ export interface OsPageAvailability {
   kerberos: boolean;
   languages: boolean;
   multidevice: boolean;
-  people: boolean|{
-    googleAccounts: boolean,
-    lockScreen: boolean,
-  };
+  people: boolean;
   personalization: boolean;
   printing: boolean;
   privacy: boolean;
@@ -47,15 +44,7 @@ export interface OsPageAvailability {
  * overriding load time data within tests.
  */
 export function createPageAvailability(): OsPageAvailability {
-  const isGuestMode = loadTimeData.getBoolean('isGuest');
-  const isAccountManagerEnabled =
-      loadTimeData.valueExists('isAccountManagerEnabled') &&
-      loadTimeData.getBoolean('isAccountManagerEnabled');
-  const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&
-      loadTimeData.getBoolean('isKerberosEnabled');
-  const isPowerwashAllowed = loadTimeData.getBoolean('allowPowerwash');
-
-  if (isGuestMode) {
+  if (isGuest()) {
     return {
       a11y: true,
       apps: true,
@@ -65,14 +54,14 @@ export function createPageAvailability(): OsPageAvailability {
       device: true,
       files: false,
       internet: true,
-      kerberos: isKerberosEnabled,
+      kerberos: isKerberosEnabled(),
       languages: true,
       multidevice: false,
       people: false,
       personalization: false,
       printing: true,
       privacy: true,
-      reset: isPowerwashAllowed,
+      reset: isPowerwashAllowed(),
       search: true,
     };
   }
@@ -85,17 +74,14 @@ export function createPageAvailability(): OsPageAvailability {
     device: true,
     files: true,
     internet: true,
-    kerberos: isKerberosEnabled,
+    kerberos: isKerberosEnabled(),
     languages: true,
     multidevice: true,
-    people: {
-      googleAccounts: isAccountManagerEnabled,
-      lockScreen: true,
-    },
+    people: true,
     personalization: true,
     printing: true,
     privacy: true,
-    reset: isPowerwashAllowed,
+    reset: isPowerwashAllowed(),
     search: true,
   };
 }

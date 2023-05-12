@@ -9,6 +9,22 @@
  */
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+export function isGuest(): boolean {
+  return loadTimeData.getBoolean('isGuest');
+}
+
+export function isAccountManagerEnabled(): boolean {
+  return loadTimeData.getBoolean('isAccountManagerEnabled');
+}
+
 export function isCrostiniSupported(): boolean {
   return loadTimeData.getBoolean('isCrostiniSupported');
+}
+
+export function isKerberosEnabled(): boolean {
+  return loadTimeData.getBoolean('isKerberosEnabled');
+}
+
+export function isPowerwashAllowed(): boolean {
+  return loadTimeData.getBoolean('allowPowerwash');
 }

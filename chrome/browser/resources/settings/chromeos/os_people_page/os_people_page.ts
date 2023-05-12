@@ -26,6 +26,7 @@ import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isAccountManagerEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -92,7 +93,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       isAccountManagerEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isAccountManagerEnabled');
+          return isAccountManagerEnabled();
         },
         readOnly: true,
       },
