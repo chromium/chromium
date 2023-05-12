@@ -59258,6 +59258,7 @@ from previous Chrome versions.
   <int value="-1731267886" label="AutofillEnableStickyPaymentsBubble:enabled"/>
   <int value="-1731149013" label="AndroidMessagesIntegration:enabled"/>
   <int value="-1729926412" label="enable-webusb-notifications"/>
+  <int value="-1729822987" label="PasswordsInCredMan:disabled"/>
   <int value="-1729808721" label="SubresourceRedirect:enabled"/>
   <int value="-1728605240" label="UseXpsForPrintingFromPdf:enabled"/>
   <int value="-1727530898" label="LookalikeUrlNavigationSuggestionsUI:enabled"/>
@@ -66200,6 +66201,7 @@ from previous Chrome versions.
   <int value="1968199744" label="PrintJobManagementApp:disabled"/>
   <int value="1969604362" label="enable-pinch-virtual-viewport"/>
   <int value="1969860311" label="DynamicColorGamut:enabled"/>
+  <int value="1971436110" label="PasswordsInCredMan:enabled"/>
   <int value="1971472561" label="CrostiniImeSupport:disabled"/>
   <int value="1971964569" label="NewEncodeCpuLoadEstimator:disabled"/>
   <int value="1972178452" label="CCTResizableWindowAboveNavbar:enabled"/>

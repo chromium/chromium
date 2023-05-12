@@ -87,6 +87,7 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroidBranding);
 BASE_DECLARE_FEATURE(kExploratorySaveUpdatePasswordStrings);
+BASE_DECLARE_FEATURE(kPasswordsInCredMan);
 #endif
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);

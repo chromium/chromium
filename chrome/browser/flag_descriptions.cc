@@ -3965,6 +3965,11 @@ const char kPasswordGenerationBottomSheetName[] =
 const char kPasswordGenerationBottomSheetDescription[] =
     "Enabled showing the password generation bottom sheet.";
 
+const char kPasswordsInCredManName[] = "Passwords in Credential Management API";
+const char kPasswordsInCredManDescription[] =
+    "Enable saving and logging in with passwords using Credential Management "
+    "API. Requires Android 14 or higher.";
+
 const char kPolicyLogsPageAndroidName[] = "Policy Logs Page on Android";
 const char kPolicyLogsPageAndroidDescription[] =
     "Enable the new chrome://policy-logs page containing logs for debugging "

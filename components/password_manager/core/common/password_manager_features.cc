@@ -275,6 +275,10 @@ BASE_FEATURE(kUnifiedPasswordManagerAndroidBranding,
 BASE_FEATURE(kExploratorySaveUpdatePasswordStrings,
              "ExploratorySaveUpdatePasswordStrings",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPasswordsInCredMan,
+             "PasswordsInCredMan",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables support of sending additional votes on username first flow. The votes
