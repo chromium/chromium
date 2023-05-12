@@ -90,7 +90,7 @@ class BigQueryQuerier():
         self.GetFailingBuildCulpritFromCiQuery())
 
   def GetFlakyOrFailingTestsFromCiBuilders(
-      self, builder_name_list: List[str]) -> ct.QueryJsonType:
+      self, builder_names: List[str]) -> ct.QueryJsonType:
     """Gets all flaky or failing tests from input CI builders.
 
     Returns:
@@ -98,7 +98,18 @@ class BigQueryQuerier():
       all failing results that came from input CI builders.
     """
     return self._GetJsonResultsFromBigQuery(
-        self.GetFlakyOrFailingFromCIBuildersQuery(builder_name_list))
+        self.GetFlakyOrFailingFromCIBuildersQuery(builder_names))
+
+  def GetFailingBuildCulpritFromCiBuilders(
+      self, builder_names: List[str]) -> ct.QueryJsonType:
+    """Gets all failing build culprit tests from input CI builders.
+
+    Returns:
+      A JSON representation of the BigQuery results containing all found
+      all failing results that came from input CI builders.
+    """
+    return self._GetJsonResultsFromBigQuery(
+        self.GetFailingBuildCulpritFromCIBuildersQuery(builder_names))
 
   def GetFlakyOrFailingTryTests(self) -> ct.QueryJsonType:
     """Gets all flaky or failing tests from the trybots.
@@ -131,7 +142,7 @@ class BigQueryQuerier():
     return result_counts
 
   def GetResultCountFromCiBuilders(
-      self, builder_name_list: List[str]) -> ct.ResultCountType:
+      self, builder_names: List[str]) -> ct.ResultCountType:
     """Gets the result count for the input CI builders.
 
     Returns:
@@ -145,8 +156,7 @@ class BigQueryQuerier():
     result_counts = collections.defaultdict(
         lambda: collections.defaultdict(int))
     self._GetResultCountWithQuery(
-        self.GetResultCountFromCIBuildersQuery(builder_name_list),
-        result_counts)
+        self.GetResultCountFromCIBuildersQuery(builder_names), result_counts)
     return result_counts
 
   def GetFlakyOrFailingCiQuery(self) -> str:
@@ -164,10 +174,19 @@ class BigQueryQuerier():
     raise NotImplementedError
 
   def GetFlakyOrFailingFromCIBuildersQuery(self,
-                                           builder_name_list: List[str]) -> str:
+                                           builder_names: List[str]) -> str:
     """
     Returns:
       Query string to get all the failing or flaky results from input CI
+      builders.
+    """
+    raise NotImplementedError
+
+  def GetFailingBuildCulpritFromCIBuildersQuery(
+      self, builder_names: List[str]) -> str:
+    """
+    Returns:
+      Query string to get all failing build culprit results from input CI
       builders.
     """
     raise NotImplementedError
@@ -195,8 +214,7 @@ class BigQueryQuerier():
     """
     raise NotImplementedError
 
-  def GetResultCountFromCIBuildersQuery(self,
-                                        builder_name_list: List[str]) -> str:
+  def GetResultCountFromCIBuildersQuery(self, builder_names: List[str]) -> str:
     """
     Returns:
       Query string to get the result count for test/tag combination from input

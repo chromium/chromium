@@ -166,6 +166,71 @@ WHERE
 """.format(
     sheriff_rotations_ci_builds_subquery=SHERIFF_ROTATIONS_CI_BUILDS_SUBQUERY)
 
+# Gets the failing input build names culprit results from the past
+# |sample_period| days from CI bots that did not already have an associated test
+# suppression when  the test ran, test with one pass in retry will consider as
+# pass.
+CI_FAILED_BUILD_CULPRIT_FROM_BUILDERS_QUERY = """\
+WITH
+  unpassed_tests AS (
+  SELECT
+    exported.id,
+    test_metadata.name,
+    status,
+    ARRAY(
+          SELECT value
+          FROM tr.tags
+          WHERE key = "typ_tag") as typ_tags,
+    ARRAY(
+          SELECT value
+          FROM tr.tags
+          WHERE key = "raw_typ_expectation") as typ_expectations,
+    (SELECT value FROM tr.tags
+     WHERE key = "step_name") as step_name,
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") as builder
+  FROM
+    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+  WHERE
+    status != "PASS" AND status != "SKIP" AND
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") IN UNNEST({builder_names}) AND
+    exported.realm = "chromium:ci" AND
+    partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                   INTERVAL @sample_period DAY)
+  ),
+  passed_tests AS (
+  SELECT
+    exported.id,
+    test_metadata.name,
+  FROM
+    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+  WHERE
+    status = "PASS" AND
+    exported.realm = "chromium:ci" AND
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") IN UNNEST({builder_names}) AND
+    partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                   INTERVAL @sample_period DAY)
+  )
+SELECT
+  ut.name,
+  ut.id,
+  ut.status,
+  ut.builder,
+  ut.step_name,
+  ut.typ_expectations,
+  ut.typ_tags
+FROM unpassed_tests ut
+LEFT JOIN passed_tests pt ON (ut.name = pt.name AND ut.id = pt.id)
+WHERE
+  (ARRAY_TO_STRING(ut.typ_expectations, '') = "Pass" OR
+   ARRAY_TO_STRING(ut.typ_expectations, '') = "PassSlow") AND
+  pt.name IS NULL AND
+  (STARTS_WITH(ut.step_name, 'blink_wpt_tests') OR
+   STARTS_WITH(ut.step_name, 'blink_web_tests'))
+"""
+
 # Gets all failures from the past |sample_period| days from trybots that did not
 # already have an associated test suppresssion when the test ran, only including
 # data from builds that were used for CL submission.
@@ -314,10 +379,15 @@ class WebTestsBigQueryQuerier(queries_module.BigQueryQuerier):
     def GetFailingBuildCulpritFromCiQuery(self) -> str:
         return CI_FAILED_BUILD_CULPRIT_TEST_QUERY
 
-    def GetFlakyOrFailingFromCIBuildersQuery(
-            self, builder_name_list: List[str]) -> str:
+    def GetFlakyOrFailingFromCIBuildersQuery(self,
+                                             builder_names: List[str]) -> str:
         return CI_FAILED_TEST_FROM_BUILDERS_QUERY.format(
-            builder_names=builder_name_list)
+            builder_names=builder_names)
+
+    def GetFailingBuildCulpritFromCIBuildersQuery(
+            self, builder_names: List[str]) -> str:
+        return CI_FAILED_BUILD_CULPRIT_FROM_BUILDERS_QUERY.format(
+            builder_names=builder_names)
 
     def GetFlakyOrFailingTryQuery(self) -> str:
         return TRY_FAILED_TEST_QUERY
@@ -329,6 +399,6 @@ class WebTestsBigQueryQuerier(queries_module.BigQueryQuerier):
         return TRY_RESULT_COUNT_QUERY
 
     def GetResultCountFromCIBuildersQuery(self,
-                                          builder_name_list: List[str]) -> str:
+                                          builder_names: List[str]) -> str:
         return CI_RESULT_COUNT_FROM_BUILDERS_QUERY.format(
-            builder_names=builder_name_list)
+            builder_names=builder_names)

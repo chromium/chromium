@@ -43,16 +43,20 @@ def main() -> int:
         args.sample_period, args.project, results_processor)
 
     if len(args.builder_names) > 0:
-        results = querier_instance.\
-            GetFlakyOrFailingTestsFromCiBuilders(args.builder_names)
-        aggregated_results = results_processor.AggregateResults(results)
-    elif args.non_hidden_failures:
-        results = querier_instance.GetFailingCiBuildCulpritTests()
-        aggregated_results = results_processor.AggregateResults(results)
+        if args.non_hidden_failures:
+            results = querier_instance.\
+                GetFailingBuildCulpritFromCiBuilders(args.builder_names)
+        else:
+            results = querier_instance.\
+                GetFlakyOrFailingTestsFromCiBuilders(args.builder_names)
     else:
-        results = querier_instance.GetFlakyOrFailingCiTests()
-        results.extend(querier_instance.GetFlakyOrFailingTryTests())
-        aggregated_results = results_processor.AggregateResults(results)
+        if args.non_hidden_failures:
+            results = querier_instance.GetFailingCiBuildCulpritTests()
+        else:
+            results = querier_instance.GetFlakyOrFailingCiTests()
+            results.extend(querier_instance.GetFlakyOrFailingTryTests())
+
+    aggregated_results = results_processor.AggregateResults(results)
 
     if args.result_output_file:
         with open(args.result_output_file, 'w') as outfile:
@@ -69,22 +73,20 @@ def main() -> int:
         expectations_processor.IterateThroughResultsForUser(
             aggregated_results, args.group_by_tags, args.include_all_tags)
     else:
-        if len(args.builder_names) > 0:
-            result_counts = querier_instance.\
-                GetResultCountFromCiBuilders(args.builder_names)
-            expectations_processor.IterateThroughResultsWithThresholds(
-                aggregated_results, args.group_by_tags, result_counts,
-                args.ignore_threshold, args.flaky_threshold,
-                args.include_all_tags)
-        elif args.non_hidden_failures:
+        if args.non_hidden_failures:
             expectations_processor.CreateFailureExpectationsForAllResults(
                 aggregated_results, args.group_by_tags, args.include_all_tags)
         else:
-            result_counts = querier_instance.GetResultCounts()
+            if len(args.builder_names) > 0:
+                result_counts = querier_instance.\
+                    GetResultCountFromCiBuilders(args.builder_names)
+            else:
+                result_counts = querier_instance.GetResultCounts()
             expectations_processor.IterateThroughResultsWithThresholds(
                 aggregated_results, args.group_by_tags, result_counts,
                 args.ignore_threshold, args.flaky_threshold,
                 args.include_all_tags)
+
     print('\nGenerated expectations will need to have bugs manually added.')
 
     return 0
