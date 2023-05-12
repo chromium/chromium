@@ -560,6 +560,16 @@ bool ShoppingService::IsCommercePriceTrackingEnabled() {
                                       country_on_startup_, locale_on_startup_);
 }
 
+bool ShoppingService::IsPriceInsightsEligible() {
+  if (!IsRegionLockedFeatureEnabled(kPriceInsights,
+                                    kPriceInsightsRegionLaunched,
+                                    country_on_startup_, locale_on_startup_)) {
+    return false;
+  }
+  return account_checker_ &&
+         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
+}
+
 void ShoppingService::HandleOptGuideProductInfoResponse(
     const GURL& url,
     WebWrapper* web,

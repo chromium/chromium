@@ -86,6 +86,11 @@ BASE_DECLARE_FEATURE(kCommerceLocalPDPDetection);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
+
+// Feature flag for Price Insights.
+BASE_DECLARE_FEATURE(kPriceInsights);
+BASE_DECLARE_FEATURE(kPriceInsightsRegionLaunched);
+
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
