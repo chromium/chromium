@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -856,6 +857,46 @@ public class AddressEditorTest {
         Assert.assertEquals("New locality", address.getProfile().getLocality());
         Assert.assertEquals("New dependent locality", address.getProfile().getDependentLocality());
         Assert.assertEquals("New organization", address.getProfile().getCompanyName());
+    }
+
+    @Test
+    @SmallTest
+    public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsGetReset() {
+        mAddressEditor = new AddressEditor(mEditorDialog, mDelegate,
+                new AutofillAddress(mActivity, new AutofillProfile(sLocalProfile)),
+                /*saveToDisk=*/false,
+                /*isUpdate=*/false,
+                /*isMigrationToAccount=*/false);
+
+        // Whitelist only full name, admin area and locality.
+        setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS.subList(0, 3));
+        mAddressEditor.showEditorDialog();
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        // editorFields[0] - country dropdown.
+        // editorFields[1] - honorific prefix field.
+        // editorFields[2] - full name field.
+        // editorFields[3] - admin area field.
+        // editorFields[4] - locality field.
+        // editorFields[5] - phone number field.
+        // editorFields[6] - email field.
+        // editorFields[7] - nickname field.
+        Assert.assertEquals(8, editorFields.size());
+
+        editorModel.done();
+        verify(mDelegate, times(1)).onDone(mAddressCapture.capture());
+        verify(mDelegate, times(0)).onCancel();
+
+        AutofillAddress address = mAddressCapture.getValue();
+        Assert.assertNotNull(address);
+        AutofillProfile profile = address.getProfile();
+        assertThat(profile.getStreetAddress(), isEmptyString());
+        assertThat(profile.getDependentLocality(), isEmptyString());
+        assertThat(profile.getCompanyName(), isEmptyString());
+        assertThat(profile.getPostalCode(), isEmptyString());
+        assertThat(profile.getSortingCode(), isEmptyString());
     }
 
     @Test
