@@ -377,6 +377,23 @@ def main():
                                    'bar@example.com')
   generate(n_us_az_email, "name-us-arizona-email.pem")
 
+  n_us_az_email = copy.deepcopy(n_us_az)
+  n_us_az_email.add_rdn().add_attr('emailAddress', 'IA5STRING',
+                                   'FoO@example.com')
+  generate(n_us_az_email, "name-us-arizona-email-localpartcase.pem")
+
+  n_us_az_email = copy.deepcopy(n_us_az)
+  n_us_az_email.add_rdn().add_attr('emailAddress', 'IA5STRING',
+                                   'foo@example.com')
+  n_us_az_email.add_rdn().add_attr('emailAddress', 'IA5STRING',
+                                   'bar@example.com')
+  generate(n_us_az_email, "name-us-arizona-email-multiple.pem")
+
+  n_us_az_email = copy.deepcopy(n_us_az)
+  n_us_az_email.add_rdn().add_attr('emailAddress', 'VISIBLESTRING',
+                                   'bar@example.com')
+  generate(n_us_az_email, "name-us-arizona-email-invalidstring.pem")
+
   n_ca = generate_names.NameGenerator()
   n_ca.add_rdn().add_attr('countryName', 'PRINTABLESTRING', 'CA')
   generate(n_ca, "name-ca.pem")
@@ -445,6 +462,59 @@ def main():
   generate(san, "san-rfc822name.pem")
 
   san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("foo@eXaMplE.cOm"))
+  generate(san, "san-rfc822name-domaincase.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("FoO@example.com"))
+  generate(san, "san-rfc822name-localpartcase.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name('\\"foo\\"@example.com'))
+  generate(san, "san-rfc822name-quoted.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("@example.com"))
+  generate(san, "san-rfc822name-empty-localpart.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("foo@subdomain.example.com"))
+  generate(san, "san-rfc822name-subdomain.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("foo@sUbdoMAin.exAmPLe.COm"))
+  generate(san, "san-rfc822name-subdomaincase.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("example.com"))
+  generate(san, "san-rfc822name-no-at.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("foo@bar@example.com"))
+  generate(san, "san-rfc822name-two-ats.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("subdomain.example.com"))
+  generate(san, "san-rfc822name-subdomain-no-at.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("foo@bar@subdomain.example.com"))
+  generate(san, "san-rfc822name-subdomain-two-ats.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name(""))
+  generate(san, "san-rfc822name-empty.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("foo@[8.8.8.8]"))
+  generate(san, "san-rfc822name-ipv4.pem")
+
+  san = SubjectAltNameGenerator()
+  san.add_name(rfc822_name("foo@example.com"))
+  san.add_name(rfc822_name("bar@example.com"))
+  generate(san, "san-rfc822name-multiple.pem")
+
+  san = SubjectAltNameGenerator()
   san.add_name(dns_name("foo.example.com"))
   generate(san, "san-dnsname.pem")
 
@@ -490,9 +560,58 @@ def main():
   c = NameConstraintsGenerator()
   c.add_permitted(rfc822_name("foo@example.com"))
   generate(c, "rfc822name-permitted.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_permitted(rfc822_name('\\"foo\\"@example.com'))
+  generate(c, "rfc822name-permitted-quoted.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_permitted(rfc822_name("example.com"))
+  generate(c, "rfc822name-permitted-hostname.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_permitted(rfc822_name("@example.com"))
+  generate(c, "rfc822name-permitted-hostnamewithat.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_permitted(rfc822_name(".example.com"))
+  generate(c, "rfc822name-permitted-subdomains.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_permitted(rfc822_name(""))
+  generate(c, "rfc822name-permitted-empty.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_permitted(rfc822_name("[8.8.8.8]"))
+  generate(c, "rfc822name-permitted-ipv4.pem")
+
   c = NameConstraintsGenerator()
   c.add_excluded(rfc822_name("foo@example.com"))
   generate(c, "rfc822name-excluded.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_excluded(rfc822_name('\\"foo\\"@example.com'))
+  generate(c, "rfc822name-excluded-quoted.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_excluded(rfc822_name("example.com"))
+  generate(c, "rfc822name-excluded-hostname.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_excluded(rfc822_name("@example.com"))
+  generate(c, "rfc822name-excluded-hostnamewithat.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_excluded(rfc822_name(".example.com"))
+  generate(c, "rfc822name-excluded-subdomains.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_excluded(rfc822_name(""))
+  generate(c, "rfc822name-excluded-empty.pem")
+
+  c = NameConstraintsGenerator()
+  c.add_excluded(rfc822_name("[8.8.8.8]"))
+  generate(c, "rfc822name-excluded-ipv4.pem")
 
   c = NameConstraintsGenerator()
   c.add_permitted(x400_address())

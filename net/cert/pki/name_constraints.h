@@ -50,6 +50,12 @@ class NET_EXPORT NameConstraints {
                        const GeneralNames* subject_alt_names,
                        CertErrors* errors) const;
 
+  // Returns true if the ASCII email address |name| is permitted. |name| should
+  // be a "mailbox" as specified by RFC 2821, with the additional restriction
+  // that quoted names and whitespace are not allowed by this implementation.
+  bool IsPermittedRfc822Name(std::string_view name,
+                             bool case_insensitive_exclude_localpart) const;
+
   // Returns true if the ASCII hostname |name| is permitted.
   // |name| may be a wildcard hostname (starts with "*."). Eg, "*.bar.com"
   // would not be permitted if "bar.com" is permitted and "foo.bar.com" is

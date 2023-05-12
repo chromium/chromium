@@ -783,18 +783,57 @@ TEST_P(ParseNameConstraints, Rfc822NamesInPermitted) {
       der::Input(&constraints_der), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  if (is_critical()) {
-    EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
-              name_constraints->constrained_name_types());
-  } else {
-    EXPECT_EQ(0, name_constraints->constrained_name_types());
-  }
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
 
   std::string san_der;
   std::unique_ptr<GeneralNames> san;
+
   ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
-  EXPECT_EQ(!is_critical(),
-            IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-domaincase.pem", &san, &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-localpartcase.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-no-at.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-two-ats.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-quoted.pem", &san, &san_der));
+  // `"foo"@example.com` and `foo@example.com` are the same address, but we
+  // don't support quoted address at all.
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-ipv4.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-multiple.pem", &san, &san_der));
+  // SAN contains multiple email addresses, only the first matches the
+  // permitted constraint.
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
 }
 
 TEST_P(ParseNameConstraints, Rfc822NamesInExcluded) {
@@ -806,18 +845,498 @@ TEST_P(ParseNameConstraints, Rfc822NamesInExcluded) {
       der::Input(&constraints_der), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  if (is_critical()) {
-    EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
-              name_constraints->constrained_name_types());
-  } else {
-    EXPECT_EQ(0, name_constraints->constrained_name_types());
-  }
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
 
   std::string san_der;
   std::unique_ptr<GeneralNames> san;
+
   ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
-  EXPECT_EQ(!is_critical(),
-            IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-domaincase.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-localpartcase.pem", &san,
+                                     &san_der));
+  // Excluded names are matched case-sensitive in the local-part for addresses
+  // from subjectAlternativeName, so this is allowed.
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-no-at.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-two-ats.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-ipv4.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameHostnameInPermitted) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-permitted-hostname.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-domaincase.pem", &san, &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-localpartcase.pem", &san,
+                                     &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-no-at.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-two-ats.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-empty-localpart.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-quoted.pem", &san, &san_der));
+  // `"foo"@example.com` would match `example.com` hostname, but we don't
+  // support quoted address at all.
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-multiple.pem", &san, &san_der));
+  // SAN contains multiple email addresses, all match the permitted hostname.
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameHostnameInExcluded) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-excluded-hostname.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-domaincase.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-localpartcase.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-no-at.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-two-ats.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-empty-localpart.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameHostnameWithAtInPermitted) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-permitted-hostnamewithat.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-empty-localpart.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-domaincase.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-localpartcase.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-no-at.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-two-ats.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameHostnameWithAtInExcluded) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-excluded-hostnamewithat.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-empty-localpart.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-domaincase.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-localpartcase.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-no-at.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-two-ats.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameSubdomainInPermitted) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-permitted-subdomains.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-subdomaincase.pem", &san,
+                                     &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-subdomain-no-at.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-subdomain-two-ats.pem",
+                                     &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameSubdomainInExcluded) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-excluded-subdomains.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-subdomaincase.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-subdomain-no-at.pem", &san,
+                                     &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name-subdomain-two-ats.pem",
+                                     &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameEmptyPermitted) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-permitted-empty.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-empty.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameEmptyExcluded) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-excluded-empty.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-empty.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameIPv4Permitted) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-permitted-ipv4.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-empty.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-ipv4.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, Rfc822NameIPv4Excluded) {
+  std::string constraints_der;
+  ASSERT_TRUE(
+      LoadTestNameConstraint("rfc822name-excluded-ipv4.pem", &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  EXPECT_EQ(GENERAL_NAME_RFC822_NAME,
+            name_constraints->constrained_name_types());
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+
+  ASSERT_TRUE(LoadTestSubjectAltName("san-rfc822name.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-empty.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-ipv4.pem", &san, &san_der));
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, QuotedRfc822SanWithNoRfc822Constraints) {
+  // Load an unrelated (non-rfc822) constraint.
+  std::string constraints_der;
+  ASSERT_TRUE(
+      LoadTestNameConstraint("othername-excluded.pem", &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-quoted.pem", &san, &san_der));
+  // A rfc822 in SAN with quotes should be allowed since we only try to parse
+  // the name if we are enforcing a constraint against it.
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, QuotedRfc822SanMatchesQuotedPermitted) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-permitted-quoted.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-quoted.pem", &san, &san_der));
+  // Both SAN and constraint are `"foo"@example.com`, but we don't support
+  // quoted address at all.
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
+}
+
+TEST_P(ParseNameConstraints, UnquotedRfc822SanNotMatchingQuotedExcluded) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-excluded-quoted.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  std::string san_der;
+  std::unique_ptr<GeneralNames> san;
+  ASSERT_TRUE(
+      LoadTestSubjectAltName("san-rfc822name-subdomain.pem", &san, &san_der));
+  // The name `foo@subdomain.example.com` should be allowed since it doesn't
+  // match an exclude of `"foo"@example.com`, but we don't support quoted
+  // address at all so this is not allowed.
+  EXPECT_FALSE(
+      IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
 }
 
 TEST_P(ParseNameConstraints, X400AddresssInPermitted) {
@@ -1085,7 +1604,8 @@ TEST_P(ParseNameConstraints, FailsOnEmptyExcluded) {
                                        is_critical(), &errors));
 }
 
-TEST_P(ParseNameConstraints, IsPermittedCertSubjectEmailAddressIsOk) {
+TEST_P(ParseNameConstraints,
+       IsPermittedCertSubjectEmailAddressNoEmailConstraint) {
   std::string constraints_der;
   ASSERT_TRUE(LoadTestNameConstraint("directoryname.pem", &constraints_der));
   CertErrors errors;
@@ -1093,15 +1613,53 @@ TEST_P(ParseNameConstraints, IsPermittedCertSubjectEmailAddressIsOk) {
       der::Input(&constraints_der), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  std::string name_us_arizona_email;
-  ASSERT_TRUE(
-      LoadTestName("name-us-arizona-email.pem", &name_us_arizona_email));
-
+  std::string name;
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email.pem", &name));
   // Name constraints don't contain rfc822Name, so emailAddress in subject is
   // allowed regardless.
   EXPECT_TRUE(IsPermittedCert(name_constraints.get(),
-                              SequenceValueFromString(&name_us_arizona_email),
-                              nullptr /* subject_alt_names */));
+                              SequenceValueFromString(&name),
+                              /*subject_alt_names=*/nullptr));
+
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email-invalidstring.pem", &name));
+  // Name constraints don't contain rfc822Name, so emailAddress in subject is
+  // allowed regardless.
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(),
+                              SequenceValueFromString(&name),
+                              /*subject_alt_names=*/nullptr));
+}
+
+TEST_P(ParseNameConstraints, IsPermittedCertSubjectEmailAddressIsOk) {
+  std::string constraints_der;
+  ASSERT_TRUE(LoadTestNameConstraint("rfc822name-permitted-hostname.pem",
+                                     &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  std::string name;
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email.pem", &name));
+
+  // Name constraints contain rfc822Name, and the address matches the
+  // constraint (which is all addresses on the hostname.)
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(),
+                              SequenceValueFromString(&name),
+                              /*subject_alt_names=*/nullptr));
+
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email-invalidstring.pem", &name));
+  // The bytes of the name string match, but the string type is VISIBLESTRING
+  // which is not supported, so this should fail.
+  EXPECT_FALSE(IsPermittedCert(name_constraints.get(),
+                               SequenceValueFromString(&name),
+                               /*subject_alt_names=*/nullptr));
+
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email-multiple.pem", &name));
+  // Subject contains multiple rfc822Names, and they all match the constraint
+  // (which is all addresses on the hostname.)
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(),
+                              SequenceValueFromString(&name),
+                              /*subject_alt_names=*/nullptr));
 }
 
 TEST_P(ParseNameConstraints, IsPermittedCertSubjectEmailAddressIsNotOk) {
@@ -1113,16 +1671,61 @@ TEST_P(ParseNameConstraints, IsPermittedCertSubjectEmailAddressIsNotOk) {
       der::Input(&constraints_der), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  std::string name_us_arizona_email;
-  ASSERT_TRUE(
-      LoadTestName("name-us-arizona-email.pem", &name_us_arizona_email));
+  std::string name;
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email.pem", &name));
 
-  // Name constraints contain rfc822Name, so emailAddress in subject is not
-  // allowed if the constraints were critical.
-  EXPECT_EQ(!is_critical(),
-            IsPermittedCert(name_constraints.get(),
-                            SequenceValueFromString(&name_us_arizona_email),
-                            nullptr /* subject_alt_names */));
+  // Name constraints contain rfc822Name, and the address does not match the
+  // constraint.
+  EXPECT_FALSE(IsPermittedCert(name_constraints.get(),
+                               SequenceValueFromString(&name),
+                               /*subject_alt_names=*/nullptr));
+
+  // Address is a case-insensitive match, but name constraints (permitted) are
+  // case-sensitive, so this fails.
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email-localpartcase.pem", &name));
+  EXPECT_FALSE(IsPermittedCert(name_constraints.get(),
+                               SequenceValueFromString(&name),
+                               /*subject_alt_names=*/nullptr));
+
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email-multiple.pem", &name));
+  // Subject contains multiple rfc822Names, and only the first one matches the
+  // constraint.
+  EXPECT_FALSE(IsPermittedCert(name_constraints.get(),
+                               SequenceValueFromString(&name),
+                               /*subject_alt_names=*/nullptr));
+}
+
+TEST_P(ParseNameConstraints, IsPermittedCertSubjectEmailAddressExcluded) {
+  std::string constraints_der;
+  ASSERT_TRUE(
+      LoadTestNameConstraint("rfc822name-excluded.pem", &constraints_der));
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(NameConstraints::Create(
+      der::Input(&constraints_der), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  std::string name;
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email.pem", &name));
+
+  // Name constraints contain excluded rfc822Name, and the address does not
+  // match the constraint.
+  EXPECT_TRUE(IsPermittedCert(name_constraints.get(),
+                              SequenceValueFromString(&name),
+                              /*subject_alt_names=*/nullptr));
+
+  // Name constraints for excluded are done case-insensitive in the local part,
+  // so this is not allowed.
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email-localpartcase.pem", &name));
+  EXPECT_FALSE(IsPermittedCert(name_constraints.get(),
+                               SequenceValueFromString(&name),
+                               /*subject_alt_names=*/nullptr));
+
+  ASSERT_TRUE(LoadTestName("name-us-arizona-email-multiple.pem", &name));
+  // Subject contains multiple rfc822Names, and one of them is excluded by the
+  // constraint.
+  EXPECT_FALSE(IsPermittedCert(name_constraints.get(),
+                               SequenceValueFromString(&name),
+                               /*subject_alt_names=*/nullptr));
 }
 
 // Hostname in commonName is not allowed (crbug.com/308330), so these are tests

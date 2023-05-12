@@ -11,6 +11,7 @@
 #include "base/numerics/clamped_math.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/common_cert_errors.h"
+#include "net/cert/pki/general_names.h"
 #include "net/cert/pki/string_util.h"
 #include "net/cert/pki/verify_name_match.h"
 #include "net/der/input.h"
@@ -30,9 +31,9 @@ namespace {
 // that name form appears in the subject field or subjectAltName
 // extension of a subsequent certificate, then the application MUST
 // either process the constraint or reject the certificate.)
-const int kSupportedNameTypes = GENERAL_NAME_DNS_NAME |
-                                GENERAL_NAME_DIRECTORY_NAME |
-                                GENERAL_NAME_IP_ADDRESS;
+const int kSupportedNameTypes =
+    GENERAL_NAME_RFC822_NAME | GENERAL_NAME_DNS_NAME |
+    GENERAL_NAME_DIRECTORY_NAME | GENERAL_NAME_IP_ADDRESS;
 
 // Controls wildcard handling of DNSNameMatches.
 // If WildcardMatchType is WILDCARD_PARTIAL_MATCH "*.bar.com" is considered to
@@ -162,6 +163,107 @@ bool DNSNameMatches(std::string_view name,
   return true;
 }
 
+bool IsAlphaDigit(char c) {
+  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
+         (c >= 'A' && c <= 'Z');
+}
+
+// Returns true if 'local_part' contains only characters that are valid in a
+// non-quoted mailbox local-part. Does not check any other part of the syntax
+// requirements. Does not allow whitespace.
+bool IsAllowedRfc822LocalPart(std::string_view local_part) {
+  if (local_part.empty()) {
+    return false;
+  }
+  for (char c : local_part) {
+    if (!(IsAlphaDigit(c) || c == '!' || c == '#' || c == '$' || c == '%' ||
+          c == '&' || c == '\'' || c == '*' || c == '+' || c == '-' ||
+          c == '/' || c == '=' || c == '?' || c == '^' || c == '_' ||
+          c == '`' || c == '{' || c == '|' || c == '}' || c == '~' ||
+          c == '.')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Returns true if 'domain' contains only characters that are valid in a
+// mailbox domain. Does not check any other part of the syntax
+// requirements. Does not allow IPv6-address-literal as text IPv6 addresses are
+// non-unique. Does not allow other address literals either as how to handle
+// them with domain/subdomain matching isn't specified/possible.
+bool IsAllowedRfc822Domain(std::string_view domain) {
+  if (domain.empty()) {
+    return false;
+  }
+  for (char c : domain) {
+    if (!(IsAlphaDigit(c) || c == '-' || c == '.')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+enum class Rfc822NameMatchType { kPermitted, kExcluded };
+bool Rfc822NameMatches(std::string_view local_part,
+                       std::string_view domain,
+                       std::string_view rfc822_constraint,
+                       Rfc822NameMatchType match_type,
+                       bool case_insensitive_local_part) {
+  // In case of parsing errors, return a value that will cause the name to not
+  // be permitted.
+  const bool error_value =
+      match_type == Rfc822NameMatchType::kPermitted ? false : true;
+
+  std::vector<std::string_view> constraint_components =
+      net::string_util::SplitString(rfc822_constraint, '@');
+  std::string_view constraint_local_part;
+  std::string_view constraint_domain;
+  if (constraint_components.size() == 1) {
+    constraint_domain = constraint_components[0];
+  } else if (constraint_components.size() == 2) {
+    constraint_local_part = constraint_components[0];
+    if (!IsAllowedRfc822LocalPart(constraint_local_part)) {
+      return error_value;
+    }
+    constraint_domain = constraint_components[1];
+  } else {
+    // If we did the full parsing then it is possible for a @ to be in a quoted
+    // local-part of the name, but we don't do that, so just error if @ appears
+    // more than once.
+    return error_value;
+  }
+  if (!IsAllowedRfc822Domain(constraint_domain)) {
+    return error_value;
+  }
+
+  // RFC 5280 section 4.2.1.10:
+  // To indicate a particular mailbox, the constraint is the complete mail
+  // address.  For example, "root@example.com" indicates the root mailbox on
+  // the host "example.com".
+  if (!constraint_local_part.empty()) {
+    return (case_insensitive_local_part
+                ? string_util::IsEqualNoCase(local_part, constraint_local_part)
+                : local_part == constraint_local_part) &&
+           string_util::IsEqualNoCase(domain, constraint_domain);
+  }
+
+  // RFC 5280 section 4.2.1.10:
+  // To specify any address within a domain, the constraint is specified with a
+  // leading period (as with URIs).  For example, ".example.com" indicates all
+  // the Internet mail addresses in the domain "example.com", but not Internet
+  // mail addresses on the host "example.com".
+  if (constraint_domain.starts_with('.')) {
+    return string_util::EndsWithNoCase(domain, constraint_domain);
+  }
+
+  // RFC 5280 section 4.2.1.10:
+  // To indicate all Internet mail addresses on a particular host, the
+  // constraint is specified as the host name.  For example, the constraint
+  // "example.com" is satisfied by any mail address at the host "example.com".
+  return string_util::IsEqualNoCase(domain, constraint_domain);
+}
+
 }  // namespace
 
 NameConstraints::~NameConstraints() = default;
@@ -247,6 +349,10 @@ void NameConstraints::IsPermittedCert(const der::Input& subject_rdn_sequence,
 
   if (subject_alt_names) {
     check_count +=
+        base::ClampMul(subject_alt_names->rfc822_names.size(),
+                       base::ClampAdd(excluded_subtrees_.rfc822_names.size(),
+                                      permitted_subtrees_.rfc822_names.size()));
+    check_count +=
         base::ClampMul(subject_alt_names->dns_names.size(),
                        base::ClampAdd(excluded_subtrees_.dns_names.size(),
                                       permitted_subtrees_.dns_names.size()));
@@ -263,6 +369,21 @@ void NameConstraints::IsPermittedCert(const der::Input& subject_rdn_sequence,
   if (!(subject_alt_names && subject_rdn_sequence.Length() == 0)) {
     check_count += base::ClampAdd(excluded_subtrees_.directory_names.size(),
                                   permitted_subtrees_.directory_names.size());
+  }
+
+  std::vector<std::string> subject_email_addresses_to_check;
+  if (!subject_alt_names &&
+      (constrained_name_types() & GENERAL_NAME_RFC822_NAME)) {
+    if (!FindEmailAddressesInName(subject_rdn_sequence,
+                                  &subject_email_addresses_to_check)) {
+      // Error parsing |subject_rdn_sequence|.
+      errors->AddError(cert_errors::kNotPermittedByNameConstraints);
+      return;
+    }
+    check_count +=
+        base::ClampMul(subject_email_addresses_to_check.size(),
+                       base::ClampAdd(excluded_subtrees_.rfc822_names.size(),
+                                      permitted_subtrees_.rfc822_names.size()));
   }
 
   if (check_count > kMaxChecks) {
@@ -298,6 +419,20 @@ void NameConstraints::IsPermittedCert(const der::Input& subject_rdn_sequence,
     }
 
     // Check supported name types:
+
+    // Only check rfc822 SANs if any rfc822 constraints are present, since we
+    // might fail if there are email addresses we don't know how to parse but
+    // are technically correct.
+    if (constrained_name_types() & GENERAL_NAME_RFC822_NAME) {
+      for (const auto& rfc822_name : subject_alt_names->rfc822_names) {
+        if (!IsPermittedRfc822Name(
+                rfc822_name, /*case_insensitive_exclude_localpart=*/false)) {
+          errors->AddError(cert_errors::kNotPermittedByNameConstraints);
+          return;
+        }
+      }
+    }
+
     for (const auto& dns_name : subject_alt_names->dns_names) {
       if (!IsPermittedDNSName(dns_name)) {
         errors->AddError(cert_errors::kNotPermittedByNameConstraints);
@@ -329,15 +464,20 @@ void NameConstraints::IsPermittedCert(const der::Input& subject_rdn_sequence,
   // form, but the certificate does not include a subject alternative name, the
   // rfc822Name constraint MUST be applied to the attribute of type emailAddress
   // in the subject distinguished name.
-  if (!subject_alt_names &&
-      (constrained_name_types() & GENERAL_NAME_RFC822_NAME)) {
-    bool contained_email_address = false;
-    if (!NameContainsEmailAddress(subject_rdn_sequence,
-                                  &contained_email_address)) {
-      errors->AddError(cert_errors::kNotPermittedByNameConstraints);
-      return;
-    }
-    if (contained_email_address) {
+  for (const auto& rfc822_name : subject_email_addresses_to_check) {
+    // Whether local_part should be matched case-sensitive or not is somewhat
+    // unclear. RFC 2821 says that it should be case-sensitive. RFC 2985 says
+    // that emailAddress attributes in a Name are fully case-insensitive.
+    // Some other verifier implementations always do local-part comparison
+    // case-sensitive, while some always do it case-insensitive. Many but not
+    // all SMTP servers interpret addresses as case-insensitive.
+    //
+    // Give how poorly specified this is, and the conflicting implementations
+    // in the wild, this implementation will do case-insensitive match for
+    // excluded names from the subject to avoid potentially allowing
+    // something that wasn't expected.
+    if (!IsPermittedRfc822Name(rfc822_name,
+                               /*case_insensitive_exclude_localpart=*/true)) {
       errors->AddError(cert_errors::kNotPermittedByNameConstraints);
       return;
     }
@@ -358,6 +498,113 @@ void NameConstraints::IsPermittedCert(const der::Input& subject_rdn_sequence,
     errors->AddError(cert_errors::kNotPermittedByNameConstraints);
     return;
   }
+}
+
+bool NameConstraints::IsPermittedRfc822Name(
+    std::string_view name,
+    bool case_insensitive_exclude_localpart) const {
+  // RFC 5280 4.2.1.6.  Subject Alternative Name
+  //
+  // When the subjectAltName extension contains an Internet mail address,
+  // the address MUST be stored in the rfc822Name.  The format of an
+  // rfc822Name is a "Mailbox" as defined in Section 4.1.2 of [RFC2821].
+  // A Mailbox has the form "Local-part@Domain".  Note that a Mailbox has
+  // no phrase (such as a common name) before it, has no comment (text
+  // surrounded in parentheses) after it, and is not surrounded by "<" and
+  // ">".  Rules for encoding Internet mail addresses that include
+  // internationalized domain names are specified in Section 7.5.
+
+  // Relevant parts from RFC 2821 & RFC 2822
+  //
+  // Mailbox = Local-part "@" Domain
+  // Local-part = Dot-string / Quoted-string
+  //       ; MAY be case-sensitive
+  //
+  // Dot-string = Atom *("." Atom)
+  // Atom = 1*atext
+  // Quoted-string = DQUOTE *qcontent DQUOTE
+  //
+  //
+  // atext           =       ALPHA / DIGIT / ; Any character except controls,
+  //                         "!" / "#" /     ;  SP, and specials.
+  //                         "$" / "%" /     ;  Used for atoms
+  //                         "&" / "'" /
+  //                         "*" / "+" /
+  //                         "-" / "/" /
+  //                         "=" / "?" /
+  //                         "^" / "_" /
+  //                         "`" / "{" /
+  //                         "|" / "}" /
+  //                         "~"
+  //
+  // atom            =       [CFWS] 1*atext [CFWS]
+  //
+  //
+  // qtext           =       NO-WS-CTL /     ; Non white space controls
+  //                         %d33 /          ; The rest of the US-ASCII
+  //                         %d35-91 /       ;  characters not including "\"
+  //                         %d93-126        ;  or the quote character
+  //
+  // quoted-pair     =       ("\" text) / obs-qp
+  // qcontent        =       qtext / quoted-pair
+  //
+  //
+  // Domain = (sub-domain 1*("." sub-domain)) / address-literal
+  // sub-domain = Let-dig [Ldh-str]
+  //
+  // Let-dig = ALPHA / DIGIT
+  // Ldh-str = *( ALPHA / DIGIT / "-" ) Let-dig
+  //
+  // address-literal = "[" IPv4-address-literal /
+  //                       IPv6-address-literal /
+  //                       General-address-literal "]"
+  //       ; See section 4.1.3
+
+  // However, no one actually implements all that. Known implementations just
+  // do string comparisons, but that is technically incorrect. (Ex: a
+  // constraint excluding |foo@example.com| should exclude a SAN of
+  // |"foo"@example.com|, while a naive direct comparison will allow it.)
+  //
+  // We don't implement all that either, but do something a bit more fail-safe
+  // by rejecting any addresses that contain characters that are not allowed in
+  // the non-quoted formats.
+
+  std::vector<std::string_view> name_components =
+      net::string_util::SplitString(name, '@');
+  if (name_components.size() != 2) {
+    // If we did the full parsing then it is possible for a @ to be in a quoted
+    // local-part of the name, but we don't do that, so just fail if @ appears
+    // more than once.
+    return false;
+  }
+  if (!IsAllowedRfc822LocalPart(name_components[0]) ||
+      !IsAllowedRfc822Domain(name_components[1])) {
+    return false;
+  }
+
+  for (const auto& excluded_name : excluded_subtrees_.rfc822_names) {
+    if (Rfc822NameMatches(name_components[0], name_components[1], excluded_name,
+                          Rfc822NameMatchType::kExcluded,
+                          case_insensitive_exclude_localpart)) {
+      return false;
+    }
+  }
+
+  // If permitted subtrees are not constrained, any name that is not excluded is
+  // allowed.
+  if (!(permitted_subtrees_.present_name_types & GENERAL_NAME_RFC822_NAME)) {
+    return true;
+  }
+
+  for (const auto& permitted_name : permitted_subtrees_.rfc822_names) {
+    if (Rfc822NameMatches(name_components[0], name_components[1],
+                          permitted_name, Rfc822NameMatchType::kPermitted,
+                          /*case_insenitive_local_part=*/false)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool NameConstraints::IsPermittedDNSName(std::string_view name) const {
