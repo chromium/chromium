@@ -957,13 +957,12 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
                          ui::kColorAlertMediumSeverityIcon)
         .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
         .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-        .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                          DownloadCommands::Command::DISCARD,
-                          /*is_prominent=*/true)
-        .AddSubpageButton(
+        .AddPrimarySubpageButton(
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
+            DownloadCommands::Command::DISCARD)
+        .AddSecondarySubpageButton(
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-            DownloadCommands::Command::KEEP,
-            /*is_prominent=*/false);
+            DownloadCommands::Command::KEEP, ui::kColorAlertMediumSeverityText);
   }
 
   // Cookie theft
@@ -991,10 +990,9 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
             .AddIconAndColor(vector_icons::kDangerousIcon,
                              ui::kColorAlertHighSeverity)
             .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-            .AddSubpageButton(
+            .AddPrimarySubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                DownloadCommands::Command::DISCARD,
-                /*is_prominent=*/true);
+                DownloadCommands::Command::DISCARD);
       }
     }
     return DownloadUIModel::BubbleUIInfo(
@@ -1003,9 +1001,9 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
         .AddIconAndColor(vector_icons::kDangerousIcon,
                          ui::kColorAlertHighSeverity)
         .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-        .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                          DownloadCommands::Command::DISCARD,
-                          /*is_prominent=*/true);
+        .AddPrimarySubpageButton(
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
+            DownloadCommands::Command::DISCARD);
   }
 
   NOTREACHED();

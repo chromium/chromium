@@ -116,9 +116,14 @@ class DownloadUIModel {
       std::u16string label;
       bool is_prominent = false;
 
+      // Controls the text color of the button. Only applied for secondary
+      // buttons.
+      absl::optional<ui::ColorId> color;
+
       SubpageButton(DownloadCommands::Command command,
                     std::u16string label,
-                    bool is_prominent);
+                    bool is_prominent,
+                    absl::optional<ui::ColorId> color = absl::nullopt);
     };
 
     struct QuickAction {
@@ -176,9 +181,11 @@ class DownloadUIModel {
     // Add button to the subpage. Only two buttons are supported.
     // The first one added is the primary, and the second one the secondary.
     // The checkbox, if present, controls the secondary.
-    BubbleUIInfo& AddSubpageButton(const std::u16string& label,
-                                   DownloadCommands::Command command,
-                                   bool is_prominent);
+    BubbleUIInfo& AddPrimarySubpageButton(const std::u16string& label,
+                                          DownloadCommands::Command command);
+    BubbleUIInfo& AddSecondarySubpageButton(const std::u16string& label,
+                                            DownloadCommands::Command command,
+                                            ui::ColorId color);
     BubbleUIInfo& SetProgressBarLooping();
     BubbleUIInfo& AddQuickAction(DownloadCommands::Command command,
                                  const std::u16string& label,

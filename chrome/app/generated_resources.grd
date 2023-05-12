@@ -2692,11 +2692,11 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SCAN"
                desc="Label for the button prompting for Deep Scanning">
-        Scan
+        Scan for malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_OPEN"
                desc="Label for the button prompting to bypass Deep Scanning">
-        Open
+        Open anyway
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_OPEN_NOW"
                desc="Label for the button prompting to open a download while deep scanning is in progress">
@@ -2833,6 +2833,20 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG"
                desc="Subpage summary of warning for a file blocked for being too large.">
         Your organization blocked this file because it is too big for a security check. You can open files up to 50 MB.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
+               desc="Subpage summary of warning for a file where we recommend sending the file for deep scanning.">
+        This file might be a virus or malware.
+
+You can send it to Google to check if it's unsafe. Scans usually take a few seconds.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK_WRAPPER"
+        desc="Additional text describing the process of deep scanning a download">
+        Analysis done by <ph name="LINK">$1<ex>Google Safe Browsing</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK"
+        desc="Text of link within IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK_WRAPPER">
+        Google Safe Browsing
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
                desc="Retry button when a download is failed">

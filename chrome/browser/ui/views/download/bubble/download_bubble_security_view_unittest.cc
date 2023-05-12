@@ -21,6 +21,7 @@
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -137,43 +138,47 @@ TEST_F(DownloadBubbleSecurityViewTest,
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
-          .AddSubpageButton(std::u16string(),
-                            DownloadCommands::Command::DISCARD,
-                            /*is_prominent=*/true)
+          .AddPrimarySubpageButton(std::u16string(),
+                                   DownloadCommands::Command::DISCARD)
           // Cancel button
-          .AddSubpageButton(std::u16string(), DownloadCommands::Command::KEEP,
-                            /*is_prominent=*/false));
+          .AddSecondarySubpageButton(std::u16string(),
+                                     DownloadCommands::Command::KEEP,
+                                     ui::kColorAlertHighSeverity));
   security_view_->UpdateSecurityView(row_view_.get());
   EXPECT_EQ(bubble_delegate_->GetDialogButtons(),
             ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_OK);
 
   // Two buttons, none prominent
-  row_view_->SetUIInfoForTesting(
+  DownloadUIModel::BubbleUIInfo info =
       DownloadUIModel::BubbleUIInfo(std::u16string())
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
-          .AddSubpageButton(std::u16string(),
-                            DownloadCommands::Command::DISCARD,
-                            /*is_prominent=*/false)
+          .AddPrimarySubpageButton(std::u16string(),
+                                   DownloadCommands::Command::DISCARD)
           // Cancel button
-          .AddSubpageButton(std::u16string(), DownloadCommands::Command::KEEP,
-                            /*is_prominent=*/false));
+          .AddSecondarySubpageButton(std::u16string(),
+                                     DownloadCommands::Command::KEEP,
+                                     ui::kColorAlertHighSeverity);
+  info.subpage_buttons[0].is_prominent = false;  // Primary buttons are
+                                                 // prominent by default.
+  row_view_->SetUIInfoForTesting(std::move(info));
   security_view_->UpdateSecurityView(row_view_.get());
   EXPECT_EQ(bubble_delegate_->GetDialogButtons(),
             ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 
   // One button, none prominent
-  row_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo(std::u16string())
-          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
-          .AddPrimaryButton(DownloadCommands::Command::KEEP)
-          // OK button
-          .AddSubpageButton(std::u16string(),
-                            DownloadCommands::Command::DISCARD,
-                            /*is_prominent=*/false));
+  info = DownloadUIModel::BubbleUIInfo(std::u16string())
+             .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
+             .AddPrimaryButton(DownloadCommands::Command::KEEP)
+             // OK button
+             .AddPrimarySubpageButton(std::u16string(),
+                                      DownloadCommands::Command::DISCARD);
+  info.subpage_buttons[0].is_prominent = false;  // Primary buttons are
+                                                 // prominent by default.
+  row_view_->SetUIInfoForTesting(std::move(info));
   security_view_->UpdateSecurityView(row_view_.get());
   EXPECT_EQ(bubble_delegate_->GetDialogButtons(), ui::DIALOG_BUTTON_OK);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);

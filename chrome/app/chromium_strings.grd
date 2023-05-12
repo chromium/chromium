@@ -660,10 +660,6 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="Subpage summary for malware warning for the user.">
         Chromium blocked this file because it has malware
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
-               desc="Subpage summary of warning for Deep Scanning.">
-        Chromium recommends scanning this file because it may be dangerous
-      </message>
 
       <!-- Tailored Warning in Download Bubble Items -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE"

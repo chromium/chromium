@@ -740,6 +740,10 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
        {}},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(test_case.danger_type)
+                 << std::endl);
     SetupDownloadItemDefaults();
     ON_CALL(item(), GetDangerType())
         .WillByDefault(Return(test_case.danger_type));
@@ -804,6 +808,10 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off) {
        {}},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(test_case.danger_type)
+                 << std::endl);
     SetupDownloadItemDefaults();
     ON_CALL(item(), GetDangerType())
         .WillByDefault(Return(test_case.danger_type));

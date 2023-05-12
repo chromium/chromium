@@ -62,8 +62,7 @@ class DownloadBubbleSecurityView : public views::View {
   // state, if it is a secondary button.
   void UpdateButton(DownloadUIModel::BubbleUIInfo::SubpageButton button,
                     bool is_secondary_button,
-                    bool has_checkbox,
-                    ui::ColorId color_id);
+                    bool has_checkbox);
   void UpdateButtons();
 
   // |is_secondary_button| checks if the command/action originated from the
@@ -85,6 +84,7 @@ class DownloadBubbleSecurityView : public views::View {
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::StyledLabel> styled_label_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
+  raw_ptr<views::StyledLabel> deep_scanning_link_ = nullptr;
   absl::optional<base::Time> warning_time_;
   bool did_log_action_ = false;
 };
