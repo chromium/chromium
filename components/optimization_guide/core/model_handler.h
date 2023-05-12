@@ -137,7 +137,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
       base::OnceCallback<void(const std::vector<absl::optional<OutputType>>&)>;
   virtual void BatchExecuteModelWithInput(
       BatchExecutionCallback callback,
-      ModelExecutor<OutputType, InputType>::ConstRefInputVector batch_input) {
+      typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
+          batch_input) {
     model_executor_task_runner_->PostTask(
         FROM_HERE, GetBatchExecutionTask(std::move(callback), batch_input));
   }
@@ -146,7 +147,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
   virtual void BatchExecuteModelWithInput(
       base::CancelableTaskTracker* tracker,
       BatchExecutionCallback callback,
-      ModelExecutor<OutputType, InputType>::ConstRefInputVector batch_input) {
+      typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
+          batch_input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     tracker->PostTask(model_executor_task_runner_.get(), FROM_HERE,
@@ -261,7 +263,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // execution.
   base::OnceClosure GetBatchExecutionTask(
       BatchExecutionCallback callback,
-      ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs) {
+      typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
+          inputs) {
     base::TimeTicks now = base::TimeTicks::Now();
 
     BatchExecutionCallback on_complete_callback =
