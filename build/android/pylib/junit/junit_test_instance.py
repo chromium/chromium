@@ -21,6 +21,9 @@ class JunitTestInstance(test_instance.TestInstance):
     self._robolectric_runtime_deps_dir = args.robolectric_runtime_deps_dir
     self._runner_filter = args.runner_filter
     self._shards = args.shards
+    self._shard_filter = None
+    if args.shard_filter:
+      self._shard_filter = {int(x) for x in args.shard_filter.split(',')}
     self._test_filters = test_filter.InitializeFiltersFromArgs(args)
     self._has_literal_filters = (args.isolated_script_test_filters
                                  or args.test_filters)
@@ -81,6 +84,10 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def shards(self):
     return self._shards
+
+  @property
+  def shard_filter(self):
+    return self._shard_filter
 
   @property
   def suite(self):

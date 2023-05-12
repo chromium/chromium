@@ -39,6 +39,11 @@ _EXCLUDED_SUITES = {
     'touch_to_fill_junit_tests',
 }
 
+_FAILURE_TYPES = (
+    base_test_result.ResultType.FAIL,
+    base_test_result.ResultType.CRASH,
+    base_test_result.ResultType.TIMEOUT,
+)
 
 # It can actually take longer to run if you shard too much, especially on
 # smaller suites. Locally media_base_junit_tests takes 4.3 sec with 1 shard,
@@ -49,7 +54,7 @@ _MIN_CLASSES_PER_SHARD = 8
 _SHARD_TIMEOUT = 30 * 60
 
 # RegExp to detect logcat lines, e.g., 'I/AssetManager: not found'.
-_LOGCAT_RE = re.compile(r'[A-Z]/[\w\d_-]+:')
+_LOGCAT_RE = re.compile(r'(:?\d+\| )?[A-Z]/[\w\d_-]+:')
 
 
 class LocalMachineJunitTestRun(test_run.TestRun):
@@ -76,7 +81,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     return ret
 
-  def _CreateJarArgsList(self, json_result_file_paths, group_test_list, shards):
+  def _CreateJarArgsList(self, json_result_file_paths, grouped_tests, shards):
     # Creates a list of jar_args. The important thing is each jar_args list
     # has a different json_results file for writing test results to and that
     # each list of jar_args has its own test to run as specified in the
@@ -84,7 +89,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     jar_args_list = [['-json-results-file', result_file]
                      for result_file in json_result_file_paths]
     for index, jar_arg in enumerate(jar_args_list):
-      shard_test_filter = group_test_list[index] if shards > 1 else None
+      shard_test_filter = grouped_tests[index] if shards > 1 else None
       jar_arg += self._GetFilterArgs(shard_test_filter)
 
     return jar_args_list
@@ -166,20 +171,41 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       test_classes = _GetTestClasses(self._wrapper_path)
       shards = ChooseNumOfShards(test_classes, self._test_instance.shards)
 
-    logging.info('Running tests on %d shard(s).', shards)
-    group_test_list = GroupTestsForShard(shards, test_classes)
+    grouped_tests = GroupTestsForShard(shards, test_classes)
+    shard_list = list(range(shards))
+    shard_filter = self._test_instance.shard_filter
+    if shard_filter:
+      shard_list = [x for x in shard_list if x in shard_filter]
+
+    if not shard_list:
+      results_list = [
+          base_test_result.BaseTestResult('Invalid shard filter',
+                                          base_test_result.ResultType.UNKNOWN)
+      ]
+      test_run_results = base_test_result.TestRunResults()
+      test_run_results.AddResults(results_list)
+      results.append(test_run_results)
+      return
+
+    if shard_filter:
+      logging.warning('Running test shards: %s',
+                      ', '.join(str(x) for x in shard_list))
+    else:
+      logging.warning('Running tests on %d shard(s).', shards)
 
     with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-      cmd_list = [[self._wrapper_path] for _ in range(shards)]
+      cmd_list = [[self._wrapper_path] for _ in shard_list]
       json_result_file_paths = [
-          os.path.join(temp_dir, 'results%d.json' % i) for i in range(shards)
+          os.path.join(temp_dir, 'results%d.json' % i) for i in shard_list
+      ]
+      active_groups = [
+          g for i, g in enumerate(grouped_tests) if i in shard_list
       ]
       jar_args_list = self._CreateJarArgsList(json_result_file_paths,
-                                              group_test_list, shards)
+                                              active_groups, shards)
       if jar_args_list:
-        for i in range(shards):
-          cmd_list[i].extend(
-              ['--jar-args', '"%s"' % ' '.join(jar_args_list[i])])
+        for cmd, jar_args in zip(cmd_list, jar_args_list):
+          cmd += ['--jar-args', '"%s"' % ' '.join(jar_args)]
 
       jvm_args = self._CreateJvmArgsList()
       if jvm_args:
@@ -190,7 +216,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       show_logcat = logging.getLogger().isEnabledFor(logging.INFO)
       num_omitted_lines = 0
-      for line in _RunCommandsAndSerializeOutput(cmd_list):
+      for line in _RunCommandsAndSerializeOutput(cmd_list, shard_list):
         if raw_logs_fh:
           raw_logs_fh.write(line)
         if show_logcat or not _LOGCAT_RE.match(line):
@@ -205,11 +231,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         raw_logs_fh.flush()
 
       results_list = []
+      failed_shards = []
       try:
-        for json_file_path in json_result_file_paths:
+        for i, json_file_path in enumerate(json_result_file_paths):
           with open(json_file_path, 'r') as f:
-            results_list += json_results.ParseResultsFromJson(
+            parsed_results = json_results.ParseResultsFromJson(
                 json.loads(f.read()))
+            results_list += parsed_results
+            if any(r for r in parsed_results if r.GetType() in _FAILURE_TYPES):
+              failed_shards.append(shard_list[i])
       except IOError:
         # In the case of a failure in the JUnit or Robolectric test runner
         # the output json file may never be written.
@@ -217,6 +247,17 @@ class LocalMachineJunitTestRun(test_run.TestRun):
             base_test_result.BaseTestResult('Test Runner Failure',
                                             base_test_result.ResultType.UNKNOWN)
         ]
+
+      if shards > 1 and failed_shards:
+        for i in failed_shards:
+          filt = ':'.join(grouped_tests[i])
+          print(f'Test filter for failed shard {i}: --test-filter "{filt}"')
+
+        print(
+            f'{len(failed_shards)} shards had failing tests. To re-run only '
+            f'these shards, use the above filter flags, or use: '
+            '--shards {shards} --shard-filter',
+            ','.join(str(x) for x in failed_shards))
 
       test_run_results = base_test_result.TestRunResults()
       test_run_results.AddResults(results_list)
@@ -274,18 +315,18 @@ def GroupTestsForShard(num_of_shards, test_classes):
     test_classes: A list of test_class files in the jar.
 
   Return:
-    Returns a dictionary containing a list of test classes.
+    Returns a list test lists.
   """
-  test_dict = {i: [] for i in range(num_of_shards)}
+  ret = [[] for _ in range(num_of_shards)]
 
   # Round robin test distribiution to reduce chance that a sequential group of
   # classes all have an unusually high number of tests.
   for count, test_cls in enumerate(test_classes):
     test_cls = test_cls.replace('.class', '*')
     test_cls = test_cls.replace('/', '.')
-    test_dict[count % num_of_shards].append(test_cls)
+    ret[count % num_of_shards].append(test_cls)
 
-  return test_dict
+  return ret
 
 
 def _DumpJavaStacks(pid):
@@ -300,24 +341,20 @@ def _DumpJavaStacks(pid):
   return result.stdout
 
 
-def _RunCommandsAndSerializeOutput(cmd_list):
+def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
   """Runs multiple commands in parallel and yields serialized output lines.
-
-  Args:
-    cmd_list: List of commands.
-
-  Returns: N/A
 
   Raises:
     TimeoutError: If timeout is exceeded.
   """
-  num_shards = len(cmd_list)
+  num_shards = len(shard_list)
   assert num_shards > 0
   procs = []
   temp_files = []
-  for i, cmd in enumerate(cmd_list):
+  first_shard = shard_list[0]
+  for i, cmd in zip(shard_list, cmd_list):
     # Shard 0 yields results immediately, the rest write to files.
-    if i == 0:
+    if i == first_shard:
       temp_files.append(None)  # Placeholder.
       procs.append(
           cmd_helper.Popen(
@@ -337,7 +374,7 @@ def _RunCommandsAndSerializeOutput(cmd_list):
   deadline = time.time() + (_SHARD_TIMEOUT / (num_shards // 2 + 1))
 
   yield '\n'
-  yield 'Shard 0 output:\n'
+  yield f'Shard {first_shard} output:\n'
 
   # The following will be run from a thread to pump Shard 0 results, allowing
   # live output while allowing timeout.
@@ -359,7 +396,7 @@ def _RunCommandsAndSerializeOutput(cmd_list):
       line = shard_0_q.get(timeout=deadline - time.time())
       if line is None:
         break
-      yield line
+      yield f'{first_shard:2}| {line}'
     except queue.Empty:
       if time.time() > deadline:
         break
@@ -377,13 +414,13 @@ def _RunCommandsAndSerializeOutput(cmd_list):
   while not shard_0_q.empty():
     yield shard_0_q.get()
 
-  for i in range(1, num_shards):
-    f = temp_files[i]
+  for i, shard in enumerate(shard_list[1:]):
+    f = temp_files[i + 1]
     yield '\n'
-    yield 'Shard %d output:\n' % i
+    yield f'Shard {shard} output:\n'
     f.seek(0)
     for line in f.readlines():
-      yield line
+      yield f'{shard:2}| {line}'
     f.close()
 
   # Output stacks
@@ -393,7 +430,7 @@ def _RunCommandsAndSerializeOutput(cmd_list):
     yield '\nOne or mord shards timed out.\n'
     yield ('=' * 80) + '\n'
     for i, dump in timeout_dumps.items():
-      yield 'Index of timed out shard: %d\n' % i
+      yield f'Index of timed out shard: {shard_list[i]}\n'
       yield 'Thread dump:\n'
       yield dump
       yield '\n'

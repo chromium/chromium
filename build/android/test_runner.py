@@ -754,6 +754,8 @@ def AddJUnitTestOptions(parser):
       help='Number of shards to run junit tests in parallel on. Only 1 shard '
       'is supported when test-filter is specified. Values less than 1 will '
       'use auto select.')
+  parser.add_argument('--shard-filter',
+                      help='Comma separated list of shard indices to run.')
   parser.add_argument(
       '-s', '--test-suite', required=True,
       help='JUnit test suite to run.')
