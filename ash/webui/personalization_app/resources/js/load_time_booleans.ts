@@ -50,3 +50,7 @@ export function isUserAvatarCustomizationSelectorsEnabled() {
 export function isTimeOfDayScreenSaverEnabled() {
   return loadTimeData.getBoolean('isTimeOfDayScreenSaverEnabled');
 }
+
+export function isTimeOfDayWallpaperEnabled() {
+  return loadTimeData.getBoolean('isTimeOfDayWallpaperEnabled');
+}

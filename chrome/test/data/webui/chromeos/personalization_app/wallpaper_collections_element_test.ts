@@ -5,9 +5,9 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollections, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollections, WallpaperGridItem, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -261,4 +261,123 @@ suite('WallpaperCollectionsTest', function() {
         Array.from(onlineTiles).map(item => item.infoText),
         'correct info text set for both online collections');
   });
+
+  for (const isTimeOfDayWallpaperEnabled of [false, true]) {
+    test(`tile order time of day ${isTimeOfDayWallpaperEnabled}`, async () => {
+      loadTimeData.overrideValues({isTimeOfDayWallpaperEnabled});
+      const timeOfDayCollectionId =
+          loadTimeData.getString('timeOfDayWallpaperCollectionId');
+
+      // A simplified representation of WallpaperCollectionElement tile for
+      // testing.
+      interface Tile {
+        id: string;
+        type: string;
+      }
+      function getTiles(): Tile[] {
+        // Access a private field for testing because iron-list hides elements
+        // that are out of the viewport. Pick just id and type fields for
+        // simpler testing.
+        return (wallpaperCollectionsElement as any)
+            .tiles_.map(({id, type}: Tile) => ({id, type}));
+      }
+
+      personalizationStore.data = emptyState();
+      // Local images are still loading.
+      personalizationStore.data.wallpaper.loading.local.images = true;
+
+      wallpaperCollectionsElement = initElement(WallpaperCollections);
+      await waitAfterNextRender(wallpaperCollectionsElement);
+
+      let tiles = getTiles();
+      assertGE(tiles.length, 6, 'minimum 3 wide by 2 high');
+      for (const tile of tiles) {
+        assertEquals('loading', tile.type, 'all elements are loading tile');
+      }
+
+      // Local tile loads.
+      personalizationStore.data.wallpaper.local.images = [kDefaultImageSymbol];
+      personalizationStore.data.wallpaper.local.data = {
+        [kDefaultImageSymbol]: {
+          url: createSvgDataUrl(kDefaultImageSymbol.toString()),
+        },
+      };
+      personalizationStore.data.wallpaper.loading.local.images = false;
+      personalizationStore.data.wallpaper.loading.local
+          .data = {[kDefaultImageSymbol]: false};
+      // Google photos tile loads.
+      personalizationStore.data.wallpaper.googlePhotos.enabled =
+          GooglePhotosEnablementState.kEnabled;
+      personalizationStore.data.wallpaper.loading.googlePhotos.enabled = false;
+      personalizationStore.notifyObservers();
+      await waitAfterNextRender(wallpaperCollectionsElement);
+
+      tiles = getTiles();
+      let expectedTiles: Tile[] = [];
+      if (isTimeOfDayWallpaperEnabled) {
+        expectedTiles.push({id: timeOfDayCollectionId, type: 'loading'});
+      }
+      expectedTiles.push(
+          {id: 'local_', type: 'image_local'},
+          {id: 'google_photos_', type: 'image_google_photos'});
+      // All loading tiles with sequential backdrop temporary ids.
+      expectedTiles.push(...Array.from(
+          {length: tiles.length - expectedTiles.length},
+          (_, i) => ({id: `backdrop_collection_${i}`, type: 'loading'})));
+
+      assertDeepEquals(
+          expectedTiles, tiles,
+          'first special tiles should match and all loading after that');
+
+      personalizationStore.data.wallpaper.backdrop.collections =
+          wallpaperProvider.collections;
+
+      if (!isTimeOfDayWallpaperEnabled) {
+        personalizationStore.data.wallpaper.backdrop.collections =
+            personalizationStore.data.wallpaper.backdrop.collections!.filter(
+                collection => collection.id !==
+                    loadTimeData.getString('timeOfDayWallpaperCollectionId'));
+      }
+
+      personalizationStore.data.wallpaper.backdrop.images =
+          personalizationStore.data.wallpaper.backdrop.collections!.reduce(
+              (result, next) => {
+                result[next.id] = wallpaperProvider.images;
+                return result;
+              },
+              {} as Record<string, WallpaperImage[]|null>);
+      personalizationStore.data.wallpaper.loading.collections = false;
+      personalizationStore.data.wallpaper.loading.images =
+          personalizationStore.data.wallpaper.backdrop.collections!.reduce(
+              (result, next) => {
+                result[next.id] = false;
+                return result;
+              },
+              {} as Record<string, boolean>);
+      personalizationStore.notifyObservers();
+      await waitAfterNextRender(wallpaperCollectionsElement);
+
+      tiles = getTiles();
+      expectedTiles = [];
+      if (isTimeOfDayWallpaperEnabled) {
+        expectedTiles.push({
+          id: loadTimeData.getString('timeOfDayWallpaperCollectionId'),
+          type: 'image_online',
+        });
+      }
+      expectedTiles.push(
+          {id: 'local_', type: 'image_local'},
+          {id: 'google_photos_', type: 'image_google_photos'});
+      // Loading tiles truncated to match correct number of collections, and
+      // switched to correct id and type image_online.
+      expectedTiles.push(
+          ...personalizationStore.data.wallpaper.backdrop.collections!
+              .filter(
+                  collection => collection.id !==
+                      loadTimeData.getString('timeOfDayWallpaperCollectionId'))
+              .map(collection => ({id: collection.id, type: 'image_online'})));
+
+      assertDeepEquals(expectedTiles, tiles, 'tiles expected to match');
+    });
+  }
 });

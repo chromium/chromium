@@ -469,6 +469,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isTimeOfDayScreenSaverEnabled",
                      features::IsTimeOfDayScreenSaverEnabled());
+
+  source->AddBoolean("isTimeOfDayWallpaperEnabled",
+                     features::IsTimeOfDayWallpaperEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {

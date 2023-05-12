@@ -104,7 +104,7 @@ export function getLoadingPlaceholderAnimationDelay(index: number): string {
  */
 export function getLoadingPlaceholders<T>(factory: () => T): T[] {
   const x = getNumberOfGridItemsPerRow();
-  const y = Math.floor(window.innerHeight / /*tileHeightPx=*/ 136);
+  const y = Math.max(Math.floor(window.innerHeight / /*tileHeightPx=*/ 136), 2);
   return Array.from({length: x * y}, factory);
 }
 
