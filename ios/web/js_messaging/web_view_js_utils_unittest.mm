@@ -261,9 +261,16 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   EXPECT_FALSE(current_list);
 }
 
+TEST_F(WebViewJsUtilsTest, NSObjectFromNullptr) {
+  id wk_result = web::NSObjectFromValueResult(nullptr);
+  // `wk_result` should be nil.
+  EXPECT_FALSE(wk_result);
+}
+
 // Tests that NSObjectFromValueResult converts Value::Type::STRING to NSString.
 TEST_F(WebViewJsUtilsTest, NSObjectFromStringValueResult) {
-  id wk_result = web::NSObjectFromValueResult(base::Value("test"));
+  auto value = std::make_unique<base::Value>("test");
+  id wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSString class]]);
   EXPECT_NSEQ(@"test", wk_result);
@@ -271,7 +278,8 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromStringValueResult) {
 
 // Tests that NSObjectFromValueResult converts Value::Type::INT to NSNumber.
 TEST_F(WebViewJsUtilsTest, NSObjectFromIntValueResult) {
-  id wk_result = web::NSObjectFromValueResult(base::Value(1));
+  auto value = std::make_unique<base::Value>(1);
+  id wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
   EXPECT_EQ(1, [wk_result intValue]);
@@ -279,7 +287,8 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromIntValueResult) {
 
 // Tests that NSObjectFromValueResult converts Value::Type::DOUBLE to NSNumber.
 TEST_F(WebViewJsUtilsTest, NSObjectFromDoubleValueResult) {
-  id wk_result = web::NSObjectFromValueResult(base::Value(3.14));
+  auto value = std::make_unique<base::Value>(3.14);
+  id wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
   EXPECT_EQ(3.14, [wk_result doubleValue]);
@@ -287,12 +296,14 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromDoubleValueResult) {
 
 // Tests that NSObjectFromValueResult converts Value::Type::BOOLEAN to NSNumber.
 TEST_F(WebViewJsUtilsTest, NSObjectFromBoolValueResult) {
-  id wk_result = web::NSObjectFromValueResult(base::Value(true));
+  auto value = std::make_unique<base::Value>(true);
+  id wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
   EXPECT_EQ(YES, [wk_result boolValue]);
 
-  wk_result = web::NSObjectFromValueResult(base::Value(false));
+  value.reset(new base::Value(false));
+  wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSNumber class]]);
   EXPECT_EQ(NO, [wk_result boolValue]);
@@ -300,7 +311,8 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromBoolValueResult) {
 
 // Tests that NSObjectFromValueResult converts Value::Type::NONE to NSNull.
 TEST_F(WebViewJsUtilsTest, NSObjectFromNoneValueResult) {
-  id wk_result = web::NSObjectFromValueResult(base::Value());
+  auto value = std::make_unique<base::Value>();
+  id wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSNull class]]);
 }
@@ -315,8 +327,8 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromDictValueResult) {
   inner_test_dict.Set("Key3", 42);
   test_dict.Set("Key2", std::move(inner_test_dict));
 
-  id wk_result =
-      web::NSObjectFromValueResult(base::Value(std::move(test_dict)));
+  auto value = std::make_unique<base::Value>(std::move(test_dict));
+  id wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSDictionary class]]);
 
@@ -340,8 +352,8 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromListValueResult) {
 
   test_list.Append(42);
 
-  id wk_result =
-      web::NSObjectFromValueResult(base::Value(std::move(test_list)));
+  auto value = std::make_unique<base::Value>(std::move(test_list));
+  id wk_result = web::NSObjectFromValueResult(value.get());
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSArray class]]);
 

@@ -36,7 +36,7 @@ enum JSEvaluationErrorCode {
 std::unique_ptr<base::Value> ValueResultFromWKResult(id result);
 
 // Converts base::Value to an equivalent Foundation object.
-id NSObjectFromValueResult(const base::Value& value_result);
+id NSObjectFromValueResult(const base::Value* value_result);
 
 // Executes JavaScript on WKWebView. If the web view cannot execute JS at the
 // moment, `completion_handler` is called with an NSError.
