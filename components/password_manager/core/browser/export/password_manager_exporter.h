@@ -26,10 +26,9 @@ struct PasswordExportInfo {
   std::string file_path;
   // The name of the folder containing the exported file.
   std::string folder_name;
-
-  friend bool operator==(const PasswordExportInfo& lhs,
-                         const PasswordExportInfo& rhs) = default;
 };
+
+bool operator==(const PasswordExportInfo& lhs, const PasswordExportInfo& rhs);
 
 // Controls the exporting of passwords. One instance per export flow.
 // PasswordManagerExporter will perform the export asynchronously as soon as all
