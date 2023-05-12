@@ -103,13 +103,6 @@ void FileHandlingSubManager::Configure(
       registrar_->GetAppFileHandlerApprovalState(app_id) ==
           ApiApprovalState::kDisallowed ||
       !ShouldRegisterFileHandlersWithOs()) {
-#if BUILDFLAG(IS_MAC)
-    if (AreSubManagersExecuteEnabled()) {
-      AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-          app_id, profile_path_, {}, {});
-    }
-#endif
-
     std::move(configure_done).Run();
     return;
   }
