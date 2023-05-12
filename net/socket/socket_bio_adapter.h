@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -142,6 +143,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
 
   raw_ptr<Delegate> delegate_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SocketBIOAdapter> weak_factory_{this};
 };
 
