@@ -1,0 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+// https://github.com/patcg-individual-drafts/ipa
+
+[
+    ImplementedAs=WindowPrivateAttribution,
+    SecureContext,
+    RuntimeEnabled=InteroperablePrivateAttribution
+] partial interface Window {
+    [SameObject, Replaceable] readonly attribute PrivateAttribution privateAttribution;
+};

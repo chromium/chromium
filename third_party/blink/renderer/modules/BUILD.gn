@@ -133,6 +133,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/picture_in_picture",
     "//third_party/blink/renderer/modules/plugins",
     "//third_party/blink/renderer/modules/presentation",
+    "//third_party/blink/renderer/modules/private_attribution",
     "//third_party/blink/renderer/modules/push_messaging",
     "//third_party/blink/renderer/modules/quota",
     "//third_party/blink/renderer/modules/remoteplayback",

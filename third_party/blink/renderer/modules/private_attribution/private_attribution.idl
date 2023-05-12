@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/patcg-individual-drafts/ipa
+
+dictionary PrivateAttributionHelperShare {
+  octet keyId;
+
+  ArrayBuffer encryptedShare;
+};
+
+dictionary PrivateAttributionEncryptedMatchKey {
+  record<DOMString, PrivateAttributionHelperShare> shares;
+};
+
+dictionary PrivateAttributionOptions {
+  PrivateAttributionEvent eventType;
+
+  unsigned long helperNetworkId;
+};
+
+dictionary PrivateAttributionHelperInfo {
+  DOMString origin;
+
+  DOMString publicKey;
+};
+
+[Serializable]
+dictionary PrivateAttributionNetwork {
+  unsigned long id;
+
+  sequence<PrivateAttributionHelperInfo> helpers;
+};
+
+enum PrivateAttributionEvent {
+  "source",
+  "trigger",
+};
+
+[
+  Exposed=(Window),
+  SecureContext,
+  RuntimeEnabled=InteroperablePrivateAttribution
+] interface PrivateAttribution {
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<PrivateAttributionEncryptedMatchKey> getEncryptedMatchKey(
+      DOMString reportCollector,
+
+      PrivateAttributionOptions options);
+
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<sequence<PrivateAttributionNetwork>> getHelperNetworks();
+};

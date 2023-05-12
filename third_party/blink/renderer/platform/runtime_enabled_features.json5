@@ -2006,6 +2006,10 @@
       base_feature: "none",
     },
     {
+      name: "InteroperablePrivateAttribution",
+      status: "experimental",
+    },
+    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
       base_feature: "none",
