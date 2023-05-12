@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_APN_MIGRATOR_H_
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -44,6 +45,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   void SetShillCustomApnListForNetwork(const NetworkState& network,
                                        const base::Value::List* apn_list);
 
+  void OnSetShillCustomApnListSuccess(const std::string iccid);
+
+  void OnSetShillCustomApnListFailure(const std::string iccid,
+                                      const std::string guid,
+                                      const std::string& error_name);
+
   // Migrate the |network|'s custom APNs to the APN Revamp feature. If the
   // migration requires the network's managed properties, this function will
   // invoke an async call, and mark the network as "in migration".
@@ -57,7 +64,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
                               absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);
 
+  // ICCIDs that are currently being migrated.
   base::flat_set<std::string> iccids_in_migration_;
+
+  // ICCIDs of networks that have been configured in shill with the revamped APN
+  // list. Networks must be updated in shill with the migrated APNs each time
+  // the revamp flag is enabled.
+  base::flat_set<std::string> iccids_shill_updated_with_migrated_apns_;
 
   raw_ptr<ManagedCellularPrefHandler, ExperimentalAsh>
       managed_cellular_pref_handler_ = nullptr;
