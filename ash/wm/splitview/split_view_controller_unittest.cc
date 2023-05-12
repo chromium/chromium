@@ -311,13 +311,14 @@ class SplitViewControllerTest : public AshTestBase {
                                        std::vector<int>&& exit_counts) {
     CheckForDuplicateTraceName(trace);
 
-    // Overview histograms recorded via ui::ThroughputTracker is reported
-    // on the next frame presented after animation stops. Wait for the next
-    // frame with a 100ms timeout for the report, regardless of whether there
-    // is a next frame.
-    std::ignore = ui::WaitForNextFrameToBePresented(
-        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::Milliseconds(100));
+    // Force a frame then wait, ensuring there is one more frame presented after
+    // animation finishes to allow animation throughput data to be passed from
+    // cc to ui.
+    ui::Compositor* compositor =
+        Shell::GetPrimaryRootWindow()->layer()->GetCompositor();
+    compositor->ScheduleFullRedraw();
+    std::ignore =
+        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(500));
 
     {
       SCOPED_TRACE(trace + std::string(".Enter"));
@@ -776,10 +777,11 @@ TEST_F(SplitViewControllerTest, ExitOverviewMode) {
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 }
 
+#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) && \
+    !defined(LEAK_SANITIZER) && !defined(THREAD_SANITIZER)
 // Tests that the overview mode enter exit smoothness histograms are recorded
 // properly when one window is snapped.
-// TODO(b/252523767): Reenable this test.
-TEST_F(SplitViewControllerTest, DISABLED_EnterExitOverviewModeHistograms) {
+TEST_F(SplitViewControllerTest, EnterExitOverviewModeHistograms) {
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -795,7 +797,7 @@ TEST_F(SplitViewControllerTest, DISABLED_EnterExitOverviewModeHistograms) {
             split_view_controller()->state());
 
   ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -805,6 +807,7 @@ TEST_F(SplitViewControllerTest, DISABLED_EnterExitOverviewModeHistograms) {
   WaitForOverviewExitAnimation();
   CheckOverviewEnterExitHistogram("ExitInSplitView", {0, 1}, {0, 1});
 }
+#endif
 
 // Tests that the split divider was created when the split view mode is active
 // and destroyed when the split view mode is ended. The split divider should be
@@ -1745,8 +1748,9 @@ TEST_F(SplitViewControllerTest, LongPressInOverviewMode) {
 
 // Tests the overview animation smoothness histograms when using long pressing
 // the overview button.
-// TODO(b/252523767): Reenable this test.
-TEST_F(SplitViewControllerTest, DISABLED_LongPressInOverviewModeHistograms) {
+#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) && \
+    !defined(LEAK_SANITIZER) && !defined(THREAD_SANITIZER)
+TEST_F(SplitViewControllerTest, LongPressInOverviewModeHistograms) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -1776,6 +1780,7 @@ TEST_F(SplitViewControllerTest, DISABLED_LongPressInOverviewModeHistograms) {
   EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   CheckOverviewEnterExitHistogram("NoTransition", {1, 0}, {0, 0});
 }
+#endif
 
 TEST_F(SplitViewControllerTest, LongPressWithUnsnappableWindow) {
   // Add an unsnappable window and a regular window.

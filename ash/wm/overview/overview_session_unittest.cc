@@ -842,8 +842,9 @@ TEST_P(OverviewSessionTest, MaximizedWindow) {
 
 // Tests the animation histograms when entering and exiting overview with a
 // maximized and fullscreen window.
-// TODO(b/252523767): Reenable this test.
-TEST_P(OverviewSessionTest, DISABLED_MaximizedFullscreenHistograms) {
+#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) && \
+    !defined(LEAK_SANITIZER) && !defined(THREAD_SANITIZER)
+TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
   std::unique_ptr<aura::Window> maximized_window(CreateTestWindow());
   std::unique_ptr<aura::Window> fullscreen_window(CreateTestWindow());
 
@@ -881,6 +882,7 @@ TEST_P(OverviewSessionTest, DISABLED_MaximizedFullscreenHistograms) {
   CheckOverviewEnterExitHistogram("FullscreenWindowExit1", {0, 2, 0, 0, 0},
                                   {0, 2, 0, 0, 0});
 }
+#endif
 
 TEST_P(OverviewSessionTest, TabletModeHistograms) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(

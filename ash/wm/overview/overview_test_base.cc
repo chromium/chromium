@@ -222,13 +222,14 @@ void OverviewTestBase::CheckOverviewEnterExitHistogram(
     const std::vector<int>& exit_counts) {
   CheckForDuplicateTraceName(trace);
 
-  // Overview histograms recorded via ui::ThroughputTracker is reported
-  // on the next frame presented after animation stops. Wait for the next
-  // frame with a 100ms timeout for the report, regardless of whether there
-  // is a next frame.
-  std::ignore = ui::WaitForNextFrameToBePresented(
-      Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-      base::Milliseconds(500));
+  // Force a frame then wait, ensuring there is one more frame presented after
+  // animation finishes to allow animation throughput data to be passed from
+  // cc to ui.
+  ui::Compositor* compositor =
+      Shell::GetPrimaryRootWindow()->layer()->GetCompositor();
+  compositor->ScheduleFullRedraw();
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(500));
 
   {
     SCOPED_TRACE(trace + ".Enter");
