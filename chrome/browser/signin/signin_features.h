@@ -23,7 +23,6 @@ BASE_DECLARE_FEATURE(kForYouFreSyntheticTrialRegistration);
 
 extern const base::FeatureParam<std::string> kForYouFreStudyGroup;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_DECLARE_FEATURE(kEnterpriseWelcomeTangibleSyncStyle);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);

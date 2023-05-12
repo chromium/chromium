@@ -53,10 +53,6 @@ const base::FeatureParam<std::string> kForYouFreStudyGroup{
     &kForYouFreSyntheticTrialRegistration, /*name=*/"group_name",
     /*default_value=*/""};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-BASE_FEATURE(kEnterpriseWelcomeTangibleSyncStyle,
-             "EnterpriseWelcomeTangibleSyncStyle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 // Enables the client-side processing of the HTTP response header
