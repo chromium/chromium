@@ -36,6 +36,22 @@
     }
   }
 
+  :host-context([chrome-refresh-2023]) .image-container {
+    background-color: var(--color-side-panel-customize-chrome-theme-background);
+  }
+
+  :host-context([chrome-refresh-2023]) #uploadImageTile .image-container {
+    --cr-icon-color: var(
+        --color-side-panel-customize-chrome-custom-option-foreground);
+    background-color: var(
+        --color-side-panel-customize-chrome-custom-option-background);
+  }
+
+  :host-context([chrome-refresh-2023]) #chromeWebStoreTile .image-container {
+    border: solid 1px
+        var(--color-side-panel-customize-chrome-web-store-option-border);
+  }
+
   .image-container img,
   .image-container div,
   .image-container svg {
