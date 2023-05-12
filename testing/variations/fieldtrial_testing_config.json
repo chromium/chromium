@@ -6413,28 +6413,6 @@
             ]
         }
     ],
-    "HatsGeneralCamera": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithGooglers_20230317",
-                    "params": {
-                        "enabled_for_googlers": "true",
-                        "prob": "0.01",
-                        "survey_cycle_length": "90",
-                        "survey_start_date_ms": "1677715200000",
-                        "trigger_id": "vpqxGW9RC0jBnuKU19R0S2ceNB9H"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingGeneralCamera"
-                    ]
-                }
-            ]
-        }
-    ],
     "HatsOnboardingExperience": [
         {
             "platforms": [
