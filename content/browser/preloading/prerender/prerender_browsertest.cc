@@ -10059,23 +10059,22 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest, ViewPort_Width) {
   GURL url = GetUrl("/empty.html?acceptch-viewport-width");
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
-  // Start prerendering. This won't have the "(sec-ch-)viewport-width" headers
-  // as the width is 0 due to the lack of a cached/known viewport size.
+  // Start prerendering. This should have the "(sec-ch-)viewport-width" headers.
   GURL prerender_url = GetUrl("/iframe.html?acceptch");
   int host_id = AddPrerender(prerender_url);
   WaitForPrerenderLoadCompleted(host_id);
-  EXPECT_FALSE(HasRequestHeader(prerender_url, "viewport-width"));
-  EXPECT_FALSE(HasRequestHeader(prerender_url, "sec-ch-viewport-width"));
+  EXPECT_TRUE(HasRequestHeader(prerender_url, "viewport-width"));
+  EXPECT_TRUE(HasRequestHeader(prerender_url, "sec-ch-viewport-width"));
 
   // Resize the window.
   web_contents_impl()->Resize(gfx::Rect(30, 40));
 
-  // Activation should also not have the "(sec-ch-)viewport-width" headers.
+  // Activation should also have the "(sec-ch-)viewport-width" headers but their
+  // value is different from prerender initial navigation. This shouldn't fail
+  // prerender activation parameter match.
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
   NavigatePrimaryPage(prerender_url);
   prerender_observer.WaitForActivation();
-  EXPECT_FALSE(HasRequestHeader(prerender_url, "viewport-width"));
-  EXPECT_FALSE(HasRequestHeader(prerender_url, "sec-ch-viewport-width"));
 }
 
 // Test that changes on the viewport height of the initiator page between when
@@ -10095,21 +10094,21 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest, ViewPort_Height) {
   GURL url = GetUrl("/empty.html?acceptch-viewport-height");
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
-  // Start prerendering. This won't have the "sec-ch-viewport-height" header
-  // as the height is 0 due to the lack of a cached/known viewport size.
+  // Start prerendering. This should have the "sec-ch-viewport-height" header.
   GURL prerender_url = GetUrl("/iframe.html?acceptch");
   int host_id = AddPrerender(prerender_url);
   WaitForPrerenderLoadCompleted(host_id);
-  EXPECT_FALSE(HasRequestHeader(prerender_url, "sec-ch-viewport-height"));
+  EXPECT_TRUE(HasRequestHeader(prerender_url, "sec-ch-viewport-height"));
 
   // Resize the window.
   web_contents_impl()->Resize(gfx::Rect(30, 40));
 
-  // Activation should also not have the "sec-ch-viewport-height" header.
+  // Activation should also have the "sec-ch-viewport-height" header but its
+  // value is different from prerender initial navigation. This shouldn't fail
+  // prerender activation parameter match.
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
   NavigatePrimaryPage(prerender_url);
   prerender_observer.WaitForActivation();
-  EXPECT_FALSE(HasRequestHeader(prerender_url, "sec-ch-viewport-height"));
 }
 
 void CheckExpectedCrossOriginMetrics(

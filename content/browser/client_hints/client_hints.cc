@@ -7,10 +7,8 @@
 #include <algorithm>
 #include <string>
 
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -287,14 +285,6 @@ RenderWidgetHostView* GetRenderWidgetHostViewFromFrameTreeNode(
 
 gfx::Size GetViewportSize(FrameTreeNode* frame_tree_node,
                           ClientHintsControllerDelegate* delegate) {
-#if DCHECK_IS_ON()
-  // In some tests we need to force an empty viewport size.
-  if (delegate->ShouldForceEmptyViewportSize()) {
-    CHECK_IS_TEST();
-    return gfx::Size();
-  }
-#endif
-
   // If possible, return the current viewport size.
   RenderWidgetHostView* view =
       GetRenderWidgetHostViewFromFrameTreeNode(frame_tree_node);
@@ -310,13 +300,12 @@ gfx::Size GetViewportSize(FrameTreeNode* frame_tree_node,
     return cached_viewport_size;
   }
 
-  // We used to return the display size here as a last resort if above methods
-  // didn't work, but this was so inaccurate as to be useless. Short of trying
-  // to build a more extensive caching method or restructuring the calculation
-  // path to make the estimated size available here, we simply return 0.
-  // Further context can be found in crbug.com/1430903.
+  // Finally, use the display size if neither of the above methods work. Applies
+  // the device scale factor in this case, which is implicitly applied to other
   // viewport sizes already.
-  return gfx::Size();
+  return ScaleToRoundedSize(
+      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel(),
+      1.0 / GetDeviceScaleFactor());
 }
 
 gfx::Size GetScaledViewportSize(BrowserContext* context,
@@ -364,9 +353,8 @@ void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
   gfx::Size viewport_size =
       GetScaledViewportSize(context, url, frame_tree_node, delegate);
 
-  // The width cannot be less than 0, but if it is zero that means we could not
-  // determine the width and should omit the header.
-  DCHECK_LE(0, viewport_size.width());
+  DCHECK_LT(0, viewport_size.width());
+  // TODO(yoav): Find out why this 0 check is needed...
   if (viewport_size.width() > 0) {
     SetHeaderToInt(headers,
                    use_deprecated_version
@@ -387,13 +375,9 @@ void AddViewportHeightHeader(net::HttpRequestHeaders* headers,
   gfx::Size viewport_size =
       GetScaledViewportSize(context, url, frame_tree_node, delegate);
 
-  // The height cannot be less than 0, but if it is zero that means we could not
-  // determine the height and should omit the header.
-  DCHECK_LE(0, viewport_size.height());
-  if (viewport_size.height() > 0) {
-    SetHeaderToInt(headers, network::mojom::WebClientHintsType::kViewportHeight,
-                   viewport_size.height());
-  }
+  DCHECK_LT(0, viewport_size.height());
+  SetHeaderToInt(headers, network::mojom::WebClientHintsType::kViewportHeight,
+                 viewport_size.height());
 }
 
 void AddRttHeader(net::HttpRequestHeaders* headers,

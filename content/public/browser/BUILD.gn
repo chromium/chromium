@@ -110,7 +110,6 @@ source_set("browser_sources") {
     "client_certificate_delegate.h",
     "client_hints.cc",
     "client_hints.h",
-    "client_hints_controller_delegate.cc",
     "client_hints_controller_delegate.h",
     "commit_deferring_condition.cc",
     "commit_deferring_condition.h",

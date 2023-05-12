@@ -82,12 +82,6 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
   virtual void SetMostRecentMainFrameViewportSize(
       const gfx::Size& viewport_size) = 0;
   virtual gfx::Size GetMostRecentMainFrameViewportSize() = 0;
-
-  // Optionally implemented for use in tests. Forces gfx::Size to be empty in
-  // all future navigations.
-  virtual void ForceEmptyViewportSizeForTesting(
-      bool should_force_empty_viewport_size) {}
-  virtual bool ShouldForceEmptyViewportSize();
 };
 
 }  // namespace content
