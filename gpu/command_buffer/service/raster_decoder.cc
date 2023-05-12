@@ -78,6 +78,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -291,14 +292,32 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
     AddToPendingQueue(submit_count);
     finished_ = false;
 
-    auto* gr_context = shared_context_state_->gr_context();
-    GrFlushInfo info;
-    info.fFinishedProc = RasterCommandsCompletedQuery::FinishedProc;
-    auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-    info.fFinishedContext =
-        new base::WeakPtr<RasterCommandsCompletedQuery>(weak_ptr);
-    gr_context->flush(info);
-    gr_context->submit();
+    if (auto* gr_context = shared_context_state_->gr_context()) {
+      GrFlushInfo info;
+      info.fFinishedProc = RasterCommandsCompletedQuery::FinishedProc;
+      auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+      info.fFinishedContext =
+          new base::WeakPtr<RasterCommandsCompletedQuery>(weak_ptr);
+      gr_context->flush(info);
+      gr_context->submit();
+    } else {
+      CHECK(shared_context_state_->graphite_context());
+      auto recording =
+          shared_context_state_->gpu_main_graphite_recorder()->snap();
+      if (recording) {
+        skgpu::graphite::InsertRecordingInfo info = {};
+        info.fRecording = recording.get();
+        info.fFinishedProc = [](void* context, skgpu::CallbackResult result) {
+          RasterCommandsCompletedQuery::FinishedProc(context);
+        };
+        info.fFinishedContext = new base::WeakPtr<RasterCommandsCompletedQuery>(
+            weak_ptr_factory_.GetWeakPtr());
+        shared_context_state_->graphite_context()->insertRecording(info);
+        shared_context_state_->graphite_context()->submit();
+      } else {
+        finished_ = true;
+      }
+    }
   }
 
   void QueryCounter(base::subtle::Atomic32 submit_count) override {
@@ -353,7 +372,8 @@ class RasterQueryManager : public QueryManager {
                      scoped_refptr<gpu::Buffer> buffer,
                      QuerySync* sync) override {
     if (target == GL_COMMANDS_COMPLETED_CHROMIUM &&
-        shared_context_state_->gr_context()) {
+        (shared_context_state_->gr_context() ||
+         shared_context_state_->graphite_context())) {
       auto query = base::MakeRefCounted<RasterCommandsCompletedQuery>(
           shared_context_state_, this, target, std::move(buffer), sync);
       std::pair<QueryMap::iterator, bool> result =
@@ -559,6 +579,9 @@ class RasterDecoderImpl final : public RasterDecoder,
   GrDirectContext* gr_context() const {
     return shared_context_state_->gr_context();
   }
+  skgpu::graphite::Context* graphite_context() const {
+    return shared_context_state_->graphite_context();
+  }
   skgpu::graphite::Recorder* graphite_recorder() const {
     return shared_context_state_->gpu_main_graphite_recorder();
   }
@@ -582,8 +605,11 @@ class RasterDecoderImpl final : public RasterDecoder,
     // The workaround is not needed for arm based macs (because they don't have
     // the bug).
 #if BUILDFLAG(IS_MAC) && !defined(ARCH_CPU_ARM64)
-    if (!shared_context_state_->GrContextIsGL())
+    // The workaround is also not needed for Graphite, which always uses Metal
+    // drivers (via Dawn).
+    if (!shared_context_state_->GrContextIsGL()) {
       return;
+    }
     // This function does aggressive flushes to work around crashes in the
     // macOS OpenGL driver.
     // https://crbug.com/906453
@@ -713,6 +739,24 @@ class RasterDecoderImpl final : public RasterDecoder,
       const volatile GLuint* paint_cache_ids);
   void DoClearPaintCacheINTERNAL();
 
+  void GraphiteFlushAndSubmitWithRecording(
+      std::unique_ptr<skgpu::graphite::Recording> recording,
+      skgpu::graphite::SyncToCpu sync_to_cpu =
+          skgpu::graphite::SyncToCpu::kNo) {
+    if (recording) {
+      skgpu::graphite::InsertRecordingInfo info = {};
+      info.fRecording = recording.get();
+      graphite_context()->insertRecording(info);
+    }
+    graphite_context()->submit(sync_to_cpu);
+  }
+
+  void GraphiteFlushAndSubmit(skgpu::graphite::SyncToCpu sync_to_cpu =
+                                  skgpu::graphite::SyncToCpu::kNo) {
+    GraphiteFlushAndSubmitWithRecording(graphite_recorder()->snap(),
+                                        sync_to_cpu);
+  }
+
   void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
     static int flush_count = 0;
     const base::TimeTicks start = base::TimeTicks::Now();
@@ -723,6 +767,11 @@ class RasterDecoderImpl final : public RasterDecoder,
       surface->flush();
     }
     access->ApplyBackendSurfaceEndState();
+
+    if (graphite_context()) {
+      GraphiteFlushAndSubmit();
+    }
+
     if (flush_count < 100) {
       ++flush_count;
       base::UmaHistogramCustomMicrosecondsTimes(
@@ -737,6 +786,9 @@ class RasterDecoderImpl final : public RasterDecoder,
     // This will ensure that vulkan memory allocated on gpu main thread will be
     // cleaned up.
     if (!signal_semaphores.empty() || is_drdc_enabled_) {
+      // NOTE: The Graphite SharedImage representation does not set semaphores,
+      // and we are not enabling DrDC with Graphite.
+      CHECK(gr_context());
       GrFlushInfo flush_info = {
           .fNumSemaphores = signal_semaphores.size(),
           .fSignalSemaphores = signal_semaphores.data(),
@@ -761,8 +813,13 @@ class RasterDecoderImpl final : public RasterDecoder,
     const bool need_submit =
         sync_cpu || !signal_semaphores.empty() || is_drdc_enabled_;
 
-    if (need_submit)
+    if (need_submit) {
+      // NOTE: Graphite uses Metal (via Dawn), the Graphite SharedImage
+      // representation does not set semaphores, and we are not enabling DrDC
+      // with Graphite.
+      CHECK(gr_context());
       gr_context()->submit(sync_cpu);
+    }
   }
 
 #if defined(NDEBUG)
@@ -1062,7 +1119,7 @@ ContextResult RasterDecoderImpl::Initialize(
       return ContextResult::kFatalFailure;
     }
 
-    DCHECK(gr_context());
+    DCHECK(gr_context() || graphite_context());
     use_gpu_raster_ = true;
     paint_cache_ = std::make_unique<cc::ServicePaintCache>();
   }
@@ -1201,6 +1258,10 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
         gr_context()->colorTypeSupportedAsImage(kA16_unorm_SkColorType);
     caps.texture_half_float_linear =
         gr_context()->colorTypeSupportedAsImage(kA16_float_SkColorType);
+  } else if (graphite_context()) {
+    // TODO(b/281151641): Determine if there are checks to be made here.
+    caps.texture_norm16 = true;
+    caps.texture_half_float_linear = true;
   } else {
     caps.texture_norm16 = feature_info()->feature_flags().ext_texture_norm16;
     caps.texture_half_float_linear =
@@ -1316,8 +1377,11 @@ bool RasterDecoderImpl::HasPendingQueries() const {
 
 void RasterDecoderImpl::ProcessPendingQueries(bool did_finish) {
   if (query_manager_) {
-    if (auto* gr_context = shared_context_state_->gr_context())
-      gr_context->checkAsyncWorkCompletion();
+    if (gr_context()) {
+      gr_context()->checkAsyncWorkCompletion();
+    } else if (graphite_context()) {
+      graphite_context()->checkAsyncWorkCompletion();
+    }
     query_manager_->ProcessPendingQueries(did_finish);
   }
 }
@@ -1804,15 +1868,19 @@ error::Error RasterDecoderImpl::HandleQueryCounterEXT(
 }
 
 void RasterDecoderImpl::DoFinish() {
-  if (auto* gr_context = shared_context_state_->gr_context()) {
-    gr_context->flushAndSubmit(/*syncCpu=*/true);
+  if (gr_context()) {
+    gr_context()->flushAndSubmit(/*syncCpu=*/true);
+  } else if (graphite_context()) {
+    GraphiteFlushAndSubmit(skgpu::graphite::SyncToCpu::kYes);
   }
   ProcessPendingQueries(/*did_finish=*/true);
 }
 
 void RasterDecoderImpl::DoFlush() {
-  if (auto* gr_context = shared_context_state_->gr_context()) {
-    gr_context->flushAndSubmit(/*syncCpu=*/false);
+  if (gr_context()) {
+    gr_context()->flushAndSubmit(/*syncCpu=*/false);
+  } else if (graphite_context()) {
+    GraphiteFlushAndSubmit();
   }
   ProcessPendingQueries(/*did_finish=*/false);
 }
@@ -2026,7 +2094,10 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   // Try a direct texture upload without using SkSurface.
-  if (gfx::Size(src_width, src_height) == dest_shared_image->size() &&
+  // TODO(crbug.com/1423576): Enable this path for Graphite after fixing
+  // RGBA/BGRA mismatch.
+  if (!graphite_context() &&
+      gfx::Size(src_width, src_height) == dest_shared_image->size() &&
       x_offset == 0 && y_offset == 0 &&
       (src_info.alphaType() == dest_shared_image->alpha_type() ||
        src_info.alphaType() == kUnknown_SkAlphaType) &&
@@ -2104,19 +2175,35 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
     return false;
   }
   if (!begin_semaphores.empty()) {
-    bool result = shared_context_state_->gr_context()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
+    // The Graphite SharedImage representation does not set semaphores.
+    CHECK(gr_context());
+    bool result =
+        gr_context()->wait(begin_semaphores.size(), begin_semaphores.data(),
+                           /*deleteSemaphoresAfterWait=*/false);
     DCHECK(result);
   }
 
   SkPixmap pixmap(src_info, pixel_data, row_bytes);
-  bool written = gr_context()->updateBackendTexture(
-      dest_scoped_access->promise_image_texture(plane_index)->backendTexture(),
-      &pixmap,
-      /*levels=*/1, dest_shared_image->surface_origin(), nullptr, nullptr);
-
-  dest_scoped_access->ApplyBackendSurfaceEndState();
+  bool written = false;
+  if (gr_context()) {
+    written = gr_context()->updateBackendTexture(
+        dest_scoped_access->promise_image_texture(plane_index)
+            ->backendTexture(),
+        &pixmap,
+        /*numLevels=*/1, dest_shared_image->surface_origin(), nullptr, nullptr);
+    dest_scoped_access->ApplyBackendSurfaceEndState();
+  } else {
+    CHECK(graphite_context());
+    written = graphite_recorder()->updateBackendTexture(
+        dest_scoped_access->graphite_texture(plane_index), &pixmap,
+        /*numLevels=*/1);
+    auto recording = graphite_recorder()->snap();
+    if (!recording) {
+      DLOG(ERROR) << "Failed to snap Graphite recording";
+      return false;
+    }
+    GraphiteFlushAndSubmitWithRecording(std::move(recording));
+  }
 
   SubmitIfNecessary(std::move(end_semaphores));
   if (written && !dest_shared_image->IsCleared()) {
@@ -2654,11 +2741,20 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
       flags = 0;
       break;
     case kMSAA:
+      // Graphite operates as in the kDMSAA case below.
+      if (graphite_context()) {
+        final_msaa_count = 1;
+        flags = SkSurfaceProps::kDynamicMSAA_Flag;
+        break;
+      }
+
       // If we can't match requested MSAA samples, don't use MSAA.
       final_msaa_count = std::max(static_cast<int>(msaa_sample_count), 0);
-      if (final_msaa_count >
-          gr_context()->maxSurfaceSampleCountForColorType(sk_color_type))
+      if (gr_context() &&
+          final_msaa_count >
+              gr_context()->maxSurfaceSampleCountForColorType(sk_color_type)) {
         final_msaa_count = 0;
+      }
       flags = 0;
       break;
     case kDMSAA:
