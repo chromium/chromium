@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
+#include "dbus/message.h"
 
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
@@ -46,7 +47,8 @@ HermesResponseStatus HermesResponseStatusFromErrorName(
   if (error_name == hermes::kErrorWrongState) {
     return HermesResponseStatus::kErrorWrongState;
   }
-  if (error_name == hermes::kErrorNoResponse) {
+  if (error_name == hermes::kErrorNoResponse ||
+      error_name == DBUS_ERROR_NO_REPLY) {
     return HermesResponseStatus::kErrorNoResponse;
   }
   if (error_name == hermes::kErrorMalformedResponse) {

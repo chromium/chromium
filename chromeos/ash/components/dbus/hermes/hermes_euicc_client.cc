@@ -154,7 +154,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     writer.AppendInt32(static_cast<int32_t>(reset_option));
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
+        &method_call, hermes_constants::kHermesOperationTimeoutMs,
         base::BindOnce(&HermesEuiccClientImpl::OnResetMemoryResponse,
                        weak_ptr_factory_.GetWeakPtr(), euicc_path,
                        std::move(callback)));
