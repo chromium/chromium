@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -34,6 +35,23 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
       if (style.ShapeOutside()->CssBox() != CSSBoxType::kMissing)
         return nullptr;
       return style.ShapeOutside()->Shape();
+    case CSSPropertyID::kOffsetPath: {
+      auto* offset_path_operation =
+          DynamicTo<ShapeOffsetPathOperation>(style.OffsetPath());
+      if (!offset_path_operation) {
+        return nullptr;
+      }
+      const auto& shape = offset_path_operation->GetBasicShape();
+
+      // Path and Ray shapes are handled by PathInterpolationType and
+      // RayInterpolationType.
+      if (shape.GetType() == BasicShape::kStylePathType ||
+          shape.GetType() == BasicShape::kStyleRayType) {
+        return nullptr;
+      }
+
+      return &shape;
+    }
     case CSSPropertyID::kClipPath: {
       auto* clip_path_operation =
           DynamicTo<ShapeClipPathOperation>(style.ClipPath());
@@ -136,8 +154,12 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
     return basic_shape_interpolation_functions::MaybeConvertCSSValue(value);
 
   const auto& list = To<CSSValueList>(value);
-  if (list.length() != 1)
+  // Path and Ray shapes are handled by PathInterpolationType and
+  // RayInterpolationType.
+  if (!list.First().IsBasicShapeValue() || list.First().IsRayValue() ||
+      list.First().IsPathValue()) {
     return nullptr;
+  }
   return basic_shape_interpolation_functions::MaybeConvertCSSValue(
       list.Item(0));
 }
@@ -188,6 +210,11 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
     case CSSPropertyID::kShapeOutside:
       state.StyleBuilder().SetShapeOutside(MakeGarbageCollected<ShapeValue>(
           std::move(shape), CSSBoxType::kMissing));
+      break;
+    case CSSPropertyID::kOffsetPath:
+      // TODO(sakhapov): handle coord box.
+      state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
+          std::move(shape), CoordBox::kBorderBox));
       break;
     case CSSPropertyID::kClipPath:
       state.StyleBuilder().SetClipPath(
