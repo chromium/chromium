@@ -1587,6 +1587,11 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   std::string details_roles = ComputeDetailsRoles();
   if (!details_roles.empty())
     AddAttributeToList("details-roles", details_roles, attributes);
+
+  if (ui::IsLink(GetRole())) {
+    AddAttributeToList(ax::mojom::StringAttribute::kLinkTarget, "link-target",
+                       attributes);
+  }
 }
 
 void AXPlatformNodeBase::AddAttributeToList(

@@ -3774,6 +3774,9 @@ data/accessibility/html/link-inside-heading-expected-mac.txt
 data/accessibility/html/link-inside-heading-expected-uia-win.txt
 data/accessibility/html/link-inside-heading-expected-win.txt
 data/accessibility/html/link-inside-heading.html
+data/accessibility/html/link-target-expected-auralinux.txt
+data/accessibility/html/link-target-expected-win.txt
+data/accessibility/html/link-target.html
 data/accessibility/html/link.html
 data/accessibility/html/list-expected-android-external.txt
 data/accessibility/html/list-expected-android.txt

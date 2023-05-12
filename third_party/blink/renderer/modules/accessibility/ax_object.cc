@@ -1772,6 +1772,13 @@ void AXObject::SerializeOtherScreenReaderAttributes(
       node_data->AddIntAttribute(
           ax::mojom::blink::IntAttribute::kInPageLinkTargetId, target_id);
     }
+
+    // `ax::mojom::blink::StringAttribute::kLinkTarget` is only valid on <a> and
+    // <area> elements. <area> elements should link to something in order to be
+    // considered, see `AXImageMap::Role()`.
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kLinkTarget,
+        EffectiveTarget());
   }
 
   if (node_data->role == ax::mojom::blink::Role::kRadioButton) {
@@ -4439,6 +4446,14 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
 bool AXObject::IsNameFromAuthorAttribute() const {
   return IsNameFromAriaAttribute(GetElement()) ||
          HasAttribute(html_names::kTitleAttr);
+}
+
+AXObject* AXObject::InPageLinkTarget() const {
+  return nullptr;
+}
+
+const AtomicString& AXObject::EffectiveTarget() const {
+  return g_null_atom;
 }
 
 AccessibilityOrientation AXObject::Orientation() const {

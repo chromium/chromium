@@ -633,7 +633,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // <a href="#foo">, this will return the AXObject for the target.
   // The object returned should be unignored. If necessary, it will return
   // a descendant of the actual target.
-  virtual AXObject* InPageLinkTarget() const { return nullptr; }
+  virtual AXObject* InPageLinkTarget() const;
+  // Returns the value of the "target" attribute, e.g. <a href="example.com"
+  // target="blank">.
+  virtual const AtomicString& EffectiveTarget() const;
   virtual AccessibilityOrientation Orientation() const;
   virtual ax::mojom::blink::ListStyle GetListStyle() const {
     return ax::mojom::blink::ListStyle::kNone;

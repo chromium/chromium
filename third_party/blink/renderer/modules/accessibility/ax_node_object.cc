@@ -2279,6 +2279,27 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
   return ax_target;
 }
 
+const AtomicString& AXNodeObject::EffectiveTarget() const {
+  // The "target" attribute defines the target browser context and is supported
+  // on <a>, <area>, <base>, and <form>. Valid values are: "frame_name", "self",
+  // "blank", "top", and "parent", where "frame_name" is the value of the "name"
+  // attribute on any enclosing iframe.
+  //
+  // <area> is a subclass of <a>, while <base> provides the document's base
+  // target that any <a>'s or any <area>'s target can override.
+  // `HtmlAnchorElement::GetEffectiveTarget()` will take <base> into account.
+  //
+  // <form> is out of scope, because it affects the target to which the form is
+  // submitted, and could also be overridden by a "formTarget" attribute on e.g.
+  // a form's submit button. However, screen reader users have no need to know
+  // to which target (browser context) a form would be submitted.
+  const auto* anchor = DynamicTo<HTMLAnchorElement>(GetNode());
+  if (anchor) {
+    return anchor->GetEffectiveTarget();
+  }
+  return AXObject::EffectiveTarget();
+}
+
 AccessibilityOrientation AXNodeObject::Orientation() const {
   const AtomicString& aria_orientation =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kOrientation);

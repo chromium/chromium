@@ -1715,6 +1715,9 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kLanguage:
         result += " language=" + value;
         break;
+      case ax::mojom::StringAttribute::kLinkTarget:
+        result += " link_target=" + value;
+        break;
       case ax::mojom::StringAttribute::kLiveRelevant:
         result += " relevant=" + value;
         break;
