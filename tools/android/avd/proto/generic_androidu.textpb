@@ -19,18 +19,7 @@ system_image_name: "system-images;android-UpsideDownCake;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-upsidedowncake/google_apis/x86_64"
+  version: "WIgPA8j-YTI1W7MVC3eckiSYVxEDqLc7UZI3mkTjyPoC"  # created in bb_id 8781558768666395489
   dest_path: "generic_androidu"
 }
 avd_name: "android_u_google_apis_x86_64"
-
-avd_settings {
-  screen {
-    density: 480
-    height: 1920
-    width: 1080
-  }
-  advanced_features {
-    key: "GLESDynamicVersion"
-    value: "on"
-  }
-}
