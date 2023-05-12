@@ -15,6 +15,7 @@
 #include "base/functional/identity.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/password_manager/core/browser/field_info_table.h"
@@ -36,65 +37,17 @@ using sync_util::IsPasswordSyncEnabled;
 
 bool ShouldExecuteModifyOperationsOnShadowBackend(PrefService* prefs,
                                                   bool is_syncing) {
-  // TODO(crbug.com/1306001): Reenable or clean up for local-only users.
   return false;
 }
 
 bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
                                                 bool is_syncing) {
-  if (ShouldExecuteModifyOperationsOnShadowBackend(prefs, is_syncing)) {
-    // Read operations are always allowed whenever modifications are allowed.
-    // i.e. necessary migrations have happened and appropriate flags are set.
-    return true;
-  }
-
-  if (!is_syncing)
-    return false;
-
-  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))
-    return false;
-
-  features::UpmExperimentVariation variation =
-      features::kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case features::UpmExperimentVariation::kEnableForSyncingUsers:
-    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-    case features::UpmExperimentVariation::kEnableForAllUsers:
-      return false;
-    case features::UpmExperimentVariation::kShadowSyncingUsers:
-      return true;
-  }
-  NOTREACHED() << "Define explicitly whether shadow traffic is recorded!";
   return false;
 }
 
 bool ShouldExecuteDeletionsOnShadowBackend(PrefService* prefs,
                                            bool is_syncing) {
-  if (ShouldExecuteModifyOperationsOnShadowBackend(prefs, is_syncing))
-    return true;
-
-  if (!is_syncing)
-    return false;
-
-  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))
-    return false;
-
-  features::UpmExperimentVariation variation =
-      features::kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case features::UpmExperimentVariation::kEnableForSyncingUsers:
-    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-      return true;
-    case features::UpmExperimentVariation::kEnableForAllUsers:
-      // All passwords are in the remote storage. There should not be a
-      // shadow backend anymore.
-      return false;
-    case features::UpmExperimentVariation::kShadowSyncingUsers:
-      return false;
-  }
-  NOTREACHED()
-      << "Define explicitly whether deletions on both backends are required!";
-  return false;
+  return is_syncing;
 }
 
 bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
@@ -109,21 +62,7 @@ bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
 }
 
 bool IsBuiltInBackendSyncEnabled() {
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid));
-
-  features::UpmExperimentVariation variation =
-      features::kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case features::UpmExperimentVariation::kEnableForSyncingUsers:
-    case features::UpmExperimentVariation::kShadowSyncingUsers:
-    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-      return true;
-    case features::UpmExperimentVariation::kEnableForAllUsers:
-      return false;
-  }
-  NOTREACHED() << "Define which backend handles sync change callbacks!";
-  return false;
+  return true;
 }
 
 void CallOnSyncEnabledOrDisabledForEnabledBackend(
@@ -686,22 +625,14 @@ FieldInfoStore* PasswordStoreProxyBackend::GetFieldInfoStore() {
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
-  switch (features::kUpmExperimentVariationParam.Get()) {
-    case features::UpmExperimentVariation::kEnableForSyncingUsers:
-    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-    case features::UpmExperimentVariation::kShadowSyncingUsers:
-      DCHECK(!base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly))
-          << "Without support for local passwords, use legacy sync controller";
-      return built_in_backend_->CreateSyncControllerDelegate();
-    case features::UpmExperimentVariation::kEnableForAllUsers:
-      return base::FeatureList::IsEnabled(
-                 features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly)
-                 ? android_backend_->CreateSyncControllerDelegate()
-                 : built_in_backend_->CreateSyncControllerDelegate();
+  if (base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly)) {
+    // The android backend (PasswordStoreAndroidBackend) creates a controller
+    // delegate that prevents sync from actually communicating with the sync
+    // server using the built in SyncEngine.
+    return android_backend_->CreateSyncControllerDelegate();
   }
-  NOTREACHED() << "Define which backend creates the sync delegate.";
-  return nullptr;
+  return built_in_backend_->CreateSyncControllerDelegate();
 }
 
 void PasswordStoreProxyBackend::ClearAllLocalPasswords() {
@@ -763,21 +694,7 @@ bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
   if (!IsPasswordSyncEnabled(sync_service_))
     return false;
 
-  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))
-    return false;
-
-  features::UpmExperimentVariation variation =
-      features::kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case features::UpmExperimentVariation::kEnableForSyncingUsers:
-    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-    case features::UpmExperimentVariation::kEnableForAllUsers:
-      return true;
-    case features::UpmExperimentVariation::kShadowSyncingUsers:
-      return false;
-  }
-  NOTREACHED() << "Define explicitly whether Android is the main backend!";
-  return false;
+  return true;
 }
 
 }  // namespace password_manager
