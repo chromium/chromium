@@ -831,7 +831,9 @@ void GpuChannelManager::PerformImmediateCleanup() {
     fence_helper->PerformImmediateCleanup();
   }
 #endif
-  shared_context_state_->gr_context()->flushAndSubmit(true);
+  if (auto* context = shared_context_state_->gr_context()) {
+    context->flushAndSubmit(true);
+  }
 }
 
 void GpuChannelManager::HandleMemoryPressure(
