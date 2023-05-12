@@ -383,10 +383,6 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   crash_keys::SetCurrentlySignedIn(true);
 }
 
-void AuthenticationService::SignIn(id<SystemIdentity> identity) {
-  SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-}
-
 void AuthenticationService::GrantSyncConsent(
     id<SystemIdentity> identity,
     signin_metrics::AccessPoint access_point) {

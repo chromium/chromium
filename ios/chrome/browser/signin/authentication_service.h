@@ -133,13 +133,6 @@ class AuthenticationService : public KeyedService,
   virtual void SignIn(id<SystemIdentity> identity,
                       signin_metrics::AccessPoint access_point);
 
-  // Grants signin::ConsentLevel::kSignin to `identity` and records the signin
-  // at `ACCESS_POINT_UNKNOWN`. This method is used for testing. Virtual for
-  // testing.
-  // TODO(crbug.com/1261772): Remove this method and update all unit
-  // tests accordingly.
-  virtual void SignIn(id<SystemIdentity> identity);
-
   // Grants signin::ConsentLevel::kSync to `identity` and records the event at
   // `access_point`. This starts setting up Sync-the-feature, but the setup will
   // only complete once SyncUserSettings::SetFirstSetupComplete() is called.
