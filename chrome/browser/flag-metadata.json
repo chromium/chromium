@@ -552,11 +552,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "autofill-enable-support-for-new-street-level-fields",
-    "owners": [ "vizcay","koerber" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-enable-update-virtual-card-enrollment",
     "owners": [ "siyua", "jsaul@google.com" ],
     "expiry_milestone": 120

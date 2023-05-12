@@ -219,7 +219,7 @@ class ContactInfoSyncUtilTest : public testing::Test {
  public:
   ContactInfoSyncUtilTest() {
     features_.InitAndEnableFeature(
-        features::kAutofillEnableNewStreetLevelFieldTypes);
+        features::kAutofillEnableSupportForExtraSettingsVisibleFields);
   }
 
  private:

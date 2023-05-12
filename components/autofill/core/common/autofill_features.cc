@@ -189,8 +189,8 @@ BASE_FEATURE(kAutofillEnableSelectMenu,
 //   - ADDRESS_HOME_BETWEEN_STREETS
 //   - ADDRESS_HOME_ADMIN_LEVEL2
 // TODO(crbug.com/1441904) Remove once launched.
-BASE_FEATURE(kAutofillEnableNewStreetLevelFieldTypes,
-             "AutofillEnableNewStreetLevelFieldTypes",
+BASE_FEATURE(kAutofillEnableSupportForExtraSettingsVisibleFields,
+             "AutofillEnableSupportForExtraSettingsVisibleFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if the heuristic field parsing utilizes shared labels.

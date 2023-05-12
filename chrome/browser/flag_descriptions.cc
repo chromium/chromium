@@ -457,12 +457,6 @@ const char kAutofillEnableStickyManualFallbackForCardsDescription[] =
     "When enabled, if the user interacts with the manual fallback bottom "
     "sheet, it'll remain sticky until the user dismisses it.";
 
-const char kAutofillEnableNewStreetLevelFieldTypesName[] =
-    "Enable support for new street level address fields";
-const char kAutofillEnableNewStreetLevelFieldTypesDescription[] =
-    "Enables support for new street level address fields including landmark, "
-    "between streets and admin level 2.";
-
 const char kAutofillEnableUpdateVirtualCardEnrollmentName[] =
     "Enable Update Virtual Card Enrollment";
 const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =

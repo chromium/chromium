@@ -58893,8 +58893,6 @@ from previous Chrome versions.
   <int value="-1925106340" label="CameraSystemWebApp:disabled"/>
   <int value="-1924837577"
       label="InterestFeedV1ClickAndViewActionsConditionalUpload:enabled"/>
-  <int value="-1924770828"
-      label="AutofillEnableSupportForNewAddressFields:enabled"/>
   <int value="-1922176861"
       label="WalletRequiresFirstSyncSetupComplete:disabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
@@ -62907,8 +62905,6 @@ from previous Chrome versions.
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
   <int value="213214333" label="UnifiedPasswordManagerReenrollment:enabled"/>
-  <int value="214809280"
-      label="AutofillEnableNewStreetLevelFieldTypes:disabled"/>
   <int value="215328738" label="ImprovedGeoLanguageData:disabled"/>
   <int value="215528151" label="NearbySharingWebRtc:enabled"/>
   <int value="217455219" label="SyncStandaloneTransport:enabled"/>
@@ -64871,8 +64867,6 @@ from previous Chrome versions.
   <int value="1277167761" label="EnableTouchscreensInDiagnosticsApp:enabled"/>
   <int value="1277386636" label="QueryInOmnibox:disabled"/>
   <int value="1278244152" label="AutofillFillMerchantPromoCodeFields:enabled"/>
-  <int value="1278508900"
-      label="AutofillEnableNewStreetLevelFieldTypes:enabled"/>
   <int value="1278512661" label="SmartDimNewMlAgent:disabled"/>
   <int value="1278580122" label="OrganicRepeatableQueries:enabled"/>
   <int value="1279422279" label="query-tiles-country-code"/>
@@ -66478,8 +66472,6 @@ from previous Chrome versions.
   <int value="2125732298" label="RetailCoupons:disabled"/>
   <int value="2126030721" label="VCBackgroundBlur:disabled"/>
   <int value="2126203058" label="force-show-update-menu-badge"/>
-  <int value="2126262586"
-      label="AutofillEnableSupportForNewAddressFields:disabled"/>
   <int value="2127648677" label="OmniboxExperimentalSuggestScoring:disabled"/>
   <int value="2127700228" label="NtpHistoryClustersModule:enabled"/>
   <int value="2129184006" label="NTPOfflinePageDownloadSuggestions:enabled"/>
