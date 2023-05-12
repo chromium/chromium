@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -79,6 +80,7 @@ int InactiveDaysThresholdWithItemType(ItemType item_type) {
   [super viewDidLoad];
   self.tableView.estimatedRowHeight = 70;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
+  self.tableView.accessibilityIdentifier = kInactiveTabsSettingsTableViewId;
   [self loadModel];
 }
 

@@ -369,6 +369,14 @@ id<GREYMatcher> SettingsNotificationsTableView() {
   return [ChromeMatchersAppInterface settingsNotificationsTableView];
 }
 
+id<GREYMatcher> SettingsInactiveTabsTableView() {
+  return [ChromeMatchersAppInterface settingsInactiveTabsTableView];
+}
+
+id<GREYMatcher> SettingsTabsTableView() {
+  return [ChromeMatchersAppInterface settingsTabsTableView];
+}
+
 id<GREYMatcher> SettingsTrackingPriceTableView() {
   return [ChromeMatchersAppInterface settingsTrackingPriceTableView];
 }
@@ -383,6 +391,14 @@ id<GREYMatcher> GoogleServicesSettingsButton() {
 
 id<GREYMatcher> ManageSyncSettingsButton() {
   return [ChromeMatchersAppInterface manageSyncSettingsButton];
+}
+
+id<GREYMatcher> InactiveTabsSettingsButton() {
+  return [ChromeMatchersAppInterface inactiveTabsSettingsButton];
+}
+
+id<GREYMatcher> TabsSettingsButton() {
+  return [ChromeMatchersAppInterface tabsSettingsButton];
 }
 
 id<GREYMatcher> GoogleServicesSettingsView() {

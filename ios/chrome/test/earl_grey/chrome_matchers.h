@@ -292,6 +292,12 @@ id<GREYMatcher> SettingsPrivacySafeBrowsingTableView();
 // Returns a matcher for the notifications settings table view.
 id<GREYMatcher> SettingsNotificationsTableView();
 
+// Returns a matcher for the inactive tabs settings table view.
+id<GREYMatcher> SettingsInactiveTabsTableView();
+
+// Returns a matcher for the tabs settings table view.
+id<GREYMatcher> SettingsTabsTableView();
+
 // Returns a matcher for the tracking price settings table view.
 id<GREYMatcher> SettingsTrackingPriceTableView();
 
@@ -306,6 +312,12 @@ id<GREYMatcher> GoogleServicesSettingsButton();
 // Returns a matcher for the Manage Sync Settings button on the main Settings
 // screen.
 id<GREYMatcher> ManageSyncSettingsButton();
+
+// Returns a matcher for the Tabs Settings button on the Tabs Settings screen.
+id<GREYMatcher> InactiveTabsSettingsButton();
+
+// Returns a matcher for the Tabs Settings button on the main Settings screen.
+id<GREYMatcher> TabsSettingsButton();
 
 // Returns a matcher for the Google Services Settings view.
 id<GREYMatcher> GoogleServicesSettingsView();

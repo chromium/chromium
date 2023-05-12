@@ -57,6 +57,8 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -622,6 +624,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kNotificationsTableViewId);
 }
 
++ (id<GREYMatcher>)settingsInactiveTabsTableView {
+  return grey_accessibilityID(kInactiveTabsSettingsTableViewId);
+}
+
++ (id<GREYMatcher>)settingsTabsTableView {
+  return grey_accessibilityID(kTabsSettingsTableViewId);
+}
+
 + (id<GREYMatcher>)settingsTrackingPriceTableView {
   return grey_accessibilityID(kTrackingPriceTableViewId);
 }
@@ -635,6 +645,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_allOf(grey_kindOfClass([UITableViewCell class]),
                     grey_accessibilityID(kSettingsGoogleServicesCellId),
                     grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)inactiveTabsSettingsButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS)];
+}
+
++ (id<GREYMatcher>)tabsSettingsButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_TABS_MANAGEMENT_SETTINGS)];
 }
 
 + (id<GREYMatcher>)manageSyncSettingsButton {

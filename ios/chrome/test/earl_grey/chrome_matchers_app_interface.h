@@ -281,6 +281,12 @@
 // Returns matcher for the notifications table view.
 + (id<GREYMatcher>)settingsNotificationsTableView;
 
+// Returns matcher for the inactive tabs table view.
++ (id<GREYMatcher>)settingsInactiveTabsTableView;
+
+// Returns matcher for the tabs table view.
++ (id<GREYMatcher>)settingsTabsTableView;
+
 // Returns matcher for the tracking price table view.
 + (id<GREYMatcher>)settingsTrackingPriceTableView;
 
@@ -290,6 +296,13 @@
 // Returns matcher for the Google Services Settings button on the main Settings
 // screen.
 + (id<GREYMatcher>)googleServicesSettingsButton;
+
+// Returns matcher for the Inactive Tabs Settings button on the Tabs Settings
+// screen.
++ (id<GREYMatcher>)inactiveTabsSettingsButton;
+
+// Returns matcher for the Tabs Settings button on the main Settings screen.
++ (id<GREYMatcher>)tabsSettingsButton;
 
 // Returns matcher for the Manage Sync Settings button on the main Settings
 // screen.

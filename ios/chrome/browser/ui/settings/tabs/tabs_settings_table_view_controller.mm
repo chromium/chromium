@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -58,7 +59,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
   self.tableView.estimatedRowHeight = 70;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
-
+  self.tableView.accessibilityIdentifier = kTabsSettingsTableViewId;
   [self loadModel];
 }
 

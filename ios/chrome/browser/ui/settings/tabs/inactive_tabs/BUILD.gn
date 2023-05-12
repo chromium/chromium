@@ -34,6 +34,7 @@ source_set("inactive_tabs_ui") {
     "inactive_tabs_settings_table_view_controller_delegate.h",
   ]
   deps = [
+    ":inactive_tabs_constants",
     "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:styler",
@@ -44,4 +45,31 @@ source_set("inactive_tabs_ui") {
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
+}
+
+source_set("inactive_tabs_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "inactive_tabs_settings_constants.h",
+    "inactive_tabs_settings_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "inactive_tabs_settings_egtest.mm" ]
+  deps = [
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
