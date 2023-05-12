@@ -182,17 +182,6 @@ ALWAYS_INLINE void OperationRecord::StoreStackTrace() {
 // TODO(https://crbug.com/1419908): Evaluate the impact of the shared cache
 // lines between entries.
 struct BASE_EXPORT AllocationTraceRecorder {
-  // Verify that the image of a recorder copied into the crashpad handler is
-  // still valid. IsValid compares the bytes of prologue and epilogue to
-  // expected values.
-  //
-  // Note: This is intended to protect from programming errors like using a
-  // wrong address or not copying the full recorder into the crash handler.
-  //
-  // TODO(https://crbug.com/1419908): Develop a full integration test which
-  // makes this IsValid check obsolete.
-  bool IsValid() const;
-
   // The allocation event observer interface. See the dispatcher for further
   // details. The functions are marked NO_INLINE. All other functions called but
   // the one taking the call stack are marked ALWAYS_INLINE. This way we ensure
@@ -229,30 +218,17 @@ struct BASE_EXPORT AllocationTraceRecorder {
   }
 
  private:
-  // The guards are short byte sequences which are stored in the beginning and
-  // at the end of AllocationTraceRecorder. They are used to ensure the memory
-  // image copied to crashpad handler is valid.
-  static constexpr uint64_t kMemoryGuard = 0x5A55A55A55A55A5A;
-
   ALWAYS_INLINE size_t GetNextIndex();
 
   ALWAYS_INLINE static constexpr size_t WrapIdxIfNeeded(size_t idx);
 
-  // Used to ensure validity after copying memory-image into crashpad-handler.
-  // It is declared volatile to prevent the compiler from taking shortcuts
-  // when checking the guards, since they are never written explicitly.
-  uint64_t const volatile prologue_ = kMemoryGuard;
   // The actual container.
   std::array<OperationRecord, kMaximumNumberOfMemoryOperationTraces>
-      alloc_trace_buffer_;
+      alloc_trace_buffer_ = {};
   // The total number of records that have been taken so far. Note that this
   // might be greater than |kMaximumNumberOfMemoryOperationTraces| since we
   // overwrite oldest items.
   std::atomic<size_t> total_number_of_records_ = 0;
-  // Used to ensure validity after copying memory-image into crashpad-handler.
-  // It is declared volatile to prevent the compiler from taking shortcuts
-  // when checking the guards, since they are never written explicitly.
-  uint64_t const volatile epilogue_ = kMemoryGuard;
 };
 
 ALWAYS_INLINE constexpr size_t AllocationTraceRecorder::WrapIdxIfNeeded(

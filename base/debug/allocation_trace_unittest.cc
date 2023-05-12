@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/debug/allocation_trace.h"
-#include "base/allocator/dispatcher/dispatcher.h"
-#include "base/debug/stack_trace.h"
-
-#include "testing/gtest/include/gtest/gtest.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -15,10 +11,17 @@
 #include <sstream>
 #include <string>
 
+#include "base/allocator/dispatcher/dispatcher.h"
+#include "base/debug/stack_trace.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
 using base::allocator::dispatcher::AllocationSubsystem;
-using testing::AssertionResult;
+using testing::ContainerEq;
+using testing::Message;
 using testing::Test;
 
+namespace base::debug::tracer {
 namespace {
 
 template <typename Iterator>
@@ -41,11 +44,15 @@ std::string MakeString(const C& data) {
   return MakeString(std::begin(data), std::end(data));
 }
 
+void AreEqual(const base::debug::tracer::OperationRecord& expected,
+              const base::debug::tracer::OperationRecord& is) {
+  EXPECT_EQ(is.GetOperationType(), expected.GetOperationType());
+  EXPECT_EQ(is.GetAddress(), expected.GetAddress());
+  EXPECT_EQ(is.GetSize(), expected.GetSize());
+  EXPECT_THAT(is.GetStackTrace(), ContainerEq(expected.GetStackTrace()));
+}
+
 }  // namespace
-
-namespace base::debug::tracer {
-
-using base::allocator::dispatcher::AllocationSubsystem;
 
 struct AllocationTraceRecorderTest : public Test {
   AllocationTraceRecorder& GetSubjectUnderTest() const {
@@ -68,9 +75,25 @@ struct AllocationTraceRecorderTest : public Test {
       std::make_unique<AllocationTraceRecorder>();
 };
 
-TEST_F(AllocationTraceRecorderTest, VerifyIsValid) {
+TEST_F(AllocationTraceRecorderTest, VerifyBinaryCopy) {
   AllocationTraceRecorder& subject_under_test = GetSubjectUnderTest();
 
+  // Fill the recorder with some fake allocations and frees.
+  constexpr size_t number_of_records = 100;
+
+  for (size_t index = 0; index < number_of_records; ++index) {
+    if (index & 0x1) {
+      subject_under_test.OnAllocation(this, sizeof(*this),
+                                      AllocationSubsystem::kPartitionAllocator,
+                                      nullptr);
+    } else {
+      subject_under_test.OnFree(this);
+    }
+  }
+
+  ASSERT_EQ(number_of_records, subject_under_test.size());
+
+  // Create a copy of the recorder using buffer as storage for the copy.
   auto const buffer = std::make_unique<Buffer>();
 
   ASSERT_TRUE(buffer);
@@ -78,29 +101,15 @@ TEST_F(AllocationTraceRecorderTest, VerifyIsValid) {
   auto* const buffered_recorder =
       reinterpret_cast<AllocationTraceRecorder*>(&(buffer->data[0]));
 
-  // Verify IsValid returns true on the copied image.
-  {
-    memcpy(buffered_recorder, &subject_under_test,
-           sizeof(AllocationTraceRecorder));
-    EXPECT_TRUE(buffered_recorder->IsValid());
-  }
+  memcpy(buffered_recorder, &subject_under_test,
+         sizeof(AllocationTraceRecorder));
 
-  // Verify IsValid returns false when the prologue has been altered on the
-  // copied image.
-  {
-    memcpy(buffered_recorder, &subject_under_test,
-           sizeof(AllocationTraceRecorder));
-    buffer->data[2] ^= 0xff;
-    EXPECT_FALSE(buffered_recorder->IsValid());
-  }
+  // Verify that the original recorder and the buffered recorder are equal.
+  ASSERT_EQ(subject_under_test.size(), buffered_recorder->size());
 
-  // Verify IsValid returns false when the epilogue has been altered on the
-  // copied image.
-  {
-    memcpy(buffered_recorder, &subject_under_test,
-           sizeof(AllocationTraceRecorder));
-    buffer->data[sizeof(AllocationTraceRecorder) - 2] ^= 0xff;
-    EXPECT_FALSE(buffered_recorder->IsValid());
+  for (size_t index = 0; index < subject_under_test.size(); ++index) {
+    SCOPED_TRACE(Message("difference detected at index ") << index);
+    AreEqual(subject_under_test[index], (*buffered_recorder)[index]);
   }
 }
 

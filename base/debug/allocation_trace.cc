@@ -55,10 +55,6 @@ void AllocationTraceRecorder::OnFree(const void* freed_address) {
   }
 }
 
-bool AllocationTraceRecorder::IsValid() const {
-  return kMemoryGuard == prologue_ && kMemoryGuard == epilogue_;
-}
-
 size_t AllocationTraceRecorder::size() const {
   return std::min(kMaximumNumberOfMemoryOperationTraces,
                   total_number_of_records_.load(std::memory_order_relaxed));
