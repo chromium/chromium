@@ -26,10 +26,6 @@ constexpr char kCacheDirectoryName[] = "managed_screensaver";
 constexpr char kManagedGuestsCacheDirectoryPath[] =
     "/var/cache/managed_screensaver/guest";
 
-// This limit is specified in the policy definition for the policies
-// ScreensaverLockScreenImages and DeviceScreensaverLoginScreenImages.
-constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
-
 base::FilePath GetDownloaderRootPath() {
   SessionControllerImpl& session =
       CHECK_DEREF(Shell::Get()->session_controller());
@@ -92,35 +88,7 @@ void ScreensaverImagesPolicyHandler::
 
   const base::Value::List& url_list = user_pref_service_->GetList(
       ash::ambient::prefs::kAmbientModeManagedScreensaverImages);
-  if (url_list.empty()) {
-    // If the screensaver is listening to updates, notify that the images are no
-    // longer available before deleting them.
-    if (on_images_updated_callback_) {
-      on_images_updated_callback_.Run(std::vector<base::FilePath>());
-    }
-
-    image_downloader_->ClearRequestQueue();
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    image_downloader_->DeleteDownloadedImages();
-    return;
-  }
-
-  for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy && i < url_list.size();
-       ++i) {
-    const base::Value& value = url_list[i];
-    if (!value.is_string() || value.GetString().empty()) {
-      continue;
-    }
-    // Canonicalize URLs and require HTTPS.
-    GURL url(value.GetString());
-    if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
-      LOG(WARNING) << "Ignored invalid URL: " << url;
-      continue;
-    }
-    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url.spec());
-
-    image_downloader_->QueueDownloadJob(std::move(job));
-  }
+  image_downloader_->UpdateImageUrlList(url_list);
 }
 
 void ScreensaverImagesPolicyHandler::OnDownloadedImageListUpdated(

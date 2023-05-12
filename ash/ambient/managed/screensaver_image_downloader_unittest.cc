@@ -261,7 +261,8 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   VerifyDownloadingQueueSize(0u);
 }
 
-TEST_F(ScreensaverImageDownloaderTest, DeleteDownloadedImagesTest) {
+TEST_F(ScreensaverImageDownloaderTest,
+       DeleteDownloadedImagesWhenEmptyListIsPassedTest) {
   // Download two images to attempt clearing later.
   url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
   url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
@@ -278,14 +279,15 @@ TEST_F(ScreensaverImageDownloaderTest, DeleteDownloadedImagesTest) {
   VerifySucessfulImageRequest(expected_images);
 
   // Verify that images saved into disk are deleted properly.
-  screensaver_image_downloader()->DeleteDownloadedImages();
+  screensaver_image_downloader()->UpdateImageUrlList(base::Value::List());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(base::PathExists(test_download_folder()));
 }
 
-TEST_F(ScreensaverImageDownloaderTest, ClearRequestQueueTest) {
-  // Queue 3 download request, the first one one will be executed, the latter
-  // will be queued.
+TEST_F(ScreensaverImageDownloaderTest,
+       ClearRequestQueueWhenEmptyListIsPassedTest) {
+  // Queue 3 download request, the first one one will be waiting for the URL
+  // response, the latter will be queued.
   QueueNewImageDownload(kImageUrl1);
   QueueNewImageDownload(kImageUrl2);
   QueueNewImageDownload(kImageUrl3);
@@ -293,19 +295,17 @@ TEST_F(ScreensaverImageDownloaderTest, ClearRequestQueueTest) {
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(2u);
 
-  // Clear the queue and resolve the first request.
-  url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
-  screensaver_image_downloader()->ClearRequestQueue();
+  // Simulate a new policy update that clears the queue.
+  screensaver_image_downloader()->UpdateImageUrlList(base::Value::List());
 
-  // Verify that the pending request was executed until completion.
-  std::vector<std::pair<base::FilePath, std::string>> expected_images;
-  expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
-                               std::string(kFileContents));
-  VerifySucessfulImageRequest(expected_images);
+  // Resolve the request for the first image, the image should not be saved to
+  // file.
+  url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
 
   // Verify that the downloader did not create image files for the cancelled
   // downloads.
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl3)));
 }

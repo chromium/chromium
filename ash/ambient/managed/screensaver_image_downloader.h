@@ -55,6 +55,34 @@ class ASH_EXPORT ScreensaverImageDownloader {
   using ImageListUpdatedCallback =
       base::RepeatingCallback<void(const std::vector<base::FilePath>& images)>;
 
+  ScreensaverImageDownloader() = delete;
+
+  ScreensaverImageDownloader(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      const base::FilePath& download_directory,
+      ImageListUpdatedCallback image_list_updated_callback);
+
+  ~ScreensaverImageDownloader();
+
+  ScreensaverImageDownloader(const ScreensaverImageDownloader&) = delete;
+  ScreensaverImageDownloader& operator=(const ScreensaverImageDownloader&) =
+      delete;
+
+  // Updates the list of images to be cached to `image_url_list`. Processing the
+  // new list can download new images and delete images that are no longer being
+  // referenced in the new list.
+  void UpdateImageUrlList(const base::Value::List& image_url_list);
+
+  std::vector<base::FilePath> GetScreensaverImages();
+
+  // Used for setting images in tests.
+  void SetImagesForTesting(const std::vector<base::FilePath>& images);
+
+  base::FilePath GetDowloadDirForTesting();
+
+ private:
+  friend class ScreensaverImageDownloaderTest;
+
   // Represents a single image download request from `image_url` to
   // `download_directory_`. Once this job has been completed, `result_callback`
   // will be invoked with the actual result, and the path to the downloaded file
@@ -72,19 +100,6 @@ class ASH_EXPORT ScreensaverImageDownloader {
     const std::string image_url;
   };
 
-  ScreensaverImageDownloader() = delete;
-
-  ScreensaverImageDownloader(
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      const base::FilePath& download_directory,
-      ImageListUpdatedCallback image_list_updated_callback);
-
-  ~ScreensaverImageDownloader();
-
-  ScreensaverImageDownloader(const ScreensaverImageDownloader&) = delete;
-  ScreensaverImageDownloader& operator=(const ScreensaverImageDownloader&) =
-      delete;
-
   // Downloads a new external image from `image_url` to the download folder as
   // `file_name`. The async `callback` will pass the result, and the file path
   // if the operation succeeded.
@@ -96,16 +111,6 @@ class ASH_EXPORT ScreensaverImageDownloader {
 
   // Clears out the download folder.
   void DeleteDownloadedImages();
-
-  std::vector<base::FilePath> GetScreensaverImages();
-
-  // Used for setting images in tests.
-  void SetImagesForTesting(const std::vector<base::FilePath>& images);
-
-  base::FilePath GetDowloadDirForTesting();
-
- private:
-  friend class ScreensaverImageDownloaderTest;
 
   // Verifies that the download directory is present and writable, or attempts
   // to create it otherwise. The result of this operation is passed along to
