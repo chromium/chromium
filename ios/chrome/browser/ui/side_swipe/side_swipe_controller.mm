@@ -471,7 +471,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
         ->CancelPlaceholderForNextNavigation();
 
     // Redisplay the view if it was in overlay preview mode.
-    [_swipeDelegate sideSwipeRedisplayWebState:self.activeWebState];
+    [_swipeDelegate sideSwipeRedisplayTabView];
     [self.tabStripDelegate setHighlightsSelectedTab:NO];
     [self deleteGreyCache];
     [[NSNotificationCenter defaultCenter]

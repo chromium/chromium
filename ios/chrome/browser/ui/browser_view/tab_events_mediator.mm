@@ -213,9 +213,9 @@
   // Add `newTab`'s view to the hierarchy if it's the current Tab.
   if (currentWebState == newWebState) {
     // Set this before triggering any of the possible page loads in
-    // displayWebStateIfActive.
+    // displayTabViewIfActive.
     newWebState->SetKeepRenderProcessAlive(true);
-    [self.consumer displayWebStateIfActive:newWebState];
+    [self.consumer displayTabViewIfActive];
   }
 }
 

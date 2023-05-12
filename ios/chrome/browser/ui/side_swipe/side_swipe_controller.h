@@ -33,7 +33,7 @@ extern NSString* const kSideSwipeDidStopNotification;
 // Returns the main content view.
 - (UIView*)sideSwipeContentView;
 // Makes `tab` the currently visible tab, displaying its view.
-- (void)sideSwipeRedisplayWebState:(web::WebState*)webState;
+- (void)sideSwipeRedisplayTabView;
 // Controls the visibility of views such as the findbar, infobar and voice
 // search bar.
 - (void)updateAccessoryViewsForSideSwipeWithVisibility:(BOOL)visible;

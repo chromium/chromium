@@ -36,10 +36,9 @@ class WebState;
 // `webState` is already the selected WebState.
 - (void)webStateSelected;
 
-// Tells the consumer to make `webState` the currently visible WebState,
-// displaying its view if BVC is in an active state.
-// TODO(crbug.com/1417570): Remove webState from this call.
-- (void)displayWebStateIfActive:(web::WebState*)webState;
+// Tells the consumer to make the current WebState visible, displaying its view
+// if BVC is in an active state.
+- (void)displayTabViewIfActive;
 
 // Tells the consumer to display the tab view associated to the new web state
 // index.

@@ -667,6 +667,22 @@ enum HeaderBehaviour {
   return height - statusBarOffset;
 }
 
+- (UIView*)viewForCurrentWebState {
+  return [self viewForWebState:self.currentWebState];
+}
+
+- (void)updateWebStateVisibility:(BOOL)isVisible {
+  if (isVisible) {
+    // TODO(crbug.com/971364): The webState is not necessarily added to the view
+    // hierarchy, even though the bookkeeping says that the WebState is visible.
+    // Do not DCHECK([webState->GetView() window]) here since this is a known
+    // issue.
+    self.currentWebState->WasShown();
+  } else {
+    self.currentWebState->WasHidden();
+  }
+}
+
 - (web::WebState*)currentWebState {
   return self.webStateList ? _webStateList->GetActiveWebState() : nullptr;
 }
@@ -766,7 +782,7 @@ enum HeaderBehaviour {
   // dismiss the keyboard.
   [self.findInPageCommandsHandler closeFindInPage];
   [self.textZoomHandler closeTextZoom];
-  [[self viewForWebState:self.currentWebState] endEditing:NO];
+  [self.viewForCurrentWebState endEditing:NO];
 
   // Present voice search.
   [_voiceSearchController
@@ -778,7 +794,7 @@ enum HeaderBehaviour {
 // TODO:(crbug.com/1385847): Remove this when BVC is refactored to not know
 // about model layer objects such as webstates.
 - (void)displayCurrentTab {
-  [self displayWebState:self.currentWebState];
+  [self displayTabView];
 }
 
 #pragma mark - browser_view_controller+private.h
@@ -792,15 +808,13 @@ enum HeaderBehaviour {
   [self updateBroadcastState];
 
   if (active) {
-    // Make sure the tab (if any; it's possible to get here without a current
-    // tab if the caller is about to create one) ends up on screen completely.
     // Force loading the view in case it was not loaded yet.
     [self loadViewIfNeeded];
     _pagePlaceholderBrowserAgent->AddPagePlaceholder();
-    if (self.currentWebState)
-      [self displayWebState:self.currentWebState];
+    if (self.viewForCurrentWebState) {
+      [self displayTabView];
+    }
   }
-
   [self setNeedsStatusBarAppearanceUpdate];
 }
 
@@ -1028,7 +1042,7 @@ enum HeaderBehaviour {
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
       self.webUsageEnabled) {
     self.ntpCoordinator.viewController.view.frame =
-        [self ntpFrameForWebState:self.currentWebState];
+        [self ntpFrameForCurrentWebState];
   }
 }
 
@@ -1051,10 +1065,11 @@ enum HeaderBehaviour {
   if (!self.webUsageEnabled || !self.contentArea) {
     return;
   }
-  // Update the displayed WebState (if any; the switcher may not have created
+  // Update the displayed view (if any; the switcher may not have created
   // one yet) in case it changed while showing the switcher.
-  if (self.currentWebState)
-    [self displayWebState:self.currentWebState];
+  if (self.viewForCurrentWebState) {
+    [self displayTabView];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1062,7 +1077,7 @@ enum HeaderBehaviour {
   [self updateBroadcastState];
   web::WebState* activeWebState = self.currentWebState;
   if (activeWebState) {
-    activeWebState->WasHidden();
+    [self updateWebStateVisibility:NO];
     if (!self.presentedViewController)
       activeWebState->SetKeepRenderProcessAlive(false);
   }
@@ -1695,9 +1710,10 @@ enum HeaderBehaviour {
   [self updateOverlayContainerOrder];
 }
 
-// Makes `webState` the currently visible WebState, displaying its view.
-- (void)displayWebState:(web::WebState*)webState {
-  DCHECK(webState);
+// Displays the current webState view.
+- (void)displayTabView {
+  UIView* view = self.viewForCurrentWebState;
+  DCHECK(view);
   [self loadViewIfNeeded];
 
   if (!self.inNewTabAnimation) {
@@ -1709,14 +1725,14 @@ enum HeaderBehaviour {
 
     // Make new content visible, resizing it first as the orientation may
     // have changed from the last time it was displayed.
-    CGRect webStateViewFrame = self.contentArea.bounds;
+    CGRect viewFrame = self.contentArea.bounds;
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       // If the view was translated for the thumb strip, make sure to re-apply
       // that translation here.
       if (self.viewTranslatedForSmoothScrolling) {
         CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-        webStateViewFrame = UIEdgeInsetsInsetRect(
-            webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+        viewFrame = UIEdgeInsetsInsetRect(
+            viewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
       }
     } else {
       // If the Smooth Scrolling is on, the WebState view is not
@@ -1725,29 +1741,26 @@ enum HeaderBehaviour {
       // they should be accounted for here to prevent animation jitter.
       UIEdgeInsets viewportInsets =
           self.fullscreenController->GetCurrentViewportInsets();
-      webStateViewFrame =
-          UIEdgeInsetsInsetRect(webStateViewFrame, viewportInsets);
+      viewFrame = UIEdgeInsetsInsetRect(viewFrame, viewportInsets);
     }
-    [self viewForWebState:webState].frame = webStateViewFrame;
+    view.frame = viewFrame;
 
     [self updateToolbarState];
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webState);
-    if (NTPHelper && NTPHelper->IsActive()) {
-      NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
+
+    NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
+    if (NTPCoordinator.isNTPActiveForCurrentWebState) {
       UIViewController* viewController = NTPCoordinator.viewController;
-      viewController.view.frame = [self ntpFrameForWebState:webState];
+      viewController.view.frame = [self ntpFrameForCurrentWebState];
       [viewController.view layoutIfNeeded];
       // TODO(crbug.com/873729): For a newly created WebState, the session will
       // not be restored until LoadIfNecessary call. Remove when fixed.
-      webState->GetNavigationManager()->LoadIfNecessary();
+      self.currentWebState->GetNavigationManager()->LoadIfNecessary();
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
           viewController;
       [NTPCoordinator constrainDiscoverHeaderMenuButtonNamedGuide];
     } else {
-      self.browserContainerViewController.contentView =
-          [self viewForWebState:webState];
+      self.browserContainerViewController.contentView = view;
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
@@ -1758,13 +1771,7 @@ enum HeaderBehaviour {
   // somehow.
   [self.primaryToolbarCoordinator updateToolbar];
 
-  // TODO(crbug.com/971364): The webState is not necessarily added to the view
-  // hierarchy, even though the bookkeeping says that the WebState is visible.
-  // Do not DCHECK([webState->GetView() window]) here since this is a known
-  // issue.
-  // TODO(crbug.com/1329088): This update should happen in the mediator, not
-  // here.
-  webState->WasShown();
+  [self updateWebStateVisibility:YES];
 }
 
 - (void)updateOverlayContainerOrder {
@@ -1820,9 +1827,8 @@ enum HeaderBehaviour {
 }
 
 // Returns the appropriate frame for the NTP.
-- (CGRect)ntpFrameForWebState:(web::WebState*)webState {
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  DCHECK(NTPHelper && NTPHelper->IsActive());
+- (CGRect)ntpFrameForCurrentWebState {
+  DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
   // NTP is laid out only in the visible part of the screen.
   UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
   if (!IsRegularXRegularSizeClass(self)) {
@@ -1868,8 +1874,7 @@ enum HeaderBehaviour {
 - (UIView*)viewForWebState:(web::WebState*)webState {
   if (!webState)
     return nil;
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (NTPHelper && NTPHelper->IsActive()) {
+  if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     return self.ntpCoordinator.started ? self.ntpCoordinator.viewController.view
                                        : nil;
   }
@@ -1953,8 +1958,7 @@ enum HeaderBehaviour {
     webStateViewFrame = UIEdgeInsetsInsetRect(
         webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
   }
-  UIView* webStateView = [self viewForWebState:self.currentWebState];
-  webStateView.frame = webStateViewFrame;
+  self.viewForCurrentWebState.frame = webStateViewFrame;
 
   self.ntpCoordinator.panGestureHandler = panHandler;
   [self.ntpCoordinator.thumbStripSupporting
@@ -1977,8 +1981,7 @@ enum HeaderBehaviour {
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   CGRect webStateViewFrame = self.contentArea.bounds;
-  UIView* webStateView = [self viewForWebState:self.currentWebState];
-  webStateView.frame = webStateViewFrame;
+  self.viewForCurrentWebState.frame = webStateViewFrame;
 
   [self.ntpCoordinator.thumbStripSupporting thumbStripDisabled];
   self.ntpCoordinator.panGestureHandler = nil;
@@ -2046,10 +2049,10 @@ enum HeaderBehaviour {
       self.viewTranslatedForSmoothScrolling = YES;
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
       if (self.currentWebState) {
-        CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-            [self viewForWebState:self.currentWebState].frame,
-            UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-        [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+        CGRect webStateViewFrame =
+            UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
+                                  UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+        self.viewForCurrentWebState.frame = webStateViewFrame;
       }
 
       // Translate all web states' offset so web states from other tabs are also
@@ -2152,10 +2155,10 @@ enum HeaderBehaviour {
       self.fullscreenController->FreezeToolbarHeight(false);
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
       if (self.currentWebState) {
-        CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-            [self viewForWebState:self.currentWebState].frame,
-            UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
-        [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+        CGRect webStateViewFrame =
+            UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
+                                  UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
+        self.viewForCurrentWebState.frame = webStateViewFrame;
       }
 
       for (int index = 0; index < self.webStateListSize; ++index) {
@@ -2603,7 +2606,7 @@ enum HeaderBehaviour {
   // Dismiss the omnibox (if open).
   [self.omniboxCommandsHandler cancelOmniboxEdit];
   // Dismiss the soft keyboard (if open).
-  [[self viewForWebState:self.currentWebState] endEditing:NO];
+  [self.viewForCurrentWebState endEditing:NO];
   // Dismiss Find in Page focus.
   [self.findInPageCommandsHandler defocusFindInPage];
 
@@ -2624,7 +2627,7 @@ enum HeaderBehaviour {
 }
 
 - (void)webStateSelected {
-  if (!self.currentWebState) {
+  if (!self.viewForCurrentWebState) {
     return;
   }
   // Ignore changes while the tab stack view is visible (or while suspended).
@@ -2633,9 +2636,7 @@ enum HeaderBehaviour {
     return;
   }
 
-  // TODO(crbug.com/1329088): Trigger this update from the mediator, or (as an
-  // interm step) pass the view to be displayed instead.
-  [self displayWebState:self.currentWebState];
+  [self displayTabView];
   if (!self.inNewTabAnimation) {
     _pagePlaceholderBrowserAgent->CancelPagePlaceholder();
   }
@@ -2682,9 +2683,9 @@ enum HeaderBehaviour {
   self.inNewTabAnimation = NO;
 }
 
-- (void)displayWebStateIfActive:(web::WebState*)webState {
+- (void)displayTabViewIfActive {
   if (self.active) {
-    [self displayWebState:webState];
+    [self displayTabView];
   }
 }
 
@@ -2801,7 +2802,7 @@ enum HeaderBehaviour {
   } else {
     if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
         self.webUsageEnabled) {
-      newPage.frame = [self ntpFrameForWebState:self.currentWebState];
+      newPage.frame = [self ntpFrameForCurrentWebState];
     } else {
       newPage.frame = self.contentArea.bounds;
     }
@@ -2954,8 +2955,8 @@ enum HeaderBehaviour {
   return self.contentArea;
 }
 
-- (void)sideSwipeRedisplayWebState:(web::WebState*)webState {
-  [self displayWebState:webState];
+- (void)sideSwipeRedisplayTabView {
+  [self displayTabView];
 }
 
 // TODO(crbug.com/1329105): Federate side swipe logic.
