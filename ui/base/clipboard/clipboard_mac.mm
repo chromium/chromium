@@ -23,6 +23,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_base.h"
 #include "skia/ext/skia_utils_mac.h"
@@ -71,16 +74,30 @@ base::scoped_nsobject<NSImage> GetNSImage(NSPasteboard* pasteboard) {
 
 // Read raw PNG bytes from the clipboard.
 std::vector<uint8_t> GetPngFromPasteboard(NSPasteboard* pasteboard) {
-  if (!pasteboard)
-    return std::vector<uint8_t>();
+  if (!pasteboard) {
+    return {};
+  }
 
   NSData* data = [pasteboard dataForType:NSPasteboardTypePNG];
-  if (!data)
-    return std::vector<uint8_t>();
+  if (!data) {
+    return {};
+  }
 
   const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
   std::vector<uint8_t> png(bytes, bytes + data.length);
   return png;
+}
+
+std::vector<uint8_t> EncodeGfxImageToPng(gfx::Image image) {
+  base::AssertLongCPUWorkAllowed();
+
+  if (image.IsEmpty()) {
+    return {};
+  }
+
+  scoped_refptr<base::RefCountedMemory> mem = image.As1xPNGBytes();
+  std::vector<uint8_t> image_data(mem->data(), mem->data() + mem->size());
+  return image_data;
 }
 
 }  // namespace
@@ -315,7 +332,7 @@ void ClipboardMac::ReadPng(ClipboardBuffer buffer,
                            const DataTransferEndpoint* data_dst,
                            ReadPngCallback callback) const {
   RecordRead(ClipboardFormatMetric::kPng);
-  std::move(callback).Run(ReadPngInternal(buffer, GetPasteboard()));
+  ReadPngInternal(buffer, GetPasteboard(), std::move(callback));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -467,29 +484,36 @@ void ClipboardMac::WriteWebSmartPaste() {
   [GetPasteboard() setData:nil forType:format];
 }
 
-std::vector<uint8_t> ClipboardMac::ReadPngInternal(
-    ClipboardBuffer buffer,
-    NSPasteboard* pasteboard) const {
+void ClipboardMac::ReadPngInternal(ClipboardBuffer buffer,
+                                   NSPasteboard* pasteboard,
+                                   ReadPngCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   std::vector<uint8_t> png = GetPngFromPasteboard(pasteboard);
-  if (!png.empty())
-    return png;
+  if (!png.empty()) {
+    std::move(callback).Run(std::move(png));
+    return;
+  }
 
   // If we can’t read a PNG, try reading for an NSImage, and if successful,
   // transcode it to PNG.
   base::scoped_nsobject<NSImage> image = GetNSImage(pasteboard);
-  if (!image)
-    return std::vector<uint8_t>();
+  if (!image) {
+    std::move(callback).Run({});
+    return;
+  }
 
   auto gfx_image = gfx::Image(image);
-  if (gfx_image.IsEmpty())
-    return std::vector<uint8_t>();
+  if (gfx_image.IsEmpty()) {
+    std::move(callback).Run({});
+    return;
+  }
 
-  scoped_refptr<base::RefCountedMemory> mem = gfx_image.As1xPNGBytes();
-  std::vector<uint8_t> image_data(mem->data(), mem->data() + mem->size());
-  return image_data;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&EncodeGfxImageToPng, std::move(gfx_image)),
+      std::move(callback));
 }
 
 void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,

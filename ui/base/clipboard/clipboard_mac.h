@@ -27,12 +27,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   ClipboardMac& operator=(const ClipboardMac&) = delete;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, WriteBitmapAddsPNGToClipboard);
   friend class Clipboard;
+  friend class ClipboardMacTest;
 
   ClipboardMac();
   ~ClipboardMac() override;
@@ -109,8 +105,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
                  base::span<const uint8_t> data) override;
 
   void WriteBitmapInternal(const SkBitmap& bitmap, NSPasteboard* pasteboard);
-  std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer,
-                                       NSPasteboard* pasteboard) const;
+  void ReadPngInternal(ClipboardBuffer buffer,
+                       NSPasteboard* pasteboard,
+                       ReadPngCallback callback) const;
 
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {

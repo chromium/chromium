@@ -25,6 +25,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_constants.h"
@@ -465,7 +466,7 @@ TEST_F(ClipboardHistoryTest, DuplicateBitmapEncodingPreserved) {
       data_to_duplicate.sequence_number_token();
   const auto original_timestamp = items.back().time_copied();
   EXPECT_FALSE(data_to_duplicate.maybe_png());
-  auto png = ui::ClipboardData::EncodeBitmapData(test_bitmap_1);
+  auto png = ui::clipboard_util::EncodeBitmapToPng(test_bitmap_1);
   data_to_duplicate.SetPngDataAfterEncoding(png);
   EXPECT_TRUE(data_to_duplicate.maybe_png());
 

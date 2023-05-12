@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ui/base/clipboard/clipboard_mac.h"
+#include "base/test/test_future.h"
 
 #import <AppKit/AppKit.h>
 
@@ -15,6 +16,8 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/platform_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -48,7 +51,8 @@ void CreateImageBufferReleaser(void* info, const void* data, size_t size) {
 class ClipboardMacTest : public PlatformTest,
                          public testing::WithParamInterface<bool> {
  public:
-  ClipboardMacTest() = default;
+  ClipboardMacTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
@@ -86,8 +90,24 @@ class ClipboardMacTest : public PlatformTest,
 
   bool ShouldWriteImageWithPng() const { return GetParam(); }
 
+  std::vector<uint8_t> ReadPngSync(ClipboardMac* clipboard_mac,
+                                   NSPasteboard* pasteboard) {
+    base::test::TestFuture<std::vector<uint8_t>> future;
+    clipboard_mac->ReadPngInternal(
+        ClipboardBuffer::kCopyPaste, pasteboard,
+        future.GetCallback<const std::vector<uint8_t>&>());
+    return future.Get();
+  }
+
+  void WriteBitmap(ClipboardMac* clipboard_mac,
+                   const SkBitmap& bitmap,
+                   NSPasteboard* pasteboard) {
+    clipboard_mac->WriteBitmapInternal(bitmap, pasteboard);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_P(ClipboardMacTest, ReadImageRetina) {
@@ -100,8 +120,7 @@ TEST_P(ClipboardMacTest, ReadImageRetina) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
   SkBitmap bitmap;
   gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(2 * width, bitmap.width());
@@ -118,8 +137,7 @@ TEST_P(ClipboardMacTest, ReadImageNonRetina) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
   SkBitmap bitmap;
   gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(width, bitmap.width());
@@ -134,8 +152,7 @@ TEST_P(ClipboardMacTest, EmptyImage) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
   SkBitmap bitmap;
   gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(0, bitmap.width());
@@ -159,8 +176,7 @@ TEST_P(ClipboardMacTest, PDFImage) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
   SkBitmap bitmap;
   gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(width, bitmap.width());
@@ -178,7 +194,7 @@ TEST_P(ClipboardMacTest, WriteBitmapAddsPNGToClipboard) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(SK_ColorRED);
-  clipboard_mac->WriteBitmapInternal(bitmap, pasteboard->get());
+  WriteBitmap(clipboard_mac, bitmap, pasteboard->get());
 
   NSData* data = [pasteboard->get() dataForType:NSPasteboardTypePNG];
 

@@ -40,10 +40,6 @@ enum class ClipboardInternalFormat {
 // It mostly just provides APIs to cleanly access and manipulate this data.
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
  public:
-  // Encode a bitmap to a PNG. Callers encoding a PNG on a background thread
-  // should use this method.
-  static std::vector<uint8_t> EncodeBitmapData(const SkBitmap& bitmap);
-
   ClipboardData();
   ClipboardData(const ClipboardData&);
   ClipboardData(ClipboardData&&);
@@ -135,7 +131,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   void SetBitmapData(const SkBitmap& bitmap);
   // Use this method to obtain the bitmap to be encoded to a PNG. It is only
   // recommended to call this method after checking that `maybe_png()` returns
-  // no value. If this returns a value, use `EncodeBitmapData()` to encode the
+  // no value. If this returns a value, use `EncodeBitmapToPng()` to encode the
   // bitmap to a PNG on a background thread.
   absl::optional<SkBitmap> GetBitmapIfPngNotEncoded() const;
 

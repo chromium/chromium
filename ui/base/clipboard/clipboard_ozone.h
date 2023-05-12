@@ -111,8 +111,6 @@ class ClipboardOzone : public Clipboard {
                  std::unique_ptr<DataTransferEndpoint> data_src);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  base::span<uint8_t> ReadPngInternal(const ClipboardBuffer buffer) const;
-
   class AsyncClipboardOzone;
 
   std::unique_ptr<AsyncClipboardOzone> async_clipboard_ozone_;

@@ -98,6 +98,8 @@ component("clipboard") {
     "clipboard_observer.cc",
     "clipboard_observer.h",
     "clipboard_sequence_number_token.h",
+    "clipboard_util.cc",
+    "clipboard_util.h",
     "custom_data_helper.cc",
     "custom_data_helper.h",
     "scoped_clipboard_writer.cc",

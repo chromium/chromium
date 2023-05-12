@@ -54,6 +54,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/ime/input_method.h"
@@ -91,7 +92,7 @@ void EncodeBitmapToPNG(
     std::map<base::UnguessableToken, std::vector<uint8_t>>* const encoded_pngs,
     base::UnguessableToken id,
     SkBitmap bitmap) {
-  auto png = ui::ClipboardData::EncodeBitmapData(bitmap);
+  auto png = ui::clipboard_util::EncodeBitmapToPng(bitmap);
 
   // Don't acquire the lock until after the image encoding has finished.
   static base::NoDestructor<base::Lock> map_lock;

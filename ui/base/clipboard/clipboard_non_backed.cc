@@ -33,6 +33,7 @@
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -223,7 +224,7 @@ class ClipboardInternal {
 
     png_encoding_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&ClipboardData::EncodeBitmapData,
+        base::BindOnce(&clipboard_util::EncodeBitmapToPng,
                        std::move(maybe_bitmap.value())),
         base::BindOnce(&ClipboardInternal::DidEncodePng,
                        weak_factory_.GetMutableWeakPtr(), sequence_number()));
