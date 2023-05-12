@@ -22,21 +22,24 @@ from http.server import SimpleHTTPRequestHandler
 from pkg_resources import packaging
 from threading import Thread
 
+_THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+_CHROMIUM_SRC_DIR = os.path.realpath(os.path.join(_THIS_DIR, '..', '..'))
+# Needed for skia_gold_common import.
+sys.path.append(os.path.join(_CHROMIUM_SRC_DIR, 'build'))
+# Needed to import common without pylint errors.
+sys.path.append(os.path.join(_CHROMIUM_SRC_DIR, 'testing'))
+
 import pkg_resources
 from skia_gold_common.skia_gold_properties import SkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_utils
 
 import variations_seed_access_helper as seed_helper
 
-_THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _VARIATIONS_TEST_DATA = 'variations_smoke_test_data'
 _VERSION_STRING = 'PRODUCT_VERSION'
 _FLAG_RELEASE_VERSION = packaging.version.parse('105.0.5176.3')
 
 
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from scripts import common
 
 from selenium import webdriver
