@@ -803,6 +803,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   // Create a WebContents that represents the modal dialog, specifically
   // the structure that the Identity Registry hangs to.
   Shell* modal = CreateBrowser();
+  modal->LoadURL(config_url);
 
   base::RunLoop run_loop;
   EXPECT_CALL(*controller, ShowModalDialog(_, _))
@@ -842,8 +843,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   std::string token = "--fake-token-from-pop-up-window--";
 
   // Resolve the hanging token request by notifying the registry.
-  IdentityRegistry::FromWebContents(modal->web_contents())
-      ->NotifyResolve(url::Origin::Create(config_url), token);
+  EXPECT_TRUE(content::ExecJs(
+      modal, R"(IdentityProvider.resolve(')" + token + R"('))"));
 
   // Finally, wait for the promise to resolve and compare its result
   // to the expected token that was provided in the modal dialog.

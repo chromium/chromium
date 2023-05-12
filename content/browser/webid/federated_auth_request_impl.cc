@@ -807,9 +807,14 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
     std::move(callback).Run(false);
     return;
   }
-  // TODO(crbug.com/1429083): Implement the resolution of the RequestToken
-  // call with the token that is passed here.
-  std::move(callback).Run(true);
+
+  if (!identity_registry_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool accepted = identity_registry_->NotifyResolve(origin(), token);
+  std::move(callback).Run(accepted);
 }
 
 void FederatedAuthRequestImpl::SetIdpSigninStatus(
@@ -1967,6 +1972,8 @@ bool FederatedAuthRequestImpl::NotifyResolve(const std::string& token) {
   CompleteRequest(FederatedAuthRequestResult::kSuccess, TokenStatus::kSuccess,
                   absl::nullopt, token,
                   /*should_delay_callback=*/false);
+  // TODO(crbug.com/1429083): handle the corner cases where CompleteRequest
+  // can't actually fulfill the request.
   return true;
 }
 
