@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Отключить тёмную тему</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1827738518074806965">Галерея</translation>
+<translation id="1838374766361614909">Удалить условия поиска</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1852934301711881861">Установить Chrome OS Flex</translation>
 <translation id="1856388568474281774">Стрелка вниз</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3291996639387199448">Направление ключа</translation>
 <translation id="3294437725009624529">Гость</translation>
+<translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
 <translation id="3340011300870565703">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4930320165497208503">Чтобы задать или изменить параметры подключения, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
-<translation id="4937657825850660613">Разделить экран</translation>
 <translation id="4950314376641394653">Встроенное ПО для устройства "<ph name="DEVICE_NAME" />" было обновлено до версии <ph name="VERSION" />.</translation>
 <translation id="4971925105143343452">Частичное увеличение</translation>
 <translation id="4972592110715526173">сменить режим</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC-адрес</translation>
 <translation id="7491478667760509108">Выйти из плавающего режима</translation>
 <translation id="7497215489070763236">Серверный сертификат ЦС</translation>
+<translation id="7501957181231305652">или</translation>
 <translation id="7502658306369382406">Адрес IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Справочный контент недоступен</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
 <translation id="763165478673169849">Время последнего сброса</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
+<translation id="765159867434478292">Разделить</translation>
 <translation id="7656388927906093505">Это мышь.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7665800271478495366">Изменить аватар</translation>

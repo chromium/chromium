@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Deaktiveer donkertema</translation>
 <translation id="1807246157184219062">Lig</translation>
 <translation id="1827738518074806965">Kunsgalery</translation>
+<translation id="1838374766361614909">Vee soektog uit</translation>
 <translation id="1851218745569890714">Videokonferensies</translation>
 <translation id="1852934301711881861">Installeer Chrome OS Flex</translation>
 <translation id="1856388568474281774">Afpyl</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Sleutelrigting</translation>
 <translation id="3294437725009624529">Gas</translation>
+<translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
 <translation id="3310640316857623290">DNS-traagheid is aansienlik bo toelaatbare drempel</translation>
 <translation id="3328783797891415197">Toets loop tans</translation>
 <translation id="3340011300870565703">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in regterknoppie.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Het <ph name="RATE" /> gelaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="4930320165497208503">Gaan na <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om 'n verbinding op te stel of op te dateer.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4937657825850660613">Half</translation>
 <translation id="4950314376641394653">Fermware <ph name="DEVICE_NAME" /> is opgedateer na weergawe <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Gedeeltelik</translation>
 <translation id="4972592110715526173">modus verander</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC-adres</translation>
 <translation id="7491478667760509108">Verlaat swewende venster</translation>
 <translation id="7497215489070763236">Bediener se CA-sertifikaat</translation>
+<translation id="7501957181231305652">of</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Hulpinhoud is nie beskikbaar nie</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Kom meer te wete in Hulpsentrum</translation>
 <translation id="763165478673169849">Laas teruggestel</translation>
 <translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>
+<translation id="765159867434478292">Verdeel</translation>
 <translation id="7656388927906093505">Toestel is 'n muis.</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7665800271478495366">Verander avatar</translation>

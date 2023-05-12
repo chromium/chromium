@@ -22,8 +22,6 @@
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">列印失敗。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
-<translation id="1126013303640354461">系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
-只有知道通關密語的人才能讀取你加密的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記通關密語或想要變更這項設定，就必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
@@ -46,7 +44,7 @@
 <translation id="1254117744268754948">選擇資料夾</translation>
 <translation id="1254424942107648268">尋找上一個相符的項目</translation>
 <translation id="1258491128795710625">新功能</translation>
-<translation id="1264156759663453185">所選文字內容太長，因此無法翻譯。</translation>
+<translation id="1264156759663453185">所選文字太多，不適用部分翻譯。</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已選取</translation>
@@ -89,6 +87,7 @@
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="152234381334907219">一律不儲存</translation>
 <translation id="1523341279170789507">允許所有 Cookie</translation>
+<translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1531836666020185856">精選內容</translation>
 <translation id="1535268707340844072">你目前的設定可能會導致某些網站無法正常運作。如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="1540800554400757039">地址 1</translation>
@@ -246,7 +245,6 @@
 <translation id="2647269890314209800">使用中的 Cookie</translation>
 <translation id="2648721026697078500">永不移動</translation>
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
-<translation id="2653659639078652383">提交</translation>
 <translation id="2664621323652615289">停止</translation>
 <translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員所儲存的密碼。</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
@@ -306,7 +304,6 @@
 <translation id="2932085390869194046">建議密碼...</translation>
 <translation id="2932765531295814441">手動新增密碼</translation>
 <translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
-<translation id="2953871438216280742">登入即可開啟 Google 帳戶的閱讀清單及儲存清單項目。</translation>
 <translation id="2958718410589002129">密碼</translation>
 <translation id="2961210776189273067">稱謂</translation>
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
@@ -435,6 +432,7 @@
 <translation id="3861486700625780712">取消追蹤</translation>
 <translation id="3863769054730344136">傳送到你的裝置</translation>
 <translation id="387280738075653372">在這裡下載 Chrome。</translation>
+<translation id="3875783148670536197">顯示操作說明</translation>
 <translation id="3888863481921783344">系統會使用這些資料向你顯示活動的可能邀請對象。</translation>
 <translation id="3891414008432200754">價格</translation>
 <translation id="3892144330757387737">這裡會顯示你的歷史記錄</translation>
@@ -550,9 +548,6 @@
 <translation id="4652817563047461855">確保密碼安全、檢查密碼是否外洩，並提供可保護上網安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">進入分頁切換選項</translation>
 <translation id="46614316059270592">儲存密碼</translation>
-<translation id="4666531726415300315">目前登入的帳戶是 <ph name="EMAIL" />。
-
-您已使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的 [設定]</translation>
 <translation id="4689564913179979534">管理付款方式...</translation>
 <translation id="469300482518076788">關閉分頁</translation>
@@ -561,16 +556,12 @@
 <translation id="4737560986434232178">搜尋最近開啟的分頁</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4746926359847517643">你隨時可以從歷史記錄重新開啟這些分頁。</translation>
-<translation id="4747097190499141774">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。只有知道你通關密語的人，才能讀取加密保護的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />，<ph name="STATE" />，僅在這部裝置上，<ph name="URL" /></translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
 <translation id="4775879719735953715">預設瀏覽器</translation>
 <translation id="4778644898150334464">使用其他密碼</translation>
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
-<translation id="4802417911091824046">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。
-
-如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">由貴機構管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">卡號無效</translation>
@@ -815,6 +806,7 @@
 <translation id="6331180460633101391">有 <ph name="COUNT" /> 組重複使用的密碼</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="633809752005859102">發生重大錯誤，我們將設法解決。</translation>
+<translation id="6339793034470834130">如要使用網頁檢閱器，請利用傳輸線連上電腦的 Safari，從「開發」選單存取 iPhone。你可以透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
 <translation id="6340285871011301182">無法進行部分翻譯。</translation>
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6344783595350022745">清除文字</translation>
@@ -822,6 +814,7 @@
 <translation id="6347953390226388422">{count,plural, =1{這個地址將從 Google 帳戶 (<ph name="USER_EMAIL" />) 和這部裝置中刪除。}other{這些地址將從 Google 帳戶 (<ph name="USER_EMAIL" />) 和這部裝置中刪除。}}</translation>
 <translation id="634878792104344809">將所有裝置上的密碼、歷史記錄及其他設定保持同步</translation>
 <translation id="6348855835728304880">這部裝置的其他應用程式也能使用儲存在 Chrome 中的密碼和其他資訊。</translation>
+<translation id="63519665078626091">如要使用網頁檢閱器，請利用傳輸線連上電腦的 Safari，從「開發」選單存取 iPad。你可以透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
 <translation id="6355820205320395730">低強度密碼容易讓人猜中，請務必設定高強度密碼。<ph name="BEGIN_LINK" />查看更多安全性提示<ph name="END_LINK" />。</translation>
 <translation id="6361848730467328243">追蹤 <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">沒有已開啟的無痕式分頁</translation>
@@ -830,16 +823,12 @@
 <translation id="6366663624406569102">登出並關閉同步功能</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6377118281273296434">網站安全性</translation>
-<translation id="6380866119319257197">如果您忘記通關密語，或是想變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">開啟位置…</translation>
 <translation id="6387994324662817823">密碼只會儲存至這部裝置上的 Google 密碼管理員。</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6410390304316730527">安全瀏覽功能可保護你不受到攻擊，攻擊者可能會誘騙你從事一些危險行為，例如安裝惡意軟體或洩漏個人資訊 (例如密碼、電話號碼或信用卡資訊)。如果你停用這項功能，瀏覽不熟悉或風評不佳的網站時，請提高警覺。</translation>
 <translation id="6410883413783534063">開啟分頁即可同時造訪不同的網頁</translation>
-<translation id="641799622251403418">目前登入的帳戶是 <ph name="EMAIL" />。
-
-您已在 <ph name="TIME" />使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
 <translation id="6429213933892582367">開啟「密碼選項」</translation>
 <translation id="6434591244308415567">發生錯誤，請稍後再試。</translation>
@@ -1053,7 +1042,6 @@
 <translation id="7845466610722898">顯示閱讀清單</translation>
 <translation id="784551991304901159">如要查看內容，請從選單中選取「開啟」</translation>
 <translation id="7846158885638438868">{count,plural, =1{已在「{title}」中加入書籤}other{已在「{title}」中加入書籤}}</translation>
-<translation id="7852017611907717397">復原</translation>
 <translation id="7853202427316060426">活動</translation>
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="785938070103630874">開啟密碼、付款方式或地址等等</translation>
@@ -1082,6 +1070,7 @@
 <translation id="7993619969781047893">某些網站的功能可能無法正常運作</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟輸入的網址。</translation>
 <translation id="8005666035647241369">儲存至這部裝置的 Google 密碼管理員</translation>
+<translation id="8011489434346330032">網頁檢閱器</translation>
 <translation id="8016714545083187120">一律使用安全連線</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8023878949384262191">展開這個專區。</translation>
@@ -1255,7 +1244,7 @@
 <translation id="9100610230175265781">請提供通關密語</translation>
 <translation id="9107664647686727385">檢查是否有遭外洩的密碼</translation>
 <translation id="9120217828624527905">切換成整頁翻譯</translation>
-<translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。</translation>
+<translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9157836665414082580">禁止顯示對話方塊</translation>

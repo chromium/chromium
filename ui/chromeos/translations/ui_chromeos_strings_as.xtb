@@ -166,7 +166,6 @@
 <translation id="23721837607121582">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">সূচী চোৱা ম’ডলৈ সলনি কৰক</translation>
 <translation id="2377590462528165447">Linuxৰ সৈতে <ph name="NUMBER_OF_ITEMS" />টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হ’ল</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />টা ফাইল বাছনি কৰা হৈছে</translation>
 <translation id="2383454254762599978">ট্ৰেশ্বলৈ নিয়ক</translation>
 <translation id="2387458720915042159">প্ৰক্সি সংযোগৰ প্ৰকাৰ</translation>
 <translation id="2389832672041313158">বাৰ্মীজ/ম্যানমাৰ</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">ডিভাইচটো কেৱল পঢ়িব পৰা</translation>
 <translation id="4826849268470072925">তামিল ITRANS</translation>
 <translation id="482932175346970750">আপোনাৰ ব্ৰাউজাৰত <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> টাইপ কৰক</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" />টা বস্তু বাছনি কৰা হ’ল</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="485316830061041779">জাৰ্মান</translation>
@@ -755,7 +753,6 @@
 <translation id="6989942356279143254">ছুইডিশ্ব</translation>
 <translation id="6990081529015358884">আপোনাৰ ষ্ট'ৰেজৰ খালী ঠাই কমি আহিছে</translation>
 <translation id="6993826899923627728">এই বস্তুবোৰ আপোনাৰ ট্ৰেশ্বত আছে</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />টা ফ’ল্ডাৰ বাছনি কৰা হৈছে</translation>
 <translation id="7008426324576352165">আপল'ডটো সম্পূৰ্ণ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানক অধিক ষ্ট'ৰেজৰ আৱশ্যক।</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> টা ফাইল অন্য ঠাইলৈ নিয়াটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

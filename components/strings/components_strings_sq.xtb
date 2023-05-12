@@ -175,7 +175,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1363819917331173092">Mos ofro t'i përkthesh faqet në <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Kjo politikë është bllokuar, vlera do të shpërfillet.</translation>
 <translation id="1368318639262510626">Loja Dino. Një dinozaur i pikselizuar shmang kaktuset dhe pterodaktilët ndërsa vrapon përgjatë një peizazhi të shkretuar. Kur dëgjon një sinjalizim audioje, shtyp hapësirën për të kapërcyer mbi pengesa.</translation>
-<translation id="136907351928231527">Mund të duhet deri në një javë që një listë temash të shfaqet këtu bazuar në historikun tënd të shfletimit së fundi.</translation>
 <translation id="1374468813861204354">sugjerime</translation>
 <translation id="1375198122581997741">Rreth versionit</translation>
 <translation id="1376836354785490390">Shfaq më pak</translation>
@@ -439,6 +438,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2003709556000175978">Rivendos fjalëkalimin tënd tani</translation>
 <translation id="2003775180883135320">Katër shpime lart</translation>
 <translation id="201174227998721785">Menaxho lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
+<translation id="2012276282211112603">Nuk ka asnjë temë për të shfaqur për momentin</translation>
 <translation id="2019607688127825327">Butoni "Menaxho cilësimet e qasshmërisë". Shtyp "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e Chrome</translation>
 <translation id="2021333772895814435">Kjo politikë çaktivizon automatikisht sinkronizimin mes pajisjeve për: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 inç</translation>
@@ -1673,6 +1673,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="5051305769747448211">Komedia e drejtpërdrejtë</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për ta dërguar këta skedarë duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
+<translation id="5060419232449737386">Cilësimet e titrave</translation>
 <translation id="5060483733937416656">Ti zgjodhe që të verifikohesh me Windows Hello në sajtet e uebit që përdorin <ph name="PROVIDER_ORIGIN" />. Ky ofrues mund të ketë ruajtur informacione për mënyrën tënde të pagesës, të cilat mund <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Mos dëshiron të thuash <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historiku i printimeve</translation>

@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Newid i ffenestr sydd ar Agor</translation>
 <translation id="1112015203684611006">Wedi methu ag argraffu.</translation>
 <translation id="1125564390852150847">Creu tab newydd.</translation>
-<translation id="1126013303640354461">Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
-Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, bydd angen i chi ailosod cysoni. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
 <translation id="1145536944570833626">Dileu'r data presennol.</translation>
 <translation id="1147031633655575115">Wedi mewngofnodi fel <ph name="USER" /></translation>
@@ -89,6 +87,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1509960214886564027">Mae'n bosib y bydd nodweddion ar lawer o wefannau yn torri</translation>
 <translation id="152234381334907219">Erioed wedi'i gadw</translation>
 <translation id="1523341279170789507">Caniatáu'r Holl Gwcis</translation>
+<translation id="1524563461097350801">Dim diolch</translation>
 <translation id="1531836666020185856">Wedi'i gynnwys</translation>
 <translation id="1535268707340844072">Mae'n bosib y bydd eich gosodiad presennol yn achosi i rai gwefannau dorri. I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau Cwcis<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Cyfeiriad 1</translation>
@@ -246,7 +245,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2647269890314209800">Cwcis sy'n cael eu defnyddio</translation>
 <translation id="2648721026697078500">Peidio Byth â Symud</translation>
 <translation id="2648803196158606475">Clirio'r Rhestr Ddarllen</translation>
-<translation id="2653659639078652383">Danfon</translation>
 <translation id="2664621323652615289">Stopio</translation>
 <translation id="2671426118752779020">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i Reolwr Cyfrineiriau Google mewn apiau eraill ar eich iPhone.</translation>
 <translation id="2690858294534178585">Mae'r camera'n cael ei ddefnyddio</translation>
@@ -306,7 +304,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2932085390869194046">Awgrymu Cyfrinair...</translation>
 <translation id="2932765531295814441">Ychwanegu Cyfrineiriau yn Bwrpasol</translation>
 <translation id="2952581218264071393">1. Agorwch Osodiadau Chrome</translation>
-<translation id="2953871438216280742">Mewngofnodwch i agor a chadw eich rhestr ddarllen yn eich Cyfrif Google.</translation>
 <translation id="2958718410589002129">Cyfrineiriau</translation>
 <translation id="2961210776189273067">Teitl</translation>
 <translation id="2964349545761222050">Rhwystro Cwcis Trydydd Parti</translation>
@@ -435,6 +432,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3861486700625780712">Peidio â dilyn</translation>
 <translation id="3863769054730344136">Anfon at Eich Dyfeisiau</translation>
 <translation id="387280738075653372">Lawrlwythwch Chrome yma.</translation>
+<translation id="3875783148670536197">Dangoswch i Fi Sut</translation>
 <translation id="3888863481921783344">Bydd hwn yn cael ei ddefnyddio i ddangos i chi wahoddedigion posib i'ch digwyddiad.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Byddwch yn gweld eich hanes yma</translation>
@@ -550,9 +548,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4652817563047461855">Gwneud yn siŵr bod eich cyfrineiriau yn ddiogel, darganfod a ydynt wedi cael eu peryglu, a chael cyngor i helpu i amddiffyn eich hun ar-lein. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Rhowch Newidydd Tabiau</translation>
 <translation id="46614316059270592">Cadw'r Cyfrinair</translation>
-<translation id="4666531726415300315">Wedi mewngofnodi fel <ph name="EMAIL" />.
-
-Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd cysoni. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="4682686630151240767">1. Agorwch y Gosodiadau iPhone</translation>
 <translation id="4689564913179979534">Rheoli dulliau talu...</translation>
 <translation id="469300482518076788">Cau'r Tab</translation>
@@ -561,16 +556,12 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd cysoni. Rhowch eich cyfriny
 <translation id="4737560986434232178">Chwilio Tabiau Diweddar</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4746926359847517643">Gallwch bob amser eu cael yn ôl yn hanes.</translation>
-<translation id="4747097190499141774">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu na chyfeiriadau gan Google Pay. Dim ond rhywun â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, bydd angen i chi ailosod cysoni. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" /> Ar y ddyfais hon yn unig, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Tab Anhysbys Newydd</translation>
 <translation id="4766112107778026136">Darganfod a Dilynir</translation>
 <translation id="4775879719735953715">Porwr Diofyn</translation>
 <translation id="4778644898150334464">Defnyddiwch gyfrinair arall</translation>
 <translation id="478808905805139173">Agor yn y Modd Anhysbys?</translation>
-<translation id="4802417911091824046">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau gan Google Pay.
-
-I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">Rheolir gan eich sefydliad.
 <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Rhif Cerdyn Annilys</translation>
@@ -815,6 +806,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6331180460633101391"><ph name="COUNT" /> o Gyfrineiriau sydd wedi'u Hailddefnyddio</translation>
 <translation id="6337234675334993532">Amgryptio</translation>
 <translation id="633809752005859102">Aeth rhywbeth o'i le yn ddifrifol. Byddwn yn gweithio ar hynny.</translation>
+<translation id="6339793034470834130">I ddefnyddio'r Web Inspector, cysylltwch â Safari ar eich cyfrifiadur gan ddefnyddio cebl a chyrchwch eich iPhone o'r ddewislen Datblygu. Gallwch alluogi'r ddewislen datblygu yn adran Uwch gosodiadau Safari ar eich cyfrifiadur.</translation>
 <translation id="6340285871011301182">Cyfieithiad rhannol ddim ar gael.</translation>
 <translation id="6342069812937806050">Newydd ddigwydd</translation>
 <translation id="6344783595350022745">Clirio'r Testun</translation>
@@ -822,6 +814,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6347953390226388422">{count,plural, =1{Bydd y cyfeiriad hwn yn cael ei ddileu o'ch Cyfrif Google (<ph name="USER_EMAIL" />) ac o'r ddyfais hon.}zero{Bydd y cyfeiriadau hyn yn cael eu dileu o'ch Cyfrif Google (<ph name="USER_EMAIL" />) ac o'r ddyfais hon.}two{Bydd y cyfeiriadau hyn yn cael eu dileu o'ch Cyfrif Google (<ph name="USER_EMAIL" />) ac o'r ddyfais hon.}few{Bydd y cyfeiriadau hyn yn cael eu dileu o'ch Cyfrif Google (<ph name="USER_EMAIL" />) ac o'r ddyfais hon.}many{Bydd y cyfeiriadau hyn yn cael eu dileu o'ch Cyfrif Google (<ph name="USER_EMAIL" />) ac o'r ddyfais hon.}other{Bydd y cyfeiriadau hyn yn cael eu dileu o'ch Cyfrif Google (<ph name="USER_EMAIL" />) ac o'r ddyfais hon.}}</translation>
 <translation id="634878792104344809">Cysoni eich cyfrineiriau, eich hanes, a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="6348855835728304880">Gallwch gael mynediad at eich cyfrineiriau Chrome a rhagor ar draws apiau eraill ar y ddyfais hon.</translation>
+<translation id="63519665078626091">I ddefnyddio'r Web Inspector, cysylltwch â Safari ar eich cyfrifiadur gan ddefnyddio cebl a chyrchwch eich iPad o'r ddewislen Datblygu. Gallwch alluogi'r ddewislen datblygu yn adran Uwch gosodiadau Safari ar eich cyfrifiadur.</translation>
 <translation id="6355820205320395730">Mae'n hawdd dyfalu cyfrineiriau gwan. Gwnewch yn siŵr eich bod yn creu cyfrineiriau cryf. <ph name="BEGIN_LINK" />Gweld rhagor o awgrymiadau diogelwch.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Dilyn <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Nid oes unrhyw dabiau anhysbys</translation>
@@ -830,16 +823,12 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6366663624406569102">Allgofnodi a Diffodd Cysoni</translation>
 <translation id="6374469231428023295">Rhoi cynnig arall arni</translation>
 <translation id="6377118281273296434">Diogelwch Gwefan</translation>
-<translation id="6380866119319257197">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, bydd angen i chi <ph name="BEGIN_LINK" />ailosod cysoni<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Agor Lleoliad…</translation>
 <translation id="6387994324662817823">Mae cyfrineiriau'n cael eu cadw i Rheolwr Cyfrineiriau Google ar y ddyfais hon yn unig.</translation>
 <translation id="6389470377220713856">Enw ar y Cerdyn</translation>
 <translation id="6406506848690869874">Cysoni</translation>
 <translation id="6410390304316730527">Mae Pori'n Ddiogel yn eich amddiffyn rhag ymosodwyr a allai eich twyllo i wneud rhywbeth peryglus fel gosod meddalwedd maleisus neu ddatgelu gwybodaeth bersonol fel cyfrineiriau, rhifau ffôn neu gardiau credyd. Os byddwch yn ei ddiffodd, byddwch yn ofalus wrth bori gwefannau anghyfarwydd neu annibynadwy.</translation>
 <translation id="6410883413783534063">Agor tabiau i fynd i wahanol dudalennau ar yr un pryd</translation>
-<translation id="641799622251403418">Wedi mewngofnodi fel <ph name="EMAIL" />.
-
-Amgryptiwyd eich data â'ch cyfrinair cysoni <ph name="TIME" />. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="6418346271604475326">Wrthi'n paratoi PDF</translation>
 <translation id="6429213933892582367">Agorwch Opsiynau Cyfrinair</translation>
 <translation id="6434591244308415567">Bu gwall. Rhowch gynnig arall arni'n nes ymlaen.</translation>
@@ -1053,7 +1042,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7845466610722898">Dangos y Rhestr Ddarllen</translation>
 <translation id="784551991304901159">I weld cynnwys, dewiswch Troi Ymlaen o'r ddewislen</translation>
 <translation id="7846158885638438868">{count,plural, =1{Wedi creu nod tudalen ar gyfer "{title}"}zero{Wedi creu nod tudalen ar gyfer "{title}"}two{Wedi creu nodau tudalen ar gyfer "{title}"}few{Wedi creu nodau tudalen ar gyfer "{title}"}many{Wedi creu nodau tudalen ar gyfer "{title}"}other{Wedi creu nodau tudalen ar gyfer "{title}"}}</translation>
-<translation id="7852017611907717397">DADWNEUD</translation>
 <translation id="7853202427316060426">Gweithgarwch</translation>
 <translation id="7856733331829174190">Wedi methu â Lawrlwytho</translation>
 <translation id="785938070103630874">Agorwch Cyfrineiriau, Dulliau Talu neu Cyfeiriad a Rhagor</translation>
@@ -1082,6 +1070,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="7993619969781047893">Mae'n bosib y bydd nodweddion ar rai gwefannau yn torri</translation>
 <translation id="800361585186029508">Yn agor y cyfeiriadau URL a fewnbynnwyd yn Google Chrome.</translation>
 <translation id="8005666035647241369">I Reolwr Cyfrineiriau Google ar y ddyfais hon</translation>
+<translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Defnyddio Cysylltiadau Diogel Bob Tro</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8023878949384262191">Yn ehangu'r adran.</translation>

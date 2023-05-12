@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">タブの取得元のデバイスを選択してください</translation>
 <translation id="3575801299326994724">現在選択されているデバイスから復元対象として選択したタブを確認します。</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ、最終更新: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> 個のタブ、最終更新: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">戻る</translation>
 <translation id="3983305234037158273">タブの復元で同期するデバイスをタップ操作で変更できます。現在のデバイスで選択したタブにタップ操作で移動して確認または復元できます。キーボードは非表示です。</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを開く}other{<ph name="TABS_COUNT_MANY" /> 個のタブを開く}}</translation>
 <translation id="4811934403802581334">現在選択されているデバイスから選択したタブがすべて復元されます。</translation>

@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Deaktiver Mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
+<translation id="1838374766361614909">Ryd søgning</translation>
 <translation id="1851218745569890714">Videomøder</translation>
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pil ned</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Nøgleretning</translation>
 <translation id="3294437725009624529">Gæst</translation>
+<translation id="3303855915957856445">Der blev ikke fundet nogen søgeresultater</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at konfigurere eller opdatere en forbindelse.</translation>
 <translation id="4932733599132424254">Dato</translation>
-<translation id="4937657825850660613">Halver</translation>
 <translation id="4950314376641394653">Firmwaren på <ph name="DEVICE_NAME" /> er opdateret til version <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Delvis</translation>
 <translation id="4972592110715526173">ændring af tilstand</translation>
@@ -559,7 +560,7 @@
 <translation id="5649768706273821470">Lyt</translation>
 <translation id="5655283760733841251">Øg tastaturets lysstyrke</translation>
 <translation id="5659593005791499971">Mail</translation>
-<translation id="5662240986744577912">slå Privatlivsskærm til/fra</translation>
+<translation id="5662240986744577912">slå privatlivsfilter til/fra</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC-adresse</translation>
 <translation id="7491478667760509108">Afslut svævetilstand</translation>
 <translation id="7497215489070763236">Serverens CA-certifikat</translation>
+<translation id="7501957181231305652">eller</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Indholdet i Hjælp er ikke tilgængeligt</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>
 <translation id="763165478673169849">Tidspunkt for seneste nulstilling</translation>
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
+<translation id="765159867434478292">Opdel</translation>
 <translation id="7656388927906093505">Enheden er en mus.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7665800271478495366">Skift avatar</translation>

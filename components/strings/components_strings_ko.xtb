@@ -175,7 +175,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" />로 페이지 번역 옵션 제공 안 함</translation>
 <translation id="1364822246244961190">차단된 정책이므로 값이 무시됩니다.</translation>
 <translation id="1368318639262510626">공룡 게임입니다. 픽셀 스타일의 공룡이 선인장과 프테로사우루스를 피하며 황무지를 달려갑니다. 오디오 신호음이 들리면 Space 키를 눌러 장애물을 뛰어넘으세요.</translation>
-<translation id="136907351928231527">최근 방문 기록을 기반으로 여기에 주제 목록이 표시되기까지 최대 일주일이 걸릴 수 있습니다.</translation>
 <translation id="1374468813861204354">제안사항</translation>
 <translation id="1375198122581997741">버전 정보</translation>
 <translation id="1376836354785490390">간략히 보기</translation>
@@ -439,6 +438,7 @@
 <translation id="2003709556000175978">지금 비밀번호 재설정</translation>
 <translation id="2003775180883135320">상단 4공 펀칭</translation>
 <translation id="201174227998721785">Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
+<translation id="2012276282211112603">현재 표시할 주제 없음</translation>
 <translation id="2019607688127825327">접근성 설정 관리 버튼, Chrome 설정의 접근성 도구를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="2021333772895814435">이 정책은 <ph name="ACTION_LIST" />의 기기 간 동기화를 자동으로 사용 중지합니다.</translation>
 <translation id="202224654587969958">12x19인치</translation>
@@ -1673,6 +1673,7 @@
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="5051305769747448211">라이브 코미디</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
+<translation id="5060419232449737386">자막 설정</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> 주소를 사용하는 웹사이트의 인증 방식으로 Windows Hello를 선택했습니다. 이 제공업체에서 내 결제 수단 정보를 저장했을 수 있으며 직접 <ph name="LINK_TEXT" />할 수 있습니다.</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" />을(를) 찾으셨나요?</translation>
 <translation id="5066056036849835175">인쇄 기록</translation>

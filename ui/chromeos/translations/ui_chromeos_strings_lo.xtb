@@ -166,7 +166,6 @@
 <translation id="23721837607121582">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
-<translation id="2378075407703503998">ເລືອກ <ph name="SELCTED_FILE_COUNT" /> ໄຟລ໌ແລ້ວ</translation>
 <translation id="2383454254762599978">ຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2387458720915042159">ປະເພດການເຊື່ອມຕໍ່ພຣັອກຊີ</translation>
 <translation id="2389832672041313158">ພາສາມຽນມາ/ພະມ້າ</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">ອຸປະກອນເປັນແບບອ່ານເທົ່ານັ້ນ</translation>
 <translation id="4826849268470072925">ພາສາທາມິລ (ITRANS)</translation>
 <translation id="482932175346970750">ພິມ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ໃສ່ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
-<translation id="4839847978919684242">ເລືອກ <ph name="SELCTED_FILES_COUNT" /> ລາຍ​ການແລ້ວ</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
@@ -755,7 +753,6 @@
 <translation id="6989942356279143254">ພາສາສະວີດິດ</translation>
 <translation id="6990081529015358884">ທ່ານໝົດບ່ອນ​ວ່າງ​ແລ້ວ</translation>
 <translation id="6993826899923627728">ລາຍການເຫຼົ່ານີ້ແມ່ນຢູ່ໃນຖັງຂີ້ເຫຍື້ອຂອງທ່ານ</translation>
-<translation id="6998711733709403587">ເລືອກໂຟນເດີ <ph name="SELCTED_FOLDERS_COUNT" /> ແລ້ວ</translation>
 <translation id="7008426324576352165">ອົງກອນຂອງທ່ານຕ້ອງການບ່ອນຈັດເກັບຂໍ້ມູນເພີ່ມເຕີມເພື່ອສຳເລັດການອັບໂຫຼດ.</translation>
 <translation id="7009985720488544166">ການຍ້າຍໄຟລ໌ <ph name="COUNT" /> ໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

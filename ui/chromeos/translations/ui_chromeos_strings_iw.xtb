@@ -166,7 +166,6 @@
 <translation id="23721837607121582">הורדה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">מעבר לתצוגת רשימה</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Linux</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> קבצים נבחרו</translation>
 <translation id="2383454254762599978">העברה לאשפה</translation>
 <translation id="2387458720915042159">‏סוג חיבור לשרת proxy</translation>
 <translation id="2389832672041313158">בורמזית/מיאנמר</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">המכשיר מוגדר לקריאה בלבד</translation>
 <translation id="4826849268470072925">‏טמילית ITRANS</translation>
 <translation id="482932175346970750">‏מקלידים <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> בדפדפן</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> פריטים נבחרו</translation>
 <translation id="4843566743023903107">‏מכשירי Chromebase</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="485316830061041779">גרמנית</translation>
@@ -757,7 +755,6 @@
 <translation id="6989942356279143254">שוודית</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
 <translation id="6993826899923627728">הפריטים האלה נמצאים באשפה</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> תיקיות נבחרו</translation>
 <translation id="7008426324576352165">על פי דרישת הארגון שלך, יש צורך בנפח אחסון נוסף כדי להשלים את ההעלאה.</translation>
 <translation id="7009985720488544166">בהתאם למדיניות האדמין, ההעברה של <ph name="COUNT" /> קבצים חסומה</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

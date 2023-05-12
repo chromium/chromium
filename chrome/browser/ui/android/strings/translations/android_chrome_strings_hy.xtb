@@ -58,7 +58,6 @@
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1273937721055267968">Արգելափակել <ph name="DOMAIN" /> տիրույթը</translation>
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
-<translation id="1285310382777185058">Փոխել լեզուն</translation>
 <translation id="1291207594882862231">Մաքրել պատմությունը, քուքիները, կայքի տվյալները, քեշը…</translation>
 <translation id="129553762522093515">Վերջերս փակված</translation>
 <translation id="1298077576058087471">Տնտեսեք թրաֆիկի մինչև 60%-ը, կարդացեք այսօրվա նորությունները</translation>
@@ -131,7 +130,6 @@
 <translation id="1671236975893690980">Պատրաստվում է ներբեռնման…</translation>
 <translation id="1672586136351118594">Այլևս ցույց չտալ</translation>
 <translation id="1680919990519905526">Գնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
-<translation id="1682195225331129001">Փորձել</translation>
 <translation id="1702543251015153180">Փոխե՞լ մուգ թեմայի կարգավորումները</translation>
 <translation id="1702907158640575240">Կառավարվող դիտարկիչ</translation>
 <translation id="1710099199314114079">Անցնել մյուս ներդիր կամ փակել ներդիրները</translation>
@@ -187,12 +185,10 @@
 <translation id="204321170514947529"><ph name="APP_NAME" /> հավելվածը նաև ունի տվյալներ Chrome-ում</translation>
 <translation id="2046634576464120978">Գրանցման սխալ</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="2052422354554967744">Որոնում համացանցում</translation>
 <translation id="2053105195397337973">Մենք ուսումնասիրում ենք օգտատերերի գործողությունների հետագծումը սահմանափակելու եղանակները՝ օգնելով կայքերին պայքարել գովազդային սպամի և խարդախության դեմ։</translation>
 <translation id="2056878612599315956">Կայքը դադարեցված է</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Չհաջողվեց ներբեռնել 1 ֆայլ}one{Չհաջողվեց ներբեռնել # ֆայլ}other{Չհաջողվեց ներբեռնել # ֆայլ}}</translation>
 <translation id="2067805253194386918">տեքստ</translation>
-<translation id="2068748236079642969">Դիտել հաջորդ տեսանյութը</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
 <translation id="2096012225669085171">Համաժամացում և անհատականացում բոլոր սարքերում</translation>
@@ -384,6 +380,7 @@
 <translation id="3066573403916685335">Տեղափոխել վար</translation>
 <translation id="3070005020161560471">Ավտոմատ թարգմանել</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Կիրառվում է նաև <ph name="BEGIN_LINK3" />Գաղտնիության քաղաքականությունը<ph name="END_LINK3" />։</translation>
+<translation id="3080525922482950719">Դուք կարող եք պահել էջերը՝ ավելի ուշ կամ անցանց ռեժիմում կարդալու համար</translation>
 <translation id="3083194063661536258">Դուք դուրս եք եկել հաշվից։ Կոճակ։ Այս տարբերակը բացում է պատուհան, որում կարող եք մուտք գործել և միացնել համաժամացումը։</translation>
 <translation id="3091010850649238832">Ցույց տալ սեղմատախտակի բովանդակությունը</translation>
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
@@ -415,14 +412,12 @@
 <translation id="3250563604907490871">Պատկերի նկարագրությունները կցուցադրվեն, երբ միանաք Wi-Fi-ին</translation>
 <translation id="3254409185687681395">Էջանշել այս էջը</translation>
 <translation id="3259831549858767975">Էջում ամեն ինչ փոքրացնել</translation>
-<translation id="3264124641674805320">Ինչպես բովանդակություն ներբեռնել ավելի ուշ դիտման համար</translation>
 <translation id="3264259168916048410">Ձեր համակարգիչն ուզում է օգտագործել այս սարքը՝ կայքում մուտք գործելու համար</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> տիրույթի բոլոր էջերը</translation>
 <translation id="3265534588625245297">Կառավարեք կայքերը, որոնց բաժանորդագրված եք</translation>
 <translation id="3269093882174072735">Բեռնել պատկերը</translation>
 <translation id="3280562213547448728">Ձայնային որոնում</translation>
 <translation id="3282568296779691940">Մուտք գործել Chrome</translation>
-<translation id="3285080554353377245">Տեսանյութեր Chrome-ի օգտագործման մասին</translation>
 <translation id="3290249595466894471">Նաև ուղարկում է էջերի, ներբեռնված ֆայլերի, ընդլայնումների գործողությունների և համակարգի մասին տեղեկություններից որոշ հատվածներ, որոնք օգնում են հայտնաբերել օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="3293181007446299124">Ձեր այցելությունների պատմությունը պահվում է ձեր սարքում և հասանելի է միայն ձեզ, իսկ անձնական տվյալները պաշտպանելու նպատակով հաշվետվություններն ուղարկվում են ոչ անմիջապես</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
@@ -432,7 +427,6 @@
 <translation id="3341262203274374114">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
 <translation id="3359667936385849800">Օգտագործել իմ ընթացիկ մատակարարը</translation>
 <translation id="3365271666488085187">Chrome-ը կարող է հաշվի առնել այս հետաքրքրությունը</translation>
-<translation id="3367813778245106622">Նորից մուտք գործեք՝ համաժամացումը սկսելու համար</translation>
 <translation id="3373979091428520308">Այս էջով մեկ այլ սարքի հետ կիսվելու համար միացրեք համաժամացումը այդ սարքի Chrome-ի կարգավորումներում</translation>
 <translation id="3374023511497244703">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու Chrome-ի մյուս տվյալները այլևս չեն համաժամացվի ձեր Google հաշվի հետ:</translation>
 <translation id="3384347053049321195">Կիսվել պատկերով</translation>
@@ -515,7 +509,6 @@
 <translation id="3845098929839618392">Բացել ինկոգնիտո ներդիրում</translation>
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3858860766373142691">Անուն</translation>
-<translation id="3861633093716975811">Հաճախ դիտվող տեսանյութեր</translation>
 <translation id="3874520961715512166">Կայքը հեռացվեց</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="3894427358181296146">Պանակի ավելացում</translation>
@@ -568,7 +561,6 @@
 <translation id="4135200667068010335">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված չեն էկրանին:</translation>
 <translation id="4137746084635924146">Սարքի ընթացիկ լեզուն</translation>
 <translation id="414128724510021958">Կայքերի համակարգչային տարբերակները պահանջվում են ըստ կանխադրման</translation>
-<translation id="4141536112466364990">Իմացեք ավելին Chrome-ի մասին</translation>
 <translation id="4147131678541801076">Երբ փորձնական գործառույթները միացված են, սպամի և խարդախության դեմ պայքարի համար օգտագործվում են վիճակի անձնական թոքեններ, որոնք օգնում են կայքերին կանխել խարդախության փորձերը և տարբերել բոտերին մարդկանցից։
 
 Երբ դուք փոխազդում եք կայքի հետ (օրինակ՝ կանոնավոր կերպով հաշիվ եք մտնում), այն կարող է ձեր դիտարկիչին վիճակի անձնական թոքեն տրամադրել։ Դրանից հետո, եթե ձեր այցելած մյուս կայքերը գտնեն վիճակի անձնական վավեր թոքեն, ամենայն հավանականությամբ ձեզ կճանաչեն որպես մարդ, այլ ոչ թե բոտ։
@@ -629,7 +621,6 @@
 <translation id="449126573531210296">Գաղտնագրել համաժամացված գաղտնաբառերը Google հաշվի միջոցով</translation>
 <translation id="4504667196171871375">Wi-Fi-ի և բջջային ինտերնետի միջոցով</translation>
 <translation id="4508528996305412043">Լրահոսի քարտի ընտրացանկը բացված է</translation>
-<translation id="4508642716788467538">Ընտրեք լեզուն</translation>
 <translation id="4509501256689523862">Գովազդի անհատականացումը կախված է այս կարգավորումից, <ph name="BEGIN_LINK_1" />գովազդի թեմաներից<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />քուքիների կարգավորումներից<ph name="END_LINK_2" /> և այն կայքի կարգավորումներից, որը դուք դիտում եք</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
 <translation id="451872707440238414">Որոնել էջանիշներում</translation>
@@ -696,7 +687,6 @@
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
 <translation id="481574578487123132">Կապված սարքեր</translation>
 <translation id="4826163340425232009">Հաշիվ մտնելու ներքևի էկրան։</translation>
-<translation id="4831037795716408498">Բովանդակության ներբեռնում</translation>
 <translation id="4834007576107377210">Որոնման պատմությունը ջնջելու համար դիտեք համապատասխան որոնողական համակարգի հրահանգները։</translation>
 <translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
@@ -747,7 +737,6 @@
 <translation id="5010886807652684893">Վիզուալ տեսք</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5017529052065664584">Վերջին 15 րոպեն</translation>
 <translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5040262127954254034">Գաղտնիություն</translation>
@@ -781,7 +770,6 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Ֆայլը ներբեռնվում է…}one{Ներբեռնվում է # ֆայլ…}other{Ներբեռնվում է # ֆայլ…}}</translation>
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
-<translation id="5213672942202814946">Որոնում ձայնի միջոցով</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5227554086496586518">Հպեք՝ որոնման արդյունքները տեսնելու համար</translation>
 <translation id="5233638681132016545">Նոր ներդիր</translation>
@@ -823,9 +811,7 @@
 <translation id="5458366071038729214">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
 <translation id="5468068603361015296">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը։</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
-<translation id="5483197086164197190">Նավիգացիա Chrome-ում</translation>
 <translation id="5487521232677179737">Ջնջել տվյալները</translation>
-<translation id="549025011754480756">Ինչպես որոնել ձայնի միջոցով</translation>
 <translation id="5492637351392383067">Գաղտնագրում սարքում</translation>
 <translation id="5514904542973294328">Անջատվել է այս սարքի ադմինիստրատորի կողմից</translation>
 <translation id="5515439363601853141">Գաղտնաբառը տեսնելու համար ապակողպեք էկրանը</translation>
@@ -884,7 +870,6 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />։ Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="5813552293717797987">Այս դիտարկիչը կառավարվում է <ph name="PARENT_NAME_1" /> և <ph name="PARENT_NAME_2" /> հաշիվների կողմից։</translation>
-<translation id="5814131985548525293">Սկսելու համար հպեք այստեղ կամ ձայնի պատկերակին</translation>
 <translation id="5814749351757353073">Բաժանորդագրվեք ձեր սիրած կայքերին</translation>
 <translation id="5822875253699806474">Համաժամացրեք ձեր ներդիրները և պատմությունը, որպեսզի արագ վերադառնաք ձեր այցելած կայքեր</translation>
 <translation id="583281660410589416">Անհայտ</translation>
@@ -971,7 +956,6 @@
 <translation id="6294610283659775533">Դուք կարող եք ուղարկել ներդիրները մի սարքից մյուսը, եթե դրանցում մտել եք հաշիվ միևնույն Google հաշվով</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6297765934698848803">Ձեր սարքը կառավարող կազմակերպությունն անջատել է տեսախցիկը։</translation>
-<translation id="6301525844455696527">Մի՛ մոռացեք ձեր ընթերցանության ցանկի մասին</translation>
 <translation id="6303969859164067831">Դուրս գրվել հաշվից և անջատել համաժամացումը</translation>
 <translation id="6312687380483398334">Վեբ հավելվածներ (լուռ)</translation>
 <translation id="6316139424528454185">Android-ի հնացած տարբերակ</translation>
@@ -1169,7 +1153,6 @@
 <translation id="7260367682327802201">Ձեր Android սարքում կարող է նմանատիպ կարգավորում լինել։ Եթե գովազդի արդյունավետության գնահատումը Chrome-ում և ձեր Android սարքում միացված է, ընկերությունները կարող են գնահատել գովազդի արդյունավետությունը ձեր այցելած կայքերում և ձեր կողմից օգտագործվող հավելվածներում։</translation>
 <translation id="727288900855680735">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="ORIGIN" /> կայքին</translation>
 <translation id="7274013316676448362">Արգելափակված կայք</translation>
-<translation id="7286572596625053347">Փոխե՞լ լեզուն (<ph name="LANGUAGE" />)</translation>
 <translation id="7286703216224610554">Կիսվել միայն արձագանքով</translation>
 <translation id="7290209999329137901">Հնարավոր չէ վերանվանել</translation>
 <translation id="7291910923717764901">Այս պատկերի համար ավելացված նկարագրությունները</translation>
@@ -1294,10 +1277,8 @@
 <translation id="78707286264420418">Ձեր սարքին միանալու համար <ph name="PRODUCT_NAME" />-ին մոտակա սարքերը գտնելու թույլտվություն է հարկավոր</translation>
 <translation id="7875915731392087153">Ստեղծեք նամակ</translation>
 <translation id="7876243839304621966">Հեռացնել բոլորը</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> չկարդացված էջ}one{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> չկարդացված էջ}other{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> չկարդացված էջ}}</translation>
 <translation id="7886917304091689118">Այս էջն արդեն բացված է Chrome-ում</translation>
 <translation id="7887174313503389866">Դիտեք գաղտնիության և անվտանգության հիմնական կառավարման տարրերը։ Լրացուցիչ պարամետրերի համար բացեք առանձին կարգավորումները։</translation>
-<translation id="789763218334337857">Ինչպես օգտագործել Chrome-ը</translation>
 <translation id="7903184275147100332">Սա կարող է մեկ րոպե տևել</translation>
 <translation id="7914399737746719723">Հավելվածը տեղադրվեց</translation>
 <translation id="7919123827536834358">Ավտոմատ թարգմանել այս լեզուներով էջերը</translation>
@@ -1368,7 +1349,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8209050860603202033">Բացել պատկերը</translation>
-<translation id="8216351761227087153">Դիտել</translation>
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8221401890884589479">Դուք կարող եք արգելափակել անցանկալի կայքերը։ Chrome-ը նաև ցանկից ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
@@ -1458,7 +1438,6 @@
 <translation id="8645920082661222035">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
 <translation id="8646467750715887511">Էջերը բեռնվում են միայն, եթե բացում եք դրանք։</translation>
 <translation id="8655129584991699539">Տվյալները կարող եք ջնջել Chrome-ի կարգավորումներում</translation>
-<translation id="8659579665266920523">Ինչպես որոնել Chrome-ի միջոցով</translation>
 <translation id="8662811608048051533">Դուք դուրս կգրվեք կայքերի մեծ մասից։</translation>
 <translation id="8664215986015753476">Կարգավորեք Chrome-ն ըստ ձեր ճաշակի</translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
@@ -1497,7 +1476,6 @@
 <translation id="885480114717186641">Դուք կարող եք <ph name="HOST_NAME" /> կայքի համակարգչային տարբերակը խնդրել</translation>
 <translation id="8856607253650333758">Ստանալ նկարագրություններ</translation>
 <translation id="8856931513242997049">Ծանուցումների թույլտվության պատուհանը փակված է</translation>
-<translation id="8873817150012960745">Սկսելու համար հպեք այստեղ</translation>
 <translation id="8881973373982641723">Մաքրում է պատմությունը, այդ թվում որոնման դաշտում։</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Ինչպես կարող եք կառավարել ձեր տվյալները.<ph name="END_BOLD" /> ձեր գաղտնիությունը պաշտպանելու նպատակով մենք 4 շաբաթից կայքերն ավտոմատ ջնջում ենք ցանկից։ Եթե դուք նորից այցելեք որոշակի կայք, այն կրկին կարող է հայտնվել ցանկում։ Դուք նաև կարող եք հեռացնել կայքը, եթե չեք ցանկանում, որ ըստ դրա որոշվեն ձեր հետաքրքրությունները։</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>

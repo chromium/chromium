@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Retourner à la fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1125564390852150847">Créer un onglet.</translation>
-<translation id="1126013303640354461">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
-Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google, ni stockée par Google. Si vous oubliez votre phrase de passe ou si vous souhaitez la modifier, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
 <translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
@@ -89,6 +87,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
 <translation id="152234381334907219">Jamais enregistrés</translation>
 <translation id="1523341279170789507">Autoriser tous les témoins</translation>
+<translation id="1524563461097350801">Non, merci</translation>
 <translation id="1531836666020185856">En vedette</translation>
 <translation id="1535268707340844072">Vos paramètres actuels pourraient nuire au fonctionnement de certains sites. Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Ligne adresse 1</translation>
@@ -246,7 +245,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2647269890314209800">Témoins en cours d'utilisation</translation>
 <translation id="2648721026697078500">Ne jamais déplacer</translation>
 <translation id="2648803196158606475">Supprimer les éléments lus</translation>
-<translation id="2653659639078652383">Envoyer</translation>
 <translation id="2664621323652615289">Arrêter</translation>
 <translation id="2671426118752779020">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPhone.</translation>
 <translation id="2690858294534178585">La caméra est en cours d'utilisation</translation>
@@ -306,7 +304,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2932765531295814441">Ajouter des mots de passe manuellement</translation>
 <translation id="2952581218264071393">1. Ouvrez les paramètres de Chrome</translation>
-<translation id="2953871438216280742">Connectez-vous pour ouvrir et enregistrer la liste de lecture dans votre compte Google.</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2961210776189273067">Titre</translation>
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
@@ -435,6 +432,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3861486700625780712">Ne plus suivre</translation>
 <translation id="3863769054730344136">Envoyer à vos appareils</translation>
 <translation id="387280738075653372">Téléchargez Chrome ici.</translation>
+<translation id="3875783148670536197">Afficher la marche à suivre</translation>
 <translation id="3888863481921783344">Cela sera utilisé pour vous montrer les invités potentiels à votre événement.</translation>
 <translation id="3891414008432200754">Prix</translation>
 <translation id="3892144330757387737">Vous trouverez votre historique ici</translation>
@@ -550,9 +548,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4652817563047461855">Assurez-vous que vos mots de passe sont sûrs, découvrez s'ils ont été compromis et obtenez des conseils pour vous protéger en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Accéder au gestionnaire d’onglets</translation>
 <translation id="46614316059270592">Enregistrer le mot de passe</translation>
-<translation id="4666531726415300315">Connecté en tant que <ph name="EMAIL" />.
-
-Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="4682686630151240767">1. Ouvrez Réglages de l'iPhone</translation>
 <translation id="4689564913179979534">Gérer vos modes de paiement…</translation>
 <translation id="469300482518076788">Fermer l'onglet</translation>
@@ -561,16 +556,12 @@ Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour 
 <translation id="4737560986434232178">Rechercher dans les onglets récents</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4746926359847517643">Vous pouvez toujours les retrouver dans l'historique.</translation>
-<translation id="4747097190499141774">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, uniquement sur cet appareil, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
 <translation id="4766112107778026136">Découvrir et suivre</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4778644898150334464">Utiliser un autre mot de passe</translation>
 <translation id="478808905805139173">Ouvrir en mode de navigation privée?</translation>
-<translation id="4802417911091824046">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay.
-
-Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">Géré par votre organisation.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numéro de carte incorrect</translation>
@@ -832,16 +823,12 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6366663624406569102">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6377118281273296434">Sécurité du site</translation>
-<translation id="6380866119319257197">Si vous oubliez votre phrase de passe ou souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Ouvrir un emplacement…</translation>
 <translation id="6387994324662817823">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil uniquement.</translation>
 <translation id="6389470377220713856">Nom sur carte</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6410390304316730527">La navigation sécurisée vous protège contre les pirates qui pourraient vous inciter à faire quelque chose de dangereux comme installer un logiciel malveillant ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). Si vous la désactivez, faites attention lorsque vous naviguez sur des sites inconnus ou de mauvaise réputation.</translation>
 <translation id="6410883413783534063">Ouvrez des onglets pour visiter différentes pages en même temps</translation>
-<translation id="641799622251403418">Connecté en tant que <ph name="EMAIL" />.
-
-Vos données ont été chiffrées avec votre phrase de passe le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="6418346271604475326">Prép. du PDF</translation>
 <translation id="6429213933892582367">Ouvrez les options de mot de passe</translation>
 <translation id="6434591244308415567">Une erreur s'est produite. Réessayez plus tard.</translation>
@@ -1055,7 +1042,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="784551991304901159">Pour afficher du contenu, sélectionnez Activer dans le menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Mis en favori avec « {title} »}one{Mis en favori avec « {title} »}other{Mis en favori avec « {title} »}}</translation>
-<translation id="7852017611907717397">ANNULER</translation>
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7856733331829174190">Échec du téléchargement</translation>
 <translation id="785938070103630874">Ouvrir les mots de passe, les modes de paiement, l'adresse et plus</translation>

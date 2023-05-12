@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">ముదురు రంగు రూపాన్ని డిజేబుల్ చేయండి</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1827738518074806965">చిత్రకళా గ్యాలరీ</translation>
+<translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
 <translation id="1851218745569890714">వీడియో మీటింగ్‌ నిర్వహించడం</translation>
 <translation id="1852934301711881861">ChromeOS Flexను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="1856388568474281774">కింది వైపు బాణం</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">కీ దశ</translation>
 <translation id="3294437725009624529">అతిథి</translation>
+<translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4930320165497208503">కనెక్షన్‌ను సెటప్ చేయడానికి లేదా అప్‌డేట్ చేయడానికి, <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
-<translation id="4937657825850660613">సగం</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" />, <ph name="VERSION" /> వెర్షన్‌కు అప్‌డేట్ చేయబడింది</translation>
 <translation id="4971925105143343452">పాక్షికం</translation>
 <translation id="4972592110715526173">మోడ్‌ను మారుస్తుంది</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC అడ్రస్‌</translation>
 <translation id="7491478667760509108">ఫ్లోట్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="7497215489070763236">సర్వర్ CA సర్టిఫికేట్</translation>
+<translation id="7501957181231305652">లేదా</translation>
 <translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">సహాయక కంటెంట్ అందుబాటులో లేదు</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="763165478673169849">చివరిగా రీసెట్ చేసిన సమయం</translation>
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
+<translation id="765159867434478292">విభజించు</translation>
 <translation id="7656388927906093505">పరికరం రకం మౌస్.</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7665800271478495366">అవతార్‌ను మార్చండి</translation>

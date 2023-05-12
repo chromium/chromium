@@ -87,6 +87,7 @@
 <translation id="2467438592969358367">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна. Үүнийг зөвшөөрч байгаа бол Windows-н нууц үгээ оруулна уу.</translation>
 <translation id="2485422356828889247">Устгах</translation>
 <translation id="2534507159460261402">Google Pay (Chrome-д хуулсан)</translation>
+<translation id="2556847002339236023">Танай байгууллага Chrome-г <ph name="TIMEOUT_DURATION" />-н турш ашиглаагүй үед хаадаг. Интернэтээр үзсэн өгөгдлийг устгасан. Үүнд түүх, автоматаар бөглөх хэсэг болон татаж авсан файлууд багтаж болно.</translation>
 <translation id="2559253115192232574">Дараа нь таны зочилсон сайт таны хардаг зарыг хувийн болгохын тулд Chrome-с таны сонирхлыг харахыг хүсэх боломжтой. Chrome 3 хүртэлх сонирхол хуваалцах боломжтой.</translation>
 <translation id="2563121210305478421">Chrome-г дахин эхлүүлэх үү?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> Chrome-н энэ профайлд аль хэдийн нэвтэрсэн байна. Таны хөтчийн үзэлтийг тусад нь байлгахын тулд Chrome танд өөрийн гэсэн профайл үүсгэж өгөх боломжтой.</translation>
@@ -275,6 +276,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6113794647360055231">Chrome илүү сайн боллоо</translation>
 <translation id="6145313976051292476">PDF-г Chrome-д нээх</translation>
 <translation id="6155960517327665396">Санах ой хэмнэгч нь Chrome-г илүү хурдан болгосон</translation>
+<translation id="6157638032135951407">Танай байгууллага Chrome-г <ph name="TIMEOUT_DURATION" />-н турш ашиглаагүй үед өгөгдлийг нь устгадаг. Үүнд түүх, автоматаар бөглөх хэсэг болон татаж авсан файлууд багтаж болно.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Бета</translation>
 <translation id="6235018212288296708">mDNS урсгалыг зөвшөөрөх Google Chrome-ын дотоод дүрэм.</translation>
@@ -290,6 +292,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6418662306461808273">Chrome-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="648319183876919572">Сайжруулсан аюулгүй хөтөч нь таныг аюултай вебсайт болон таталтаас хамгаалахын тулд илүү ихийг хийдэг</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" /> оролдож байна</translation>
+<translation id="6497147134301593682">Chrome-г автоматаар хаасан</translation>
 <translation id="6506909944137591434">Таны эргэн тойрны 3D газрын зургийг үүсгэхийн тулд Chrome-д камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Дев</translation>
 <translation id="659498884637196217">Энэ төхөөрөмжийн Google-н Нууц үгний менежерт байна</translation>
@@ -326,6 +329,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7155997830309522122">Хэрэв тийм бол Chrome-д хадгалсан нууц үгээ засаж, шинэ нууц үгтэйгээ тааруулна уу.</translation>
 <translation id="7161904924553537242">Google Chrome-д тавтай морил</translation>
 <translation id="7177959540995930968">Та эдгээр онцлогийн талаар Chrome-н тохиргоо хэсгээс нэмэлт мэдээлэл авах боломжтой.</translation>
+<translation id="7193885263065350793">Танай байгууллага Chrome-г <ph name="TIMEOUT_DURATION" />-н турш ашиглаагүй үед хаадаг.</translation>
 <translation id="7242029209006116544">Та удирдлагатай бүртгэлээр нэвтрэн орсноор үүний админд нь өөрийнхөө Google Chrome-ын мэдээллийг хянах эрхийг өгөх болно.  Жишээ нь, таны Chrome-ын мэдээлэл,  хадгалагдсан хуудсууд,  түүх, нууц үг болон бусад тохиргоонууд <ph name="USER_NAME" /> руу  тэр чигтээ нэгтгэгдэх болно.  Та Google-ийн Хяналтын Самбараар дамжуулан энэ мэдээллийг устгах боломжтой хэдий ч энэ мэдээллийг өөр бүртгэлтэй холбох боломжгүй болно. Харин та одоо байгаа Chrome-ын мэдээллийг тусад нь хадгалахын тулд шинэ хэрэглэгч үүсгэж болно. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Энэ хэлийг Google Chrome UI-г харуулахад ашигладаг</translation>
 <translation id="7296210096911315575">Ашиглалт болон аюулгүй байдлын чухал мэдээлэл</translation>

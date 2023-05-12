@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Деактивиране на тъмната тема</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
+<translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1852934301711881861">Инсталиране на ChromeOS Flex</translation>
 <translation id="1856388568474281774">Стрелка за надолу</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГХц</translation>
 <translation id="3291996639387199448">Посока на ключа</translation>
 <translation id="3294437725009624529">Гост</translation>
+<translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
 <translation id="4930320165497208503">За настройване или актуализиране на дадена връзка отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
-<translation id="4937657825850660613">Наполовина</translation>
 <translation id="4950314376641394653">Фърмуерът на <ph name="DEVICE_NAME" /> е актуализиран до версия <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Частично</translation>
 <translation id="4972592110715526173">промяна на режима</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC адрес</translation>
 <translation id="7491478667760509108">Изход от режима на плаващ прозорец</translation>
 <translation id="7497215489070763236">Сертификат от сертифициращ орган за сървъра</translation>
+<translation id="7501957181231305652">или</translation>
 <translation id="7502658306369382406">IPv6 адрес</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Помощното съдържание не е налично</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
+<translation id="765159867434478292">Разделяне</translation>
 <translation id="7656388927906093505">Устройството е мишка.</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7665800271478495366">Промяна на аватара</translation>

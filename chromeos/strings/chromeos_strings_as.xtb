@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">গাঢ় ৰঙৰ থীম অক্ষম কৰক</translation>
 <translation id="1807246157184219062">পাতল</translation>
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
+<translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
 <translation id="1852934301711881861">ChromeOS Flex ইনষ্টল কৰক</translation>
 <translation id="1856388568474281774">ডাউন এৰ’</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> গিগাহাৰ্টজ</translation>
 <translation id="3291996639387199448">চাবিৰ নির্দেশনা</translation>
 <translation id="3294437725009624529">অতিথি</translation>
+<translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
 <translation id="3310640316857623290">DNSৰ বিলম্বতা যথেষ্ট পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
 <translation id="3340011300870565703">ডিভাইচটোৰ সোঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
 <translation id="4930320165497208503">কোনো সংযোগ ছেট আপ কৰিবলৈ অথবা আপডে’ট কৰিবলৈ, <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
-<translation id="4937657825850660613">আধা</translation>
 <translation id="4950314376641394653">ফাৰ্মৱেৰ <ph name="DEVICE_NAME" /> সংস্কৰণ <ph name="VERSION" />লৈ আপডে’ট কৰা হ’ল</translation>
 <translation id="4971925105143343452">আংশিক</translation>
 <translation id="4972592110715526173">ম’ড সলনি কৰক</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC ঠিকনা</translation>
 <translation id="7491478667760509108">ওপঙা স্থিতিৰ পৰা বাহিৰ হওক</translation>
 <translation id="7497215489070763236">ছার্ভাৰ CA প্ৰমাণপত্ৰ</translation>
+<translation id="7501957181231305652">অথবা</translation>
 <translation id="7502658306369382406">IPv6 ঠিকনা</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">সহায় বিষয়ক সমল উপলব্ধ নহয়</translation>

@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">S'ha detectat un document</translation>
 <translation id="414641094616694804">Aquesta càmera no pot canviar la resolució</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
-<translation id="4281620174117014503">Resolució mitjana</translation>
 <translation id="428234092390943511">Miniatura de la pàgina</translation>
 <translation id="4383571725254449280">Registres de rendiment d'impressió</translation>
 <translation id="4445542136948522167">No facis la foto</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">S'està escanejant la pàgina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrat</translation>
+<translation id="574392208103952083">Mitja</translation>
 <translation id="5746169159649715125">Desa com a PDF</translation>
 <translation id="5753488212459587150">Activa el mode expert</translation>
 <translation id="5759254179196327752">Escaneja el document</translation>

@@ -82,6 +82,7 @@
 <translation id="2467438592969358367">Google Chrome からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2534507159460261402">Google Pay（Chrome にコピー）</translation>
+<translation id="2556847002339236023"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome は組織によって終了されます。閲覧データは削除されました。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
 <translation id="2559253115192232574">その後、アクセスしたサイトは、表示する広告をパーソナライズするために、Chrome にユーザーの興味 / 関心を提示するよう依頼できます。Chrome では、興味 / 関心を 3 つまで共有できます。</translation>
 <translation id="2563121210305478421">Chrome を再起動しますか？</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。ブラウジング環境を分ける場合は、Chrome で自分用のプロファイルを作成できます。</translation>
@@ -266,6 +267,7 @@
 <translation id="6113794647360055231">進化する Chrome</translation>
 <translation id="6145313976051292476">Chrome で PDF を開く</translation>
 <translation id="6155960517327665396">メモリセーバーで Chrome の速度を向上</translation>
+<translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome のデータは組織によって削除されます。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">mDNS トラフィックを許可する Google Chrome のインバウンド ルールです。</translation>
@@ -281,6 +283,7 @@
 <translation id="6418662306461808273">既存の Chrome プロファイルに切り替えますか？</translation>
 <translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>
 <translation id="6493527311031785448">Google Chrome が <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome は自動的に終了しました</translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>
@@ -317,6 +320,7 @@
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
 <translation id="7161904924553537242">Google Chrome へようこそ</translation>
 <translation id="7177959540995930968">これらの機能について詳しくは、Chrome の設定をご覧ください。</translation>
+<translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome は組織によって終了されます。</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">この言語が Google Chrome UI の表示に使用されます</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>

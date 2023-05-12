@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">Documento detectado</translation>
 <translation id="414641094616694804">Esta cámara no puede cambiar de resolución</translation>
 <translation id="4269820728363426813">Copiar la dirección del enlace</translation>
-<translation id="4281620174117014503">Resolución media</translation>
 <translation id="428234092390943511">Miniatura de la página</translation>
 <translation id="4383571725254449280">Imprimir registros de rendimiento</translation>
 <translation id="4445542136948522167">Detener foto</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">Escaneando página <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Cuadrado</translation>
+<translation id="574392208103952083">Media</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5753488212459587150">Habilitar modo Experto</translation>
 <translation id="5759254179196327752">Escanear documento</translation>

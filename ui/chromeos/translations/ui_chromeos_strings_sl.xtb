@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Preklop na pogled seznama</translation>
 <translation id="2377590462528165447">Št. map, deljenih z Linuxom: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="2378075407703503998">Št. izbranih datotek: <ph name="SELCTED_FILE_COUNT" /></translation>
 <translation id="2383454254762599978">Premakni v smetnjak</translation>
 <translation id="2387458720915042159">Vrsta povezave strežnika proxy</translation>
 <translation id="2389832672041313158">burmanščina/mjanmarščina</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Naprava je samo za branje</translation>
 <translation id="4826849268470072925">tamilščina (ITRANS)</translation>
 <translation id="482932175346970750">V brskalnik vnesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
-<translation id="4839847978919684242">Št. izbranih elementov: <ph name="SELCTED_FILES_COUNT" /></translation>
 <translation id="4843566743023903107">Naprave Chromebase</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="485316830061041779">nemščina</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">švedščina</translation>
 <translation id="6990081529015358884">Zmanjkalo vam je prostora</translation>
 <translation id="6993826899923627728">Ti elementi so v smetnjaku</translation>
-<translation id="6998711733709403587">Izbranih toliko map: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
 <translation id="7008426324576352165">Vaša organizacija potrebuje več prostora za shranjevanje, da bo mogoče dokončati nalaganje.</translation>
 <translation id="7009985720488544166">Premikanje <ph name="COUNT" /> datotek(-e) blokira skrbniški pravilnik</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Mudar para janela aberta</translation>
 <translation id="1112015203684611006">Falha na impressão.</translation>
 <translation id="1125564390852150847">Criar nova guia</translation>
-<translation id="1126013303640354461">As formas de pagamento e os endereços do Google Pay não vão ser criptografados. O histórico de navegação do Chrome não será sincronizado.
-Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa senha não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, vai ser necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1147031633655575115">Conta conectada: <ph name="USER" /></translation>
@@ -89,6 +87,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
 <translation id="152234381334907219">Nunca salvas</translation>
 <translation id="1523341279170789507">Permitir todos os cookies</translation>
+<translation id="1524563461097350801">Agora não</translation>
 <translation id="1531836666020185856">Em destaque</translation>
 <translation id="1535268707340844072">Suas configurações atuais podem fazer com que alguns sites não funcionem corretamente. Para gerenciar os cookies de todos os sites, acesse <ph name="BEGIN_LINK" />Configurações de cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Endereço 1</translation>
@@ -246,7 +245,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2647269890314209800">Cookies em uso</translation>
 <translation id="2648721026697078500">Nunca mover</translation>
 <translation id="2648803196158606475">Excluir lidas</translation>
-<translation id="2653659639078652383">Enviar</translation>
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2671426118752779020">Você pode usar as senhas armazenadas no Gerenciador de senhas do Google em outros apps do iPhone.</translation>
 <translation id="2690858294534178585">A câmera está sendo usada</translation>
@@ -306,7 +304,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2932085390869194046">Sugerir senha…</translation>
 <translation id="2932765531295814441">Adicionar senhas manualmente</translation>
 <translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
-<translation id="2953871438216280742">Faça login para abrir e salvar sua lista de leitura na Conta do Google.</translation>
 <translation id="2958718410589002129">Senhas</translation>
 <translation id="2961210776189273067">Título</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
@@ -435,6 +432,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3861486700625780712">Parar de seguir</translation>
 <translation id="3863769054730344136">Enviar para seus dispositivos</translation>
 <translation id="387280738075653372">Faça o download do Chrome aqui.</translation>
+<translation id="3875783148670536197">Me ajude a fazer isso</translation>
 <translation id="3888863481921783344">Essa informação vai ser usada para mostrar possíveis convidados para seu evento.</translation>
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">Você verá seu histórico aqui</translation>
@@ -550,9 +548,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4652817563047461855">Verifique se suas senhas estão seguras, descubra se elas foram comprometidas e receba conselhos de proteção on-line. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Entrar no seletor guias</translation>
 <translation id="46614316059270592">Salvar senha</translation>
-<translation id="4666531726415300315">Conectado como <ph name="EMAIL" />.
-
-Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="4682686630151240767">1. Abra o app Ajustes do iPhone</translation>
 <translation id="4689564913179979534">Gerenciar formas de pagamento…</translation>
 <translation id="469300482518076788">Fechar guia</translation>
@@ -561,16 +556,12 @@ Seus dados são criptografados com sua senha longa de sincronização. Informe-a
 <translation id="4737560986434232178">Pesquisar guias recentes</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4746926359847517643">Elas podem ser recuperadas a qualquer momento no histórico.</translation>
-<translation id="4747097190499141774">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay. Só alguém com acesso a sua senha longa pode ler seus dados criptografados. Essa senha não é enviada ou armazenada pelo Google. Se você esquecer a senha longa ou quiser alterar essa configuração, será necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, somente neste dispositivo, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nova guia anônima</translation>
 <translation id="4766112107778026136">Discover e seguindo</translation>
 <translation id="4775879719735953715">Navegador padrão</translation>
 <translation id="4778644898150334464">Usar outra senha</translation>
 <translation id="478808905805139173">Abrir na navegação anônima?</translation>
-<translation id="4802417911091824046">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
-
-Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">Gerenciado pela sua organização.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Número de cartão inválido</translation>
@@ -815,6 +806,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6331180460633101391"><ph name="COUNT" /> senhas reutilizadas</translation>
 <translation id="6337234675334993532">Criptografia</translation>
 <translation id="633809752005859102">Algo deu errado. Estamos trabalhando para resolver isso.</translation>
+<translation id="6339793034470834130">Para usar o Web Inspector, conecte-se ao Safari no computador usando um cabo e acesse o iPhone no menu de desenvolvimento. Você pode ativar o menu de desenvolvimento na seção "Avançado" das configurações do Safari no computador.</translation>
 <translation id="6340285871011301182">A tradução parcial não está disponível.</translation>
 <translation id="6342069812937806050">Neste instante</translation>
 <translation id="6344783595350022745">Limpar texto</translation>
@@ -822,6 +814,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6347953390226388422">{count,plural, =1{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}one{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}other{Esses endereços serão excluídos da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}}</translation>
 <translation id="634878792104344809">Sincronize senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="6348855835728304880">Acesse suas senhas do Chrome e muito mais em outros apps neste dispositivo.</translation>
+<translation id="63519665078626091">Para usar o Web Inspector, conecte-se ao Safari no computador usando um cabo e acesse o iPad no menu de desenvolvimento. Você pode ativar o menu de desenvolvimento na seção "Avançado" das configurações do Safari no computador.</translation>
 <translation id="6355820205320395730">Senhas fracas são fáceis de adivinhar. Você precisa criar senhas fortes. <ph name="BEGIN_LINK" />Confira mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Não há guias anônimas</translation>
@@ -830,16 +823,12 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6366663624406569102">Sair e desativar a sincronização</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
-<translation id="6380866119319257197">Se você esquecer a senha longa ou quiser alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Abrir local…</translation>
 <translation id="6387994324662817823">As senhas são salvas no Gerenciador de senhas do Google somente neste dispositivo.</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
 <translation id="6410390304316730527">O "Navegação segura" protege contra invasores que podem levar você a fazer algo perigoso, como instalar um software malicioso ou revelar informações pessoais como senhas, números de telefone ou cartões de crédito. Se desativá-lo, tenha cuidado ao navegar em sites desconhecidos ou com má reputação.</translation>
 <translation id="6410883413783534063">Abra guias para acessar páginas diferentes ao mesmo tempo</translation>
-<translation id="641799622251403418">Conectado como <ph name="EMAIL" />.
-
-Seus dados foram criptografados com sua senha longa de sincronização no dia <ph name="TIME" />. Informe-a para começar a sincronização.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
 <translation id="6429213933892582367">Abra "Opções de senha"</translation>
 <translation id="6434591244308415567">Ocorreu um erro. Tente novamente mais tarde.</translation>
@@ -1053,7 +1042,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7845466610722898">Mostrar "Lista de leitura"</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione "Ativar" no menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
-<translation id="7852017611907717397">DESFAZER</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Falha no download</translation>
 <translation id="785938070103630874">Abrir senhas, formas de pagamento, endereço e mais</translation>
@@ -1082,6 +1070,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="7993619969781047893">Os recursos de alguns sites podem apresentar falhas</translation>
 <translation id="800361585186029508">Abre os URLs fornecidos no Google Chrome.</translation>
 <translation id="8005666035647241369">Para o Gerenciador de senhas do Google deste dispositivo</translation>
+<translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Sempre usar conexões seguras</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8023878949384262191">Expande a seção.</translation>

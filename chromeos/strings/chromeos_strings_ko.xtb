@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
+<translation id="1838374766361614909">검색어 지우기</translation>
 <translation id="1851218745569890714">화상 회의</translation>
 <translation id="1852934301711881861">ChromeOS Flex 설치</translation>
 <translation id="1856388568474281774">아래쪽 화살표</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">키 방향</translation>
 <translation id="3294437725009624529">게스트</translation>
+<translation id="3303855915957856445">검색결과 없음</translation>
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
 <translation id="4930320165497208503">연결을 설정하거나 업데이트하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4932733599132424254">날짜</translation>
-<translation id="4937657825850660613">절반 분할</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> 펌웨어가 <ph name="VERSION" /> 버전으로 업데이트되었습니다</translation>
 <translation id="4971925105143343452">부분화면</translation>
 <translation id="4972592110715526173">모드를 변경합니다</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC 주소</translation>
 <translation id="7491478667760509108">플로팅 종료</translation>
 <translation id="7497215489070763236">서버 CA 인증서</translation>
+<translation id="7501957181231305652">또는</translation>
 <translation id="7502658306369382406">IPv6 주소</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">도움말 콘텐츠를 사용할 수 없습니다.</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">고객센터에서 자세히 알아보기</translation>
 <translation id="763165478673169849">마지막 재설정 시간</translation>
 <translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
+<translation id="765159867434478292">분할</translation>
 <translation id="7656388927906093505">마우스 기기입니다.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665800271478495366">아바타 변경</translation>

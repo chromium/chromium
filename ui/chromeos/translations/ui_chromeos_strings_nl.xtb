@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Overschakelen naar lijstweergave</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Linux</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> bestanden geselecteerd</translation>
 <translation id="2383454254762599978">Naar de prullenbak verplaatsen</translation>
 <translation id="2387458720915042159">Proxyverbindingstype</translation>
 <translation id="2389832672041313158">Birmaans/Myanmar</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Apparaat is alleen-lezen</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
 <translation id="482932175346970750">Typ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> in de browser</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> items geselecteerd</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="485316830061041779">Duits</translation>
@@ -757,7 +755,6 @@
 <translation id="6989942356279143254">Zweeds</translation>
 <translation id="6990081529015358884">Er is onvoldoende ruimte beschikbaar</translation>
 <translation id="6993826899923627728">Deze items staan in je prullenbak</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> mappen geselecteerd</translation>
 <translation id="7008426324576352165">Je organisatie heeft meer opslagruimte nodig om de upload af te ronden.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> bestanden verplaatsen is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

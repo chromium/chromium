@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">השבתת העיצוב הכהה</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1827738518074806965">גלריית אומנות</translation>
+<translation id="1838374766361614909">ניקוי חיפוש</translation>
 <translation id="1851218745569890714">שיחת ועידה בווידאו</translation>
 <translation id="1852934301711881861">‏התקנה של ChromeOS Flex</translation>
 <translation id="1856388568474281774">חץ למטה</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3291996639387199448">כיוון המפתח</translation>
 <translation id="3294437725009624529">אורח</translation>
+<translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4930320165497208503">כדי להגדיר או לעדכן חיבור, צריך לעבור ל<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">תאריך</translation>
-<translation id="4937657825850660613">חצי</translation>
 <translation id="4950314376641394653">הקושחה במכשיר <ph name="DEVICE_NAME" /> עודכנה לגרסה <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">חלקי</translation>
 <translation id="4972592110715526173">שינוי מצב</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">‏כתובת MAC</translation>
 <translation id="7491478667760509108">יציאה ממצב צף</translation>
 <translation id="7497215489070763236">‏אישור CA של שרת</translation>
+<translation id="7501957181231305652">או</translation>
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">תוכן העזרה לא זמין</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
+<translation id="765159867434478292">פצל</translation>
 <translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665800271478495366">החלפת הדמות</translation>

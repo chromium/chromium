@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Atspējot tumšo motīvu</translation>
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1827738518074806965">Mākslas galerija</translation>
+<translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
 <translation id="1851218745569890714">Videokonferences</translation>
 <translation id="1852934301711881861">Instalēt Chrome OS Flex</translation>
 <translation id="1856388568474281774">Lejupvērstais bulttaustiņš</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Atslēgas pozīcija</translation>
 <translation id="3294437725009624529">Viesis</translation>
+<translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
 <translation id="3310640316857623290">DNS latentums ievērojami pārsniedz pieļaujamo slieksni</translation>
 <translation id="3328783797891415197">Tiek veikta pārbaude</translation>
 <translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
 <translation id="4930320165497208503">Lai iestatītu vai atjauninātu savienojumu, pārejiet uz <ph name="BEGIN_LINK" />iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datums</translation>
-<translation id="4937657825850660613">Puse</translation>
 <translation id="4950314376641394653">Ierīces <ph name="DEVICE_NAME" /> aparātprogrammatūra tika atjaunināta uz versiju <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Daļējs</translation>
 <translation id="4972592110715526173">mainīt režīmu</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC adrese</translation>
 <translation id="7491478667760509108">Iziet no peldēšanas režīma</translation>
 <translation id="7497215489070763236">Servera CA sertifikāts</translation>
+<translation id="7501957181231305652">vai</translation>
 <translation id="7502658306369382406">IPv6 adrese</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Palīdzības saturs nav pieejams</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="763165478673169849">Pēdējās atiestatīšanas laiks</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
+<translation id="765159867434478292">Sadalīt</translation>
 <translation id="7656388927906093505">Ierīce ir pele.</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7665800271478495366">Mainīt iemiesojumu</translation>

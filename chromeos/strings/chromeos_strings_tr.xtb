@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Koyu temayı devre dışı bırak</translation>
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1827738518074806965">Sanat galerisi</translation>
+<translation id="1838374766361614909">Aramayı temizle</translation>
 <translation id="1851218745569890714">Video Konferansı</translation>
 <translation id="1852934301711881861">ChromeOS Flex'i yükle</translation>
 <translation id="1856388568474281774">Aşağı ok</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Anahtar yönü</translation>
 <translation id="3294437725009624529">Misafir</translation>
+<translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyede <ph name="RATE" /> şarj oldu</translation>
 <translation id="4930320165497208503">Bir bağlantıyı kurmak veya güncellemek için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'a gidin.</translation>
 <translation id="4932733599132424254">Tarih</translation>
-<translation id="4937657825850660613">Yarı</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> donanım yazılımı <ph name="VERSION" /> sürümüne güncellendi</translation>
 <translation id="4971925105143343452">Kısmi</translation>
 <translation id="4972592110715526173">mod değiştir</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC adresi</translation>
 <translation id="7491478667760509108">Kayan moddan çık</translation>
 <translation id="7497215489070763236">Sunucu CA sertifikası</translation>
+<translation id="7501957181231305652">veya</translation>
 <translation id="7502658306369382406">IPv6 adresi</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Yardım içeriği kullanılamıyor</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Yardım Merkezi'nde daha fazla bilgi edinin</translation>
 <translation id="763165478673169849">Son Sıfırlanma Zamanı</translation>
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>
+<translation id="765159867434478292">Böl</translation>
 <translation id="7656388927906093505">Cihazın türü fare.</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7665800271478495366">Avatarı değiştir</translation>

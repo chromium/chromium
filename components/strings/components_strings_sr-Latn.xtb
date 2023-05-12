@@ -175,7 +175,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1363819917331173092">Ne nudi prevod stranica na jeziku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Ove smernice su blokirane. Njihova vrednost će biti zanemarena.</translation>
 <translation id="1368318639262510626">Igra sa dinosaurusom. Pikselizovani dinosaurus izbegava kaktuse i pterodaktile dok trči pustim pejzažem. Kada čujete zvučni signal dodirnite taster za razmak da biste preskakali prepreke.</translation>
-<translation id="136907351928231527">Može da prođe i do nedelju dana da se lista tema pojavi ovde na osnovu nedavne istorije pregledanja</translation>
 <translation id="1374468813861204354">predlozi</translation>
 <translation id="1375198122581997741">O verziji</translation>
 <translation id="1376836354785490390">Prikaži manje</translation>
@@ -1673,6 +1672,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5045550434625856497">Neispravna lozinka</translation>
 <translation id="5051305769747448211">Komedija uživo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali ovaj fajl pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
+<translation id="5060419232449737386">Podešavanja titla</translation>
 <translation id="5060483733937416656">Odabrali ste da se verifikujete pomoću Windows Hello-a na veb-sajtovima koji koriste <ph name="PROVIDER_ORIGIN" />. Ovaj dobavljač je možda sačuvao informacije o načinu plaćanja, za koji možete da <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Da li ste mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Istorija štampanja</translation>
@@ -2645,7 +2645,7 @@ Dodatni detalji:
 <translation id="7465963048299965912">10×13 in</translation>
 <translation id="7469935732330206581">Obrazac nije bezbedan</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
-<translation id="7481312909269577407">Prosledi</translation>
+<translation id="7481312909269577407">Napred</translation>
 <translation id="7481603210197454575">Italijanska koverta</translation>
 <translation id="7485870689360869515">Nisu pronađeni podaci.</translation>
 <translation id="748745328507845862">Koncerti i muzički festivali</translation>

@@ -163,7 +163,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1703117532528082099">Aktiivne aken dokiti vasakule.</translation>
 <translation id="1708345662127501511">Töölaud: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Võrguseaded</translation>
-<translation id="1715293566947629045">Profiili keelamine. Oodake mõni minut.</translation>
 <translation id="1719094688023114093">Reaalajas subtiitrid on sisse lülitatud.</translation>
 <translation id="1720011244392820496">Lülitage WiFi sünkroonimine sisse</translation>
 <translation id="1720230731642245863">Kuumkoht on väljas</translation>
@@ -183,7 +182,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1771761307086386028">Keri paremale</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, praegu on valitud <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Väljas</translation>
-<translation id="1807246157184219062">Hele</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1816896987747843206">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1823280932251546115">Olekusalv, aeg <ph name="TIME" />,
@@ -264,6 +262,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2170530631236737939">Ülevaatest lahkumiseks pühkige kolme sõrmega alla</translation>
 <translation id="2185166372312820725">Eelmisele vahelehele liikumine</translation>
 <translation id="2185444992308415167">Vahelehtede 1 kuni 8 läbivaatamine</translation>
+<translation id="2198625180564913276">Profiili lisamine. See võib võtta mõne minuti.</translation>
 <translation id="219905428774326614">Käivitaja, kõik rakendused</translation>
 <translation id="2201071101391734388">Hiljutine foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Ühendatud töölaua režiim</translation>
@@ -436,7 +435,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3039939407102840004">Elektronpliiatsi aku laetuse tase on <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Tere päevast!</translation>
 <translation id="3047761520276763270">Püüdke öelda:</translation>
-<translation id="3051189971848907985">Profiili nime muudetakse. Oodake mõni minut.</translation>
 <translation id="3055162170959710888">Kasutasite seda seadet täna <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Ei toetata</translation>
 <translation id="3068622547379332530">Versioon: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -508,7 +506,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3371140690572404006">C-tüüpi USB-seade (eesmine parempoolne port)</translation>
 <translation id="3375634426936648815">Ühendatud</translation>
 <translation id="3378438761594387761">Siit leiate oma hiljutised allalaadimised ja jäädvustatud ekraanikuvad</translation>
-<translation id="3378442621503952303">Profiiliga luuakse ühendust. Oodake mõni minut.</translation>
 <translation id="3386978599540877378">täisekraani luup</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Lisaseaded</translation>
@@ -716,13 +713,13 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4280601795273309128">Turvavärskenduste saatmine lõppes. Viige seade üle uuemale versioonile.</translation>
 <translation id="4283888303416325161">Sisestage tugevama turvalisuse jaoks parool</translation>
 <translation id="4285498937028063278">Vabasta</translation>
+<translation id="428715201724021596">Profiiliga luuakse ühendust. See võib võtta mõne minuti.</translation>
 <translation id="4294319844246081198">Tere hommikust, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Kustuta kõik <ph name="COUNT" /> märguannet</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> teisaldati kausta <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Pole saadaval</translation>
 <translation id="4303223480529385476">Laienda olekuala</translation>
 <translation id="4305133312001648038">Lehel suumitaseme lähtestamine</translation>
-<translation id="4311195029067684288">Täielik</translation>
 <translation id="4312840429157639164">Kaamera kinnitati paremasse ülanurka. Konflikt süsteemi platvormiga.</translation>
 <translation id="4316910396681052118">KÕIK RAKENDUSED</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -772,6 +769,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4536664881735498710">rami kasutus</translation>
 <translation id="4538824937723742295">Täisekraani ekraanipildi jäädvustamine</translation>
 <translation id="4539127209940689201">Praeguse lehe printimine</translation>
+<translation id="4541706525461326392">Profiil eemaldatakse. See võib võtta mõne minuti.</translation>
 <translation id="4544483149666270818">Valige salvestatav aken</translation>
 <translation id="454541942614298893">minu seade</translation>
 <translation id="4548482551627849548">Teisaldage aktiivne aken vasakul asuvale töölauale</translation>
@@ -857,7 +855,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> kasutab praegu teie kaamerat</translation>
 <translation id="492453977506755176">Jäädvustusrežiimi klahv</translation>
 <translation id="4925542575807923399">Selle konto administraator nõuab, et mitmesse kontosse sisselogimisega seansil logitaks esmalt sisse sellesse kontosse.</translation>
-<translation id="4929163402621253029">Kas kõnelete? Teie mikrofon on vaigistatud. Lisateave</translation>
 <translation id="493076006037866439">Suumi ekraanil välja</translation>
 <translation id="4936329710968938986">Kõik, väljas</translation>
 <translation id="4938176435186993759">Peida kõik soovitused</translation>
@@ -878,6 +875,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4987738733603015246">Töölaud 16</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
 <translation id="5004607513195820459">Võrk on hallatud</translation>
+<translation id="5009463889040999939">Profiili nime muudetakse. See võib võtta mõne minuti.</translation>
 <translation id="5016558321564993266">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Juurdepääs seadme mikrofonile on sisse lülitatud</translation>
 <translation id="5030659775136592441">Kuvab järjehoidjate halduri</translation>
@@ -886,6 +884,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5034421018520995080">Lehe algusesse liikumine</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ühendati uue telefoniga</translation>
 <translation id="5035389544768382859">Kuva seadistuse kinnitamine</translation>
+<translation id="5038863510258510803">Lubamine ...</translation>
 <translation id="5042305953558921026">Ülevaaterežiimi klahv</translation>
 <translation id="5043679421800073804">Klõps või puudutus riiuli viimasel ikoonil</translation>
 <translation id="504465286040788597">Eelmine lõik</translation>
@@ -949,7 +948,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5331975486040154427">C-tüüpi USB-seade (tagumine vasakpoolne port)</translation>
 <translation id="533282197239610265">Ülekandeseadmete kuvamine</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (parem)</translation>
-<translation id="5351427059191534258">Kas lülitada juurdepääs kaamerale välja?</translation>
 <translation id="5352250171825660495">Tume teema on sees</translation>
 <translation id="5356963482258194581">Vahetage tumeda ja heleda teema vahel. Tehke töölaual paremklikk ning valik Taustapilt ja stiil.</translation>
 <translation id="536019650977002321">Teie administraator ei luba heli jäädvustada. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
@@ -963,6 +961,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5395308026110844773">Rakendus <ph name="DRAGGED_APP_NAME" /> rakenduse <ph name="IN_PLACE_APP" /> kohal, kausta loomiseks vabastage.</translation>
 <translation id="5397578532367286026">Haldur (<ph name="MANAGER_EMAIL" />) saab kasutaja kasutusandmeid ja ajalugu vaadata aadressil chrome.com.</translation>
 <translation id="5400461572260843123">Kiirseaded, märguandekeskusele juurdepääsemiseks vajutage otsinguklahvi ja vasaknoolt.</translation>
+<translation id="5414198321558177633">Profiililoendit värskendatakse. See võib võtta mõne minuti.</translation>
 <translation id="5426063383988017631">Seadete menüü on suletud</translation>
 <translation id="5428899915242071344">Alustage valimist</translation>
 <translation id="5429993543155113935">Inkognito aknaid praegu ei toetata</translation>
@@ -1089,7 +1088,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5983567367406220847">Tegevusetuse tõttu on kuumkoht välja lülitatud.</translation>
 <translation id="598407983968395253">Kasuta malli</translation>
 <translation id="598882571027504733">Värskenduse hankimiseks taaskäivitage Chromebook koos ühendatud klaviatuuriga.</translation>
-<translation id="6002179289567220515">Kasutasite füüsilist lülitit, et 1 kaamera välja lülitada. Samuti saate lülitada välja juurdepääsu kõigile kaameratele.</translation>
 <translation id="6012623610530968780">Leht <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Riiulil järgmise üksuse esiletõstmine</translation>
 <translation id="6018164090099858612">Peeglirežiimist väljumine</translation>
@@ -1207,7 +1205,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6537924328260219877">Signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Allalaaditava faili <ph name="FILENAME" /> skannimine</translation>
 <translation id="6542521951477560771">Ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
-<translation id="6548693220024099658">Taustahägustus</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Uus installimine</translation>
 <translation id="6559976592393364813">Küsige administraatorilt</translation>
@@ -1242,7 +1239,6 @@ Uus installimine</translation>
 <translation id="6683022854667115063">Kõrvaklapid</translation>
 <translation id="6696025732084565524">Eemaldatav klaviatuur vajab kriitilist värskendust</translation>
 <translation id="6700713906295497288">IME menüünupp</translation>
-<translation id="6705577071209924099">Valgustuse kohandamine</translation>
 <translation id="6707693040195709527">Seadme operatsioonisüsteemi eelmisele versioonile ülemineku tähtaeg on möödunud</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6723839937902243910">Toide</translation>
@@ -1363,6 +1359,7 @@ Uus installimine</translation>
 <translation id="7302889331339392448">Reaalajas subtiitrid on välja lülitatud.</translation>
 <translation id="7303365578352795231">Vastamine muus seadmes.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7312210124139670355">Administraator lähtestab teie eSIM-i. See võib võtta mõne minuti.</translation>
 <translation id="7313193732017069507">Kaamera laiendamine</translation>
 <translation id="731589979057211264">Shelf Party on sisse lülitatud.</translation>
 <translation id="7340731148882810149">Automaatsete klikkide menüü</translation>
@@ -1485,7 +1482,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7862292329216937261">Seadme külalisena kasutamiseks peate välja logima ja seejärel ekraani allservas tegema valiku Sirvi külalisena.</translation>
 <translation id="7866482334467279021">sisse</translation>
 <translation id="7868900307798234037">Sõrmejäljega avamine</translation>
-<translation id="7872195908557044066">Administraator lähtestab teie eSIM-i. Oodake mõni minut.</translation>
 <translation id="7872786842639831132">Väljas</translation>
 <translation id="7875575368831396199">Näib, et Bluetooth on teie seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Lülitage Bluetooth Phone Hubi kasutamiseks sisse.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Viige seadme operatsioonisüsteem kohe tagasi eelmisele versioonile}=1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega 1 sekund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # sekundit}}</translation>
@@ -1625,6 +1621,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="847056008324733326">Ekraani skaala seaded</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Tühistamiseks vajutage klahvikombinatsiooni Alt + Otsing või tõstuklahvi.</translation>
+<translation id="8487699605742506766">Kuumkoht</translation>
 <translation id="8491237443345908933">Lingi avamine uuel vahelehel</translation>
 <translation id="8492573885090281069">Seade <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
 <translation id="8496402167048257517">Läheduses jagamise seadete kuvamine</translation>
@@ -1650,12 +1647,10 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8614517853887502247">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="8619138598101195078">Vähenda helitugevust</translation>
 <translation id="8627191004499078455">Ühendatud seadmega <ph name="DEVICE_NAME" /></translation>
-<translation id="8630991711272431708">Lülita juurdepääs kaamerale välja</translation>
 <translation id="8631727435199967028">Juurdepääsetavuse seaded</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="8638637208069328956">Lülita mikrofon sisse/välja</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> on jäänud</translation>
-<translation id="8641805545866562088">Profiililoendit värskendatakse. Oodake mõni minut.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> taimer</translation>
 <translation id="8647931990447795414">Inimese lisamiseks sisestage Family Linki vanema pääsukood.</translation>
 <translation id="8649597172973390955">Riiul on alati kuvatud</translation>
@@ -1691,7 +1686,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="880709030178078220">„Abi“</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Sisestusmeetodi seaded</translation>
-<translation id="8818320199597151042">Profiil eemaldatakse. Oodake mõni minut.</translation>
 <translation id="8819728065740986820">Adaptiivne laadimine on sisse lülitatud</translation>
 <translation id="8825863694328519386">Tagasiliikumiseks pühkige vasakult paremale</translation>
 <translation id="8832513206237979203">Järjehoidjariba kuvamine või peitmine</translation>
@@ -1758,7 +1752,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="9089416786594320554">Sisestusviisid</translation>
 <translation id="9091626656156419976">Ekraan <ph name="DISPLAY_NAME" /> eemaldati</translation>
 <translation id="9098969848082897657">Telefoni vaigistamine</translation>
-<translation id="9100887602489003640">Profiili lisamine. Oodake mõni minut.</translation>
 <translation id="9105450214093926548">Teise kasutaja sisselogimist ei toetata, kui brauser Lacros töötab. Kasutage selle asemel brauseris Lacros teist brauseriprofiili või sulgege Lacros ja proovige uuesti.</translation>
 <translation id="9120448753905017833">Lülitasime WiFi välja, et alustada kuumkoha kasutamist mobiilse andmeside kaudu. See võib kaasa tuua andmesidekulud.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> või <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

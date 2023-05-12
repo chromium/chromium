@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">ডার্ক থিম বন্ধ করুন</translation>
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1827738518074806965">আর্ট গ্যালারি</translation>
+<translation id="1838374766361614909">সার্চ সাফ করুন</translation>
 <translation id="1851218745569890714">ভিডিও কনফারেন্সিং</translation>
 <translation id="1852934301711881861">ChromeOS Flex ইনস্টল করুন</translation>
 <translation id="1856388568474281774">নিম্নমুখী তীরচিহ্ন</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">মূল দিকনির্দেশ</translation>
 <translation id="3294437725009624529">অতিথি</translation>
+<translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ হয়েছে।</translation>
 <translation id="4930320165497208503">কানেকশন আপডেট করতে বা সেট আপ করতে<ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="4932733599132424254">তারিখ</translation>
-<translation id="4937657825850660613">হাফ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ফার্মওয়্যার <ph name="VERSION" /> ভার্সনে আপডেট করা হয়েছে</translation>
 <translation id="4971925105143343452">আংশিক</translation>
 <translation id="4972592110715526173">মোড পাল্টান</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC ঠিকানা</translation>
 <translation id="7491478667760509108">ফ্লোট স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="7497215489070763236">সার্ভার CA সার্টিফিকেট</translation>
+<translation id="7501957181231305652">অথবা</translation>
 <translation id="7502658306369382406">IPv6 ঠিকানা</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">সহায়তা কন্টেন্ট উপলভ্য নেই</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>
 <translation id="763165478673169849">শেষবার রিসেট করার সময়</translation>
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
+<translation id="765159867434478292">স্প্লিট</translation>
 <translation id="7656388927906093505">ডিভাইস একটি মাউজ।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7665800271478495366">অবতার পরিবর্তন করুন</translation>

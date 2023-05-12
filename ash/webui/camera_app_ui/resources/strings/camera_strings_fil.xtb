@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">Na-detect ang dokumento</translation>
 <translation id="414641094616694804">Hindi puwedeng baguhin ng camera na ito ang resolution</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
-<translation id="4281620174117014503">Katamtamang resolution</translation>
 <translation id="428234092390943511">Thumbnail ng page</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
 <translation id="4445542136948522167">Ihinto ang pagkuha ng larawan</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">Sina-scan ang page <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Parisukat</translation>
+<translation id="574392208103952083">Katamtaman</translation>
 <translation id="5746169159649715125">I-save bilang PDF</translation>
 <translation id="5753488212459587150">I-enable ang expert mode</translation>
 <translation id="5759254179196327752">I-scan ang dokumento</translation>

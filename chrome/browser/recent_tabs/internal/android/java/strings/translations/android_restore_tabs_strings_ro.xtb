@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">Alege dispozitivul de pe care dorești să descarci filele</translation>
 <translation id="3575801299326994724">Examinează filele selectate de restabilit de pe dispozitivul selectat momentan.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă, ultima actualizare: <ph name="TIME_SINCE_MODIFIED" />}few{<ph name="TABS_COUNT_MANY" /> file, ultima actualizare: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> de file, ultima actualizare: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Înapoi</translation>
 <translation id="3983305234037158273">Dispozitivele sincronizate pentru restabilirea filelor sunt disponibile pentru modificare la atingere. Navighează pentru a examina sau a restabili filele selectate pentru dispozitivul actual la atingere. Tastatura este ascunsă.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Deschide <ph name="TABS_COUNT_ONE" /> filă}few{Deschide <ph name="TABS_COUNT_MANY" /> file}other{Deschide <ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="4811934403802581334">Toate filele selectate de pe dispozitivul selectat momentan se vor restabili.</translation>

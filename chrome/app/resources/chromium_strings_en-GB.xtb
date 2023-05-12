@@ -250,6 +250,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6475912303565314141">It also controls what page is shown when you start Chromium.</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
 <translation id="6510925080656968729">Uninstall Chromium</translation>
+<translation id="6539122709674868420">Your organisation closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION" />. Browsing data was deleted. This could include history, autofill and downloads.</translation>
 <translation id="6542839706527980775">Each profile holds its own Chromium info, like bookmarks, history, passwords and more</translation>
 <translation id="656935081669708576">You can switch to see passwords from another Chromium profile</translation>
 <translation id="6570579332384693436">To fix spelling errors, Chromium sends the text that you type in text fields to Google</translation>
@@ -286,6 +287,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="7025789849649390912">Installation stopped.</translation>
 <translation id="705851970750939768">Update Chromium</translation>
 <translation id="7067091210845072982">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google.</translation>
+<translation id="7173822816570314652">Your organisation deletes Chromium data when it isn't used for <ph name="TIMEOUT_DURATION" />. This could include history, autofill and downloads.</translation>
 <translation id="718435575166326686">Chromium needs camera permission for this site</translation>
 <translation id="7196312274710523067">Couldn't launch Chromium. Try again.</translation>
 <translation id="7197677400338048821">Chromium can't check your passwords. Try again after 24 hours.</translation>
@@ -340,6 +342,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="8266560134891435528">Chromium can't check your passwords because you're not signed in</translation>
 <translation id="8290862415967981663">This file may be dangerous, so Chromium has blocked it.</translation>
+<translation id="8318772038038596122">Your organisation closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Do more with Chromium</translation>
 <translation id="8330519371938183845">Sign in to sync and personalise Chromium across your devices</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> was previously using Chromium</translation>
@@ -375,6 +378,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="907832235989677238">Sign in to Chromium If you'd just like to sign in an account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Chromium was automatically closed</translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium will relaunch in an hour}other{Chromium will relaunch in # hours}}</translation>
 <translation id="9106612006984859720">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>

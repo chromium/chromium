@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Deaktivovat tmavý motiv</translation>
 <translation id="1807246157184219062">Světlé</translation>
 <translation id="1827738518074806965">Galerie umění</translation>
+<translation id="1838374766361614909">Vymazat vyhledávání</translation>
 <translation id="1851218745569890714">Videokonference</translation>
 <translation id="1852934301711881861">Nainstalovat ChromeOS Flex</translation>
 <translation id="1856388568474281774">Šipka dolů</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Směr klíče</translation>
 <translation id="3294437725009624529">Host</translation>
+<translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Pokud chcete nastavit nebo aktualizovat připojení, přejděte do sekce <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4937657825850660613">Polovina</translation>
 <translation id="4950314376641394653">Firmware zařízení <ph name="DEVICE_NAME" /> byl aktualizován na verzi <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Částečné</translation>
 <translation id="4972592110715526173">změna režimu</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Adresa MAC</translation>
 <translation id="7491478667760509108">Zavřít plovoucí režim</translation>
 <translation id="7497215489070763236">Certifikát CA serveru</translation>
+<translation id="7501957181231305652">nebo</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Obsah nápovědy není k dispozici</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
 <translation id="763165478673169849">Čas posledního resetování</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
+<translation id="765159867434478292">Rozdělit</translation>
 <translation id="7656388927906093505">Zařízení je myš.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7665800271478495366">Změnit avatara</translation>

@@ -386,25 +386,6 @@
       请注意，此政策只是一项临时性政策，旨在让受管用户仍能使用已弃用的旧版快捷键。待自定义键盘快捷键可用后，此政策将被弃用。</translation>
 <translation id="1361661842732478894">在工具栏上显示首页按钮</translation>
 <translation id="1363275621236827384">允许在 Quirks Server 中查询硬件配置文件</translation>
-<translation id="136422692261301619">以列表形式配置在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
-
-      如果 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策未设置，此政策将不会产生任何效力。
-
-      达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后，<ph name="PRODUCT_NAME" /> 会运行此政策中配置的操作。
-
-      如果此政策为空或未设置，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策将不会产生任何效力。
-
-      支持的操作如下：
-
-      “<ph name="CLOSE_BROWSERS_ACTION" />”：关闭该个人资料的所有浏览器窗口和 PWA。在 Android 设备上不受支持。
-
-      “<ph name="SHOW_PROFILE_PICKER_ACTION" />”：显示“个人资料选择器”窗口。在 Android 设备上不受支持。
-
-      “<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />”“<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />”“<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”“<ph name="CLEAR_SITE_SETTINGS_ACTION" />”“<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />”：清除相应的浏览数据。有关详情，请参阅 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 政策。
-
-      “<ph name="RELOAD_PAGES_ACTION" />”：重新加载所有网页。对于某些页面，系统可能会提示用户先进行确认。
-
-      如果既未通过设置 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策停用“<ph name="CHROME_SYNC_NAME" />”，也未停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，设置“<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”和“<ph name="CLEAR_SITE_SETTINGS_ACTION" />”将为相应的数据类型停用同步功能。</translation>
 <translation id="1371626834351873151">系统将为所有来源启用“用户代理字符串缩短”功能。</translation>
 <translation id="1371851989348083665">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
 <translation id="1372618949173323717">停用 JavaScript</translation>
@@ -537,15 +518,6 @@
       如需查看外部扩展程序及其安装方法，请参阅 https://developer.chrome.com/apps/external_extensions 上的文档。
       </translation>
 <translation id="1484190167468437592">停用单声道音频</translation>
-<translation id="1484997972080261820">为 <ph name="PRODUCT_NAME" /> 配置浏览数据生命周期设置。此政策让管理员能够（按数据类型）配置浏览器对数据的删除时间点。这对需要处理敏感客户数据的客户非常有用。
-
-      可用的数据类型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
-
-      浏览器会自动移除留存时长已超过 <ph name="TIME_TO_LIVE_IN_HOURS" /> 的所选类型数据。可设置的最小值为 1 小时。
-
-      浏览器启动 15 秒后便会开始删除过期数据，运行期间会每小时删除一次。
-
-      如果既未通过设置 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策停用“<ph name="CHROME_SYNC_NAME" />”，也未停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，设置此政策将会为相应的数据类型停用同步功能。</translation>
 <translation id="1486021504508098388">报告背光信息</translation>
 <translation id="1487722536912664411">允许用户使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
@@ -946,11 +918,6 @@
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
 <translation id="1888871729456797026">云政策在桌面设备上的注册令牌</translation>
 <translation id="1890850749633603276">恢复允许的 Chrome 应用 <ph name="WEBVIEW_TAG_NAME" /> 行为</translation>
-<translation id="1891159017416825511">以列表形式配置应在用户关闭所有浏览器窗口后删除哪些类型的浏览数据。可用的数据类型包括浏览记录 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下载记录 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、缓存 <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自动填充 (<ph name="DATA_TYPE_AUTOFILL" />)、密码 (<ph name="DATA_TYPE_PASSWORD" />)、网站设置 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和托管的应用数据 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。此政策不会优先于 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
-
-如果既未通过设置 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策停用“<ph name="CHROME_SYNC_NAME" />”，也未停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，设置此政策将会为相应的数据类型停用同步功能。
-
-      如果用户未彻底退出 <ph name="PRODUCT_NAME" />（例如浏览器或 OS 崩溃时），系统将在下次加载个人资料时清除浏览数据。</translation>
 <translation id="1893271062894546361">如果此政策已启用，由本地网络中的其他设备启动的 <ph name="PRODUCT_NAME" /> 会话便可使用媒体播放控件界面。
 
       如果此政策未针对企业用户设置或者已停用，由本地网络中的其他设备启动的 <ph name="PRODUCT_NAME" /> 会话便无法使用媒体播放控件界面。
@@ -2382,6 +2349,13 @@
       如果管理员需要更多时间来更新受这项新限制影响的内部网站，则可以使用此政策。这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 117 版之后移除。
       </translation>
 <translation id="3185009703220253572">从版本 <ph name="SINCE_VERSION" /> 开始</translation>
+<translation id="3185895671618336039">为 <ph name="PRODUCT_NAME" /> 配置浏览数据生命周期设置。此政策让管理员能够（按数据类型）配置浏览器对数据的删除时间点。这对需要处理敏感客户数据的客户非常有用。仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。
+
+      可用的数据类型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
+
+      浏览器会自动移除留存时长已超过 <ph name="TIME_TO_LIVE_IN_HOURS" />的所选类型数据。可设置的最小值为 1 小时。
+
+      浏览器启动 15 秒后便会开始删除过期数据，运行期间会每小时删除一次。</translation>
 <translation id="3192902750888034827">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> 来指定用于提供新标签页的搜索引擎网址。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" />，系统将不会提供任何新标签页。</translation>
@@ -4142,6 +4116,25 @@
 <translation id="4860900625632464759">允许用户在手机和 Chromebook 之间同步短信</translation>
 <translation id="486146220825734683">不允许用户让系统记住 Kerberos 密码</translation>
 <translation id="4861767323695239729">配置可在用户会话中使用的输入法</translation>
+<translation id="4870120523614402392">在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
+
+      如果 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策未设置，此政策将不会产生任何效力。
+
+      达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后，<ph name="PRODUCT_NAME" /> 会运行此政策中配置的操作。
+
+      如果此政策为空或未设置，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策将不会产生任何效力。
+
+      支持的操作如下：
+
+      “<ph name="CLOSE_BROWSERS_ACTION" />”：关闭该个人资料的所有浏览器窗口和 PWA。在 Android 设备上不受支持。
+
+      “<ph name="SHOW_PROFILE_PICKER_ACTION" />”：显示“个人资料选择器”窗口。在 Android 设备上不受支持。
+
+      “<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />”“<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />”“<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”“<ph name="CLEAR_SITE_SETTINGS_ACTION" />”“<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />”：清除相应的浏览数据。有关详情，请参阅 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 政策。
+
+      “<ph name="RELOAD_PAGES_ACTION" />”：重新加载所有网页。对于某些页面，系统可能会提示用户先进行确认。
+
+      “<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”和“<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />”要求将 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策设为 true。</translation>
 <translation id="4873380469296842901">如果启用此设置，已选择启用 Phone Hub 功能的用户将能够在 Chrome 操作系统中收发其手机上的通知。
 
       如果停用此设置，用户将无法使用该功能。如果停用 PhoneHubAllowed 政策，用户也将无法使用该功能。
@@ -7515,6 +7508,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7999336306414770162">停用设备 VPD 信息报告功能</translation>
 <translation id="7999818120028621358">启用关于数据泄露预防事件的报告</translation>
 <translation id="8001701200415781021">限制哪些 Google 帐号可以设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号</translation>
+<translation id="8004582292198964060">浏览器</translation>
 <translation id="8005143535239983809">此政策用于控制浏览器能否自动记住网站上的密码并将其保存到内置的密码管理工具中。此政策不会限制访问或更改下述类型的密码内容：已保存到密码管理工具，且可能已同步到 Google 帐号个人资料和 <ph name="ANDROID_NAME" />。
 
 如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 记住密码并在自己下次登录相应网站时提供密码。
@@ -8207,6 +8201,15 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
        如果您设置了此政策，用户便无法更改它。如果您未设置此政策，语音反馈最初会处于关闭状态，但用户可随时开启它。</translation>
 <translation id="8656110680728938054">启用“随选朗读”</translation>
+<translation id="8657026983981036230">通过设置此政策，您可以配置供 Chrome 用于下载文件的目录。无论用户是指定了一个目录，还是开启了 flag，要求系统在每次下载前都向用户询问文件保存位置，Chrome 都会使用此政策中提供的目录。
+
+      此政策会覆盖 <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策。
+
+      如果您未设置此政策，Chrome 会使用默认下载目录，而且用户可以更改此目录。
+
+      在 <ph name="PRODUCT_OS_NAME" /> 中，可将此政策仅设为 Google 云端硬盘目录。
+
+      注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
 <translation id="8657543427358173663">允许从 Google 服务收集 WebRTC 事件日志</translation>
 <translation id="8659843732895043951">允许这些网站使用剪贴板</translation>
 <translation id="8661297125441579970">禁止数据迁移和 ARC。</translation>

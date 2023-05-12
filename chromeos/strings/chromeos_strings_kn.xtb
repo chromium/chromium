@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">ಡಾರ್ಕ್‌ ಥೀಮ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
 <translation id="1827738518074806965">ಆರ್ಟ್ ಗ್ಯಾಲರಿ</translation>
+<translation id="1838374766361614909">ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="1851218745569890714">ವೀಡಿಯೊ ಕಾನ್ಫರೆನ್ಸಿಂಗ್</translation>
 <translation id="1852934301711881861">ChromeOS Flex ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="1856388568474281774">ಡೌನ್ ಆ್ಯರೋ</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ಕೀ ನಿರ್ದೇಶನ</translation>
 <translation id="3294437725009624529">ಅತಿಥಿ</translation>
+<translation id="3303855915957856445">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="3310640316857623290">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಗಮನಾರ್ಹವಾಗಿ ಮೇಲಿದೆ</translation>
 <translation id="3328783797891415197">ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3340011300870565703">ಸಾಧನದ ಬಲ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4930320165497208503">ಕನೆಕ್ಷನ್ ಸೆಟಪ್ ಮಾಡಲು ಅಥವಾ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
-<translation id="4937657825850660613">ಅರ್ಧ</translation>
 <translation id="4950314376641394653">ಫರ್ಮ್‌‌ವೇರ್‌‌ <ph name="DEVICE_NAME" /> ಅನ್ನು <ph name="VERSION" /> ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4971925105143343452">ಭಾಗಶಃ</translation>
 <translation id="4972592110715526173">ಮೋಡ್ ಬದಲಾಯಿಸಿ</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
 <translation id="7491478667760509108">ಫ್ಲೋಟ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="7497215489070763236">ಸರ್ವರ್ CA ಪ್ರಮಾಣಪತ್ರ</translation>
+<translation id="7501957181231305652">ಅಥವಾ</translation>
 <translation id="7502658306369382406">IPv6 ವಿಳಾಸ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">ಸಹಾಯ ವಿಷಯ ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">ಸಹಾಯ ಕೇಂದ್ರದಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="763165478673169849">ಕೊನೆಯದಾಗಿ ರೀಸೆಟ್ ಮಾಡಿದ ಸಮಯ</translation>
 <translation id="7648838807254605802">ಅಧಿಕ HTTPS ವಿಳಂಬ</translation>
+<translation id="765159867434478292">ಸ್ಪ್ಲಿಟ್</translation>
 <translation id="7656388927906093505">ಸಾಧನವು ಮೌಸ್ ಆಗಿದೆ.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7665800271478495366">ಅವತಾರ್ ಬದಲಾಯಿಸಿ</translation>

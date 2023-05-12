@@ -83,6 +83,7 @@
 <translation id="2467438592969358367">Google Chrome möchte deine Passwörter exportieren. Wenn du dies zulassen möchtest, gib dein Windows-Passwort ein.</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2534507159460261402">Google Pay (in Chrome kopiert)</translation>
+<translation id="2556847002339236023">In deiner Organisation wird Chrome nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen. Browserdaten wurden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
 <translation id="2559253115192232574">Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren. Chrome kann bis zu drei Interessen teilen.</translation>
 <translation id="2563121210305478421">Chrome neu starten?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, kannst du in Chrome ein eigenes Profil für dich einrichten.</translation>
@@ -267,6 +268,7 @@
 <translation id="6113794647360055231">Chrome ist jetzt noch besser</translation>
 <translation id="6145313976051292476">PDFs in Chrome öffnen</translation>
 <translation id="6155960517327665396">Dank Arbeitsspeicher-Sparmodus ist Chrome jetzt noch schneller</translation>
+<translation id="6157638032135951407">In deiner Organisation werden Chrome-Daten nach <ph name="TIMEOUT_DURATION" /> Inaktivität gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome</translation>
@@ -282,6 +284,7 @@
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
 <translation id="6493527311031785448">Google Chrome versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome wurde automatisch geschlossen</translation>
 <translation id="6506909944137591434">Chrome benötigt die Kameraberechtigung, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">Im Google Passwortmanager auf diesem Gerät</translation>
@@ -318,6 +321,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7155997830309522122">Falls ja, ändere dein gespeichertes Passwort in Chrome, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="7161904924553537242">Willkommen bei Chrome</translation>
 <translation id="7177959540995930968">Weitere Informationen zu diesen Funktionen findest du in den Chrome-Einstellungen.</translation>
+<translation id="7193885263065350793">In deiner Organisation wird Chrome nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen.</translation>
 <translation id="7242029209006116544">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Google Chrome-Profil. Deine Chrome-Daten wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn du deine bestehenden Chrome-Daten getrennt halten möchtest, kannst du stattdessen ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Diese Sprache wird für die Google Chrome-UI verwendet</translation>
 <translation id="7296210096911315575">Wichtige Informationen zu Verwendung und Sicherheit</translation>

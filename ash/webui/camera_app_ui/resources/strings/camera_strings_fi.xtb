@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">Dokumentti havaittiin</translation>
 <translation id="414641094616694804">Kamera ei voi muuttaa resoluutiota</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
-<translation id="4281620174117014503">Keskitason resoluutio</translation>
 <translation id="428234092390943511">Sivun pikkukuva</translation>
 <translation id="4383571725254449280">Tulosta kehityslokit</translation>
 <translation id="4445542136948522167">Lopeta kuvan ottaminen</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">Skannataan sivua <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Neliö</translation>
+<translation id="574392208103952083">Keskivahva</translation>
 <translation id="5746169159649715125">Tallenna PDF-muodossa</translation>
 <translation id="5753488212459587150">Ota asiantuntijatila käyttöön</translation>
 <translation id="5759254179196327752">Skannaa dokumentti</translation>

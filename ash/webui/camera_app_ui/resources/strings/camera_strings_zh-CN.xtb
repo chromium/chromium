@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">检测到文件</translation>
 <translation id="414641094616694804">此相机无法更改分辨率</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
-<translation id="4281620174117014503">中等分辨率</translation>
 <translation id="428234092390943511">页面缩略图</translation>
 <translation id="4383571725254449280">打印性能日志</translation>
 <translation id="4445542136948522167">停止拍照</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">正在扫描第 <ph name="COUNT" /> 页</translation>
 <translation id="5671277269877808209">方形</translation>
+<translation id="574392208103952083">中</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5753488212459587150">启用专家模式</translation>
 <translation id="5759254179196327752">扫描文件</translation>

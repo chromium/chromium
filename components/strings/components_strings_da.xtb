@@ -175,7 +175,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1363819917331173092">Tilbyd ikke at oversætte sider på <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Denne politik er blokeret, og dens værdi ignoreres.</translation>
 <translation id="1368318639262510626">Dino-spillet. En pixeleret dinosaur suser gennem et øde landskab, hvor den hopper over kaktusser og undviger flyveøgler. Når du hører en lyd, skal du trykke på mellemrumstasten for at hoppe over forhindringer.</translation>
-<translation id="136907351928231527">Der kan gå op til en uge, før en liste over emner vises her baseret på din seneste browserhistorik</translation>
 <translation id="1374468813861204354">forslag</translation>
 <translation id="1375198122581997741">Om version</translation>
 <translation id="1376836354785490390">Se færre</translation>
@@ -196,7 +195,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1408787208417187241">Trehæftning øverst</translation>
 <translation id="1410941016594047814">Konvolut Invitation</translation>
 <translation id="1413407968866574823">Action- og platformspil</translation>
-<translation id="1413809658975081374">Fejl i forbindelse med beskyttelse af personlige oplysninger</translation>
+<translation id="1413809658975081374">Fejl i forbindelse med privatlivbeskyttelse</translation>
 <translation id="1414134146594747368">Børnehave</translation>
 <translation id="1422930527989633628">Websitet kan anmode om tilladelse til at søge efter Bluetooth-enheder i nærheden</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -271,7 +270,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Noget gik galt ved visningen af denne webside.</translation>
-<translation id="1584492003828271317">Om de annoncer, du ser på nettet, er tilpassede, afhænger af denne indstilling, dvs. Foreslåede annoncer fra websites, dine cookieindstillinger, og om det website, du besøger, tilpasser annoncer</translation>
+<translation id="1584492003828271317">Om de annoncer, du ser på nettet, er personligt tilpasset, afhænger af denne indstilling, dvs. Foreslåede annoncer fra websites, dine cookieindstillinger, og om det website, du besøger, tilpasser annoncer</translation>
 <translation id="1586541204584340881">Hvilke udvidelser, du har installeret</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Lokal dataadgang</translation>
@@ -344,7 +343,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Angiv en gyldig udløbsmåned</translation>
 <translation id="1741613555002899862">Skal angives og være en gyldig streng, når DnsOverHttpsMode er <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chrome registrerer emner, du kan være interesseret i, mens du browser. Emneetiketter er foruddefinerede og omfatter ting som Kunst og underholdning, Shopping og Sport. Senere, når du besøger et website, kan websitet anmode Chrome om nogle få af dine emner (men ikke din browserhistorik) for at tilpasse de annoncer, du får vist.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chrome registrerer emner, du kan være interesseret i, mens du browser. Emneetiketter er foruddefinerede og omfatter ting som Kunst og underholdning, Shopping og Sport. Senere, når du besøger et website, kan websitet anmode Chrome om nogle få af dine emner (men ikke din browserhistorik) for at personligt tilpasse de annoncer, du får vist.</translation>
 <translation id="1745880797583122200">Din browser administreres</translation>
 <translation id="1746113442205726301">Billedskift Y</translation>
 <translation id="1746531169546376413">0 grader</translation>
@@ -439,7 +438,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2003709556000175978">Nulstil din adgangskode nu</translation>
 <translation id="2003775180883135320">Fire huller øverst</translation>
 <translation id="201174227998721785">Administrer tilladelser og data, der gemmes på websites, i Chrome-indstillingerne</translation>
-<translation id="2019607688127825327">Knappen "Administrer indstillinger for hjælpefunktioner" – tryk på Enter for at tilpasse dine hjælpefunktioner i Chrome-indstillingerne</translation>
+<translation id="2019607688127825327">Knappen "Administrer indstillinger for hjælpefunktioner" – tryk på Enter for at personligt tilpasse dine hjælpefunktioner i Chrome-indstillingerne</translation>
 <translation id="2021333772895814435">Denne politik deaktiverer automatisk synkronisering på tværs af enheder for: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 tommer</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
@@ -926,7 +925,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
 <translation id="3261488570342242926">Få flere oplysninger om virtuelle kort</translation>
 <translation id="3264837738038045344">Knappen Administrer Chrome-indstillinger, tryk på Enter for at gå til dine Chrome-indstillinger</translation>
-<translation id="3266367459139339908">Vi lancerer nye metoder til at begrænse, hvad websites kan lære om dig, når de viser dig tilpassede annoncer, f.eks.:</translation>
+<translation id="3266367459139339908">Vi lancerer nye metoder til at begrænse, hvad websites kan lære om dig, når de viser dig personligt tilpassede annoncer, f.eks.:</translation>
 <translation id="3266793032086590337">Værdi (modstridende)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ingen websites, inkl. relaterede websites, er blokeret}=1{1 website, inkl. relaterede websites, er blokeret}one{# website, inkl. relaterede websites, er blokeret}other{# websites, inkl. relaterede websites, er blokeret}}</translation>
 <translation id="3268451620468152448">Åbne faner</translation>
@@ -1673,6 +1672,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="5051305769747448211">Livekomedier</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}one{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}other{Hvis du vil sende disse filer ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}}</translation>
+<translation id="5060419232449737386">Indstillinger for undertekster</translation>
 <translation id="5060483733937416656">Du har valgt at verificere med Windows Hello på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Udskrivningshistorik</translation>
@@ -1859,7 +1859,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5519516356611866228">Med dine ændringer</translation>
 <translation id="5523118979700054094">Navn på politik</translation>
 <translation id="5525755241743357906">Filen kopieres eller flyttes</translation>
-<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at tilpasse dine hjælpefunktioner i ChromeOS-indstillingerne</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at personligt tilpasse dine hjælpefunktioner i ChromeOS-indstillingerne</translation>
 <translation id="5528532273234423708">Hjemmeautomatisering</translation>
 <translation id="55293785478302737">Kanthæftning</translation>
 <translation id="5535133333442455806">Knappen Ryd browserdata – tryk på Enter for at rydde browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
@@ -2134,7 +2134,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="622039917539443112">Parallelfals</translation>
 <translation id="6221345481584921695">Google Beskyttet browsing <ph name="BEGIN_LINK" />registrerede malware<ph name="END_LINK" /> på <ph name="SITE" /> for nylig. Websites, der normalt er sikre, inficeres undertiden med malware. Det skadelige indhold kommer fra <ph name="SUBRESOURCE_HOST" />, som er en kendt malwaredistributør.</translation>
 <translation id="6221892641068781024">Enkel visning</translation>
-<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at tilpasse dine hjælpefunktioner i Chrome-indstillingerne</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at personligt tilpasse dine hjælpefunktioner i Chrome-indstillingerne</translation>
 <translation id="6229649258872345286">Familierejser</translation>
 <translation id="6232271601416750929">Bæredygtige skønhedsprodukter</translation>
 <translation id="6234122620015464377">Beskær efter hvert dokument</translation>
@@ -2288,7 +2288,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6612010098632894193">Onlinevideo</translation>
 <translation id="6615297766614333076">Stabler 2</translation>
 <translation id="6624427990725312378">Kontaktoplysninger</translation>
-<translation id="6627727261837091711">Vis oplysninger om annoncetilpasning</translation>
+<translation id="6627727261837091711">Vis oplysninger om personlig annoncetilpasning</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> -søgning</translation>
 <translation id="6630043285902923878">Finder USB-enheder...</translation>
 <translation id="6630809736994426279">Brugere med ondsindede hensigter, der i øjeblikket er på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, kan forsøge at installere farlige programmer på din Mac, som stjæler eller sletter dine oplysninger (f.eks. fotos, adgangskoder, beskeder og kreditkort). <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2818,7 +2818,7 @@ Yderligere oplysninger:
 <translation id="7840103971441592723">Screenshot er startet</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7857116075376571629">Senere, når du besøger et website, kan websitet anmode Chrome om dine emner for at tilpasse de annoncer, du får vist. Chrome deler op til 3 emner, samtidig med at din browserhistorik og identitet beskyttes.</translation>
+<translation id="7857116075376571629">Senere, når du besøger et website, kan websitet anmode Chrome om dine emner for at personligt tilpasse de annoncer, du får vist. Chrome deler op til 3 emner, samtidig med at din browserhistorik og identitet beskyttes.</translation>
 <translation id="7860345425589240791">Angiv din nye udløbsdato og kontrolkode, som du finder på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vil du forlade websitet?</translation>
 <translation id="7865448901209910068">Bedste hastighed</translation>
@@ -2978,7 +2978,7 @@ Yderligere oplysninger:
 <translation id="8249296373107784235">Annuller</translation>
 <translation id="8249463483885748674">Standardiserede prøver og adgangsprøver</translation>
 <translation id="8250094606476360498">Adressen gemmes i øjeblikket på denne enhed. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="ACCOUNT" />.</translation>
-<translation id="8252991034201168845">Knappen Administrer indstillinger for hjælpefunktioner – tryk på Enter for at tilpasse dine hjælpefunktioner i ChromeOS-indstillingerne</translation>
+<translation id="8252991034201168845">Knappen Administrer indstillinger for hjælpefunktioner – tryk på Enter for at personligt tilpasse dine hjælpefunktioner i ChromeOS-indstillingerne</translation>
 <translation id="8253091569723639551">Faktureringsadresse skal angives</translation>
 <translation id="8257387598443225809">Denne app er udviklet til mobilenheder</translation>
 <translation id="825929999321470778">Se alle gemte adgangskoder</translation>
@@ -3005,7 +3005,7 @@ Yderligere oplysninger:
 <translation id="829335040383910391">lyd</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8296205692406981542">Regionale parker og haver</translation>
-<translation id="8297545700510100061">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig tilpassede annoncer. Gå til <ph name="SETTINGS" /> for at administrere cookies for alle websites.</translation>
+<translation id="8297545700510100061">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig personligt tilpassede annoncer. Gå til <ph name="SETTINGS" /> for at administrere cookies for alle websites.</translation>
 <translation id="8298115750975731693">Det Wi-Fi-netværk, du bruger (<ph name="WIFI_NAME" />), kan kræve, at du går til <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Sektionen "<ph name="SECTION" />" vises</translation>
 <translation id="830498451218851433">Fals halvt</translation>
@@ -3116,7 +3116,7 @@ Yderligere oplysninger:
 <translation id="860043288473659153">Kortholderens navn</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din aktivitet på et website, du besøger via Chrome på denne enhed.</translation>
 <translation id="8606726445206553943">Brug dine MIDI-enheder</translation>
-<translation id="8606988009912891950">Annonceemner hjælper websites med at vise dig relevante annoncer, samtidig med at din browserhistorik og identitet beskyttes. Chrome kan registrere emner, du muligvis er interesseret i, baseret på din seneste browserhistorik. Senere, når du besøger et website, kan websitet anmode Chrome om nogle relevante emner for at tilpasse de annoncer, du får vist.</translation>
+<translation id="8606988009912891950">Annonceemner hjælper websites med at vise dig relevante annoncer, samtidig med at din browserhistorik og identitet beskyttes. Chrome kan registrere emner, du muligvis er interesseret i, baseret på din seneste browserhistorik. Senere, når du besøger et website, kan websitet anmode Chrome om nogle relevante emner for at personligt tilpasse de annoncer, du får vist.</translation>
 <translation id="8617269623452051934">din enhedsbrug</translation>
 <translation id="861775596732816396">Størrelse 4</translation>
 <translation id="8620276786115098679">Konvolut Kaku 7</translation>

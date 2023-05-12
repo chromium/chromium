@@ -250,6 +250,7 @@
 <translation id="6475912303565314141">Контролише и страницу која се приказује када покренете Chromium.</translation>
 <translation id="648319183876919572">Побољшано безбедно прегледање доприноси заштити од опасних веб-сајтова и преузимања</translation>
 <translation id="6510925080656968729">Деинсталирај Chromium</translation>
+<translation id="6539122709674868420">Организација затвара Chromium када се не користи <ph name="TIMEOUT_DURATION" />. Подаци прегледања су избрисани. То може да обухвата историју, аутоматско попуњавање и преузимања.</translation>
 <translation id="6542839706527980775">Сваки профил задржава сопствене Chromium податке, попут обележивача, историје, лозинки и другог садржаја</translation>
 <translation id="656935081669708576">Можете да се пребаците да бисте видели лозинке са другог Chromium профила</translation>
 <translation id="6570579332384693436">Да би исправио правописне грешке, Chromium шаље Google-овим серверима текст који уносите у поља за текст.</translation>
@@ -287,6 +288,7 @@
 <translation id="7025789849649390912">Инсталација је прекинута.</translation>
 <translation id="705851970750939768">Ажурирај Chromium</translation>
 <translation id="7067091210845072982">Ако слика нема користан опис, Chromium ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
+<translation id="7173822816570314652">Организација брише Chromium податке када се не користе <ph name="TIMEOUT_DURATION" />. То може да обухвата историју, аутоматско попуњавање и преузимања.</translation>
 <translation id="718435575166326686">Chromium-у треба дозвола за камеру за овај сајт</translation>
 <translation id="7196312274710523067">Није могуће покренути Chromium. Покушајте поново.</translation>
 <translation id="7197677400338048821">Chromium не може да вам проверава лозинке. Пробајте поново за 24 сата.</translation>
@@ -341,6 +343,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8248265253516264921">Ако слика нема користан опис, Chromium ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа. То можете да искључите у подешавањима у сваком тренутку.</translation>
 <translation id="8266560134891435528">Chromium не може да вам проверава лозинке зато што нисте пријављени</translation>
 <translation id="8290862415967981663">Ова датотека је можда опасна, па ју је Chromium блокирао.</translation>
+<translation id="8318772038038596122">Организација затвара Chromium када се не користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Урадите више уз Chromium</translation>
 <translation id="8330519371938183845">Пријавите се да бисте синхронизовали и персонализовали Chromium на свим уређајима</translation>
 <translation id="8340674089072921962">Корисник <ph name="USER_EMAIL_ADDRESS" /> је претходно користио Chromium</translation>
@@ -376,6 +379,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="9019929317751753759">Да бисмо учинили Chromium безбеднијим, онемогућили смо следећи додатак који <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи и који је можда додат без вашег знања.</translation>
 <translation id="9022552996538154597">Пријављивање на Chromium</translation>
 <translation id="907832235989677238">Пријавите се у Chromium. Ако желите да се пријавите на налог само једном, можете да <ph name="GUEST_LINK_BEGIN" />користите уређај као гост<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Chromium је аутоматски затворен</translation>
 <translation id="9089354809943900324">Chromium је застарео</translation>
 <translation id="9093206154853821181">{0,plural, =1{Поново ћемо покренути Chromium за један сат}one{Поново ћемо покренути Chromium за # сат}few{Поново ћемо покренути Chromium за # сата}other{Поново ћемо покренути Chromium за # сати}}</translation>
 <translation id="9106612006984859720">Да бисте добијали будућа Chromium ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 8.1.</translation>

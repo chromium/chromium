@@ -248,6 +248,7 @@
 <translation id="6475912303565314141">この拡張機能では、Chromium の起動時に表示されるページも制御されます。</translation>
 <translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>
 <translation id="6510925080656968729">Chromium をアンインストール</translation>
+<translation id="6539122709674868420"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chromium は組織によって終了されます。閲覧データは削除されました。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
 <translation id="6542839706527980775">Chromium の情報（ブックマーク、履歴、パスワードなど）はプロフィールごとに分けて保持されます</translation>
 <translation id="656935081669708576">別の Chromium プロフィールに切り替えて、そのプロフィールのパスワードを表示できます</translation>
 <translation id="6570579332384693436">スペルミスを修正するために、テキスト欄に入力したテキストが Chromium から Google に送信されます</translation>
@@ -284,6 +285,7 @@
 <translation id="7025789849649390912">インストールが停止しました。</translation>
 <translation id="705851970750939768">Chromium を更新</translation>
 <translation id="7067091210845072982">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
+<translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chromium のデータは組織によって削除されます。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
 <translation id="718435575166326686">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
 <translation id="7196312274710523067">Chromium を起動できませんでした。もう一度お試しください。</translation>
 <translation id="7197677400338048821">Chromium でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
@@ -338,6 +340,7 @@
 <translation id="8248265253516264921">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="8266560134891435528">ログインしていないため、Chromium でパスワードを確認できません</translation>
 <translation id="8290862415967981663">このファイルは危険なファイルの可能性があるため、Chromium でブロックしました。</translation>
+<translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chromium は組織によって終了されます。</translation>
 <translation id="8325404639443959713">Chromium でもっと便利に</translation>
 <translation id="8330519371938183845">ログインすると、同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="8340674089072921962">Chromium の前回の使用者は <ph name="USER_EMAIL_ADDRESS" /> です</translation>
@@ -373,6 +376,7 @@
 <translation id="9019929317751753759">Chromium をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>
 <translation id="907832235989677238">Chromium にログインします。アカウントに今回だけログインする場合は、<ph name="GUEST_LINK_BEGIN" />デバイスをゲストとして使用<ph name="GUEST_LINK_END" />できます。</translation>
+<translation id="9078733879136747090">Chromium は自動的に終了しました</translation>
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium は 1 時間後に再起動されます}other{Chromium は # 時間後に再起動されます}}</translation>
 <translation id="9106612006984859720">今後、Chromium のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8.1 が実行されています。</translation>

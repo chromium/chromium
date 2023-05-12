@@ -250,6 +250,7 @@
 <translation id="6475912303565314141">또한 Chromium을 시작할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="648319183876919572">향상된 세이프 브라우징은 위험한 웹사이트와 다운로드로부터 사용자를 보호합니다.</translation>
 <translation id="6510925080656968729">Chromium 설치 제거</translation>
+<translation id="6539122709674868420"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium을 종료합니다. 인터넷 사용 기록이 삭제되었습니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.</translation>
 <translation id="6542839706527980775">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chromium 정보가 보관됩니다.</translation>
 <translation id="656935081669708576">다른 Chromium 프로필의 비밀번호를 보도록 전환할 수 있습니다.</translation>
 <translation id="6570579332384693436">맞춤법 오류를 수정하기 위해 Chromium에서 사용자가 입력하는 텍스트를 Google로 전송합니다.</translation>
@@ -287,6 +288,7 @@
 <translation id="7025789849649390912">설치가 중단되었습니다.</translation>
 <translation id="705851970750939768">Chromium 업데이트</translation>
 <translation id="7067091210845072982">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
+<translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium 데이터를 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.</translation>
 <translation id="718435575166326686">Chromium에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="7196312274710523067">Chromium을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="7197677400338048821">Chromium에서 비밀번호를 확인할 수 없습니다. 24시간 후 다시 시도해 보세요.</translation>
@@ -341,6 +343,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8248265253516264921">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="8266560134891435528">로그인되어 있지 않으므로 Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="8290862415967981663">이 파일은 위험할 수 있으므로 Chromium에서 차단했습니다.</translation>
+<translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium을 종료합니다.</translation>
 <translation id="8325404639443959713">Chromium으로 더 많은 작업하기</translation>
 <translation id="8330519371938183845">로그인하여 모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />에서 이전에 Chromium을 사용한 적이 있음</translation>
@@ -376,6 +379,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9019929317751753759">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="907832235989677238">Chromium에 로그인합니다. 계정에 한 번만 로그인하려면 <ph name="GUEST_LINK_BEGIN" />기기를 게스트로 사용<ph name="GUEST_LINK_END" />하면 됩니다.</translation>
+<translation id="9078733879136747090">Chromium이 자동으로 종료되었습니다</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="9093206154853821181">{0,plural, =1{1시간 후 Chromium이 다시 시작됩니다}other{#시간 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="9106612006984859720">향후 Chromium 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8.1을 사용 중입니다.</translation>

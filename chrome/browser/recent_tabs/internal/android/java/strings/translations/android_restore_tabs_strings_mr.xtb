@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">तुम्ही ज्या डिव्हाइसवरील टॅब मिळवायचे आहे ते डिव्हाइस निवडा</translation>
 <translation id="3575801299326994724">सध्या निवडलेल्या डिव्हाइसवरून रिस्टोअर करण्यासाठी निवडलेल्या टॅबचे पुनरावलोकन करा.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब, शेवटचा अपडेट केला: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> टॅब, शेवटचे अपडेट केले: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">मागील</translation>
 <translation id="3983305234037158273">टॅब रिस्टोअर करण्यासाठी सिंक केलेली डिव्हाइस स्पर्श केल्यावर बदलण्याकरिता उपलब्ध आहेत. स्पर्श करून सध्याच्या डिव्हाइससाठी निवडलेल्या टॅबचे पुनरावलोकन किंवा ते रिस्टोअर करण्यासाठी नेव्हिगेट करा. कीबोर्ड लपवलेला आहे.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब उघडा}other{<ph name="TABS_COUNT_MANY" /> टॅब उघडा}}</translation>
 <translation id="4811934403802581334">सध्या निवडलेल्या डिव्हाइसमधील सर्व निवडलेले टॅब रिस्टोअर केले जातील.</translation>

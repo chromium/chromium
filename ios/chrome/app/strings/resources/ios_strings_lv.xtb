@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Pārslēgties uz atvērto logu</translation>
 <translation id="1112015203684611006">Neizdevās drukāt.</translation>
 <translation id="1125564390852150847">Izveidot jaunu cilni.</translation>
-<translation id="1126013303640354461">Maksājuma veidi un adreses no pakalpojuma Google Pay netiks šifrētas. Pārlūkā Chrome saglabātā pārlūkošanas vēsture netiks sinhronizēta.
-Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze. Ieejas frāze netiek sūtīta uzņēmumam Google, un uzņēmums Google to neuzglabā. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs jāveic sinhronizācijas atiestatīšana. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="1126809382673880764">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Jūs joprojām saņemsiet drošas pārlūkošanas aizsardzību, ja tā ir pieejama, citos Google pakalpojumos, piemēram, Gmail un Meklēšana.</translation>
 <translation id="1145536944570833626">Dzēst esošos datus.</translation>
 <translation id="1147031633655575115">Pierakstījies kā <ph name="USER" /></translation>
@@ -89,6 +87,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1509960214886564027">Daudzās vietnēs funkcijas var nedarboties</translation>
 <translation id="152234381334907219">Netiek saglabātas</translation>
 <translation id="1523341279170789507">Atļaut visus sīkfailus</translation>
+<translation id="1524563461097350801">Nē, paldies</translation>
 <translation id="1531836666020185856">Aktualitātes</translation>
 <translation id="1535268707340844072">Pašreizējais iestatījums var radīt traucējumus noteiktās vietnēs. Lai pārvaldītu visu vietņu sīkfailus, skatiet sadaļu <ph name="BEGIN_LINK" />Sīkfailu iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">1. adrese</translation>
@@ -246,7 +245,6 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2647269890314209800">Izmantojamie sīkfaili</translation>
 <translation id="2648721026697078500">Nekad nepārvietot</translation>
 <translation id="2648803196158606475">Dzēst izlasītos</translation>
-<translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2664621323652615289">Apturēt</translation>
 <translation id="2671426118752779020">Google paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="2690858294534178585">Tiek izmantota kamera.</translation>
@@ -306,7 +304,6 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2932085390869194046">Ieteikt paroli...</translation>
 <translation id="2932765531295814441">Manuāla paroļu pievienošana</translation>
 <translation id="2952581218264071393">1. Atveriet pārlūka Chrome iestatījumus.</translation>
-<translation id="2953871438216280742">Pierakstieties, lai atvērtu un saglabātu lasīšanas sarakstu savā Google kontā.</translation>
 <translation id="2958718410589002129">Paroles</translation>
 <translation id="2961210776189273067">Uzruna/amats</translation>
 <translation id="2964349545761222050">Bloķēt trešo pušu sīkfailus</translation>
@@ -435,6 +432,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3861486700625780712">Nesekot</translation>
 <translation id="3863769054730344136">Sūtīt uz jūsu ierīcēm</translation>
 <translation id="387280738075653372">Lejupielādējiet lietotni Chrome šeit.</translation>
+<translation id="3875783148670536197">Parādīt, kā</translation>
 <translation id="3888863481921783344">Piekļuve tiks izmantota, lai rādītu jums lietotājus, ko varat ielūgt uz savu pasākumu.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Šeit varēsiet skatīt savu vēsturi</translation>
@@ -550,9 +548,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4652817563047461855">Aizsargājiet savas paroles, uzziniet, vai tās nav uzlauztas, un saņemiet padomus par drošību tiešsaistē. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4659667755519643272">Atvērt ciļņu pārslēdzēju</translation>
 <translation id="46614316059270592">Saglabāt paroli</translation>
-<translation id="4666531726415300315">Pierakstījies kā <ph name="EMAIL" />.
-
-Jūsu dati ir šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi. Lai sāktu sinhronizēšanu, ievadiet ieejas frāzi.</translation>
 <translation id="4682686630151240767">1. iPhone tālrunī atveriet sadaļu Settings (Iestatījumi).</translation>
 <translation id="4689564913179979534">Pārvaldīt maksājumu veidus...</translation>
 <translation id="469300482518076788">Aizvērt cilni</translation>
@@ -561,16 +556,12 @@ Jūsu dati ir šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi. Lai s�
 <translation id="4737560986434232178">Meklēt nesen atvērtajās cilnēs</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4746926359847517643">Jebkurā laikā vēstures sadaļā varat tās atjaunot</translation>
-<translation id="4747097190499141774">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay. Jūsu šifrētos datus var lasīt tikai personas, kurām ir zināma jūsu ieejas frāze. Ieejas frāze netiek sūtīta Google serveriem un netiek tajos glabāta. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs jāatiestata sinhronizācija. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />. Tikai šajā ierīcē. <ph name="URL" /></translation>
 <translation id="4751645464639803239">Jauna inkognito cilne</translation>
 <translation id="4766112107778026136">Discover un sekošana</translation>
 <translation id="4775879719735953715">Noklusējuma pārlūks</translation>
 <translation id="4778644898150334464">Izmantot citu paroli</translation>
 <translation id="478808905805139173">Vai atvērt inkognito režīmā?</translation>
-<translation id="4802417911091824046">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay.
-
-Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">Pārvalda jūsu organizācija.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4805759445554688327">Nederīgs kartes numurs</translation>
@@ -832,16 +823,12 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6366663624406569102">Izrakstīties un izslēgt sinhronizēšanu</translation>
 <translation id="6374469231428023295">Mēģināt vēlreiz</translation>
 <translation id="6377118281273296434">Vietnes drošība</translation>
-<translation id="6380866119319257197">Ja esat aizmirsis ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" />.</translation>
 <translation id="6383719166112032471">Atvērt atrašanās vietu…</translation>
 <translation id="6387994324662817823">Paroles tiek saglabātas tikai šīs ierīces Google paroļu pārvaldniekā.</translation>
 <translation id="6389470377220713856">Vārds un uzvārds uz kartes</translation>
 <translation id="6406506848690869874">Sinhronizācija</translation>
 <translation id="6410390304316730527">Izmantojot drošu pārlūkošanu, jūs iegūstat aizsardzību pret uzbrucējiem, kuri varētu mudināt jūs veikt bīstamas darbības, piemēram, instalēt ļaunprātīgu programmatūru vai atklāt personas informāciju — paroles, tālruņa numurus, kredītkaršu datus u.tml. Ja izslēgsiet drošu pārlūkošanu, ievērojiet piesardzību, pārlūkojot nepazīstamas vietnes vai vietnes ar sliktu reputāciju.</translation>
 <translation id="6410883413783534063">Atveriet cilnes, lai vienlaikus apmeklētu vairākas lapas</translation>
-<translation id="641799622251403418">Pierakstījies kā <ph name="EMAIL" />.
-
-Jūsu dati tika šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi šādā datumā: <ph name="TIME" />. Lai sāktu sinhronizēšanu, ievadiet ieejas frāzi.</translation>
 <translation id="6418346271604475326">PDF sagatave</translation>
 <translation id="6429213933892582367">Atveriet sadaļu Paroles iespējas.</translation>
 <translation id="6434591244308415567">Radās kļūda. Vēlāk mēģiniet vēlreiz.</translation>
@@ -1055,7 +1042,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7845466610722898">Rādīt lasīšanas sarakstu</translation>
 <translation id="784551991304901159">Lai skatītu saturu, izvēlnē atlasiet vienumu Ieslēgt</translation>
 <translation id="7846158885638438868">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}”.}zero{Grāmatzīmes ir saglabātas mapē “{title}”.}one{Grāmatzīmes ir saglabātas mapē “{title}”.}other{Grāmatzīmes ir saglabātas mapē “{title}”.}}</translation>
-<translation id="7852017611907717397">ATSAUKT</translation>
 <translation id="7853202427316060426">Aktivitāte</translation>
 <translation id="7856733331829174190">Lejupielāde neizdevās</translation>
 <translation id="785938070103630874">Atveriet sadaļu Paroles, Maksājumu veidi vai Adreses un citi dati.</translation>

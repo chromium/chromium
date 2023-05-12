@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Префрли на режим за преглед во список</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со Linux</translation>
-<translation id="2378075407703503998">Избрани се <ph name="SELCTED_FILE_COUNT" /> датотеки</translation>
 <translation id="2383454254762599978">Премести во корпата</translation>
 <translation id="2387458720915042159">Тип на врска прокси</translation>
 <translation id="2389832672041313158">бурмански (Мјанмар)</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Уредот е само за читање</translation>
 <translation id="4826849268470072925">тамилски ITRANS</translation>
 <translation id="482932175346970750">Напишете <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> во вашиот прелистувач</translation>
-<translation id="4839847978919684242">Избрани ставки: <ph name="SELCTED_FILES_COUNT" /></translation>
 <translation id="4843566743023903107">Уреди Chromebase</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">германски</translation>
@@ -755,7 +753,6 @@
 <translation id="6989942356279143254">шведски</translation>
 <translation id="6990081529015358884">Немате веќе простор</translation>
 <translation id="6993826899923627728">Ставкиве се во корпата</translation>
-<translation id="6998711733709403587">Избрани се <ph name="SELCTED_FOLDERS_COUNT" /> папки</translation>
 <translation id="7008426324576352165">Вашата организација има потреба од повеќе капацитет за да го заврши прикачувањево.</translation>
 <translation id="7009985720488544166">Администраторското правило го блокира преместувањето на <ph name="COUNT" /> датотеки</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

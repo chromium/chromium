@@ -83,6 +83,7 @@
 <translation id="2467438592969358367">Google Chrome хоче експортувати ваші паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2534507159460261402">Google Pay (скопійовано в Chrome)</translation>
+<translation id="2556847002339236023">Ваша організація закриває веб-переглядач Chrome, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />. Дані веб-перегляду, зокрема історію, дані автозаповнення й завантаження, було видалено.</translation>
 <translation id="2559253115192232574">Коли ви пізніше відвідаєте якийсь сайт, він може запитати в Chrome про ваші інтереси, щоб персоналізувати для вас оголошення. Chrome може надати доступ до інформації про щонайбільше 3 інтереси.</translation>
 <translation id="2563121210305478421">Перезапустити Chrome?</translation>
 <translation id="2574930892358684005">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chrome.</translation>
@@ -267,6 +268,7 @@
 <translation id="6113794647360055231">Chrome став ще кращим</translation>
 <translation id="6145313976051292476">Відкривати файли PDF у Chrome</translation>
 <translation id="6155960517327665396">Функція заощадження пам’яті пришвидшує роботу Chrome</translation>
+<translation id="6157638032135951407">Ваша організація видаляє дані Chrome, якщо вони не використовуються протягом <ph name="TIMEOUT_DURATION" />. Це може включати історію, дані автозаповнення й завантаження.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>
 <translation id="6235018212288296708">Вхідне правило для Google Chrome дозволяє трафік mDNS.</translation>
@@ -282,6 +284,7 @@
 <translation id="6418662306461808273">Перейти в наявний профіль Chrome?</translation>
 <translation id="648319183876919572">Безпечний перегляд із розширеним захистом додатково захищає вас від небезпечних веб-сайтів і завантажень</translation>
 <translation id="6493527311031785448">Google Chrome намагається <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome закрито автоматично</translation>
 <translation id="6506909944137591434">Веб-переглядачу Chrome потрібен доступ до камери, щоб створити 3D-карту вашого оточення</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
 <translation id="659498884637196217">У Менеджері паролів Google на цьому пристрої</translation>
@@ -318,6 +321,7 @@
 <translation id="7155997830309522122">Якщо так, змініть збережений пароль у Chrome, щоб він збігався з новим.</translation>
 <translation id="7161904924553537242">Вітаємо у Google Chrome:</translation>
 <translation id="7177959540995930968">Дізнатися більше про ці функції можна в налаштуваннях Chrome.</translation>
+<translation id="7193885263065350793">Ваша організація закриває веб-переглядач Chrome, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Google Chrome. Ваші дані Chrome, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. Проте ви можете створити новий профіль, щоб зберігати наявні дані Chrome окремо. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Цією мовою відображається інтерфейс Google Chrome</translation>
 <translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>

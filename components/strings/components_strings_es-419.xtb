@@ -175,7 +175,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1363819917331173092">No ofrecer la traducción de las páginas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Como esta política está bloqueada, se omitirá su valor.</translation>
 <translation id="1368318639262510626">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desolado. Cuando escuches la señal, presiona la barra espaciadora para saltar los obstáculos.</translation>
-<translation id="136907351928231527">Aquí aparecerá una lista de temas basada en tu historial de navegación reciente; puede demorar hasta una semana.</translation>
 <translation id="1374468813861204354">sugerencias</translation>
 <translation id="1375198122581997741">Acerca de la versión</translation>
 <translation id="1376836354785490390">Mostrar menos</translation>
@@ -1674,6 +1673,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="5051305769747448211">Comedia en vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este archivo mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}other{Para enviar estos archivos mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}}</translation>
+<translation id="5060419232449737386">Configuración de subtítulos</translation>
 <translation id="5060483733937416656">Elegiste realizar la verificación con Windows Hello en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">¿Quisiste decir <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historial de impresión</translation>

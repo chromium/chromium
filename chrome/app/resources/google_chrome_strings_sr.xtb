@@ -87,6 +87,7 @@
 <translation id="2467438592969358367">Google Chrome жели да извезе лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2534507159460261402">Google Pay (копирано у Chrome)</translation>
+<translation id="2556847002339236023">Организација затвара Chrome када се не користи <ph name="TIMEOUT_DURATION" />. Подаци прегледања су избрисани. То може да обухвата историју, аутоматско попуњавање и преузимања.</translation>
 <translation id="2559253115192232574">Сајт који касније посетите може да затражи од Chrome-а приступ вашим интересовањима да би персонализовао огласе који вам се приказују. Chrome може да дели највише 3 интересовања.</translation>
 <translation id="2563121210305478421">Желите поново да покренете Chrome?</translation>
 <translation id="2574930892358684005">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Да би вам прегледање било раздвојено, Chrome може да направи засебан профил за вас.</translation>
@@ -275,6 +276,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6113794647360055231">Управо смо побољшали Chrome</translation>
 <translation id="6145313976051292476">Отварајте PDF-ове у Chrome-у</translation>
 <translation id="6155960517327665396">Уштеда меморије је убрзала Chrome</translation>
+<translation id="6157638032135951407">Организација брише Chrome податке када се не користе <ph name="TIMEOUT_DURATION" />. То може да обухвата историју, аутоматско попуњавање и преузимања.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
 <translation id="6235018212288296708">Правило за долазни саобраћај за Google Chrome да бисте омогућили mDNS саобраћај.</translation>
@@ -290,6 +292,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6418662306461808273">Желите да пређете на постојећи Chrome профил?</translation>
 <translation id="648319183876919572">Побољшано безбедно прегледање доприноси заштити од опасних веб-сајтова и преузимања</translation>
 <translation id="6493527311031785448">Google Chrome покушава да <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome је аутоматски затворен</translation>
 <translation id="6506909944137591434">Chrome-у треба дозвола за камеру да би направио 3D мапу окружења</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Програмерска верзија Google Chrome-а</translation>
 <translation id="659498884637196217">У Google менаџеру лозинки на овом уређају</translation>
@@ -326,6 +329,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7155997830309522122">Ако је тако, измените сачувану лозинку у Chrome-у тако да се подудара са новом лозинком.</translation>
 <translation id="7161904924553537242">Добро дошли у Google Chrome</translation>
 <translation id="7177959540995930968">Више о овим функцијама можете да сазнате у подешавањима Chrome-а.</translation>
+<translation id="7193885263065350793">Организација затвара Chrome када се не користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Пријављујете се помоћу налога којим се управља и дајете његовом администратору контролу над Google Chrome профилом. Chrome подаци, као што су апликације, обележивачи, историја, лозинке и друга подешавања, биће трајно повезани са налогом <ph name="USER_NAME" />. Моћи ћете да избришете те податке преко Контролне табле Google налога, али нећете моћи да их повежете са неким другим налогом. Можете опционално да направите нови профил да би постојећи Chrome подаци остали одвојени. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Овај језик се користи за приказивање корисничког интерфејса Google Chrome-а</translation>
 <translation id="7296210096911315575">Важне информације о употреби и безбедности</translation>

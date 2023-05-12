@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Nonaktifkan tema gelap</translation>
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
+<translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="1851218745569890714">Konferensi Video</translation>
 <translation id="1852934301711881861">Instal ChromeOS Flex</translation>
 <translation id="1856388568474281774">Panah bawah</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Arah kunci</translation>
 <translation id="3294437725009624529">Tamu</translation>
+<translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
-<translation id="4937657825850660613">Setengah</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> telah diupdate ke versi <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Sebagian</translation>
 <translation id="4972592110715526173">pengubahan mode</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Alamat MAC</translation>
 <translation id="7491478667760509108">Keluar dari status mengambang</translation>
 <translation id="7497215489070763236">Sertifikat CA server</translation>
+<translation id="7501957181231305652">atau</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Konten bantuan tidak tersedia</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
 <translation id="763165478673169849">Waktu Reset Terakhir</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
+<translation id="765159867434478292">Pisahkan</translation>
 <translation id="7656388927906093505">Perangkat adalah mouse.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665800271478495366">Ubah avatar</translation>

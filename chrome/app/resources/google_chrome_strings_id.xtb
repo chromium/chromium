@@ -83,6 +83,7 @@
 <translation id="2467438592969358367">Google Chrome ingin mengekspor sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="2485422356828889247">Uninstal</translation>
 <translation id="2534507159460261402">Google Pay (disalin ke Chrome)</translation>
+<translation id="2556847002339236023">Organisasi Anda menutup Chrome saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data penjelajahan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.</translation>
 <translation id="2559253115192232574">Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat. Chrome dapat membagikan hingga 3 minat.</translation>
 <translation id="2563121210305478421">Luncurkan kembali Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> telah login ke profil Chrome ini. Agar penjelajahan Anda tetap terpisah, Chrome dapat membuat profil tersendiri untuk Anda.</translation>
@@ -267,6 +268,7 @@
 <translation id="6113794647360055231">Chrome menjadi lebih baik</translation>
 <translation id="6145313976051292476">Buka PDF di Chrome</translation>
 <translation id="6155960517327665396">Penghemat Memori membuat Chrome lebih cepat</translation>
+<translation id="6157638032135951407">Organisasi Anda akan menghapus data Chrome jika tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data ini dapat mencakup histori, isi otomatis, dan download.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
@@ -282,6 +284,7 @@
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
 <translation id="648319183876919572">Safe Browsing yang Disempurnakan melakukan lebih banyak hal untuk melindungi Anda dari situs dan download berbahaya</translation>
 <translation id="6493527311031785448">Google Chrome sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome otomatis ditutup</translation>
 <translation id="6506909944137591434">Chrome memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Di Pengelola Sandi Google di perangkat ini</translation>
@@ -318,6 +321,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7155997830309522122">Jika ya, edit sandi Anda yang tersimpan di Chrome agar cocok dengan sandi baru Anda.</translation>
 <translation id="7161904924553537242">Selamat Datang di Google Chrome</translation>
 <translation id="7177959540995930968">Anda dapat mempelajari fitur ini lebih lanjut di setelan Chrome.</translation>
+<translation id="7193885263065350793">Organisasi Anda menutup Chrome saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. Anda dapat membuat profil baru secara opsional untuk menjaga agar data Chrome Anda tetap terpisah. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk menampilkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Penggunaan penting dan informasi keamanan</translation>

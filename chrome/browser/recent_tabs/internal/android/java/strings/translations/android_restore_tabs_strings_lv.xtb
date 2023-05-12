@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">Izvēlieties ierīci, no kuras iegūt cilnes</translation>
 <translation id="3575801299326994724">Pārskatiet atjaunošanai atlasītās cilnes no pašlaik atlasītās ierīces.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne, pēdējoreiz atjaunināta <ph name="TIME_SINCE_MODIFIED" />}zero{<ph name="TABS_COUNT_MANY" /> cilnes, pēdējoreiz atjauninātas <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> cilne, un tās ir pēdējoreiz atjauninātas <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> cilnes, pēdējoreiz atjauninātas <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3983305234037158273">Pieskaroties varat mainīt sinhronizētās ierīces, kas pieejamas ciļņu atjaunošanai. Veiciet navigāciju, lai pieskaroties pārskatītu vai atjaunotu atlasītās cilnes pašreizējai ierīcei. Tastatūra ir paslēpta.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Atvērt <ph name="TABS_COUNT_ONE" /> cilni}zero{Atvērt <ph name="TABS_COUNT_MANY" /> cilnes}one{Atvērt <ph name="TABS_COUNT_MANY" /> cilni}other{Atvērt <ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
 <translation id="4811934403802581334">Visas atlasītās cilnes no pašlaik atlasītās ierīces tiks atjaunotas.</translation>

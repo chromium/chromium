@@ -166,7 +166,6 @@
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड करा, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची व्‍ह्यूवर स्विच करा</translation>
 <translation id="2377590462528165447">Linux सोबत शेअर केलेली <ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> फाइल निवडल्या</translation>
 <translation id="2383454254762599978">ट्रॅशमध्ये हलवा</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
 <translation id="2389832672041313158">बर्मीज/म्यानमार</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">डिव्हाइस केवळ वाचनीय आहे</translation>
 <translation id="4826849268470072925">तमिळ ITRANS</translation>
 <translation id="482932175346970750">तुमच्या ब्राउझरमध्ये <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करा</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> आयटम निवडले</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -756,7 +754,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
 <translation id="6993826899923627728">हे आयटम तुमच्या ट्रॅश मध्ये आहेत</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फोल्डर निवडली</translation>
 <translation id="7008426324576352165">अपलोड पूर्ण करण्यासाठी तुमच्या संस्थेला आणखी स्टोरेजची आवश्यकता आहे.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> फाइल हलवणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

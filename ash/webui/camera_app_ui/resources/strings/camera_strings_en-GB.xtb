@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">Document detected</translation>
 <translation id="414641094616694804">This camera cannot change resolution</translation>
 <translation id="4269820728363426813">Copy link address</translation>
-<translation id="4281620174117014503">Medium resolution</translation>
 <translation id="428234092390943511">Page thumbnail</translation>
 <translation id="4383571725254449280">Print performance logs</translation>
 <translation id="4445542136948522167">Stop taking photo</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">Scanning page <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Square</translation>
+<translation id="574392208103952083">Medium</translation>
 <translation id="5746169159649715125">Save as PDF</translation>
 <translation id="5753488212459587150">Enable expert mode</translation>
 <translation id="5759254179196327752">Scan document</translation>

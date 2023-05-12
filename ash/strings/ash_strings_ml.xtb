@@ -163,7 +163,6 @@
 <translation id="1703117532528082099">സജീവ വിൻഡോ ഇടതുവശത്ത് ഡോക്ക് ചെയ്‌തു.</translation>
 <translation id="1708345662127501511">ഡെസ്‌ക്: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">നെറ്റ്‌വർക്ക് ക്രമീകരണം</translation>
-<translation id="1715293566947629045">പ്രൊഫൈൽ പ്രവർത്തനരഹിതമാക്കുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="1719094688023114093">തത്സമയ ക്യാപ്ഷൻ ഓണാണ്.</translation>
 <translation id="1720011244392820496">വൈഫൈ സമന്വയം ഓണാക്കുക</translation>
 <translation id="1720230731642245863">ഹോട്ട്സ്പോട്ട് ഓഫാണ്</translation>
@@ -183,7 +182,6 @@
 <translation id="1771761307086386028">വലത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="1774796056689732716">കലണ്ടർ, <ph name="CURRENT_MONTH_YEAR" />, നിലവിൽ <ph name="DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="1787955149152357925">ഓഫാണ്</translation>
-<translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1816896987747843206">ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="1823280932251546115">സ്റ്റാറ്റസ് ട്രേ, സമയം <ph name="TIME" />,
@@ -264,6 +262,7 @@
 <translation id="2170530631236737939">അവലോകനത്തിൽ നിന്ന് പുറത്ത് കടക്കാൻ മൂന്നു വിരലുകൾ ഉപയോഗിച്ച് താഴേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2185166372312820725">മുമ്പത്തെ ടാബിലേക്ക് പോവുക</translation>
 <translation id="2185444992308415167">1 മുതൽ 8 വരെയുള്ള ടാബുകളിലൂടെ പോകുക</translation>
+<translation id="2198625180564913276">പ്രൊഫെെൽ ചേർക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="219905428774326614">ലോഞ്ചർ, എല്ലാ ആപ്പുകളും</translation>
 <translation id="2201071101391734388">അടുത്തിടെയുള്ള <ph name="TOTAL_COUNT" /> ഫോട്ടോകളിൽ <ph name="INDEX" />-മത്തേത്.</translation>
 <translation id="2208323208084708176">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡ്</translation>
@@ -436,7 +435,6 @@
 <translation id="3039939407102840004">സ്റ്റൈലസ് ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനത്തിലാണ്.</translation>
 <translation id="3045488863354895414">ഗുഡ് ആഫ്‌റ്റർനൂൺ,</translation>
 <translation id="3047761520276763270">ഇങ്ങനെ പറഞ്ഞ് നോക്കൂ:</translation>
-<translation id="3051189971848907985">പ്രൊഫൈലിന്റെ പേര് മാറ്റുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="3055162170959710888">നിങ്ങൾ ഇന്ന് <ph name="USED_TIME" />, ഈ ഉപകരണം ഉപയോഗിച്ചു</translation>
 <translation id="3062298103034426069">പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" /> പതിപ്പ് (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -508,7 +506,6 @@
 <translation id="3371140690572404006">USB-C ഉപകരണം (വലതുവശത്ത് മുന്നിലെ പോർട്ട്)</translation>
 <translation id="3375634426936648815">കണക്റ്റ് ചെയ്‌തു</translation>
 <translation id="3378438761594387761">നിങ്ങളുടെ പുതിയ ഡൗൺലോഡുകളും സ്ക്രീൻ ക്യാപ്ചറുകളും ഇവിടെ കണ്ടെത്താം</translation>
-<translation id="3378442621503952303">പ്രൊഫൈലിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="3386978599540877378">പൂര്‍‌ണ്ണ-സ്‌ക്രീൻ മാഗ്‌നിഫയർ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">അധിക ക്രമീകരണങ്ങൾ</translation>
@@ -715,13 +712,13 @@
 <translation id="4280601795273309128">സുരക്ഷാ അപ്‌ഡേറ്റുകൾ അവസാനിച്ചു. നിങ്ങളുടെ ഉപകരണം അപ്‌ഗ്രേഡ് ചെയ്യുക.</translation>
 <translation id="4283888303416325161">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
+<translation id="428715201724021596">പ്രൊഫൈലിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="4294319844246081198">ഗുഡ്മോണിംഗ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">എല്ലാ <ph name="COUNT" /> അറിയിപ്പുകളും മായ്ക്കുക</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> എന്ന ആപ്പിനെ <ph name="FOLDER_NAME" /> എന്ന ഫോൾഡറിലേക്ക് നീക്കി.</translation>
 <translation id="4302592941791324970">ലഭ്യമല്ല</translation>
 <translation id="4303223480529385476">സ്റ്റാറ്റസ് ഏരിയ വികസിപ്പിക്കുക</translation>
 <translation id="4305133312001648038">പേജിലെ സൂം നില റീസെറ്റ് ചെയ്യുക</translation>
-<translation id="4311195029067684288">പൂർണ്ണം</translation>
 <translation id="4312840429157639164">മുകളിൽ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
 <translation id="4316910396681052118">എല്ലാ ആപ്പുകളും</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -771,6 +768,7 @@
 <translation id="4536664881735498710">RAM ഉപയോഗം</translation>
 <translation id="4538824937723742295">പൂർണ്ണ സ്ക്രീൻ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="4539127209940689201">നിലവിലെ പേജ് പ്രിന്റ് ചെയ്യുക</translation>
+<translation id="4541706525461326392">പ്രൊഫൈല്‍ നീക്കം ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="4544483149666270818">റെക്കോർഡ് ചെയ്യാൻ വിൻഡോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="454541942614298893">എന്റെ ഉപകരണം</translation>
 <translation id="4548482551627849548">സജീവ വിൻഡോ ഇടതുവശത്തെ ഡെസ്‌ക്കിലേക്ക് നീക്കുക</translation>
@@ -856,7 +854,6 @@
 <translation id="4919841137949306064"><ph name="APP_NAME" /> നിലവിൽ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
 <translation id="492453977506755176">ക്യാപ്‌ചർ മോഡ് കീ</translation>
 <translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
-<translation id="4929163402621253029">നിങ്ങൾ സംസാരിക്കുന്നുണ്ടോ? നിങ്ങൾ മ്യൂട്ട് ചെയ്‌തിരിക്കുകയാണ്. കൂടുതലറിയുക</translation>
 <translation id="493076006037866439">സ്ക്രീൻ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="4936329710968938986">എല്ലാവരും, ഓഫാണ്</translation>
 <translation id="4938176435186993759">എല്ലാ നിർദ്ദേശങ്ങളും മറയ്ക്കുക</translation>
@@ -877,6 +874,7 @@
 <translation id="4987738733603015246">ഡെസ്‌ക് 16</translation>
 <translation id="5003993274120026347">അടുത്ത വാചകം</translation>
 <translation id="5004607513195820459">മാനേജ് ചെയ്യുന്ന നെറ്റ്‌വർക്കാണ്</translation>
+<translation id="5009463889040999939">പ്രൊഫൈലിന്റെ പേര് മാറ്റുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="5016558321564993266">മാർക്കർ ടോഗിൾ ചെയ്യുക. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">ഉപകരണത്തിന്റെ മൈക്രോഫോൺ ആക്‌സസ് ഓണാണ്</translation>
 <translation id="5030659775136592441">ബുക്ക്മാർക്ക് മാനേജർ കാണിക്കുക</translation>
@@ -885,6 +883,7 @@
 <translation id="5034421018520995080">പേജിന്റെ മുകളിലേക്ക് പോവുക</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> പുതിയ ഫോണിലേക്ക് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5035389544768382859">ഡിസ്പ്ലേ കോൺഫിഗറേഷൻ സ്ഥിരീകരിക്കുക</translation>
+<translation id="5038863510258510803">പ്രാപ്‌തമാക്കുന്നു...</translation>
 <translation id="5042305953558921026">ചുരുക്കവിവരണ മോഡ് കീ</translation>
 <translation id="5043679421800073804">ഷെൽഫിലെ അവസാന ഐക്കണിൽ ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="504465286040788597">മുമ്പത്തെ പാരഗ്രാഫ്</translation>
@@ -948,7 +947,6 @@
 <translation id="5331975486040154427">USB-C ഉപകരണം (പുറകിൽ ഇടതുവശത്തെ പോർട്ട്)</translation>
 <translation id="533282197239610265">കാസ്‌റ്റ് ഉപകരണങ്ങൾ കാണിക്കുക</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (വലത്)</translation>
-<translation id="5351427059191534258">ക്യാമറാ ആക്‌സസ് ഓഫാക്കണോ?</translation>
 <translation id="5352250171825660495">ഡാർക്ക് തീം ഓണാണ്</translation>
 <translation id="5356963482258194581">ഡാർക്ക്, ലൈറ്റ് തീമുകൾ തമ്മിൽ മാറുക. ഡെസ്‌ക്ടോപ്പിൽ വലത് ക്ലിക്ക് ചെയ്ത ശേഷം വാൾപേപ്പറും സ്റ്റൈലും തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="536019650977002321">നിങ്ങളുടെ അഡ്‌മിൻ ഓഡിയോ ക്യാപ്ചർ ചെയ്യാൻ അനുവദിക്കുന്നില്ല. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
@@ -962,6 +960,7 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> എന്നതിന് മുകളിലാണ് <ph name="DRAGGED_APP_NAME" />, ഫോൾഡർ സൃഷ്‌ടിക്കാൻ റിലീസ് ചെയ്യുക.</translation>
 <translation id="5397578532367286026">ഈ ഉപയോക്താവിന്റെ ഉപയോഗവും ചരിത്രവും chrome.com-ൽ മാനേജർക്ക് (<ph name="MANAGER_EMAIL" />) അവലോകനം ചെയ്യാനാകും.</translation>
 <translation id="5400461572260843123">ദ്രുത ക്രമീകരണം, അറിയിപ്പ് കേന്ദ്രം ആക്‌സസ് ചെയ്യാൻ തിരയൽ + ഇടത് അമ്പടയാളം അമർത്തുക.</translation>
+<translation id="5414198321558177633">പ്രൊഫൈല്‍ ലിസ്റ്റ് റീഫ്രഷ് ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="5426063383988017631">ക്രമീകരണം മെനു അടച്ചു</translation>
 <translation id="5428899915242071344">തിരഞ്ഞെടുക്കാൻ ആരംഭിക്കുക</translation>
 <translation id="5429993543155113935">അദൃശ്യ വിൻഡോകൾക്ക് നിലവിൽ പിന്തുണയില്ല</translation>
@@ -1088,7 +1087,6 @@
 <translation id="5983567367406220847">നിഷ്‌ക്രിയത്വത്തെ തുടർന്ന്, ഹോട്ട്‌സ്പോട്ട് ഓഫാക്കി.</translation>
 <translation id="598407983968395253">ടെംപ്ലേറ്റ് ഉപയോഗിക്കുക</translation>
 <translation id="598882571027504733">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
-<translation id="6002179289567220515">1 ക്യാമറ ഓഫാക്കാൻ നിങ്ങൾ ഫിസിക്കൽ സ്വിച്ച് ഉപയോഗിച്ചു. എല്ലാ ക്യാമറകളിലേക്കുമുള്ള ആക്‌സസും നിങ്ങൾക്ക് ഓഫാക്കാനാകും.</translation>
 <translation id="6012623610530968780">പേജ് <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ഷെൽഫിലെ അടുത്ത ഇനം ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="6018164090099858612">മിറർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
@@ -1206,7 +1204,6 @@
 <translation id="6537924328260219877">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ഡൗൺലോഡ് സ്‌കാൻ ചെയ്യുന്നു <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ഉപകരണത്തിലേക്ക് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
-<translation id="6548693220024099658">പശ്ചാത്തലം മങ്ങിക്കൽ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 പുതിയ ഇൻസ്റ്റാൾ</translation>
 <translation id="6559976592393364813">അഡ്‌മിനിസ്‌ട്രേറ്ററോട് ചോദിക്കുക</translation>
@@ -1241,7 +1238,6 @@
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6696025732084565524">നിങ്ങളുടെ വേർപെടുത്താനാകുന്ന കീബോഡിന് നിർണ്ണായക അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>
 <translation id="6700713906295497288">IME മെനു ബട്ടൺ</translation>
-<translation id="6705577071209924099">ലൈറ്റിംഗ് ക്രമീകരിക്കുക</translation>
 <translation id="6707693040195709527">മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റേണ്ട സമയം കഴിഞ്ഞു.</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="6723839937902243910">പവർ</translation>
@@ -1362,6 +1358,7 @@
 <translation id="7302889331339392448">തത്സമയ ക്യാപ്ഷൻ ഓഫാണ്.</translation>
 <translation id="7303365578352795231">മറ്റൊരു ഉപകരണത്തിൽ മറുപടി നൽകുന്നു.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7312210124139670355">നിങ്ങളുടെ അഡ്‌മിൻ eSIM റീസെറ്റ് ചെയ്യുകയാണ്. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="7313193732017069507">ക്യാമറ വികസിപ്പിക്കുക</translation>
 <translation id="731589979057211264">ഷെൽഫ് പാർട്ടി ഓണാണ്.</translation>
 <translation id="7340731148882810149">സ്വയമേവയുള്ള ക്ലിക്കുകളുടെ മെനു</translation>
@@ -1484,7 +1481,6 @@
 <translation id="7862292329216937261">അതിഥിയായി ഉപകരണം ഉപയോഗിക്കാൻ, സൈൻ ഔട്ട് ചെയ്‌ത ശേഷം സ്‌ക്രീനിന്റെ ഏറ്റവും താഴെ നിന്ന് 'അതിഥിയായി ബ്രൗസ് ചെയ്യുക' തിരഞ്ഞെടുക്കേണ്ടതുണ്ട്.</translation>
 <translation id="7866482334467279021">ഓണാണ്</translation>
 <translation id="7868900307798234037">വിരലടയാളം ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുന്നു</translation>
-<translation id="7872195908557044066">നിങ്ങളുടെ അഡ്‌മിൻ eSIM റീസെറ്റ് ചെയ്യുകയാണ്. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="7872786842639831132">ഓഫാണ്</translation>
 <translation id="7875575368831396199">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Bluetooth ഓഫാണെന്ന് തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കാൻ, Bluetooth ഓണാക്കുക.</translation>
 <translation id="7877557217297072640">{0,plural, =0{ഉപകരണം ഇപ്പോൾ തന്നെ മുമ്പത്തെ പതിപ്പിലേക്ക് മാറ്റുക}=1{ഉപകരണം ഒരു സെക്കൻഡിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് മാറ്റുക}other{ഉപകരണം # സെക്കൻഡിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് മാറ്റുക}}</translation>
@@ -1624,6 +1620,7 @@
 <translation id="847056008324733326">സ്‌കെയിൽ ക്രമീകരണം പ്രദർശിപ്പിക്കുക</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> എന്ന സ്ഥാപനം <ph name="FEATURE_NAME" /> എന്ന ഫീച്ചർ <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">റദ്ദാക്കാൻ Alt+തിരയൽ അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
+<translation id="8487699605742506766">ഹോട്ട്‌സ്‌പോട്ട്</translation>
 <translation id="8491237443345908933">പുതിയ ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="8496402167048257517">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക</translation>
@@ -1649,12 +1646,10 @@
 <translation id="8614517853887502247">'കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ' ഓണായതിനാൽ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="8619138598101195078">ശബ്‌ദം കുറയ്ക്കുക</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>
-<translation id="8630991711272431708">ക്യാമറ ആക്‌സസ് ഓഫാക്കുക</translation>
 <translation id="8631727435199967028">ഉപയോഗസഹായി ക്രമീകരണം</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8638637208069328956">മൈക്രോഫോൺ ഓണാക്കുക/ഓഫാക്കുക</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ശേഷിക്കുന്നു</translation>
-<translation id="8641805545866562088">പ്രൊഫൈല്‍ ലിസ്റ്റ് റീഫ്രഷ് ചെയ്യുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ടൈമർ</translation>
 <translation id="8647931990447795414">ഒരു വ്യക്തിയെ ചേർക്കാൻ, നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="8649597172973390955">ഷെൽഫ് എപ്പോഴും ദൃശ്യമാക്കിയിരിക്കുന്നു</translation>
@@ -1690,7 +1685,6 @@
 <translation id="880709030178078220">"സഹായം"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
-<translation id="8818320199597151042">പ്രൊഫൈല്‍ നീക്കം ചെയ്യുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="8819728065740986820">അഡാപ്റ്റീവ് ചാർജിംഗ് ഓണാണ്</translation>
 <translation id="8825863694328519386">തിരികെ പോകാൻ ഇടതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="8832513206237979203">ബുക്ക്‌മാർക്ക് ബാർ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക</translation>
@@ -1757,7 +1751,6 @@
 <translation id="9089416786594320554">ഇൻപുട്ട്  രീതികൾ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ഡിസ്‌പ്ലേ നീക്കംചെയ്‌തു</translation>
 <translation id="9098969848082897657">ഫോൺ നിശബ്ദമാക്കുക</translation>
-<translation id="9100887602489003640">പ്രൊഫെെൽ ചേർക്കുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="9105450214093926548">Lacros ബ്രൗസർ റൺ ചെയ്യുമ്പോൾ രണ്ടാമത്തെ ഉപയോക്താവ് സൈൻ ഇൻ ചെയ്യുന്നത് പിന്തുണയ്ക്കുന്നില്ല. പകരം Lacros-ൽ രണ്ടാമത്തെ ബ്രൗസർ പ്രൊഫൈൽ ഉപയോഗിക്കുകയോ Lacros അടച്ച ശേഷം വീണ്ടും ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="9120448753905017833">മൊബൈൽ ഡാറ്റ വഴി ഹോട്ട്‌സ്‌പോട്ട് ഉപയോഗിക്കുന്നത് തുടങ്ങാൻ ഞങ്ങൾ വൈഫൈ ഓഫാക്കി. ഇത് ഡാറ്റാ നിരക്ക് ഈടാക്കാൻ കാരണമായേക്കാം.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> അല്ലെങ്കിൽ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

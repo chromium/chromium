@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">បិទ​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="1807246157184219062">ភ្លឺ</translation>
 <translation id="1827738518074806965">វិចិត្រសាល</translation>
+<translation id="1838374766361614909">ជម្រះការស្វែងរក</translation>
 <translation id="1851218745569890714">ការប្រជុំតាម​វីដេអូ</translation>
 <translation id="1852934301711881861">ដំឡើង ChromeOS Flex</translation>
 <translation id="1856388568474281774">ព្រួញ​ចុះ​ក្រោម</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ទិសដៅសោ</translation>
 <translation id="3294437725009624529">ភ្ញៀវ</translation>
+<translation id="3303855915957856445">រកមិនឃើញលទ្ធផលស្វែងរកទេ</translation>
 <translation id="3310640316857623290">កម្រិតពន្យាររបស់ DNS ខ្ពស់ជាងកម្រិតអនុញ្ញាតខ្លាំង</translation>
 <translation id="3328783797891415197">កំពុងដំណើរការតេស្ត</translation>
 <translation id="3340011300870565703">ឧបករណ៍មានថ្មកាសខាងស្ដាំ <ph name="BATTERY_PERCENTAGE" />%។</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">បានសាកថ្ម <ph name="RATE" /> ក្នុងរយៈពេល <ph name="NUM_SECONDS" /> វិនាទី។</translation>
 <translation id="4930320165497208503">ដើម្បីរៀបចំ ឬធ្វើបច្ចុប្បន្នភាពការតភ្ជាប់ សូមចូលទៅកាន់<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="4932733599132424254">កាលបរិច្ឆេទ</translation>
-<translation id="4937657825850660613">ពាក់​ក​ណ្តា​ល</translation>
 <translation id="4950314376641394653">កម្មវិធី​បង្កប់ <ph name="DEVICE_NAME" /> ត្រូវបាន​ដំឡើងកំណែ​ទៅកំណែ <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">ផ្នែកខ្លះ</translation>
 <translation id="4972592110715526173">ការប្ដូរ​មុខងារ</translation>
@@ -739,6 +740,7 @@
 <translation id="7130438335435247835">ឈ្មោះ​ចំណុចចូលប្រើប្រាស់ (APN)</translation>
 <translation id="7131634559772719176">បញ្ជាក់ការកំណត់ជាមុន</translation>
 <translation id="7134436342991564651">{0,plural, =1{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}other{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}}</translation>
+<translation id="7135814714616751706">ស្វែងរកផ្លូវកាត់</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>
@@ -769,6 +771,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ចុច "ស្វែងរក" រួមជាមួយ "ដកឃ្លា" ដើម្បីមើល​លទ្ធផល​នៅក្នុង​កម្មវិធីស្វែងរក​នៅលើ Google។</translation>
 <translation id="7343649194310845056">ឧបករណ៍​បណ្ដាញ</translation>
+<translation id="7353413232959255829">លទ្ធផលស្វែងរក <ph name="LIST_POSITION" /> នៃ <ph name="LIST_SIZE" />៖ <ph name="SEARCH_RESULT_TEXT" />។ ចុច Enter ដើម្បី​ទៅកាន់​ផ្លូវកាត់។</translation>
 <translation id="7359657277149375382">ប្រភេទ​ឯកសារ</translation>
 <translation id="73631062356239394">ចែករំលែក​ទិន្នន័យ​វិភាគ</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -784,6 +787,7 @@
 <translation id="7490813197707563893">អាសយដ្ឋាន MAC</translation>
 <translation id="7491478667760509108">ចេញពី​ការ​អណ្ដែត</translation>
 <translation id="7497215489070763236">វិញ្ញាបនបត្រ CA ម៉ាស៊ីនមេ</translation>
+<translation id="7501957181231305652">ឬ</translation>
 <translation id="7502658306369382406">អាសយដ្ឋាន IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">មិនអាចចូលមើល​ខ្លឹមសារ​ជំនួយ​បានទេ</translation>
@@ -800,6 +804,7 @@
 <translation id="7620771111601174153">ស្វែងយល់បន្ថែម​នៅក្នុងមជ្ឈមណ្ឌលជំនួយ</translation>
 <translation id="763165478673169849">ពេលវេលាកំណត់ឡើងវិញចុងក្រោយ</translation>
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>
+<translation id="765159867434478292">បំបែក</translation>
 <translation id="7656388927906093505">ឧបករណ៍គឺជាកណ្ដុរ។</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7665800271478495366">ប្ដូររូបតំណាង</translation>

@@ -166,7 +166,6 @@
 <translation id="23721837607121582">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">เปลี่ยนเป็นมุมมองรายการ</translation>
 <translation id="2377590462528165447">แชร์กับ Linux แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
-<translation id="2378075407703503998">เลือก <ph name="SELCTED_FILE_COUNT" /> ไฟล์</translation>
 <translation id="2383454254762599978">ย้ายไปที่ถังขยะ</translation>
 <translation id="2387458720915042159">ประเภทการเชื่อมต่อพร็อกซี</translation>
 <translation id="2389832672041313158">พม่า/เมียนมา</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">อุปกรณ์เป็นแบบอ่านอย่างเดียว</translation>
 <translation id="4826849268470072925">ทมิฬ (ITRANS)</translation>
 <translation id="482932175346970750">พิมพ์ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ลงในเบราว์เซอร์</translation>
-<translation id="4839847978919684242">เลือก <ph name="SELCTED_FILES_COUNT" /> รายการ</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">สวีเดน</translation>
 <translation id="6990081529015358884">คุณไม่มีพื้นที่เหลือแล้ว</translation>
 <translation id="6993826899923627728">รายการเหล่านี้อยู่ในถังขยะ</translation>
-<translation id="6998711733709403587">เลือก <ph name="SELCTED_FOLDERS_COUNT" /> โฟลเดอร์</translation>
 <translation id="7008426324576352165">องค์กรต้องมีพื้นที่เก็บข้อมูลมากกว่านี้เพื่ออัปโหลดให้เสร็จสิ้น</translation>
 <translation id="7009985720488544166">นโยบายของผู้ดูแลระบบบล็อกการย้ายไฟล์ <ph name="COUNT" /> รายการ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

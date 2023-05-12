@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Onemogući tamnu temu</translation>
 <translation id="1807246157184219062">Svijetli</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
+<translation id="1838374766361614909">Obriši pretraživanje</translation>
 <translation id="1851218745569890714">Videokonferencija</translation>
 <translation id="1852934301711881861">Instaliraj ChromeOS Flex</translation>
 <translation id="1856388568474281774">Strelica nadolje</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Smjer ključa</translation>
 <translation id="3294437725009624529">Gost</translation>
+<translation id="3303855915957856445">Nije pronađen nijedan rezultat pretraživanja</translation>
 <translation id="3310640316857623290">Latentnost DNS-a je znatno iznad dozvoljenog praga</translation>
 <translation id="3328783797891415197">Test je u toku</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Da postavite ili ažurirate vezu, idite u <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4937657825850660613">Napola</translation>
 <translation id="4950314376641394653">Firmver uređaja <ph name="DEVICE_NAME" /> je ažuriran na verziju <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Djelimično</translation>
 <translation id="4972592110715526173">promjena načina rada</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC adresa</translation>
 <translation id="7491478667760509108">Izlaz iz lebdenja</translation>
 <translation id="7497215489070763236">CA certifikat servera</translation>
+<translation id="7501957181231305652">ili</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Sadržaj za pomoć nije dostupan</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>
 <translation id="7648838807254605802">Visoka HTTPs latentnost</translation>
+<translation id="765159867434478292">Podijeli</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665800271478495366">Promjena avatara</translation>

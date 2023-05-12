@@ -83,6 +83,7 @@
 <translation id="2467438592969358367">Google Chrome 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2534507159460261402">Google Pay (已複製到 Chrome)</translation>
+<translation id="2556847002339236023">由於 Chrome 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。瀏覽資料已刪除，當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
 <translation id="2559253115192232574">在此之後，你造訪的網站可以要求 Chrome 查看你的興趣喜好，以便向你放送個人化廣告。Chrome 最多可以分享 3 個感興趣的主題。</translation>
 <translation id="2563121210305478421">要重新啟動 Chrome 嗎？</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。如要分開保存你的瀏覽資料，建議在 Chrome 中建立專屬設定檔。</translation>
@@ -269,6 +270,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
 <translation id="6145313976051292476">在 Chrome 中開啟 PDF</translation>
 <translation id="6155960517327665396">記憶體節省模式可以提升 Chrome 運作速度</translation>
+<translation id="6157638032135951407">由於 Chrome 資料閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其刪除。當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 測試版</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
@@ -284,6 +286,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6418662306461808273">要切換至現有的 Chrome 設定檔嗎？</translation>
 <translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>
 <translation id="6493527311031785448">Google Chrome 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome 已自動關閉</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
 <translation id="659498884637196217">前往這部裝置的 Google 密碼管理員進行更新</translation>
@@ -320,6 +323,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7155997830309522122">如果是的話，請編輯你儲存在 Chrome 中的密碼，使其與新密碼相符。</translation>
 <translation id="7161904924553537242">歡迎使用 Google Chrome</translation>
 <translation id="7177959540995930968">你可以前往 Chrome 設定進一步瞭解這些功能。</translation>
+<translation id="7193885263065350793">由於 Chrome 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。</translation>
 <translation id="7242029209006116544">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">這是 Google Chrome UI 的顯示語言</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>

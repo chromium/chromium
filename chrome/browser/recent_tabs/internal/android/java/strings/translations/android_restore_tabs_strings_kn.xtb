@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">ನೀವು ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆಯಲು ಬಯಸುವ ಸಾಧನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3575801299326994724">ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಿದ ಸಾಧನದಿಂದ ಮರುಸ್ಥಾಪಿಸಲು ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, ಕೊನೆಯದಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಿದ್ದು: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, ಕೊನೆಯದಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಿದ್ದು: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, ಕೊನೆಯದಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಿದ್ದು: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="3983305234037158273">ಸ್ಪರ್ಶದ ಮೂಲಕ ಬದಲಾಯಿಸಲು ಲಭ್ಯವಿರುವ ಮರುಸ್ಥಾಪನೆ ಟ್ಯಾಬ್‌ಗೆ ಸಾಧನಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. ಸ್ಪರ್ಶದ ಮೂಲಕ ಪ್ರಸ್ತುತ ಸಾಧನಕ್ಕಾಗಿ ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಅಥವಾ ಮರುಸ್ಥಾಪಿಸಲು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ. ಕೀಬೋರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="4811934403802581334">ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಿದ ಸಾಧನದಿಂದ ಎಲ್ಲಾ ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>

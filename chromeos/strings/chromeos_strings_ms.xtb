@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Lumpuhkan tema gelap</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
+<translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
 <translation id="1852934301711881861">Pasang Chrome OS Flex</translation>
 <translation id="1856388568474281774">Anak panah ke bawah</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">Arahan utama</translation>
 <translation id="3294437725009624529">Tetamu</translation>
+<translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Dicas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="4930320165497208503">Untuk menyediakan atau mengemas kini sambungan, pergi ke <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tarikh</translation>
-<translation id="4937657825850660613">Separuh</translation>
 <translation id="4950314376641394653">Perisian tegar <ph name="DEVICE_NAME" /> telah dikemas kini kepada versi <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Separa</translation>
 <translation id="4972592110715526173">pertukaran mod</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Alamat MAC</translation>
 <translation id="7491478667760509108">Keluar dari keadaan terapung</translation>
 <translation id="7497215489070763236">Sijil CA pelayan</translation>
+<translation id="7501957181231305652">atau</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Kandungan bantuan tidak tersedia</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
 <translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
+<translation id="765159867434478292">Pisah</translation>
 <translation id="7656388927906093505">Peranti ialah tetikus.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665800271478495366">Tukar avatar</translation>

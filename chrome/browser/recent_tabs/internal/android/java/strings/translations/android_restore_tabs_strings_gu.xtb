@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">જેમાંથી તમે ટૅબ મેળવવા માગતા હો, તે ડિવાઇસ પસંદ કરો</translation>
 <translation id="3575801299326994724">હાલમાં પસંદ કરેલા ડિવાઇસમાંથી રિસ્ટોર કરવા માટે, પસંદ કરેલા ટૅબનો રિવ્યૂ કરો.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ, છેલ્લે અપડેટ કર્યાનો સમય: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> ટૅબ, છેલ્લે અપડેટ કર્યાનો સમય: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> ટૅબ, છેલ્લે અપડેટ કર્યાનો સમય: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">પાછળ</translation>
 <translation id="3983305234037158273">ટૅબને રિસ્ટોર કરવા માટે, સિંક કરેલા ડિવાઇસને ટચ કરીને બદલવાની સુવિધા ઉપલબ્ધ છે. ટચ કરીને હાલના ડિવાઇસ માટે પસંદ કરેલા ટૅબનો રિવ્યૂ કરવા કે તેને રિસ્ટોર કરવા માટે નૅવિગેટ કરો. કીબોર્ડ છુપાવેલું છે.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ખોલો}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ખોલો}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ખોલો}}</translation>
 <translation id="4811934403802581334">હાલમાં પસંદ કરેલા ડિવાઇસમાંથી બધા ટૅબને રિસ્ટોર કરવામાં આવશે.</translation>

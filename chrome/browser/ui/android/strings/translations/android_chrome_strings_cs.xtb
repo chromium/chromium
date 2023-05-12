@@ -58,7 +58,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1273937721055267968">Blokovat doménu <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Klepnutím rozbalíte</translation>
-<translation id="1285310382777185058">Změna jazyka</translation>
 <translation id="1291207594882862231">Vymazat historii, soubory cookie, data webů, mezipaměť…</translation>
 <translation id="129553762522093515">Nedávno zavřené</translation>
 <translation id="1298077576058087471">Přečtěte si dnešní zprávy a ušetřete až 60 % dat</translation>
@@ -131,7 +130,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1671236975893690980">Nevyřízené stahování…</translation>
 <translation id="1672586136351118594">Tuto zprávu již nezobrazovat</translation>
 <translation id="1680919990519905526">Koupit věc na obrázku pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
-<translation id="1682195225331129001">Vyzkoušet</translation>
 <translation id="1702543251015153180">Změnit nastavení tmavého motivu?</translation>
 <translation id="1702907158640575240">Spravovaný prohlížeč</translation>
 <translation id="1710099199314114079">Přepnout nebo zavřít karty</translation>
@@ -187,12 +185,10 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="204321170514947529">Aplikace <ph name="APP_NAME" /> má také data v Chromu</translation>
 <translation id="2046634576464120978">Registrace se nezdařila</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="2052422354554967744">Vyhledávání na internetu</translation>
 <translation id="2053105195397337973">Zkoumáme možnosti, jak zabránit sledování a zároveň webům umožnit potírání reklamního spamu a podvodů.</translation>
 <translation id="2056878612599315956">Web je pozastaven</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo}few{Stažení # souborů se nezdařilo}many{Stažení # souboru se nezdařilo}other{Stažení # souborů se nezdařilo}}</translation>
 <translation id="2067805253194386918">text</translation>
-<translation id="2068748236079642969">Přehrát další video</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Synchronizovat a přizpůsobit na různých zařízeních</translation>
@@ -384,6 +380,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3066573403916685335">Posunout dolů</translation>
 <translation id="3070005020161560471">Automatický překlad</translation>
 <translation id="3072980200212375806">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />. Platí také <ph name="BEGIN_LINK3" />zásady ochrany soukromí<ph name="END_LINK3" />.</translation>
+<translation id="3080525922482950719">Stránky si můžete uložit a přečíst si je později nebo v režimu offline</translation>
 <translation id="3083194063661536258">Jste odhlášeni. Tlačítko. Otevře dialogové okno k přihlášení a zapnutí synchronizace.</translation>
 <translation id="3091010850649238832">Zobrazit obsah schránky</translation>
 <translation id="3098745985164956033">Za účelem zlepšení popisů se některé obrázky odesílají do Googlu</translation>
@@ -415,14 +412,12 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3250563604907490871">Práce s popisy obrázků bude pokračovat, až se připojíte k Wi-Fi</translation>
 <translation id="3254409185687681395">Přidat stránku do záložek</translation>
 <translation id="3259831549858767975">Zmenšit veškerý obsah stránky</translation>
-<translation id="3264124641674805320">Jak stáhnout obsah na později</translation>
 <translation id="3264259168916048410">Váš počítač chce toto zařízení používat k přihlašování na web</translation>
 <translation id="3265093782546847662">Všechny stránky domény <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Správa sledovaných webů</translation>
 <translation id="3269093882174072735">Načíst obrázek</translation>
 <translation id="3280562213547448728">Hlasové vyhledávání</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
-<translation id="3285080554353377245">Výuková videa o používání Chromu</translation>
 <translation id="3290249595466894471">Odesílá také malý vzorek stránek, stažených souborů, rozšíření, aktivity a informací o systému a pomáhá tak odhalovat nové hrozby</translation>
 <translation id="3293181007446299124">Vaše historie prohlížení zůstává soukromá ve vašem zařízení a přehledy se z důvodu ochrany vaší totožnosti odesílají se zpožděním.</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
@@ -432,7 +427,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3341262203274374114">Sledování nelze zrušit. Něco se pokazilo.</translation>
 <translation id="3359667936385849800">Použít aktuálního poskytovatele služeb</translation>
 <translation id="3365271666488085187">Chrome může vzít v úvahu tento zájem</translation>
-<translation id="3367813778245106622">Chcete-li zahájit synchronizaci, znovu se přihlaste.</translation>
 <translation id="3373979091428520308">Chcete-li tuto stránku sdílet s jiným zařízením, v nastavení Chromu na druhém zařízení zapněte synchronizaci</translation>
 <translation id="3374023511497244703">Vaše záložky, historie, hesla a další data v Chromu se již nebudou synchronizovat do vašeho účtu Google</translation>
 <translation id="3384347053049321195">Sdílet obrázek</translation>
@@ -515,7 +509,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3845098929839618392">Otevřít na anonymní kartě</translation>
 <translation id="3856096718352044181">Zkontrolujte, zda se jedná o platného poskytovatele, nebo to zkuste znovu později</translation>
 <translation id="3858860766373142691">Název</translation>
-<translation id="3861633093716975811">Populární videa</translation>
 <translation id="3874520961715512166">Web byl odstraněn</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="3894427358181296146">Přidat složku</translation>
@@ -568,7 +561,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4135200667068010335">Seznam zařízení, se kterými se má karta sdílet, je zavřený.</translation>
 <translation id="4137746084635924146">Aktuální jazyk zařízení</translation>
 <translation id="414128724510021958">Ve výchozím nastavení jsou požadovány weby pro počítače</translation>
-<translation id="4141536112466364990">Seznamte se s Chromem</translation>
 <translation id="4147131678541801076">Když jsou zapnuté zkušební verze, omezení spamu a podvodů závisí na tokenech soukromého stavu, které webům pomáhají bojovat proti podvodům a odlišit lidi od robotů.
 
 Na základě vaší interakce, jako je například pravidelné přihlašování k účtu, může web vašemu prohlížeči vystavit token soukromého stavu. Když potom jiné weby, které navštívíte, najdou platný token soukromého stavu, s větší pravděpodobností s vámi budou nakládat jako s člověkem a ne jako s robotem.
@@ -629,7 +621,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="449126573531210296">Šifrovat synchronizovaná hesla pomocí účtu Google</translation>
 <translation id="4504667196171871375">Přes Wi-Fi a mobilní data</translation>
 <translation id="4508528996305412043">Je otevřená nabídka karty informačního kanálu</translation>
-<translation id="4508642716788467538">Vyberte jazyk</translation>
 <translation id="4509501256689523862">Když procházíte internet, závisí personalizace reklam na tomto nastavení, <ph name="BEGIN_LINK_1" />tématech reklam<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavení souborů cookie<ph name="END_LINK_2" /> a na tom, zda zobrazená stránka personalizuje reklamy.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{před # dnem}few{před # dny}many{před # dne}other{před # dny}}</translation>
 <translation id="451872707440238414">Prohledat záložky</translation>
@@ -696,7 +687,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4807098396393229769">Jméno na kartě</translation>
 <translation id="481574578487123132">Propojená zařízení</translation>
 <translation id="4826163340425232009">Spodní tabulka s přihlášením.</translation>
-<translation id="4831037795716408498">Stáhnout obsah</translation>
 <translation id="4834007576107377210">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici)</translation>
 <translation id="4834250788637067901">Platební metody, nabídky a adresy z Google Pay</translation>
 <translation id="4835385943915508971">Chrome k požadovanému zdroji nemá přístup.</translation>
@@ -727,6 +717,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="492284538114688557">Byla zjištěna nižší cena</translation>
 <translation id="4925120120285606924">Snímek obrazovky <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Vaše hesla budou exportována a stažena jako textový soubor. Uvidí je každý uživatel a všechny aplikace s přístupem k cílové složce.</translation>
+<translation id="4926901776383726965">Obrázky a soubory si můžete uložit k prohlížení offline nebo sdílení v jiných aplikacích</translation>
 <translation id="4932247056774066048">Protože se odhlašujete z účtu spravovaného doménou <ph name="DOMAIN_NAME" />, vaše data prohlížeče Chrome z tohoto zařízení budou smazána. Ve vašem účtu Google zůstanou.</translation>
 <translation id="4943703118917034429">Virtuální realita</translation>
 <translation id="4943872375798546930">Žádné výsledky</translation>
@@ -746,7 +737,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5010886807652684893">Vizuální zobrazení</translation>
 <translation id="5011311129201317034">Web <ph name="SITE" /> žádá o připojení</translation>
 <translation id="5016205925109358554">Patková</translation>
-<translation id="5017529052065664584">Posledních 15 minut</translation>
 <translation id="5032430150487044192">QR kód nelze vytvořit</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5040262127954254034">Ochrana soukromí</translation>
@@ -780,7 +770,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Stahování souboru…}few{Stahování # souborů…}many{Stahování # souboru…}other{Stahování # souborů…}}</translation>
 <translation id="5210286577605176222">Přejít na předchozí kartu</translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
-<translation id="5213672942202814946">Hlasové vyhledávání</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5227554086496586518">Klepnutím zobrazíte výsledky vyhledávání</translation>
 <translation id="5233638681132016545">Nová karta</translation>
@@ -822,9 +811,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5458366071038729214">Zde najdete weby, které sledujete</translation>
 <translation id="5468068603361015296">Chcete soubor <ph name="FILE_NAME" /> přesto stáhnout?</translation>
 <translation id="548278423535722844">Otevřít v mapové aplikaci</translation>
-<translation id="5483197086164197190">Navigace v Chromu</translation>
 <translation id="5487521232677179737">Vymazat data</translation>
-<translation id="549025011754480756">Jak vyhledávat hlasem</translation>
 <translation id="5492637351392383067">Šifrování v zařízení</translation>
 <translation id="5514904542973294328">Zakázáno administrátorem tohoto zařízení</translation>
 <translation id="5515439363601853141">Chcete-li zobrazit heslo, odemkněte zařízení</translation>
@@ -883,7 +870,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5809361687334836369">{HOURS,plural, =1{před # hodinou}few{před # hodinami}many{před # hodiny}other{před # hodinami}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="5813552293717797987">Tento prohlížeč spravuje <ph name="PARENT_NAME_1" /> a <ph name="PARENT_NAME_2" />.</translation>
-<translation id="5814131985548525293">Začněte psát nebo klepněte na ikonu hlasového zadávání</translation>
 <translation id="5814749351757353073">Sledujte své oblíbené weby</translation>
 <translation id="5822875253699806474">Pokud chcete mít možnost rychle se vrátit na navštívené weby, synchronizujte své karty a historii</translation>
 <translation id="583281660410589416">Neznámé</translation>
@@ -970,7 +956,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6294610283659775533">Mezi zařízeními přihlášenými ke stejnému účtu Google lze posílat karty</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6297765934698848803">Organizace, která spravuje vaše zařízení, kameru vypnula.</translation>
-<translation id="6301525844455696527">Sledujte svůj seznam k přečtení</translation>
 <translation id="6303969859164067831">Odhlásit a vypnout synchronizaci</translation>
 <translation id="6312687380483398334">Webové aplikace (tiché)</translation>
 <translation id="6316139424528454185">Nepodporovaná verze Androidu</translation>
@@ -1168,7 +1153,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7260367682327802201">Zařízení Android může obsahovat podobné nastavení. Pokud máte v Chromu a v zařízení Android zapnuté měření reklam, společnosti mohou měřit efektivitu reklamy na webech, které navštěvujete, a v aplikacích, které používáte.</translation>
 <translation id="727288900855680735">Odeslat <ph name="ONE_TIME_CODE" /> webu <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokovaný web</translation>
-<translation id="7286572596625053347">Změnit jazyk <ph name="LANGUAGE" />?</translation>
 <translation id="7286703216224610554">Sdílet pouze reakci</translation>
 <translation id="7290209999329137901">Přejmenování není k dispozici</translation>
 <translation id="7291910923717764901">Byly přidány popisy obrázků pro tuto stránku</translation>
@@ -1293,10 +1277,8 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> k připojení k vašemu zařízení potřebuje oprávnění pro přístup k zařízením v okolí</translation>
 <translation id="7875915731392087153">Vytvořit e-mail</translation>
 <translation id="7876243839304621966">Odstranit vše</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> nepřečtenou stránku}few{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtené stránky}many{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtené stránky}other{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtených stránek}}</translation>
 <translation id="7886917304091689118">Spuštěno v Chromu</translation>
 <translation id="7887174313503389866">Podívejte se na komentovanou prohlídku klíčových ovládacích prvků ochrany soukromí a zabezpečení. Pro další možnosti přejděte na jednotlivá nastavení.</translation>
-<translation id="789763218334337857">Práce s prohlížečem Chrome</translation>
 <translation id="7903184275147100332">Může to chvíli trvat</translation>
 <translation id="7914399737746719723">Aplikace byla nainstalována</translation>
 <translation id="7919123827536834358">Tyto jazyky překládat automaticky</translation>
@@ -1367,7 +1349,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8209050860603202033">Otevřít obrázek</translation>
-<translation id="8216351761227087153">Sledovat</translation>
 <translation id="8218622182176210845">Správa účtu</translation>
 <translation id="8221401890884589479">Nežádoucí weby můžete zablokovat. Chrome z tohoto seznamu také automaticky odstraňuje weby, které jsou starší než 30 dní. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Nabídka karty informačního kanálu</translation>
@@ -1425,6 +1406,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8503559462189395349">Hesla Chrome</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8505766168025405649">Stav stahování naleznete v oznámení</translation>
+<translation id="8506357771923193001">Zde najdete své stažené soubory</translation>
 <translation id="8514477925623180633">Exportovat hesla uložená v Chromu</translation>
 <translation id="8516012719330875537">Editor obrázků</translation>
 <translation id="8516431725144212809">Vaše zájmy podle odhadu Chromu</translation>
@@ -1456,7 +1438,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8645920082661222035">Předvídá nebezpečné události a upozorňuje vás na ně ještě předtím, než k nim dojde</translation>
 <translation id="8646467750715887511">Stránky se načítají až poté, co je otevřete.</translation>
 <translation id="8655129584991699539">Data můžete vymazat v nastavení Chromu</translation>
-<translation id="8659579665266920523">Vyhledávání v Chromu</translation>
 <translation id="8662811608048051533">Odhlásí vás z většiny webů.</translation>
 <translation id="8664215986015753476">Používejte Chrome po svém</translation>
 <translation id="8664979001105139458">Název souboru již existuje</translation>
@@ -1495,7 +1476,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="885480114717186641">Můžete požádat o web <ph name="HOST_NAME" /> pro počítače</translation>
 <translation id="8856607253650333758">Zobrazovat popisy</translation>
 <translation id="8856931513242997049">Postup udělení oznámení k zasílání oprávnění je zavřený</translation>
-<translation id="8873817150012960745">Začnete klepnutím sem</translation>
 <translation id="8881973373982641723">Vymaže historii, včetně vyhledávacího pole.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Jak můžete své údaje spravovat:<ph name="END_BOLD" /> Abychom chránili vaše soukromí, weby starší než 4 měsíce ze seznamu automaticky mažeme. Web, který navštívíte znovu, se může na seznamu opět objevit. Pokud nechcete, aby nějaký web definoval vaše zájmy, můžete ho odstranit.</translation>
 <translation id="8898822736010347272">Odesílá adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek do Googlu a pomáhá tak objevovat nové hrozby a chránit všechny uživatele internetu.</translation>

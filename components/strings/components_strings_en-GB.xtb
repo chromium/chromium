@@ -175,7 +175,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1363819917331173092">Don‘t offer to translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">This policy is blocked; its value will be ignored.</translation>
 <translation id="1368318639262510626">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, press space to jump over obstacles.</translation>
-<translation id="136907351928231527">It can take up to a week for a list of topics to appear here based on your recent browsing history</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">About Version</translation>
 <translation id="1376836354785490390">Show Less</translation>
@@ -1673,6 +1672,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5051305769747448211">Live comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
+<translation id="5060419232449737386">Caption settings</translation>
 <translation id="5060483733937416656">You chose to verify with Windows Hello on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Did you mean <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Printing history</translation>

@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Inhabilitar el tema oscuro</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
+<translation id="1838374766361614909">Borrar la búsqueda</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
 <translation id="1852934301711881861">Instalar Chrome OS Flex</translation>
 <translation id="1856388568474281774">Flecha hacia abajo</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Dirección de la clave</translation>
 <translation id="3294437725009624529">Invitado</translation>
+<translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
 <translation id="3310640316857623290">La latencia de DNS supera significativamente el umbral permitido</translation>
 <translation id="3328783797891415197">Prueba en ejecución</translation>
 <translation id="3340011300870565703">Nivel de batería del auricular derecho <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Se cargó <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para configurar o actualizar una conexión, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Fecha</translation>
-<translation id="4937657825850660613">Mitad</translation>
 <translation id="4950314376641394653">Se actualizó el firmware del dispositivo <ph name="DEVICE_NAME" /> a la versión <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Parcial</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Dirección MAC</translation>
 <translation id="7491478667760509108">Salir del estado flotante</translation>
 <translation id="7497215489070763236">Certificado de CA del servidor</translation>
+<translation id="7501957181231305652">o</translation>
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">El contenido de ayuda no está disponible</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Más información en el Centro de ayuda</translation>
 <translation id="763165478673169849">Último restablecimiento</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
+<translation id="765159867434478292">Dividir</translation>
 <translation id="7656388927906093505">El dispositivo es un mouse.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Cambiar avatar</translation>

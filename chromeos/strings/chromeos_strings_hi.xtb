@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">गहरे रंग वाली थीम बंद करें</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1827738518074806965">आर्ट गैलरी</translation>
+<translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
 <translation id="1852934301711881861">ChromeOS Flex इंस्टॉल करें</translation>
 <translation id="1856388568474281774">डाउन ऐरो</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />गीगाहर्ट्ज़</translation>
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
 <translation id="3294437725009624529">अतिथि</translation>
+<translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
 <translation id="4930320165497208503">किसी कनेक्शन को सेट अप या अपडेट करने के लिए, <ph name="BEGIN_LINK" />सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">तारीख</translation>
-<translation id="4937657825850660613">स्क्रीन को आधे हिस्सों में बाटें</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> फ़र्मवेयर को <ph name="VERSION" /> पर अपडेट कर दिया गया है</translation>
 <translation id="4971925105143343452">आंशिक</translation>
 <translation id="4972592110715526173">मोड बदलें</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC पता</translation>
 <translation id="7491478667760509108">फ़्लोट मोड से बाहर निकलें</translation>
 <translation id="7497215489070763236">सर्वर CA प्रमाणपत्र</translation>
+<translation id="7501957181231305652">या</translation>
 <translation id="7502658306369382406">IPv6 पता</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">सहायता कॉन्टेंट उपलब्ध नहीं है</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">इसके बारे में ज़्यादा जानने के लिए सहायता केंद्र पर जाएं</translation>
 <translation id="763165478673169849">आखिर में रीसेट किया गया समय</translation>
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
+<translation id="765159867434478292">विभाजन करें</translation>
 <translation id="7656388927906093505">डिवाइस एक माउस है.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7665800271478495366">अवतार बदलें</translation>

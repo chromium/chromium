@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Скачать мобильный профиль, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Показать в виде списка</translation>
 <translation id="2377590462528165447">Linux предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />)</translation>
-<translation id="2378075407703503998">Выбрано файлов: <ph name="SELCTED_FILE_COUNT" />.</translation>
 <translation id="2383454254762599978">Удалить</translation>
 <translation id="2387458720915042159">Тип подключения через прокси-сервер</translation>
 <translation id="2389832672041313158">Бирманский</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Устройство доступно только для чтения</translation>
 <translation id="4826849268470072925">Тамильский, раскладка ITRANS</translation>
 <translation id="482932175346970750">Введите <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в адресной строке браузера.</translation>
-<translation id="4839847978919684242">Выбрано элементов: <ph name="SELCTED_FILES_COUNT" />.</translation>
 <translation id="4843566743023903107">Устройства Chromebase</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
 <translation id="485316830061041779">Немецкий</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">Шведский</translation>
 <translation id="6990081529015358884">Недостаточно свободного места</translation>
 <translation id="6993826899923627728">Эти объекты находятся в корзине</translation>
-<translation id="6998711733709403587">Выбрано папок: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
 <translation id="7008426324576352165">Чтобы выполнить загрузку, увеличьте хранилище организации.</translation>
 <translation id="7009985720488544166">Администратор запретил перемещать файлы (<ph name="COUNT" />).</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

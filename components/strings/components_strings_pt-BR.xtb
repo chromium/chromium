@@ -175,7 +175,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1363819917331173092">Não oferecer a opção de traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada. O valor dela será ignorado.</translation>
 <translation id="1368318639262510626">Jogo do dinossauro. Um dinossauro pixelado corre por uma paisagem desolada desviando de cactos e pterodátilos. Quando você ouvir o sinal, pressione a barra de espaço para pular os obstáculos.</translation>
-<translation id="136907351928231527">Pode levar até uma semana para que uma lista de temas apareça com base no seu histórico de navegação recente.</translation>
 <translation id="1374468813861204354">sugestões</translation>
 <translation id="1375198122581997741">Sobre a versão</translation>
 <translation id="1376836354785490390">Mostrar menos</translation>
@@ -1673,6 +1672,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="5051305769747448211">Shows de comédia ao vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes arquivos usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
+<translation id="5060419232449737386">Configurações de legenda</translation>
 <translation id="5060483733937416656">Você escolheu fazer a verificação com o Windows Hello em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Esse provedor pode ter armazenado informações sobre sua forma de pagamento, mas você pode <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Você quis dizer "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
 <translation id="5066056036849835175">Histórico de impressão</translation>

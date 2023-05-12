@@ -166,7 +166,6 @@
 <translation id="23721837607121582">മൊബൈൽ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുക, <ph name="NETWORK_COUNT" /> എണ്ണത്തിൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ലിസ്റ്റ് കാഴ്‌ചയിലേക്ക് മാറുക</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Linux ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ഫയലുകൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="2383454254762599978">ട്രാഷിലേക്ക് നീക്കുക</translation>
 <translation id="2387458720915042159">പ്രോക്‌സി കണക്ഷൻ തരം</translation>
 <translation id="2389832672041313158">ബർമീസ്/മ്യാൻമർ</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">ഉപകരണം വായിക്കാൻ മാത്രമുള്ള മോഡിലാണ്</translation>
 <translation id="4826849268470072925">തമിഴ് ITRANS</translation>
 <translation id="482932175346970750">നിങ്ങളുടെ ബ്രൗസറിൽ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ഇനങ്ങൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="4843566743023903107">Chromebase-കൾ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">സ്വീഡിഷ്</translation>
 <translation id="6990081529015358884">നിങ്ങൾക്ക് മതിയായ ഇടമില്ല</translation>
 <translation id="6993826899923627728">ഈ ഇനങ്ങൾ നിങ്ങളുടെ ട്രാഷിലാണുള്ളത്</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ഫോൾഡറുകൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="7008426324576352165">അപ്‌ലോഡ് പൂർത്തിയാക്കാൻ നിങ്ങളുടെ സ്ഥാപനത്തിന് കൂടുതൽ സ്‌റ്റോറേജ് ആവശ്യമാണ്.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> ഫയലുകൾ നീക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

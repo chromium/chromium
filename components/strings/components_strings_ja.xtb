@@ -175,7 +175,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> のページを翻訳するか尋ねない</translation>
 <translation id="1364822246244961190">このポリシーはブロックされているため、値は無視されます。</translation>
 <translation id="1368318639262510626">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、Space キーを押して障害物を飛び越えましょう。</translation>
-<translation id="136907351928231527">最近の閲覧履歴に基づいてトピックのリストがここに表示されるようになるまで 1 週間ほどかかる場合があります</translation>
 <translation id="1374468813861204354">ヒント</translation>
 <translation id="1375198122581997741">バージョン情報</translation>
 <translation id="1376836354785490390">折りたたむ</translation>
@@ -439,6 +438,7 @@
 <translation id="2003709556000175978">今すぐパスワードを再設定してください</translation>
 <translation id="2003775180883135320">4 穴パンチ（上）</translation>
 <translation id="201174227998721785">Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
+<translation id="2012276282211112603">現在、表示できるトピックはありません</translation>
 <translation id="2019607688127825327">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと Chrome の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="2021333772895814435">このポリシーにより、<ph name="ACTION_LIST" /> でのデバイス間の同期が自動的に無効になります。</translation>
 <translation id="202224654587969958">12x19 インチ</translation>
@@ -1673,6 +1673,7 @@
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5051305769747448211">お笑いライブ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
+<translation id="5060419232449737386">字幕設定</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで Windows Hello による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="LINK_TEXT" /> を行うことができます。</translation>
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">印刷履歴</translation>

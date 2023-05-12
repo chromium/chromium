@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Қараңғы режимді өшіру</translation>
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1827738518074806965">Өнер галереясы</translation>
+<translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1851218745569890714">Бейнеконференция жасау</translation>
 <translation id="1852934301711881861">ChromeOS Flex-ті орнату</translation>
 <translation id="1856388568474281774">Төмен бағыт пернесі</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3291996639387199448">Кілт бағыты</translation>
 <translation id="3294437725009624529">Қонақ</translation>
+<translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3328783797891415197">Тексерілуде</translation>
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4930320165497208503">Байланысты реттеу немесе жаңарту үшін <ph name="BEGIN_LINK" />Параметрлерге<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4932733599132424254">Күні</translation>
-<translation id="4937657825850660613">Жартылай</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> микробағдарламасы <ph name="VERSION" /> нұсқасына жаңартылды.</translation>
 <translation id="4971925105143343452">Ішінара</translation>
 <translation id="4972592110715526173">режимді өзгерту</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC мекенжайы</translation>
 <translation id="7491478667760509108">Қалқыма күйден шығу</translation>
 <translation id="7497215489070763236">Сервер CA сертификаты</translation>
+<translation id="7501957181231305652">немесе</translation>
 <translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Анықтамалық контент қолжетімсіз</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="763165478673169849">Соңғы рет нөлденген уақыт</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
+<translation id="765159867434478292">Бөлу</translation>
 <translation id="7656388927906093505">Бұл — тінтуір.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7665800271478495366">Аватарды өзгерту</translation>

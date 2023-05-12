@@ -86,6 +86,7 @@
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2534507159460261402">Google Pay (copiouse en Chrome)</translation>
+<translation id="2556847002339236023">A túa organización pecha Chrome cando non se usa durante <ph name="TIMEOUT_DURATION" />. Elimináronse os datos de navegación. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="2559253115192232574">Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren. Chrome pode compartir ata 3 intereses.</translation>
 <translation id="2563121210305478421">Queres reiniciar Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Se queres xestionar a túa navegación cun perfil independente e de teu, Chrome pode crearche un.</translation>
@@ -274,6 +275,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6113794647360055231">Chrome introduciu melloras</translation>
 <translation id="6145313976051292476">Abrir PDF en Chrome</translation>
 <translation id="6155960517327665396">Chrome funciona máis rápido grazas a Aforro de memoria</translation>
+<translation id="6157638032135951407">A túa organización elimina os datos de Chrome cando non se usan durante <ph name="TIMEOUT_DURATION" />. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
 <translation id="6235018212288296708">Norma de entrada de Google Chrome para permitir tráfico mDNS.</translation>
@@ -289,6 +291,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
 <translation id="648319183876919572">Navegación segura mellorada é máis eficaz á hora de protexerte de descargas e sitios web perigosos</translation>
 <translation id="6493527311031785448">Google Chrome está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome pechouse automaticamente</translation>
 <translation id="6506909944137591434">Chrome necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="659498884637196217">No xestor de contrasinais de Google neste dispositivo</translation>
@@ -325,6 +328,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7155997830309522122">Se o fixeches, substitúe o contrasinal gardado en Chrome polo novo.</translation>
 <translation id="7161904924553537242">Dámosche a benvida a Google Chrome</translation>
 <translation id="7177959540995930968">Podes obter máis información sobre estas funcións na configuración de Chrome.</translation>
+<translation id="7193885263065350793">A túa organización pecha Chrome cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Vas iniciar sesión cunha conta administrada, o que significa que concederás ao seu administrador control sobre o teu perfil de Google Chrome. Os teus datos de Chrome como, por exemplo, as aplicacións, os marcadores, o historial, os contrasinais e outras opcións ligaranse de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control de contas de Google, pero non poderás asocialos a outra conta. De maneira opcional, podes crear un novo perfil para manter separados os teus datos de Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Este é o idioma no que se mostra a IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>

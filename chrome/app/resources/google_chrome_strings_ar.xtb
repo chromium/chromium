@@ -85,6 +85,7 @@
 <translation id="2467438592969358367">‏يرغب Google Chrome في تصدير كلمات مرورك، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2534507159460261402">‏Google Pay (تم النسخ إلى Chrome)</translation>
+<translation id="2556847002339236023">‏تغلق مؤسستك متصفِّح Chrome في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />. تم حذف بيانات التصفُّح. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
 <translation id="2559253115192232574">‏بعد ذلك، يمكن للموقع الإلكتروني الذي تنتقل إليه أن يطلب من Chrome معرفة اهتماماتك من أجل تخصيص الإعلانات التي تظهر لك. ويمكن أن يشارك Chrome ما يصل إلى 3 اهتمامات.</translation>
 <translation id="2563121210305478421">‏هل تريد إعادة تشغيل Chrome؟</translation>
 <translation id="2574930892358684005">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. للحصول على تجربة تصفّح منفصلة، يمكن لمتصفِّح Chrome إنشاء ملف شخصي خاص بك.</translation>
@@ -271,6 +272,7 @@
 <translation id="6113794647360055231">‏Chrome أصبح أفضل</translation>
 <translation id="6145313976051292476">‏فتح ملفات PDF في متصفِّح Chrome</translation>
 <translation id="6155960517327665396">‏زيادة سرعة أداء Chrome بفضل ميزة "توفير الذاكرة"</translation>
+<translation id="6157638032135951407">‏تحذف مؤسستك بيانات Chrome في حال عدم استخدامها لمدّة <ph name="TIMEOUT_DURATION" />. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Google Chrome</translation>
 <translation id="6235018212288296708">‏قاعدة الوارد إلى Google Chrome للسماح بحركة مرور mDNS.</translation>
@@ -286,6 +288,7 @@
 <translation id="6418662306461808273">‏هل تريد الانتقال إلى ملف شخصي حالي على Chrome؟</translation>
 <translation id="648319183876919572">تعزِّز ميزة "الحماية المُحسّنة للتصفّح الآمن" حمايتك من المواقع الإلكترونية الضارة وعمليات التنزيل الخطيرة.</translation>
 <translation id="6493527311031785448">‏يحاول Google Chrome <ph name="AUTHENTICATION_PURPOSE" />.</translation>
+<translation id="6497147134301593682">‏تم إغلاق متصفِّح Chrome تلقائيًا</translation>
 <translation id="6506909944137591434">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للمكان حولك.</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
 <translation id="659498884637196217">‏تعديل كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
@@ -320,6 +323,7 @@
 <translation id="7155997830309522122">‏في هذه الحالة، يُرجى تعديل كلمة المرور المحفوظة في Chrome لتتطابق مع كلمة المرور الجديدة.</translation>
 <translation id="7161904924553537242">‏مرحبًا بك في Google Chrome</translation>
 <translation id="7177959540995930968">‏يمكنك الاطّلاع على المزيد من المعلومات عن هذه الميزات في إعدادات Chrome.</translation>
+<translation id="7193885263065350793">‏تغلق مؤسستك متصفِّح Chrome في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">‏إنك تسجل الدخول باستخدام حساب مُدار وتمنح المشرف إمكانية التحكم في ملفك الشخصي في Google Chrome. وسيتم ربط بيانات Chrome التابعة لك، مثل التطبيقات والإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بالمستخدم <ph name="USER_NAME" />. وستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. ويُمكنك اختيار إنشاء ملف شخصي جديد للإبقاء على بياناتك الحالية في Chrome بشكل مستقل. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">‏يتم استخدام هذه اللغة لعرض واجهة مستخدم Google Chrome</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>

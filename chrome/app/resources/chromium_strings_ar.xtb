@@ -246,6 +246,7 @@
 <translation id="6475912303565314141">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chromium.</translation>
 <translation id="648319183876919572">تعزِّز ميزة "الحماية المُحسّنة للتصفّح الآمن" حمايتك من المواقع الإلكترونية الضارة وعمليات التنزيل الخطيرة.</translation>
 <translation id="6510925080656968729">‏إزالة Chromium</translation>
+<translation id="6539122709674868420">‏تغلق مؤسستك Chromium في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />. تم حذف بيانات التصفُّح. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
 <translation id="6542839706527980775">‏يحتفظ كل ملف شخصي بالمعلومات الخاصة به على Chromium، مثل الإشارات المرجعية والسجلّ وكلمات المرور وغير ذلك.</translation>
 <translation id="656935081669708576">‏يمكنك التبديل للاطّلاع على كلمات المرور من ملف شخصي آخر في Chromium.</translation>
 <translation id="6570579332384693436">‏لإصلاح الأخطاء الإملائية، يُرسِل Chromium ما تكتبه في حقول النص إلى Google</translation>
@@ -283,6 +284,7 @@
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>
 <translation id="705851970750939768">‏تحديث Chromium</translation>
 <translation id="7067091210845072982">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chromium توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
+<translation id="7173822816570314652">‏تحذف مؤسستك بيانات Chromium في حال عدم استخدامها لمدّة <ph name="TIMEOUT_DURATION" />. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
 <translation id="718435575166326686">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="7196312274710523067">‏تعذَّر إطلاق Chromium. يُرجى إعادة المحاولة.</translation>
 <translation id="7197677400338048821">‏يتعذّر على Chromium التحقُّق من كلمات المرور. يُرجى إعادة المحاولة بعد 24 ساعة.</translation>
@@ -337,6 +339,7 @@
 <translation id="8248265253516264921">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chromium توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
 <translation id="8266560134891435528">‏يتعذّر على Chromium التحقّق من كلمات المرور لأنك لم تسجّل الدخول.</translation>
 <translation id="8290862415967981663">‏قد يكون هذا الملف ضارًا، لذلك فقد حظره Chromium.</translation>
+<translation id="8318772038038596122">‏تغلق مؤسستك Chromium في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">‏إنجاز المزيد باستخدام Chromium</translation>
 <translation id="8330519371938183845">‏يمكنك تسجيل الدخول لمزامنة Chromium وتخصيصه على جميع أجهزتك.</translation>
 <translation id="8340674089072921962">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chromium مسبقًا</translation>
@@ -372,6 +375,7 @@
 <translation id="9019929317751753759">‏لجعل Chromium أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت بدون علمك.</translation>
 <translation id="9022552996538154597">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="907832235989677238">‏عليك تسجيل الدخول إلى Chromium. إذا كنت تريد تسجيل الدخول باستخدام أحد الحسابات مرة واحدة فقط، يمكنك <ph name="GUEST_LINK_BEGIN" />استخدام الجهاز في "وضع الضيف"<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">‏تم إغلاق Chromium تلقائيًا</translation>
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏ستتم إعادة تشغيل Chromium في غضون ساعة واحدة}zero{‏ستتم إعادة تشغيل Chromium في غضون # ساعة}two{‏ستتم إعادة تشغيل Chromium في غضون ساعتين}few{‏ستتم إعادة تشغيل Chromium في غضون # ساعات}many{‏ستتم إعادة تشغيل Chromium في غضون # ساعةً}other{‏ستتم إعادة تشغيل Chromium في غضون # ساعة}}</translation>
 <translation id="9106612006984859720">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل Windows 10 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل Windows 8.1.</translation>

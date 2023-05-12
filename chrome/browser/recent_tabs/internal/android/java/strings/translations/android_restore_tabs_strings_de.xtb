@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">Wähle das Gerät aus, von dem du Tabs abrufen möchtest</translation>
 <translation id="3575801299326994724">Prüfe die ausgewählten Tabs, die auf dem aktuell ausgewählten Gerät wiederhergestellt werden sollen.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab, zuletzt aktualisiert: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> Tabs, zuletzt aktualisiert: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Zurück</translation>
 <translation id="3983305234037158273">Synchronisierte Geräte für die Wiederherstellung von Tabs können durch Berührung geändert werden. Prüfe ausgewählte Tabs für das aktuelle Gerät durch Berührung oder stelle sie wieder her. Tastatur ausgeblendet.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab öffnen}other{<ph name="TABS_COUNT_MANY" /> Tabs öffnen}}</translation>
 <translation id="4811934403802581334">Alle Tabs, die für das aktuell ausgewählte Gerät ausgewählt sind, werden wiederhergestellt.</translation>

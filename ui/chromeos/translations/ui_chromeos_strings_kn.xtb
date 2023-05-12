@@ -166,7 +166,6 @@
 <translation id="23721837607121582">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2377590462528165447">Linux ನೊಂದಿಗೆ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2383454254762599978">ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="2387458720915042159">ಪ್ರಾಕ್ಸಿ ಪ್ರಕಾರ ಸಂಪರ್ಕ</translation>
 <translation id="2389832672041313158">ಬರ್ಮೀಸ್/ಮ್ಯಾನ್ಮಾರ್</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">ಸಾಧನ ಓದಲು ಮಾತ್ರ ಆಗಿದೆ</translation>
 <translation id="4826849268470072925">ತಮಿಳು ITRANS</translation>
 <translation id="482932175346970750">ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ಟೈಪ್ ಮಾಡಿ</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ಐಟಂಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="485316830061041779">ಜರ್ಮನ್</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">ಸ್ವೀಡಿಶ್</translation>
 <translation id="6990081529015358884">ನಿಮ್ಮ ಬಳಿ ಇದ್ದ ಸ್ಥಳ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="6993826899923627728">ಈ ಐಟಂಗಳು ನಿಮ್ಮ ಅನುಪಯುಕ್ತದಲ್ಲಿವೆ</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7008426324576352165">ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಹೆಚ್ಚಿನ ಸಂಗ್ರಹಣೆಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="7009985720488544166">ನಿರ್ವಾಹಕ ನೀತಿಯಿಂದ <ph name="COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

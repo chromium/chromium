@@ -250,6 +250,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6475912303565314141">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chromium.</translation>
 <translation id="648319183876919572">Mae Pori'n Ddiogel Uwch yn gwneud rhagor i'ch amddiffyn rhag lawrlwythiadau a gwefannau peryglus</translation>
 <translation id="6510925080656968729">Dadosod Chromium</translation>
+<translation id="6539122709674868420">Mae eich sefydliad yn cau Chromium pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />. Cafodd data pori eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
 <translation id="6542839706527980775">Mae gan bob proffil ei wybodaeth Chromium ei hun megis nodau tudalen, hanes, cyfrineiriau, a rhagor</translation>
 <translation id="656935081669708576">Gallwch newid i weld cyfrineiriau o broffil Chromium arall</translation>
 <translation id="6570579332384693436">I drwsio gwallau sillafu, mae Chromium yn anfon y testun rydych yn ei deipio mewn meysydd testun at Google</translation>
@@ -287,6 +288,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="7025789849649390912">Wedi Stopio Gosod.</translation>
 <translation id="705851970750939768">Diweddaru Chromium</translation>
 <translation id="7067091210845072982">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
+<translation id="7173822816570314652">Mae eich sefydliad yn dileu data Chromium pan na chaiff ei ddefnyddio am <ph name="TIMEOUT_DURATION" />. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
 <translation id="718435575166326686">Mae angen caniatâd camera ar Chromium ar gyfer y wefan hon</translation>
 <translation id="7196312274710523067">Methu â lansio Chromium. Rhowch gynnig arall arni.</translation>
 <translation id="7197677400338048821">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig arall arni ar ôl 24 awr.</translation>
@@ -341,6 +343,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8248265253516264921">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau. Gallwch ddiffodd hyn yn y gosodiadau ar unrhyw adeg.</translation>
 <translation id="8266560134891435528">Ni all Chromium wirio'ch cyfrineiriau oherwydd nad ydych wedi mewngofnodi</translation>
 <translation id="8290862415967981663">Mae'n bosib bod y ffeil hon yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
+<translation id="8318772038038596122">Mae eich sefydliad yn cau Chromium pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Gwneud rhagor gyda Chromium</translation>
 <translation id="8330519371938183845">Mewngofnodi i gysoni a phersonoleiddio Chromium ar draws eich dyfeisiau</translation>
 <translation id="8340674089072921962">Yn flaenorol roedd <ph name="USER_EMAIL_ADDRESS" /> yn defnyddio Chromium</translation>
@@ -376,6 +379,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="9019929317751753759">I wneud Chromium yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>
 <translation id="907832235989677238">Mewngofnodi i Chromium. Os ydych chi am fewngofnodi cyfrif unwaith yn unig, gallwch <ph name="GUEST_LINK_BEGIN" />ddefnyddio'r ddyfais fel gwestai<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">Caewyd Chromium yn awtomatig</translation>
 <translation id="9089354809943900324">Mae Chromium yn hen</translation>
 <translation id="9093206154853821181">{0,plural, =1{Bydd Chromium yn ail-lansio mewn awr}zero{Bydd Chromium yn ail-lansio mewn # awr}two{Bydd Chromium yn ail-lansio mewn # awr}few{Bydd Chromium yn ail-lansio mewn # awr}many{Bydd Chromium yn ail-lansio mewn # awr}other{Bydd Chromium yn ail-lansio mewn # awr}}</translation>
 <translation id="9106612006984859720">I gael diweddariadau Chromium yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.1.</translation>

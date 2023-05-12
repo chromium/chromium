@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">ドキュメントを検出しました</translation>
 <translation id="414641094616694804">このカメラでは解像度を変更できません</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
-<translation id="4281620174117014503">解像度: 中</translation>
 <translation id="428234092390943511">ページのサムネイル</translation>
 <translation id="4383571725254449280">パフォーマンス ログを印刷する</translation>
 <translation id="4445542136948522167">写真の撮影をキャンセル</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K（2160p）</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> ページ目をスキャンしています</translation>
 <translation id="5671277269877808209">スクエア</translation>
+<translation id="574392208103952083">中</translation>
 <translation id="5746169159649715125">PDF に保存</translation>
 <translation id="5753488212459587150">エキスパート モードを有効にする</translation>
 <translation id="5759254179196327752">ドキュメント スキャン</translation>

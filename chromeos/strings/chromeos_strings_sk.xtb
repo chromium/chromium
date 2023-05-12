@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Vypnúť tmavý motív</translation>
 <translation id="1807246157184219062">Svetlý režim</translation>
 <translation id="1827738518074806965">Umelecká galéria</translation>
+<translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
 <translation id="1851218745569890714">Videokonferencie</translation>
 <translation id="1852934301711881861">Nainštalovať Chrome OS Flex</translation>
 <translation id="1856388568474281774">Šípka nadol</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Smer kľúča</translation>
 <translation id="3294437725009624529">Hosť</translation>
+<translation id="3303855915957856445">Nič sa nenašlo</translation>
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
 <translation id="3328783797891415197">Test prebieha</translation>
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Ak chcete nastaviť alebo aktualizovať pripojenie, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dátum</translation>
-<translation id="4937657825850660613">Polovica</translation>
 <translation id="4950314376641394653">Firmvér zariadenia <ph name="DEVICE_NAME" /> bol aktualizovaný na verziu <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Čiastočné</translation>
 <translation id="4972592110715526173">zmena režimu</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Adresa MAC</translation>
 <translation id="7491478667760509108">Ukončiť plávajúci režim</translation>
 <translation id="7497215489070763236">Certifikát CA servera</translation>
+<translation id="7501957181231305652">alebo</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Obsah pomocníka nie je k dispozícii</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Ďalšie informácie v centre pomoci</translation>
 <translation id="763165478673169849">Čas posledného resetovania</translation>
 <translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
+<translation id="765159867434478292">Rozdeliť</translation>
 <translation id="7656388927906093505">Zariadenie je myš.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7665800271478495366">Zmeniť avatar</translation>

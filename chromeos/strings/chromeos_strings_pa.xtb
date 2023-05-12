@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
 <translation id="1827738518074806965">ਕਲਾ ਗੈਲਰੀ</translation>
+<translation id="1838374766361614909">ਖੋਜ ਹਟਾਓ</translation>
 <translation id="1851218745569890714">ਵੀਡੀਓ ਕਾਨਫਰੰਸਿੰਗ</translation>
 <translation id="1852934301711881861">ChromeOS Flex ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="1856388568474281774">ਹੇਠਾਂ ਤੀਰ</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ਕੁੰਜੀ ਨਿਰਦੇਸ਼</translation>
 <translation id="3294437725009624529">ਮਹਿਮਾਨ</translation>
+<translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="3310640316857623290">DNS ਵਿਲੰਬਤਾ ਇਜਾਜ਼ਤਯੋਗ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਕਾਫ਼ੀ ਉੱਤੇ ਹੈ</translation>
 <translation id="3328783797891415197">ਟੈਸਟ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="3340011300870565703">ਡੀਵਾਈਸ ਦੇ ਸੱਜੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਚਾਰਜ ਹੋਈ।</translation>
 <translation id="4930320165497208503">ਕਿਸੇ ਕਨੈਕਸ਼ਨ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਜਾਂ ਉਸਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
-<translation id="4937657825850660613">ਸਕ੍ਰੀਨ ਨੂੰ ਅੱਧੇ ਹਿੱਸੇ ਵਿੱਚ ਵੰਡੋ</translation>
 <translation id="4950314376641394653">ਫ਼ਰਮਵੇਅਰ <ph name="DEVICE_NAME" /> ਨੂੰ ਵਰਜਨ <ph name="VERSION" /> 'ਤੇ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4971925105143343452">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨ</translation>
 <translation id="4972592110715526173">ਮੋਡ ਬਦਲੋ</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC ਪਤਾ</translation>
 <translation id="7491478667760509108">ਫ਼ਲੋਟ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="7497215489070763236">ਸਰਵਰ CA ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
+<translation id="7501957181231305652">ਜਾਂ</translation>
 <translation id="7502658306369382406">IPv6 ਪਤਾ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">ਮਦਦ ਸਮੱਗਰੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">ਮਦਦ ਕੇਂਦਰ ਵਿੱਚ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="763165478673169849">ਪਿਛਲੀ ਵਾਰ ਰੀਸੈੱਟ ਕਰਨ ਦਾ ਸਮਾਂ</translation>
 <translation id="7648838807254605802">ਜ਼ਿਆਦਾ HTTPS ਵਿਲੰਬਤਾ</translation>
+<translation id="765159867434478292">ਵੱਖਰਾ ਕਰੋ</translation>
 <translation id="7656388927906093505">ਡੀਵਾਈਸ ਇੱਕ ਮਾਊਸ ਹੈ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7665800271478495366">ਅਵਤਾਰ ਬਦਲੋ</translation>

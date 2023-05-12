@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">Välj den enhet du vill hämta flikar från</translation>
 <translation id="3575801299326994724">Granska de valda flikarna som ska återställas från den valda enheten.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik, uppdaterades senast: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> flikar, uppdaterades senast: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Föregående</translation>
 <translation id="3983305234037158273">Synkroniserade enheter för flikåterställning kan ändras vid beröring. Navigera för att granska eller återställa valda flikar för den aktuella enheten med ett tryck. Tangentbordet är dolt.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Öppna <ph name="TABS_COUNT_ONE" /> flik}other{Öppna <ph name="TABS_COUNT_MANY" /> flikar}}</translation>
 <translation id="4811934403802581334">Alla valda flikar från den valda enheten återställs.</translation>

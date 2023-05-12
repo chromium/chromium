@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1827738518074806965">画廊</translation>
+<translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1851218745569890714">视频会议</translation>
 <translation id="1852934301711881861">安装 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">密钥方向</translation>
 <translation id="3294437725009624529">访客</translation>
+<translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
 <translation id="4930320165497208503">若要设置或更新连接，请转到<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
 <translation id="4932733599132424254">日期</translation>
-<translation id="4937657825850660613">分成两半</translation>
 <translation id="4950314376641394653">固件“<ph name="DEVICE_NAME" />”已更新到版本 <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">局部</translation>
 <translation id="4972592110715526173">更改模式</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC 地址</translation>
 <translation id="7491478667760509108">退出悬浮模式</translation>
 <translation id="7497215489070763236">服务器 CA 证书</translation>
+<translation id="7501957181231305652">或</translation>
 <translation id="7502658306369382406">IPv6 地址</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">帮助内容不可用</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="763165478673169849">上次重置时间</translation>
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
+<translation id="765159867434478292">拆分</translation>
 <translation id="7656388927906093505">设备类型是鼠标。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665800271478495366">更换头像</translation>

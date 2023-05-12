@@ -166,7 +166,6 @@
 <translation id="23721837607121582">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">목록 보기로 전환</translation>
 <translation id="2377590462528165447">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Linux와 공유되었습니다.</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />개의 파일이 선택됨</translation>
 <translation id="2383454254762599978">휴지통으로 이동</translation>
 <translation id="2387458720915042159">프록시 연결 유형</translation>
 <translation id="2389832672041313158">버마어/미얀마어</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">읽기 전용 기기</translation>
 <translation id="4826849268470072925">타밀어(ITRANS)</translation>
 <translation id="482932175346970750">브라우저에 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />를 입력합니다.</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" />개의 항목이 선택됨</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="485316830061041779">독일어</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
 <translation id="6993826899923627728">항목이 휴지통에 있습니다</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />개의 폴더가 선택됨</translation>
 <translation id="7008426324576352165">업로드를 완료하려면 조직에 추가 저장용량이 필요합니다.</translation>
 <translation id="7009985720488544166">관리자 정책에 의해 파일 <ph name="COUNT" />개의 이동이 차단되었습니다.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />(<ph name="ROOT_SUMMARY" />)</translation>

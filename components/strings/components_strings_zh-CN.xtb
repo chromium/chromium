@@ -175,7 +175,6 @@
 <translation id="1363819917331173092">不询问是否翻译<ph name="SOURCE_LANGUAGE" />网页</translation>
 <translation id="1364822246244961190">此政策已被禁用，其值也会被忽略。</translation>
 <translation id="1368318639262510626">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时按一下空格键，即可让恐龙跃过障碍物。</translation>
-<translation id="136907351928231527">主题列表最多可能需要 1 周的时间才会显示在这里，具体取决于您近期的浏览记录</translation>
 <translation id="1374468813861204354">建议</translation>
 <translation id="1375198122581997741">关于版本</translation>
 <translation id="1376836354785490390">收起</translation>
@@ -439,6 +438,7 @@
 <translation id="2003709556000175978">立即重置您的密码</translation>
 <translation id="2003775180883135320">四孔（顶部）</translation>
 <translation id="201174227998721785">在 Chrome 设置中管理各网站的权限及存储的数据</translation>
+<translation id="2012276282211112603">暂无可显示的主题</translation>
 <translation id="2019607688127825327">“管理无障碍设置”按钮，按 Enter 键即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
 <translation id="2021333772895814435">此政策会针对以下操作自动停用跨设备同步功能：<ph name="ACTION_LIST" />。</translation>
 <translation id="202224654587969958">12 x 19 英寸</translation>
@@ -1669,6 +1669,7 @@
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5051305769747448211">相声/小品</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
+<translation id="5060419232449737386">字幕设置</translation>
 <translation id="5060483733937416656">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过 Windows Hello 来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">打印记录</translation>

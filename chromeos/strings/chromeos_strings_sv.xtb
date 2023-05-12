@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Inaktivera mörkt tema</translation>
 <translation id="1807246157184219062">Ljus</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
+<translation id="1838374766361614909">Rensa sökning</translation>
 <translation id="1851218745569890714">Videokonferenser</translation>
 <translation id="1852934301711881861">Installera ChromeOS Flex</translation>
 <translation id="1856388568474281774">Nedåtpiltangenten</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Nyckelriktning</translation>
 <translation id="3294437725009624529">Gäst</translation>
+<translation id="3303855915957856445">Inga sökresultat hittades</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
 <translation id="3328783797891415197">Testet körs</translation>
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">Öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill konfigurera eller uppdatera en anslutning.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4937657825850660613">Halvskärm</translation>
 <translation id="4950314376641394653">Firmware på <ph name="DEVICE_NAME" /> har uppdaterats till version <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Delvis</translation>
 <translation id="4972592110715526173">lägesändring</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC-adress</translation>
 <translation id="7491478667760509108">Avsluta flytläge</translation>
 <translation id="7497215489070763236">Serverns CA-certifikat</translation>
+<translation id="7501957181231305652">eller</translation>
 <translation id="7502658306369382406">IPv6-adress</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Hjälpinnehållet är inte tillgängligt</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Läs mer i hjälpcentret</translation>
 <translation id="763165478673169849">Återställdes senast</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
+<translation id="765159867434478292">Dela upp</translation>
 <translation id="7656388927906093505">Enheten är en mus.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665800271478495366">Byt avatar</translation>

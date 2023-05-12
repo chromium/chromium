@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">ตรวจพบเอกสาร</translation>
 <translation id="414641094616694804">เปลี่ยนความละเอียดของกล้องนี้ไม่ได้</translation>
 <translation id="4269820728363426813">คัดลอกที่อยู่ลิงก์</translation>
-<translation id="4281620174117014503">ความละเอียดปานกลาง</translation>
 <translation id="428234092390943511">ภาพขนาดย่อของหน้า</translation>
 <translation id="4383571725254449280">พิมพ์บันทึกประสิทธิภาพ</translation>
 <translation id="4445542136948522167">หยุดถ่ายภาพ</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">กำลังสแกนหน้า <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">สี่เหลี่ยมจัตุรัส</translation>
+<translation id="574392208103952083">ปานกลาง</translation>
 <translation id="5746169159649715125">บันทึกเป็น PDF</translation>
 <translation id="5753488212459587150">เปิดใช้โหมดผู้เชี่ยวชาญ</translation>
 <translation id="5759254179196327752">สแกนเอกสาร</translation>

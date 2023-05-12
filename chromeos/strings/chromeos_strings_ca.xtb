@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Desactiva el tema fosc</translation>
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1827738518074806965">Galeria d'art</translation>
+<translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="1851218745569890714">Videoconferències</translation>
 <translation id="1852934301711881861">Instal·la ChromeOS Flex</translation>
 <translation id="1856388568474281774">Fletxa avall</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direcció de la clau</translation>
 <translation id="3294437725009624529">Convidat</translation>
+<translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
 <translation id="3340011300870565703">L'auricular dret del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4930320165497208503">Per configurar o actualitzar una connexió, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
-<translation id="4937657825850660613">Meitat</translation>
 <translation id="4950314376641394653">El microprogramari del dispositiu <ph name="DEVICE_NAME" /> s'ha actualitzat a la versió <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Parcial</translation>
 <translation id="4972592110715526173">canvi de mode</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Adreça MAC</translation>
 <translation id="7491478667760509108">Surt del mode flotant</translation>
 <translation id="7497215489070763236">Certificat de CA del servidor</translation>
+<translation id="7501957181231305652">o</translation>
 <translation id="7502658306369382406">Adreça IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">El contingut d'ajuda no està disponible</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
 <translation id="763165478673169849">Hora del darrer restabliment</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
+<translation id="765159867434478292">Desglossa</translation>
 <translation id="7656388927906093505">El dispositiu és un ratolí.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665800271478495366">Canvia l'avatar</translation>

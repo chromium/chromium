@@ -163,7 +163,6 @@
 <translation id="1703117532528082099">Ակտիվ պատուհանն ամրացված է ձախ կողմում։</translation>
 <translation id="1708345662127501511">Աշխատասեղան՝ <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ցանցի կարգավորումներ</translation>
-<translation id="1715293566947629045">Պրոֆիլն անջատվում է։ Մի փոքր սպասեք։</translation>
 <translation id="1719094688023114093">Կենդանի ենթագրերը միացված են։</translation>
 <translation id="1720011244392820496">Միացրեք Wi-Fi համաժամացումը</translation>
 <translation id="1720230731642245863">Թեժ կետն անջատված է</translation>
@@ -183,7 +182,6 @@
 <translation id="1771761307086386028">Ոլորել աջ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
-<translation id="1807246157184219062">Բաց</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1816896987747843206">Սա հասանելի է դարձնում տեսախցիկը բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="1823280932251546115">Կարգավիճակի տող, ժամը՝ <ph name="TIME" />,
@@ -264,6 +262,7 @@
 <translation id="2170530631236737939">Համատեսքը փակելու համար երեք մատով սահեցրեք վար</translation>
 <translation id="2185166372312820725">Անցնել նախորդ ներդիր</translation>
 <translation id="2185444992308415167">Անցնել 1–8 ներդիրներ</translation>
+<translation id="2198625180564913276">Պրոֆիլն ավելացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="219905428774326614">Գործարկիչ, բոլոր հավելվածները</translation>
 <translation id="2201071101391734388">Վերջին լուսանկար <ph name="INDEX" />/<ph name="TOTAL_COUNT" />։</translation>
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
@@ -436,7 +435,6 @@
 <translation id="3039939407102840004">Ստիլուսի մարտկոցի լիցքը՝ <ph name="PERCENTAGE" /> տոկոս։</translation>
 <translation id="3045488863354895414">Բարի օր,</translation>
 <translation id="3047761520276763270">Ասեք՝</translation>
-<translation id="3051189971848907985">Պրոֆիլը վերանվանվում է։ Մի փոքր սպասեք։</translation>
 <translation id="3055162170959710888">Այս սարքն այսօր օգտագործվել է <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Չի աջակցվում</translation>
 <translation id="3068622547379332530">Տարբերակ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -508,7 +506,6 @@
 <translation id="3371140690572404006">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="3375634426936648815">Միացված է</translation>
 <translation id="3378438761594387761">Այստեղ կգտնեք ձեր վերջին ներբեռնումներն ու սքրինշոթները</translation>
-<translation id="3378442621503952303">Միացում պրոֆիլին։ Մի փոքր սպասեք։</translation>
 <translation id="3386978599540877378">Լիաէկրան խոշորացույց</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Լրացուցիչ կարգավորումներ</translation>
@@ -714,13 +711,13 @@
 <translation id="4280601795273309128">Ձեր սարքն այլևս չի ստանա անվտանգության թարմացումներ։ Ձեռք բերեք նոր սարք։</translation>
 <translation id="4283888303416325161">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք գաղտնաբառը</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
+<translation id="428715201724021596">Միանում է պրոֆիլին։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Մաքրել բոլոր <ph name="COUNT" /> ծանուցումները</translation>
 <translation id="430191667033048642">«<ph name="MOVED_APP_NAME" />» հավելվածը տեղափոխվեց «<ph name="FOLDER_NAME" />» պանակ։</translation>
 <translation id="4302592941791324970">Հասանելի չէ</translation>
 <translation id="4303223480529385476">Ծավալել կարգավիճակի տարածքը</translation>
 <translation id="4305133312001648038">Վերականգնել էջի սկզբնական մասշտաբը</translation>
-<translation id="4311195029067684288">Ամբողջական</translation>
 <translation id="4312840429157639164">Տեսախցիկի պատկերն ամրացված է վերևի աջ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
 <translation id="4316910396681052118">ԲՈԼՈՐ ՀԱՎԵԼՎԱԾՆԵՐԸ</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -770,6 +767,7 @@
 <translation id="4536664881735498710">օպերատիվ հիշողության օգտագործումը</translation>
 <translation id="4538824937723742295">Լիաէկրան սքրինշոթ անել</translation>
 <translation id="4539127209940689201">Տպել ընթացիկ էջը</translation>
+<translation id="4541706525461326392">Պրոֆիլը հեռացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="4544483149666270818">Ընտրեք պատուհանը՝ տեսագրելու համար</translation>
 <translation id="454541942614298893">իմ սարքը</translation>
 <translation id="4548482551627849548">Ակտիվ պատուհանը տեղափոխել ձախ աշխատասեղան</translation>
@@ -855,7 +853,6 @@
 <translation id="4919841137949306064"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="492453977506755176">Տեսագրման ռեժիմի ստեղն</translation>
 <translation id="4925542575807923399">Այս հաշվի ադմինիստրատորը պահանջում է, որ այս հաշիվը լինի առաջին մուտքգործած հաշիվը բազմակի մուտքի աշխատաշրջանում:</translation>
-<translation id="4929163402621253029">Դուք խոսո՞ւմ եք։ Ձեր ձայնն անջատված է։ Իմանալ ավելին</translation>
 <translation id="493076006037866439">Փոքրացնել էկրանի մասշտաբը</translation>
 <translation id="4936329710968938986">Բոլորը, անջատված է</translation>
 <translation id="4938176435186993759">Թաքցնել բոլոր առաջարկները</translation>
@@ -876,6 +873,7 @@
 <translation id="4987738733603015246">Աշխատասեղան 16</translation>
 <translation id="5003993274120026347">Հաջորդ նախադասությունը</translation>
 <translation id="5004607513195820459">Ցանցը կառավարվում է ադմինիստրատորի կողմից</translation>
+<translation id="5009463889040999939">Պրոֆիլը վերանվանվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="5016558321564993266">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Սարքի տեսախցիկի օգտագործման թույլտվությունը միացված է</translation>
 <translation id="5030659775136592441">Ցուցադրել էջանիշների կառավարիչը</translation>
@@ -884,6 +882,7 @@
 <translation id="5034421018520995080">Անցնել էջի սկիզբ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> սարքը կապվեց նոր հեռախոսի հետ</translation>
 <translation id="5035389544768382859">Հաստատեք էկրանի կազմաձևումը</translation>
+<translation id="5038863510258510803">Միացում…</translation>
 <translation id="5042305953558921026">Համատեսքի ռեժիմի ստեղն</translation>
 <translation id="5043679421800073804">Ընտրել վերջին պատկերակը դարակում</translation>
 <translation id="504465286040788597">Նախորդ պարբերությունը</translation>
@@ -947,7 +946,6 @@
 <translation id="5331975486040154427">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="533282197239610265">Ցուցադրել հեռարձակման սարքերը</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (աջ)</translation>
-<translation id="5351427059191534258">Անջատե՞լ տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="5352250171825660495">Մուգ թեման միացված է</translation>
 <translation id="5356963482258194581">Անցեք մուգ թեմայից բաց թեմային և հակառակը։ Սեղմեք մկնիկի աջ կոճակը աշխատասեղանի վրա և ընտրեք «Պաստառ և ոճ»։</translation>
 <translation id="536019650977002321">Ձեր ադմինիստրատորը թույլ չի տալիս ձայնագրություններ կատարել։ Լրացուցիչ տեղեկությունների համար դիմեք ձեր ադմինիստրատորին։</translation>
@@ -961,6 +959,7 @@
 <translation id="5395308026110844773">«<ph name="DRAGGED_APP_NAME" />» հավելվածը «<ph name="IN_PLACE_APP" />» հավելվածի վրա է: Բաց թողեք՝ պանակ ստեղծելու համար:</translation>
 <translation id="5397578532367286026">Այս օգտատիրոջ օգտագործման տվյալները և պատմությունը կարող են վերահսկվել chrome.com-ի կառավարիչի (<ph name="MANAGER_EMAIL" />) կողմից:</translation>
 <translation id="5400461572260843123">Արագ կարգավորումներ․ սեղմեք Search+ձախ սլաքը՝ ծանուցումների կենտրոն մտնելու համար։</translation>
+<translation id="5414198321558177633">Պրոֆիլների ցանկը թարմացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="5426063383988017631">Կարգավորումների ընտրացանկը փակված է</translation>
 <translation id="5428899915242071344">Սկսել տեքստի ընտրությունը</translation>
 <translation id="5429993543155113935">Ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում</translation>
@@ -1087,7 +1086,6 @@
 <translation id="5983567367406220847">Անգործուն լինելու պատճառով թեժ կետն անջատվել է։</translation>
 <translation id="598407983968395253">Օգտագործել ձևանմուշը</translation>
 <translation id="598882571027504733">Թարմացումը տեղադրելու համար վերագործարկեք Chromebook-ը՝ առանց ստեղնաշարն անջատելու։</translation>
-<translation id="6002179289567220515">Դուք ֆիզիկական փոխանջատիչի միջոցով անջատել եք 1 տեսախցիկ։ Կարող եք նաև անջատել բոլոր տեսախցիկների հասանելիությունը։</translation>
 <translation id="6012623610530968780">Էջ <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Առանձնացնել հաջորդ տարրը դարակում</translation>
 <translation id="6018164090099858612">Ելք հայելային ռեժիմից</translation>
@@ -1205,7 +1203,6 @@
 <translation id="6537924328260219877">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Ներբեռնումը դադարեցված է, <ph name="FILENAME" /> ֆայլը ստուգվում է</translation>
 <translation id="6542521951477560771">Հեռարձակում «<ph name="RECEIVER_NAME" />» սարքին</translation>
-<translation id="6548693220024099658">Ֆոնի շաղում</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Նոր տեղադրում</translation>
 <translation id="6559976592393364813">Հարցրեք ադմինիստրատորին</translation>
@@ -1240,7 +1237,6 @@
 <translation id="6683022854667115063">Ականջակալներ</translation>
 <translation id="6696025732084565524">Անհրաժեշտ է թարմացնել արտաքին ստեղնաշարը</translation>
 <translation id="6700713906295497288">IME ընտրացանկի կոճակ</translation>
-<translation id="6705577071209924099">Կարգավորել լուսավորությունը</translation>
 <translation id="6707693040195709527">Օպերացիոն համակարգի նախորդ տարբերակին անցնելու ժամանակը լրացել է</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6723839937902243910">Սնուցում</translation>
@@ -1360,6 +1356,7 @@
 <translation id="7302889331339392448">«Կենդանի ենթագրեր» գործառույթը միացված է։</translation>
 <translation id="7303365578352795231">Օգնականն այլ սարքում է պատասխանում:</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7312210124139670355">Ադմինիստրատորը վերակայում է ձեր eSIM-ը։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="7313193732017069507">Ծավալել տեսախցիկը</translation>
 <translation id="731589979057211264">Shelf Party ռեժիմը միացված է։</translation>
 <translation id="7340731148882810149">Ավտոմատ սեղմումների ընտրացանկ</translation>
@@ -1482,7 +1479,6 @@
 <translation id="7862292329216937261">Սարքը որպես հյուր օգտագործելու համար մուտք գործեք հաշիվ, այնուհետև էկրանի ներքևում ընտրեք «Մտնել հյուրի ռեժիմ»</translation>
 <translation id="7866482334467279021">միացված է</translation>
 <translation id="7868900307798234037">Ապակողպում մատնահետքով</translation>
-<translation id="7872195908557044066">Ադմինիստրատորը վերակայում է ձեր eSIM-ը։ Մի փոքր սպասեք։</translation>
 <translation id="7872786842639831132">Անջատված է</translation>
 <translation id="7875575368831396199">Bluetooth-ն անջատված է ձեր <ph name="DEVICE_TYPE" /> սարքում։ Հեռախոսի կառավարման կենտրոնն օգտագործելու համար միացրեք Bluetooth-ը։</translation>
 <translation id="7877557217297072640">{0,plural, =0{Այժմ վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին}=1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին 1 վայրկյանի ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # վայրկյանի ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # վայրկյանի ընթացքում}}</translation>
@@ -1622,6 +1618,7 @@
 <translation id="847056008324733326">Էկրանի մասշտաբի կարգավորումներ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ն ունի <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />:</translation>
 <translation id="8477270416194247200">Չեղարկելու համար սեղմեք Alt+Search կամ Shift:</translation>
+<translation id="8487699605742506766">Թեժ կետ</translation>
 <translation id="8491237443345908933">Բացել հղումը նոր ներդիրում</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։ Հպեք «Հաստատել»՝ փոփոխությունները պահպանելու համար։ Նախորդ կարգավորումները կվերականգնվեն <ph name="TIMEOUT_SECONDS" /> հետո։</translation>
 <translation id="8496402167048257517">Ցուցադրել «Փոխանակում մոտակա սարքերի հետ» գործառույթի կարգավորումները</translation>
@@ -1647,12 +1644,10 @@
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> և <ph name="APP_2_TITLE" /> հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="8619138598101195078">Իջեցնել ձայնը</translation>
 <translation id="8627191004499078455">Միացված է <ph name="DEVICE_NAME" /> սարքին</translation>
-<translation id="8630991711272431708">Անջատել տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="8631727435199967028">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="8638637208069328956">Միացնել/անջատել խոսափողը</translation>
 <translation id="8639760480004882931">Մնացել է <ph name="PERCENTAGE" /></translation>
-<translation id="8641805545866562088">Պրոֆիլների ցանկը թարմացվում է։ Մի փոքր սպասեք։</translation>
 <translation id="8646417893960517480">Ժամաչափ՝ <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Օգտատեր ավելացնելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը</translation>
 <translation id="8649597172973390955">Դարակը միշտ ցուցադրված է</translation>
@@ -1688,7 +1683,6 @@
 <translation id="880709030178078220">«Help» (օգնություն)</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ներածման մեթոդների կարգավորումներ</translation>
-<translation id="8818320199597151042">Պրոֆիլը հեռացվում է։ Մի փոքր սպասեք։</translation>
 <translation id="8819728065740986820">Հարմարվող լիցքավորումը միացված է</translation>
 <translation id="8825863694328519386">Սահեցրեք մատը ձախից՝ հետ գնալու համար</translation>
 <translation id="8832513206237979203">Ցուցադրել կամ թաքցնել էջանիշների գոտին</translation>
@@ -1755,7 +1749,6 @@
 <translation id="9089416786594320554">Ներածման եղանակներ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> էկրանը հեռացվեց</translation>
 <translation id="9098969848082897657">Անջատել հեռախոսի ձայնը</translation>
-<translation id="9100887602489003640">Պրոֆիլն ավելացվում է։ Մի փոքր սպասեք։</translation>
 <translation id="9105450214093926548">Մի քանի հաշիվների մուտքը չի աջակցվում, երբ գործարկված է Lacros դիտարկիչը։ Օգտագործեք դիտարկիչի երկրորդ պրոֆիլ Lacros-ում կամ փակեք Lacros-ը և նորից փորձեք։</translation>
 <translation id="9120448753905017833">Մենք անջատել ենք Wi-Fi-ը, որպեսզի սկսենք օգտագործել թեժ գիծը բջջային ինտերնետի միջոցով։ Թրաֆիկի համար կարող է գումար գանձվել։</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> կամ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

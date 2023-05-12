@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Sötét téma kikapcsolása</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1827738518074806965">Galéria</translation>
+<translation id="1838374766361614909">Keresett kifejezés törlése</translation>
 <translation id="1851218745569890714">Videokonferencia</translation>
 <translation id="1852934301711881861">ChromeOS Flex telepítése</translation>
 <translation id="1856388568474281774">Lefelé nyíl</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Kulcs iránya</translation>
 <translation id="3294437725009624529">Vendég</translation>
+<translation id="3303855915957856445">Nincs találat</translation>
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
 <translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="RATE" /> töltöttség <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="4930320165497208503">A kapcsolatokat a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> között állíthatja be vagy módosíthatja.</translation>
 <translation id="4932733599132424254">Dátum</translation>
-<translation id="4937657825850660613">Fél</translation>
 <translation id="4950314376641394653">A(z) <ph name="DEVICE_NAME" /> firmware-e frissült a(z) <ph name="VERSION" /> verzióra</translation>
 <translation id="4971925105143343452">Részleges</translation>
 <translation id="4972592110715526173">mód váltása</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC-cím</translation>
 <translation id="7491478667760509108">Kilépés a lebegő nézetből</translation>
 <translation id="7497215489070763236">Szerver CA tanúsítványa</translation>
+<translation id="7501957181231305652">vagy</translation>
 <translation id="7502658306369382406">IPv6-cím</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">A súgótartalom nem áll rendelkezésre</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">További információ a Súgóban</translation>
 <translation id="763165478673169849">Utolsó visszaállítás ideje</translation>
 <translation id="7648838807254605802">Hosszú várakozási idő HTTPS esetén</translation>
+<translation id="765159867434478292">Megosztás</translation>
 <translation id="7656388927906093505">Az eszköz egy egér.</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7665800271478495366">Avatar módosítása</translation>

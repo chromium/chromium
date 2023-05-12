@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">अँध्यारो थिम अफ गर्नुहोस्</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1827738518074806965">आर्ट ग्यालेरी</translation>
+<translation id="1838374766361614909">खोजी खाली गर्नुहोस्</translation>
 <translation id="1851218745569890714">भिडियो कन्फ्रेन्स</translation>
 <translation id="1852934301711881861">ChromeOS Flex इन्स्टल गर्नुहोस्</translation>
 <translation id="1856388568474281774">डाउन एरो</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">मुख्य डिरेक्सन</translation>
 <translation id="3294437725009624529">पाहुना</translation>
+<translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्याधिक मात्रामा बढी छ</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
 <translation id="4930320165497208503">तपाईं नयाँ कनेक्सन सेटअप गर्न वा सेटअप गरिएको कनेक्सनसम्बन्धी सेटिङ बदल्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="4932733599132424254">मिति</translation>
-<translation id="4937657825850660613">स्क्रिन दुई भागमा स्प्लिट गर्नुहोस्</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गरी संस्करण <ph name="VERSION" /> इन्स्टल गरिएको छ</translation>
 <translation id="4971925105143343452">स्क्रिनको केही भाग स्प्लिट गर्नुहोस्</translation>
 <translation id="4972592110715526173">"मोड बदल्नुहोस्" जनाउने आइकन</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">म्याक एड्रेस</translation>
 <translation id="7491478667760509108">फ्लोट विन्डोबाट बाहिरिनुहोस्</translation>
 <translation id="7497215489070763236">सर्भरको CA को सर्टिफिकेट</translation>
+<translation id="7501957181231305652">वा</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">मद्दतसम्बन्धी सामग्री उपलब्ध छैन</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">मद्दत केन्द्रमा गई थप जान्नुहोस्</translation>
 <translation id="763165478673169849">पछिल्लो पटक रिसेट गरिएको मिति र समय</translation>
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
+<translation id="765159867434478292">विभाजन गर्नुहोस्</translation>
 <translation id="7656388927906093505">यो डिभाइस माउस हो।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7665800271478495366">अवतार बदल्नुहोस्</translation>

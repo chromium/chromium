@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="1827738518074806965">Γκαλερί</translation>
+<translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
 <translation id="1852934301711881861">Εγκατάσταση ChromeOS</translation>
 <translation id="1856388568474281774">Κάτω βέλος</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Κατεύθυνση κλειδιού</translation>
 <translation id="3294437725009624529">Επισκέπτης</translation>
+<translation id="3303855915957856445">Δεν βρέθηκαν αποτελέσματα αναζήτησης</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="4930320165497208503">Για να ρυθμίσετε ή να ενημερώσετε μια σύνδεση, μεταβείτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
-<translation id="4937657825850660613">Μισό</translation>
 <translation id="4950314376641394653">Το υλικολογισμικό της συσκευής <ph name="DEVICE_NAME" /> έχει ενημερωθεί στην έκδοση <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Μερική</translation>
 <translation id="4972592110715526173">αλλαγή λειτουργίας</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Διεύθυνση MAC</translation>
 <translation id="7491478667760509108">Έξοδος από κινούμενο</translation>
 <translation id="7497215489070763236">Πιστοποιητικό διακομιστή CA</translation>
+<translation id="7501957181231305652">ή</translation>
 <translation id="7502658306369382406">Διεύθυνση IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Το περιεχόμενο βοήθειας δεν είναι διαθέσιμο</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
+<translation id="765159867434478292">Διαχωρισμός</translation>
 <translation id="7656388927906093505">Η συσκευή είναι ποντίκι.</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7665800271478495366">Αλλαγή avatar</translation>

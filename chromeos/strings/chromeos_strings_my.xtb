@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">အမှောင်နောက်ခံ ပိတ်ရန်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
+<translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
 <translation id="1852934301711881861">ChromeOS Flex ထည့်သွင်းရန်</translation>
 <translation id="1856388568474281774">အောက်ညွှန်မြား</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ကီးလမ်းညွှန်ချက်</translation>
 <translation id="3294437725009624529">ဧည့်သည်</translation>
+<translation id="3303855915957856445">မည်သည့်ရှာဖွေမှု ရလဒ်မျှ မတွေ့ပါ</translation>
 <translation id="3310640316857623290">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို သိသာစွာကျော်နေသည်</translation>
 <translation id="3328783797891415197">စစ်ဆေးနေသည်</translation>
 <translation id="3340011300870565703">ညာနားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားသွင်းထားသည်။</translation>
 <translation id="4930320165497208503">ချိတ်ဆက်မှု စနစ်ထည့်သွင်းရန် (သို့) အပ်ဒိတ်လုပ်ရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
-<translation id="4937657825850660613">တစ်ဝက်</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ဖာမ်းဝဲကို <ph name="VERSION" /> ဗားရှင်းသို့ အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="4971925105143343452">တစ်စိတ်တစ်ပိုင်း</translation>
 <translation id="4972592110715526173">မုဒ်ပြောင်းရန်</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC လိပ်စာ</translation>
 <translation id="7491478667760509108">လွင့်မျောမှုမှ ထွက်ရန်</translation>
 <translation id="7497215489070763236">ဆာဗာ CA အသိအမှတ်ပြုလက်မှတ်</translation>
+<translation id="7501957181231305652">သို့မဟုတ်</translation>
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">အကူအညီ အကြောင်းအရာ မရနိုင်ပါ</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="763165478673169849">နောက်ဆုံး ပြင်ဆင်သတ်မှတ်ထားချိန်</translation>
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>
+<translation id="765159867434478292">ခွဲရန်</translation>
 <translation id="7656388927906093505">ကိရိယာသည် မောက်စ်ဖြစ်သည်။</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7665800271478495366">ချန်နယ်ပုံပြောင်းရန်</translation>

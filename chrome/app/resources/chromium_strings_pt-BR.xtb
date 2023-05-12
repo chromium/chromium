@@ -246,6 +246,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6475912303565314141">Controla também qual página deve ser exibida quando você inicia o Chromium.</translation>
 <translation id="648319183876919572">O recurso "Navegação segura com maior proteção" protege você ainda mais contra sites e downloads perigosos</translation>
 <translation id="6510925080656968729">Desinstalar Chromium</translation>
+<translation id="6539122709674868420">Sua organização vai fechar o Chromium se ele não for usado por <ph name="TIMEOUT_DURATION" />. Os dados de navegação foram excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.</translation>
 <translation id="6542839706527980775">Cada perfil armazena as próprias informações do Chromium, como favoritos, histórico, senhas, entre outras</translation>
 <translation id="656935081669708576">Mude para outro perfil do Chromium para conferir as senhas dele</translation>
 <translation id="6570579332384693436">Para corrigir erros de ortografia, o Chromium envia ao Google o texto que você digita nos campos de texto</translation>
@@ -281,6 +282,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7025789849649390912">Instalação interrompida.</translation>
 <translation id="705851970750939768">Atualizar o Chromium</translation>
 <translation id="7067091210845072982">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições.</translation>
+<translation id="7173822816570314652">Sua organização exclui os dados do Chromium se eles não forem usados por <ph name="TIMEOUT_DURATION" />. Isso pode incluir o histórico, o preenchimento automático e os downloads.</translation>
 <translation id="718435575166326686">O Chromium precisa da permissão de acesso à câmera para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
@@ -333,6 +335,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8248265253516264921">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>
 <translation id="8266560134891435528">O Chromium não pode verificar suas senhas porque a conta não está conectada</translation>
 <translation id="8290862415967981663">Esse arquivo pode ser perigoso, por isso ele foi bloqueado pelo Chromium.</translation>
+<translation id="8318772038038596122">Sua organização vai fechar o Chromium se ele não for usado por <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8325404639443959713">Faça mais com o Chromium</translation>
 <translation id="8330519371938183845">Faça login para sincronizar e personalizar o Chromium em todos os seus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava usando o Chromium anteriormente</translation>
@@ -368,6 +371,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativamos a extensão a seguir, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e pode ter sido adicionada sem seu conhecimento.</translation>
 <translation id="9022552996538154597">Fazer login no Chromium</translation>
 <translation id="907832235989677238">Faça login no Chromium. Se você quiser que a conta fique conectada apenas nesta sessão, <ph name="GUEST_LINK_BEGIN" />use o dispositivo como visitante<ph name="GUEST_LINK_END" />.</translation>
+<translation id="9078733879136747090">O Chromium foi fechado automaticamente</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{O Chromium será reiniciado em 1 hora}one{O Chromium será reiniciado em # hora}other{O Chromium será reiniciado em # horas}}</translation>
 <translation id="9106612006984859720">Para receber as próximas atualizações do Chromium, você precisa ter do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.1.</translation>

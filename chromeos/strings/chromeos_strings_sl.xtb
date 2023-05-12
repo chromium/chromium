@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Onemogočanje temne teme</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1827738518074806965">Umetnostna galerija</translation>
+<translation id="1838374766361614909">Čiščenje iskanja</translation>
 <translation id="1851218745569890714">Videokonference</translation>
 <translation id="1852934301711881861">Namesti ChromeOS Flex</translation>
 <translation id="1856388568474281774">Puščica dol</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Smer ključa</translation>
 <translation id="3294437725009624529">Gost</translation>
+<translation id="3303855915957856445">Ni rezultatov iskanja</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3328783797891415197">Preizkus se izvaja</translation>
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Napolnjeno <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Če želite nastaviti ali posodobiti povezavo, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4937657825850660613">Polovično</translation>
 <translation id="4950314376641394653">Vdelana programska oprema za napravo <ph name="DEVICE_NAME" /> je posodobljena na različico <ph name="VERSION" />.</translation>
 <translation id="4971925105143343452">Delno</translation>
 <translation id="4972592110715526173">sprememba načina</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Naslov MAC</translation>
 <translation id="7491478667760509108">Zapusti plavajoči gumb</translation>
 <translation id="7497215489070763236">Strežniško overjeno potrdilo</translation>
+<translation id="7501957181231305652">ali</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Vsebina s pomočjo ni na voljo.</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Preberite več v centru za pomoč</translation>
 <translation id="763165478673169849">Čas zadnje ponastavitve</translation>
 <translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
+<translation id="765159867434478292">Delitev</translation>
 <translation id="7656388927906093505">Naprava je miška.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7665800271478495366">Spremeni avatar</translation>

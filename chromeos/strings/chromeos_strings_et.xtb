@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Tumeda teema keelamine</translation>
 <translation id="1807246157184219062">Hele</translation>
 <translation id="1827738518074806965">Kunstigalerii</translation>
+<translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="1851218745569890714">Videokonverents</translation>
 <translation id="1852934301711881861">Installi Chrome OS Flex</translation>
 <translation id="1856388568474281774">Allanool</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Võtme suund</translation>
 <translation id="3294437725009624529">Külaline</translation>
+<translation id="3303855915957856445">Otsingutulemusi ei leitud</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3328783797891415197">Test on pooleli</translation>
 <translation id="3340011300870565703">Seadme parema kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Laeti <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundi jooksul.</translation>
 <translation id="4930320165497208503">Ühenduse seadistamiseks või värskendamiseks avage leht <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
-<translation id="4937657825850660613">Pool</translation>
 <translation id="4950314376641394653">Seadme <ph name="DEVICE_NAME" /> püsivara on värskendatud versioonile <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Osaline</translation>
 <translation id="4972592110715526173">muudab režiimi</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC-aadress</translation>
 <translation id="7491478667760509108">Välju hõljukaknast</translation>
 <translation id="7497215489070763236">Serveri CA-sertifikaat</translation>
+<translation id="7501957181231305652">või</translation>
 <translation id="7502658306369382406">IPv6 aadress</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Abimaterjalid pole saadaval</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Lisateavet leiate abikeskusest</translation>
 <translation id="763165478673169849">Viimane lähtestamisaeg</translation>
 <translation id="7648838807254605802">Pikk HTTPS-i latentsusaeg</translation>
+<translation id="765159867434478292">Eralda</translation>
 <translation id="7656388927906093505">Seade on hiir.</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7665800271478495366">Muuda avatari</translation>

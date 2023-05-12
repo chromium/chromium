@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Zima mandhari meusi</translation>
 <translation id="1807246157184219062">Mwangaza</translation>
 <translation id="1827738518074806965">Matunzio ya sanaa</translation>
+<translation id="1838374766361614909">Futa utafutaji</translation>
 <translation id="1851218745569890714">Mikutano ya Video</translation>
 <translation id="1852934301711881861">Sakinisha ChromeOS Flex</translation>
 <translation id="1856388568474281774">Kishale cha chini</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3291996639387199448">Uelekeo wa ufunguo</translation>
 <translation id="3294437725009624529">Mgeni</translation>
+<translation id="3303855915957856445">Hakuna matokeo ya utafutaji yaliyopatikana</translation>
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3328783797891415197">Jaribio linatekelezwa</translation>
 <translation id="3340011300870565703">Kiwango cha chaji cha spika ya masikioni ya kulia ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Imechaji <ph name="RATE" /> baada ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="4930320165497208503">Ili uweke au usasishe muunganisho, nenda kwenye <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tarehe</translation>
-<translation id="4937657825850660613">Nusu</translation>
 <translation id="4950314376641394653">Programu dhibiti ya <ph name="DEVICE_NAME" /> imesasishwa na sasa inatumia toleo la <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Kiasi</translation>
 <translation id="4972592110715526173">hali ya mabadiliko</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Anwani ya MAC</translation>
 <translation id="7491478667760509108">Funga hali ya kuelea</translation>
 <translation id="7497215489070763236">Cheti cha CA cha Seva</translation>
+<translation id="7501957181231305652">au</translation>
 <translation id="7502658306369382406">Anwani ya IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Maudhui ya usaidizi hayapatikani</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Pata maelezo zaidi katika Kituo cha Usaidizi</translation>
 <translation id="763165478673169849">Wakati wa Mwisho Zilipobadilishwa</translation>
 <translation id="7648838807254605802">Muda mwingi wa kusubiri maombi ya HTTPS</translation>
+<translation id="765159867434478292">Tenganisha</translation>
 <translation id="7656388927906093505">Kifaa hiki ni kipanya.</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7665800271478495366">Badilisha ishara</translation>

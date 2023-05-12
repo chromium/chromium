@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Tắt giao diện tối</translation>
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1827738518074806965">Phòng tranh</translation>
+<translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="1851218745569890714">Hội nghị truyền hình</translation>
 <translation id="1852934301711881861">Cài đặt ChromeOS Flex</translation>
 <translation id="1856388568474281774">Mũi tên xuống</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Hướng khoá</translation>
 <translation id="3294437725009624529">Khách</translation>
+<translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
 <translation id="3340011300870565703">Tai nghe phải còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Đã sạc <ph name="RATE" /> trong <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="4930320165497208503">Để thiết lập hoặc cập nhật kết nối, hãy chuyển đến phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
-<translation id="4937657825850660613">Chia nửa</translation>
 <translation id="4950314376641394653">Chương trình cơ sở của <ph name="DEVICE_NAME" /> đã được cập nhật lên phiên bản <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Một phần</translation>
 <translation id="4972592110715526173">thay đổi chế độ</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Địa chỉ MAC</translation>
 <translation id="7491478667760509108">Thoát khỏi trạng thái nổi</translation>
 <translation id="7497215489070763236">Chứng chỉ CA máy chủ</translation>
+<translation id="7501957181231305652">hoặc</translation>
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Không có nội dung trợ giúp</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
 <translation id="763165478673169849">Lần đặt lại cuối</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
+<translation id="765159867434478292">Phân tách</translation>
 <translation id="7656388927906093505">Thiết bị là chuột.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7665800271478495366">Thay đổi hình đại diện</translation>

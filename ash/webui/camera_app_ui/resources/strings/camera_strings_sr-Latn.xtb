@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">Dokument je otkriven</translation>
 <translation id="414641094616694804">Ova kamera ne može da promeni rezoluciju</translation>
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
-<translation id="4281620174117014503">Srednja rezolucija</translation>
 <translation id="428234092390943511">Sličica stranice</translation>
 <translation id="4383571725254449280">Evidencije o učinku štampanja</translation>
 <translation id="4445542136948522167">Zaustavi snimanje slike</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160 piksela)</translation>
 <translation id="5662366948659129155">Skenira se <ph name="COUNT" />. stranica</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="574392208103952083">Srednja</translation>
 <translation id="5746169159649715125">Sačuvaj kao PDF</translation>
 <translation id="5753488212459587150">Omogući režim za stručnjake</translation>
 <translation id="5759254179196327752">Skeniranje dokumenata</translation>

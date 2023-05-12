@@ -250,6 +250,7 @@
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="648319183876919572">「強化安全瀏覽」可進一步保護您免受危險網站和下載檔案威脅</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
+<translation id="6539122709674868420">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後將其關閉。瀏覽資料已刪除，當中可能包括記錄、自動填入資料和下載檔案。</translation>
 <translation id="6542839706527980775">每個設定檔都會保存本身專屬的 Chromium 資料，例如書籤、記錄、密碼等</translation>
 <translation id="656935081669708576">您可切換查看其他 Chromium 個人檔案的密碼</translation>
 <translation id="6570579332384693436">為修正拼字錯誤，Chromium 會將您在文字欄中輸入的文字傳送給 Google</translation>
@@ -286,6 +287,7 @@
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
+<translation id="7173822816570314652">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後刪除 Chromium 資料，當中可能包括記錄、自動填入資料和下載檔案。</translation>
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行此網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查密碼，請於 24 小時後再試一次。</translation>
@@ -340,6 +342,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8248265253516264921">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>
 <translation id="8266560134891435528">由於您尚未登入帳戶，因此 Chromium 無法檢查密碼</translation>
 <translation id="8290862415967981663">此檔案可能不安全，因此 Chromium 已封鎖此檔案。</translation>
+<translation id="8318772038038596122">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後關閉 Chromium。</translation>
 <translation id="8325404639443959713">使用 Chromium 讓您事半功倍</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
@@ -375,6 +378,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="907832235989677238">登入 Chromium。如果您想只登入帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。</translation>
+<translation id="9078733879136747090">Chromium 已自動關閉</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 將於 1 小時後重新啟動}other{Chromium 將於 # 小時後重新啟動}}</translation>
 <translation id="9106612006984859720">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>

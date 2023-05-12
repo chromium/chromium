@@ -163,7 +163,6 @@
 <translation id="1703117532528082099">अ‍ॅक्टिव्ह विंडो डावीकडे डॉक केली आहे.</translation>
 <translation id="1708345662127501511">डेस्‍क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग्ज</translation>
-<translation id="1715293566947629045">प्रोफाइल बंद करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="1719094688023114093">लाइव्ह कॅप्शन सुरू आहे.</translation>
 <translation id="1720011244392820496">वाय-फाय सिंक सुरू करा</translation>
 <translation id="1720230731642245863">हॉटस्पॉट बंद आहे</translation>
@@ -183,7 +182,6 @@
 <translation id="1771761307086386028">उजवीकडे स्क्रोल करा</translation>
 <translation id="1774796056689732716">कॅलेंडर, <ph name="CURRENT_MONTH_YEAR" />, सध्या <ph name="DATE" /> निवडली आहे.</translation>
 <translation id="1787955149152357925">बंद करा</translation>
-<translation id="1807246157184219062">फिकट</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="1816896987747843206">हे कॅमेरा परवानगी असलेल्या सर्व अ‍ॅप्स आणि वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="1823280932251546115">स्टेटस ट्रे, वेळ <ph name="TIME" />,
@@ -264,6 +262,7 @@
 <translation id="2170530631236737939">अवलोकन मधून बाहेर पडण्यासाठी तीन बोटांनी खाली स्वाइप करा</translation>
 <translation id="2185166372312820725">आधीच्या टॅबवर जा</translation>
 <translation id="2185444992308415167">एक ते आठ टॅबमधून जा</translation>
+<translation id="2198625180564913276">प्रोफाइल जोडत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="219905428774326614">लाँचर, सर्व अ‍ॅप्स</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
@@ -436,7 +435,6 @@
 <translation id="3039939407102840004">स्टायलसची बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>
 <translation id="3045488863354895414">शुभ दुपार,</translation>
 <translation id="3047761520276763270">हे म्हणून पहा:</translation>
-<translation id="3051189971848907985">प्रोफाइलचे नाव बदलत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="3055162170959710888">तुम्ही हे डिव्हाइस आज <ph name="USED_TIME" /> साठी वापरले</translation>
 <translation id="3062298103034426069">सपोर्ट करत नाही</translation>
 <translation id="3068622547379332530">आवृत्ती <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -508,7 +506,6 @@
 <translation id="3371140690572404006">USB-C डिव्‍हाइस (उजव्‍या बाजूचे पुढील पोर्ट)</translation>
 <translation id="3375634426936648815">कनेक्ट केले आहे</translation>
 <translation id="3378438761594387761">तुम्हाला तुमचे अलीकडील डाउनलोड आणि स्‍क्रीन कॅप्‍चर येथे दिसतील</translation>
-<translation id="3378442621503952303">प्रोफाइलशी कनेक्ट करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="3386978599540877378">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">अतिरिक्त सेटिंग्ज</translation>
@@ -715,13 +712,13 @@
 <translation id="4280601795273309128">सुरक्षा अपडेट पूर्ण झाली आहेत. तुमचे डिव्हाइस अपग्रेड करा.</translation>
 <translation id="4283888303416325161">आणखी सुरक्षिततेसाठी पासवर्ड एंटर करा</translation>
 <translation id="4285498937028063278">अनपिन</translation>
+<translation id="428715201724021596">प्रोफाइलशी कनेक्ट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="4294319844246081198">सुप्रभात <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सर्व <ph name="COUNT" /> सूचना साफ करा</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> फोल्डर <ph name="FOLDER_NAME" /> वर हलवले.</translation>
 <translation id="4302592941791324970">उपलब्ध नाही</translation>
 <translation id="4303223480529385476">स्थिती क्षेत्राचा विस्तार करा</translation>
 <translation id="4305133312001648038">पेजवरील झूम पातळी रीसेट करा</translation>
-<translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4312840429157639164">कॅमेरा सर्वात वरच्या उजव्या कोपर्‍यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>
 <translation id="4316910396681052118">सर्व अ‍ॅप्स</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -771,6 +768,7 @@
 <translation id="4536664881735498710">RAM चा वापर</translation>
 <translation id="4538824937723742295">फुल स्क्रीन स्क्रीनशॉट घ्या</translation>
 <translation id="4539127209940689201">सध्याचे पेज प्रिंट करा</translation>
+<translation id="4541706525461326392">प्रोफाइल काढून टाकत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="4544483149666270818">रेकॉर्ड करण्यासाठी विंडो निवडा</translation>
 <translation id="454541942614298893">माझे डिव्हाइस</translation>
 <translation id="4548482551627849548">डावीकडील डेस्‍कवर अ‍ॅक्टिव्ह विंडो हलवा</translation>
@@ -856,7 +854,6 @@
 <translation id="4919841137949306064"><ph name="APP_NAME" /> हे सध्या तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="492453977506755176">कॅप्चर मोड की</translation>
 <translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
-<translation id="4929163402621253029">तुम्ही बोलत आहात का? तुम्ही म्यूट केले आहे. अधिक जाणून घ्या</translation>
 <translation id="493076006037866439">स्क्रीनवर झूम आउट करा</translation>
 <translation id="4936329710968938986">प्रत्येकजण, बंद आहे</translation>
 <translation id="4938176435186993759">सर्व सूचना लपवा</translation>
@@ -877,6 +874,7 @@
 <translation id="4987738733603015246">डेस्‍क १६</translation>
 <translation id="5003993274120026347">पुढील वाक्य</translation>
 <translation id="5004607513195820459">नेटवर्क व्यवस्थापित केले आहे</translation>
+<translation id="5009463889040999939">प्रोफाइलचे नाव बदलत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="5016558321564993266">मार्कर टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">डिव्हाइसच्या मायक्रोफोनचा अ‍ॅक्सेस सुरू आहे</translation>
 <translation id="5030659775136592441">बुकमार्क व्यवस्थापक दाखवा</translation>
@@ -885,6 +883,7 @@
 <translation id="5034421018520995080">पेजच्या सर्वात वर जा</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
 <translation id="5035389544768382859">डिस्प्ले कॉंफिगरेशन निश्चित करा</translation>
+<translation id="5038863510258510803">सक्षम करत आहे...</translation>
 <translation id="5042305953558921026">पूर्वावलोकन मोड की</translation>
 <translation id="5043679421800073804">शेल्फवरील शेवटच्या आयकनवर क्लिक किंवा टॅप करा</translation>
 <translation id="504465286040788597">मागील परिच्छेद</translation>
@@ -948,7 +947,6 @@
 <translation id="5331975486040154427">USB-C डिव्‍हाइस (डाव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="533282197239610265">कास्‍ट डिव्‍हाइस दाखवा</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (उजवे)</translation>
-<translation id="5351427059191534258">कॅमेराचा ॲक्सेस बंद करायचा आहे का?</translation>
 <translation id="5352250171825660495">गडद थीम सुरू आहे</translation>
 <translation id="5356963482258194581">गडद आणि फिकट थीमदरम्यान स्विच करा. डेस्कटॉपवर राइट-क्लिक करा आणि वॉलपेपर आणि स्टाइल निवडा.</translation>
 <translation id="536019650977002321">तुमचा अ‍ॅडमिनिस्ट्रेटर ऑडिओ कॅप्चरला अनुमती देत नाही. अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -962,6 +960,7 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
 <translation id="5397578532367286026">या वापरकर्त्याच्या वापर आणि इतिहासाचे chrome.com वरील व्यवस्थापकाद्वारे (<ph name="MANAGER_EMAIL" />) पुनरावलोकन केले जाऊ शकते.</translation>
 <translation id="5400461572260843123">क्विक सेटिंग्ज, सूचना केंद्र अ‍ॅक्सेस करण्यासाठी शोध + डावे बटण प्रेस करा.</translation>
+<translation id="5414198321558177633">प्रोफाइल सूची रिफ्रेश करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="5426063383988017631">सेटिंग्ज मेनू बंद केला आहे</translation>
 <translation id="5428899915242071344">निवडणे सुरू करा</translation>
 <translation id="5429993543155113935">गुप्त विंडोना सध्या सपोर्ट नाही</translation>
@@ -1088,7 +1087,6 @@
 <translation id="5983567367406220847">इनॅक्टिव्हिटीमुळे हॉटस्पॉट बंद करण्यात आला आहे.</translation>
 <translation id="598407983968395253">टेंप्लेट वापरा</translation>
 <translation id="598882571027504733">अपडेट करण्यासाठी, संलग्न केलेल्या कीबोर्डसह तुमचे Chromebook रीस्टार्ट करा.</translation>
-<translation id="6002179289567220515">तुम्ही एक कॅमेरा बंद करण्यासाठी प्रत्यक्ष स्विच वापरले. तुम्ही सर्व कॅमेराचा अ‍ॅक्सेसदेखील बंद करू शकता.</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> पैकी <ph name="SELECTED_PAGE" /> पेज</translation>
 <translation id="601304062528754300">शेल्फवरील पुढील आयटम हायलाइट करा</translation>
 <translation id="6018164090099858612">मिरर मोडमधून बाहेर पडत आहे</translation>
@@ -1206,7 +1204,6 @@
 <translation id="6537924328260219877">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> डाउनलोड स्कॅन करत आहे</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> वर कास्ट करत आहे</translation>
-<translation id="6548693220024099658">बॅकग्राउंड ब्लर</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 नवीन इंस्टॉल केले आहे</translation>
 <translation id="6559976592393364813">अ‍ॅडमिनिस्ट्रेटरला विचारा</translation>
@@ -1241,7 +1238,6 @@
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6696025732084565524">तुमच्या वेगळ्या करण्यायोग्य कीबोर्डला गंभीर अपडेटची आवश्यकता आहे</translation>
 <translation id="6700713906295497288">IME मेनू बटण</translation>
-<translation id="6705577071209924099">प्रकाश अ‍ॅडजस्‍ट करा</translation>
 <translation id="6707693040195709527">डिव्हाइस मागील आवृत्तीवर बदलण्याची मुदत संपली आहे</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6723839937902243910">सामर्थ्य</translation>
@@ -1362,6 +1358,7 @@
 <translation id="7302889331339392448">लाइव्ह कॅप्शन बंद आहे.</translation>
 <translation id="7303365578352795231">दुसऱ्या डिव्हाइसवर उत्तर देत आहे.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7312210124139670355">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="7313193732017069507">कॅमेराचा विस्तार करा</translation>
 <translation id="731589979057211264">शेल्फ पार्टी सुरू आहे.</translation>
 <translation id="7340731148882810149">ऑटोमॅटिक क्लिक मेनू</translation>
@@ -1484,7 +1481,6 @@
 <translation id="7862292329216937261">अतिथी म्हणून डिव्हाइस वापरण्यासाठी, तुम्हाला साइन आउट करून नंतर स्क्रीनच्या तळाशी अतिथी म्हणून ब्राउझ करणे निवडावे लागेल.</translation>
 <translation id="7866482334467279021">सुरू</translation>
 <translation id="7868900307798234037">फिंगरप्रिंटने अनलॉक करत आहे</translation>
-<translation id="7872195908557044066">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="7872786842639831132">बंद करा</translation>
 <translation id="7875575368831396199">तुमच्या <ph name="DEVICE_TYPE" /> चा ब्लूटूथ बंद असल्याचे दिसते. कृपया फोन हब वापरण्यासाठी ब्लूटूथ सुरू करा.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{एका सेकंदामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# सेकंदांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
@@ -1624,6 +1620,7 @@
 <translation id="847056008324733326">स्केल सेटिंग्‍ज दाखवा</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> कडे <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> आहेत.</translation>
 <translation id="8477270416194247200">रद्द करण्यासाठी Alt+Search किंवा Shift प्रेस करा.</translation>
+<translation id="8487699605742506766">हॉटस्पॉट</translation>
 <translation id="8491237443345908933">नवीन टॅबमध्ये लिंक उघडा</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> वर बदलले. बदल ठेवण्यासाठी खात्री करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="8496402167048257517">Nearby सह शेअरिंग सेटिंग्ज दाखवा</translation>
@@ -1649,12 +1646,10 @@
 <translation id="8614517853887502247">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" /> आणि <ph name="APP_2_TITLE" /> सूचना लपवल्या आहेत</translation>
 <translation id="8619138598101195078">व्‍हॉल्‍यूम कमी करा</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> शी कनेक्ट केले</translation>
-<translation id="8630991711272431708">कॅमेराचा ॲक्सेस बंद करा</translation>
 <translation id="8631727435199967028">अ‍ॅक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="8638637208069328956">मायक्रोफोन सुरू/बंद करा</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> शिल्लक</translation>
-<translation id="8641805545866562088">प्रोफाइल सूची रिफ्रेश करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> टायमर</translation>
 <translation id="8647931990447795414">एखाद्या व्यक्तीला जोडण्यासाठी तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
 <translation id="8649597172973390955">शेल्फ नेहमी दाखवले जात आहे</translation>
@@ -1690,7 +1685,6 @@
 <translation id="880709030178078220">"मदत"</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
 <translation id="881757059229893486">इनपुट पद्धती सेटिंग्ज</translation>
-<translation id="8818320199597151042">प्रोफाइल काढून टाकत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="8819728065740986820">अडॅप्टिव्ह चार्जिंग सुरू आहे</translation>
 <translation id="8825863694328519386">मागे जाण्यासाठी डावीकडून स्वाइप करा</translation>
 <translation id="8832513206237979203">बुकमार्क बार दाखवा किंवा लपवा</translation>
@@ -1757,7 +1751,6 @@
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> डिस्प्ले काढले</translation>
 <translation id="9098969848082897657">फोन सायलंट करा</translation>
-<translation id="9100887602489003640">प्रोफाइल जोडत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="9105450214093926548">Lacros ब्राउझर रन होत असताना दुसऱ्या
 वापरकर्त्याला साइन इन करण्यास सपोर्ट नाही. त्याऐवजी कृपया Lacros मध्ये दुसरी ब्राउझर प्रोफाइल वापरा किंवा Lacros बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="9120448753905017833">मोबाइल डेटाद्वारे हॉटस्पॉट वापरणे सुरू करण्यासाठी आम्ही वायफाय बंद केले आहे. यासाठी मोबाइल डेटा शुल्क लागू शकते.</translation>

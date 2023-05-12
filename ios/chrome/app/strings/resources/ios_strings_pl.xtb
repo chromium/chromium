@@ -21,9 +21,10 @@
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Przełącz na otwarte okno</translation>
 <translation id="1112015203684611006">Drukowanie nie udało się.</translation>
+<translation id="1113057722807951993">Szyfrowanie haseł nie obejmuje form płatności ani adresów w Google Pay.
+
+Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Utwórz nową kartę.</translation>
-<translation id="1126013303640354461">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
-Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, musisz zresetować synchronizację. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1145536944570833626">Usuń istniejące dane.</translation>
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
@@ -89,6 +90,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
 <translation id="152234381334907219">Nigdy nie zapisane</translation>
 <translation id="1523341279170789507">Zezwalaj na wszystkie pliki cookie</translation>
+<translation id="1524563461097350801">Nie, dziękuję</translation>
 <translation id="1531836666020185856">Polecane</translation>
 <translation id="1535268707340844072">Twoje obecne ustawienie może powodować problemy w niektórych witrynach. Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="BEGIN_LINK" />Ustawienia plików cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -159,6 +161,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="1990820278544963435">Znajdź</translation>
 <translation id="199425419756152024">Wyświetl hasło</translation>
+<translation id="2008357574463816229">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Załaduj ponownie</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="2021670401941426298">Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wyszukiwarki.</translation>
@@ -246,7 +249,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2647269890314209800">Pliki cookie w użyciu</translation>
 <translation id="2648721026697078500">Nigdy nie przenoś</translation>
 <translation id="2648803196158606475">Usuń przeczytane</translation>
-<translation id="2653659639078652383">Prześlij</translation>
 <translation id="2664621323652615289">Zatrzymaj</translation>
 <translation id="2671426118752779020">Haseł zapisanych w menedżerze haseł Google możesz używać w innych aplikacjach na iPhonie.</translation>
 <translation id="2690858294534178585">Aparat jest w użyciu</translation>
@@ -306,7 +308,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2932085390869194046">Zaproponuj hasło...</translation>
 <translation id="2932765531295814441">Ręczne dodawanie haseł</translation>
 <translation id="2952581218264071393">1. Otwórz ustawienia Chrome.</translation>
-<translation id="2953871438216280742">Zaloguj się, aby otworzyć i zapisać listę Do przeczytania na koncie Google.</translation>
 <translation id="2958718410589002129">Hasła</translation>
 <translation id="2961210776189273067">Tytuł</translation>
 <translation id="2964349545761222050">Blokowanie plików cookie innych firm</translation>
@@ -435,6 +436,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3861486700625780712">Przestań obserwować</translation>
 <translation id="3863769054730344136">Wyślij na swoje urządzenia</translation>
 <translation id="387280738075653372">Tutaj możesz pobrać Chrome.</translation>
+<translation id="3875783148670536197">Pokaż jak</translation>
 <translation id="3888863481921783344">Będziemy z tego korzystać, aby sugerować Ci osoby, które możesz zaprosić na swoje wydarzenie.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tu znajdziesz swoją historię</translation>
@@ -550,9 +552,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4652817563047461855">Upewnij się, że Twoje hasła są bezpieczne, dowiedz się, czy nie zostały przejęte, i poznaj porady, jak lepiej chronić się online. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Otwórz przełącznik kart</translation>
 <translation id="46614316059270592">Zapisz hasło</translation>
-<translation id="4666531726415300315">Jesteś zalogowany jako <ph name="EMAIL" />.
-
-Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="4682686630151240767">1. Otwórz Ustawienia na iPhonie.</translation>
 <translation id="4689564913179979534">Zarządzaj formami płatności…</translation>
 <translation id="469300482518076788">Zamknij kartę</translation>
@@ -561,16 +560,12 @@ Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, 
 <translation id="4737560986434232178">Szukaj w ostatnio przeglądanych kartach</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4746926359847517643">Zawsze możesz przywrócić je z historii.</translation>
-<translation id="4747097190499141774">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay. Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, konieczne będzie zresetowanie synchronizacji. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Tylko na tym urządzeniu, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nowa karta incognito</translation>
 <translation id="4766112107778026136">Odkrywanie i obserwowanie</translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4778644898150334464">Użyj innego hasła</translation>
 <translation id="478808905805139173">Otworzyć w trybie incognito?</translation>
-<translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
-
-Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
 <translation id="4803185665210547709">Zarządzana przez Twoją organizację.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Nieprawidłowy numer karty</translation>
@@ -716,6 +711,9 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5745916533876677730">Przejdź do poprzedniej karty</translation>
 <translation id="5755162682436943950">Wylogowano. Otwiera okno logowania się i włączania synchronizacji.</translation>
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>
+<translation id="5762370665605786758">Szyfrowanie haseł nie obejmuje form płatności ani adresów w Google Pay.
+
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menu → Ustawienia → Domyślna przeglądarka</translation>
 <translation id="5777888488419460501">Zapisz na koncie</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
@@ -832,16 +830,12 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6366663624406569102">Wyloguj się i wyłącz synchronizację</translation>
 <translation id="6374469231428023295">Spróbuj jeszcze raz</translation>
 <translation id="6377118281273296434">Bezpieczeństwo witryny</translation>
-<translation id="6380866119319257197">Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Otwórz lokalizację…</translation>
 <translation id="6387994324662817823">Hasła są zapisywane w Menedżerze haseł Google tylko na tym urządzeniu.</translation>
 <translation id="6389470377220713856">Imię i nazwisko na karcie</translation>
 <translation id="6406506848690869874">Synchronizacja</translation>
 <translation id="6410390304316730527">Bezpieczne przeglądanie chroni Cię przed osobami przeprowadzającymi ataki, które mogą podstępem nakłonić Cię do wykonania niebezpiecznych czynności, takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). Gdy wyłączasz tę funkcję, zachowaj ostrożność, przeglądając nieznane lub cieszące się złą sławą strony.</translation>
 <translation id="6410883413783534063">Otwórz karty, by odwiedzić jednocześnie wiele stron</translation>
-<translation id="641799622251403418">Jesteś zalogowany jako <ph name="EMAIL" />.
-
-Twoje dane zostały zaszyfrowane z użyciem hasła synchronizacji w dniu <ph name="TIME" />. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="6418346271604475326">Przygotowuję PDF</translation>
 <translation id="6429213933892582367">Otwórz Opcje haseł</translation>
 <translation id="6434591244308415567">Wystąpił błąd. Spróbuj ponownie później.</translation>
@@ -861,6 +855,9 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6476800141292307438">Tłumaczę stronę na <ph name="LANGUAGE" />. Opcje znajdują się na dole ekranu.</translation>
 <translation id="648164694371393720">Błąd uwierzytelniania</translation>
 <translation id="6482629121755362506">Usunięte elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="6484712497741564393">Zalogowano jako <ph name="EMAIL" />.
+
+Dane zostały zaszyfrowane Twoim hasłem. Podaj hasło, aby korzystać z danych Chrome i zapisywać je na swoim koncie Google.</translation>
 <translation id="6497772452874122664">Jeśli ufasz stronie <ph name="TIME" />, możesz użyć zapisanego hasła z innej witryny.
 
 Postaraj się używać innego hasła w każdej witrynie.</translation>
@@ -907,6 +904,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6730682669179532099">Nie można wyeksportować haseł</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6748108480210050150">Od</translation>
+<translation id="6753469262000681876">Tryb blokady</translation>
 <translation id="6760509555861141183">Powrót na ostatnio wyświetlaną kartę</translation>
 <translation id="6762812039470893796">Odznacz wszystko</translation>
 <translation id="6780034285637185932">Kod pocztowy</translation>
@@ -1055,7 +1053,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7845466610722898">Pokaż listę Do przeczytania</translation>
 <translation id="784551991304901159">Aby zobaczyć zawartość, wybierz w menu opcję Włącz</translation>
 <translation id="7846158885638438868">{count,plural, =1{Utworzono zakładkę w folderze „{title}”}few{Utworzono zakładki w folderze „{title}”}many{Utworzono zakładki w folderze „{title}”}other{Utworzono zakładki w folderze „{title}”}}</translation>
-<translation id="7852017611907717397">COFNIJ</translation>
 <translation id="7853202427316060426">Aktywność</translation>
 <translation id="7856733331829174190">Nie udało się pobrać pliku</translation>
 <translation id="785938070103630874">Otwórz sekcje Hasła, Formy płatności lub Adres i inne</translation>
@@ -1134,6 +1131,9 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8299417921174340354">Aby użyć haseł, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="8299613349954694191">Otwórz kartę incognito, aby przeglądać strony prywatnie.</translation>
 <translation id="8316944564970119719">Wpisz witrynę i hasło, a następnie zapisz</translation>
+<translation id="8317835149433843300">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie zapisywana na Twoim koncie Google.
+
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>
 <translation id="8323906514956095947">Naciśnij i przytrzymaj, by zobaczyć więcej opcji</translation>
 <translation id="8328777765163860529">Zamknij wszystkie</translation>
@@ -1156,6 +1156,9 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="8488923644885757471">Nowe okno</translation>
 <translation id="8490978609246021741">Zapisz zmiany</translation>
+<translation id="8491300088149538575">Zalogowano jako <ph name="EMAIL" />.
+
+Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzystać z danych Chrome i zapisywać je na swoim koncie Google.</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="850600235656508448">Otwórz w trybie incognito</translation>
 <translation id="8517375800490286174">Licencje typu open source</translation>

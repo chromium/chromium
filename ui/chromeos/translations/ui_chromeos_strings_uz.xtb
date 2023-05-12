@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> kabilarni yuklab olish</translation>
 <translation id="2377319039870049694">Qator shaklida</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ta jild Linuxga ulashilgan</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ta fayl belgilandi</translation>
 <translation id="2383454254762599978">Chiqitdonga tashlash</translation>
 <translation id="2387458720915042159">Proksi-server orqali ulanish turi</translation>
 <translation id="2389832672041313158">Birma/Myanma</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">Qurilma faqat o‘qish rejimida</translation>
 <translation id="4826849268470072925">Tamil (ITRANS klaviaturasi)</translation>
 <translation id="482932175346970750">Brauzerda <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> manzilini yozing</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ta element tanlandi</translation>
 <translation id="4843566743023903107">Chromebase qurilmalari</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="485316830061041779">Nemis</translation>
@@ -755,7 +753,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6989942356279143254">Shved</translation>
 <translation id="6990081529015358884">Bo‘sh joy juda kam qoldi</translation>
 <translation id="6993826899923627728">Bu fayllar chiqitdonda</translation>
-<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ta jild tanlandi</translation>
 <translation id="7008426324576352165">Yuklash uchun tashkilotingiz xotirasini kengaytiring.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> ta faylni koʻchirishni administrator taqiqlagan</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

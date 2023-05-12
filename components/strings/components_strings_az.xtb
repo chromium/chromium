@@ -175,7 +175,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> dilində səhifələrin tərcümə edilməsini təklif etməyin</translation>
 <translation id="1364822246244961190">Bu siyasət blok edildiyinə görə onun dəyəri iqnor ediləcək.</translation>
 <translation id="1368318639262510626">Dinozavr oyunu. Pikselləşdirilmiş dinozavr kimsəsiz ərazi boyunca qaçarkən kaktuslardan və pterodaktillərdən yayınır. Səs siqnalı eşitdiyiniz zaman boşluq düyməsinə basaraq maneələrin üstündən tullanın.</translation>
-<translation id="136907351928231527">Son baxış tarixçəniz əsasında mövzuların siyahısının burada görünməsi bir həftə çəkə bilər</translation>
 <translation id="1374468813861204354">təkliflər</translation>
 <translation id="1375198122581997741">Versiya Haqqında</translation>
 <translation id="1376836354785490390">Daha Azına Baxın</translation>
@@ -439,6 +438,7 @@
 <translation id="2003709556000175978">Parolu indi sıfırlayın</translation>
 <translation id="2003775180883135320">Yuxarıdan dördlü deşik açın</translation>
 <translation id="201174227998721785">Chrome ayarlarında saytlarda saxlanılan icazələri və datanı idarə edin</translation>
+<translation id="2012276282211112603">Hazırda mövzu yoxdur</translation>
 <translation id="2019607688127825327">"Əlçatımlılıq ayarlarını idarə edin" düyməsi, Enter düyməsinə basaraq Chrome ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="2021333772895814435">Bu siyasət aşağıdakılar üçün cihazlar arasında sinxronlaşdırmanı avtomatik deaktiv edir: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 düym</translation>
@@ -1669,6 +1669,7 @@
 <translation id="5045550434625856497">Yanlış parol</translation>
 <translation id="5051305769747448211">Canlı komediya</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Yaxınlıqda Paylaşım ilə bu faylı göndərmək üçün cihazınızda (<ph name="DISK_SPACE_SIZE" />) yer boşaldın}other{Yaxınlıqda Paylaşım ilə bu faylları göndərmək üçün cihazınızda (<ph name="DISK_SPACE_SIZE" />) yer boşaldın}}</translation>
+<translation id="5060419232449737386">Altyazı ayarları</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> istifadə edən saytlarda Windows Hello ilə doğrulamağı seçmisiniz. Bu provayder ödəniş metodunuz haqqında məlumat saxlamış ola bilər, onu <ph name="LINK_TEXT" /> ünvanında tapa bilərsiniz.</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> nəzərdə tuturdunuz?</translation>
 <translation id="5066056036849835175">Çap tarixçəsi</translation>

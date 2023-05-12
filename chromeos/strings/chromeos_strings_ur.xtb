@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">گہری تھیم غیر فعال کریں</translation>
 <translation id="1807246157184219062">روشنی</translation>
 <translation id="1827738518074806965">آرٹ گیلری</translation>
+<translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
 <translation id="1852934301711881861">‏ChromeOS Flex انسٹال کریں</translation>
 <translation id="1856388568474281774">نیچے تیر کا نشان</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534">‎<ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">کلیدی ڈائریکشن</translation>
 <translation id="3294437725009624529">مہمان</translation>
+<translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
 <translation id="3340011300870565703">آلے کے دائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> چارج کیا گیا۔</translation>
 <translation id="4930320165497208503">کنکشن سیٹ اپ کرنے یا اپ ڈیٹ کرنے کیلئے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="4932733599132424254">تاریخ</translation>
-<translation id="4937657825850660613">ہاف</translation>
 <translation id="4950314376641394653">فرم ویئر <ph name="DEVICE_NAME" /> کو ورژن <ph name="VERSION" /> میں اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="4971925105143343452">جزوی</translation>
 <translation id="4972592110715526173">وضع میں تبدیلی</translation>
@@ -739,6 +740,7 @@
 <translation id="7130438335435247835">‏رسائی کی جگہ کا نام (APN)</translation>
 <translation id="7131634559772719176">پری سیٹ کی تصدیق کریں</translation>
 <translation id="7134436342991564651">{0,plural, =1{نام سرور}other{نام سرورز}}</translation>
+<translation id="7135814714616751706">شارٹ کٹس تلاش کریں</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
@@ -769,6 +771,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
+<translation id="7353413232959255829">‏<ph name="LIST_SIZE" /> میں سے <ph name="LIST_POSITION" /> تلاش کا نتیجہ: <ph name="SEARCH_RESULT_TEXT" />۔ شارٹ کٹ پر نیویگیٹ کرنے کے لیے Enter دبائیں۔</translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
 <translation id="73631062356239394">تشخیصی ڈیٹا کا اشتراک کریں</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -784,6 +787,7 @@
 <translation id="7490813197707563893">‏MAC پتہ</translation>
 <translation id="7491478667760509108">فلوٹ سے باہر نکلیں</translation>
 <translation id="7497215489070763236">‏سرور CA سرٹیفکیٹ</translation>
+<translation id="7501957181231305652">یا</translation>
 <translation id="7502658306369382406">‏IPv6 پتہ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">مددگار مواد دستیاب نہیں ہے</translation>
@@ -800,6 +804,7 @@
 <translation id="7620771111601174153">مرکز امداد میں مزید جانیں</translation>
 <translation id="763165478673169849">آخری ری سیٹ کرنے کا وقت</translation>
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
+<translation id="765159867434478292">تقسیم کریں</translation>
 <translation id="7656388927906093505">آلہ ایک ماؤس ہے۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7665800271478495366">اوتار تبدیل کریں</translation>

@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">I-disable ang madilim na tema</translation>
 <translation id="1807246157184219062">Maliwanag</translation>
 <translation id="1827738518074806965">Art gallery</translation>
+<translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1851218745569890714">Pakikipagkumperensya Gamit ang Video</translation>
 <translation id="1852934301711881861">I-install ang ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pababang arrow</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">Direksyon ng key</translation>
 <translation id="3294437725009624529">Bisita</translation>
+<translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Na-charge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
 <translation id="4930320165497208503">Para mag-set up o mag-update ng koneksyon, pumunta sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Petsa</translation>
-<translation id="4937657825850660613">Kalahati</translation>
 <translation id="4950314376641394653">Na-update ang firmware na <ph name="DEVICE_NAME" /> sa bersyong <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Hindi Buo</translation>
 <translation id="4972592110715526173">pagbabago ng mode</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">MAC address</translation>
 <translation id="7491478667760509108">Lumabas sa float</translation>
 <translation id="7497215489070763236">CA certificate ng server</translation>
+<translation id="7501957181231305652">o</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Hindi available ang content ng tulong</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Matuto pa sa Help Center</translation>
 <translation id="763165478673169849">Oras ng Huling Pag-reset</translation>
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
+<translation id="765159867434478292">Hatiin</translation>
 <translation id="7656388927906093505">Mouse ang device.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665800271478495366">Palitan ang avatar</translation>

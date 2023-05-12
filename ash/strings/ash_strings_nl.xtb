@@ -163,7 +163,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1703117532528082099">Actief venster links vastgezet.</translation>
 <translation id="1708345662127501511">Bureau: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Netwerkinstellingen</translation>
-<translation id="1715293566947629045">Profiel uitzetten. Wacht een paar minuten.</translation>
 <translation id="1719094688023114093">Live ondertiteling staat aan.</translation>
 <translation id="1720011244392820496">Wifi-synchronisatie aanzetten</translation>
 <translation id="1720230731642245863">Hotspot staat uit</translation>
@@ -183,7 +182,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1771761307086386028">Naar rechts scrollen</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, momenteel is <ph name="DATE" /> geselecteerd.</translation>
 <translation id="1787955149152357925">Uit</translation>
-<translation id="1807246157184219062">Licht</translation>
 <translation id="181103072419391116">Signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="1816896987747843206">Hiermee geef je alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="1823280932251546115">Statusvak, tijd <ph name="TIME" />,
@@ -264,6 +262,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2170530631236737939">Swipe met 3 vingers omlaag om het overzicht te sluiten</translation>
 <translation id="2185166372312820725">Naar het vorige tabblad gaan</translation>
 <translation id="2185444992308415167">Tabbladen 1 tot en met 8 doorlopen</translation>
+<translation id="2198625180564913276">Profiel toevoegen. Dit kan een paar minuten duren.</translation>
 <translation id="219905428774326614">Launcher, alle apps</translation>
 <translation id="2201071101391734388">Recente foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Samengestelde desktopmodus</translation>
@@ -436,7 +435,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3039939407102840004">Batterij van stylus op <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="3045488863354895414">Goedemiddag,</translation>
 <translation id="3047761520276763270">Zeg eens:</translation>
-<translation id="3051189971848907985">Naam van profiel wijzigen. Wacht een paar minuten.</translation>
 <translation id="3055162170959710888">Je hebt dit apparaat vandaag <ph name="USED_TIME" /> gebruikt</translation>
 <translation id="3062298103034426069">Niet ondersteund</translation>
 <translation id="3068622547379332530">Versie <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -508,7 +506,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3371140690572404006">USB-C-apparaat (poort rechts aan de voorkant)</translation>
 <translation id="3375634426936648815">Verbonden</translation>
 <translation id="3378438761594387761">Hier vind je je recente downloads en schermopnamen</translation>
-<translation id="3378442621503952303">Verbinding maken met profiel. Wacht een paar minuten.</translation>
 <translation id="3386978599540877378">het vergrootglas op volledige schermgrootte</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Aanvullende instellingen</translation>
@@ -715,13 +712,13 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
 <translation id="4285498937028063278">Losmaken</translation>
+<translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
 <translation id="4294319844246081198">Goedemorgen <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Alle <ph name="COUNT" /> meldingen wissen</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> is verplaatst naar de map <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Niet beschikbaar</translation>
 <translation id="4303223480529385476">Statusgedeelte uitvouwen</translation>
 <translation id="4305133312001648038">Zoomniveau op pagina resetten</translation>
-<translation id="4311195029067684288">Volledig</translation>
 <translation id="4312840429157639164">Camera uitgelijnd op de rechterbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -771,6 +768,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4536664881735498710">ram-gebruik</translation>
 <translation id="4538824937723742295">Screenshot van volledig scherm maken</translation>
 <translation id="4539127209940689201">Huidige pagina afdrukken</translation>
+<translation id="4541706525461326392">Profiel verwijderen. Dit kan een paar minuten duren.</translation>
 <translation id="4544483149666270818">Selecteer een venster om op te nemen</translation>
 <translation id="454541942614298893">mijn apparaat</translation>
 <translation id="4548482551627849548">Actief venster verplaatsen naar bureau aan de linkerkant</translation>
@@ -856,7 +854,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> gebruikt momenteel je camera</translation>
 <translation id="492453977506755176">Toets voor opnamemodus</translation>
 <translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
-<translation id="4929163402621253029">Ben je aan het praten? Je geluid staat uit. Meer informatie</translation>
 <translation id="493076006037866439">Uitzoomen op scherm</translation>
 <translation id="4936329710968938986">Iedereen, uit</translation>
 <translation id="4938176435186993759">Alle suggesties verbergen</translation>
@@ -877,6 +874,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
 <translation id="5004607513195820459">Netwerk wordt beheerd</translation>
+<translation id="5009463889040999939">Naam van profiel wijzigen. Dit kan een paar minuten duren.</translation>
 <translation id="5016558321564993266">Stift aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Microfoontoegang voor apparaat staat aan</translation>
 <translation id="5030659775136592441">Bookmarkmanager bekijken</translation>
@@ -885,6 +883,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5034421018520995080">Naar bovenkant van pagina gaan</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> verbonden met nieuwe telefoon</translation>
 <translation id="5035389544768382859">Schermconfiguratie bevestigen</translation>
+<translation id="5038863510258510803">Aanzetten...</translation>
 <translation id="5042305953558921026">Toets voor de overzichtsmodus</translation>
 <translation id="5043679421800073804">Op het laatste icoon op de plank klikken of tikken</translation>
 <translation id="504465286040788597">Vorige alinea</translation>
@@ -948,7 +947,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5331975486040154427">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="533282197239610265">Cast-apparaten tonen</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (rechts)</translation>
-<translation id="5351427059191534258">Cameratoegang uitzetten?</translation>
 <translation id="5352250171825660495">Donker thema staat aan</translation>
 <translation id="5356963482258194581">Schakelen tussen het donkere en lichte thema. Klik met de rechtermuisknop op het bureaublad en selecteer Achtergrond en stijl.</translation>
 <translation id="536019650977002321">Je beheerder staat geen audio-opnamen toe. Neem contact op met je beheerder voor meer informatie.</translation>
@@ -962,6 +960,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bovenop <ph name="IN_PLACE_APP" />, laat los om een map te maken.</translation>
 <translation id="5397578532367286026">Het gebruik en de geschiedenis van deze gebruiker kunnen worden bekeken door de beheerder (<ph name="MANAGER_EMAIL" />) op chrome.com.</translation>
 <translation id="5400461572260843123">Snelle instellingen, druk op Zoeken + pijl-links om het meldingscentrum te openen.</translation>
+<translation id="5414198321558177633">Lijst met profielen vernieuwen. Dit kan een paar minuten duren.</translation>
 <translation id="5426063383988017631">Menu Instellingen gesloten</translation>
 <translation id="5428899915242071344">Selecteren starten</translation>
 <translation id="5429993543155113935">Incognitovensters worden momenteel niet ondersteund</translation>
@@ -1088,7 +1087,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5983567367406220847">De hotspot is uitgezet vanwege inactiviteit.</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
-<translation id="6002179289567220515">Je hebt de fysieke schakelaar gebruikt om 1 camera uit te zetten. Je kunt de toegang ook voor alle camera's uitzetten.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Het volgende item op de plank markeren</translation>
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
@@ -1206,7 +1204,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6537924328260219877">Signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> scannen voor downloaden</translation>
 <translation id="6542521951477560771">Er wordt gecast naar <ph name="RECEIVER_NAME" /></translation>
-<translation id="6548693220024099658">Achtergrondvervaging</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nieuwe installatie</translation>
 <translation id="6559976592393364813">Vraag het de beheerder</translation>
@@ -1241,7 +1238,6 @@ Nieuwe installatie</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
 <translation id="6700713906295497288">IME-menuknop</translation>
-<translation id="6705577071209924099">Belichting aanpassen</translation>
 <translation id="6707693040195709527">Het apparaat had al moeten zijn teruggezet naar een oudere versie</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Voeding</translation>
@@ -1359,6 +1355,7 @@ Nieuwe installatie</translation>
 <translation id="7302889331339392448">Live ondertiteling staat uit.</translation>
 <translation id="7303365578352795231">Je vraag wordt beantwoord op een ander apparaat.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7313193732017069507">Camera uitvouwen</translation>
 <translation id="731589979057211264">Shelf Party staat aan.</translation>
 <translation id="7340731148882810149">Menu Automatische klikken</translation>
@@ -1481,7 +1478,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7862292329216937261">Als je het apparaat wilt gebruiken als gast, log je uit en selecteer je onderaan het scherm Gebruiken als gast.</translation>
 <translation id="7866482334467279021">aan</translation>
 <translation id="7868900307798234037">Ontgrendelen met vingerafdruk</translation>
-<translation id="7872195908557044066">Je beheerder reset je e-simkaart. Wacht een paar minuten.</translation>
 <translation id="7872786842639831132">Uit</translation>
 <translation id="7875575368831396199">Zo te zien staat bluetooth uit op je <ph name="DEVICE_TYPE" />. Zet bluetooth aan om Telefoonhub te gebruiken.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Zet het apparaat nu terug naar een oudere versie}=1{Zet het apparaat binnen 1 seconde terug naar een oudere versie}other{Zet het apparaat binnen # seconden terug naar een oudere versie}}</translation>
@@ -1621,6 +1617,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="847056008324733326">Instellingen voor weergaveschaal</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>
+<translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Link openen in een nieuw tabblad</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="8496402167048257517">Instellingen voor Dichtbij delen tonen</translation>
@@ -1646,12 +1643,10 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="8619138598101195078">Volume lager zetten</translation>
 <translation id="8627191004499078455">Verbonden met <ph name="DEVICE_NAME" /></translation>
-<translation id="8630991711272431708">Cameratoegang uitzetten</translation>
 <translation id="8631727435199967028">Instellingen voor toegankelijkheid</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="8638637208069328956">Microfoon aan-/uitzetten</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> resterend</translation>
-<translation id="8641805545866562088">Lijst met profielen vernieuwen. Wacht een paar minuten.</translation>
 <translation id="8646417893960517480">Timer van <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Voer de Family Link-toegangscode voor ouders in om iemand toe te voegen</translation>
 <translation id="8649597172973390955">Plank altijd zichtbaar</translation>
@@ -1687,7 +1682,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="880709030178078220">'Hulp'</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Instellingen voor invoermethoden</translation>
-<translation id="8818320199597151042">Profiel verwijderen. Wacht een paar minuten.</translation>
 <translation id="8819728065740986820">Aangepast opladen staat aan</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8832513206237979203">Bookmarkbalk tonen of verbergen</translation>
@@ -1754,7 +1748,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9089416786594320554">Invoermethoden</translation>
 <translation id="9091626656156419976">Scherm <ph name="DISPLAY_NAME" /> is verwijderd</translation>
 <translation id="9098969848082897657">Telefoon dempen</translation>
-<translation id="9100887602489003640">Profiel toevoegen. Wacht een paar minuten.</translation>
 <translation id="9105450214093926548">Een tweede gebruiker inloggen wordt niet ondersteund als de Lacros-browser actief is. Gebruik in plaats daarvan een tweede browserprofiel in Lacros of sluit Lacros en probeer het opnieuw.</translation>
 <translation id="9120448753905017833">We hebben wifi uitgezet om de hotspot te gebruiken via mobiele data. Dit kan leiden tot datakosten.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

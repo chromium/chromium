@@ -82,6 +82,7 @@
 <translation id="2467438592969358367">Чтобы экспортировать пароли из Google Chrome, введите пароль своего аккаунта Windows.</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2534507159460261402">Google Pay (скопирована в Chrome)</translation>
+<translation id="2556847002339236023">Ваша организация задала настройки, согласно которым браузер Chrome закрывается, если он не используется в течение <ph name="TIMEOUT_DURATION" />. Данные о работе браузера, включая историю, сведения для автозаполнения и скачанные файлы, были удалены.</translation>
 <translation id="2559253115192232574">Сайты, на которые вы зайдете в дальнейшем, смогут запрашивать у Chrome сведения о ваших интересах, чтобы показывать вам подходящую рекламу. Chrome может предоставлять информацию не более чем о трех интересах.</translation>
 <translation id="2563121210305478421">Перезапустить Chrome?</translation>
 <translation id="2574930892358684005">Пользователь <ph name="EXISTING_USER" /> уже вошел в этот профиль Chrome. Вы можете создать свой профиль, чтобы использовать браузер Chrome отдельно.</translation>
@@ -266,6 +267,7 @@
 <translation id="6113794647360055231">Chrome становится все лучше</translation>
 <translation id="6145313976051292476">Открывать PDF-файлы в Chrome</translation>
 <translation id="6155960517327665396">В режиме экономии памяти Chrome работает ещё быстрее</translation>
+<translation id="6157638032135951407">Ваша организация удаляет данные Chrome, если они не используются в течение <ph name="TIMEOUT_DURATION" />. Они могут включать в себя историю, сведения для автозаполнения и скачанные файлы.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome (бета-версия)</translation>
 <translation id="6235018212288296708">Разрешить в Google Chrome передачу входящего трафика по протоколу mDNS</translation>
@@ -281,6 +283,7 @@
 <translation id="6418662306461808273">Переключиться на существующий профиль Chrome?</translation>
 <translation id="648319183876919572">Улучшенный Безопасный просмотр дополнительно защищает вас от угроз на сайтах и вредоносных скачанных файлов.</translation>
 <translation id="6493527311031785448">Google Chrome пытается <ph name="AUTHENTICATION_PURPOSE" />.</translation>
+<translation id="6497147134301593682">Chrome был закрыт автоматически</translation>
 <translation id="6506909944137591434">Для создания 3D-карты места, в котором вы находитесь, браузеру Chrome требуется доступ к камере.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome для разработчиков</translation>
 <translation id="659498884637196217">В Google Менеджере паролей на этом устройстве</translation>
@@ -317,6 +320,7 @@
 <translation id="7155997830309522122">Если да, то вам нужно сменить пароль, сохраненный в Chrome, на новый.</translation>
 <translation id="7161904924553537242">Добро пожаловать в Google Chrome</translation>
 <translation id="7177959540995930968">Вы можете узнать больше об этих функциях в настройках Chrome.</translation>
+<translation id="7193885263065350793">Ваша организация задала настройки, согласно которым браузер Chrome закрывается, если он не используется в течение <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Выполнив вход в управляемый аккаунт, вы предоставляете администратору право контролировать настройки вашего профиля Google Chrome. Ваши данные Chrome (приложения, закладки, история, пароли и другие настройки) будут временно связаны с аккаунтом <ph name="USER_NAME" />. Эти данные можно удалить в Личном кабинете Google, но их нельзя связать с другим аккаунтом. Чтобы сохранить данные Chrome отдельно, создайте новый профиль. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">На этом языке отображается интерфейс Google Chrome</translation>
 <translation id="7296210096911315575">Использование и безопасность</translation>

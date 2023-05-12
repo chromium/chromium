@@ -21,9 +21,10 @@
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Mudar para a janela aberta</translation>
 <translation id="1112015203684611006">Falha ao imprimir.</translation>
+<translation id="1113057722807951993">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas do Google Pay.
+
+Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Criar novo separador</translation>
-<translation id="1126013303640354461">Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é sincronizado.
-Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1145536944570833626">Eliminar dados existentes.</translation>
 <translation id="1147031633655575115">Sessão iniciada como <ph name="USER" /></translation>
@@ -89,6 +90,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1509960214886564027">As funcionalidades em muitos sites podem falhar.</translation>
 <translation id="152234381334907219">Nunca guardado</translation>
 <translation id="1523341279170789507">Mostrar todos os cookies</translation>
+<translation id="1524563461097350801">Não</translation>
 <translation id="1531836666020185856">Em destaque</translation>
 <translation id="1535268707340844072">A sua definição atual pode fazer com que alguns sites falhem. Para gerir cookies de todos os sites, veja <ph name="BEGIN_LINK" />Definições de cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Morada 1</translation>
@@ -159,6 +161,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1990820278544963435">Encontrar</translation>
 <translation id="199425419756152024">Ver a palavra-passe</translation>
+<translation id="2008357574463816229">Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Atualizar</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="2021670401941426298">Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas.</translation>
@@ -246,7 +249,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2647269890314209800">Cookies em utilização</translation>
 <translation id="2648721026697078500">Nunca mover</translation>
 <translation id="2648803196158606475">Eliminar lidas</translation>
-<translation id="2653659639078652383">Enviar</translation>
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2671426118752779020">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPhone.</translation>
 <translation id="2690858294534178585">A câmara está a ser utilizada</translation>
@@ -306,7 +308,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2932765531295814441">Adicione palavras-passe manualmente</translation>
 <translation id="2952581218264071393">1. Abra as definições do Chrome.</translation>
-<translation id="2953871438216280742">Inicie sessão para abrir e guardar a sua Lista de leitura na Conta Google.</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
 <translation id="2961210776189273067">Título</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
@@ -435,6 +436,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3861486700625780712">Não seguir</translation>
 <translation id="3863769054730344136">Enviar para os seus dispositivos</translation>
 <translation id="387280738075653372">Transfira o Chrome aqui.</translation>
+<translation id="3875783148670536197">Mostrar-me como</translation>
 <translation id="3888863481921783344">Isto vai ser usado para lhe mostrar possíveis convidados para o seu evento.</translation>
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">O seu histórico será apresentado aqui</translation>
@@ -550,9 +552,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4652817563047461855">Certifique-se de que as suas palavras-passe estão seguras, saiba se ficaram comprometidas e obtenha conselhos para se proteger online. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Aceder ao Comutador de separadores</translation>
 <translation id="46614316059270592">Guardar palavra-passe</translation>
-<translation id="4666531726415300315">Sessão iniciada como <ph name="EMAIL" />.
-
-Os dados estão encriptados com a sua frase de acesso de sincronização. Introduza-a para iniciar a sincronização.</translation>
 <translation id="4682686630151240767">1. Abra as Definições do iPhone</translation>
 <translation id="4689564913179979534">Gerir métodos de pagamento</translation>
 <translation id="469300482518076788">Fechar separador</translation>
@@ -561,16 +560,12 @@ Os dados estão encriptados com a sua frase de acesso de sincronização. Introd
 <translation id="4737560986434232178">Pesquise separadores recentes</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4746926359847517643">Pode sempre recuperá-los no histórico.</translation>
-<translation id="4747097190499141774">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Apenas neste dispositivo, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Novo separador anónimo</translation>
 <translation id="4766112107778026136">Discover e A seguir</translation>
 <translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4778644898150334464">Utilize outra palavra-passe</translation>
 <translation id="478808905805139173">Abrir na Navegação anónima?</translation>
-<translation id="4802417911091824046">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay.
-
-Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
 <translation id="4803185665210547709">Gerido pela sua organização.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Número de cartão inválido</translation>
@@ -716,6 +711,9 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5745916533876677730">Aceder ao separador anterior</translation>
 <translation id="5755162682436943950">Sessão terminada. Abre a caixa de diálogo para iniciar sessão e ativar a sincronização.</translation>
 <translation id="5758631781033351321">A sua lista de leitura será apresentada aqui</translation>
+<translation id="5762370665605786758">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas do Google Pay.
+
+Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menu → Definições → Navegador predefinido</translation>
 <translation id="5777888488419460501">Guardar na conta</translation>
 <translation id="5782227691023083829">A traduzir...</translation>
@@ -832,16 +830,12 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6366663624406569102">Terminar sessão e desativar sincronização</translation>
 <translation id="6374469231428023295">Tentar novamente</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
-<translation id="6380866119319257197">Se se esquecer da frase de acesso ou pretender alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Abrir localização…</translation>
 <translation id="6387994324662817823">As palavras-passe são guardadas no Gestor de palavras-passe da Google apenas neste dispositivo.</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6410390304316730527">A Navegação segura permite-lhe proteger-se contra os atacantes que o podem enganar no sentido de fazer algo perigoso, como instalar software malicioso, ou revelar informações pessoais, como palavras-passe, números de telefone ou cartões de crédito. Se a desativar, tenha cuidado ao navegar em sites desconhecidos ou pouco credíveis.</translation>
 <translation id="6410883413783534063">Abra separadores para visitar várias páginas em simultâneo.</translation>
-<translation id="641799622251403418">Sessão iniciada como <ph name="EMAIL" />.
-
-Os dados foram encriptados com a sua frase de acesso de sincronização em <ph name="TIME" />. Introduza-a para iniciar a sincronização.</translation>
 <translation id="6418346271604475326">A preparar PDF</translation>
 <translation id="6429213933892582367">Abra as Opções de palavras-passe</translation>
 <translation id="6434591244308415567">Ocorreu um erro. Tente mais tarde.</translation>
@@ -861,6 +855,9 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="6476800141292307438">A traduzir a página para <ph name="LANGUAGE" />. Estão disponíveis opções junto à parte inferior do ecrã.</translation>
 <translation id="648164694371393720">Erro de autenticação</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens eliminados</translation>
+<translation id="6484712497741564393">Com sessão iniciada como <ph name="EMAIL" />.
+
+Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
 <translation id="6497772452874122664">Se confiar em <ph name="TIME" />, pode utilizar uma palavra-passe guardada de outro site.
 
 Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
@@ -907,6 +904,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6730682669179532099">Não é possível exportar palavras-passe</translation>
 <translation id="6732087373923685049">câmara</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6753469262000681876">Modo de bloqueio</translation>
 <translation id="6760509555861141183">Volte ao separador Recentes</translation>
 <translation id="6762812039470893796">Desmarcar tudo</translation>
 <translation id="6780034285637185932">Código postal</translation>
@@ -1055,7 +1053,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7845466610722898">Mostrar Lista de leitura</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione Ativar no menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Adicionado aos marcadores em "{title}"}other{Adicionados aos marcadores em "{title}"}}</translation>
-<translation id="7852017611907717397">ANULAR</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="785938070103630874">Abra palavras-passe, métodos de pagamento, moradas e muito mais</translation>
@@ -1134,6 +1131,9 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8299417921174340354">Para utilizar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="8299613349954694191">Abra um separador de navegação anónima para navegar na Web de forma privada.</translation>
 <translation id="8316944564970119719">Introduza o site e a palavra-passe e, em seguida, guarde</translation>
+<translation id="8317835149433843300">Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é guardado na sua Conta Google.
+
+Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque sem soltar para obter mais opções de separadores.</translation>
 <translation id="8328777765163860529">Fechar Tudo</translation>
@@ -1156,6 +1156,9 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8487700953926739672">Disponível offline</translation>
 <translation id="8488923644885757471">Nova janela</translation>
 <translation id="8490978609246021741">Guardar alterações</translation>
+<translation id="8491300088149538575">Com sessão iniciada como <ph name="EMAIL" />.
+
+Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="850600235656508448">Abrir no modo de navegação anónima</translation>
 <translation id="8517375800490286174">Licenças de Código Aberto</translation>

@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Overschakelen naar geopend venster</translation>
 <translation id="1112015203684611006">Afdrukken mislukt.</translation>
 <translation id="1125564390852150847">Nieuw tabblad maken.</translation>
-<translation id="1126013303640354461">Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
-Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet verstuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, moet je de synchronisatie opnieuw instellen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
 <translation id="1145536944570833626">Bestaande gegevens verwijderen.</translation>
 <translation id="1147031633655575115">Ingelogd als <ph name="USER" /></translation>
@@ -89,6 +87,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1509960214886564027">Functies op veel sites werken mogelijk niet meer</translation>
 <translation id="152234381334907219">Nooit opgeslagen</translation>
 <translation id="1523341279170789507">Alle cookies toestaan</translation>
+<translation id="1524563461097350801">Nee, bedankt</translation>
 <translation id="1531836666020185856">Aanbevolen</translation>
 <translation id="1535268707340844072">Je huidige instelling kan ervoor zorgen dat bepaalde sites niet goed werken. Ga naar <ph name="BEGIN_LINK" />Cookie-instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -246,7 +245,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2647269890314209800">Gebruikte cookies</translation>
 <translation id="2648721026697078500">Nooit verplaatsen</translation>
 <translation id="2648803196158606475">Gelezen items verwijderen</translation>
-<translation id="2653659639078652383">Verzenden</translation>
 <translation id="2664621323652615289">Stoppen</translation>
 <translation id="2671426118752779020">Je kunt de wachtwoorden die je in Google Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPhone.</translation>
 <translation id="2690858294534178585">Camera wordt gebruikt</translation>
@@ -306,7 +304,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2932085390869194046">Wachtwoord voorstellen…</translation>
 <translation id="2932765531295814441">Wachtwoorden handmatig toevoegen</translation>
 <translation id="2952581218264071393">1. Open de Chrome-instellingen</translation>
-<translation id="2953871438216280742">Log in om je leeslijst te openen en op te slaan in je Google-account.</translation>
 <translation id="2958718410589002129">Wachtwoorden</translation>
 <translation id="2961210776189273067">Titel</translation>
 <translation id="2964349545761222050">Cookies van derden blokkeren</translation>
@@ -435,6 +432,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3861486700625780712">Niet meer volgen</translation>
 <translation id="3863769054730344136">Naar je apparaten sturen</translation>
 <translation id="387280738075653372">Download Chrome hier.</translation>
+<translation id="3875783148670536197">Laten zien</translation>
 <translation id="3888863481921783344">Dit wordt gebruikt om je mogelijke genodigden voor je evenement te tonen.</translation>
 <translation id="3891414008432200754">Prijs</translation>
 <translation id="3892144330757387737">Hier vind je je geschiedenis</translation>
@@ -550,9 +548,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4652817563047461855">Zorg dat je wachtwoorden veilig zijn, ga na of ze zijn gehackt en krijg advies om je online te beschermen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Tabbladschakelaar openen</translation>
 <translation id="46614316059270592">Wachtwoord opslaan</translation>
-<translation id="4666531726415300315">Ingelogd als <ph name="EMAIL" />.
-
-Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="4682686630151240767">1. Open de iPhone-instellingen</translation>
 <translation id="4689564913179979534">Betaalmethoden beheren...</translation>
 <translation id="469300482518076788">Tabblad sluiten</translation>
@@ -561,16 +556,12 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="4737560986434232178">Recente tabbladen doorzoeken</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4746926359847517643">Je kunt ze altijd terugkrijgen via de geschiedenis.</translation>
-<translation id="4747097190499141774">Wachtwoordzinversleuteling is niet van toepassing op betaalmethoden en adressen van Google Pay. Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet verzonden naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, moet je de synchronisatie resetten. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, alleen op dit apparaat, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nieuw incognitotabblad</translation>
 <translation id="4766112107778026136">Discover en volgen</translation>
 <translation id="4775879719735953715">Standaardbrowser</translation>
 <translation id="4778644898150334464">Ander wachtwoord gebruiken</translation>
 <translation id="478808905805139173">Openen in incognitomodus?</translation>
-<translation id="4802417911091824046">Wachtwoordzinversleuteling is niet van toepassing op betaalmethoden en adressen van Google Pay.
-
-<ph name="BEGIN_LINK" />Reset de synchronisatie<ph name="END_LINK" /> als je deze instelling wilt wijzigen.</translation>
 <translation id="4803185665210547709">Beheerd door je organisatie.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Ongeldig creditcardnummer</translation>
@@ -832,16 +823,12 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6366663624406569102">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6374469231428023295">Opnieuw proberen</translation>
 <translation id="6377118281273296434">Sitebeveiliging</translation>
-<translation id="6380866119319257197">Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />stel je de synchronisatie opnieuw in<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Locatie openen…</translation>
 <translation id="6387994324662817823">Wachtwoorden worden alleen opgeslagen in Google Wachtwoordmanager op dit apparaat.</translation>
 <translation id="6389470377220713856">Naam op pas</translation>
 <translation id="6406506848690869874">Synchronisatie</translation>
 <translation id="6410390304316730527">Safe Browsing beschermt je tegen aanvallers die je proberen te misleiden zodat je iets gevaarlijks doet, zoals schadelijke software installeren of persoonlijke informatie zoals wachtwoorden, telefoonnummers of creditcards openbaar maken. Als je deze functie uitzet, moet je voorzichtig zijn als je op onbekende of onbetrouwbare sites browst.</translation>
 <translation id="6410883413783534063">Open tabbladen om verschillende pagina's tegelijk te bezoeken</translation>
-<translation id="641799622251403418">Ingelogd als <ph name="EMAIL" />.
-
-Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="6418346271604475326">Pdf voorbereiden</translation>
 <translation id="6429213933892582367">Wachtwoordopties openen</translation>
 <translation id="6434591244308415567">Er is een fout opgetreden. Probeer het later opnieuw.</translation>
@@ -1055,7 +1042,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7845466610722898">Leeslijst tonen</translation>
 <translation id="784551991304901159">Als je content wilt zien, selecteer je Aanzetten in het menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Gebookmarkt in {title}}other{Gebookmarkt in {title}}}</translation>
-<translation id="7852017611907717397">ONGEDAAN MAKEN</translation>
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="785938070103630874">Open Wachtwoorden, Betaalmethoden of Adres en meer</translation>

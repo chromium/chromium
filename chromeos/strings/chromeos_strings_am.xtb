@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">ጠቆር ያለ ገጽታን አሰናክል</translation>
 <translation id="1807246157184219062">ብርሃን</translation>
 <translation id="1827738518074806965">የሥነ ጥበብ ማዕከል</translation>
+<translation id="1838374766361614909">ፍለጋን ያፅዱ</translation>
 <translation id="1851218745569890714">የቪዲዮ ጉባዔ</translation>
 <translation id="1852934301711881861">ChromeOS Flexን ይጫኑ</translation>
 <translation id="1856388568474281774">የታች ቀስት</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />ጊኸ</translation>
 <translation id="3291996639387199448">የቁልፍ አቅጣጫ</translation>
 <translation id="3294437725009624529">እንግዳ</translation>
+<translation id="3303855915957856445">ምንም የፍለጋ ውጤቶች አልተገኙም</translation>
 <translation id="3310640316857623290">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በጉልህ ይበልጣል</translation>
 <translation id="3328783797891415197">ሙከራ በማሄድ ላይ</translation>
 <translation id="3340011300870565703">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የቀኝ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="4930320165497208503">ግንኙነትን ለማቀናበር ወይም ለማዘመን ወደ <ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="4932733599132424254">ቀን</translation>
-<translation id="4937657825850660613">ግማሽ</translation>
 <translation id="4950314376641394653">ፊርምዌር <ph name="DEVICE_NAME" /> ወደ ስሪት <ph name="VERSION" /> ተዘምኗል</translation>
 <translation id="4971925105143343452">ከፊል</translation>
 <translation id="4972592110715526173">ሁነታን የሚለውጥ</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">የማክ አድራሻ</translation>
 <translation id="7491478667760509108">ከተንሳፋፊ ውጣ</translation>
 <translation id="7497215489070763236">የአገልጋይ CA እውቅና ማረጋገጫ</translation>
+<translation id="7501957181231305652">ወይም</translation>
 <translation id="7502658306369382406">የIPv6 አድራሻ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">የእገዛ ይዘት አይገኝም</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
 <translation id="763165478673169849">የመጨረሻ ዳግም ማስጀመሪያ ጊዜ</translation>
 <translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
+<translation id="765159867434478292">የተከፈለ</translation>
 <translation id="7656388927906093505">መሣሪያ መዳፊት ነው።</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7665800271478495366">አምሳያን ቀይር</translation>

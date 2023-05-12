@@ -21,9 +21,10 @@
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="110724200315609752">เปลี่ยนเพื่อเปิดหน้าต่าง</translation>
 <translation id="1112015203684611006">การพิมพ์ล้มเหลว</translation>
+<translation id="1113057722807951993">การเข้ารหัสด้วยรหัสผ่านไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay
+
+หากต้องการเปลี่ยนแปลงการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="1125564390852150847">สร้างแท็บใหม่</translation>
-<translation id="1126013303640354461">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
-เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ คุณจะต้องรีเซ็ตการซิงค์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
@@ -89,6 +90,7 @@
 <translation id="1509960214886564027">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="152234381334907219">ไม่เคยบันทึก</translation>
 <translation id="1523341279170789507">อนุญาตคุกกี้ทั้งหมด</translation>
+<translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
 <translation id="1531836666020185856">แสดงฟีเจอร์</translation>
 <translation id="1535268707340844072">การตั้งค่าปัจจุบันอาจทำให้บางเว็บไซต์ทำงานได้ไม่ถูกต้อง ดู<ph name="BEGIN_LINK" />การตั้งค่าคุกกี้<ph name="END_LINK" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
@@ -159,6 +161,7 @@
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="1990820278544963435">ค้นหา</translation>
 <translation id="199425419756152024">ดูรหัสผ่าน</translation>
+<translation id="2008357574463816229">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="2010008505735295285">โหลดซ้ำ</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
 <translation id="2021670401941426298">ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
@@ -246,7 +249,6 @@
 <translation id="2647269890314209800">คุกกี้ที่ใช้งานอยู่</translation>
 <translation id="2648721026697078500">ไม่ต้องย้าย</translation>
 <translation id="2648803196158606475">ลบรายการที่อ่านแล้ว</translation>
-<translation id="2653659639078652383">ส่ง</translation>
 <translation id="2664621323652615289">หยุด</translation>
 <translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
@@ -306,7 +308,6 @@
 <translation id="2932085390869194046">แนะนำรหัสผ่าน...</translation>
 <translation id="2932765531295814441">เพิ่มรหัสผ่านด้วยตนเอง</translation>
 <translation id="2952581218264071393">1. เปิดการตั้งค่า Chrome</translation>
-<translation id="2953871438216280742">ลงชื่อเข้าใช้เพื่อเปิดและบันทึกเรื่องรออ่านในบัญชี Google</translation>
 <translation id="2958718410589002129">รหัสผ่าน</translation>
 <translation id="2961210776189273067">คำนำหน้าชื่อ</translation>
 <translation id="2964349545761222050">บล็อกคุกกี้ของบุคคลที่สาม</translation>
@@ -435,6 +436,7 @@
 <translation id="3861486700625780712">เลิกติดตาม</translation>
 <translation id="3863769054730344136">ส่งไปยังอุปกรณ์</translation>
 <translation id="387280738075653372">ดาวน์โหลด Chrome ที่นี่</translation>
+<translation id="3875783148670536197">แสดงวิธีการ</translation>
 <translation id="3888863481921783344">ระบบจะใช้เพื่อแสดงว่าผู้ใดสามารถได้รับเชิญให้เข้าร่วมกิจกรรมของคุณ</translation>
 <translation id="3891414008432200754">ราคา</translation>
 <translation id="3892144330757387737">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>
@@ -550,9 +552,6 @@
 <translation id="4652817563047461855">ตรวจสอบว่ารหัสผ่านปลอดภัย ดูว่ารหัสผ่านถูกละเมิดหรือไม่ และรับคำแนะนำที่จะช่วยปกป้องตัวคุณบนโลกออนไลน์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">เข้าสู่มุมมองตัวสลับแท็บ</translation>
 <translation id="46614316059270592">บันทึกรหัสผ่าน</translation>
-<translation id="4666531726415300315">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" />
-
-ข้อมูลของคุณจะได้รับการเข้ารหัสด้วยรหัสผ่านการซิงค์ โปรดป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="4682686630151240767">1. เปิดการตั้งค่า iPhone</translation>
 <translation id="4689564913179979534">จัดการวิธีการชำระเงิน...</translation>
 <translation id="469300482518076788">ปิดแท็บ</translation>
@@ -561,16 +560,12 @@
 <translation id="4737560986434232178">ค้นหาในแท็บล่าสุด</translation>
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="4746926359847517643">คุณกู้คืนแท็บเหล่านี้ได้เสมอในประวัติการเข้าชม</translation>
-<translation id="4747097190499141774">การเข้ารหัสลับด้วยรหัสผ่านจะไม่รวมข้อมูลวิธีการชำระเงินและที่อยู่จาก Google Pay เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นจึงจะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านนี้ คุณจะต้องรีเซ็ตการซิงค์หากลืมรหัสผ่านหรือต้องการเปลี่ยนแปลงการตั้งค่านี้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, เฉพาะในอุปกรณ์นี้, <ph name="URL" /></translation>
 <translation id="4751645464639803239">แท็บไม่ระบุตัวตนใหม่</translation>
 <translation id="4766112107778026136">Discover และกำลังติดตาม</translation>
 <translation id="4775879719735953715">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="4778644898150334464">ใช้รหัสผ่านอื่น</translation>
 <translation id="478808905805139173">เปิดในโหมดไม่ระบุตัวตนไหม</translation>
-<translation id="4802417911091824046">การเข้ารหัสลับด้วยรหัสผ่านจะไม่รวมข้อมูลวิธีการชำระเงินและที่อยู่จาก Google Pay
-
-หากต้องการเปลี่ยนแปลงการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">จัดการโดยองค์กร
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">หมายเลขบัตรไม่ถูกต้อง</translation>
@@ -716,6 +711,9 @@
 <translation id="5745916533876677730">ไปที่แท็บก่อนหน้า</translation>
 <translation id="5755162682436943950">ออกจากระบบ เปิดกล่องโต้ตอบเพื่อลงชื่อเข้าใช้และเปิดการซิงค์</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
+<translation id="5762370665605786758">การเข้ารหัสด้วยรหัสผ่านไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay
+
+เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="5765456154762864099">เมนู → การตั้งค่า → เบราว์เซอร์เริ่มต้น</translation>
 <translation id="5777888488419460501">บันทึกในบัญชี</translation>
 <translation id="5782227691023083829">กำลังแปล...</translation>
@@ -832,16 +830,12 @@
 <translation id="6366663624406569102">ออกจากระบบและปิดการซิงค์</translation>
 <translation id="6374469231428023295">ลองอีกครั้ง</translation>
 <translation id="6377118281273296434">ความปลอดภัยของเว็บไซต์</translation>
-<translation id="6380866119319257197">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ โปรด<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">เปิดตำแหน่ง…</translation>
 <translation id="6387994324662817823">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="6389470377220713856">ชื่อบนบัตร</translation>
 <translation id="6406506848690869874">การซิงค์ข้อมูล</translation>
 <translation id="6410390304316730527">Google Safe Browsing ปกป้องคุณจากผู้โจมตีที่อาจหลอกล่อให้ทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์ที่ประสงค์ร้ายหรือเปิดเผยข้อมูลส่วนบุคคล เช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต หากคุณปิดใช้ โปรดระวังขณะเรียกดูเว็บไซต์ที่ไม่คุ้นเคยหรือไม่เป็นที่รู้จัก</translation>
 <translation id="6410883413783534063">เปิดหลายแท็บเพื่อไปยังหน้าต่างๆ พร้อมกัน</translation>
-<translation id="641799622251403418">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" />
-
-ข้อมูลของคุณได้รับการเข้ารหัสด้วยรหัสผ่านการซิงค์เมื่อวันที่ <ph name="TIME" /> โปรดป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="6418346271604475326">กำลังเตรียม PDF</translation>
 <translation id="6429213933892582367">เปิดตัวเลือกรหัสผ่าน</translation>
 <translation id="6434591244308415567">เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง</translation>
@@ -861,6 +855,9 @@
 <translation id="6476800141292307438">กำลังแปลหน้าเว็บเป็นภาษา<ph name="LANGUAGE" /> ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="648164694371393720">ข้อผิดพลาดในการตรวจสอบสิทธิ์</translation>
 <translation id="6482629121755362506">ลบแล้ว <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
+<translation id="6484712497741564393">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" />
+
+ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่าน ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="6497772452874122664">หากคุณเชื่อถือ <ph name="TIME" /> ก็ใช้รหัสผ่านที่บันทึกไว้จากเว็บไซต์อื่นได้
 
 ขอแนะนำให้ใช้รหัสผ่านที่ไม่ซ้ำกันสำหรับทุกเว็บไซต์</translation>
@@ -907,6 +904,7 @@
 <translation id="6730682669179532099">ส่งออกรหัสผ่านไม่ได้</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6748108480210050150">จาก</translation>
+<translation id="6753469262000681876">โหมดปิดล็อก</translation>
 <translation id="6760509555861141183">กลับไปที่แท็บล่าสุด</translation>
 <translation id="6762812039470893796">ยกเลิกการเลือกทั้งหมด</translation>
 <translation id="6780034285637185932">รหัสไปรษณีย์</translation>
@@ -1055,7 +1053,6 @@
 <translation id="7845466610722898">แสดงเรื่องรออ่าน</translation>
 <translation id="784551991304901159">หากต้องการดูเนื้อหา ให้เลือก "เปิด" จากเมนู</translation>
 <translation id="7846158885638438868">{count,plural, =1{บุ๊กมาร์กไปยัง "{title}" แล้ว}other{บุ๊กมาร์กไปยัง "{title}" แล้ว}}</translation>
-<translation id="7852017611907717397">เลิกทำ</translation>
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7856733331829174190">ดาวน์โหลดไม่ได้</translation>
 <translation id="785938070103630874">เปิดรหัสผ่าน วิธีการชําระเงิน หรือที่อยู่ และอื่นๆ</translation>
@@ -1134,6 +1131,9 @@
 <translation id="8299417921174340354">หากต้องการใช้รหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="8299613349954694191">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บในแบบส่วนตัว</translation>
 <translation id="8316944564970119719">ป้อนเว็บไซต์และรหัสผ่าน แล้วบันทึก</translation>
+<translation id="8317835149433843300">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ระบบจะไม่บันทึกประวัติการท่องเว็บจาก Chrome ไว้ในบัญชี Google
+
+เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="8319076807703933069">ค้นหาใหม่</translation>
 <translation id="8323906514956095947">แตะค้างไว้เพื่อดูตัวเลือกแท็บเพิ่มเติม</translation>
 <translation id="8328777765163860529">ปิดทั้งหมด</translation>
@@ -1156,6 +1156,9 @@
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="8488923644885757471">หน้าต่างใหม่</translation>
 <translation id="8490978609246021741">บันทึกการเปลี่ยนแปลง</translation>
+<translation id="8491300088149538575">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" />
+
+ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่านเมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="850600235656508448">เปิดในโหมดไม่ระบุตัวตน</translation>
 <translation id="8517375800490286174">ใบอนุญาตโอเพนซอร์ส</translation>

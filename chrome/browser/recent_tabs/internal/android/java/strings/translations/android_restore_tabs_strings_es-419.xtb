@@ -6,6 +6,7 @@
 <translation id="3347725959865138210">Elige el dispositivo del que deseas obtener pestañas</translation>
 <translation id="3575801299326994724">Revisa las pestañas elegidas que se restablecerán del dispositivo seleccionado.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña; última actualización: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> pestañas; última actualización: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
+<translation id="385051799172605136">Atrás</translation>
 <translation id="3983305234037158273">Puedes cambiar con un toque los dispositivos sincronizados de los cuales se pueden restablecer pestañas. Navega para revisar o restablecer las pestañas seleccionadas del dispositivo actual con un toque. Teclado oculto.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Abrir <ph name="TABS_COUNT_ONE" /> pestaña}other{Abrir <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="4811934403802581334">Se restablecerán todas las pestañas elegidas del dispositivo seleccionado.</translation>

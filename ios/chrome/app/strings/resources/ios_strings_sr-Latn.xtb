@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Pređi na otvoren prozor</translation>
 <translation id="1112015203684611006">Štampanje nije uspelo.</translation>
 <translation id="1125564390852150847">Napravi novu karticu.</translation>
-<translation id="1126013303640354461">Načini plaćanja i adrese iz Google Pay-a se neće šifrovati. Istorija pregledanja iz Chrome-a se neće sinhronizovati.
-Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, moraćete da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih veb-sajtova, preuzimanja i dodataka. U drugim Google uslugama, kao što su Gmail i Pretraga, i dalje ćete imati zaštitu pomoću Bezbednog pregledanja kada je dostupna.</translation>
 <translation id="1145536944570833626">Izbrišite postojeće podatke</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
@@ -89,6 +87,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1509960214886564027">Funkcije na mnogim sajtovima mogu da prestanu sa radom</translation>
 <translation id="152234381334907219">Nikada se ne čuva</translation>
 <translation id="1523341279170789507">Dozvoli sve kolačiće</translation>
+<translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1531836666020185856">Istaknuto</translation>
 <translation id="1535268707340844072">Trenutno podešavanje može da dovede do problema na nekim sajtovima. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja kolačića<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">1. red za adresu</translation>
@@ -246,7 +245,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2647269890314209800">Kolačići u upotrebi</translation>
 <translation id="2648721026697078500">Nikad ne premeštaj</translation>
 <translation id="2648803196158606475">Izbriši pročitano</translation>
-<translation id="2653659639078652383">Pošalji</translation>
 <translation id="2664621323652615289">Zaustavi</translation>
 <translation id="2671426118752779020">Možete da koristite lozinke koje ste sačuvali u Google menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="2690858294534178585">Kamera se koristi</translation>
@@ -306,7 +304,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2932085390869194046">Predloži lozinku...</translation>
 <translation id="2932765531295814441">Dodajte lozinke ručno</translation>
 <translation id="2952581218264071393">1. Otvorite podešavanja Chrome-a</translation>
-<translation id="2953871438216280742">Prijavite se da biste otvorili i sačuvali listu za čitanje na Google nalogu.</translation>
 <translation id="2958718410589002129">Lozinke</translation>
 <translation id="2961210776189273067">Zvanje</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće treće strane</translation>
@@ -435,6 +432,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3861486700625780712">Opozovi praćenje</translation>
 <translation id="3863769054730344136">Pošalji na uređaje</translation>
 <translation id="387280738075653372">Preuzmite Chrome ovde.</translation>
+<translation id="3875783148670536197">Pokaži mi kako</translation>
 <translation id="3888863481921783344">To će se koristiti da bi vam se prikazivale osobe koje možete da pozovete na događaj.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Ovde ćete pronaći istoriju</translation>
@@ -550,9 +548,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4652817563047461855">Uverite se da su lozinke bezbedne, saznajte da li su ugrožene i potražite savet o tome kako da se zaštitite onlajn. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Uđi u prebacivač kartica</translation>
 <translation id="46614316059270592">Sačuvaj lozinku</translation>
-<translation id="4666531726415300315">Prijavljeni ste kao <ph name="EMAIL" />.
-
-Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="4682686630151240767">1. Otvorite podešavanja iPhone-a</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
 <translation id="469300482518076788">Zatvori karticu</translation>
@@ -561,16 +556,12 @@ Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da bis
 <translation id="4737560986434232178">Pretražite nedavne kartice</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4746926359847517643">Uvek možete da ih vratite iz istorije.</translation>
-<translation id="4747097190499141774">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a. Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti je on čuva. Ako zaboravite pristupnu frazu ili poželite da promenite ovo podešavanje, treba da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, samo na ovom uređaju, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nova kartica bez arhiviranja</translation>
 <translation id="4766112107778026136">Otkrivanje i praćenje</translation>
 <translation id="4775879719735953715">Podrazumevani pregledač</translation>
 <translation id="4778644898150334464">Koristite drugu lozinku</translation>
 <translation id="478808905805139173">Želite da otvorite u režimu bez arhiviranja?</translation>
-<translation id="4802417911091824046">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a.
-
-Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">Ovim upravlja organizacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Nevažeći broj kartice</translation>
@@ -815,6 +806,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6331180460633101391">Lozinke koje koristite za više naloga: <ph name="COUNT" /></translation>
 <translation id="6337234675334993532">Šifrovanje</translation>
 <translation id="633809752005859102">Nešto stvarno nije u redu. Poradićemo na tome.</translation>
+<translation id="6339793034470834130">Da biste koristili Veb-inspektor, povežite se sa Safari-jem na računaru pomoću kabla i pristupite iPhone-u iz menija za programiranje. Meni za programiranje možete da omogućite u odeljku Napredno u podešavanjima Safari-ja na računaru.</translation>
 <translation id="6340285871011301182">Delimično prevođenje nije dostupno.</translation>
 <translation id="6342069812937806050">Malopre</translation>
 <translation id="6344783595350022745">Obriši tekst</translation>
@@ -822,6 +814,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6347953390226388422">{count,plural, =1{Ova adresa će biti izbrisana sa Google naloga (<ph name="USER_EMAIL" />) i sa ovog uređaja.}one{Ove adrese će biti izbrisane sa Google naloga (<ph name="USER_EMAIL" />) i sa ovog uređaja.}few{Ove adrese će biti izbrisane sa Google naloga (<ph name="USER_EMAIL" />) i sa ovog uređaja.}other{Ove adrese će biti izbrisane sa Google naloga (<ph name="USER_EMAIL" />) i sa ovog uređaja.}}</translation>
 <translation id="634878792104344809">Sinhronizujte, lozinke, istoriju i drugo na svim uređajima</translation>
 <translation id="6348855835728304880">Pristupajte Chrome lozinkama i ostalim funkcijama u drugim aplikacijama na ovom uređaju.</translation>
+<translation id="63519665078626091">Da biste koristili Veb-inspektor, povežite se sa Safari-jem na računaru pomoću kabla i pristupite iPad-u iz menija za programiranje. Meni za programiranje možete da omogućite u odeljku Napredno u podešavanjima Safari-ja na računaru.</translation>
 <translation id="6355820205320395730">Slabe lozinke lako mogu da se pogode. Obavezno napravite jake lozinke. <ph name="BEGIN_LINK" />Pogledajte još saveta za bezbednost.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Pratite <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Nema kartica bez arhiviranja</translation>
@@ -830,16 +823,12 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6366663624406569102">Odjavi me i isključi sinhronizaciju</translation>
 <translation id="6374469231428023295">Probaj ponovo</translation>
 <translation id="6377118281273296434">Bezbednost sajta</translation>
-<translation id="6380866119319257197">Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Otvori lokaciju…</translation>
 <translation id="6387994324662817823">Lozinke se čuvaju u Google menadžeru lozinki samo na ovom uređaju.</translation>
 <translation id="6389470377220713856">Ime i prezime na kartici</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
 <translation id="6410390304316730527">Bezbedno pregledanje vas štiti od napadača koji mogu da vas navedu da uradite nešto opasno, na primer, da instalirate zlonamerni softver ili otkrijete lične podatke poput lozinki, brojeva telefona ili brojeva kreditnih kartica. Ako ga isključite, budite oprezni pri pregledanju nepoznatih ili nebezbednih sajtova.</translation>
 <translation id="6410883413783534063">Otvorite kartice da biste istovremeno posetili različite stranice</translation>
-<translation id="641799622251403418">Prijavljeni ste kao <ph name="EMAIL" />.
-
-Podaci su šifrovani pomoću pristupne fraze za sinhronizaciju <ph name="TIME" />. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="6418346271604475326">Priprema PDF datoteke</translation>
 <translation id="6429213933892582367">Otvorite Opcije lozinki</translation>
 <translation id="6434591244308415567">Došlo je do greške. Probajte ponovo kasnije.</translation>
@@ -1053,7 +1042,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7845466610722898">Prikazuje listu za čitanje</translation>
 <translation id="784551991304901159">Da biste videli sadržaj, izaberite Uključi u meniju</translation>
 <translation id="7846158885638438868">{count,plural, =1{Obeleživač je dodat u folder {title}}one{Obeleživači su dodati u folder {title}}few{Obeleživači su dodati u folder {title}}other{Obeleživači su dodati u folder {title}}}</translation>
-<translation id="7852017611907717397">OPOZOVI</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7856733331829174190">Preuzimanje nije uspelo</translation>
 <translation id="785938070103630874">Otvorite lozinke, načine plaćanja ili adresu i drugo</translation>
@@ -1082,6 +1070,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="7993619969781047893">Funkcije na nekim sajtovima mogu da prestanu sa radom</translation>
 <translation id="800361585186029508">Otvara unete URL-ove u Google Chrome-u.</translation>
 <translation id="8005666035647241369">U Google menadžeru lozinki na ovom uređaju</translation>
+<translation id="8011489434346330032">Veb-inspektor</translation>
 <translation id="8016714545083187120">Uvek koristi bezbedne veze</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8023878949384262191">Proširuje odeljak.</translation>

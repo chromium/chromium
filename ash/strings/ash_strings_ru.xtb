@@ -163,7 +163,6 @@
 <translation id="1703117532528082099">Активное окно прикреплено слева.</translation>
 <translation id="1708345662127501511">Рабочий стол "<ph name="DESK_NAME" />"</translation>
 <translation id="1709762881904163296">Настройки сети</translation>
-<translation id="1715293566947629045">Отключение профиля… Подождите несколько минут.</translation>
 <translation id="1719094688023114093">Автоматические субтитры включены</translation>
 <translation id="1720011244392820496">Включить синхронизацию Wi-Fi</translation>
 <translation id="1720230731642245863">Точка доступа отключена</translation>
@@ -183,7 +182,6 @@
 <translation id="1771761307086386028">Вправо</translation>
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, сейчас выбрано <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Отключено</translation>
-<translation id="1807246157184219062">Светлая</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1823280932251546115">Строка состояния, время <ph name="TIME" />,
@@ -264,6 +262,7 @@
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="2185166372312820725">Перейти на предыдущую вкладку</translation>
 <translation id="2185444992308415167">Перейти по вкладкам 1–8</translation>
+<translation id="2198625180564913276">Профиль добавляется. Это может занять несколько минут.</translation>
 <translation id="219905428774326614">Панель запуска, все приложения</translation>
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
@@ -351,6 +350,7 @@
 <translation id="2620016719323068571">Ищите <ph name="CATEGORY" />, файлы, приложения и не только…</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">Защищена</translation>
+<translation id="2624588537172718173">Звук с устройства и микрофон</translation>
 <translation id="263399434338050016">"Выбрать все"</translation>
 <translation id="2644422758626431000">Закрепить окно слева</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -411,6 +411,7 @@
 <translation id="2942350706960889382">Закрепленная лупа</translation>
 <translation id="2942516765047364088">Положение панели запуска</translation>
 <translation id="2946119680249604491">Добавить подключение</translation>
+<translation id="295852781144570696">Звук с устройства</translation>
 <translation id="2960314608273155470">Режим съемки. По умолчанию: <ph name="SOURCE" />, <ph name="TYPE" />. Для навигации с помощью клавиатуры используйте клавишу Tab.</translation>
 <translation id="2961963223658824723">Произошла ошибка. Повторите попытку через несколько секунд.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -434,7 +435,6 @@
 <translation id="3039939407102840004">Заряд батареи стилуса составляет <ph name="PERCENTAGE" /> процентов.</translation>
 <translation id="3045488863354895414">Добрый день!</translation>
 <translation id="3047761520276763270">Скажите:</translation>
-<translation id="3051189971848907985">Профиль переименовывается. Подождите несколько минут.</translation>
 <translation id="3055162170959710888">Сегодня вы уже использовали это устройство <ph name="USED_TIME" />.</translation>
 <translation id="3062298103034426069">Не поддерживается</translation>
 <translation id="3068622547379332530">Версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -506,7 +506,6 @@
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
 <translation id="3375634426936648815">Подключено</translation>
 <translation id="3378438761594387761">Здесь будут появляться новые записи экрана и скачанные файлы</translation>
-<translation id="3378442621503952303">Выполняется подключение к профилю. Подождите несколько минут.</translation>
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Дополнительные настройки</translation>
@@ -713,13 +712,13 @@
 <translation id="4280601795273309128">Ваше устройство больше не будет получать обновления системы безопасности. Приобретите вместо него новое.</translation>
 <translation id="4283888303416325161">Для дополнительной безопасности введите пароль.</translation>
 <translation id="4285498937028063278">Открепить</translation>
+<translation id="428715201724021596">Выполняется подключение к профилю. Это может занять несколько минут.</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
 <translation id="430191667033048642">Приложение "<ph name="MOVED_APP_NAME" />" перемещено в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="4302592941791324970">Недоступно</translation>
 <translation id="4303223480529385476">Развернуть панель состояния</translation>
 <translation id="4305133312001648038">Сбросить масштаб страницы</translation>
-<translation id="4311195029067684288">Максимальное увеличение</translation>
 <translation id="4312840429157639164">Окно предварительного просмотра камеры привязано к правому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="4316910396681052118">ВСЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -769,6 +768,7 @@
 <translation id="4536664881735498710">использование озу</translation>
 <translation id="4538824937723742295">Сделать снимок всего экрана</translation>
 <translation id="4539127209940689201">Распечатать текущую страницу</translation>
+<translation id="4541706525461326392">Профиль удаляется. Это может занять несколько минут.</translation>
 <translation id="4544483149666270818">Выберите окно для записи</translation>
 <translation id="454541942614298893">мое устройство</translation>
 <translation id="4548482551627849548">Переместить активное окно на рабочий стол слева</translation>
@@ -854,7 +854,6 @@
 <translation id="4919841137949306064">Сейчас использует камеру: <ph name="APP_NAME" />.</translation>
 <translation id="492453977506755176">Клавиша режима съемки</translation>
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
-<translation id="4929163402621253029">Вы говорите? У вас выключен звук. Подробнее</translation>
 <translation id="493076006037866439">Уменьшить масштаб</translation>
 <translation id="4936329710968938986">Доступно всем: отключено</translation>
 <translation id="4938176435186993759">Скрыть все подсказки</translation>
@@ -875,6 +874,7 @@
 <translation id="4987738733603015246">Рабочий стол 16</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
 <translation id="5004607513195820459">Сетью управляет администратор</translation>
+<translation id="5009463889040999939">Профиль переименовывается. Это может занять несколько минут.</translation>
 <translation id="5016558321564993266">Статус фломастера: <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Доступ к микрофону разрешен.</translation>
 <translation id="5030659775136592441">Открыть менеджер закладок</translation>
@@ -883,6 +883,7 @@
 <translation id="5034421018520995080">Перейти к верхней части экрана</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
 <translation id="5035389544768382859">Подтвердите конфигурацию экрана</translation>
+<translation id="5038863510258510803">Активация...</translation>
 <translation id="5042305953558921026">Клавиша режима обзора</translation>
 <translation id="5043679421800073804">Выбрать последний значок на панели запуска</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
@@ -946,7 +947,6 @@
 <translation id="5331975486040154427">Устройство USB-C (дальний порт слева)</translation>
 <translation id="533282197239610265">Показать Cast-устройства</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (правый)</translation>
-<translation id="5351427059191534258">Запретить доступ к камерам?</translation>
 <translation id="5352250171825660495">Тёмная тема включена</translation>
 <translation id="5356963482258194581">Вы можете переключаться с тёмной темы на светлую и обратно. Для этого нажмите правой кнопкой мыши на рабочий стол и выберите "Обои и стиль".</translation>
 <translation id="536019650977002321">Администратор запретил запись аудио. Обратитесь к нему за подробной информацией.</translation>
@@ -960,6 +960,7 @@
 <translation id="5395308026110844773">Вы поместили ярлык приложения "<ph name="DRAGGED_APP_NAME" />" над ярлыком приложения "<ph name="IN_PLACE_APP" />". Чтобы создать папку, отпустите палец.</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) может просматривать данные об использовании и историю этого профиля на сайте chrome.com.</translation>
 <translation id="5400461572260843123">Быстрые настройки: чтобы открыть центр уведомлений, нажмите Поиск + Стрелка влево.</translation>
+<translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
 <translation id="5426063383988017631">Меню настроек закрыто</translation>
 <translation id="5428899915242071344">Начать выбор текста</translation>
 <translation id="5429993543155113935">Окна в режиме инкогнито пока не поддерживаются</translation>
@@ -1086,7 +1087,6 @@
 <translation id="5983567367406220847">Точка доступа отключена из-за бездействия.</translation>
 <translation id="598407983968395253">Использовать шаблон</translation>
 <translation id="598882571027504733">Чтобы выполнить обновление, перезагрузите устройство Chromebook, не отключая от него клавиатуру.</translation>
-<translation id="6002179289567220515">Вы отключили одну камеру при помощи физического переключателя. Можно также запретить доступ ко всем камерам.</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> из <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Выделить следующий элемент на панели запуска</translation>
 <translation id="6018164090099858612">Выход из режима трансляции…</translation>
@@ -1204,7 +1204,6 @@
 <translation id="6537924328260219877">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Выполняется проверка скачиваемого файла "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляция на устройство "<ph name="RECEIVER_NAME" />"</translation>
-<translation id="6548693220024099658">Размытие фона</translation>
 <translation id="655633303491376835">"<ph name="APP_NAME" />"
 Новое приложение</translation>
 <translation id="6559976592393364813">Обратитесь к администратору</translation>
@@ -1239,7 +1238,6 @@
 <translation id="6683022854667115063">Наушники</translation>
 <translation id="6696025732084565524">Необходимо обновить внешнюю клавиатуру</translation>
 <translation id="6700713906295497288">Кнопка меню редактора методов ввода</translation>
-<translation id="6705577071209924099">Изменить яркость</translation>
 <translation id="6707693040195709527">Срок возврата к предыдущей версии ОС истек</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6723839937902243910">Питание</translation>
@@ -1360,6 +1358,7 @@
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
 <translation id="731589979057211264">Режим включен.</translation>
 <translation id="7340731148882810149">Меню автоматического нажатия</translation>
@@ -1482,7 +1481,6 @@
 <translation id="7862292329216937261">Чтобы пользоваться устройством в гостевом режиме, выйдите из текущего аккаунта и выберите "Войти в гостевой режим" внизу экрана.</translation>
 <translation id="7866482334467279021">включена</translation>
 <translation id="7868900307798234037">Экран разблокирован с помощью отпечатка пальца</translation>
-<translation id="7872195908557044066">Администратор выполняет сброс eSIM. Подождите несколько минут.</translation>
 <translation id="7872786842639831132">Отключено</translation>
 <translation id="7875575368831396199">Включите Bluetooth на устройстве <ph name="DEVICE_TYPE" />, чтобы использовать функцию "Управление телефоном".</translation>
 <translation id="7877557217297072640">{0,plural, =0{Вернитесь к предыдущей версии ОС сейчас}=1{Вернитесь к предыдущей версии ОС в течение 1 секунды}one{Вернитесь к предыдущей версии ОС в течение # секунды}few{Вернитесь к предыдущей версии ОС в течение # секунд}many{Вернитесь к предыдущей версии ОС в течение # секунд}other{Вернитесь к предыдущей версии ОС в течение # секунды}}</translation>
@@ -1622,6 +1620,7 @@
 <translation id="847056008324733326">Настройки масштаба экрана</translation>
 <translation id="8473301994082929012">Организация <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцию "<ph name="FEATURE_NAME" />".</translation>
 <translation id="8477270416194247200">Для отмены нажмите ALT + SEARCH или SHIFT.</translation>
+<translation id="8487699605742506766">Точка доступа</translation>
 <translation id="8491237443345908933">Открыть ссылку в новой вкладке</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Показать настройки Обмена с окружением</translation>
@@ -1647,12 +1646,10 @@
 <translation id="8614517853887502247">Уведомления "<ph name="APP_1_TITLE" />" и "<ph name="APP_2_TITLE" />" скрыты, потому что включен режим безопасного просмотра.</translation>
 <translation id="8619138598101195078">Уменьшить громкость</translation>
 <translation id="8627191004499078455">Подключено устройство "<ph name="DEVICE_NAME" />"</translation>
-<translation id="8630991711272431708">Запретить доступ к камере</translation>
 <translation id="8631727435199967028">Настройки специальных возможностей</translation>
 <translation id="8637598503828012618">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="8638637208069328956">Включить/отключить микрофон</translation>
 <translation id="8639760480004882931">Батарея заряжена на <ph name="PERCENTAGE" /></translation>
-<translation id="8641805545866562088">Список профилей обновляется. Подождите несколько минут.</translation>
 <translation id="8646417893960517480">Таймер на <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Чтобы добавить пользователя, введите родительский код доступа Family Link.</translation>
 <translation id="8649597172973390955">Временное хранилище будет всегда отображаться</translation>
@@ -1688,7 +1685,6 @@
 <translation id="880709030178078220">"Справка"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Настройки способов ввода</translation>
-<translation id="8818320199597151042">Профиль удаляется. Подождите несколько минут.</translation>
 <translation id="8819728065740986820">Адаптивная зарядка включена</translation>
 <translation id="8825863694328519386">Чтобы вернуться, проведите по экрану от левого края</translation>
 <translation id="8832513206237979203">Показать или скрыть панель закладок</translation>
@@ -1755,7 +1751,6 @@
 <translation id="9089416786594320554">Способы ввода</translation>
 <translation id="9091626656156419976">Удален экран "<ph name="DISPLAY_NAME" />"</translation>
 <translation id="9098969848082897657">Отключить звук на телефоне</translation>
-<translation id="9100887602489003640">Профиль добавляется. Подождите несколько минут.</translation>
 <translation id="9105450214093926548">Во время работы Lacros не поддерживается вход в несколько аккаунтов. Вы можете использовать второй профиль браузера или закрыть Lacros и повторить попытку.</translation>
 <translation id="9120448753905017833">Чтобы использовать мобильный интернет через точку доступа, Wi-Fi был отключен. За передачу данных может взиматься плата.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

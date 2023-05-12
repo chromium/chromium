@@ -87,6 +87,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2467438592969358367">Google Chrome ingependa kuhamisha manenosiri yako. Andika nenosiri lako la Windows ili uruhusu shughuli hii.</translation>
 <translation id="2485422356828889247">Ondoa</translation>
 <translation id="2534507159460261402">Google Pay (imenakiliwa kwenye Chrome)</translation>
+<translation id="2556847002339236023">Shirika lako hufunga Chrome isipotumika kwa <ph name="TIMEOUT_DURATION" />. Data ya kuvinjari ilifutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.</translation>
 <translation id="2559253115192232574">Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome ili ione mambo yanayokuvutia na iweze kukuonyesha matangazo kulingana na mapendeleo yako. Chrome inaweza kushiriki hadi mambo matatu yanayokuvutia.</translation>
 <translation id="2563121210305478421">Ungependa kufungua Chrome tena?</translation>
 <translation id="2574930892358684005">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu wa Chrome. Ili utenganishe shughuli zako za kuvinjari, Chrome inaweza kukutengenezea wasifu wako mwenyewe.</translation>
@@ -275,6 +276,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6113794647360055231">Chrome imeboreshwa zaidi</translation>
 <translation id="6145313976051292476">Fungua PDF katika Chrome</translation>
 <translation id="6155960517327665396">Kiokoa hifadhi kimeifanya Chrome iwe na kasi ya utendaji</translation>
+<translation id="6157638032135951407">Shirika lako hufuta data ya Chrome isipotumika kwa <ph name="TIMEOUT_DURATION" />. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Toleo la Beta la Google Chrome</translation>
 <translation id="6235018212288296708">Sheria ya ndani ya Google Chrome ili kuruhusu trafiki ya mDNS.</translation>
@@ -290,6 +292,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6418662306461808273">Ungependa kutumia wasifu uliopo wa Chrome?</translation>
 <translation id="648319183876919572">Kipengele cha Kuvinjari Salama Kilichoboreshwa hufanya mengi zaidi ili kukulinda dhidi ya tovuti na vipakuliwa hatarishi.</translation>
 <translation id="6493527311031785448">Google Chrome inajaribu <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome ilifungwa kiotomatiki</translation>
 <translation id="6506909944137591434">Chrome inahitaji ruhusa ya kufikia kamera ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome ya Wasanidi Programu</translation>
 <translation id="659498884637196217">Kwenye Kidhibiti cha Manenosiri cha Google katika kifaa hiki</translation>
@@ -326,6 +329,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="7155997830309522122">Iwapo ni hivyo, tafadhali badilisha nenosiri ulilohifadhi kwenye Chrome ili lilingane na nenosiri lako jipya.</translation>
 <translation id="7161904924553537242">Karibu Google Chrome</translation>
 <translation id="7177959540995930968">Unaweza kupata maelezo zaidi kuhusu vipengele hivi kwenye mipangilio ya Chrome.</translation>
+<translation id="7193885263065350793">Shirika lako hufunga Chrome isipotumika kwa <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Unaingia katika akaunti ykitumia akaunti inayodhibitiwa na kumpa msimamizi wa akaunti hiyo udhibiti wa wasifu wako kwenye Google Chrome. Data yako ya Chrome, kama vile programu zako, alamisho, historia, manenosiri, na mipangilio mingine itahishwa na <ph name="USER_NAME" /> daima. Utaweza kufuta data hii kupitia Dashibodi ya Akaunti za Google, lakini hutaweza kuhusisha data hii na akaunti nyingine. Unaweza kuunda kwa hiari wasifu mpya ili kuweka data yako ya Chrome iliyo kando. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Lugha hii inatumika kuonyesha Kiolesura cha Google Chrome</translation>
 <translation id="7296210096911315575">Maelezo muhimu kuhusu usalama na matumizi</translation>

@@ -175,7 +175,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1363819917331173092">Übersetzen von Seiten in <ph name="SOURCE_LANGUAGE" /> nicht anbieten</translation>
 <translation id="1364822246244961190">Diese Richtlinie ist blockiert und ihr Wert wird deshalb ignoriert.</translation>
 <translation id="1368318639262510626">Dino-Spiel. Ein verpixelter Dinosaurier weicht Kakteen und kleinen Flugsauriern aus, während er durch eine karge Landschaft läuft. Sobald du einen Ton hörst, drücke die Leertaste, um über Hindernisse zu springen.</translation>
-<translation id="136907351928231527">Es kann bis zu einer Woche dauern, bis hier eine Liste mit Themen basierend auf deinem aktuellen Browserverlauf angezeigt wird</translation>
 <translation id="1374468813861204354">Vorschläge</translation>
 <translation id="1375198122581997741">Informationen zur Version</translation>
 <translation id="1376836354785490390">Weniger anzeigen</translation>
@@ -439,6 +438,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2003709556000175978">Jetzt Passwort zurücksetzen</translation>
 <translation id="2003775180883135320">Vierfache Lochung oben</translation>
 <translation id="201174227998721785">Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen verwalten</translation>
+<translation id="2012276282211112603">Momentan sind keine Themen vorhanden</translation>
 <translation id="2019607688127825327">Schaltfläche „Einstellungen für Bedienungshilfen verwalten“ – drücke die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
 <translation id="2021333772895814435">Durch diese Richtlinie wird die geräteübergreifende Synchronisierung automatisch deaktiviert für: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 × 19 Zoll</translation>
@@ -1671,6 +1671,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="5051305769747448211">Live-Comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Damit du diese Datei mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}other{Damit du diese Dateien mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}}</translation>
+<translation id="5060419232449737386">Untertiteleinstellungen</translation>
 <translation id="5060483733937416656">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit Windows Hello durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst deren <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Meintest du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Druckverlauf</translation>

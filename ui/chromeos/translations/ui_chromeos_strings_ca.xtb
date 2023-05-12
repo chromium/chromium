@@ -166,7 +166,6 @@
 <translation id="23721837607121582">Baixa el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Canvia a la visualització de llista</translation>
 <translation id="2377590462528165447">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Linux</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fitxers seleccionats</translation>
 <translation id="2383454254762599978">Mou a la paperera</translation>
 <translation id="2387458720915042159">Tipus de connexió del servidor intermediari</translation>
 <translation id="2389832672041313158">Birmà (Birmània)</translation>
@@ -471,7 +470,6 @@
 <translation id="4823651846660089135">El dispositiu és només de lectura</translation>
 <translation id="4826849268470072925">Tàmil (itrans)</translation>
 <translation id="482932175346970750">Escriu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> al navegador</translation>
-<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elements seleccionats</translation>
 <translation id="4843566743023903107">dispositius Chromebase</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="485316830061041779">Alemany</translation>
@@ -756,7 +754,6 @@
 <translation id="6989942356279143254">Suec</translation>
 <translation id="6990081529015358884">Us heu quedat sense espai</translation>
 <translation id="6993826899923627728">Aquests elements són a la paperera</translation>
-<translation id="6998711733709403587">S'han seleccionat <ph name="SELCTED_FOLDERS_COUNT" /> carpetes</translation>
 <translation id="7008426324576352165">La teva organització requereix més emmagatzematge per completar la pujada.</translation>
 <translation id="7009985720488544166">La política de l'administrador ha bloquejat l'opció de moure <ph name="COUNT" /> fitxers</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>

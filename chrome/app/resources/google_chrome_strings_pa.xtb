@@ -87,6 +87,7 @@
 <translation id="2467438592969358367">Google Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ। ਇਹ ਕਰਨ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="2485422356828889247">ਅਣਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="2534507159460261402">Google Pay (Chrome 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ)</translation>
+<translation id="2556847002339236023"><ph name="TIMEOUT_DURATION" /> ਤੱਕ ਵਰਤੋਂ ਨਾ ਕਰਨ 'ਤੇ ਤੁਹਾਡੀ ਸੰਸਥਾ Chrome ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦੀ ਹੈ। ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ। ਇਸ ਵਿੱਚ ਇਤਿਹਾਸ, ਆਟੋਫਿਲ ਅਤੇ ਡਾਊਨਲੋਡ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2559253115192232574">ਬਾਅਦ ਵਿੱਚ, ਤੁਸੀਂ ਜਿਹੜੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ ਉਹ Chrome ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਨੂੰ ਦੇਖਣ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ। Chrome 3 ਦਿਲਚਸਪੀਆਂ ਤੱਕ ਸਾਂਝੀਆਂ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2563121210305478421">ਕੀ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇਸ Chrome ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੈ। ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chrome ਤੁਹਾਡੇ ਲਈ ਤੁਹਾਡਾ ਖੁਦ ਦਾ ਪ੍ਰੋਫਾਈਲ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
@@ -275,6 +276,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6113794647360055231">Chrome ਬਿਹਤਰ ਬਣ ਗਿਆ ਹੈ</translation>
 <translation id="6145313976051292476">Chrome ਵਿੱਚ PDF ਖੋਲ੍ਹੋ</translation>
 <translation id="6155960517327665396">ਮੈਮੋਰੀ ਸੇਵਰ Chrome ਨੂੰ ਵਧੇਰੇ ਤੇਜ਼ ਬਣਾਉਂਦਾ ਹੈ</translation>
+<translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> ਤੱਕ ਵਰਤੋਂ ਨਾ ਕਰਨ 'ਤੇ ਤੁਹਾਡੀ ਸੰਸਥਾ Chrome ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦਿੰਦੀ ਹੈ। ਇਸ ਵਿੱਚ ਇਤਿਹਾਸ, ਆਟੋਫਿਲ ਅਤੇ ਡਾਊਨਲੋਡ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ਬੀਟਾ</translation>
 <translation id="6235018212288296708">mDNS ਟਰੈਫ਼ਿਕ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ Google Chrome ਲਈ ਇਨਬਾਊਂਡ ਨਿਯਮ।</translation>
@@ -290,6 +292,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6418662306461808273">ਕੀ ਮੌਜੂਦਾ Chrome ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਜਾਣਾ ਹੈ?</translation>
 <translation id="648319183876919572">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਤੋਂ ਤੁਹਾਡੀ ਰੱਖਿਆ ਕਰਨ ਲਈ ਬਹੁਤ ਕੁਝ ਕਰਦੀ ਹੈ</translation>
 <translation id="6493527311031785448">Google Chrome ਵੱਲੋਂ <ph name="AUTHENTICATION_PURPOSE" /> ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="6497147134301593682">Chrome ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਹੋ ਗਿਆ ਸੀ</translation>
 <translation id="6506909944137591434">Chrome ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਲਈ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">ਇਸ ਡੀਵਾਈਸ 'ਤੇ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ</translation>
@@ -326,6 +329,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7155997830309522122">ਜੇ ਅਜਿਹਾ ਹੈ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ Chrome ਵਿੱਚ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦਾ ਸੰਪਾਦਨ ਕਰੋ ਤਾਂ ਜੋ ਇਹ ਤੁਹਾਡੇ ਨਵੇਂ ਪਾਸਵਰਡ ਨਾਲ ਮੇਲ ਖਾਵੇ।</translation>
 <translation id="7161904924553537242">Google Chrome ਵਿੱਚ ਸੁਆਗਤ ਹੈ</translation>
 <translation id="7177959540995930968">ਤੁਸੀਂ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣ ਸਕਦੇ ਹੋ।</translation>
+<translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> ਤੱਕ ਵਰਤੋਂ ਨਾ ਕਰਨ 'ਤੇ ਤੁਹਾਡੀ ਸੰਸਥਾ Chrome ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦੀ ਹੈ।</translation>
 <translation id="7242029209006116544">ਤੁਸੀਂ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਇਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਆਪਣੇ Google Chrome ਪ੍ਰੋਫਾਈਲ ਦਾ ਕੰਟਰੋਲ ਦੇ ਰਹੇ ਹੋ। ਤੁਹਾਡਾ Chrome ਡਾਟਾ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀਆਂ ਐਪਾਂ, ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ, ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ <ph name="USER_NAME" /> ਨਾਲ ਸਥਾਈ ਤੌਰ 'ਤੇ ਜੋੜੇ ਜਾਣਗੇ। ਤੁਸੀਂ ਇਸ ਡਾਟੇ ਨੂੰ Google ਖਾਤੇ ਡੈਸ਼ਬੋਰਡ ਰਾਹੀਂ ਮਿਟਾ ਸਕੋਗੇ, ਪਰ ਤੁਸੀਂ ਇਸ ਡਾਟੇ ਨੂੰ ਦੂਜੇ ਖਾਤੇ ਨਾਲ ਨਹੀਂ ਜੋੜ ਸਕੋਗੇ। ਤੁਸੀਂ ਆਪਣੇ ਮੌਜੂਦਾ Chrome ਡਾਟੇ ਨੂੰ ਵੱਖ ਰੱਖਣ ਲਈ ਵਿਕਲਪਿਕ ਤੌਰ 'ਤੇ ਇੱਕ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਬਣਾ ਸਕਦੇ ਹੋ। <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">ਇਸ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ Google Chrome UI ਦਿਖਾਉਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7296210096911315575">ਵਰਤੋਂ ਅਤੇ ਸੁਰੱਖਿਆ ਬਾਰੇ ਮਹੱਤਵਪੂਰਨ ਜਾਣਕਾਰੀ</translation>

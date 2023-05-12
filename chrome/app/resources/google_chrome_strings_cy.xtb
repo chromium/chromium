@@ -87,6 +87,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2467438592969358367">Mae Google Chrome eisiau allforio'ch cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="2485422356828889247">Dadosod</translation>
 <translation id="2534507159460261402">Google Pay (copïwyd i Chrome)</translation>
+<translation id="2556847002339236023">Mae eich sefydliad yn cau Chrome pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />. Cafodd data pori eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
 <translation id="2559253115192232574">Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chrome weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld. Gall Chrome rannu hyd at 3 diddordeb.</translation>
 <translation id="2563121210305478421">Ail-lansio Chrome?</translation>
 <translation id="2574930892358684005">Mae <ph name="EXISTING_USER" /> eisoes wedi'i fewngofnodi i'r proffil Chrome hwn. I gadw'ch pori ar wahân, gall Chrome greu proffil eich hun ar eich cyfer.</translation>
@@ -275,6 +276,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6113794647360055231">Gwnaeth Chrome wella</translation>
 <translation id="6145313976051292476">Agor ffeiliau PDF yn Chrome</translation>
 <translation id="6155960517327665396">Mae Arbedwr Cof wedi gwneud Chrome yn gyflymach</translation>
+<translation id="6157638032135951407">Mae eich sefydliad yn dileu data Chrome pan na chaiff ei ddefnyddio am <ph name="TIMEOUT_DURATION" />. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Rheol dod i mewn ar gyfer Google Chrome i ganiatáu traffig mDNS.</translation>
@@ -290,6 +292,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6418662306461808273">Newid i broffil Chrome presennol?</translation>
 <translation id="648319183876919572">Mae Pori'n Ddiogel Uwch yn gwneud rhagor i'ch amddiffyn rhag lawrlwythiadau a gwefannau peryglus</translation>
 <translation id="6493527311031785448">Mae Google Chrome yn ceisio <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Caewyd Chrome yn awtomatig</translation>
 <translation id="6506909944137591434">Mae angen caniatâd camera ar Chrome i greu map 3D o'ch amgylchoedd</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Datblygwr Google Chrome</translation>
 <translation id="659498884637196217">Yn Rheolwr Cyfrineiriau Google ar y ddyfais hon</translation>
@@ -326,6 +329,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7155997830309522122">Os felly, golygwch eich cyfrinair sydd wedi'i gadw yn Chrome fel ei fod yn cyfateb i'ch cyfrinair newydd.</translation>
 <translation id="7161904924553537242">Croeso i Google Chrome</translation>
 <translation id="7177959540995930968">Gallwch ddysgu rhagor am y nodweddion hyn yng ngosodiadau Chrome.</translation>
+<translation id="7193885263065350793">Mae eich sefydliad yn cau Chrome pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Rydych yn mewngofnodi gyda chyfrif a reolir ac yn rhoi rheolaeth dros eich proffil Google Chrome i'w weinyddwr. Bydd eich data Chrome, megis eich apiau, eich nodau tudalen, eich hanes, eich cyfrineiriau, a'ch gosodiadau eraill yn cysylltu'n barhaol â <ph name="USER_NAME" />. Byddwch yn gallu dileu'r data hyn drwy'r Dangosfwrdd Cyfrifon Google, ond ni fyddwch yn gallu cysylltu'r data hyn â chyfrif arall. Gallwch ddewis creu proffil newydd i gadw'ch data Chrome presennol ar wahân. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Mae'r iaith hon yn cael ei defnyddio i arddangos UI Google Chrome</translation>
 <translation id="7296210096911315575">Gwybodaeth bwysig am ddefnydd a diogelwch</translation>

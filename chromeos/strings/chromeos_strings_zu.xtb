@@ -116,6 +116,7 @@
 <translation id="1801418420130173017">Khubaza itimu emnyama</translation>
 <translation id="1807246157184219062">Okukhanyayo</translation>
 <translation id="1827738518074806965">Igalari yobuciko</translation>
+<translation id="1838374766361614909">Sula usesho</translation>
 <translation id="1851218745569890714">Inkomfa ngevidiyo</translation>
 <translation id="1852934301711881861">Faka i-ChromeOS Flex</translation>
 <translation id="1856388568474281774">Umcibisholo waphansi</translation>
@@ -272,6 +273,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">Isikhombisi-ndlela esiwukhiye</translation>
 <translation id="3294437725009624529">Isivakashi</translation>
+<translation id="3303855915957856445">Ayikho imiphumela yosesho etholakele</translation>
 <translation id="3310640316857623290">Ukubambezeleka kwe-DNS kungaphezulu kakhulu komkhawulo ovumelekile</translation>
 <translation id="3328783797891415197">Ukuhlolwa kuyaqhubeka</translation>
 <translation id="3340011300870565703">Idivayisi ine-bud yebhethri engakwesokudla engu-<ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -477,7 +479,6 @@
 <translation id="4921665434385737356">Ikhokhiswe <ph name="RATE" /> ngamasekhondi angu-<ph name="NUM_SECONDS" />.</translation>
 <translation id="4930320165497208503">Ukuze usethe noma uvuselele uxhumano, iya <ph name="BEGIN_LINK" />Kumasethingi<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Idethi</translation>
-<translation id="4937657825850660613">Uhafu</translation>
 <translation id="4950314376641394653">I-firmware ye-<ph name="DEVICE_NAME" /> ibuyekezelwe ohlotsheni lwe-<ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Ngokwengxenye</translation>
 <translation id="4972592110715526173">ukushintsha kwemodi</translation>
@@ -784,6 +785,7 @@
 <translation id="7490813197707563893">Ikheli le-MAC</translation>
 <translation id="7491478667760509108">Phuma kokuntantayo</translation>
 <translation id="7497215489070763236">Isitifiketi se-CA yeseva</translation>
+<translation id="7501957181231305652">noma</translation>
 <translation id="7502658306369382406">Ikheli le-IPv^</translation>
 <translation id="7515998400212163428">I-Android</translation>
 <translation id="7528507600602050979">Okuqukethwe kosizo akutholakali</translation>
@@ -800,6 +802,7 @@
 <translation id="7620771111601174153">Funda kabanzi Esikhungweni sosizo</translation>
 <translation id="763165478673169849">Isikhathi Sokusetha Kabusha Sokugcina</translation>
 <translation id="7648838807254605802">Ukubambezeleka okuphezulu kwe-HTTPS</translation>
+<translation id="765159867434478292">Hlukanisa</translation>
 <translation id="7656388927906093505">Idivayisi iyimawusi.</translation>
 <translation id="7658239707568436148">Khansela</translation>
 <translation id="7665800271478495366">Shintsha isithombe</translation>

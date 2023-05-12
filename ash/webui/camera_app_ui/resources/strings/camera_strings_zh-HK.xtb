@@ -66,7 +66,6 @@
 <translation id="4121305183798804752">偵測到文件</translation>
 <translation id="414641094616694804">此相機無法變更解像度</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
-<translation id="4281620174117014503">中解像度</translation>
 <translation id="428234092390943511">頁面縮圖</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>
 <translation id="4445542136948522167">停止拍照</translation>
@@ -93,6 +92,7 @@
 <translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5662366948659129155">正在掃瞄第 <ph name="COUNT" /> 頁</translation>
 <translation id="5671277269877808209">正方形</translation>
+<translation id="574392208103952083">中</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5753488212459587150">啟用專業模式</translation>
 <translation id="5759254179196327752">掃瞄文件</translation>

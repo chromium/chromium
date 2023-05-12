@@ -58,7 +58,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1273937721055267968">Blocca <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
-<translation id="1285310382777185058">Cambia lingua</translation>
 <translation id="1291207594882862231">Cancella la cronologia, i cookie, i dati dei siti, la cache…</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="1298077576058087471">Risparmia fino al 60% di dati, leggi le notizie di oggi</translation>
@@ -131,7 +130,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1671236975893690980">Download in attesa...</translation>
 <translation id="1672586136351118594">Non visualizzare più</translation>
 <translation id="1680919990519905526">Compra immagine con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
-<translation id="1682195225331129001">Prova ora</translation>
 <translation id="1702543251015153180">Vuoi cambiare le impostazioni del tema scuro?</translation>
 <translation id="1702907158640575240">Browser gestito</translation>
 <translation id="1710099199314114079">Cambia scheda o chiudi le schede</translation>
@@ -187,12 +185,10 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="204321170514947529">Anche <ph name="APP_NAME" /> presenta dati in Chrome</translation>
 <translation id="2046634576464120978">Registrazione non riuscita</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="2052422354554967744">Cercare su Internet</translation>
 <translation id="2053105195397337973">Stiamo esaminando dei metodi per limitare il monitoraggio e consentire ai siti di contrastare spam negli annunci e attività fraudolente.</translation>
 <translation id="2056878612599315956">Sito in pausa</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download non riuscito}other{# download non riusciti}}</translation>
 <translation id="2067805253194386918">testo</translation>
-<translation id="2068748236079642969">Guarda il video successivo</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincronizza e personalizza su tutti i dispositivi</translation>
@@ -384,6 +380,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3066573403916685335">Sposta giù</translation>
 <translation id="3070005020161560471">Traduci automaticamente</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />. Si applicano anche le <ph name="BEGIN_LINK3" />Norme sulla privacy<ph name="END_LINK3" />.</translation>
+<translation id="3080525922482950719">Puoi salvare le pagine da leggere in un secondo momento o quando sei offline</translation>
 <translation id="3083194063661536258">Accesso non eseguito. Pulsante. Consente di aprire la finestra di dialogo per accedere e attivare la sincronizzazione.</translation>
 <translation id="3091010850649238832">Mostra contenuti degli appunti</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
@@ -415,14 +412,12 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3250563604907490871">Le descrizioni delle immagini verranno ripristinate quando avrai effettuato la connessione alla rete Wi-Fi</translation>
 <translation id="3254409185687681395">Aggiungi ai Preferiti</translation>
 <translation id="3259831549858767975">Rimpicciolisci i contenuti della pagina</translation>
-<translation id="3264124641674805320">Come scaricare contenuti da usare in un secondo momento</translation>
 <translation id="3264259168916048410">Il computer chiede di usare questo dispositivo per accedere a un sito</translation>
 <translation id="3265093782546847662">Tutte le pagine di <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Gestisci i siti che segui</translation>
 <translation id="3269093882174072735">Carica immagine</translation>
 <translation id="3280562213547448728">Ricerca vocale</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
-<translation id="3285080554353377245">Video relativi all'utilizzo di Chrome</translation>
 <translation id="3290249595466894471">Invia anche un numero ridotto di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce</translation>
 <translation id="3293181007446299124">La cronologia di navigazione rimane privata sul tuo dispositivo e i report vengono inviati in ritardo per proteggere la tua identità</translation>
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
@@ -432,7 +427,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
 <translation id="3359667936385849800">Usa il tuo attuale fornitore di servizi</translation>
 <translation id="3365271666488085187">Chrome può considerare questo interesse</translation>
-<translation id="3367813778245106622">Accedi nuovamente per avviare la sincronizzazione</translation>
 <translation id="3373979091428520308">Per condividere questa pagina con un altro dispositivo, attiva la sincronizzazione nelle impostazioni di Chrome sull'altro dispositivo</translation>
 <translation id="3374023511497244703">I preferiti, la cronologia, le password e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google</translation>
 <translation id="3384347053049321195">Condividi immagine</translation>
@@ -515,7 +509,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3845098929839618392">Apri in scheda incognito</translation>
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3861633093716975811">Video più visti</translation>
 <translation id="3874520961715512166">Il sito è stato rimosso</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3894427358181296146">Aggiungi cartella</translation>
@@ -568,7 +561,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="4135200667068010335">L'elenco di dispositivi con cui condividere una scheda è chiuso.</translation>
 <translation id="4137746084635924146">Lingua attuale del dispositivo</translation>
 <translation id="414128724510021958">Siti desktop richiesti per impostazione predefinita</translation>
-<translation id="4141536112466364990">Imparare a usare Chrome</translation>
 <translation id="4147131678541801076">Quando sono attive le prove, la riduzione di spam e attività fraudolente è basata su token di stato privati per aiutare i siti a contrastare le attività fraudolente e a distinguere i bot dalle persone.
 
 In base alla tua interazione con un sito, ad esempio l'accesso regolare a un account, il sito in questione può emettere un token di stato privato per il browser in uso. Dopodiché, se altri siti che visiti cercano e trovano un token di stato privato valido, è più probabile che ti considerino una persona e non un bot.
@@ -629,7 +621,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
 <translation id="4504667196171871375">Su Wi-Fi e dati mobili</translation>
 <translation id="4508528996305412043">Menu scheda feed aperto</translation>
-<translation id="4508642716788467538">Seleziona la tua lingua</translation>
 <translation id="4509501256689523862">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK_1" />argomenti degli annunci<ph name="END_LINK_1" />, dalle <ph name="BEGIN_LINK_2" />impostazioni dei cookie<ph name="END_LINK_2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# giorno fa}other{# giorni fa}}</translation>
 <translation id="451872707440238414">Cerca nei preferiti</translation>
@@ -696,7 +687,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
 <translation id="481574578487123132">Dispositivi collegati</translation>
 <translation id="4826163340425232009">Riquadro inferiore di accesso.</translation>
-<translation id="4831037795716408498">Scaricare contenuti</translation>
 <translation id="4834007576107377210">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile</translation>
 <translation id="4834250788637067901">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
 <translation id="4835385943915508971">Chrome non ha accesso alla risorsa richiesta.</translation>
@@ -747,7 +737,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5010886807652684893">Visualizzazione grafica</translation>
 <translation id="5011311129201317034">Il sito <ph name="SITE" /> desidera collegarsi</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5017529052065664584">Ultimi 15 minuti</translation>
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -781,7 +770,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Download del file in corso…}other{Download di # file in corso…}}</translation>
 <translation id="5210286577605176222">Vai alla scheda precedente</translation>
 <translation id="5210365745912300556">Chiudi scheda</translation>
-<translation id="5213672942202814946">Usare la ricerca vocale</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5227554086496586518">Tocca per visualizzare i risultati di ricerca</translation>
 <translation id="5233638681132016545">Nuova scheda</translation>
@@ -823,9 +811,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5458366071038729214">Qui troverai i siti che segui</translation>
 <translation id="5468068603361015296">Vuoi comunque scaricare <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Apri nell'app di mappe</translation>
-<translation id="5483197086164197190">Esplorare Chrome</translation>
 <translation id="5487521232677179737">Cancella dati</translation>
-<translation id="549025011754480756">Come eseguire ricerche tramite comandi vocali</translation>
 <translation id="5492637351392383067">Crittografia on-device</translation>
 <translation id="5514904542973294328">Opzione disattivata dall'amministratore del dispositivo</translation>
 <translation id="5515439363601853141">Sblocca per visualizzare la password</translation>
@@ -884,7 +870,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5809361687334836369">{HOURS,plural, =1{# ora fa}other{# ore fa}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="5813552293717797987">Questo browser è gestito da <ph name="PARENT_NAME_1" /> e <ph name="PARENT_NAME_2" />.</translation>
-<translation id="5814131985548525293">Per iniziare, digita qui oppure tocca l'icona a forma di microfono</translation>
 <translation id="5814749351757353073">Rimani al passo con i tuoi siti preferiti</translation>
 <translation id="5822875253699806474">Per tornare rapidamente ai siti che hai visitato, sincronizza le tue schede e la cronologia</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
@@ -971,7 +956,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6294610283659775533">Puoi inviare schede tra dispositivi su cui è stato eseguito l'accesso con lo stesso Account Google</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6297765934698848803">L'organizzazione che gestisce il tuo dispositivo ha disattivato la fotocamera.</translation>
-<translation id="6301525844455696527">Non dimenticarti il tuo elenco di lettura</translation>
 <translation id="6303969859164067831">Esci e disattiva la sincronizzazione</translation>
 <translation id="6312687380483398334">App web (modalità silenziosa)</translation>
 <translation id="6316139424528454185">Vers. Android non supportata</translation>
@@ -1169,7 +1153,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7260367682327802201">Il tuo dispositivo Android potrebbe includere un'impostazione simile. Se la misurazione degli annunci è attiva in Chrome e sul tuo dispositivo Android, una società potrebbe essere in grado di misurare l'efficacia di un annuncio sui siti web che visiti e sulle app che utilizzi</translation>
 <translation id="727288900855680735">Inviare <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sito bloccato</translation>
-<translation id="7286572596625053347">Vuoi cambiare la lingua <ph name="LANGUAGE" />?</translation>
 <translation id="7286703216224610554">Condividi solo la reazione</translation>
 <translation id="7290209999329137901">Impossibile rinominare</translation>
 <translation id="7291910923717764901">Descrizioni delle immagini aggiunte per questa pagina</translation>
@@ -1294,10 +1277,8 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> richiede l'autorizzazione Dispositivi nelle vicinanze per potersi connettere al tuo dispositivo</translation>
 <translation id="7875915731392087153">Crea email</translation>
 <translation id="7876243839304621966">Rimuovi tutto</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pagina da leggere}other{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pagine da leggere}}</translation>
 <translation id="7886917304091689118">In esecuzione in Chrome</translation>
 <translation id="7887174313503389866">Fai un tour guidato dei controlli per la privacy e la sicurezza più importanti. Per altre opzioni, vai alle impostazioni individuali.</translation>
-<translation id="789763218334337857">Come usare Chrome</translation>
 <translation id="7903184275147100332">L'operazione potrebbe richiedere un minuto</translation>
 <translation id="7914399737746719723">App installata</translation>
 <translation id="7919123827536834358">Traduci queste lingue automaticamente</translation>
@@ -1368,7 +1349,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8209050860603202033">Apri immagine</translation>
-<translation id="8216351761227087153">Guarda</translation>
 <translation id="8218622182176210845">Gestisci il tuo account</translation>
 <translation id="8221401890884589479">Puoi bloccare i siti indesiderati. Inoltre, Chrome elimina automaticamente dall'elenco i siti risalenti a più di 30 giorni prima della data corrente. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Menu scheda feed</translation>
@@ -1458,7 +1438,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8645920082661222035">Prevede eventi pericolosi e ti avvisa prima che si verifichino</translation>
 <translation id="8646467750715887511">Le pagine si caricano solo una volta aperte.</translation>
 <translation id="8655129584991699539">Puoi cancellare i dati nelle Impostazioni di Chrome</translation>
-<translation id="8659579665266920523">Come eseguire ricerche con Chrome</translation>
 <translation id="8662811608048051533">Verrai disconnesso dalla maggior parte dei siti.</translation>
 <translation id="8664215986015753476">Usa Chrome a modo tuo</translation>
 <translation id="8664979001105139458">Nome file già esistente</translation>
@@ -1497,7 +1476,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="885480114717186641">Puoi richiedere il sito desktop di <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Recupera descrizioni</translation>
 <translation id="8856931513242997049">Flusso di autorizzazione alle notifiche chiuso</translation>
-<translation id="8873817150012960745">Tocca qui per iniziare</translation>
 <translation id="8881973373982641723">Viene cancellata la cronologia, anche nella casella di ricerca.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati<ph name="END_BOLD" />: per tutelare la tua privacy, eliminiamo automaticamente dall'elenco i siti risalenti a più di 4 settimane prima della data corrente. Un sito che visiti un'altra volta potrebbe essere visualizzato di nuovo nell'elenco. Puoi anche rimuovere un sito se non vuoi che definisca i tuoi interessi.</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>

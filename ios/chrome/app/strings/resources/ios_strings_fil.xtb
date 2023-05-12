@@ -22,8 +22,6 @@
 <translation id="110724200315609752">Lumipat sa Nakabukas na Window</translation>
 <translation id="1112015203684611006">Hindi na-print.</translation>
 <translation id="1125564390852150847">Gumawa ng bagong tab.</translation>
-<translation id="1126013303640354461">Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
-Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinadala sa o na-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong i-reset ang pag-sync. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Hindi ka pinoprotektahan laban sa mga mapanganib na website, download, at extension. Magkakaroon ka pa rin ng proteksyon ng Ligtas na Pag-browse, kung available, sa iba pang serbisyo ng Google, tulad ng Gmail at Search.</translation>
 <translation id="1145536944570833626">I-delete ang kasalukuyang data.</translation>
 <translation id="1147031633655575115">Naka-sign in bilang <ph name="USER" /></translation>
@@ -89,6 +87,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="1509960214886564027">Posibleng masira ang mga feature sa maraming site</translation>
 <translation id="152234381334907219">Hindi Kailanman Na-save</translation>
 <translation id="1523341279170789507">Payagan ang Lahat ng Cookies</translation>
+<translation id="1524563461097350801">Hindi, Salamat na lang</translation>
 <translation id="1531836666020185856">Itinampok</translation>
 <translation id="1535268707340844072">Posibleng maging dahilan ng pagkasira ng ilang site ang iyong kasalukuyang setting. Para pamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="BEGIN_LINK" />Mga Setting ng Cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
@@ -246,7 +245,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2647269890314209800">Ginagamit ang Cookies</translation>
 <translation id="2648721026697078500">Huwag Kailanman Ilipat</translation>
 <translation id="2648803196158606475">I-delete ang Nabasa Na</translation>
-<translation id="2653659639078652383">Isumite</translation>
 <translation id="2664621323652615289">Ihinto</translation>
 <translation id="2671426118752779020">Puwede mong gamitin ang mga password na na-save mo sa Google Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="2690858294534178585">Ginagamit ang camera</translation>
@@ -306,7 +304,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2932085390869194046">Magmungkahi ng Password...</translation>
 <translation id="2932765531295814441">Manual na Magdagdag ng Mga Password</translation>
 <translation id="2952581218264071393">1. Buksan ang Mga Setting ng Chrome</translation>
-<translation id="2953871438216280742">Mag-sign in para buksan at i-save ang iyong listahan ng babasahin sa Google Account mo.</translation>
 <translation id="2958718410589002129">Mga Password</translation>
 <translation id="2961210776189273067">Pamagat</translation>
 <translation id="2964349545761222050">I-block ang Third-Party Cookies</translation>
@@ -435,6 +432,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3861486700625780712">Huwag nang subaybayan</translation>
 <translation id="3863769054730344136">Ipadala sa Iyong Mga Device</translation>
 <translation id="387280738075653372">I-download ang Chrome dito.</translation>
+<translation id="3875783148670536197">Ipakita sa Akin Kung Paano</translation>
 <translation id="3888863481921783344">Gagamitin ito para ipakita sa iyo ang mga posibleng inimbitahan sa event mo.</translation>
 <translation id="3891414008432200754">Presyo</translation>
 <translation id="3892144330757387737">Makikita mo rito ang iyong history</translation>
@@ -550,9 +548,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4652817563047461855">Tiyaking ligtas ang iyong mga password, alamin kung nakompromiso ang mga ito, at makakuha ng payo para matulungang protektahan ang sarili mo online. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Pumasok sa Tagalipat ng Tab</translation>
 <translation id="46614316059270592">I-save ang Password</translation>
-<translation id="4666531726415300315">Naka-sign in bilang <ph name="EMAIL" />.
-
-Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upang simulan ang pag-sync.</translation>
 <translation id="4682686630151240767">1. Buksan ang Mga Setting ng iPhone</translation>
 <translation id="4689564913179979534">I-manage ang Payment Method...</translation>
 <translation id="469300482518076788">Isara ang Tab</translation>
@@ -561,16 +556,12 @@ Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upa
 <translation id="4737560986434232178">Maghanap sa Mga Kamakailang Tab</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4746926359847517643">Puwede mong ibalik ang mga iyon kahit kailan sa history.</translation>
-<translation id="4747097190499141774">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay. Ang tao lang na may alam ng iyong passphrase ang makakabasa sa naka-encrypt mong data. Hindi ipinapadala sa Google ang passphrase at hindi nito ito sino-store. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong i-reset ang pag-sync. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Sa device lang na ito, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Bagong Tab na Incognito</translation>
 <translation id="4766112107778026136">Discover at Sinusubaybayan</translation>
 <translation id="4775879719735953715">Default na Browser</translation>
 <translation id="4778644898150334464">Gumamit ng ibang password</translation>
 <translation id="478808905805139173">Buksan sa Incognito?</translation>
-<translation id="4802417911091824046">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
-
-Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /></translation>
 <translation id="4803185665210547709">Pinapamahalaan ng iyong organisasyon.
 <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Invalid ang Numero ng Card</translation>
@@ -832,16 +823,12 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6366663624406569102">Mag-sign Out at I-off ang Pag-sync</translation>
 <translation id="6374469231428023295">Subukan Ulit</translation>
 <translation id="6377118281273296434">Seguridad ng Site</translation>
-<translation id="6380866119319257197">Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">Buksan ang Lokasyon…</translation>
 <translation id="6387994324662817823">Sine-save ang mga password sa Google Password Manager sa device lang na ito.</translation>
 <translation id="6389470377220713856">Pangalan sa Card</translation>
 <translation id="6406506848690869874">Pag-sync</translation>
 <translation id="6410390304316730527">Pinoprotektahan ka ng Ligtas na Pag-browse laban sa mga attacker na posibleng manlinlang sa iyong gumawa ng anumang mapanganib na bagay tulad ng pag-install ng nakakapinsalang software o paghahayag ng personal na impormasyon tulad ng mga password, numero ng telepono, o credit card. Kung io-off mo ito, maging maingat kapag nagba-browse sa mga hindi pamilyar o hindi mapagkakatiwalaang site.</translation>
 <translation id="6410883413783534063">Magbukas ng mga tab para mabisita ang iba't ibang page nang sabay-sabay</translation>
-<translation id="641799622251403418">Naka-sign in bilang <ph name="EMAIL" />.
-
-Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync noong <ph name="TIME" />. Ilagay ito upang simulan ang pag-sync.</translation>
 <translation id="6418346271604475326">Ihinahanda ang PDF</translation>
 <translation id="6429213933892582367">Buksan ang Mga Opsyon sa Password</translation>
 <translation id="6434591244308415567">Nagkaroon ng error. Subukang muli sa ibang pagkakataon.</translation>
@@ -1055,7 +1042,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7845466610722898">Ipakita ang Listahan ng Babasahin</translation>
 <translation id="784551991304901159">Para makakita ng content, piliin ang I-on mula sa menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Na-bookmark sa "{title}"}one{Na-bookmark sa "{title}"}other{Na-bookmark sa "{title}"}}</translation>
-<translation id="7852017611907717397">I-UNDO</translation>
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7856733331829174190">Hindi Ma-download</translation>
 <translation id="785938070103630874">Buksan ang Mga Password, Paraan ng Pagbabayad, o Address at Higit Pa</translation>

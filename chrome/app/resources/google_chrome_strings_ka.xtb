@@ -86,6 +86,7 @@
 <translation id="2467438592969358367">Google Chrome ითხოვს თქვენი პაროლების ექსპორტირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
 <translation id="2485422356828889247">დეინსტალაცია</translation>
 <translation id="2534507159460261402">Google Pay (Chrome-ში კოპირებული)</translation>
+<translation id="2556847002339236023">თქვენი ორგანიზაცია ხურავს Chrome-ს, როცა ის <ph name="TIMEOUT_DURATION" /> არ გამოიყენება. დათვალიერების მონაცემები წაიშალა. აღნიშნული, შესაძლოა, მოიცავდეს ისტორიას, ავტომატური შევსების მონაცემებსა და ჩამოტვირთვებს.</translation>
 <translation id="2559253115192232574">მოგვიანებით, თქვენ მიერ მონახულებულ საიტს საშუალება ექნება, Chrome-ს სთხოვოს თქვენი ინტერესების ჩვენება, თქვენთვის ხილული რეკლამის პერსონალიზების მიზნით. Chrome-ს შეუძლია 3-მდე ინტერესის გაზიარება.</translation>
 <translation id="2563121210305478421">გსურთ Chrome-ის ხელახლა გაშვება?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. თქვენი დათვალიერების მონაცემები რომ განაცალკევოთ, Chrome-ს შეუძლია თქვენთვის პერსონალური პროფილის შექმნა.</translation>
@@ -274,6 +275,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6113794647360055231">Chrome უბრალოდ გაუმჯობესდა</translation>
 <translation id="6145313976051292476">PDF-ების გახსნა Chrome-ში</translation>
 <translation id="6155960517327665396">მეხსიერების დამზოგმა ააჩქარა Chrome</translation>
+<translation id="6157638032135951407">თქვენი ორგანიზაცია შლის Chrome-ის მონაცემებს, როცა ის <ph name="TIMEOUT_DURATION" /> არ გამოიყენება. აღნიშნული, შესაძლოა, მოიცავდეს ისტორიას, ავტომატური შევსების მონაცემებსა და ჩამოტვირთვებს.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome Beta</translation>
 <translation id="6235018212288296708">Google Chrome-ის შემომავალი ტრაფიკის წესი mDNS ტრაფიკისთვის.</translation>
@@ -289,6 +291,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6418662306461808273">გსურთ არსებულ Chrome პროფილზე გადართვა?</translation>
 <translation id="648319183876919572">გაძლიერებული Safe Browsing მეტად გიცავთ სახიფათო ვებსაიტებისა და ჩამოტვირთვებისგან</translation>
 <translation id="6493527311031785448">Google Chrome ცდილობს შემდეგს: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="6497147134301593682">Chrome ავტომატურად დაიხურა</translation>
 <translation id="6506909944137591434">თქვენი შემოგარენის 3-განზომილებიანი რუკის შესაქმნელად Chrome საჭიროებს მეხსიერებაზე წვდომის ნებართვას</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome Dev</translation>
 <translation id="659498884637196217">Google პაროლების მმართველში ამ მოწყობილობაზე</translation>
@@ -325,6 +328,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7155997830309522122">ამ შემთხევაში ჩაასწორეთ Chrome-ში შენახული პაროლი ახლის მიხედვით.</translation>
 <translation id="7161904924553537242">მოგესალმებათ Google Chrome!</translation>
 <translation id="7177959540995930968">ამ ფუნქციების შესახებ დამატებითი ინფორმაციის მიღება შეგიძლიათ Chrome-ის პარამეტრებიდან.</translation>
+<translation id="7193885263065350793">თქვენი ორგანიზაცია ხურავს Chrome-ს, როცა ის <ph name="TIMEOUT_DURATION" /> არ გამოიყენება.</translation>
 <translation id="7242029209006116544">თქვენ სისტემაში შედიხართ მართული ანგარიშით და მის ადმინისტრატორს თქვენი Google Chrome-ის პროფილის კონტროლის შესაძლებლობას აძლევთ. თქვენი Chrome-ის მონაცემები, როგორიცაა თქვენი პროგრამები, სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები მუდმივად მიებმება <ph name="USER_NAME" />-ს. თქვენ შეძლებთ ამ მონაცემების წაშლას Google Accounts Dashboard-ის მეშვეობით, მაგრამ თქვენ ვერ შეძლებთ ამ მონაცემების დაკავშირებას სხვა ანგარიშთან. სურვილისამებრ, შეგიძლიათ ახალი პროფილის შექმნა თქვენი Chrome-ის მონაცემების ცალე შესანახად. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">ეს ენა გამოიყენება Google Chrome-ის სამომხმარებლო ინტერფეისისთვის</translation>
 <translation id="7296210096911315575">მნიშნველოვანი ინფორმაცია გამოყენებისა და უსაფრთხოების შესახებ</translation>
