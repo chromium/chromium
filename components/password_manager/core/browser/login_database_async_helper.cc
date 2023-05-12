@@ -54,9 +54,10 @@ bool LoginDatabaseAsyncHelper::Initialize(
     LOG(ERROR) << "Could not create/open login database.";
   }
   if (success) {
-    login_db_->SetDeletionsHaveSyncedCallback(base::BindRepeating(
-        &LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
-        weak_ptr_factory_.GetWeakPtr()));
+    login_db_->password_sync_metadata_store().SetDeletionsHaveSyncedCallback(
+        base::BindRepeating(
+            &LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
+            weak_ptr_factory_.GetWeakPtr()));
 
     // Delay the actual reporting by 30 seconds, to ensure it doesn't happen
     // during the "hot phase" of Chrome startup.
@@ -451,7 +452,7 @@ LoginDatabaseAsyncHelper::RemoveCredentialByPrimaryKeySync(
 
 PasswordStoreSync::MetadataStore* LoginDatabaseAsyncHelper::GetMetadataStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return login_db_.get();
+  return login_db_ ? &login_db_->password_sync_metadata_store() : nullptr;
 }
 
 bool LoginDatabaseAsyncHelper::IsAccountStore() const {
