@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace gpu {
 
@@ -70,7 +71,7 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
         final_msaa_count != surface_msaa_count_) {
       SkColorType sk_color_type = viz::ToClosestSkColorType(
           /*gpu_compositing=*/true, format(), plane);
-      surface = SkSurface::MakeFromBackendTexture(
+      surface = SkSurfaces::WrapBackendTexture(
           gr_context, promise_texture->backendTexture(), surface_origin(),
           final_msaa_count, sk_color_type,
           backing_impl()->color_space().ToSkColorSpace(), &surface_props);

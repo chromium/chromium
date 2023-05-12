@@ -18,6 +18,7 @@
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Recording.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -46,7 +47,7 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     CHECK(write_surfaces_.empty());
     write_surfaces_.reserve(graphite_textures.size());
     for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
-      auto surface = SkSurface::MakeGraphiteFromBackendTexture(
+      auto surface = SkSurfaces::WrapBackendTexture(
           context_state_->gpu_main_graphite_recorder(),
           graphite_textures[plane], backing_impl()->GetSkColorType(plane),
           color_space().ToSkColorSpace(), &surface_props);

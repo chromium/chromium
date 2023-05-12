@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -191,7 +192,7 @@ bool SkiaOutputDeviceGL::Reshape(const SkImageInfo& image_info,
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
-  sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
+  sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
       gr_context, render_target, origin, color_type, image_info.refColorSpace(),
       &surface_props);
   if (!sk_surface_) {

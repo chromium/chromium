@@ -48,6 +48,10 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_IMAGE_ENCODE_METHODS",
     "SK_DISABLE_LEGACY_IMAGE_ENCODER",
     "SK_DISABLE_LEGACY_SKSURFACE_METHODS",
+
+    # Cannot turn this on until PDFium rolls into Chrome
+    # https://pdfium-review.googlesource.com/c/pdfium/+/107410
+    #"SK_DISABLE_LEGACY_SKSURFACE_FACTORIES",
   ]
 
   include_dirs = [ "//third_party/skia" ]

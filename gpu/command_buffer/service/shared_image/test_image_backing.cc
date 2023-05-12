@@ -81,8 +81,8 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
       return {};
     }
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    auto surface =
-        SkSurface::MakeRasterN32Premul(size().width(), size().height(), &props);
+    auto surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(size().width(), size().height()), &props);
     if (!surface)
       return {};
     return {surface};

@@ -103,8 +103,8 @@ class FakeImageSource : public CanvasImageSource {
 
 FakeImageSource::FakeImageSource(gfx::Size size, BitmapOpacity opacity)
     : size_(size), is_opaque_(opacity == kOpaqueBitmap) {
-  sk_sp<SkSurface> surface(
-      SkSurface::MakeRasterN32Premul(size_.width(), size_.height()));
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(
+      SkImageInfo::MakeN32Premul(size_.width(), size_.height())));
   surface->getCanvas()->clear(opacity == kOpaqueBitmap ? SK_ColorWHITE
                                                        : SK_ColorTRANSPARENT);
   image_ = UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());

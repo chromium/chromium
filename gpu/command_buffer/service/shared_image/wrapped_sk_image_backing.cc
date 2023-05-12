@@ -26,6 +26,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace gpu {
 
@@ -371,7 +372,7 @@ std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(
         context_state_->GetCachedSkSurface(texture.promise_texture.get());
     if (!surface || final_msaa_count != surface_msaa_count_ ||
         surface_props != surface->props()) {
-      surface = SkSurface::MakeFromBackendTexture(
+      surface = SkSurfaces::WrapBackendTexture(
           context_state_->gr_context(), texture.backend_texture,
           surface_origin(), final_msaa_count, GetSkColorType(plane),
           color_space().ToSkColorSpace(), &surface_props);

@@ -1700,7 +1700,7 @@ void RasterDecoderImpl::SetUpForRasterCHROMIUMForTest() {
   auto info = SkImageInfo::MakeN32(10, 10, kPremul_SkAlphaType,
                                    SkColorSpace::MakeSRGB());
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  sk_surface_for_testing_ = SkSurface::MakeRaster(info, &props);
+  sk_surface_for_testing_ = SkSurfaces::Raster(info, &props);
   sk_surface_ = sk_surface_for_testing_.get();
   raster_canvas_ = sk_surface_->getCanvas();
 }

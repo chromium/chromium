@@ -20,7 +20,9 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "ui/gl/egl_surface_io_surface.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
@@ -282,7 +284,7 @@ std::vector<sk_sp<SkSurface>> SkiaIOSurfaceRepresentation::BeginWriteAccess(
     if (sk_color_type == kGray_8_SkColorType) {
       sk_color_type = kAlpha_8_SkColorType;
     }
-    auto surface = SkSurface::MakeFromBackendTexture(
+    auto surface = SkSurfaces::WrapBackendTexture(
         context_state_->gr_context(),
         promise_textures_[plane_index]->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type,
@@ -418,7 +420,7 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
 
       skgpu::graphite::BackendTexture backend_texture(
           sk_size, mtl_textures_[plane].get());
-      auto surface = SkSurface::MakeGraphiteFromBackendTexture(
+      auto surface = SkSurfaces::WrapBackendTexture(
           recorder_, backend_texture, sk_color_type,
           backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
           &surface_props);

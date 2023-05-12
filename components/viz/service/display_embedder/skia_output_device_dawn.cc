@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/vsync_provider_win.h"
@@ -132,7 +133,7 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
                                        sample_count_, /*stencilBits=*/0, info);
   DCHECK(backend_target.isValid());
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-  sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
+  sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
       context_provider_->GetGrContext(), backend_target,
       capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft
           ? kTopLeft_GrSurfaceOrigin

@@ -140,7 +140,8 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 }
 
 ImageBitmap* CreateBitmap() {
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(8, 4);
+  sk_sp<SkSurface> surface =
+      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(8, 4));
   surface->getCanvas()->clear(SK_ColorRED);
   return MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot()));

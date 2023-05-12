@@ -2269,7 +2269,7 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
     ASSERT_TRUE(source_image);
 
     SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
-    sk_sp<SkSurface> dest_surface = SkSurface::MakeRenderTarget(
+    sk_sp<SkSurface> dest_surface = SkSurfaces::RenderTarget(
         context_state_->gr_context(), skgpu::Budgeted::kNo, rgba_image_info, 0,
         kTopLeft_GrSurfaceOrigin, &surface_props);
     ASSERT_NE(dest_surface, nullptr);

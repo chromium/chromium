@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 
 #include <webgpu/webgpu.h>
 
@@ -99,7 +100,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     sk_color_type = kAlpha_8_SkColorType;
   }
 
-  auto surface = SkSurface::MakeGraphiteFromBackendTexture(
+  auto surface = SkSurfaces::WrapBackendTexture(
       recorder_,
       skgpu::graphite::BackendTexture(dawn_scoped_access_->texture()),
       sk_color_type,

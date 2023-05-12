@@ -74,6 +74,7 @@
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -435,7 +436,7 @@ void SkiaOutputSurfaceImplOnGpu::DrawOverdraw(
     SkCanvas& canvas) {
   DCHECK(overdraw_ddl);
 
-  sk_sp<SkSurface> overdraw_surface = SkSurface::MakeRenderTarget(
+  sk_sp<SkSurface> overdraw_surface = SkSurfaces::RenderTarget(
       gr_context(), overdraw_ddl->characterization(), skgpu::Budgeted::kNo);
   overdraw_surface->draw(overdraw_ddl);
   destroy_after_swap_.push_back(std::move(overdraw_ddl));
@@ -1210,7 +1211,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   }
 
   // Create a destination for the scaled & clipped result:
-  auto intermediate_surface = SkSurface::MakeRenderTarget(
+  auto intermediate_surface = SkSurfaces::RenderTarget(
       gr_context(), skgpu::Budgeted::kYes,
       SkImageInfo::Make(gfx::SizeToSkISize(intermediate_dst_size),
                         SkColorType::kRGBA_8888_SkColorType,

@@ -41,6 +41,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -959,7 +960,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     }
 
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    buffer->sk_surface = SkSurface::MakeRasterDirect(
+    buffer->sk_surface = SkSurfaces::WrapPixels(
         SkImageInfo::Make(size.width(), size.height(), kColorType,
                           kOpaque_SkAlphaType),
         mapped_data, stride, &props);
@@ -1062,7 +1063,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     texture_info.fFormat = kSizedInternalFormat;
     GrBackendTexture backend_texture(size.width(), size.height(),
                                      GrMipMapped::kNo, texture_info);
-    buffer->sk_surface = SkSurface::MakeFromBackendTexture(
+    buffer->sk_surface = SkSurfaces::WrapBackendTexture(
         gr_context_.get(), backend_texture, kTopLeft_GrSurfaceOrigin,
         /* sampleCnt */ 0, kColorType, /* colorSpace */ nullptr,
         /* props */ nullptr);

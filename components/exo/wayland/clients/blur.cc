@@ -33,7 +33,7 @@ const int kGridSize = 4;
 // Create grid image for |size| and |cell_size|.
 sk_sp<SkImage> CreateGridImage(const gfx::Size& size,
                                const gfx::Size& cell_size) {
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+  sk_sp<SkSurface> surface(SkSurfaces::Raster(
       SkImageInfo::MakeN32(size.width(), size.height(), kOpaque_SkAlphaType)));
   SkCanvas* canvas = surface->getCanvas();
   canvas->clear(SK_ColorWHITE);

@@ -31,6 +31,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
@@ -774,7 +775,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
                                    texture_info);
 
   auto dest_color_space = SkColorSpace::MakeSRGB();
-  sk_sp<SkSurface> dest_surface = SkSurface::MakeFromBackendTexture(
+  sk_sp<SkSurface> dest_surface = SkSurfaces::WrapBackendTexture(
       shared_context_state_->gr_context(), backend_texture,
       flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
              : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
