@@ -25,6 +25,12 @@
     width: calc(100% - 16px);
   }
 
+  :host-context([dir=rtl]) cr-toast {
+    left: auto;
+    right: 50%;
+    transform: translate(50%, 0);
+  }
+
   cr-toolbar-search-field {
     flex-shrink: 0;
     margin: 14px;
