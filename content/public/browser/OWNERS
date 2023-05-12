@@ -1,2 +1,6 @@
 # Note: don't add new owners here. Only content/OWNERS review public changes to
 # ensure consistency and that the public API guidelines are followed closely.
+
+# Security review is required for new callers of some ServiceProcessHostOptions.
+per-file service_process_host_passkeys.h=set noparent
+per-file service_process_host_passkeys.h=file://sandbox/OWNERS

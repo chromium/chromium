@@ -1875,6 +1875,8 @@ test("content_browsertests") {
       "//third_party/isimpledom",
     ]
 
+    data_deps += [ "//services/test/echo:echo_preload_library" ]
+
     libs = [ "uiautomationcore.lib" ]
 
     configs += [ "//build/config/win:delayloads" ]
