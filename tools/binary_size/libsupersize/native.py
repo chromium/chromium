@@ -695,9 +695,6 @@ def CreateMetadata(*, native_spec, elf_info, shorten_path):
     timestamp = calendar.timegm(timestamp_obj.timetuple())
     native_metadata[models.METADATA_ELF_MTIME] = timestamp
 
-    relocations_count = _CountRelocationsFromElf(native_spec.elf_path)
-    native_metadata[models.METADATA_ELF_RELOCATIONS_COUNT] = relocations_count
-
   if native_spec.map_path:
     native_metadata[models.METADATA_MAP_FILENAME] = shorten_path(
         native_spec.map_path)
@@ -807,10 +804,15 @@ def CreateSymbols(*,
   if elf_info:
     section_ranges = elf_info.section_ranges.copy()
     if native_spec.elf_path:
-      metrics_by_file[posixpath.basename(native_spec.elf_path)] = {
-          'SIZE/' + k: size
+      key = posixpath.basename(native_spec.elf_path)
+      metrics_by_file[key] = {
+          f'{models.METRICS_SIZE}/{k}': size
           for (k, (offset, size)) in section_ranges.items()
       }
+      relocations_count = _CountRelocationsFromElf(native_spec.elf_path)
+      metrics_by_file[key][
+          f'{models.METRICS_COUNT}/{models.METRICS_COUNT_RELOCATIONS}'] = (
+              relocations_count)
 
   source_path = ''
   if native_spec.apk_so_path:

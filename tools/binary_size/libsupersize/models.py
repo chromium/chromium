@@ -21,6 +21,10 @@ BUILD_CONFIG_TITLE = 'title'
 BUILD_CONFIG_URL = 'url'
 BUILD_CONFIG_OUT_DIRECTORY = 'out_directory'
 
+METRICS_COUNT = 'COUNT'
+METRICS_COUNT_RELOCATIONS = 'Relocations'
+METRICS_SIZE = 'SIZE'
+
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.
 METADATA_APK_SIZE = 'apk_size'  # File size of apk in bytes.
 METADATA_APK_SPLIT_NAME = 'apk_split_name'  # Name of the split if applicable.
@@ -33,7 +37,6 @@ METADATA_ELF_ARCHITECTURE = 'elf_arch'  # "arm", "arm64", "x86", or "x64".
 METADATA_ELF_FILENAME = 'elf_file_name'  # Path relative to output_directory.
 METADATA_ELF_MTIME = 'elf_mtime'  # int timestamp in utc.
 METADATA_ELF_BUILD_ID = 'elf_build_id'
-METADATA_ELF_RELOCATIONS_COUNT = 'elf_relocations_count'
 METADATA_PROGUARD_MAPPING_FILENAME = 'proguard_mapping_file_name'
 
 # New sections should also be added to the SuperSize UI.

@@ -607,6 +607,6 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
   map_item_sizes = dexfile.ComputeMapItemSizes()
   metrics = {}
   for item in map_item_sizes:
-    metrics['SIZE/' + item['name']] = item['byte_size']
-    metrics['COUNT/' + item['name']] = item['size']
+    metrics[f'{models.METRICS_SIZE}/' + item['name']] = item['byte_size']
+    metrics[f'{models.METRICS_COUNT}/' + item['name']] = item['size']
   return section_ranges, dex_other_symbols, {dex_path: metrics}

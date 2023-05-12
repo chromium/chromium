@@ -132,7 +132,8 @@ def CreateArscSymbols(apk_spec):
             raw_symbols.append(placeholder_sym)
 
           if isinstance(chunk, arsc_parser.ArscResTableTypeSpec):
-            metrics['COUNT/' + chunk.type_str] = chunk.entry_count
+            metrics[f'{models.METRICS_COUNT}/{chunk.type_str}'] = (
+                chunk.entry_count)
 
           overhead -= chunk.size
       if overhead > 0:
