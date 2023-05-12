@@ -62,7 +62,9 @@ enum DistinctState {
   STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR,
   STATUS_CASE_SYNCED,
   STATUS_CASE_SYNC_DISABLED_BY_POLICY,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   STATUS_CASE_SYNC_RESET_FROM_DASHBOARD,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   NUMBER_OF_STATUS_CASES
 };
 
@@ -194,6 +196,7 @@ SyncStatusLabels SetUpDistinctCase(
               IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
       // Note: On desktop, if there is a primary account, then
       // DISABLE_REASON_USER_CHOICE can only occur if Sync was reset from the
@@ -209,6 +212,7 @@ SyncStatusLabels SetUpDistinctCase(
               IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case NUMBER_OF_STATUS_CASES:
       NOTREACHED();
   }
