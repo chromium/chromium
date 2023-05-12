@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
@@ -88,37 +87,6 @@ std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
 
   NOTREACHED() << "Bad enrollment mode " << mode;
   return kEnrollmentModeUIManual;
-}
-
-constexpr struct {
-  const char* id;
-  int title_id;
-  int subtitle_id;
-  authpolicy::KerberosEncryptionTypes encryption_types;
-} kEncryptionTypes[] = {
-    {"strong", IDS_AD_ENCRYPTION_STRONG_TITLE,
-     IDS_AD_ENCRYPTION_STRONG_SUBTITLE,
-     authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG},
-    {"all", IDS_AD_ENCRYPTION_ALL_TITLE, IDS_AD_ENCRYPTION_ALL_SUBTITLE,
-     authpolicy::KerberosEncryptionTypes::ENC_TYPES_ALL},
-    {"legacy", IDS_AD_ENCRYPTION_LEGACY_TITLE,
-     IDS_AD_ENCRYPTION_LEGACY_SUBTITLE,
-     authpolicy::KerberosEncryptionTypes::ENC_TYPES_LEGACY}};
-
-base::Value::List GetEncryptionTypesList() {
-  const authpolicy::KerberosEncryptionTypes default_types =
-      authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG;
-  base::Value::List encryption_list;
-  for (const auto& enc_types : kEncryptionTypes) {
-    base::Value::Dict enc_option;
-    enc_option.Set("title", l10n_util::GetStringUTF16(enc_types.title_id));
-    enc_option.Set("subtitle",
-                   l10n_util::GetStringUTF16(enc_types.subtitle_id));
-    enc_option.Set("value", enc_types.id);
-    enc_option.Set("selected", default_types == enc_types.encryption_types);
-    encryption_list.Append(std::move(enc_option));
-  }
-  return encryption_list;
 }
 
 std::string GetFlowString(EnrollmentScreenView::FlowType type) {
@@ -582,6 +550,7 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_SKIP_ENROLLMENT_DIALOG_SKIP_BUTTON);
 
   /* Active Directory strings */
+  // TODO(b/280560446) Remove once references in HTML/JS are removed.
   builder->Add("oauthEnrollAdMachineNameInput", IDS_AD_DEVICE_NAME_INPUT_LABEL);
   builder->Add("oauthEnrollAdDomainJoinWelcomeMessage",
                IDS_AD_DOMAIN_JOIN_WELCOME_MESSAGE);
@@ -626,7 +595,17 @@ void EnrollmentScreenHandler::DeclareJSCallbacks() {
 
 void EnrollmentScreenHandler::GetAdditionalParameters(
     base::Value::Dict* parameters) {
-  parameters->Set("encryptionTypesList", GetEncryptionTypesList());
+  // TODO(b/280560446) Remove this placeholder once
+  // chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.js
+  // is removed (currently, some tests still depend on this list to be
+  // non-empty).
+  parameters->Set(
+      "encryptionTypesList",
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("title", "some title")
+                                     .Set("subtitle", "some subtitle")
+                                     .Set("value", 42)
+                                     .Set("selected", false)));
 }
 
 bool EnrollmentScreenHandler::IsOnEnrollmentScreen() {
