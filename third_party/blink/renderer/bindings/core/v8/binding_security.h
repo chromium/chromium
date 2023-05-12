@@ -39,7 +39,6 @@
 namespace blink {
 
 class DOMWindow;
-class ExceptionState;
 class LocalDOMWindow;
 class Location;
 class Node;
@@ -52,8 +51,6 @@ class CORE_EXPORT BindingSecurity {
   STATIC_ONLY(BindingSecurity);
 
  public:
-  using ErrorReportOption = BindingSecurityForPlatform::ErrorReportOption;
-
   static void Init();
 
   // Checks if the caller (|accessing_window|) is allowed to access the JS
@@ -65,13 +62,11 @@ class CORE_EXPORT BindingSecurity {
   //
   // DOMWindow
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const DOMWindow* target,
-                                  ErrorReportOption);
+                                  const DOMWindow* target);
 
   // Location
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Location* target,
-                                  ErrorReportOption);
+                                  const Location* target);
 
   // Checks if the caller (|accessing_window|) is allowed to access the JS
   // returned object (|target|), where the returned object is the JS object
@@ -85,20 +80,14 @@ class CORE_EXPORT BindingSecurity {
   //
   // Node
   static bool ShouldAllowAccessTo(const LocalDOMWindow* accessing_window,
-                                  const Node* target,
-                                  ErrorReportOption);
+                                  const Node* target);
 
-  // These overloads should be used only when checking a general access from
-  // one context to another context.  For access to a receiver object or
+  // This function should be used only when checking a general access from
+  // one context to another context. For access to a receiver object or
   // returned object, you should use the above overloads.
   static bool ShouldAllowAccessToV8Context(
       v8::Local<v8::Context> accessing_context,
-      v8::MaybeLocal<v8::Context> target_context,
-      ExceptionState&);
-  static bool ShouldAllowAccessToV8Context(
-      v8::Local<v8::Context> accessing_context,
-      v8::MaybeLocal<v8::Context> target_context,
-      ErrorReportOption);
+      v8::MaybeLocal<v8::Context> target_context);
 
   static void FailedAccessCheckFor(v8::Isolate*,
                                    const WrapperTypeInfo*,

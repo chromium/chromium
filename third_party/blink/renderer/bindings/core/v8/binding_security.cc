@@ -70,9 +70,8 @@ bool IsSameWindowAgentFactory(const LocalDOMWindow* window1,
 }  // namespace
 
 void BindingSecurity::Init() {
-  BindingSecurityForPlatform::
-      SetShouldAllowAccessToV8ContextWithErrorReportOption(
-          ShouldAllowAccessToV8Context);
+  BindingSecurityForPlatform::SetShouldAllowAccessToV8Context(
+      ShouldAllowAccessToV8Context);
   BindingSecurityForPlatform::SetShouldAllowWrapperCreationOrThrowException(
       ShouldAllowWrapperCreationOrThrowException);
   BindingSecurityForPlatform::SetRethrowWrapperCreationException(
@@ -81,38 +80,22 @@ void BindingSecurity::Init() {
 
 namespace {
 
-void ReportOrThrowSecurityError(
+void ThrowSecurityError(
     const LocalDOMWindow* accessing_window,
     const DOMWindow* target_window,
     DOMWindow::CrossDocumentAccessPolicy cross_document_access,
-    ExceptionState& exception_state) {
+    ExceptionState* exception_state) {
+  if (!exception_state) {
+    return;
+  }
   if (target_window) {
-    exception_state.ThrowSecurityError(
+    exception_state->ThrowSecurityError(
         target_window->SanitizedCrossDomainAccessErrorMessage(
             accessing_window, cross_document_access),
         target_window->CrossDomainAccessErrorMessage(accessing_window,
                                                      cross_document_access));
   } else {
-    exception_state.ThrowSecurityError("Cross origin access was denied.");
-  }
-}
-
-void ReportOrThrowSecurityError(
-    const LocalDOMWindow* accessing_window,
-    const DOMWindow* target_window,
-    DOMWindow::CrossDocumentAccessPolicy cross_document_access,
-    BindingSecurity::ErrorReportOption reporting_option) {
-  if (reporting_option == BindingSecurity::ErrorReportOption::kDoNotReport)
-    return;
-
-  if (accessing_window && target_window) {
-    accessing_window->PrintErrorMessage(
-        target_window->CrossDomainAccessErrorMessage(accessing_window,
-                                                     cross_document_access));
-  } else if (accessing_window) {
-    accessing_window->PrintErrorMessage("Cross origin access was denied.");
-  } else {
-    // Nowhere to report the error.
+    exception_state->ThrowSecurityError("Cross origin access was denied.");
   }
 }
 
@@ -203,18 +186,18 @@ bool CanAccessWindowInternal(
   return true;
 }
 
-template <typename ExceptionStateOrErrorReportOption>
 bool CanAccessWindow(const LocalDOMWindow* accessing_window,
                      const DOMWindow* target_window,
-                     ExceptionStateOrErrorReportOption& error_report) {
+                     ExceptionState* exception_state) {
   DOMWindow::CrossDocumentAccessPolicy cross_document_access =
       DOMWindow::CrossDocumentAccessPolicy::kAllowed;
   if (CanAccessWindowInternal(accessing_window, target_window,
-                              &cross_document_access))
+                              &cross_document_access)) {
     return true;
+  }
 
-  ReportOrThrowSecurityError(accessing_window, target_window,
-                             cross_document_access, error_report);
+  ThrowSecurityError(accessing_window, target_window, cross_document_access,
+                     exception_state);
   return false;
 }
 
@@ -236,10 +219,9 @@ DOMWindow* FindWindow(v8::Isolate* isolate,
 
 bool BindingSecurity::ShouldAllowAccessTo(
     const LocalDOMWindow* accessing_window,
-    const DOMWindow* target,
-    ErrorReportOption reporting_option) {
+    const DOMWindow* target) {
   DCHECK(target);
-  bool can_access = CanAccessWindow(accessing_window, target, reporting_option);
+  bool can_access = CanAccessWindow(accessing_window, target, nullptr);
 
   if (!can_access && accessing_window) {
     UseCounter::Count(accessing_window->document(),
@@ -255,11 +237,10 @@ bool BindingSecurity::ShouldAllowAccessTo(
 
 bool BindingSecurity::ShouldAllowAccessTo(
     const LocalDOMWindow* accessing_window,
-    const Location* target,
-    ErrorReportOption reporting_option) {
+    const Location* target) {
   DCHECK(target);
   bool can_access =
-      CanAccessWindow(accessing_window, target->DomWindow(), reporting_option);
+      CanAccessWindow(accessing_window, target->DomWindow(), nullptr);
 
   if (!can_access && accessing_window) {
     UseCounter::Count(accessing_window->document(),
@@ -275,21 +256,19 @@ bool BindingSecurity::ShouldAllowAccessTo(
 
 bool BindingSecurity::ShouldAllowAccessTo(
     const LocalDOMWindow* accessing_window,
-    const Node* target,
-    ErrorReportOption reporting_option) {
+    const Node* target) {
   if (!target)
     return false;
   return CanAccessWindow(accessing_window, target->GetDocument().domWindow(),
-                         reporting_option);
+                         nullptr);
 }
 
 namespace {
 
-template <typename ExceptionStateOrErrorReportOption>
 bool ShouldAllowAccessToV8ContextInternal(
     v8::Local<v8::Context> accessing_context,
     v8::MaybeLocal<v8::Context> maybe_target_context,
-    ExceptionStateOrErrorReportOption& error_report) {
+    ExceptionState* exception_state) {
   // Workers and worklets do not support multiple contexts, so both of
   // |accessing_context| and |target_context| must be windows at this point.
 
@@ -297,9 +276,9 @@ bool ShouldAllowAccessToV8ContextInternal(
   // contexts are unconditionally treated as cross origin.
   v8::Local<v8::Context> target_context;
   if (!maybe_target_context.ToLocal(&target_context)) {
-    ReportOrThrowSecurityError(ToLocalDOMWindow(accessing_context), nullptr,
-                               DOMWindow::CrossDocumentAccessPolicy::kAllowed,
-                               error_report);
+    ThrowSecurityError(ToLocalDOMWindow(accessing_context), nullptr,
+                       DOMWindow::CrossDocumentAccessPolicy::kAllowed,
+                       exception_state);
     return false;
   }
   // Fast path for the most likely case.
@@ -312,25 +291,16 @@ bool ShouldAllowAccessToV8ContextInternal(
   CHECK_EQ(accessing_world.GetWorldId(), target_world.GetWorldId());
   return !accessing_world.IsMainWorld() ||
          CanAccessWindow(ToLocalDOMWindow(accessing_context),
-                         ToLocalDOMWindow(target_context), error_report);
+                         ToLocalDOMWindow(target_context), exception_state);
 }
 
 }  // namespace
 
 bool BindingSecurity::ShouldAllowAccessToV8Context(
     v8::Local<v8::Context> accessing_context,
-    v8::MaybeLocal<v8::Context> target_context,
-    ExceptionState& exception_state) {
+    v8::MaybeLocal<v8::Context> target_context) {
   return ShouldAllowAccessToV8ContextInternal(accessing_context, target_context,
-                                              exception_state);
-}
-
-bool BindingSecurity::ShouldAllowAccessToV8Context(
-    v8::Local<v8::Context> accessing_context,
-    v8::MaybeLocal<v8::Context> target_context,
-    ErrorReportOption reporting_option) {
-  return ShouldAllowAccessToV8ContextInternal(accessing_context, target_context,
-                                              reporting_option);
+                                              nullptr);
 }
 
 bool BindingSecurity::ShouldAllowWrapperCreationOrThrowException(
@@ -352,8 +322,8 @@ bool BindingSecurity::ShouldAllowWrapperCreationOrThrowException(
   ExceptionState exception_state(accessing_context->GetIsolate(),
                                  ExceptionState::kConstructionContext,
                                  wrapper_type_info->interface_name);
-  return ShouldAllowAccessToV8Context(accessing_context, creation_context,
-                                      exception_state);
+  return ShouldAllowAccessToV8ContextInternal(
+      accessing_context, creation_context, &exception_state);
 }
 
 void BindingSecurity::RethrowWrapperCreationException(
@@ -365,8 +335,8 @@ void BindingSecurity::RethrowWrapperCreationException(
   v8::Isolate* isolate = creation_context.ToLocalChecked()->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  wrapper_type_info->interface_name);
-  if (!ShouldAllowAccessToV8Context(accessing_context, creation_context,
-                                    exception_state)) {
+  if (!ShouldAllowAccessToV8ContextInternal(accessing_context, creation_context,
+                                            &exception_state)) {
     // A cross origin exception has turned into a SecurityError.
     CHECK(exception_state.HadException());
     return;

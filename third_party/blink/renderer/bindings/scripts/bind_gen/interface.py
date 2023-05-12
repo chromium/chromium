@@ -1006,8 +1006,7 @@ def make_check_security_of_return_value(cg_context):
     use_counter = _format(
         "UseCounter::Count(${current_execution_context}, {});", web_feature)
     cond = T("!BindingSecurity::ShouldAllowAccessTo("
-             "ToLocalDOMWindow(${current_context}), ${return_value}, "
-             "BindingSecurity::ErrorReportOption::kDoNotReport)")
+             "ToLocalDOMWindow(${current_context}), ${return_value})")
     body = [
         T(use_counter),
         T("bindings::V8SetReturnValue(${info}, nullptr);\n"
@@ -4027,8 +4026,7 @@ def make_cross_origin_access_check_callback(cg_context, function_name):
                 blink_class=blink_class)),
         TextNode("return BindingSecurity::ShouldAllowAccessTo("
                  "ToLocalDOMWindow(${accessing_context}), "
-                 "blink_accessed_object, "
-                 "BindingSecurity::ErrorReportOption::kDoNotReport);"),
+                 "blink_accessed_object);"),
     ])
 
     return func_def

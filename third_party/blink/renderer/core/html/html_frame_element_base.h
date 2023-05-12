@@ -80,7 +80,6 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
 
   void SetLocation(const String&);
   void SetNameAndOpenURL();
-  bool IsURLAllowed() const;
   void OpenURL(bool replace_current_item = true);
 
   mojom::blink::ScrollbarMode scrollbar_mode_;

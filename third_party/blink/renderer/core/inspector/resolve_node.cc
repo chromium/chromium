@@ -16,10 +16,10 @@ namespace blink {
 
 v8::Local<v8::Value> NodeV8Value(v8::Local<v8::Context> context, Node* node) {
   v8::Isolate* isolate = context->GetIsolate();
-  if (!node || !BindingSecurity::ShouldAllowAccessTo(
-                   CurrentDOMWindow(isolate), node,
-                   BindingSecurity::ErrorReportOption::kDoNotReport))
+  if (!node ||
+      !BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(isolate), node)) {
     return v8::Null(isolate);
+  }
   return ToV8(node, context->Global(), isolate);
 }
 

@@ -115,9 +115,8 @@ void V8Window::FrameElementAttributeGetterCustom(
   LocalDOMWindow* impl = To<LocalDOMWindow>(V8Window::ToImpl(info.Holder()));
   Element* frameElement = impl->frameElement();
 
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), frameElement,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
+  if (!BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(info.GetIsolate()),
+                                            frameElement)) {
     V8SetReturnValueNull(info);
     return;
   }
@@ -232,9 +231,8 @@ void V8Window::NamedPropertyGetterCustom(
 
   // This is a cross-origin interceptor. Check that the caller has access to the
   // named results.
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), window,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
+  if (!BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(info.GetIsolate()),
+                                            window)) {
     // HTML 7.2.3.3 CrossOriginGetOwnPropertyHelper ( O, P )
     // https://html.spec.whatwg.org/C/#crossorigingetownpropertyhelper-(-o,-p-)
     // step 3. If P is "then", @@toStringTag, @@hasInstance, or

@@ -1,11 +1,3 @@
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
-CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
 This script tests if iframe.src can be set to a JavaScript URL via alternate DOM interfaces (such as Node.textContent or NamedNode.setNamedItem). The test is successful if no alerts appear and the page finishes loading.
 
 

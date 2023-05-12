@@ -2171,9 +2171,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // entered realm should be same origin-domain. However, to be on the safe
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          entered_window, this,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
+  if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this)) {
     // Trigger DCHECK() failure, while gracefully failing on release builds.
     NOTREACHED();
     UseCounter::Count(GetExecutionContext(),
@@ -2317,9 +2315,7 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
   // entered realm should be same origin-domain. However, to be on the safe
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          entered_window, this,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
+  if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this)) {
     // Trigger DCHECK() failure, while gracefully failing on release builds.
     NOTREACHED();
     UseCounter::Count(GetExecutionContext(),

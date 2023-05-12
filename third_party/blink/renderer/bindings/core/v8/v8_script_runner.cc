@@ -730,8 +730,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
 
   DCHECK(!window || !window->GetFrame() ||
          BindingSecurity::ShouldAllowAccessTo(
-             ToLocalDOMWindow(function->GetCreationContextChecked()), window,
-             BindingSecurity::ErrorReportOption::kDoNotReport));
+             ToLocalDOMWindow(function->GetCreationContextChecked()), window));
   v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
   v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                        v8::MicrotasksScope::kRunMicrotasks);
