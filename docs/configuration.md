@@ -65,7 +65,7 @@ Switches:
 
 * *Are not* directly surfaced to the user
 * *Are not* localized into the user's language
-* *Are* configurable via enterprise policy
+* *Are not* configurable via enterprise policy (except on Chrome OS, via FeatureFlagsProto)
 * *Are not* reported via UMA when in use
 * *Are* included in chrome://version
 * *Are not* automatically persistent across restarts
