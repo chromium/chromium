@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/bundle_locations.h"
 #import "base/containers/contains.h"
-#import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_cftyperef.h"
 #import "base/strings/string_split.h"

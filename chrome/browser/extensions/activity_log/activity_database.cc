@@ -23,7 +23,7 @@
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 #endif
 
 namespace extensions {
@@ -87,7 +87,7 @@ void ActivityDatabase::Init(const base::FilePath& db_name) {
 
 #if BUILDFLAG(IS_MAC)
   // Exclude the database from backups.
-  base::mac::SetBackupExclusion(db_name);
+  base::apple::SetBackupExclusion(db_name);
 #endif
 
   if (!delegate_->InitDatabase(&db_))

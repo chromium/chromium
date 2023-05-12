@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "apps/app_lifetime_monitor_factory.h"
+#include "base/apple/bundle_locations.h"
 #include "base/barrier_closure.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -20,7 +21,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/memory/raw_ptr.h"
@@ -110,7 +110,7 @@ CreateAppShimRequirement() {
   // validating. We are only interested in discovering if the framework bundle
   // is code-signed, and if so what the designated requirement is.
   base::ScopedCFTypeRef<CFURLRef> framework_url =
-      base::mac::FilePathToCFURL(base::mac::FrameworkBundlePath());
+      base::mac::FilePathToCFURL(base::apple::FrameworkBundlePath());
   base::ScopedCFTypeRef<SecStaticCodeRef> framework_code;
   OSStatus status = SecStaticCodeCreateWithPath(
       framework_url, kSecCSDefaultFlags, framework_code.InitializeInto());

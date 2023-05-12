@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-namespace base::mac {
+namespace base::apple {
 
 namespace {
 
@@ -45,7 +45,7 @@ TEST_F(BackupUtilTest, TestExcludeFileFromBackups_NotByPath) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
   base::ScopedCFTypeRef<CFURLRef> excluded_url =
-      base::mac::FilePathToCFURL(excluded_file_path);
+      mac::FilePathToCFURL(excluded_file_path);
 
   constexpr char placeholder_data[] = "All your base are belong to us!";
   ASSERT_EQ(checked_cast<int>(std::size(placeholder_data)),
@@ -67,4 +67,4 @@ TEST_F(BackupUtilTest, TestExcludeFileFromBackups_NotByPath) {
 
 }  // namespace
 
-}  // namespace base::mac
+}  // namespace base::apple

@@ -19,12 +19,12 @@
 
 #include <algorithm>
 
+#include "base/apple/bundle_locations.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
@@ -437,7 +437,7 @@ void ShowErrorDialog() {
 DiskImageStatus IsAppRunningFromReadOnlyDiskImage(
     std::string* dmg_bsd_device_name) {
   return IsPathOnReadOnlyDiskImage(
-      base::mac::OuterBundle().bundlePath.fileSystemRepresentation,
+      base::apple::OuterBundle().bundlePath.fileSystemRepresentation,
       dmg_bsd_device_name);
 }
 
@@ -469,7 +469,7 @@ bool MaybeInstallFromDiskImage() {
       return false;
     }
 
-    NSString* source_path = base::mac::OuterBundle().bundlePath;
+    NSString* source_path = base::apple::OuterBundle().bundlePath;
     NSString* application_name = source_path.lastPathComponent;
     NSString* target_path =
         [application_directory stringByAppendingPathComponent:application_name];
@@ -481,8 +481,8 @@ bool MaybeInstallFromDiskImage() {
     }
 
     NSURL* installer_url =
-        [base::mac::FrameworkBundle() URLForResource:@"install"
-                                       withExtension:@"sh"];
+        [base::apple::FrameworkBundle() URLForResource:@"install"
+                                         withExtension:@"sh"];
     if (!installer_url) {
       VLOG(1) << "Could not locate install.sh";
       return false;

@@ -29,7 +29,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -236,7 +236,7 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
     case chrome::DIR_RESOURCES:
 #if BUILDFLAG(IS_MAC)
-      cur = base::mac::FrameworkBundlePath();
+      cur = base::apple::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Resources"));
 #else
       if (!base::PathService::Get(base::DIR_ASSETS, &cur))
@@ -337,7 +337,7 @@ bool PathProvider(int key, base::FilePath* result) {
     case chrome::FILE_RESOURCES_PACK:  // Falls through.
     case chrome::FILE_DEV_UI_RESOURCES_PACK:
 #if BUILDFLAG(IS_MAC)
-      cur = base::mac::FrameworkBundlePath();
+      cur = base::apple::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Resources"))
                .Append(FILE_PATH_LITERAL("resources.pak"));
 #elif BUILDFLAG(IS_ANDROID)
@@ -475,7 +475,7 @@ bool PathProvider(int key, base::FilePath* result) {
       return false;
 #else
 #if BUILDFLAG(IS_MAC)
-      cur = base::mac::FrameworkBundlePath();
+      cur = base::apple::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Default Apps"));
 #else
       if (!base::PathService::Get(base::DIR_MODULE, &cur))

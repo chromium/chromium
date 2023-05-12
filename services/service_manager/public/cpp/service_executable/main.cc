@@ -23,7 +23,7 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

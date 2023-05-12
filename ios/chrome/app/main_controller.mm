@@ -6,10 +6,10 @@
 
 #import <memory>
 
+#import "base/apple/bundle_locations.h"
 #import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -424,7 +424,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)startUpBrowserBackgroundInitialization {
   DCHECK(self.appState.initStage > InitStageSafeMode);
 
-  NSBundle* baseBundle = base::mac::OuterBundle();
+  NSBundle* baseBundle = base::apple::OuterBundle();
   base::mac::SetBaseBundleID(
       base::SysNSStringToUTF8([baseBundle bundleIdentifier]).c_str());
 
@@ -433,7 +433,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [RegisterExperimentalSettings
       registerExperimentalSettingsWithUserDefaults:[NSUserDefaults
                                                        standardUserDefaults]
-                                            bundle:base::mac::
+                                            bundle:base::apple::
                                                        FrameworkBundle()];
 
   // Register all clients before calling any web code.

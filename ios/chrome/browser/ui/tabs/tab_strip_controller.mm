@@ -8,9 +8,9 @@
 #import <memory>
 #import <vector>
 
+#import "base/apple/bundle_locations.h"
 #import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"

@@ -42,7 +42,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -654,7 +654,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   base::FilePath module_path;
 #if BUILDFLAG(IS_MAC)
   if (base::mac::AmIBundled()) {
-    dawn_search_path = base::mac::FrameworkBundlePath()
+    dawn_search_path = base::apple::FrameworkBundlePath()
                            .Append("Libraries")
                            .AsEndingWithSeparator()
                            .MaybeAsASCII();

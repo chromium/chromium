@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/ios/wait_util.h"

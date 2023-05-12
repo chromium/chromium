@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 
@@ -17,7 +17,7 @@
 namespace mac_notifications {
 
 bool IsAppBundleAlertStyle() {
-  NSDictionary* infoDictionary = [base::mac::MainBundle() infoDictionary];
+  NSDictionary* infoDictionary = [base::apple::MainBundle() infoDictionary];
   NSString* alertStyle = infoDictionary[@"NSUserNotificationAlertStyle"];
   return [alertStyle isEqualToString:@"alert"];
 }

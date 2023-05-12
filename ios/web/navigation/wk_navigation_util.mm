@@ -6,8 +6,8 @@
 
 #import <algorithm>
 
+#import "base/apple/bundle_locations.h"
 #import "base/json/json_writer.h"
-#import "base/mac/bundle_locations.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/escape.h"
 #import "base/strings/string_util.h"
@@ -79,8 +79,8 @@ bool URLNeedsUserAgentType(const GURL& url) {
 
 GURL GetRestoreSessionBaseUrl() {
   std::string restore_session_resource_path = base::SysNSStringToUTF8(
-      [base::mac::FrameworkBundle() pathForResource:@"restore_session"
-                                             ofType:@"html"]);
+      [base::apple::FrameworkBundle() pathForResource:@"restore_session"
+                                               ofType:@"html"]);
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kFileScheme);
   replacements.SetPathStr(restore_session_resource_path);

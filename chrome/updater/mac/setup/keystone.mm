@@ -7,13 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -114,7 +114,7 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
   // The Keystone Bundle is in
   // GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle.
   base::FilePath keystone_bundle_path =
-      base::mac::OuterBundlePath()
+      base::apple::OuterBundlePath()
           .Append(FILE_PATH_LITERAL("Contents"))
           .Append(FILE_PATH_LITERAL("Helpers"))
           .Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"));

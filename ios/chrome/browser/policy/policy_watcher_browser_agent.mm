@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/backup_util.h"
+#import "base/apple/backup_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
@@ -167,12 +167,12 @@ void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
   if (backup_allowed) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::mac::ClearBackupExclusion),
+        base::BindOnce(base::IgnoreResult(&base::apple::ClearBackupExclusion),
                        std::move(storage_dir)));
   } else {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::mac::SetBackupExclusion),
+        base::BindOnce(base::IgnoreResult(&base::apple::SetBackupExclusion),
                        std::move(storage_dir)));
   }
 }

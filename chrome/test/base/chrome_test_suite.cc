@@ -40,7 +40,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #endif
@@ -107,7 +107,7 @@ void ChromeTestSuite::Initialize() {
   base::FilePath path;
   base::PathService::Get(base::DIR_EXE, &path);
   path = path.Append(chrome::kFrameworkName);
-  base::mac::SetOverrideFrameworkBundlePath(path);
+  base::apple::SetOverrideFrameworkBundlePath(path);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -132,7 +132,7 @@ void ChromeTestSuite::Initialize() {
 
 void ChromeTestSuite::Shutdown() {
 #if BUILDFLAG(IS_MAC)
-  base::mac::SetOverrideFrameworkBundlePath({});
+  base::apple::SetOverrideFrameworkBundlePath({});
 #endif
 
   content::ContentTestSuiteBase::Shutdown();

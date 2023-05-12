@@ -6,7 +6,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -424,7 +424,7 @@ enum HeaderBehaviour {
                            (KeyCommandsProvider*)keyCommandsProvider
                               dependencies:(BrowserViewControllerDependencies)
                                                dependencies {
-  self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
+  self = [super initWithNibName:nil bundle:base::apple::FrameworkBundle()];
   if (self) {
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
@@ -1304,7 +1304,7 @@ enum HeaderBehaviour {
       self.hideStatusBar = YES;
 
       // Load view from Launch Screen and add it to window.
-      NSBundle* mainBundle = base::mac::FrameworkBundle();
+      NSBundle* mainBundle = base::apple::FrameworkBundle();
       NSArray* topObjects = [mainBundle loadNibNamed:@"LaunchScreen"
                                                owner:self
                                              options:nil];

@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
@@ -70,7 +70,7 @@ void BrowserUpdaterHelperClientMac::SetupSystemUpdater(
 
   [[xpc_connection_ remoteObjectProxyWithErrorHandler:errorHandler]
       setupSystemUpdaterWithBrowserPath:base::mac::FilePathToNSString(
-                                            base::mac::OuterBundlePath())
+                                            base::apple::OuterBundlePath())
                                   reply:reply];
 }
 

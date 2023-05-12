@@ -4,7 +4,7 @@
 
 #import "components/autofill/ios/browser/autofill_agent.h"
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"

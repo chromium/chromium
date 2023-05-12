@@ -12,12 +12,12 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
+#include "base/apple/bundle_locations.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/memory/ref_counted.h"
@@ -277,12 +277,12 @@ NSString* const kVersionKey = @"KSVersion";
 }
 
 - (NSDictionary*)infoDictionary {
-  // Use base::mac::OuterBundle() to get the Chrome app's own bundle identifier
-  // and path, not the framework's.  For auto-update, the application is
-  // what's significant here: it's used to locate the outermost part of the
+  // Use base::apple::OuterBundle() to get the Chrome app's own bundle
+  // identifier and path, not the framework's.  For auto-update, the application
+  // is what's significant here: it's used to locate the outermost part of the
   // application for the existence checker and other operations that need to
   // see the entire application bundle.
-  return base::mac::OuterBundle().infoDictionary;
+  return base::apple::OuterBundle().infoDictionary;
 }
 
 - (NSString*)productID {
@@ -302,7 +302,7 @@ NSString* const kVersionKey = @"KSVersion";
 }
 
 - (void)loadParameters {
-  NSBundle* appBundle = base::mac::OuterBundle();
+  NSBundle* appBundle = base::apple::OuterBundle();
   NSDictionary* infoDictionary = self.infoDictionary;
 
   NSString* productID =
@@ -437,8 +437,8 @@ NSString* const kVersionKey = @"KSVersion";
   }
 
   // Load the KeystoneRegistration framework bundle if present.  It lives
-  // inside the framework, so use base::mac::FrameworkBundle();
-  NSString* ksrPath = [base::mac::FrameworkBundle().privateFrameworksPath
+  // inside the framework, so use base::apple::FrameworkBundle();
+  NSString* ksrPath = [base::apple::FrameworkBundle().privateFrameworksPath
       stringByAppendingPathComponent:@"KeystoneRegistration.framework"];
   NSBundle* ksrBundle = [NSBundle bundleWithPath:ksrPath];
   [ksrBundle load];
@@ -883,8 +883,8 @@ NSString* const kVersionKey = @"KSVersion";
   // authenticating, may actually result in different ownership being applied
   // to files and directories.
   NSFileManager* fileManager = NSFileManager.defaultManager;
-  NSString* executablePath = base::mac::OuterBundle().executablePath;
-  NSString* frameworkPath = base::mac::FrameworkBundle().bundlePath;
+  NSString* executablePath = base::apple::OuterBundle().executablePath;
+  NSString* frameworkPath = base::apple::FrameworkBundle().bundlePath;
   return ![fileManager isWritableFileAtPath:_appPath] ||
          ![fileManager isWritableFileAtPath:executablePath] ||
          ![fileManager isWritableFileAtPath:frameworkPath];
@@ -961,10 +961,9 @@ NSString* const kVersionKey = @"KSVersion";
   // preflight now does, and then the preflight script can be removed instead.
   // However, preflight operation (and promotion) should only be asynchronous if
   // the synchronous parameter is NO.
-  NSString* preflightPath =
-      [base::mac::FrameworkBundle()
-          pathForResource:@"keystone_promote_preflight"
-                   ofType:@"sh"];
+  NSString* preflightPath = [base::apple::FrameworkBundle()
+      pathForResource:@"keystone_promote_preflight"
+               ofType:@"sh"];
   const char* preflightPathC = preflightPath.fileSystemRepresentation;
 
   // This is typically a once per machine operation, so it is not worth caching
@@ -1076,7 +1075,7 @@ NSString* const kVersionKey = @"KSVersion";
   // thread to run the tool.
   DCHECK(NSThread.isMainThread);
 
-  NSString* toolPath = [base::mac::FrameworkBundle()
+  NSString* toolPath = [base::apple::FrameworkBundle()
       pathForResource:@"keystone_promote_postflight"
                ofType:@"sh"];
 

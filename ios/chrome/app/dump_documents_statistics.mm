@@ -4,12 +4,12 @@
 
 #import "ios/chrome/app/dump_documents_statistics.h"
 
+#import "base/apple/backup_util.h"
 #import "base/files/file.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/json/json_writer.h"
-#import "base/mac/backup_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -70,7 +70,7 @@ base::Value::Dict CollectFileStatistics(base::FilePath root) {
   statistics.Set("created", TimeToLocalString(info.creation_time));
   statistics.Set("modified", TimeToLocalString(info.last_modified));
 
-  statistics.Set("excludedFromBackups", base::mac::GetBackupExclusion(root));
+  statistics.Set("excludedFromBackups", base::apple::GetBackupExclusion(root));
 
   return statistics;
 }

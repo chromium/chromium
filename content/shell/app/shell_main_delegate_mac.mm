@@ -6,10 +6,10 @@
 
 #include <unistd.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/common/content_switches.h"
@@ -62,7 +62,7 @@ void EnsureCorrectResolutionSettings() {
 }
 
 void OverrideBundleID() {
-  NSBundle* bundle = base::mac::OuterBundle();
+  NSBundle* bundle = base::apple::OuterBundle();
   base::mac::SetBaseBundleID(
       base::SysNSStringToUTF8([bundle bundleIdentifier]).c_str());
 }

@@ -12,7 +12,7 @@
 
 #include "google_apis/google_api_keys_unittest.h"
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -89,13 +89,13 @@ TEST_F(GoogleAPIKeysTest, OverrideSomeKeysUsingInfoPlist) {
   [[[mock_bundle stub] andReturn:@"plist-ID_MAIN"]
       objectForInfoDictionaryKey:@"GOOGLE_CLIENT_ID_MAIN"];
   [[[mock_bundle stub] andReturn:nil] objectForInfoDictionaryKey:[OCMArg any]];
-  base::mac::SetOverrideFrameworkBundle(mock_bundle);
+  base::apple::SetOverrideFrameworkBundle(mock_bundle);
 
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_TRUE(testcase::HasOAuthClientConfigured());
 
   // Once the keys have been configured, the bundle isn't used anymore.
-  base::mac::SetOverrideFrameworkBundle(nil);
+  base::apple::SetOverrideFrameworkBundle(nil);
 
   std::string api_key = testcase::g_api_key_cache.Get().api_key();
   std::string id_main =

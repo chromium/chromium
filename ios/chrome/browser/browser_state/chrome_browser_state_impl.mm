@@ -6,10 +6,10 @@
 
 #import <utility>
 
+#import "base/apple/backup_util.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/mac/backup_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -67,7 +67,7 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
   // stash state directory cannot easily be done at that point.
   if (!base::PathExists(otr_path) && !base::CreateDirectory(otr_path))
     return false;
-  base::mac::SetBackupExclusion(otr_path);
+  base::apple::SetBackupExclusion(otr_path);
   if (!base::PathExists(cache_path) && !base::CreateDirectory(cache_path))
     return false;
   return true;

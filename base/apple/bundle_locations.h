@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_BUNDLE_LOCATIONS_H_
-#define BASE_MAC_BUNDLE_LOCATIONS_H_
+#ifndef BASE_APPLE_BUNDLE_LOCATIONS_H_
+#define BASE_APPLE_BUNDLE_LOCATIONS_H_
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
@@ -16,7 +16,7 @@ namespace base {
 class FilePath;
 }
 
-namespace base::mac {
+namespace base::apple {
 
 // This file provides several functions to explicitly request the various
 // component bundles of Chrome.  Please use these methods rather than calling
@@ -63,6 +63,6 @@ BASE_EXPORT void SetOverrideOuterBundle(NSBundle* bundle);
 BASE_EXPORT void SetOverrideFrameworkBundle(NSBundle* bundle);
 #endif  // __OBJC__
 
-}  // namespace base::mac
+}  // namespace base::apple
 
-#endif  // BASE_MAC_BUNDLE_LOCATIONS_H_
+#endif  // BASE_APPLE_BUNDLE_LOCATIONS_H_

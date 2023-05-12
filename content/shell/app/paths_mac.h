@@ -9,10 +9,10 @@ namespace base {
 class FilePath;
 }
 
-// Sets up base::mac::FrameworkBundle.
+// Sets up base::apple::FrameworkBundle.
 void OverrideFrameworkBundlePath();
 
-// Set up base::mac::OuterBundle.
+// Set up base::apple::OuterBundle.
 void OverrideOuterBundlePath();
 
 // Sets up the CHILD_PROCESS_EXE path to properly point to the helper app.

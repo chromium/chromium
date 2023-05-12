@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/web/chrome_web_client.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
 #import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
-#import "base/mac/bundle_locations.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/strings/stringprintf.h"

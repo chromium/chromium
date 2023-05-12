@@ -6,7 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"

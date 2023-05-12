@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/policy/reporting/browser_report_generator_ios.h"
 
-#import "base/mac/bundle_locations.h"
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/proto/device_management_backend.pb.h"
@@ -26,7 +26,7 @@ BrowserReportGeneratorIOS::BrowserReportGeneratorIOS() = default;
 BrowserReportGeneratorIOS::~BrowserReportGeneratorIOS() = default;
 
 std::string BrowserReportGeneratorIOS::GetExecutablePath() {
-  NSBundle* baseBundle = base::mac::OuterBundle();
+  NSBundle* baseBundle = base::apple::OuterBundle();
   return base::SysNSStringToUTF8([baseBundle bundleIdentifier]);
 }
 

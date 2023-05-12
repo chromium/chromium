@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -32,7 +32,7 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
   static std::map<std::string, std::string> annotations = []() -> auto {
     std::map<std::string, std::string> process_annotations;
     @autoreleasepool {
-      NSBundle* outer_bundle = base::mac::OuterBundle();
+      NSBundle* outer_bundle = base::apple::OuterBundle();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       process_annotations["prod"] = "Chrome_iOS";
 #else
@@ -56,7 +56,7 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
         channel = @"developer";
       process_annotations["channel"] = base::SysNSStringToUTF8(channel);
       NSString* version =
-          base::mac::ObjCCast<NSString>([base::mac::FrameworkBundle()
+          base::mac::ObjCCast<NSString>([base::apple::FrameworkBundle()
               objectForInfoDictionaryKey:@"CFBundleVersion"]);
       process_annotations["ver"] = base::SysNSStringToUTF8(version);
       process_annotations["plat"] = std::string("iOS");

@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/feature_list.h"
-#include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"

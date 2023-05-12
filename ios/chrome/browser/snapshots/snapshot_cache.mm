@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "base/apple/backup_util.h"
 #import "base/base_paths.h"
 #import "base/containers/contains.h"
 #import "base/files/file_enumerator.h"
@@ -17,7 +18,6 @@
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
-#import "base/mac/backup_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/sequence_checker.h"
@@ -219,7 +219,7 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   base::FilePath image_path = ImagePath(snapshot_id, IMAGE_TYPE_GREYSCALE,
                                         image_scale, cache_directory);
   WriteImageToDisk(grey_image, image_path);
-  base::mac::SetBackupExclusion(image_path);
+  base::apple::SetBackupExclusion(image_path);
 }
 
 void DeleteImageWithSnapshotID(const base::FilePath& cache_directory,

@@ -9,12 +9,12 @@
 #import <memory>
 #import <utility>
 
+#import "base/apple/bundle_locations.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
-#import "base/mac/bundle_locations.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/numerics/checked_math.h"

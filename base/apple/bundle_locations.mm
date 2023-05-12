@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 
-namespace base::mac {
+namespace base::apple {
 
 // NSBundle isn't threadsafe, all functions in this file must be called on the
 // main thread.
@@ -24,12 +24,13 @@ NSURL* MainBundleURL() {
 }
 
 FilePath MainBundlePath() {
-  return NSStringToFilePath(MainBundle().bundlePath);
+  return mac::NSStringToFilePath(MainBundle().bundlePath);
 }
 
 NSBundle* OuterBundle() {
-  if (g_override_outer_bundle)
+  if (g_override_outer_bundle) {
     return g_override_outer_bundle;
+  }
   return NSBundle.mainBundle;
 }
 
@@ -38,17 +39,18 @@ NSURL* OuterBundleURL() {
 }
 
 FilePath OuterBundlePath() {
-  return NSStringToFilePath(OuterBundle().bundlePath);
+  return mac::NSStringToFilePath(OuterBundle().bundlePath);
 }
 
 NSBundle* FrameworkBundle() {
-  if (g_override_framework_bundle)
+  if (g_override_framework_bundle) {
     return g_override_framework_bundle;
+  }
   return NSBundle.mainBundle;
 }
 
 FilePath FrameworkBundlePath() {
-  return NSStringToFilePath(FrameworkBundle().bundlePath);
+  return mac::NSStringToFilePath(FrameworkBundle().bundlePath);
 }
 
 static void AssignOverrideBundle(NSBundle* new_bundle,
@@ -63,7 +65,7 @@ static void AssignOverridePath(const FilePath& file_path,
                                NSBundle** override_bundle) {
   NSBundle* new_bundle = nil;
   if (!file_path.empty()) {
-    new_bundle = [NSBundle bundleWithURL:base::mac::FilePathToNSURL(file_path)];
+    new_bundle = [NSBundle bundleWithURL:mac::FilePathToNSURL(file_path)];
     CHECK(new_bundle) << "Failed to load the bundle at " << file_path.value();
   }
   AssignOverrideBundle(new_bundle, override_bundle);
@@ -85,4 +87,4 @@ void SetOverrideFrameworkBundlePath(const FilePath& file_path) {
   AssignOverridePath(file_path, &g_override_framework_bundle);
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

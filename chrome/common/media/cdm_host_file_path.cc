@@ -16,7 +16,7 @@
 #include "chrome/common/chrome_version.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -75,7 +75,7 @@ void AddCdmHostFilePaths(
 
 #elif BUILDFLAG(IS_MAC)
 
-  base::FilePath framework_dir = base::mac::FrameworkBundlePath();
+  base::FilePath framework_dir = base::apple::FrameworkBundlePath();
   base::FilePath chrome_framework_path =
       framework_dir.Append(chrome::kFrameworkExecutableName);
   // The signature file lives inside

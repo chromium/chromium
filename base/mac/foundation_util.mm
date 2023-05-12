@@ -10,9 +10,9 @@
 
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/mac_logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -55,7 +55,7 @@ bool UncachedAmIBundled() {
     return g_override_am_i_bundled_value;
 
   // Yes, this is cheap.
-  return [[base::mac::OuterBundle() bundlePath] hasSuffix:@".app"];
+  return [[base::apple::OuterBundle() bundlePath] hasSuffix:@".app"];
 #endif
 }
 
@@ -94,12 +94,12 @@ bool IsBackgroundOnlyProcess() {
   // This function really does want to examine NSBundle's idea of the main
   // bundle dictionary.  It needs to look at the actual running .app's
   // Info.plist to access its LSUIElement property.
-  NSDictionary* info_dictionary = [base::mac::MainBundle() infoDictionary];
+  NSDictionary* info_dictionary = [base::apple::MainBundle() infoDictionary];
   return [info_dictionary[@"LSUIElement"] boolValue] != NO;
 }
 
 FilePath PathForFrameworkBundleResource(const char* resource_name) {
-  NSBundle* bundle = base::mac::FrameworkBundle();
+  NSBundle* bundle = base::apple::FrameworkBundle();
   NSURL* resource_url = [bundle URLForResource:@(resource_name)
                                  withExtension:nil];
   return NSURLToFilePath(resource_url);

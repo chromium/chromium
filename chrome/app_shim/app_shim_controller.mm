@@ -9,12 +9,12 @@
 
 #include <utility>
 
+#include "base/apple/bundle_locations.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
@@ -215,7 +215,7 @@ bool AppShimController::FindOrLaunchChrome() {
   }
 
   // Otherwise, launch Chrome.
-  base::FilePath chrome_bundle_path = base::mac::OuterBundlePath();
+  base::FilePath chrome_bundle_path = base::apple::OuterBundlePath();
   LOG(INFO) << "Launching " << chrome_bundle_path.value();
   base::CommandLine browser_command_line(base::CommandLine::NO_PROGRAM);
   browser_command_line.AppendSwitchPath(switches::kUserDataDir,
@@ -280,7 +280,7 @@ AppShimController::FindChromeFromSingletonLock(
 
   // Check the process' bundle id. As above, the specified pid could have been
   // reused by some other process.
-  NSString* expected_bundle_id = [base::mac::OuterBundle() bundleIdentifier];
+  NSString* expected_bundle_id = [base::apple::OuterBundle() bundleIdentifier];
   NSString* lock_bundle_id = [process_from_lock bundleIdentifier];
   if (![expected_bundle_id isEqualToString:lock_bundle_id]) {
     LOG(WARNING) << "Singleton lock pid " << pid

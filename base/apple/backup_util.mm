@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 
 #import <Foundation/Foundation.h>
 
@@ -12,13 +12,13 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 
-namespace base::mac {
+namespace base::apple {
 
 bool GetBackupExclusion(const FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  NSURL* file_url = FilePathToNSURL(file_path);
+  NSURL* file_url = mac::FilePathToNSURL(file_path);
   DCHECK([file_url checkPromisedItemIsReachableAndReturnError:nil]);
 
   NSError* error = nil;
@@ -40,7 +40,7 @@ bool SetBackupState(const FilePath& file_path, bool excluded) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  NSURL* file_url = FilePathToNSURL(file_path);
+  NSURL* file_url = mac::FilePathToNSURL(file_path);
   DCHECK([file_url checkPromisedItemIsReachableAndReturnError:nil]);
 
   NSError* error = nil;
@@ -61,4 +61,4 @@ bool ClearBackupExclusion(const FilePath& file_path) {
   return SetBackupState(file_path, false);
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

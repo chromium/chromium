@@ -2075,14 +2075,14 @@ component("base") {
   if (is_apple) {
     allow_circular_includes_from = [ ":base_arc" ]
     sources += [
+      "apple/backup_util.h",
+      "apple/backup_util.mm",
       "apple/bridging.h",
+      "apple/bundle_locations.h",
+      "apple/bundle_locations.mm",
       "file_version_info_mac.h",
       "file_version_info_mac.mm",
       "files/file_util_mac.mm",
-      "mac/backup_util.h",
-      "mac/backup_util.mm",
-      "mac/bundle_locations.h",
-      "mac/bundle_locations.mm",
       "mac/call_with_eh_frame.cc",
       "mac/call_with_eh_frame.h",
       "mac/call_with_eh_frame_asm.S",
@@ -3593,8 +3593,8 @@ test("base_unittests") {
     sources += [
       "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
       "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
+      "apple/backup_util_unittest.mm",
       "enterprise_util_mac_unittest.mm",
-      "mac/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
       "mac/call_with_eh_frame_unittest.mm",
       "mac/dispatch_source_mach_unittest.cc",
@@ -3756,7 +3756,7 @@ test("base_unittests") {
 
     sources += [
       # Pull in specific Mac files for iOS.
-      "mac/backup_util_unittest.mm",
+      "apple/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
       "mac/foundation_util_unittest.mm",
       "mac/scoped_nsobject_unittest.mm",

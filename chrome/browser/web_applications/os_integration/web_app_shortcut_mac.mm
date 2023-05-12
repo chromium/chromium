@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/apple/bundle_locations.h"
 #include "base/base_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -25,7 +26,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #import "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
@@ -382,15 +382,15 @@ base::CommandLine BuildCommandLineForShimLaunch() {
       app_mode::kLaunchedByChromeProcessId,
       base::NumberToString(base::GetCurrentProcId()));
   command_line.AppendSwitchPath(app_mode::kLaunchedByChromeBundlePath,
-                                base::mac::MainBundlePath());
+                                base::apple::MainBundlePath());
 
   // When running unbundled (e.g, when running browser_tests), the path
-  // returned by base::mac::FrameworkBundlePath will not include the version.
+  // returned by base::apple::FrameworkBundlePath will not include the version.
   // Manually append it.
   // https://crbug.com/1286681
   const base::FilePath framework_bundle_path =
-      base::mac::AmIBundled() ? base::mac::FrameworkBundlePath()
-                              : base::mac::FrameworkBundlePath()
+      base::mac::AmIBundled() ? base::apple::FrameworkBundlePath()
+                              : base::apple::FrameworkBundlePath()
                                     .Append("Versions")
                                     .Append(version_info::GetVersionNumber());
   command_line.AppendSwitchPath(app_mode::kLaunchedByChromeFrameworkBundlePath,
@@ -1129,7 +1129,8 @@ bool WebAppShortcutCreator::BuildShortcut(
     return false;
   }
 
-  const base::FilePath framework_bundle_path = base::mac::FrameworkBundlePath();
+  const base::FilePath framework_bundle_path =
+      base::apple::FrameworkBundlePath();
 
   const base::FilePath executable_path =
       framework_bundle_path.Append("Helpers").Append("app_mode_loader");

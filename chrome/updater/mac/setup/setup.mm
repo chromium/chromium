@@ -9,13 +9,13 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -86,7 +86,7 @@ bool CopyBundle(UpdaterScope scope) {
     }
   }
 
-  if (!CopyDir(base::mac::OuterBundlePath(), *versioned_install_dir,
+  if (!CopyDir(base::apple::OuterBundlePath(), *versioned_install_dir,
                scope == UpdaterScope::kSystem)) {
     LOG(ERROR) << "Copying app to '" << versioned_install_dir->value().c_str()
                << "' failed";

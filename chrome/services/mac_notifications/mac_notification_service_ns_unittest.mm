@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/barrier_closure.h"
-#include "base/mac/bundle_locations.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"

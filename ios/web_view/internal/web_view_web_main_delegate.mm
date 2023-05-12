@@ -4,9 +4,9 @@
 
 #import "ios/web_view/internal/web_view_web_main_delegate.h"
 
+#import "base/apple/bundle_locations.h"
 #include "base/base_paths.h"
 #include "base/logging.h"
-#import "base/mac/bundle_locations.h"
 #include "components/component_updater/component_updater_paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,7 +27,7 @@ WebViewWebMainDelegate::WebViewWebMainDelegate() {}
 WebViewWebMainDelegate::~WebViewWebMainDelegate() = default;
 
 void WebViewWebMainDelegate::BasicStartupComplete() {
-  base::mac::SetOverrideFrameworkBundle(
+  base::apple::SetOverrideFrameworkBundle(
       [NSBundle bundleForClass:[CWVBundleLocator class]]);
 
   // Sets up logging so logging levels can be controlled.

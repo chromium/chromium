@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/apple/bundle_locations.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/mac/bundle_locations.h"
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_incident.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_receiver.h"
 #include "chrome/browser/safe_browsing/signature_evaluator_mac.h"
@@ -113,9 +113,9 @@ std::vector<PathAndRequirement> GetCriticalPathsAndRequirements() {
   // clang-format on
 
   critical_binaries.push_back(
-      PathAndRequirement(base::mac::OuterBundlePath(), requirement));
+      PathAndRequirement(base::apple::OuterBundlePath(), requirement));
   critical_binaries.push_back(
-      PathAndRequirement(base::mac::FrameworkBundlePath(), requirement));
+      PathAndRequirement(base::apple::FrameworkBundlePath(), requirement));
   return critical_binaries;
 }
 

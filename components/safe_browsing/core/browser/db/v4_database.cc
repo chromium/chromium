@@ -21,7 +21,7 @@
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/backup_util.h"
+#include "base/apple/backup_util.h"
 #endif
 
 using base::TimeTicks;
@@ -111,7 +111,7 @@ void V4Database::CreateOnTaskRunner(
   }
 
 #if BUILDFLAG(IS_APPLE)
-  base::mac::SetBackupExclusion(base_path);
+  base::apple::SetBackupExclusion(base_path);
 #endif
 
   std::unique_ptr<StoreMap> store_map = std::make_unique<StoreMap>();

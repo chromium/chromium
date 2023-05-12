@@ -84,7 +84,7 @@ std::string ProductDirName() {
   // in the main app's bundle because it will be set differently on the canary
   // channel, and the autoupdate system dictates that there can be no
   // differences between channels within the versioned directory. This would
-  // normally use base::mac::FrameworkBundle(), but that references the
+  // normally use base::apple::FrameworkBundle(), but that references the
   // framework bundle within the versioned directory. Ordinarily, the profile
   // should not be accessed from non-browser processes, but those processes do
   // attempt to get the profile directory, so direct them to look in the outer

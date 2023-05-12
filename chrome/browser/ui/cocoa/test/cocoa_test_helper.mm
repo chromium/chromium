@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 
-#include "base/mac/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_constants.h"
 
@@ -23,5 +23,5 @@ void CocoaTest::BootstrapCocoa() {
   base::FilePath path;
   base::PathService::Get(base::DIR_EXE, &path);
   path = path.Append(chrome::kFrameworkName);
-  base::mac::SetOverrideFrameworkBundlePath(path);
+  base::apple::SetOverrideFrameworkBundlePath(path);
 }
