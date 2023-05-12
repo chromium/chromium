@@ -41,15 +41,15 @@ std::string ParamToTestSuffix(
 
 // Permutations of supported parameters.
 const ProfilePickerTestParam kTestParams[] = {
-    {.pixel_test_param = {.test_suffix = "TS"}},
-    {.pixel_test_param = {.test_suffix = "TSMultipleProfiles"},
+    {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "MultipleProfiles"},
      .use_multiple_profiles = true},
-    {.pixel_test_param = {.test_suffix = "DarkRtlSmallTSMultipleProfiles",
+    {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
                           .use_small_window = true},
      .use_multiple_profiles = true},
-    {.pixel_test_param = {.test_suffix = "TSCR2023",
+    {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
 };
 

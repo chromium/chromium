@@ -35,8 +35,8 @@ std::string ParamToTestSuffix(
 
 // Permutations of supported parameters.
 const PixelTestParam kTestParams[] = {
-    {.test_suffix = "TS"},
-    {.test_suffix = "DarkRtlSmallTS",
+    {.test_suffix = "Regular"},
+    {.test_suffix = "DarkRtlSmall",
      .use_dark_theme = true,
      .use_right_to_left_language = true,
      .use_small_window = true},

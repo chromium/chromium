@@ -50,36 +50,28 @@ std::string ParamToTestSuffix(
 
 // Permutations of supported parameters.
 const EnterpriseWelcomeTestParam kWindowTestParams[] = {
-    // Naming note: "Fre" refers to the TangibleSync style variants of the UI,
-    // which is now the default.
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre"}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
-                          .use_dark_theme = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
+    {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true}},
+    {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreSmallWindow",
+    {.pixel_test_param = {.test_suffix = "SmallWindow",
                           .use_small_window = true}},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreCR2023",
+    {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
 };
 
 const EnterpriseWelcomeTestParam kDialogTestParams[] = {
-    // Naming note: "Fre" refers to the TangibleSync style variants of the UI,
-    // which is now the default.
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre"}},
-    {.pixel_test_param = {.test_suffix =
-                              "EnterpriseWelcomeFreWithLinkDataCheckbox"},
+    {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "WithLinkDataCheckbox"},
      .show_link_data_checkbox = true},
-    {.pixel_test_param =
-         {.test_suffix = "EnterpriseWelcomeFreWithProfileCreationRequired"},
+    {.pixel_test_param = {.test_suffix = "WithProfileCreationRequired"},
      .profile_creation_required_by_policy = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
-                          .use_dark_theme = true},
+    {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .show_link_data_checkbox = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
+    {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true},
      .show_link_data_checkbox = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreCR2023",
+    {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
 };
 
