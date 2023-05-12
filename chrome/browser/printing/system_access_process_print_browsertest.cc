@@ -410,6 +410,15 @@ class SystemAccessProcessPrintBrowserTestBase
     ASSERT_EQ(print_job_construction_count(), print_job_destruction_count());
   }
 
+  // `PrintBackendServiceTestImpl` does a debug check on shutdown that there
+  // are no residual persistent printing contexts left in the service.  For
+  // tests which are known to break this (either by design, for test simplicity
+  // or because a related change is only partly implemented), use this method
+  // to notify the service to not DCHECK on such a condition.
+  void SkipPersistentContextsCheckOnShutdown() {
+    print_backend_service_->SkipPersistentContextsCheckOnShutdown();
+  }
+
   // PrintViewManagerBase::Observer:
   void OnRegisterSystemPrintClient(bool succeeded) override {
     system_print_registration_succeeded_ = succeeded;
@@ -2187,6 +2196,13 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 
   void RunScriptedPrintTest(const std::string& script) {
     AddPrinter("printer_name");
+
+    if (UseService()) {
+      // Test does not do extra cleanup beyond the check for analysis
+      // permission.
+      SkipPersistentContextsCheckOnShutdown();
+    }
+
     ASSERT_TRUE(embedded_test_server()->Started());
     GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2211,14 +2227,12 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1396386): Remove this when tests are fixed.
-  if (UseService()) {
-    return;
-  }
-#endif
-
   AddPrinter("printer_name");
+
+  if (UseService()) {
+    // Test does not do extra cleanup beyond the check for analysis permission.
+    SkipPersistentContextsCheckOnShutdown();
+  }
 
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
@@ -2254,6 +2268,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
   AddPrinter("printer_name");
+
+  if (UseService()) {
+    // Test does not do extra cleanup beyond the check for analysis permission.
+    SkipPersistentContextsCheckOnShutdown();
+  }
 
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
@@ -2333,11 +2352,13 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     ContentAnalysisScriptedPreviewlessPrintBrowserTest,
-    // TODO(crbug.com/1396386): Add back oop_enabled=true values when tests are
-    // fixed.
     testing::Values(
         ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
+                                /*oop_enabled=*/true},
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
                                 /*oop_enabled=*/false},
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
+                                /*oop_enabled=*/true},
         ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
                                 /*oop_enabled=*/false}));
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)

@@ -598,9 +598,8 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
       !snapshotting_for_content_analysis_ &&
 #endif
       !query_with_ui_client_id_.has_value()) {
-    // Renderer process has requested settings outside of the expected setup.
-    GetDefaultPrintSettingsReply(std::move(callback), nullptr);
-    return;
+    // Script initiated print, this is first signal of start of printing.
+    RegisterSystemPrintClient();
   }
 #endif
 
