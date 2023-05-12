@@ -42,34 +42,6 @@ class SynthesizedClip;
 
 using CompositorScrollCallbacks = cc::ScrollCallbacks;
 
-// This enum is used for histograms and should not be renumbered (see:
-// PaintArtifactCompositorUpdateReason in tools/metrics/histograms/enums.xml).
-enum class PaintArtifactCompositorUpdateReason {
-  kTest = 0,
-  kPaintArtifactCompositorNeedsFullUpdateChunksChanged = 1,
-  kPaintArtifactCompositorNeedsFullUpdateAfterPaintingChunk = 2,
-  kPaintArtifactCompositorPrefersLCDText = 3,
-  kLocalFrameViewUpdateLayerDebugInfo = 4,
-  kLocalFrameViewBenchmarking = 5,
-  kDisplayLockContextNeedsPaintArtifactCompositorUpdate = 6,
-  kViewTransitionNotifyChanges = 7,
-  kFrameCaretSetVisible = 8,
-  kFrameCaretPaint = 9,
-  kInspectorOverlayAgentDisableFrameOverlay = 10,
-  kLinkHighlightImplNeedsCompositingUpdate = 11,
-  kPaintLayerScrollableAreaUpdateScrollOffset = 12,
-  kPaintPropertyTreeBuilderPaintPropertyChanged = 13,
-  kPaintPropertyTreeBuilderHasFixedPositionObjects = 14,
-  kPaintPropertyTreeBulderNonStackingContextScroll = 15,
-  kVisualViewportPaintPropertyTreeBuilderUpdate = 16,
-  kVideoPainterPaintReplaced = 17,
-  kPaintPropertyTreeBuilderPaintPropertyChangedOnlyNonRerasterValues = 18,
-  kPaintPropertyTreeBuilderPaintPropertyChangedOnlySimpleValues = 19,
-  kPaintPropertyTreeBuilderPaintPropertyChangedOnlyValues = 20,
-  kPaintPropertyTreeBuilderPaintPropertyAddedOrRemoved = 21,
-  kCount = 22
-};
-
 class LayerListBuilder {
  public:
   void Add(scoped_refptr<cc::Layer>);
@@ -233,7 +205,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // do not affect compositing can use a fast-path in |UpdateRepaintedLayers|
   // (see comment above that function for more information), and should not call
   // SetNeedsUpdate.
-  void SetNeedsUpdate(PaintArtifactCompositorUpdateReason reason);
+  void SetNeedsUpdate() { needs_update_ = true; }
   bool NeedsUpdate() const { return needs_update_; }
   void ClearNeedsUpdateForTesting() { needs_update_ = false; }
 

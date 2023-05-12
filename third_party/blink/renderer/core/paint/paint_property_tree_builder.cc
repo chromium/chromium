@@ -162,9 +162,7 @@ void VisualViewportPaintPropertyTreeBuilder::Update(
 
   if (property_changed >
       PaintPropertyChangeType::kChangedOnlyCompositedValues) {
-    main_frame_view.SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kVisualViewportPaintPropertyTreeBuilderUpdate);
+    main_frame_view.SetPaintArtifactCompositorNeedsUpdate();
   }
 
 #if DCHECK_IS_ON()
@@ -3452,32 +3450,6 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
   }
 }
 
-namespace {
-PaintArtifactCompositorUpdateReason PACUpdateReasonForPaintPropertyChange(
-    PaintPropertyChangeType change) {
-  switch (change) {
-    case (PaintPropertyChangeType::kChangedOnlyNonRerasterValues):
-      return PaintArtifactCompositorUpdateReason::
-          kPaintPropertyTreeBuilderPaintPropertyChangedOnlyNonRerasterValues;
-    case (PaintPropertyChangeType::kChangedOnlySimpleValues):
-      return PaintArtifactCompositorUpdateReason::
-          kPaintPropertyTreeBuilderPaintPropertyChangedOnlySimpleValues;
-    case (PaintPropertyChangeType::kChangedOnlyValues):
-      return PaintArtifactCompositorUpdateReason::
-          kPaintPropertyTreeBuilderPaintPropertyChangedOnlyValues;
-    case (PaintPropertyChangeType::kNodeAddedOrRemoved):
-      return PaintArtifactCompositorUpdateReason::
-          kPaintPropertyTreeBuilderPaintPropertyAddedOrRemoved;
-    default:
-      // The other values for PaintPropertyChangeType should not cause a
-      // paint artifact compositor update.
-      NOTREACHED();
-  }
-  return PaintArtifactCompositorUpdateReason::
-      kPaintPropertyTreeBuilderPaintPropertyChanged;
-}
-}  // namespace
-
 bool PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
     LayoutObject& object) {
   if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
@@ -3533,9 +3505,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
 
   if (effective_change_type >=
       PaintPropertyChangeType::kChangedOnlySimpleValues) {
-    object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kPaintPropertyTreeBuilderPaintPropertyChanged);
+    object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
   }
 
   PaintPropertiesChangeInfo properties_changed;
@@ -3566,9 +3536,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(
 
   if (effective_change_type >=
       PaintPropertyChangeType::kChangedOnlySimpleValues) {
-    object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kPaintPropertyTreeBuilderPaintPropertyChanged);
+    object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
   }
 }
 
@@ -3595,8 +3563,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
   }
 
   if (max_change > PaintPropertyChangeType::kChangedOnlyCompositedValues) {
-    auto reason = PACUpdateReasonForPaintPropertyChange(max_change);
-    object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(reason);
+    object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
   }
 
   if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {

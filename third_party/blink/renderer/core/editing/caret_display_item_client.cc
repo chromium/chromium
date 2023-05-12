@@ -164,8 +164,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     if (new_layout_block) {
       needs_paint_invalidation_ = true;
       // The caret property tree space may have changed.
-      layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-          PaintArtifactCompositorUpdateReason::kFrameCaretPaint);
+      layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
     }
   }
 
@@ -179,8 +178,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
       rect_and_block.box_fragment;
   if (new_box_fragment != box_fragment_) {
     // The caret property tree space may have changed.
-    layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::kFrameCaretPaint);
+    layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
 
     if (new_box_fragment)
       needs_paint_invalidation_ = true;

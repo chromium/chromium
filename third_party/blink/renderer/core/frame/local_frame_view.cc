@@ -2652,8 +2652,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
     if (paint_artifact_compositor_ &&
         benchmark_mode ==
             PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate) {
-      paint_artifact_compositor_->SetNeedsUpdate(
-          PaintArtifactCompositorUpdateReason::kLocalFrameViewBenchmarking);
+      paint_artifact_compositor_->SetNeedsUpdate();
     }
     needed_update = !paint_artifact_compositor_ ||
                     paint_artifact_compositor_->NeedsUpdate();
@@ -4343,11 +4342,10 @@ bool LocalFrameView::VisualViewportOrOverlayNeedsRepaintForTesting() const {
   return visual_viewport_or_overlay_needs_repaint_;
 }
 
-void LocalFrameView::SetPaintArtifactCompositorNeedsUpdate(
-    PaintArtifactCompositorUpdateReason reason) {
+void LocalFrameView::SetPaintArtifactCompositorNeedsUpdate() {
   LocalFrameView* root = GetFrame().LocalFrameRoot().View();
   if (root && root->paint_artifact_compositor_)
-    root->paint_artifact_compositor_->SetNeedsUpdate(reason);
+    root->paint_artifact_compositor_->SetNeedsUpdate();
 }
 
 PaintArtifactCompositor* LocalFrameView::GetPaintArtifactCompositor() const {
@@ -4668,9 +4666,7 @@ bool LocalFrameView::UpdateLayerDebugInfoEnabled() {
       CoreProbeSink::HasAgentsGlobal(CoreProbeSink::kInspectorLayerTreeAgent);
   if (should_enable != layer_debug_info_enabled_) {
     layer_debug_info_enabled_ = should_enable;
-    SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kLocalFrameViewUpdateLayerDebugInfo);
+    SetPaintArtifactCompositorNeedsUpdate();
     return true;
   }
 #endif

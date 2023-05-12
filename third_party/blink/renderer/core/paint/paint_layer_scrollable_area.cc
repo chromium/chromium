@@ -460,9 +460,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 
   if (auto* scrolling_coordinator = GetScrollingCoordinator()) {
     if (!scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this)) {
-      GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-          PaintArtifactCompositorUpdateReason::
-              kPaintLayerScrollableAreaUpdateScrollOffset);
+      GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
     }
   }
 

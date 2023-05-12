@@ -102,8 +102,7 @@ void PaintArtifactCompositor::SetLCDTextPreference(
   if (lcd_text_preference_ == preference) {
     return;
   }
-  SetNeedsUpdate(PaintArtifactCompositorUpdateReason::
-                     kPaintArtifactCompositorPrefersLCDText);
+  SetNeedsUpdate();
   lcd_text_preference_ = preference;
 }
 
@@ -391,8 +390,7 @@ void PaintArtifactCompositor::SetNeedsFullUpdateAfterPaintIfNeeded(
 
   // Adding or removing chunks requires a full update to add/remove cc::layers.
   if (previous.PaintChunks().size() != repainted.PaintChunks().size()) {
-    SetNeedsUpdate(PaintArtifactCompositorUpdateReason::
-                       kPaintArtifactCompositorNeedsFullUpdateChunksChanged);
+    SetNeedsUpdate();
     return;
   }
 
@@ -401,9 +399,7 @@ void PaintArtifactCompositor::SetNeedsFullUpdateAfterPaintIfNeeded(
     if (NeedsFullUpdateAfterPaintingChunk(previous.PaintChunks()[i], previous,
                                           repainted.PaintChunks()[i],
                                           repainted)) {
-      SetNeedsUpdate(
-          PaintArtifactCompositorUpdateReason::
-              kPaintArtifactCompositorNeedsFullUpdateAfterPaintingChunk);
+      SetNeedsUpdate();
       return;
     }
   }
@@ -1382,19 +1378,6 @@ ContentLayerClientImpl* PaintArtifactCompositor::ContentLayerClientForTesting(
     }
   }
   return nullptr;
-}
-
-void PaintArtifactCompositor::SetNeedsUpdate(
-    PaintArtifactCompositorUpdateReason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.Paint.PaintArtifactCompositorUpdateReason",
-                            reason,
-                            PaintArtifactCompositorUpdateReason::kCount);
-  if (!needs_update_) {
-    needs_update_ = true;
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.Paint.PaintArtifactCompositorUpdateFirstReason", reason,
-        PaintArtifactCompositorUpdateReason::kCount);
-  }
 }
 
 }  // namespace blink

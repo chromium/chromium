@@ -220,8 +220,7 @@ void FrameCaret::SetVisibleIfActive(bool visible) {
     }
   }
   // Fallback to full update if direct update is not available.
-  frame_->View()->SetPaintArtifactCompositorNeedsUpdate(
-      PaintArtifactCompositorUpdateReason::kFrameCaretSetVisible);
+  frame_->View()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 void FrameCaret::PaintCaret(GraphicsContext& context,
@@ -235,8 +234,7 @@ void FrameCaret::PaintCaret(GraphicsContext& context,
       PaintPropertyChangeType::kUnchanged) {
     // Needs full PaintArtifactCompositor update if the parent or the local
     // transform space changed.
-    frame_->View()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::kFrameCaretPaint);
+    frame_->View()->SetPaintArtifactCompositorNeedsUpdate();
   }
   ScopedPaintChunkProperties scoped_properties(context.GetPaintController(),
                                                *effect_, *display_item_client_,

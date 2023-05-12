@@ -1573,9 +1573,7 @@ void InspectorOverlayAgent::DisableFrameOverlay() {
   client.SetCursor(PointerCursor(), GetFrame());
 
   if (auto* frame_view = frame_impl_->GetFrameView()) {
-    frame_view->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kInspectorOverlayAgentDisableFrameOverlay);
+    frame_view->SetPaintArtifactCompositorNeedsUpdate();
   }
 }
 

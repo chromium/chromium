@@ -79105,35 +79105,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Both candidates match initiator"/>
 </enum>
 
-<enum name="PaintArtifactCompositorUpdateReason">
-  <int value="0" label="Test"/>
-  <int value="1" label="PaintArtifactCompositorNeedsFullUpdateChunksChanged"/>
-  <int value="2"
-      label="PaintArtifactCompositorNeedsFullUpdateAfterPaintingChunk"/>
-  <int value="3" label="PaintArtifactCompositorPrefersLCDText"/>
-  <int value="4" label="LocalFrameViewUpdateLayerDebugInfo"/>
-  <int value="5" label="LocalFrameViewBenchmarking"/>
-  <int value="6" label="DisplayLockContextNeedsPaintArtifactCompositorUpdate"/>
-  <int value="7" label="ViewTransitionNotifyChanges"/>
-  <int value="8" label="FrameCaretSetVisible"/>
-  <int value="9" label="FrameCaretPaint"/>
-  <int value="10" label="InspectorOverlayAgentDisableFrameOverlay"/>
-  <int value="11" label="LinkHighlightImplNeedsCompositingUpdate"/>
-  <int value="12" label="PaintLayerScrollableAreaUpdateScrollOffset"/>
-  <int value="13" label="PaintPropertyTreeBuilderPaintPropertyChanged"/>
-  <int value="14" label="PaintPropertyTreeBuilderHasFixedPositionObjects"/>
-  <int value="15" label="PaintPropertyTreeBulderNonStackingContextScroll"/>
-  <int value="16" label="VisualViewportPaintPropertyTreeBuilderUpdate"/>
-  <int value="17" label="VideoPainterPaintReplaced"/>
-  <int value="18"
-      label="PaintPropertyTreeBuilderPaintPropertyChangedOnlyNonRerasterValues"/>
-  <int value="19"
-      label="PaintPropertyTreeBuilderPaintPropertyChangedOnlySimpleValues"/>
-  <int value="20"
-      label="PaintPropertyTreeBuilderPaintPropertyChangedOnlyValues"/>
-  <int value="21" label="PaintPropertyTreeBuilderPaintPropertyAddedOrRemoved"/>
-</enum>
-
 <enum name="PaintHoldingCommitTrigger">
   <int value="0" label="Feature Disabled"/>
   <int value="1" label="Disallowed"/>

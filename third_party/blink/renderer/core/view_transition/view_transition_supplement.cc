@@ -240,8 +240,7 @@ void ViewTransitionSupplement::AddPendingRequest(
 
   // Ensure paint artifact compositor does an update, since that's the mechanism
   // we use to pass transition requests to the compositor.
-  document->View()->SetPaintArtifactCompositorNeedsUpdate(
-      PaintArtifactCompositorUpdateReason::kViewTransitionNotifyChanges);
+  document->View()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 VectorOf<std::unique_ptr<ViewTransitionRequest>>
