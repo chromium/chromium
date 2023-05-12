@@ -166,10 +166,10 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
       std::make_unique<views::Label>(std::u16string()));
   if (is_jelly_enabled) {
     bubble_utils::ApplyStyle(subtitle_, TypographyToken::kCrosAnnotation1,
-                             kColorAshTextColorSecondary);
+                             cros_tokens::kCrosSysOnSurfaceVariant);
   } else {
     bubble_utils::ApplyStyle(subtitle_, TypographyToken::kCrosAnnotation1,
-                             cros_tokens::kCrosSysSecondary);
+                             kColorAshTextColorSecondary);
   }
   subtitle_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   subtitle_->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);

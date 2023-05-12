@@ -293,7 +293,7 @@ void AppListToastView::SetSubtitle(const std::u16string subtitle) {
       label_container_->AddChildView(std::make_unique<views::Label>(subtitle));
   const ui::ColorId label_color_id =
       chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
           : kColorAshTextColorSecondary;
   bubble_utils::ApplyStyle(subtitle_label_, TypographyToken::kCrosAnnotation1,
                            label_color_id);

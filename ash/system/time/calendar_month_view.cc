@@ -121,7 +121,7 @@ void CalendarDateCellView::OnThemeChanged() {
 
   // Gray-out the date that is not in the current month.
   if (features::IsCalendarJellyEnabled()) {
-    SetEnabledTextColorIds(grayed_out_ ? cros_tokens::kCrosSysSecondary
+    SetEnabledTextColorIds(grayed_out_ ? cros_tokens::kCrosSysOnSurfaceVariant
                                        : cros_tokens::kCrosSysOnSurface);
   } else {
     SetEnabledTextColors(grayed_out_ ? calendar_utils::GetDisabledTextColor()

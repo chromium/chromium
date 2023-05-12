@@ -234,7 +234,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
   email_->SetText(base::UTF8ToUTF16(user_session->user_info.display_email));
   email_->SetEnabledColorId(
       is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
           : kColorAshTextColorSecondary);
   if (is_jelly_enabled) {
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,

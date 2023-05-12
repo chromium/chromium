@@ -383,7 +383,7 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
     title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
     timestamp_in_collapsed_view_->SetEnabledColorId(
-        cros_tokens::kCrosSysSecondary);
+        cros_tokens::kCrosSysOnSurfaceVariant);
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
   }
@@ -468,7 +468,7 @@ void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
   if (chromeos::features::IsJellyEnabled()) {
     title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
     timestamp_in_collapsed_view_->SetEnabledColorId(
-        cros_tokens::kCrosSysSecondary);
+        cros_tokens::kCrosSysOnSurfaceVariant);
   }
 }
 
@@ -592,7 +592,7 @@ AshNotificationView::AshNotificationView(
 
   if (chromeos::features::IsJellyEnabled()) {
     message_label_in_expanded_state_->SetEnabledColorId(
-        cros_tokens::kCrosSysSecondary);
+        cros_tokens::kCrosSysOnSurfaceVariant);
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosAnnotation1,
         *message_label_in_expanded_state_);
@@ -1222,7 +1222,7 @@ void AshNotificationView::UpdateWithNotification(
     ConfigureLabelStyle(message_label(), kMessageLabelSize,
                         /*is_color_primary=*/false);
     if (chromeos::features::IsJellyEnabled()) {
-      message_label()->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+      message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
       ash::TypographyProvider::Get()->StyleLabel(
           ash::TypographyToken::kCrosAnnotation1, *message_label());
     }
@@ -1418,7 +1418,7 @@ void AshNotificationView::OnThemeChanged() {
   if (message_label()) {
     message_label()->SetEnabledColor(secondary_text_color);
     if (chromeos::features::IsJellyEnabled()) {
-      message_label()->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+      message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
     }
   }
 
@@ -1432,7 +1432,7 @@ void AshNotificationView::OnThemeChanged() {
     message_label_in_expanded_state_->SetEnabledColor(secondary_text_color);
     if (chromeos::features::IsJellyEnabled()) {
       message_label_in_expanded_state_->SetEnabledColorId(
-          cros_tokens::kCrosSysSecondary);
+          cros_tokens::kCrosSysOnSurfaceVariant);
     }
   }
 
