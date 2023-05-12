@@ -95,8 +95,9 @@ BASE_EXPORT void ClearAllMallocZonesForTesting();
 
 inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
   for (unsigned int i = 0; i < kMaxZoneCount; ++i) {
-    if (g_malloc_zones[i].context == zone)
+    if (g_malloc_zones[i].context == zone) {
       return g_malloc_zones[i];
+    }
   }
   PA_IMMEDIATE_CRASH();
 }

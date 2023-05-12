@@ -347,8 +347,9 @@ static std::atomic<bool> g_initialization_is_done;
 // receives an address allocated by the system allocator.
 __attribute__((constructor(0))) void
 InitializeDefaultMallocZoneWithPartitionAlloc() {
-  if (IsAlreadyRegistered())
+  if (IsAlreadyRegistered()) {
     return;
+  }
 
   // Instantiate the existing regular and purgeable zones in order to make the
   // existing purgeable zone use the existing regular zone since PartitionAlloc

@@ -74,8 +74,9 @@ class LeakySingleton {
 
   PA_ALWAYS_INLINE T* Get() {
     auto* instance = instance_.load(std::memory_order_acquire);
-    if (PA_LIKELY(instance))
+    if (PA_LIKELY(instance)) {
       return instance;
+    }
 
     return GetSlowPath();
   }
@@ -130,8 +131,9 @@ T* LeakySingleton<T, Constructor>::GetSlowPath() {
 
   T* instance = instance_.load(std::memory_order_relaxed);
   // Someone beat us.
-  if (instance)
+  if (instance) {
     return instance;
+  }
 
   instance = Constructor::New(reinterpret_cast<void*>(instance_buffer_));
   instance_.store(instance, std::memory_order_release);
@@ -250,10 +252,11 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
   // Apple only since it's not needed elsewhere, and there is a performance
   // penalty.
 
-  if (value)
+  if (value) {
     g_alloc_flags = 0;
-  else
+  } else {
     g_alloc_flags = partition_alloc::AllocFlags::kReturnNull;
+  }
 #endif
 }
 
@@ -318,12 +321,14 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
     new_ptr = AllocateAlignedMemory(alignment, size);
   } else {
     // size == 0 and address != null means just "free(address)".
-    if (address)
+    if (address) {
       partition_alloc::ThreadSafePartitionRoot::FreeNoHooks(address);
+    }
   }
   // The original memory block (specified by address) is unchanged if ENOMEM.
-  if (!new_ptr)
+  if (!new_ptr) {
     return nullptr;
+  }
   // TODO(tasak): Need to compare the new alignment with the address' alignment.
   // If the two alignments are not the same, need to return nullptr with EINVAL.
   if (address) {
@@ -418,8 +423,9 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* context) {
   // This is used to implement malloc_usable_size(3). Per its man page, "if ptr
   // is NULL, 0 is returned".
-  if (!address)
+  if (!address) {
     return 0;
+  }
 
 #if BUILDFLAG(IS_APPLE)
   if (!partition_alloc::IsManagedByPartitionAlloc(
@@ -528,9 +534,10 @@ void EnablePartitionAllocMemoryReclaimer() {
   ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
       Allocator());
   auto* original_root = OriginalAllocator();
-  if (original_root)
+  if (original_root) {
     ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
         original_root);
+  }
   if (AlignedAllocator() != Allocator()) {
     ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
         AlignedAllocator());
@@ -671,12 +678,14 @@ void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   partition_alloc::internal::PCScan::Initialize(config);
 
   partition_alloc::internal::PCScan::RegisterScannableRoot(Allocator());
-  if (OriginalAllocator() != nullptr)
+  if (OriginalAllocator() != nullptr) {
     partition_alloc::internal::PCScan::RegisterScannableRoot(
         OriginalAllocator());
-  if (Allocator() != AlignedAllocator())
+  }
+  if (Allocator() != AlignedAllocator()) {
     partition_alloc::internal::PCScan::RegisterScannableRoot(
         AlignedAllocator());
+  }
 
   base::internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
   base::internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
@@ -755,15 +764,17 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   auto& nonscannable_allocator =
       base::internal::NonScannableAllocator::Instance();
   partition_alloc::SimplePartitionStatsDumper nonscannable_allocator_dumper;
-  if (auto* nonscannable_root = nonscannable_allocator.root())
+  if (auto* nonscannable_root = nonscannable_allocator.root()) {
     nonscannable_root->DumpStats("malloc", true,
                                  &nonscannable_allocator_dumper);
+  }
   auto& nonquarantinable_allocator =
       base::internal::NonQuarantinableAllocator::Instance();
   partition_alloc::SimplePartitionStatsDumper nonquarantinable_allocator_dumper;
-  if (auto* nonquarantinable_root = nonquarantinable_allocator.root())
+  if (auto* nonquarantinable_root = nonquarantinable_allocator.root()) {
     nonquarantinable_root->DumpStats("malloc", true,
                                      &nonquarantinable_allocator_dumper);
+  }
 
   struct mallinfo info = {0};
   info.arena = 0;  // Memory *not* allocated with mmap().

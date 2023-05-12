@@ -36,8 +36,9 @@ constexpr size_t kMaxAllowedSize = std::numeric_limits<int>::max() - (1 << 12);
 void* GlibcMalloc(const AllocatorDispatch*, size_t size, void* context) {
   // Cannot force glibc's malloc() to crash when a large size is requested, do
   // it in the shim instead.
-  if (PA_UNLIKELY(size >= kMaxAllowedSize))
+  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
     base::TerminateBecauseOutOfMemory(size);
+  }
 
   return __libc_malloc(size);
 }
@@ -45,8 +46,9 @@ void* GlibcMalloc(const AllocatorDispatch*, size_t size, void* context) {
 void* GlibcUncheckedMalloc(const AllocatorDispatch*,
                            size_t size,
                            void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize))
+  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
     return nullptr;
+  }
 
   return __libc_malloc(size);
 }
@@ -56,8 +58,9 @@ void* GlibcCalloc(const AllocatorDispatch*,
                   size_t size,
                   void* context) {
   const auto total = partition_alloc::internal::base::CheckMul(n, size);
-  if (PA_UNLIKELY(!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize))
+  if (PA_UNLIKELY(!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize)) {
     base::TerminateBecauseOutOfMemory(size * n);
+  }
 
   return __libc_calloc(n, size);
 }
@@ -66,8 +69,9 @@ void* GlibcRealloc(const AllocatorDispatch*,
                    void* address,
                    size_t size,
                    void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize))
+  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
     base::TerminateBecauseOutOfMemory(size);
+  }
 
   return __libc_realloc(address, size);
 }
@@ -76,8 +80,9 @@ void* GlibcMemalign(const AllocatorDispatch*,
                     size_t alignment,
                     size_t size,
                     void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize))
+  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
     base::TerminateBecauseOutOfMemory(size);
+  }
 
   return __libc_memalign(alignment, size);
 }

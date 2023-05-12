@@ -26,8 +26,9 @@ void ResetAllMallocZones() {
   vm_address_t* zones;
   unsigned int count;
   kern_return_t kr = malloc_get_all_zones(mach_task_self(), 0, &zones, &count);
-  if (kr != KERN_SUCCESS)
+  if (kr != KERN_SUCCESS) {
     return;
+  }
   for (unsigned int i = 0; i < count; ++i) {
     ChromeMallocZone* zone = reinterpret_cast<ChromeMallocZone*>(zones[i]);
     ResetMallocZone(zone);

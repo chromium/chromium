@@ -35,33 +35,38 @@ inline HANDLE get_heap_handle() {
 }  // namespace
 
 void* WinHeapMalloc(size_t size) {
-  if (size < kMaxWindowsAllocation)
+  if (size < kMaxWindowsAllocation) {
     return HeapAlloc(get_heap_handle(), 0, size);
+  }
   return nullptr;
 }
 
 void WinHeapFree(void* ptr) {
-  if (!ptr)
+  if (!ptr) {
     return;
+  }
 
   HeapFree(get_heap_handle(), 0, ptr);
 }
 
 void* WinHeapRealloc(void* ptr, size_t size) {
-  if (!ptr)
+  if (!ptr) {
     return WinHeapMalloc(size);
+  }
   if (!size) {
     WinHeapFree(ptr);
     return nullptr;
   }
-  if (size < kMaxWindowsAllocation)
+  if (size < kMaxWindowsAllocation) {
     return HeapReAlloc(get_heap_handle(), 0, ptr, size);
+  }
   return nullptr;
 }
 
 size_t WinHeapGetSizeEstimate(void* ptr) {
-  if (!ptr)
+  if (!ptr) {
     return 0;
+  }
 
   return HeapSize(get_heap_handle(), 0, ptr);
 }
@@ -74,8 +79,9 @@ bool WinCallNewHandler(size_t size) {
 #endif  // _CPPUNWIND
   // Get the current new handler.
   _PNH nh = _query_new_handler();
-  if (!nh)
+  if (!nh) {
     return false;
+  }
   // Since exceptions are disabled, we don't really know if new_handler
   // failed.  Assume it will abort if it fails.
   return nh(size) ? true : false;
@@ -152,12 +158,14 @@ void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
   PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
 
   size_t adjusted = AdjustedSize(size, alignment);
-  if (adjusted >= kMaxWindowsAllocation)
+  if (adjusted >= kMaxWindowsAllocation) {
     return nullptr;
+  }
 
   void* ptr = WinHeapMalloc(adjusted);
-  if (!ptr)
+  if (!ptr) {
     return nullptr;
+  }
 
   return AlignAllocation(ptr, alignment);
 }
@@ -165,16 +173,18 @@ void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
 void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
   PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
 
-  if (!ptr)
+  if (!ptr) {
     return WinHeapAlignedMalloc(size, alignment);
+  }
   if (!size) {
     WinHeapAlignedFree(ptr);
     return nullptr;
   }
 
   size_t adjusted = AdjustedSize(size, alignment);
-  if (adjusted >= kMaxWindowsAllocation)
+  if (adjusted >= kMaxWindowsAllocation) {
     return nullptr;
+  }
 
   // Try to resize the allocation in place first.
   void* unaligned = UnalignAllocation(ptr);
@@ -187,8 +197,9 @@ void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
   // unaligned allocation from HeapReAlloc() would force us to copy the
   // allocation twice.
   void* new_ptr = WinHeapAlignedMalloc(size, alignment);
-  if (!new_ptr)
+  if (!new_ptr) {
     return nullptr;
+  }
 
   size_t gap =
       reinterpret_cast<uintptr_t>(ptr) - reinterpret_cast<uintptr_t>(unaligned);
@@ -199,8 +210,9 @@ void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
 }
 
 void WinHeapAlignedFree(void* ptr) {
-  if (!ptr)
+  if (!ptr) {
     return;
+  }
 
   void* original_allocation = UnalignAllocation(ptr);
   WinHeapFree(original_allocation);
