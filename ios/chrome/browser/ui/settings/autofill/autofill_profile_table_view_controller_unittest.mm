@@ -131,6 +131,14 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
 
 // Deleting the only profile results in item deletion and section deletion.
 TEST_F(AutofillProfileTableViewControllerTest, TestOneProfileItemDeleted) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAccountProfilesUnionView)) {
+    // The test is incompatible with the feature as now the user is asked to
+    // confirm the deletion.
+    // TODO(crbug.com/1423319): Cleanup
+    return;
+  }
+
   AddProfile("John Doe", "1 Main Street");
   CreateController();
   CheckController();

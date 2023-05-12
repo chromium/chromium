@@ -123,6 +123,14 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
 
 // Adding a single address results in an address section.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestOneProfile) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAccountProfilesUnionView)) {
+    // The test is incompatible with the feature as the country is a selection
+    // field.
+    // TODO(crbug.com/1423319): Cleanup
+    return;
+  }
+
   TableViewModel* model = [controller() tableViewModel];
 
   autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
