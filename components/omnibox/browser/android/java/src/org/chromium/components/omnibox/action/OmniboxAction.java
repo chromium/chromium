@@ -50,4 +50,11 @@ public class OmniboxAction {
         this.hint = hint;
         this.icon = icon != null ? icon : DEFAULT_ICON;
     }
+
+    /**
+     * Execute the associated action.
+     *
+     * @param delegate delegate capable of routing and executing variety of action-specific tasks
+     */
+    public void execute(@NonNull OmniboxActionDelegate delegate){};
 }

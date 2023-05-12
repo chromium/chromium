@@ -31,6 +31,11 @@ public class HistoryClustersAction extends OmniboxAction {
         this.query = query;
     }
 
+    @Override
+    public void execute(@NonNull OmniboxActionDelegate delegate) {
+        delegate.openHistoryClustersPage(query);
+    }
+
     /**
      * Cast supplied OmniboxAction to HistoryClustersAction.
      * Requires the supplied input to be a valid instance of an HistoryClustersAction whose

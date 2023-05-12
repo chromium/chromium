@@ -6,9 +6,15 @@ package org.chromium.components.omnibox.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -19,6 +25,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HistoryClustersActionUnitTest {
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    private @Mock OmniboxActionDelegate mDelegate;
+
     @Test
     public void creation_usesExpectedIcon() {
         var action = new HistoryClustersAction("hint", "query");
@@ -61,5 +70,14 @@ public class HistoryClustersActionUnitTest {
     @Test
     public void safeCasting_successWithHistoryClusters() {
         HistoryClustersAction.from(new HistoryClustersAction("hint", "query"));
+    }
+
+    @Test
+    public void executeHistoryClusters() {
+        String testJourneyName = "example journey name";
+        var action = new HistoryClustersAction("hint", testJourneyName);
+        action.execute(mDelegate);
+        verify(mDelegate).openHistoryClustersPage(testJourneyName);
+        verifyNoMoreInteractions(mDelegate);
     }
 }

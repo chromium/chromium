@@ -15,18 +15,10 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxMetrics;
-import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
-import org.chromium.components.omnibox.action.OmniboxActionType;
-import org.chromium.components.omnibox.action.OmniboxPedal;
-import org.chromium.components.omnibox.action.OmniboxPedalType;
 import org.chromium.content_public.browser.LoadUrlParams;
 
-import java.net.URISyntaxException;
 import java.util.function.Consumer;
 
 /**
@@ -57,71 +49,41 @@ public class ActionChipsDelegateImpl implements OmniboxActionDelegate {
         mOpenHistoryClustersForQueryCb = openHistoryClustersForQueryCb;
     }
 
-    private void executePedalAction(OmniboxPedal pedal) {
-        @OmniboxPedalType
-        int pedalId = pedal.pedalId;
-        switch (pedalId) {
-            case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
-                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.MAIN);
-                break;
-            case OmniboxPedalType.CLEAR_BROWSING_DATA:
-                mSettingsLauncher.launchSettingsActivity(
-                        mContext, SettingsFragment.CLEAR_BROWSING_DATA);
-                break;
-            case OmniboxPedalType.UPDATE_CREDIT_CARD:
-                mSettingsLauncher.launchSettingsActivity(
-                        mContext, SettingsFragment.PAYMENT_METHODS);
-                break;
-            case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
-                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.SAFETY_CHECK);
-                break;
-            case OmniboxPedalType.MANAGE_SITE_SETTINGS:
-                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.SITE);
-                break;
-            case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
-                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.ACCESSIBILITY);
-                break;
-            case OmniboxPedalType.VIEW_CHROME_HISTORY:
-                loadPageInCurrentTab(UrlConstants.HISTORY_URL);
-                break;
-            case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
-                loadPageInCurrentTab(UrlConstants.CHROME_DINO_URL);
-                break;
-            case OmniboxPedalType.MANAGE_PASSWORDS:
-                mOpenPasswordSettingsCb.run();
-                break;
-            case OmniboxPedalType.LAUNCH_INCOGNITO:
-                mOpenIncognitoTabCb.run();
-                break;
-        }
-        OmniboxMetrics.recordPedalUsed(pedalId);
+    /**
+     * TODO(crbug/1418077): turn the class into a factory and remove.
+     */
+    @Override
+    public void execute(OmniboxAction action) {
+        action.execute(this);
     }
 
     @Override
-    public void execute(OmniboxAction action) {
-        switch (action.actionId) {
-            case OmniboxActionType.PEDAL:
-                executePedalAction(OmniboxPedal.from(action));
-                break;
-
-            case OmniboxActionType.HISTORY_CLUSTERS:
-                mOpenHistoryClustersForQueryCb.accept(HistoryClustersAction.from(action).query);
-                break;
-
-            case OmniboxActionType.ACTION_IN_SUGGEST:
-                startActionInSuggestIntent(OmniboxActionInSuggest.from(action));
-                break;
-        }
+    public void openHistoryClustersPage(String query) {
+        mOpenHistoryClustersForQueryCb.accept(query);
     }
 
-    /**
-     * Load the supplied URL in the current tab.
-     * If not possible, open a new tab and load the url there. Try to re-use existing tabs where
-     * possible.
-     *
-     * @param url the page URL to load
-     */
-    private void loadPageInCurrentTab(String url) {
+    @Override
+    public void openIncognitoTab() {
+        mOpenIncognitoTabCb.run();
+    }
+
+    @Override
+    public void openPasswordManager() {
+        mOpenPasswordSettingsCb.run();
+    }
+
+    @Override
+    public void openSettingsPage(@SettingsFragment int fragment) {
+        mSettingsLauncher.launchSettingsActivity(mContext, fragment);
+    }
+
+    @Override
+    public boolean isIncognito() {
+        return mTabSupplier.get().isIncognito();
+    }
+
+    @Override
+    public void loadPageInCurrentTab(String url) {
         var tab = mTabSupplier.get();
         if (tab.isUserInteractable()) {
             tab.loadUrl(new LoadUrlParams(url));
@@ -130,92 +92,16 @@ public class ActionChipsDelegateImpl implements OmniboxActionDelegate {
         }
     }
 
-    /**
-     * Execute an Intent associated with OmniboxActionInSuggest.
-     *
-     * @param actionInSuggest the action to execute the intent for
-     */
-    private void startActionInSuggestIntent(OmniboxActionInSuggest actionInSuggest) {
-        var actionType = actionInSuggest.actionInfo.getActionType();
-        boolean actionStarted = false;
-        Intent intent = null;
-
+    @Override
+    public boolean startActivity(@NonNull Intent intent) {
         try {
-            intent = Intent.parseUri(
-                    actionInSuggest.actionInfo.getActionUri(), Intent.URI_INTENT_SCHEME);
-
-            switch (actionType) {
-                case WEBSITE:
-                    // Rather than invoking an intent that opens a new tab, load the page in the
-                    // current tab.
-                    loadPageInCurrentTab(intent.getDataString());
-                    actionStarted = true;
-                    break;
-
-                case REVIEWS:
-                    assert false : "Pending implementation";
-                    break;
-
-                case CALL:
-                    // Don't call directly. Use `DIAL` instead to let the user decide.
-                    // Note also that ACTION_CALL requires a dedicated permission.
-                    intent.setAction(Intent.ACTION_DIAL);
-                    // Start dialer even if the user is in incognito mode. The intent only pre-dials
-                    // the phone number without ever making the call. This gives the user the chance
-                    // to abandon before making a call.
-                    startActivity(intent);
-                    actionStarted = true;
-                    break;
-
-                case DIRECTIONS:
-                    // Open directions in maps only if maps are installed and the incognito mode is
-                    // not engaged. In all other cases, redirect the action to Browser.
-                    Tab currentTab = mTabSupplier.get();
-                    if (currentTab == null || !currentTab.isIncognito()) {
-                        startActivity(intent);
-                        actionStarted = true;
-                    }
-                    break;
-
-                    // No `default` to capture new variants.
+            if (IntentUtils.intentTargetsSelf(mContext, intent)) {
+                IntentUtils.addTrustedIntentExtras(intent);
             }
-
-            // Record intent started only if it was sent.
-            if (actionStarted) {
-                OmniboxMetrics.recordActionInSuggestIntentResult(
-                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS);
-            }
-        } catch (URISyntaxException e) {
-            // Never happens. http://b/279756377.
+            mContext.startActivity(intent);
+            return true;
         } catch (ActivityNotFoundException e) {
-            OmniboxMetrics.recordActionInSuggestIntentResult(
-                    OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
-        } finally {
-            // At this point we know that we were unable to launch the target activity.
-            // We may still be able to handle the corresponding action inside the browser.
-            if (!actionStarted) {
-                switch (actionType) {
-                    case DIRECTIONS:
-                        loadPageInCurrentTab(intent.getDataString());
-                        break;
-
-                    case CALL:
-                    case REVIEWS:
-                    case WEBSITE:
-                        // Give up. Don't add the `default` clause though, capture missed variants.
-                        break;
-                }
-            }
         }
-    }
-    /**
-     * Start the activity referenced by the supplied {@link android.content.Intent}.
-     * Decorates the intent with trusted intent extras when the intent references the browser.
-     */
-    private void startActivity(@NonNull Intent intent) {
-        if (IntentUtils.intentTargetsSelf(mContext, intent)) {
-            IntentUtils.addTrustedIntentExtras(intent);
-        }
-        mContext.startActivity(intent);
+        return false;
     }
 }
