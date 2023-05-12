@@ -237,11 +237,17 @@ bool IsABookmarkNodeSectionForIdentifier(
     [self generateTableViewDataForModel:_profileBookmarkModel.get()
                               inSection:
                                   BookmarksHomeSectionIdentifierRootProfile];
+  } else {
+    [self.consumer.tableViewModel
+        removeSectionWithIdentifier:BookmarksHomeSectionIdentifierRootProfile];
   }
   if (showAccountSection) {
     [self generateTableViewDataForModel:_accountBookmarkModel.get()
                               inSection:
                                   BookmarksHomeSectionIdentifierRootAccount];
+  } else {
+    [self.consumer.tableViewModel
+        removeSectionWithIdentifier:BookmarksHomeSectionIdentifierRootAccount];
   }
   if (showProfileSection && showAccountSection) {
     // Headers are only shown if both sections are visible.

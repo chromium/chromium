@@ -95,8 +95,9 @@ TEST_P(BookmarksHomeViewControllerTest,
   }
 }
 
+// Tests with two empty bookmark model. None of them are shown.
 TEST_P(BookmarksHomeViewControllerTest,
-       TableViewPopulatedAfterBookmarkModelLoadedAtRootLevel) {
+       TableViewPopulatedAfterBookmarkModelLoadedAtRootLevelWithNoModel) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
@@ -123,14 +124,68 @@ TEST_P(BookmarksHomeViewControllerTest,
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    const bookmarks::BookmarkNode* rootNode =
-        profile_bookmark_model_->root_node();
-    const bookmarks::BookmarkNode* mobileNode =
-        profile_bookmark_model_->mobile_node();
-    AddBookmark(mobileNode, u"foo");  // Ensure there are bookmarks
-    controller.displayedFolderNode = rootNode;
-    // sections: Promo, Bookmarks, root profile, root account, message.
-    EXPECT_EQ(5, [controller numberOfSectionsInTableView:controller.tableView]);
+    // At root level `displayedFolderNode` is the root node of
+    // `profile_bookmark_model`.
+    controller.displayedFolderNode = profile_bookmark_model_->root_node();
+    // sections: Promo, Bookmarks, root profile or root account, message.
+    EXPECT_EQ(3, [controller numberOfSectionsInTableView:controller.tableView]);
+    EXPECT_EQ(1, [controller tableView:controller.tableView
+                     numberOfRowsInSection:
+                         [controller.tableViewModel
+                             sectionForSectionIdentifier:
+                                 BookmarksHomeSectionIdentifierPromo]]);
+    EXPECT_EQ(0, [controller tableView:controller.tableView
+                     numberOfRowsInSection:
+                         [controller.tableViewModel
+                             sectionForSectionIdentifier:
+                                 BookmarksHomeSectionIdentifierBookmarks]]);
+    EXPECT_EQ(0, [controller tableView:controller.tableView
+                     numberOfRowsInSection:
+                         [controller.tableViewModel
+                             sectionForSectionIdentifier:
+                                 BookmarksHomeSectionIdentifierMessages]]);
+  }
+}
+
+// Tests with one empty bookmark model and one non-empty bookmark model at
+// root level. The non-empty bookmark model is hidden.
+// TODO(crbug.com/14446777): Test with account bookmark model after refactoring
+// BookmarkIOSUnitTestSupport.
+TEST_P(BookmarksHomeViewControllerTest,
+       TableViewPopulatedAfterBookmarkModelLoadedAtRootLevelWithOneModel) {
+  @autoreleasepool {
+    id mockSnackbarCommandHandler =
+        OCMProtocolMock(@protocol(SnackbarCommands));
+
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
+                             forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
+
+    BookmarksHomeViewController* controller =
+        [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
+    controller.applicationCommandsHandler = mockApplicationCommandHandler;
+    controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
+
+    // Ensure there are bookmarks.
+    AddBookmark(profile_bookmark_model_->mobile_node(), u"foo");
+    // At root level `displayedFolderNode` is the root node of
+    // `profile_bookmark_model`.
+    controller.displayedFolderNode = profile_bookmark_model_->root_node();
+    // sections: Promo, Bookmarks, root profile or root account, message.
+    EXPECT_EQ(4, [controller numberOfSectionsInTableView:controller.tableView]);
     EXPECT_EQ(1, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -150,14 +205,14 @@ TEST_P(BookmarksHomeViewControllerTest,
                      numberOfRowsInSection:
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierRootAccount]]);
-    EXPECT_EQ(0, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
   }
 }
+
+// TODO(crbug.com/14446777): Write this test after account storage support is
+// available.
+// TEST_P(BookmarksHomeViewControllerTest,
+//       TableViewPopulatedAfterBookmarkModelLoadedAtRootLevelWithBothModel) {}
 
 // Checks that metrics are correctly reported.
 TEST_P(BookmarksHomeViewControllerTest, Metrics) {
