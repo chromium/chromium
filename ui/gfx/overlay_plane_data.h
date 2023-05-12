@@ -56,7 +56,7 @@ struct GFX_EXPORT OverlayPlaneData {
   // Whether alpha blending should be enabled.
   bool enable_blend = false;
 
-  // Damage on the buffer.
+  // Damage in viz::Display space, the same space as |display_bounds|;
   Rect damage_rect;
 
   // Opacity of overlay plane. For a blending buffer (|enable_blend|) the total
