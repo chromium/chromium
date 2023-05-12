@@ -29,7 +29,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginVertical="8dp">
+        android:layout_marginVertical="@dimen/bottom_bar_marginVertical">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/start_button"

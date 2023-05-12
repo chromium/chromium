@@ -156,6 +156,7 @@ android_resources("java_resources") {
     "java/res/layout/privacy_guide_steps.xml",
     "java/res/layout/privacy_guide_welcome.xml",
     "java/res/menu/privacy_guide_toolbar_menu.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/attrs.xml",
     "java/res/values/dimens.xml",
   ]
