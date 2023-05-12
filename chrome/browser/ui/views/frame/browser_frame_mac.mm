@@ -372,7 +372,8 @@ void BrowserFrameMac::PopulateCreateWindowParams(
       params->window_title_hidden = true;
   } else if (browser_view_->GetIsPictureInPictureType()) {
     params->window_class = remote_cocoa::mojom::WindowClass::kFrameless;
-    params->style_mask = NSWindowStyleMaskFullSizeContentView;
+    params->style_mask = NSWindowStyleMaskFullSizeContentView |
+                         NSWindowStyleMaskTitled | NSWindowStyleMaskResizable;
   } else {
     params->window_class = remote_cocoa::mojom::WindowClass::kDefault;
   }
