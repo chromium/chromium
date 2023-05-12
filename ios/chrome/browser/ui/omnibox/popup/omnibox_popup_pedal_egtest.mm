@@ -248,6 +248,42 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that manage payment methods pedal is present and it opens the manage
+// payment methods page.
+- (void)testManagePaymentMethodsPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalmanagepayment"];
+
+  NSString* managePaymenyMethodsPedalString =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_UPDATE_CREDIT_CARD);
+
+  // Matcher for the manage payment methods pedal suggestion.
+  id<GREYMatcher> managePaymentMethodsPedal =
+      popupRowWithString(managePaymenyMethodsPedalString);
+
+  // Manage payment methods pedal should be visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:managePaymentMethodsPedal];
+
+  // Tap on manage payment methods pedal.
+  [[EarlGrey selectElementWithMatcher:managePaymentMethodsPedal]
+      performAction:grey_tap()];
+
+  // Manage payment methods page should be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::AutofillCreditCardTableView()];
+
+  // Close the Manage payments settings page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::AutofillCreditCardTableView()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {
