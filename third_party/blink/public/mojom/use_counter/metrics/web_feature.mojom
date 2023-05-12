@@ -3900,6 +3900,7 @@ enum WebFeature {
   kEventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved = 4560,
   kLinkRelPreloadAsFont = 4561,
   kCrossWindowAccessToBrowserGeneratedDocument = 4562,
+  kSpeculationRulesNoVarySearchHint = 4563,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

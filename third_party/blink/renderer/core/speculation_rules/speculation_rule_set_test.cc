@@ -860,6 +860,29 @@ TEST_F(SpeculationRuleSetTest, UseCounter) {
       page_holder.GetDocument().IsUseCounted(WebFeature::kSpeculationRules));
 }
 
+// Tests that the presence of a speculationrules No-Vary-Search hint is
+// recorded.
+TEST_F(SpeculationRuleSetTest, NoVarySearchHintUseCounter) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
+      true};
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  EXPECT_FALSE(page_holder.GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesNoVarySearchHint));
+
+  const String speculation_script =
+      R"nvs({"prefetch": [{
+        "source": "list",
+        "urls": ["/foo"],
+        "expects_no_vary_search": "params=(\"a\")"
+      }]})nvs";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  EXPECT_TRUE(page_holder.GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesNoVarySearchHint));
+}
+
 // Tests that rules removed before the task to update speculation candidates
 // runs are not reported.
 TEST_F(SpeculationRuleSetTest, AddAndRemoveInSameTask) {

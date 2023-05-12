@@ -348,6 +348,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
         return nullptr;
       }
     } else {
+      UseCounter::Count(context, WebFeature::kSpeculationRulesNoVarySearchHint);
       no_vary_search = std::move(no_vary_search_hint->get_no_vary_search());
     }
   }
