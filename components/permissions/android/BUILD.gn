@@ -123,7 +123,7 @@ android_library("java") {
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/util/android:java",
     "//components/content_settings/android:content_settings_enums_java",
-    "//components/omnibox/browser:browser_java",
+    "//components/omnibox/browser:scheme_classifier_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

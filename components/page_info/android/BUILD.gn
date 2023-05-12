@@ -98,7 +98,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
     "//components/location/android:location_java",
-    "//components/omnibox/browser:browser_java",
+    "//components/omnibox/browser:scheme_classifier_java",
     "//components/permissions/android:java",
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",

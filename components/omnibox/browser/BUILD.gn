@@ -506,15 +506,29 @@ if (is_android) {
     ]
   }
 
+  android_library("scheme_classifier_java") {
+    resources_package = "org.chromium.components.omnibox"
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
+      "android/java/src/org/chromium/components/omnibox/SecurityStatusIcon.java",
+    ]
+    deps = [
+      ":java_resources",
+      "//base:jni_java",
+      "//components/embedder_support/android:util_java",
+      "//components/security_state/core:security_state_enums_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
   android_library("browser_java") {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
-      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxMetrics.java",
-      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SecurityButtonAnimationDelegate.java",
-      "android/java/src/org/chromium/components/omnibox/SecurityStatusIcon.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/HistoryClustersAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
@@ -546,7 +560,10 @@ if (is_android) {
       "//url:gurl_java",
     ]
 
-    public_deps = [ "//third_party/omnibox_proto:omnibox_proto_java" ]
+    public_deps = [
+      ":scheme_classifier_java",
+      "//third_party/omnibox_proto:omnibox_proto_java",
+    ]
 
     srcjar_deps = [ ":browser_java_enums_srcjar" ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

@@ -248,7 +248,7 @@ android_library("java") {
     "//components/metrics:metrics_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/navigation_interception/android:navigation_interception_java",
-    "//components/omnibox/browser:browser_java",
+    "//components/omnibox/browser:scheme_classifier_java",
     "//components/page_info/android:java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:service_java",
