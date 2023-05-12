@@ -564,12 +564,10 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // FormData::child_frames now include |frame|.
   content::RenderFrameHost* parent_rfh = rfh->GetParent();
   if (!frame->parent_form && parent_rfh && !IsFencedFrameRoot(rfh)) {
-    LocalFrameToken parent_frame_token(
-        LocalFrameToken(parent_rfh->GetFrameToken().value()));
-    FrameData* parent_frame = GetFrameData(parent_frame_token);
-    if (parent_frame && parent_frame->driver) {
-      AFCHECK(parent_frame->driver->render_frame_host() == parent_rfh);
-      parent_frame->driver->TriggerReparse();
+    ContentAutofillDriver* parent_driver =
+        ContentAutofillDriver::GetForRenderFrameHost(parent_rfh);
+    if (parent_driver) {
+      parent_driver->TriggerReparse();
     }
   }
 }
