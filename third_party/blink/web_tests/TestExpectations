@@ -168,7 +168,7 @@ crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-
 # parser switched to using a time based budget instead of a token based budget.
 # All of these are bugs/issues with the test itself.
 
-crbug.com/1341693 [ Linux ] external/wpt/dom/nodes/MutationObserver-document.html [ Crash Failure Pass Timeout ]
+crbug.com/1342718 external/wpt/dom/nodes/MutationObserver-document.html [ Crash Failure Pass Timeout ]
 crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
 crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
 crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
@@ -6708,7 +6708,6 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 [ Debug Mac12 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Failure ]
 [ Debug Mac12 ] external/wpt/css/css-text/text-transform/text-transform-capitalize-003.html [ Failure ]
 [ Debug Mac12 ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure ]
-[ Debug Mac12 ] external/wpt/dom/nodes/MutationObserver-document.html [ Failure ]
 [ Debug Mac12 ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure ]
 [ Debug Mac12 ] external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Failure ]
 [ Debug Mac12 ] external/wpt/fetch/local-network-access/mixed-content-fetch.tentative.https.window.html [ Failure ]
