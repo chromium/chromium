@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
-#include "components/services/screen_ai/public/cpp/utilities.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -224,18 +223,7 @@ bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
   if (result != sandbox::SBOX_ALL_OK)
     return false;
 
-  base::FilePath library_binary_path =
-      screen_ai::GetLatestComponentBinaryPath();
-  if (library_binary_path.empty())
-    return false;
-  DCHECK_EQ(library_binary_path.Extension(), FILE_PATH_LITERAL(".dll"));
-
-  // TODO(https://crbug.com/1278249): Preload the binary instead of giving
-  // read permission to the sandbox.
-  result = config->AddRule(sandbox::SubSystem::kFiles,
-                           sandbox::Semantics::kFilesAllowReadonly,
-                           library_binary_path.value().c_str());
-  return result == sandbox::SBOX_ALL_OK;
+  return true;
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

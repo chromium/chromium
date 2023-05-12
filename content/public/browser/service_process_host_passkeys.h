@@ -8,6 +8,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
 
+namespace screen_ai {
+class ScreenAIServiceRouter;
+}  // namespace screen_ai
+
 namespace content {
 class ServiceProcessHostPreloadLibraries {
  public:
@@ -18,6 +22,7 @@ class ServiceProcessHostPreloadLibraries {
 
   // Service launchers using `ServiceProcessHost::Options::WithPreloadLibraries`
   // should be added here and must be reviewed by the security team.
+  friend class screen_ai::ScreenAIServiceRouter;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ServiceProcessHostBrowserTest,
