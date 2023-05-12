@@ -121,6 +121,8 @@
       'android-cronet-arm64-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
       'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient',
       'android-cronet-marshmallow-arm64-perf-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
+      'android-cronet-riscv64-dbg': 'android_cronet_debug_static_bot_riscv64_reclient',
+      'android-cronet-riscv64-rel': 'android_cronet_release_bot_minimal_symbols_riscv64_reclient',
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-nougat-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
@@ -1012,6 +1014,8 @@
       'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient',
       'android-cronet-lollipop-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
+      'android-cronet-riscv64-dbg': 'android_cronet_debug_static_bot_riscv64_reclient',
+      'android-cronet-riscv64-rel': 'android_cronet_release_bot_minimal_symbols_riscv64_reclient',
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-dbg-10-tests': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-dbg-11-tests': 'android_cronet_debug_static_bot_x86_reclient',
@@ -1525,6 +1529,10 @@
       'android', 'cronet_android', 'debug_static_bot_reclient', 'arm_no_neon', 'release_java',
     ],
 
+    'android_cronet_debug_static_bot_riscv64_reclient': [
+      'android', 'cronet_android', 'debug_static_bot_reclient', 'riscv64',
+    ],
+
     'android_cronet_debug_static_bot_x86_reclient': [
       'android', 'cronet_android', 'debug_static_bot_reclient', 'x86',
     ],
@@ -1546,6 +1554,11 @@
 
     'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient': [
       'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'arm_no_neon',
+      'strip_debug_info',
+    ],
+
+    'android_cronet_release_bot_minimal_symbols_riscv64_reclient': [
+      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'riscv64',
       'strip_debug_info',
     ],
 
@@ -4603,6 +4616,10 @@
 
     'reven': {
       'args_file': '//build/args/chromeos/reven-vmtest.gni',
+    },
+
+    'riscv64': {
+      'gn_args': 'target_cpu="riscv64"',
     },
 
     'shared': {
