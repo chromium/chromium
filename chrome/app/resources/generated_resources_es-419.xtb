@@ -2136,6 +2136,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Se permiten las extensiones en este sitio</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
+<translation id="2783024642731649028"><ph name="DISCOUNT_TEXT" /> en 1 artículo de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visto <ph name="RELATIVE_TIME" /> que está en tu carrito</translation>
 <translation id="2783298271312924866">Descargado</translation>
 <translation id="2783321960289401138">Crear acceso directo…</translation>
 <translation id="2783829359200813069">Seleccionar tipos de encriptación</translation>
@@ -3874,6 +3875,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4324577459193912240">El archivo está incompleto</translation>
 <translation id="4325237902968425115">Desinstalando <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">La seguridad más sólida de Chrome realiza más acciones para protegerte contra sitios web, descargas y extensiones peligrosos.</translation>
+<translation id="4326484226728068206"><ph name="DISCOUNT_TEXT" /> en los artículos de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, vistos <ph name="RELATIVE_TIME" /> que están en tu carrito</translation>
 <translation id="4330191372652740264">Agua helada</translation>
 <translation id="4330387663455830245">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configura los controles parentales</translation>
@@ -4571,6 +4573,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> administra esta cuenta.</translation>
 <translation id="4940845626435830013">Reservar espacio del disco</translation>
 <translation id="4941074198479265146">Por lo general los sitios se conectan a dispositivos MIDI para habilitar funciones para crear y editar música.</translation>
+<translation id="4941243352516004658"><ph name="DISCOUNT_TEXT" /> en <ph name="PRODUCT_ITEM_COUNT" /> artículos de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, vistos <ph name="RELATIVE_TIME" /> que están en tu carrito</translation>
 <translation id="4941246025622441835">Utiliza esta solicitud de dispositivo al registrar el dispositivo para la administración empresarial:</translation>
 <translation id="4941627891654116707">Tamaño de fuente</translation>
 <translation id="4941963255146903244">Ve las fotos, el contenido multimedia y las apps del teléfono</translation>
@@ -5600,7 +5603,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5884447826201752041">Personalizar para cada extensión</translation>
 <translation id="5884474295213649357">Esta pestaña está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">Tu organización administrará este perfil</translation>
-<translation id="5886009770935151472">Dedo 1</translation>
+<translation id="5886009770935151472">Huella dactilar 1</translation>
 <translation id="5886112770923972514">Conéctate a dispositivos cercanos con Vinculación rápida y configúralos rápidamente</translation>
 <translation id="5886384907280980632">Desactivar ahora</translation>
 <translation id="5888889603768021126">Accediste con</translation>

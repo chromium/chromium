@@ -2136,6 +2136,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Бұл сайтта кеңейтімдерге рұқсат етілген</translation>
 <translation id="2782104745158847185">Linux қолданбасын орнату кезінде қате кетті</translation>
+<translation id="2783024642731649028"><ph name="RELATIVE_TIME" /> көрген <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) дүкенінде себетіңіздегі 1 элементке <ph name="DISCOUNT_TEXT" /></translation>
 <translation id="2783298271312924866">Жүктелген</translation>
 <translation id="2783321960289401138">Таңбаша жасау…</translation>
 <translation id="2783829359200813069">Шифрлау түрлерін таңдаңыз</translation>
@@ -3874,6 +3875,7 @@
 <translation id="4324577459193912240">Файл толық емес</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> жойылуда…</translation>
 <translation id="4326146840124313313">Chrome-ның ең күшті қауіпсіздігі қауіпті веб-сайттардан, жүктеп алынғандардан және кеңейтімдерден қорғау үшін көбірек жұмыс істейді</translation>
+<translation id="4326484226728068206"><ph name="RELATIVE_TIME" /> көрген <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) дүкенінде себетіңіздегі элементтерге <ph name="DISCOUNT_TEXT" /></translation>
 <translation id="4330191372652740264">Мұзды су</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> тілінен ешқашан аударылмасын</translation>
 <translation id="4332976768901252016">Ата-ана бақылауын реттеу</translation>
@@ -4571,6 +4573,7 @@
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> осы аккаунтты басқарады</translation>
 <translation id="4940845626435830013">Дискіде орынды сақтау</translation>
 <translation id="4941074198479265146">Сайттар әдетте музыка жасауға және өңдеуге арналған функциялар үшін MIDI құрылғыларына қосылады.</translation>
+<translation id="4941243352516004658"><ph name="RELATIVE_TIME" /> көрген <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) дүкенінде себетіңіздегі <ph name="PRODUCT_ITEM_COUNT" /> элементке <ph name="DISCOUNT_TEXT" /></translation>
 <translation id="4941246025622441835">Кәсіпорын басқару үшін құрылғыны тіркеу кезінде осы құрылғы сұрауын пайдаланыңыз:</translation>
 <translation id="4941627891654116707">Қаріп өлшемі</translation>
 <translation id="4941963255146903244">Телефондағы фотосуреттерді, медиафайлдар мен қолданбаларды көру</translation>

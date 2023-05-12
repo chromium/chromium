@@ -2137,6 +2137,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">ଏହି ସାଇଟରେ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="2782104745158847185">Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲ୍‌ କରିବାରେ ତ୍ରୁଟି</translation>
+<translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />ରୁ ଆପଣଙ୍କ କାର୍ଟ <ph name="DISCOUNT_TEXT" />ରେ ଥିବା 1ଟି ଆଇଟମକୁ <ph name="RELATIVE_TIME" />ରେ ଭ୍ୟୁ କରାଯାଇଛି</translation>
 <translation id="2783298271312924866">ଡାଉନ୍‍‍ଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="2783321960289401138">ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ...</translation>
 <translation id="2783829359200813069">ଏନ୍‌କ୍ରିପ୍‌ସନ୍‌ର ପ୍ରକାରଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ</translation>
@@ -3874,6 +3875,7 @@
 <translation id="4324577459193912240">ଫାଇଲ୍ ଅସମ୍ପୂର୍ଣ୍ଣ ଅଟେ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />କୁ ଅନଇନ୍‍ଷ୍ଟଲ୍‍ କରାଯାଉଛି...</translation>
 <translation id="4326146840124313313">Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ଆପଣଙ୍କୁ ବିପଦଜନକ ୱେବସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନସନରୁ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆହୁରି ଅନେକ କିଛି କରେ</translation>
+<translation id="4326484226728068206"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />ରୁ ଆପଣଙ୍କ କାର୍ଟ <ph name="DISCOUNT_TEXT" />ରେ ଥିବା ଆଇଟମଗୁଡ଼ିକୁ <ph name="RELATIVE_TIME" />ରେ ଭ୍ୟୁ କରାଯାଇଛି</translation>
 <translation id="4330191372652740264">ଆଇସ୍‌ୱାଟର୍</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />କୁ କେବେ ହେଲେ ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="4332976768901252016">ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
@@ -4572,6 +4574,7 @@
 <translation id="4940448324259979830">ଏହି ଆକାଉଣ୍ଟ <ph name="PROFILE_NAME" /> ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="4940845626435830013">ଡିସ୍କ ସାଇଜ୍ ରିଜର୍ଭ କରନ୍ତୁ</translation>
 <translation id="4941074198479265146">ସଙ୍ଗୀତ ତିଆରି କରିବା ଏବଂ ଏଡିଟ୍ କରିବାର ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ MIDI ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିଥାଏ</translation>
+<translation id="4941243352516004658"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />ରୁ ଆପଣଙ୍କ କାର୍ଟ <ph name="DISCOUNT_TEXT" />ରେ ଥିବା <ph name="PRODUCT_ITEM_COUNT" />ଟି ଆଇଟମକୁ <ph name="RELATIVE_TIME" />ରେ ଭ୍ୟୁ କରାଯାଇଛି</translation>
 <translation id="4941246025622441835">ଯେତେବେଳେ ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍‌ ପରିଚାଳନା ପାଇଁ ଡିଭାଇସ୍‍କୁ ତାଲିକାଭୁକ୍ତ କରୁଛନ୍ତି, ସେତେବେଳେ ଏହି ଡିଭାଇସ୍‌ର ଅଧିଗ୍ରହଣ ବ୍ୟବହାର କରନ୍ତୁ:</translation>
 <translation id="4941627891654116707">ଫଣ୍ଟର ଆକାର</translation>
 <translation id="4941963255146903244">ଆପଣଙ୍କ ଫୋନର ଫଟୋ, ମିଡିଆ ଏବଂ ଆପ୍ସକୁ ଦେଖନ୍ତୁ</translation>

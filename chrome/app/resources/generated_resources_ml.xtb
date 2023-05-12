@@ -2138,6 +2138,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">ഈ സൈറ്റിൽ വിപുലീകരണങ്ങൾ അനുവദനീയമാണ്</translation>
 <translation id="2782104745158847185">Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിൽ പിഴവ്</translation>
+<translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-ൽ നിന്നുള്ള നിങ്ങളുടെ കാർട്ടിലെ 1 ഇനത്തിന് <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> സന്ദർശിച്ചു</translation>
 <translation id="2783298271312924866">ഡൗൺലോഡുചെയ്‌തു</translation>
 <translation id="2783321960289401138">കുറുക്കുവഴി സൃഷ്‌ടിക്കുക...</translation>
 <translation id="2783829359200813069">എൻക്രിപ്ഷൻ തരങ്ങൾ തിരഞ്ഞെടുക്കുക</translation>
@@ -3875,6 +3876,7 @@
 <translation id="4324577459193912240">ഫയൽ ‌പൂർണ്ണമല്ല</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> അണ്‍‌ ഇന്‍സ്‌റ്റാള്‍ ചെയ്യുന്നു...</translation>
 <translation id="4326146840124313313">അപകടകരമായ വെബ്‌സൈറ്റുകളിൽ നിന്നും ഡൗൺലോഡുകളിൽ നിന്നും വിപുലീകരണങ്ങളിൽ നിന്നും നിങ്ങളെ പരിരക്ഷിക്കാൻ Chrome-ന്റെ ശക്തമായ സുരക്ഷ കൂടുതൽ കാര്യങ്ങൾ ചെയ്യുന്നു</translation>
+<translation id="4326484226728068206"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-ൽ നിന്നുള്ള നിങ്ങളുടെ കാർട്ടിലെ ഇനങ്ങൾക്ക് <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> സന്ദർശിച്ചു</translation>
 <translation id="4330191372652740264">ഐസ്‌വാട്ടർ</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="4332976768901252016">രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ സജ്ജീകരിക്കുക</translation>
@@ -4572,6 +4574,7 @@
 <translation id="4940448324259979830">ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_NAME" /> ആണ്</translation>
 <translation id="4940845626435830013">ഡിസ്ക്കിൽ ഇടം നീക്കി വയ്ക്കുക</translation>
 <translation id="4941074198479265146">സംഗീതം സൃഷ്‌ടിക്കുന്നതിനും എഡിറ്റ് ചെയ്യുന്നതിനുമുള്ള ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി MIDI ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാറുണ്ട്</translation>
+<translation id="4941243352516004658"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-ൽ നിന്നുള്ള നിങ്ങളുടെ കാർട്ടിലെ <ph name="PRODUCT_ITEM_COUNT" /> ഇനങ്ങൾക്ക് <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> സന്ദർശിച്ചു</translation>
 <translation id="4941246025622441835">ഉപകരണ എന്റർപ്രൈസ് മാനേജ്‍മെന്റിനായി എൻറോൾ ചെയ്യുമ്പോൾ ഈ ഉപകരണ അഭ്യർത്ഥന ഉപയോഗിക്കുക:</translation>
 <translation id="4941627891654116707">ഫോണ്ട് വലുപ്പം</translation>
 <translation id="4941963255146903244">നിങ്ങളുടെ ഫോണിലെ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുക</translation>

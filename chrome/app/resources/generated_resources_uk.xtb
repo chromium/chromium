@@ -2157,6 +2157,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">На цьому сайті дозволено розширення</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
+<translation id="2783024642731649028">1 товар у кошику (<ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Завантажено</translation>
 <translation id="2783321960289401138">Створити ярлик…</translation>
 <translation id="2783829359200813069">Виберіть тип шифрування</translation>
@@ -3895,6 +3896,7 @@
 <translation id="4324577459193912240">Файл неповний</translation>
 <translation id="4325237902968425115">Видаляється <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Найнадійніша система безпеки Chrome захищає вас від небезпечних веб-сайтів, завантажень і розширень</translation>
+<translation id="4326484226728068206">Товари у вашому кошику (<ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Крижана вода</translation>
 <translation id="4330387663455830245">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Налаштуйте батьківський контроль</translation>
@@ -4593,6 +4595,7 @@
 <translation id="4940448324259979830">Цим обліковим записом керує <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Зарезервувати розмір диска</translation>
 <translation id="4941074198479265146">Сайти зазвичай підключаються до пристроїв MIDI для створення та редагування музики</translation>
+<translation id="4941243352516004658">Товари у вашому кошику (<ph name="PRODUCT_ITEM_COUNT" />, <ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Використати заявку цього пристрою під час його реєстрації для корпоративного керування:</translation>
 <translation id="4941627891654116707">Розмір шрифту</translation>
 <translation id="4941963255146903244">Переглядати фотографії, медіафайли й додатки на вашому телефоні</translation>
@@ -5416,7 +5419,7 @@
 <translation id="5701786609538182967">Зараз їх можна відкривати не лише в додатку <ph name="APP_NAME" />. Після зміни <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> та ще 1 додаток більше не зможуть відкривати підтримувані посилання.</translation>
 <translation id="5702749864074810610">Пропозицію закрито</translation>
 <translation id="5704875434923668958">Синхронізовано з</translation>
-<translation id="5705005699929844214">Завжди показувати параметри спеціальних можливостей</translation>
+<translation id="5705005699929844214">Завжди показувати функції доступності</translation>
 <translation id="5705882733397021510">Назад</translation>
 <translation id="5707185214361380026">Не вдалося завантажити розширення з:</translation>
 <translation id="5708171344853220004">Ім'я учасника Microsoft</translation>
@@ -8445,7 +8448,7 @@
 <translation id="8347227221149377169">Завдання друку</translation>
 <translation id="834785183489258869">В анонімному режимі сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="8350789879725387295">Інструменти стилуса на закріпленій панелі</translation>
-<translation id="8351316842353540018">Завжди показувати параметри спеціальних можливостей</translation>
+<translation id="8351316842353540018">Завжди показувати функції доступності</translation>
 <translation id="8351419472474436977">Розширення керує налаштуваннями проксі-сервера, тобто може змінювати та переривати будь-які ваші дії онлайн, а також стежити за ними. Якщо ви не знаєте причини такої зміни, імовірно, вона небажана.</translation>
 <translation id="8351630282875799764">Акумулятор не заряджається</translation>
 <translation id="8352287103893778223">Назва групи вкладок</translation>

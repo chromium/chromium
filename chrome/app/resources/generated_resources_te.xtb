@@ -2152,6 +2152,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">ఈ సైట్‌లోని ఎక్స్‌టెన్షన్‌లు అనుమతించబడతాయి</translation>
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
+<translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />‌లోని మీ కార్ట్‌లోని <ph name="DISCOUNT_TEXT" /> గల 1 ఐటెమ్‌ను, <ph name="RELATIVE_TIME" /> చూడటం జరిగింది</translation>
 <translation id="2783298271312924866">డౌన్‌లోడ్ చేయబడింది</translation>
 <translation id="2783321960289401138">షార్ట్‌కట్‌ను క్రియేట్ చేయండి...</translation>
 <translation id="2783829359200813069">ఎన్‌క్రిప్షన్ రకాలను ఎంచుకోండి</translation>
@@ -3890,6 +3891,7 @@
 <translation id="4324577459193912240">ఫైల్ అసంపూర్ణంగా ఉంది</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />ని అన్ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="4326146840124313313">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, వాటితోపాటు ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించడానికి Chrome అందించే బలమైన సెక్యూరిటీ మరెన్నో చేస్తుంది</translation>
+<translation id="4326484226728068206"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />‌లోని మీ కార్ట్‌లోని <ph name="DISCOUNT_TEXT" /> గల ఐటెమ్‌లను, <ph name="RELATIVE_TIME" /> చూడటం జరిగింది</translation>
 <translation id="4330191372652740264">చల్లటి నీరు</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />ని ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="4332976768901252016">తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయండి</translation>
@@ -4588,6 +4590,7 @@
 <translation id="4940448324259979830">ఈ ఖాతా <ph name="PROFILE_NAME" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="4940845626435830013">డిస్క్ పరిమాణాన్ని రిజర్వ్ చేయండి</translation>
 <translation id="4941074198479265146">మ్యూజిక్‌ను క్రియేట్, ఎడిట్ చేయడం వంటి ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు MIDI పరికరాలకు కనెక్ట్ అవుతాయి</translation>
+<translation id="4941243352516004658"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />‌లోని మీ కార్ట్‌లోని <ph name="DISCOUNT_TEXT" /> గల <ph name="PRODUCT_ITEM_COUNT" /> ఐటెమ్‌లను, <ph name="RELATIVE_TIME" /> చూడటం జరిగింది</translation>
 <translation id="4941246025622441835">పరికరాన్ని బిజినెస్ నిర్వహణ కోసం నమోదు చేసేటప్పుడు ఈ పరికర రిక్వెస్ట్‌ను ఉపయోగించండి:</translation>
 <translation id="4941627891654116707">ఫాంట్ సైజ్‌</translation>
 <translation id="4941963255146903244">మీ ఫోన్‌లోని ఫోటోలు, మీడియా, ఇంకా యాప్‌లను చూడండి</translation>

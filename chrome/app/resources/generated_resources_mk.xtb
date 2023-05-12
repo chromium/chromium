@@ -2155,6 +2155,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Екстензиите се дозволени на овој сајт</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
+<translation id="2783024642731649028">1 ставка во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Преземено</translation>
 <translation id="2783321960289401138">Креирај кратенка...</translation>
 <translation id="2783829359200813069">Избор на типови шифрирање</translation>
@@ -3893,6 +3894,7 @@
 <translation id="4324577459193912240">Датотеката не е целосна</translation>
 <translation id="4325237902968425115">Се деинсталира <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Најсилната безбедност на Chrome нуди поголема заштита од опасни веб-сајтови, преземања и екстензии</translation>
+<translation id="4326484226728068206">Ставки во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Вода со мраз</translation>
 <translation id="4330387663455830245">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Поставете родителски контроли</translation>
@@ -4591,6 +4593,7 @@
 <translation id="4940448324259979830">Со сметкава управува <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Резервирајте големина на дискот</translation>
 <translation id="4941074198479265146">Сајтовите обично се поврзуваат со MIDI-уредите за функциите за создавање и уредување музика</translation>
+<translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> ставки во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Употреби го ова барање за уреди кога се запишува уредот за компаниско управување:</translation>
 <translation id="4941627891654116707">Големина на фонт</translation>
 <translation id="4941963255146903244">Прегледувајте ги фотографиите, аудиовизуелните содржини и апликациите од телефонот</translation>

@@ -2156,6 +2156,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">이 사이트에서 확장 프로그램이 허용되었습니다.</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
+<translation id="2783024642731649028">장바구니에 있는 상품 1개 <ph name="MERCHANT_NAME" />(<ph name="MERCHANT_DOMAIN" />)에서 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" />에 확인함</translation>
 <translation id="2783298271312924866">다운로드됨</translation>
 <translation id="2783321960289401138">바로가기 만들기...</translation>
 <translation id="2783829359200813069">암호화 유형 선택</translation>
@@ -3892,6 +3893,7 @@
 <translation id="4324577459193912240">파일 다운로드가 완료되지 않음</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> 제거 중...</translation>
 <translation id="4326146840124313313">Chrome의 가장 강력한 보안 기능은 위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다.</translation>
+<translation id="4326484226728068206"><ph name="MERCHANT_NAME" />(<ph name="MERCHANT_DOMAIN" />)에서 장바구니에 있는 상품 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" />에 확인함</translation>
 <translation id="4330191372652740264">얼음물</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
@@ -4590,6 +4592,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" />에서 관리하는 계정입니다</translation>
 <translation id="4940845626435830013">디스크 용량 예약</translation>
 <translation id="4941074198479265146">사이트에서는 일반적으로 음악을 만들고 편집하는 기능을 사용하기 위해 MIDI 기기에 연결합니다.</translation>
+<translation id="4941243352516004658"><ph name="MERCHANT_NAME" />(<ph name="MERCHANT_DOMAIN" />)에서 장바구니에 있는 상품 <ph name="PRODUCT_ITEM_COUNT" />개 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" />에 확인함</translation>
 <translation id="4941246025622441835">다음과 같이 기기를 엔터프라이즈 관리용으로 등록할 때 이 기기 요청을 사용합니다.</translation>
 <translation id="4941627891654116707">글꼴 크기</translation>
 <translation id="4941963255146903244">휴대전화의 사진, 미디어, 앱을 봅니다.</translation>

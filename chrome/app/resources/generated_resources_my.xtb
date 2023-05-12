@@ -2152,6 +2152,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">ဤဝဘ်ဆိုက်တွင် နောက်ဆက်တွဲများကို ခွင့်ပြုသည်</translation>
 <translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
+<translation id="2783024642731649028">သင့်ဈေးခြင်းတောင်းအတွင်းရှိ <ph name="MERCHANT_DOMAIN" />၊ <ph name="MERCHANT_NAME" /> ထံမှ <ph name="DISCOUNT_TEXT" /> ပစ္စည်း ၁ ခု၊ ကြည့်ရှုခဲ့ချိန် <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ဒေါင်းလုပ်ရယူပြီး၏</translation>
 <translation id="2783321960289401138">အလွယ်သုံး ဖန်တီးပါ</translation>
 <translation id="2783829359200813069">အသွင်ဝှက်ခြင်း အမျိုးအစားများကို ရွေးပါ</translation>
@@ -3889,6 +3890,7 @@
 <translation id="4324577459193912240">ဖိုင်မပြည့်စုံပါ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> ကို ဖယ်ရှားနေသည်...</translation>
 <translation id="4326146840124313313">Chrome ၏ အတောင့်တင်းဆုံး လုံခြုံရေးသည် အန္တရာယ်ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများရန်မှ ကာကွယ်ရန် ပိုမိုလုပ်ဆောင်ပေးသည်</translation>
+<translation id="4326484226728068206">သင့်ဈေးခြင်းတောင်းအတွင်းရှိ <ph name="MERCHANT_DOMAIN" />၊ <ph name="MERCHANT_NAME" /> ထံမှ <ph name="DISCOUNT_TEXT" /> ပစ္စည်းများ၊ ကြည့်ရှုခဲ့ချိန် <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">ရေခဲရေ</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> ကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="4332976768901252016">'မိဘ အထိန်းအချုပ်များ' ကို စနစ်ထည့်သွင်းခြင်း</translation>
@@ -4587,6 +4589,7 @@
 <translation id="4940448324259979830">ဤအကောင့်ကို <ph name="PROFILE_NAME" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="4940845626435830013">ဒစ်ခ်အရွယ်အစား ဖယ်ထားရန်</translation>
 <translation id="4941074198479265146">သီချင်းဖန်တီးခြင်းနှင့် တည်းဖြတ်ခြင်း ဝန်ဆောင်မှုများအတွက် MIDI ကိရိယာများသို့ ဝဘ်ဆိုက်များက ချိတ်ဆက်လေ့ရှိသည်</translation>
+<translation id="4941243352516004658">သင့်ဈေးခြင်းတောင်းအတွင်းရှိ <ph name="MERCHANT_DOMAIN" />၊ <ph name="MERCHANT_NAME" /> ထံမှ <ph name="DISCOUNT_TEXT" /> ပစ္စည်း <ph name="PRODUCT_ITEM_COUNT" /> ခု၊ ကြည့်ရှုခဲ့ချိန် <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">လုပ်ငန်းစီမံမှုအတွက် စက်ပစ္စည်းကို စာရင်းသွင်းသော် ဤစက်ပစ္စည်းတောင်းဆိုမှုကို သုံးပါ။</translation>
 <translation id="4941627891654116707">ဖေါင့် အရွယ်အစား</translation>
 <translation id="4941963255146903244">သင့်ဖုန်း၏ ဓာတ်ပုံ၊ မီဒီယာနှင့် အက်ပ်များကို ကြည့်နိုင်သည်</translation>

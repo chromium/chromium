@@ -2136,6 +2136,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">यो साइटमा एक्स्टेन्सनहरूलाई अनुमति दिइएको छ</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
+<translation id="2783024642731649028">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएको <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> को १ वस्तु <ph name="RELATIVE_TIME" /> हेरिए</translation>
 <translation id="2783298271312924866">डाउनलोड गरिएको</translation>
 <translation id="2783321960289401138">सर्टकट सिर्जना गर्नुहोस्...</translation>
 <translation id="2783829359200813069">इन्क्रिप्सनका प्रकारहरू चयन गर्नुहोस्</translation>
@@ -3874,6 +3875,7 @@
 <translation id="4324577459193912240">फाइल अपूर्ण छ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> को स्थापना रद्द गर्दै...</translation>
 <translation id="4326146840124313313">Chrome को सबैभन्दा भरपर्दो सुरक्षा सुविधाले तपाईंलाई खतरनाक वेबसाइट, डाउनलोड तथा एक्स्टेन्सनहरूबाट थप सुरक्षित राख्छ</translation>
+<translation id="4326484226728068206">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएका <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> का वस्तुहरू <ph name="RELATIVE_TIME" /> हेरिए</translation>
 <translation id="4330191372652740264">बरफ जस्तो चिसो पानी</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> लाई कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="4332976768901252016">अभिभावकीय नियन्त्रणहरू सेट अप गर्नुहोस्</translation>
@@ -4571,6 +4573,7 @@
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> ले यो खाता व्यवस्थापन गर्छ</translation>
 <translation id="4940845626435830013">डिस्कको आकार रिजर्भ गर्नुहोस्</translation>
 <translation id="4941074198479265146">साइटहरूले संगीत सिर्जना तथा सम्पादन गर्ने सुविधाहरू प्रदान गर्न सामान्यतया MIDI यन्त्रमा कनेक्ट गर्छन्</translation>
+<translation id="4941243352516004658">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएका <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> का <ph name="PRODUCT_ITEM_COUNT" /> वटा वस्तुहरू <ph name="RELATIVE_TIME" /> हेरिए</translation>
 <translation id="4941246025622441835">यन्त्रलाई उद्योग व्यवस्थापनको लागि भर्ति गर्दा यस यन्त्र आवश्यकता प्रयोग गर्नुहोस्।</translation>
 <translation id="4941627891654116707">फन्टको आकार</translation>
 <translation id="4941963255146903244">आफ्नो फोनका फोटो, मिडिया तथा एपहरू हेर्नुहोस्</translation>

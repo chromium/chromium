@@ -2142,6 +2142,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Пашырэнні на гэтым сайце разблакіраваны</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
+<translation id="2783024642731649028">На 1 тавар у кошыку дзейнічае скідка <ph name="DISCOUNT_TEXT" /> ад <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прагледжана <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Спампавана</translation>
 <translation id="2783321960289401138">Стварыць ярлык...</translation>
 <translation id="2783829359200813069">Выберыце тыпы шыфравання</translation>
@@ -3878,6 +3879,7 @@
 <translation id="4324577459193912240">Файл няпоўны</translation>
 <translation id="4325237902968425115">Ідзе выдаленне праграмы <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Самая надзейная сістэма бяспекі Chrome забяспечвае лепшую абарону ад небяспечных вэб-сайтаў, спамповак і пашырэнняў</translation>
+<translation id="4326484226728068206">На тавары ў кошыку дзейнічае скідка <ph name="DISCOUNT_TEXT" /> ад <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прагледжана <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Ледзяная вада</translation>
 <translation id="4330387663455830245">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Наладжванне бацькоўскага кантролю</translation>
@@ -4575,6 +4577,7 @@
 <translation id="4940448324259979830">Гэтым уліковым запісам кіруе <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Зарэзерваваць памер дыска</translation>
 <translation id="4941074198479265146">Сайты звычайна падключаюцца да прылад MIDI для работы функцый стварэння і манціравання музыкі</translation>
+<translation id="4941243352516004658">На тавары (<ph name="PRODUCT_ITEM_COUNT" />) у кошыку дзейнічае скідка <ph name="DISCOUNT_TEXT" /> ад <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прагледжана <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Выкарыстоўваць заяўку на гэту прыладу пры рэгістрацыі прылады для карпаратыўнага кіравання:</translation>
 <translation id="4941627891654116707">Памер шрыфту</translation>
 <translation id="4941963255146903244">Прагляд фота, медыяфайлаў і праграм з тэлефона</translation>

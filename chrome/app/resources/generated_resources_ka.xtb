@@ -2139,6 +2139,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">გაფართოებები დაშვებულია ამ საიტზე</translation>
 <translation id="2782104745158847185">შეცდომა Linux აპლიკაციის ინსტალაციისას</translation>
+<translation id="2783024642731649028">თქვენს კალათაში არსებულ 1 ერთეულზე ახლა მოქმედებს <ph name="DISCOUNT_TEXT" /> <ph name="MERCHANT_NAME" />-ისგან (<ph name="MERCHANT_DOMAIN" />), ნანახია: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ჩამოტვირთული</translation>
 <translation id="2783321960289401138">მალსახმობის შექმნა…</translation>
 <translation id="2783829359200813069">აირჩიეთ დაშიფვრის ტიპები</translation>
@@ -3877,6 +3878,7 @@
 <translation id="4324577459193912240">ფაილი არასრულია</translation>
 <translation id="4325237902968425115">მიმდინარეობს <ph name="LINUX_APP_NAME" />-ის დეინსტალაცია…</translation>
 <translation id="4326146840124313313">Chrome-ის ყველაზე ძლიერი დაცვა უკეთ გიცავთ სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან.</translation>
+<translation id="4326484226728068206">თქვენს კალათაში არსებულ ერთეულებზე ახლა მოქმედებს <ph name="DISCOUNT_TEXT" /> <ph name="MERCHANT_NAME" />-ისგან (<ph name="MERCHANT_DOMAIN" />), ნანახია: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">გაყინული წყალი</translation>
 <translation id="4330387663455830245">არასოდეს ითარგმნოს <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">მშობლის მიერ კონტროლის დაყენება</translation>
@@ -4574,6 +4576,7 @@
 <translation id="4940448324259979830">ამ ანგარიშს მართავს <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">დისკის ზომის დარეზერვება</translation>
 <translation id="4941074198479265146">როგორც წესი, საიტების მიერ MIDI-მოწყობილობებთან დაკავშირება ხდება ისეთი ფუნქციების უზრუნველსაყოფად, როგორიცაა, მაგალითად, მუსიკის შექმნა თუ მონტაჟი</translation>
+<translation id="4941243352516004658">თქვენს კალათაში არსებულ <ph name="PRODUCT_ITEM_COUNT" /> ერთეულზე ახლა მოქმედებს <ph name="DISCOUNT_TEXT" /> <ph name="MERCHANT_NAME" />-ისგან (<ph name="MERCHANT_DOMAIN" />), ნანახია: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">გამოიყენე მოწყობილობის ეს რეკვიზიტები კორპორატიული მართვისთვის რეგისტრაციის დროს:</translation>
 <translation id="4941627891654116707">შრიფტის ზომა</translation>
 <translation id="4941963255146903244">ნახეთ თქვენი ტელეფონის ფოტოები, მედია და აპები</translation>

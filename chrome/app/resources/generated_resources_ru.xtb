@@ -2141,6 +2141,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Расширения разрешены на этом сайте</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
+<translation id="2783024642731649028">1 товар в вашей корзине, к которому относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Сохранено</translation>
 <translation id="2783321960289401138">Создать ярлык...</translation>
 <translation id="2783829359200813069">Выбор типа шифрования</translation>
@@ -3354,7 +3355,7 @@
 <translation id="3843464315703645664">Разрешение дано браузером Chrome</translation>
 <translation id="3844888638014364087">Вставлен символ эмодзи</translation>
 <translation id="3846116211488856547">Разрабатывайте сайты, приложения для Android и другие программы с помощью удобных инструментов. При установке Linux будут скачаны данные объемом <ph name="DOWNLOAD_SIZE" />.</translation>
-<translation id="3847319713229060696">Помочь сделать Интернет безопасным для всех</translation>
+<translation id="3847319713229060696">Помочь сделать интернет безопасным для всех</translation>
 <translation id="3848547754896969219">Открыть в режиме &amp;инкогнито</translation>
 <translation id="3850172593216628215">Обновлений системы безопасности больше не будет. Сэкономьте от 50 долларов США при покупке нового Chromebook</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -3879,6 +3880,7 @@
 <translation id="4324577459193912240">Файл скачан не полностью</translation>
 <translation id="4325237902968425115">Удаление приложения "<ph name="LINUX_APP_NAME" />"…</translation>
 <translation id="4326146840124313313">Это самый высокий уровень защиты в Chrome, который позволяет обезопасить вас от угроз на сайтах, а также от вредоносных расширений и загрузок.</translation>
+<translation id="4326484226728068206">Товары в вашей корзине, к которым относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Вода со льдом</translation>
 <translation id="4330387663455830245">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Настройка родительского контроля</translation>
@@ -4576,6 +4578,7 @@
 <translation id="4940448324259979830">Этим аккаунтом управляет администратор домена <ph name="PROFILE_NAME" />.</translation>
 <translation id="4940845626435830013">Зарезервировать место на диске</translation>
 <translation id="4941074198479265146">Обычно сайты подключаются к MIDI-устройствам, чтобы использовать функции, которые позволяют создавать и изменять музыку.</translation>
+<translation id="4941243352516004658">Товары в вашей корзине (<ph name="PRODUCT_ITEM_COUNT" />), к которым относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Воспользуйтесь этой заявкой при регистрации устройства в домене предприятия:</translation>
 <translation id="4941627891654116707">Размер шрифта</translation>
 <translation id="4941963255146903244">Просмотр фотографий, медиафайлов и приложений с телефона</translation>

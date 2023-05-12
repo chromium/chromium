@@ -2141,6 +2141,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Rozšírenia sú na tomto webe povolené</translation>
 <translation id="2782104745158847185">Pri inštalácii aplikácie pre Linux sa vyskytla chyba</translation>
+<translation id="2783024642731649028">Jedna položka vo vašom košíku so zľavou <ph name="DISCOUNT_TEXT" /> od predajcu <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) zobrazená <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Stiahnuté</translation>
 <translation id="2783321960289401138">Vytvoriť odkaz...</translation>
 <translation id="2783829359200813069">Vyberte typy šifrovania</translation>
@@ -3879,6 +3880,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4324577459193912240">Súbor nie je úplný</translation>
 <translation id="4325237902968425115">Prebieha odinštalovanie aplikácie <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Najúčinnejšie zabezpečenie Chromu vás viac chráni pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami</translation>
+<translation id="4326484226728068206">Položky vo vašom košíku so zľavou <ph name="DISCOUNT_TEXT" /> od predajcu <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) zobrazené <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Voda s ľadom</translation>
 <translation id="4330387663455830245">Nikdy neprekladať jazyk <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Nastavenie rodičovskej kontroly</translation>
@@ -4576,6 +4578,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4940448324259979830">Tento účet spravuje <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Rezervovať veľkosť na disku</translation>
 <translation id="4941074198479265146">Weby sa zvyčajne pripájajú k zariadeniam MIDI, aby mohli poskytovať funkcie na tvorbu a úpravu hudby</translation>
+<translation id="4941243352516004658">Položky (<ph name="PRODUCT_ITEM_COUNT" />) vo vašom košíku so zľavou <ph name="DISCOUNT_TEXT" /> od predajcu <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) zobrazené <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Pri zaraďovaní zariadenia do správy firmy použite nasledujúcu rekvizíciu zariadenia:</translation>
 <translation id="4941627891654116707">Veľkosť písma</translation>
 <translation id="4941963255146903244">Zobrazujte si fotky, médiá a aplikácie svojho telefónu</translation>

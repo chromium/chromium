@@ -2150,6 +2150,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Энэ сайтад өргөтгөлүүдийг зөвшөөрсөн</translation>
 <translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
+<translation id="2783024642731649028">Таны сагсан дахь 1 зүйл <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-д <ph name="DISCOUNT_TEXT" /> байгаа бөгөөд үүнийг <ph name="RELATIVE_TIME" /> үзсэн</translation>
 <translation id="2783298271312924866">Татаж авсан</translation>
 <translation id="2783321960289401138">Богино холболт үүсгэх</translation>
 <translation id="2783829359200813069">Шифрлэлтийн төрлийг сонгоно уу</translation>
@@ -3887,6 +3888,7 @@
 <translation id="4324577459193912240">Файл дутуу байна</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />-г устгаж байна...</translation>
 <translation id="4326146840124313313">Chrome-н хамгийн хүчтэй аюулгүй байдал нь таныг аюултай вебсайт, татаж авсан файл болон өргөтгөлүүдээс хамгаалахын тулд илүү ихийг хийдэг</translation>
+<translation id="4326484226728068206">Таны сагсан дахь зүйлс <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-д <ph name="DISCOUNT_TEXT" /> байгаа бөгөөд үүнийг <ph name="RELATIVE_TIME" /> үзсэн</translation>
 <translation id="4330191372652740264">Мөстэй ус</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />-г хэзээ ч бүү орчуул</translation>
 <translation id="4332976768901252016">Эцэг эхийн хяналтыг тохируулах</translation>
@@ -4585,6 +4587,7 @@
 <translation id="4940448324259979830">Энэ бүртгэлийг <ph name="PROFILE_NAME" />-с удирддаг</translation>
 <translation id="4940845626435830013">Дискийн хэмжээг хадгалах</translation>
 <translation id="4941074198479265146">Сайтууд ихэвчлэн хөгжим үүсгэх болон засах онцлогуудад зориулж MIDI төхөөрөмжүүдэд холбогддог</translation>
+<translation id="4941243352516004658">Таны сагсан дахь <ph name="PRODUCT_ITEM_COUNT" /> зүйл <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-д <ph name="DISCOUNT_TEXT" /> байгаа бөгөөд <ph name="RELATIVE_TIME" /> үзсэн</translation>
 <translation id="4941246025622441835">Байгууллагын удирдлагын хүрээнд холбогдох төхөөрөмжийг ашиглах тохиолдолд энэхүү төхөөрөмжийн шаардлагыг ашиглана уу:</translation>
 <translation id="4941627891654116707">Үсгийн хэвний хэмжээ</translation>
 <translation id="4941963255146903244">Утасныхаа зураг, медиа болон аппуудыг хараарай</translation>

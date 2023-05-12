@@ -2154,6 +2154,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">இந்தத் தளத்தில் நீட்டிப்புகள் அனுமதிக்கப்பட்டுள்ளன</translation>
 <translation id="2782104745158847185">ஒரு Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது</translation>
+<translation id="2783024642731649028">உங்கள் கார்ட்டில் உள்ள ஒரு தயாரிப்பு <ph name="MERCHANT_NAME" /> இல் <ph name="DISCOUNT_TEXT" /> கொண்டுள்ளது, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> பார்த்துள்ளீர்கள்</translation>
 <translation id="2783298271312924866">பதிவிறக்கப்பட்டது</translation>
 <translation id="2783321960289401138">ஷார்ட்கட்டை உருவாக்கு...</translation>
 <translation id="2783829359200813069">என்க்ரிப்ஷன் வகைகளைத் தேர்வுசெய்யவும்</translation>
@@ -3892,6 +3893,7 @@
 <translation id="4324577459193912240">பதிவிறக்கம் முழுமையடையவில்லை</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />ஐ நிறுவல் நீக்குகிறது...</translation>
 <translation id="4326146840124313313">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றில் இருந்து உங்களைப் பாதுகாக்க Chrome உலாவியின் வலுவான பாதுகாப்பு பலவற்றைச் செய்கிறது</translation>
+<translation id="4326484226728068206">உங்கள் கார்ட்டில் உள்ள தயாரிப்புகள் <ph name="MERCHANT_NAME" /> இல் <ph name="DISCOUNT_TEXT" /> கொண்டுள்ளன, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> பார்த்துள்ளீர்கள்</translation>
 <translation id="4330191372652740264">ஐஸ் வாட்டர்</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> மொழியிலிருந்தால் ஒருபோதும் மொழிபெயர்க்காதே</translation>
 <translation id="4332976768901252016">பெற்றோர் கட்டுப்பாடுகளை அமைத்தல்</translation>
@@ -4590,6 +4592,7 @@
 <translation id="4940448324259979830">இந்தக் கணக்கை <ph name="PROFILE_NAME" /> நிர்வகிக்கிறது</translation>
 <translation id="4940845626435830013">டிஸ்க் அளவை ரிசர்வ் செய்</translation>
 <translation id="4941074198479265146">வழக்கமாக இசையை உருவாக்குதல், எடிட்டிங் ஆகிய அம்சங்களுக்காக MIDI சாதனங்களுடன் தளங்கள் இணையும்</translation>
+<translation id="4941243352516004658">உங்கள் கார்ட்டில் உள்ள <ph name="PRODUCT_ITEM_COUNT" /> தயாரிப்புகள் <ph name="MERCHANT_NAME" /> இல் <ph name="DISCOUNT_TEXT" /> கொண்டுள்ளன, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> பார்த்துள்ளீர்கள்</translation>
 <translation id="4941246025622441835">நிறுவன மேலாண்மைக்காக சாதனத்தைச் சேர்க்கும்போது இந்தச் சாதனக் கோரிக்கையைப் பயன்படுத்தவும்:</translation>
 <translation id="4941627891654116707">எழுத்து வடிவ அளவு</translation>
 <translation id="4941963255146903244">மொபைலில் உள்ள படங்கள், மீடியா, ஆப்ஸ் ஆகியவற்றைப் பார்க்கலாம்</translation>

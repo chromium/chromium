@@ -2133,6 +2133,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">このサイトでは拡張機能が許可されています</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
+<translation id="2783024642731649028">カート内の 1 件の商品が <ph name="MERCHANT_NAME" />（<ph name="MERCHANT_DOMAIN" />）で <ph name="DISCOUNT_TEXT" />（<ph name="RELATIVE_TIME" /> に閲覧）</translation>
 <translation id="2783298271312924866">ダウンロード済み</translation>
 <translation id="2783321960289401138">ショートカットを作成...</translation>
 <translation id="2783829359200813069">暗号化タイプの選択</translation>
@@ -3870,6 +3871,7 @@
 <translation id="4324577459193912240">ファイルが不完全です</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4326146840124313313">Chrome の最高水準のセキュリティで、危険なウェブサイト、ダウンロード、拡張機能から保護します</translation>
+<translation id="4326484226728068206">カート内の商品が <ph name="MERCHANT_NAME" />（<ph name="MERCHANT_DOMAIN" />）で <ph name="DISCOUNT_TEXT" />（<ph name="RELATIVE_TIME" /> に閲覧）</translation>
 <translation id="4330191372652740264">氷水</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="4332976768901252016">保護者による使用制限を設定する</translation>
@@ -4566,6 +4568,7 @@
 <translation id="4940448324259979830">このアカウントは <ph name="PROFILE_NAME" /> によって管理されています</translation>
 <translation id="4940845626435830013">ディスクサイズを予約</translation>
 <translation id="4941074198479265146">多くのサイトは、音楽の制作や編集をするために MIDI デバイスに接続します。</translation>
+<translation id="4941243352516004658">カート内の <ph name="PRODUCT_ITEM_COUNT" /> 件の商品が <ph name="MERCHANT_NAME" />（<ph name="MERCHANT_DOMAIN" />）で <ph name="DISCOUNT_TEXT" />（<ph name="RELATIVE_TIME" /> に閲覧）</translation>
 <translation id="4941246025622441835">エンタープライズ管理のためにデバイスを登録するときにこのデバイス利用申請を使用する:</translation>
 <translation id="4941627891654116707">フォントサイズ</translation>
 <translation id="4941963255146903244">スマートフォンの写真、メディア、アプリを表示します</translation>
