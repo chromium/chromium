@@ -8,6 +8,7 @@
 // The types of the start up screens.
 typedef NS_ENUM(NSInteger, ScreenType) {
   kSignIn,
+  kHistorySync,
   kTangibleSync,
   kDefaultBrowserPromo,
 

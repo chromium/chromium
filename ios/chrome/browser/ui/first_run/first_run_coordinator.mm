@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/history_sync/history_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
@@ -136,6 +137,12 @@
                                                ACCESS_POINT_START_PAGE
                                promoAction:signin_metrics::PromoAction::
                                                PROMO_ACTION_NO_SIGNIN_PROMO];
+    case kHistorySync:
+      return [[HistorySyncScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  firstRun:YES
+                                  delegate:self];
     case kTangibleSync:
       return [[TangibleSyncScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController

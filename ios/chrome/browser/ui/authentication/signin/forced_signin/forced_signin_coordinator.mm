@@ -118,6 +118,7 @@
                                                ACCESS_POINT_FORCED_SIGNIN
                                promoAction:signin_metrics::PromoAction::
                                                PROMO_ACTION_NO_SIGNIN_PROMO];
+    case kHistorySync:
     case kTangibleSync:
     case kDefaultBrowserPromo:
     case kStepsCompleted:
