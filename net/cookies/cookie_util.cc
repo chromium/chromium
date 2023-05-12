@@ -326,7 +326,7 @@ bool GetCookieDomainWithString(const GURL& url,
   // a sequence of individual domain name labels"; a label can only be empty if
   // it is the last label in the name, but a name ending in `..` would have an
   // empty label in the penultimate position and is thus invalid.
-  if (url_host.ends_with("..")) {
+  if (base::EndsWith(url_host, "..")) {
     return false;
   }
   // If no domain was specified in the domain string, default to a host cookie.
