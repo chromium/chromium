@@ -18,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_com_initializer.h"
+#include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
@@ -29,11 +30,6 @@ namespace {
 // Command line switch "--console" runs the service interactively for
 // debugging purposes.
 constexpr char kConsoleSwitchName[] = "console";
-
-bool IsInternalService() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-             kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
-}
 
 HRESULT RunWakeTask() {
   base::CommandLine run_updater_wake_command(

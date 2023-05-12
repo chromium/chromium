@@ -35,14 +35,10 @@
 
 namespace updater {
 
-namespace {
-
 bool IsInternalService() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
 }
-
-}  // namespace
 
 AppServer::AppServer() : external_constants_(CreateExternalConstants()) {}
 
