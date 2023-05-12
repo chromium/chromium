@@ -138488,7 +138488,7 @@
        ]
       ],
       "image-set-type-first-match-rendering.html": [
-       "7e6ea8fa1f785ccde919b85ce2922c78c886acbe",
+       "eafe5bfb2cc80f18174f4a9f4f2a08963cc95e5d",
        [
         null,
         [
@@ -272102,16 +272102,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "77cc0f9907dfbb638badda5f1d0a42e864a96985",
-     []
-    ],
-    "mtime.json": [
-     "870fae931b1edc95a2627598516c6ca556f65df5",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -356989,11 +356979,11 @@
       },
       "resources": {
        "reporting-common.js": [
-        "19f6410cbf809eefe299b08e73356d8443c04049",
+        "70bb4897f5082d84bd26f618dd8212d8f17e0862",
         []
        ],
        "test-access-property.js": [
-        "fe01e9128c51bd0ee65ba212967dcc989ac1bf1e",
+        "a405202431e6f06c998a6316a6b2c2d613ebfe8c",
         []
        ],
        "try-access.js": [
@@ -357068,6 +357058,14 @@
       "restrict-properties": {
        "README.md": [
         "b3c24c3f82d2dbf07eefa9fa2e88fcf3817473d2",
+        []
+       ],
+       "access-reporting-openee-rp-ro.https-expected.txt": [
+        "0d4d312cf505711ee11be920b0bb9d3b965f04c9",
+        []
+       ],
+       "access-reporting-opener-rp-ro.https-expected.txt": [
+        "da251b50de98778e4326efa63eedd702d47d0774",
         []
        ],
        "coop-rp-in-navigation-chain.https.html.headers": [
@@ -357232,6 +357230,38 @@
        ],
        "popup-with-same-site.https.html.ini": [
         "05d2d2984d8a6e34589a66c6dfc67391763fdead",
+        []
+       ],
+       "reporting-from-rp-ro.https-expected.txt": [
+        "ea3108eb21ec47915e61e5d4b61c42d46a37754a",
+        []
+       ],
+       "reporting-from-rp-ro.https.html.sub.headers": [
+        "424ad3e8de0297a2e66dd53914f0e5faa8651bff",
+        []
+       ],
+       "reporting-from-rp.https-expected.txt": [
+        "840f72a3863b12bd0de8ac511cb5b050d4cce94e",
+        []
+       ],
+       "reporting-from-rp.https.html.sub.headers": [
+        "6339ea34c7045eabe7457cf0c170edd35ea2ba76",
+        []
+       ],
+       "reporting-to-rp-ro.https-expected.txt": [
+        "6022ac8fc7fb2591a889c9addee99de46885e32b",
+        []
+       ],
+       "reporting-to-rp-ro.https.html.headers": [
+        "16903320bb50789e0a64f9620540f1cc8c0902fd",
+        []
+       ],
+       "reporting-to-rp.https-expected.txt": [
+        "6d598760c826b564a96fcff06b344d0b02b4c2ce",
+        []
+       ],
+       "reporting-to-rp.https.html.headers": [
+        "16903320bb50789e0a64f9620540f1cc8c0902fd",
         []
        ]
       }
@@ -471059,6 +471089,13 @@
         {}
        ]
       ],
+      "offset-path-interpolation-006.html": [
+       "a19908e4fffc2383a940e04ef0c00c486085cfee",
+       [
+        null,
+        {}
+       ]
+      ],
       "offset-position-composition.html": [
        "0ee517a73a8e9e673a83a0f81bbdea98d6a3d808",
        [
@@ -540409,6 +540446,36 @@
          ]
         }
        ]
+      ],
+      "websocket.https.window.js": [
+       "7d0dd95d84b7a9e16bf3e27e9d23627f4d3adffa",
+       [
+        "html/cross-origin-embedder-policy/credentialless/websocket.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "TIMEOUT",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
       ]
      },
      "cross-origin-isolated-permission-iframe.https.window.js": [
@@ -542186,6 +542253,38 @@
      ],
      "tentative": {
       "restrict-properties": {
+       "access-reporting-closed.https.html": [
+        "1c315b35d7fa81188aabf59c1c3196a5d5d2a2ea",
+        [
+         null,
+         {}
+        ]
+       ],
+       "access-reporting-openee-rp-ro.https.html": [
+        "7a96f4f5762721378036b47d248c3ae1ef21dd2f",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "access-reporting-opener-rp-ro.https.html": [
+        "9e1e85b16a5876c3e78656b8300c2fcc9e3e3ab1",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "access-reporting-post-message.https.html": [
+        "4c8e96f57933f74d0ff3f76cafe498c20bef7353",
+        [
+         null,
+         {}
+        ]
+       ],
        "coop-rp-in-navigation-chain.https.html": [
         "e5c877517488f755e08f69233439a817dd444164",
         [
@@ -542412,6 +542511,51 @@
        ],
        "popup-with-same-site.https.html": [
         "7d115ac7e639a53c76f6bc1b7b7c9210d8d6bf89",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-bcg-reuse.https.html": [
+        "8428d0cf60ae1c5f4f002cee4ad5108c69875d53",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-from-rp-ro.https.html": [
+        "60322bffe7a1c7d8d536b35504e925b09ff0c6bd",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-from-rp.https.html": [
+        "5deb115d94ef2894e6551ca89f8d4966d2d438df",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-to-rp-ro.https.html": [
+        "cf1385e766374d7fafae07eed9a857d8b9c381a3",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-to-rp.https.html": [
+        "9ff374c1c787348115e5d10d624be64ea4040323",
         [
          null,
          {
