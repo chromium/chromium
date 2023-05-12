@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_param_associator.h"
@@ -3492,6 +3493,10 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return https_server_.GetURL("/critical_ch_dpr.html");
   }
 
+  GURL critical_ch_viewport_url() const {
+    return https_server_.GetURL("/critical_ch_viewport.html");
+  }
+
   GURL critical_ch_ua_full_version_list_url() const {
     return https_server_.GetURL("/critical_ch_ua_full_version_list.html");
   }
@@ -3525,6 +3530,21 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return ch_dpr_;
   }
 
+  const std::vector<std::string>& observed_ch_viewport_heights() {
+    base::AutoLock lock(ch_viewport_heights_lock_);
+    return ch_viewport_heights_;
+  }
+
+  const std::vector<std::string>& observed_ch_viewport_widths() {
+    base::AutoLock lock(ch_viewport_widths_lock_);
+    return ch_viewport_widths_;
+  }
+
+  const std::vector<std::string>& observed_ch_viewport_widths_deprecated() {
+    base::AutoLock lock(ch_viewport_widths_deprecated_lock_);
+    return ch_viewport_widths_deprecated_;
+  }
+
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
     if (request.headers.find("sec-ch-ua-full-version") !=
         request.headers.end()) {
@@ -3536,6 +3556,23 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     }
     if (request.headers.find("sec-ch-dpr") != request.headers.end()) {
       SetChDpr(request.headers.at("sec-ch-dpr"));
+    }
+    if (request.headers.find("sec-ch-viewport-height") !=
+        request.headers.end()) {
+      AppendChViewportHeight(request.headers.at("sec-ch-viewport-height"));
+    } else {
+      AppendChViewportHeight("MISSING");
+    }
+    if (request.headers.find("sec-ch-viewport-width") !=
+        request.headers.end()) {
+      AppendChViewportWidth(request.headers.at("sec-ch-viewport-width"));
+    } else {
+      AppendChViewportWidth("MISSING");
+    }
+    if (request.headers.find("viewport-width") != request.headers.end()) {
+      AppendChViewportWidthDeprecated(request.headers.at("viewport-width"));
+    } else {
+      AppendChViewportWidthDeprecated("MISSING");
     }
   }
 
@@ -3586,6 +3623,22 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     ch_dpr_ = ch_dpr;
   }
 
+  void AppendChViewportHeight(const std::string& ch_viewport_heights) {
+    base::AutoLock lock(ch_viewport_heights_lock_);
+    ch_viewport_heights_.push_back(ch_viewport_heights);
+  }
+
+  void AppendChViewportWidth(const std::string& ch_viewport_widths) {
+    base::AutoLock lock(ch_viewport_widths_lock_);
+    ch_viewport_widths_.push_back(ch_viewport_widths);
+  }
+
+  void AppendChViewportWidthDeprecated(
+      const std::string& ch_viewport_widths_deprecated) {
+    base::AutoLock lock(ch_viewport_widths_deprecated_lock_);
+    ch_viewport_widths_deprecated_.push_back(ch_viewport_widths_deprecated);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
   base::Lock ch_ua_full_version_lock_;
@@ -3596,6 +3649,15 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
       GUARDED_BY(ch_ua_full_version_list_lock_);
   base::Lock ch_dpr_lock_;
   absl::optional<std::string> ch_dpr_ GUARDED_BY(ch_dpr_lock_);
+  base::Lock ch_viewport_heights_lock_;
+  std::vector<std::string> ch_viewport_heights_
+      GUARDED_BY(ch_viewport_heights_lock_);
+  base::Lock ch_viewport_widths_lock_;
+  std::vector<std::string> ch_viewport_widths_
+      GUARDED_BY(ch_viewport_widths_lock_);
+  base::Lock ch_viewport_widths_deprecated_lock_;
+  std::vector<std::string> ch_viewport_widths_deprecated_
+      GUARDED_BY(ch_viewport_widths_deprecated_lock_);
 };
 
 // Verify that setting Critical-CH in the response header causes the request to
@@ -3674,6 +3736,78 @@ IN_PROC_BROWSER_TEST_F(
                                 {network::mojom::WebClientHintsType::kDpr},
                                 /*loads=*/1);
 }
+
+// Some bots disable DCHECK, but GetRenderWidgetHostViewFromFrameTreeNode requires it's
+// on for the test specific code to be invoked. This is to reduce production overhead.
+#if DCHECK_IS_ON()
+
+// Verify that setting Critical-CH for a viewport hint when no size has been
+// cached doesn't cause an infinite redirect loop.
+IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
+                       CriticalClientHintWithUncachedViewport) {
+  // Force an empty viewport size.
+  browser()
+      ->profile()
+      ->GetClientHintsControllerDelegate()
+      ->ForceEmptyViewportSizeForTesting(true);
+  // We should never see real sizes sent.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), critical_ch_viewport_url()));
+  EXPECT_EQ(observed_ch_viewport_heights().size(), 1u);
+  EXPECT_EQ(observed_ch_viewport_heights()[0], "MISSING");
+  EXPECT_EQ(observed_ch_viewport_widths().size(), 1u);
+  EXPECT_EQ(observed_ch_viewport_widths()[0], "MISSING");
+  EXPECT_EQ(observed_ch_viewport_widths_deprecated().size(), 1u);
+  EXPECT_EQ(observed_ch_viewport_widths_deprecated()[0], "MISSING");
+  // Cleanup shim to prevent other tests from breaking.
+  browser()
+      ->profile()
+      ->GetClientHintsControllerDelegate()
+      ->ForceEmptyViewportSizeForTesting(false);
+}
+
+// Verify that setting Critical-CH for a viewport hint when no size has been
+// cached doesn't cause an infinite redirect loop even when hint was cached.
+IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
+                       CriticalClientHintWithUncachedViewportAndCachedHints) {
+  // Force an empty viewport size.
+  browser()
+      ->profile()
+      ->GetClientHintsControllerDelegate()
+      ->ForceEmptyViewportSizeForTesting(true);
+  // Add setting for the host.
+  base::Value::List client_hints_list;
+  client_hints_list.Append(
+      static_cast<int>(network::mojom::WebClientHintsType::kViewportHeight));
+  client_hints_list.Append(
+      static_cast<int>(network::mojom::WebClientHintsType::kViewportWidth));
+  client_hints_list.Append(static_cast<int>(
+      network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+  base::Value::Dict client_hints_dictionary;
+  client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
+                              base::Value(std::move(client_hints_list)));
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  host_content_settings_map->SetWebsiteSettingDefaultScope(
+      critical_ch_viewport_url(), GURL(), ContentSettingsType::CLIENT_HINTS,
+      base::Value(std::move(client_hints_dictionary)));
+  // We should never see real sizes sent.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), critical_ch_viewport_url()));
+  EXPECT_EQ(observed_ch_viewport_heights().size(), 1u);
+  EXPECT_EQ(observed_ch_viewport_heights()[0], "MISSING");
+  EXPECT_EQ(observed_ch_viewport_widths().size(), 1u);
+  EXPECT_EQ(observed_ch_viewport_widths()[0], "MISSING");
+  EXPECT_EQ(observed_ch_viewport_widths_deprecated().size(), 1u);
+  EXPECT_EQ(observed_ch_viewport_widths_deprecated()[0], "MISSING");
+  // Cleanup shim to prevent other tests from breaking.
+  browser()
+      ->profile()
+      ->GetClientHintsControllerDelegate()
+      ->ForceEmptyViewportSizeForTesting(false);
+}
+
+#endif
 
 IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest, OneRestartSingleOrigin) {
   AlternatingCriticalCHRequestHandler handler;

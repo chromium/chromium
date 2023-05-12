@@ -229,4 +229,13 @@ gfx::Size ClientHints::GetMostRecentMainFrameViewportSize() {
   return viewport_size_;
 }
 
+void ClientHints::ForceEmptyViewportSizeForTesting(
+    bool should_force_empty_viewport_size) {
+  should_force_empty_viewport_size_ = should_force_empty_viewport_size;
+}
+
+bool ClientHints::ShouldForceEmptyViewportSize() {
+  return should_force_empty_viewport_size_;
+}
+
 }  // namespace client_hints
