@@ -155,9 +155,9 @@ void PlatformFontIOS::InitWithNameSizeAndStyle(const std::string& font_name,
 
 void PlatformFontIOS::CalculateMetrics() {
   UIFont* font = base::mac::CFToNSCast(GetCTFont());
-  height_ = font.lineHeight;
-  ascent_ = font.ascender;
-  cap_height_ = font.capHeight;
+  height_ = ceil(font.lineHeight);
+  ascent_ = ceil(font.ascender);
+  cap_height_ = ceil(font.capHeight);
   average_width_ = [@"x" cr_sizeWithFont:font].width;
 }
 
