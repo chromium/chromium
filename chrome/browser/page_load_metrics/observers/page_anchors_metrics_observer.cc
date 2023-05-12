@@ -11,12 +11,13 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 void PageAnchorsMetricsObserver::RecordAnchorElementMetricsDataToUkm() {
-  if (!render_frame_host_) {
+  content::RenderFrameHost* rfh = render_frame_host();
+  if (!rfh) {
     return;
   }
   NavigationPredictorMetricsDocumentData* data =
       NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
-          render_frame_host_);
+          rfh);
   CHECK(data);
   data->RecordAnchorElementMetricsData(ukm_source_id_);
 }
@@ -25,12 +26,13 @@ void PageAnchorsMetricsObserver::RecordDataToUkm() {
   // `AnchorElementMetricsData` are already recorded to UKM as we receive them,
   // and we don't need to record them again here. The edge case scenario is
   // handled separately in `OnRestoreFromBackForwardCache`.
-  if (!render_frame_host_) {
+  content::RenderFrameHost* rfh = render_frame_host();
+  if (!rfh) {
     return;
   }
   NavigationPredictorMetricsDocumentData* data =
       NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
-          render_frame_host_);
+          rfh);
   CHECK(data);
   data->RecordDataToUkm(ukm_source_id_);
 }
@@ -73,13 +75,14 @@ PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
 
 void PageAnchorsMetricsObserver::UpdateRenderFrameHostAndSourceId(
     content::NavigationHandle* navigation_handle) {
-  render_frame_host_ = navigation_handle->GetRenderFrameHost();
+  render_frame_host_id_ =
+      navigation_handle->GetRenderFrameHost()->GetGlobalId();
   ukm_source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
                                           ukm::SourceIdType::NAVIGATION_ID);
 
   NavigationPredictorMetricsDocumentData* data =
       NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
-          render_frame_host_);
+          render_frame_host());
   CHECK(data);
   data->SetUkmSourceId(ukm_source_id_);
   data->SetNavigationStartTime(GetDelegate().GetNavigationStart());
@@ -110,11 +113,11 @@ void PageAnchorsMetricsObserver::OnRenderFrameDeleted(
     content::RenderFrameHost* rfh) {
   // OnRenderFrameDeleted is called when RenderFrameHost for a frame is deleted.
   // Including the sub-frames.
-  if (render_frame_host_ == rfh) {
+  if (render_frame_host() == rfh) {
     if (!is_in_prerendered_page_) {
       RecordDataToUkm();
     }
-    render_frame_host_ = nullptr;
+    render_frame_host_id_.reset();
   }
 }
 

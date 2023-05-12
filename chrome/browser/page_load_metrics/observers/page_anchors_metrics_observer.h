@@ -54,9 +54,15 @@ class PageAnchorsMetricsObserver
   void RecordDataToUkm();
   void RecordAnchorElementMetricsDataToUkm();
 
+  content::RenderFrameHost* render_frame_host() const {
+    return render_frame_host_id_.has_value()
+               ? content::RenderFrameHost::FromID(render_frame_host_id_.value())
+               : nullptr;
+  }
+
   bool is_in_prerendered_page_ = false;
 
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  absl::optional<content::GlobalRenderFrameHostId> render_frame_host_id_;
   ukm::SourceId ukm_source_id_;
 };
 
