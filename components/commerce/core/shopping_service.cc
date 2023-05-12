@@ -441,8 +441,8 @@ void ShoppingService::PDPMetricsCallback(
   if (!IsPDPMetricsRecordingEnabled())
     return;
 
-  metrics::RecordPDPStateForNavigation(decision, metadata, pref_service_,
-                                       is_off_the_record);
+  metrics::RecordPDPMetrics(decision, metadata, pref_service_,
+                            is_off_the_record, IsShoppingListEligible());
 }
 
 void ShoppingService::GetProductInfoForUrl(const GURL& url,

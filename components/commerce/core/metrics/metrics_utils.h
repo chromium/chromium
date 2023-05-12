@@ -12,6 +12,7 @@
 
 namespace commerce::metrics {
 
+extern const char kPDPNavShoppingListEligibleHistogramName[];
 extern const char kPDPStateHistogramName[];
 extern const char kPDPStateWithLocalMetaName[];
 
@@ -43,11 +44,11 @@ enum class ShoppingPDPDetectionMethod {
 };
 
 // Record the state of a PDP for a navigation.
-void RecordPDPStateForNavigation(
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata,
-    PrefService* pref_service,
-    bool is_off_the_record);
+void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
+                      const optimization_guide::OptimizationMetadata& metadata,
+                      PrefService* pref_service,
+                      bool is_off_the_record,
+                      bool is_shopping_list_eligible);
 
 // Record how a PDP was detected.
 void RecordPDPStateWithLocalMeta(bool detected_by_server,
