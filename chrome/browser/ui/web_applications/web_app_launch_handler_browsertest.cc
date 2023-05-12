@@ -453,7 +453,14 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
                                       ClientMode::kAuto, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, SelectActiveBrowser) {
+// https://crbug.com/1444959
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SelectActiveBrowser DISABLED_SelectActiveBrowser
+#else
+#define MAYBE_SelectActiveBrowser SelectActiveBrowser
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       MAYBE_SelectActiveBrowser) {
   AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
   EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
