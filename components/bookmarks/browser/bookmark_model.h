@@ -510,7 +510,7 @@ class BookmarkModel final : public BookmarkUndoProvider,
 
   std::set<std::string> non_cloned_keys_;
 
-  raw_ptr<BookmarkUndoDelegate, DanglingUntriaged> undo_delegate_ = nullptr;
+  raw_ptr<BookmarkUndoDelegate> undo_delegate_ = nullptr;
   std::unique_ptr<BookmarkUndoDelegate> empty_undo_delegate_;
 
   scoped_refptr<ModelLoader> model_loader_;

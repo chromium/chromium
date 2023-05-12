@@ -32,6 +32,7 @@
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_delegate.h"
+#include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/url_and_title.h"
@@ -137,14 +138,12 @@ class ScopedBookmarkUndoDelegate : public BookmarkUndoDelegate {
   }
 
   // BookmarkUndoDelegate overrides.
-  void SetUndoProvider(BookmarkUndoProvider* provider) override {
-    undo_provider_ = provider;
-  }
-
   void OnBookmarkNodeRemoved(BookmarkModel* model,
+                             BookmarkUndoProvider* undo_provider,
                              const BookmarkNode* parent,
                              size_t index,
                              std::unique_ptr<BookmarkNode> node) override {
+    undo_provider_ = undo_provider;
     parent_ = parent;
     index_ = index;
     last_removed_node_ = std::move(node);
@@ -369,8 +368,6 @@ class BookmarkModelTest : public testing::Test,
     ++before_remove_count_;
   }
 
-  void SetUndoProvider(BookmarkUndoProvider* provider) override {}
-
   void BookmarkNodeRemoved(BookmarkModel* model,
                            const BookmarkNode* parent,
                            size_t old_index,
@@ -436,6 +433,7 @@ class BookmarkModelTest : public testing::Test,
   }
 
   void OnBookmarkNodeRemoved(BookmarkModel* model,
+                             BookmarkUndoProvider* undo_provider,
                              const BookmarkNode* parent,
                              size_t index,
                              std::unique_ptr<BookmarkNode> node) override {
@@ -2034,8 +2032,5 @@ TEST_F(BookmarkDualModelTest, MoveToOtherModel) {
   // Moving bookmarks to another model should generate new UUIDs.
   EXPECT_NE(moved_folder->uuid(), folder_uuid_before_move);
 }
-
-// TODO(crbug.com/1424820): Add a test for undoing
-//                          `MoveToOtherModelWithNewNodeIdsAndUuids`.
 
 }  // namespace bookmarks

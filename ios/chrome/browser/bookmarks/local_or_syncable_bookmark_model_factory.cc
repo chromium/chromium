@@ -40,7 +40,7 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kLocalOrSyncable);
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
-      ->Start(bookmark_model.get());
+      ->StartObservingBookmarkModel(bookmark_model.get());
   return bookmark_model;
 }
 

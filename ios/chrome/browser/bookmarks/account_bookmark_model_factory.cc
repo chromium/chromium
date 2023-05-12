@@ -45,7 +45,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
               browser_state))));
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kAccount);
-  // TODO(crbug.com/1424820): Support undo/redo operations.
+  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
+      ->StartObservingBookmarkModel(bookmark_model.get());
   return bookmark_model;
 }
 

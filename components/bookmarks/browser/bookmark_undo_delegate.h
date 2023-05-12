@@ -19,11 +19,9 @@ class BookmarkUndoDelegate {
  public:
   virtual ~BookmarkUndoDelegate() {}
 
-  // Sets the provider that will do the undo work.
-  virtual void SetUndoProvider(BookmarkUndoProvider* provider) = 0;
-
   // Called when |node| was removed from |parent| at position |index|.
   virtual void OnBookmarkNodeRemoved(BookmarkModel* model,
+                                     BookmarkUndoProvider* undo_provider,
                                      const BookmarkNode* parent,
                                      size_t index,
                                      std::unique_ptr<BookmarkNode> node) = 0;

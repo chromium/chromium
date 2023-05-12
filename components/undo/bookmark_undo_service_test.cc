@@ -46,7 +46,7 @@ void BookmarkUndoServiceTest::SetUp() {
   DCHECK(!bookmark_undo_service_);
   bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
   bookmark_undo_service_ = std::make_unique<BookmarkUndoService>();
-  bookmark_undo_service_->Start(bookmark_model_.get());
+  bookmark_undo_service_->StartObservingBookmarkModel(bookmark_model_.get());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_.get());
 }
 
@@ -451,6 +451,43 @@ TEST_F(BookmarkUndoServiceTest, TestUpperLimit) {
   const BookmarkNode* node = model->other_node()->children().front().get();
   EXPECT_EQ(node->GetTitle(), u"foo");
   EXPECT_EQ(node->url(), GURL("http://www.foo.com"));
+}
+
+TEST_F(BookmarkUndoServiceTest, UndoMoveToOtherModel) {
+  std::unique_ptr<BookmarkModel> second_model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  GetUndoService()->StartObservingBookmarkModel(second_model.get());
+  bookmarks::test::WaitForBookmarkModelToLoad(second_model.get());
+
+  const BookmarkNode* root = GetModel()->mobile_node();
+  const BookmarkNode* folder = GetModel()->AddFolder(root, 0, u"folder");
+  GetModel()->AddURL(folder, 0, u"foo", GURL("http://foo.com"));
+  GetModel()->AddURL(folder, 1, u"bar", GURL("http://bar.com"));
+  base::Uuid folder_uuid_before_move = folder->uuid();
+  const BookmarkNode* dest_folder = second_model->mobile_node();
+  ASSERT_TRUE(dest_folder->children().empty());
+
+  GetModel()->MoveToOtherModelWithNewNodeIdsAndUuids(folder, second_model.get(),
+                                                     dest_folder);
+
+  GetUndoService()->undo_manager()->Undo();
+
+  ASSERT_EQ(root->children().size(), 1u);
+  const BookmarkNode* undone_folder = root->children().front().get();
+  EXPECT_EQ(undone_folder->GetTitle(), u"folder");
+  ASSERT_EQ(undone_folder->children().size(), 2u);
+  const BookmarkNode* undone_foo = undone_folder->children()[0].get();
+  EXPECT_EQ(undone_foo->GetTitle(), u"foo");
+  EXPECT_EQ(undone_foo->GetTitledUrlNodeUrl(), GURL("http://foo.com"));
+  const BookmarkNode* undone_bar = undone_folder->children()[1].get();
+  EXPECT_EQ(undone_bar->GetTitle(), u"bar");
+  EXPECT_EQ(undone_bar->GetTitledUrlNodeUrl(), GURL("http://bar.com"));
+  // Undoing the move should preserve UUIDs.
+  EXPECT_EQ(undone_folder->uuid(), folder_uuid_before_move);
+
+  EXPECT_TRUE(dest_folder->children().empty());
+
+  second_model->Shutdown();
 }
 
 } // namespace
