@@ -1363,17 +1363,14 @@
       'win-swangle-try-x86': 'angle_deqp_release_trybot_x86_reclient',
     },
 
-    # crbug.com/1417003: `-Werror` is removed for these to work around the
-    # existence of C++20-only code in Chromium, while we're forcing -std=c++17.
-    # Tons of build failures slow down these builders significantly.
     'tryserver.chromium.tricium': {
-      'android-clang-tidy-rel': 'android_release_trybot_reclient_cxx17_no_werror',
-      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient_cxx17_no_werror',
-      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient_cxx17_no_werror',
-      'linux-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
-      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient_cxx17_no_werror',
-      'mac-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
-      'win10-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
+      'android-clang-tidy-rel': 'android_release_trybot_reclient',
+      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient',
+      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient',
+      'linux-clang-tidy-rel': 'release_trybot_reclient',
+      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient',
+      'mac-clang-tidy-rel': 'release_trybot_reclient',
+      'win10-clang-tidy-rel': 'release_trybot_reclient',
     },
 
     'tryserver.chromium.updater': {
@@ -1763,10 +1760,6 @@
 
     'android_release_trybot_reclient': [
       'android', 'release_trybot_reclient', 'strip_debug_info',
-    ],
-
-    'android_release_trybot_reclient_cxx17_no_werror': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'force_cxx17', 'no_werror',
     ],
 
     'android_release_trybot_x64_coverage_fastbuild_webview_trichrome_reclient': [
@@ -2345,8 +2338,8 @@
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'invert_fieldtrials',
     ],
 
-    'chromeos_with_codecs_release_trybot_reclient_cxx17_no_werror': [
-      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'force_cxx17', 'no_werror',
+    'chromeos_with_codecs_release_trybot_reclient': [
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols',
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
@@ -3010,10 +3003,6 @@
       'lacros_on_linux_release_trybot_reclient',
     ],
 
-    'lacros_on_linux_release_trybot_reclient_cxx17_no_werror': [
-      'lacros_on_linux_release_trybot_reclient', 'force_cxx17', 'no_werror', 'no_werror',
-    ],
-
     'lacros_on_linux_tot_debug': [
       'lacros_on_linux', 'debug', 'also_build_ash_chrome', 'clang_tot',
     ],
@@ -3591,10 +3580,6 @@
       'release_trybot_reclient', 'fuchsia',
     ],
 
-    'release_trybot_fuchsia_reclient_cxx17_no_werror': [
-      'release_trybot_reclient', 'fuchsia', 'force_cxx17', 'no_werror',
-    ],
-
     'release_trybot_minimal_symbols_reclient': [
       'release_trybot_minimal_symbols_reclient',
     ],
@@ -3609,10 +3594,6 @@
 
     'release_trybot_reclient': [
       'release_trybot_reclient',
-    ],
-
-    'release_trybot_reclient_cxx17_no_werror': [
-      'release_trybot_reclient', 'force_cxx17', 'no_werror',
     ],
 
     'release_trybot_reclient_x64': [
@@ -4208,10 +4189,6 @@
       'gn_args': 'ffmpeg_branding="ChromeOS"',
     },
 
-    'force_cxx17': {
-      'gn_args': 'use_cxx17=true',
-    },
-
     'fuchsia': {
       'gn_args': 'target_os="fuchsia"',
     },
@@ -4441,10 +4418,6 @@
 
     'no_symbols': {
       'gn_args': 'symbol_level=0',
-    },
-
-    'no_werror': {
-      'gn_args': 'treat_warnings_as_errors=false',
     },
 
     'no_widevine_cdm_host_verification': {

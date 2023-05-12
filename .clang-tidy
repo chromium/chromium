@@ -1,6 +1,9 @@
 ---
   # TODO(crbug.com/1282228): reenable google-readability-casting once it no
   # longer has as many false-positives.
+  # TODO(crbug.com/1406869): reenable modernize-use-default-member-init once
+  # C++20 is everywhere; it recommends using default member init for bit fields,
+  # which is C++20-only.
   Checks:          '-*,
                     bugprone-argument-comment,
                     bugprone-assert-side-effect,
@@ -24,7 +27,6 @@
                     modernize-replace-random-shuffle,
                     modernize-shrink-to-fit,
                     modernize-use-bool-literals,
-                    modernize-use-default-member-init,
                     modernize-use-emplace,
                     modernize-use-equals-default,
                     modernize-use-equals-delete,
