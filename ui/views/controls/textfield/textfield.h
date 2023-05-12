@@ -316,6 +316,10 @@ class VIEWS_EXPORT Textfield : public View,
   // updating the cursor position and visibility.
   void FitToLocalBounds();
 
+  // Getter/Setter methods for |use_default_border_|.
+  bool GetUseDefaultBorder() const;
+  void SetUseDefaultBorder(bool use_default_border);
+
   // View overrides:
   int GetBaseline() const override;
   gfx::Size CalculatePreferredSize() const override;
@@ -561,8 +565,10 @@ class VIEWS_EXPORT Textfield : public View,
   // Updates the painted background color.
   void UpdateBackgroundColor();
 
-  // Updates the border per the state of |invalid_|.
-  void UpdateBorder();
+  // Updates the border per the state of the textfield (i.e. Normal, Invalid,
+  // Readonly, Disabled). This will not do anything if a custom border has been
+  // set by SetBorder().
+  void UpdateDefaultBorder();
 
   // Updates the selection text color.
   void UpdateSelectionTextColor();
@@ -826,6 +832,10 @@ class VIEWS_EXPORT Textfield : public View,
   // directionality.
   bool force_text_directionality_ = false;
 
+  // Helper flag that tracks whether SetBorder was called with a custom
+  // border.
+  bool use_default_border_ = true;
+
   // Holds the subscription object for the enabled changed callback.
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
@@ -856,6 +866,7 @@ VIEW_BUILDER_PROPERTY(std::u16string, Text)
 VIEW_BUILDER_PROPERTY(SkColor, TextColor)
 VIEW_BUILDER_PROPERTY(int, TextInputFlags)
 VIEW_BUILDER_PROPERTY(ui::TextInputType, TextInputType)
+VIEW_BUILDER_PROPERTY(bool, UseDefaultBorder)
 END_VIEW_BUILDER
 
 }  // namespace views

@@ -235,7 +235,7 @@ Textfield::Textfield()
   cursor_view->GetViewAccessibility().OverrideIsIgnored(true);
   cursor_view_ = AddChildView(std::move(cursor_view));
   GetRenderText()->SetFontList(GetDefaultFontList());
-  UpdateBorder();
+  UpdateDefaultBorder();
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 GetCornerRadius());
@@ -294,6 +294,8 @@ void Textfield::SetReadOnly(bool read_only) {
     SetColor(GetTextColor());
     UpdateBackgroundColor();
   }
+
+  UpdateDefaultBorder();
   OnPropertyChanged(&read_only_, kPropertyEffectsPaint);
 }
 
@@ -558,7 +560,7 @@ void Textfield::SetInvalid(bool invalid) {
   if (invalid == invalid_)
     return;
   invalid_ = invalid;
-  UpdateBorder();
+  UpdateDefaultBorder();
   if (FocusRing::Get(this))
     FocusRing::Get(this)->SetInvalid(invalid);
   OnPropertyChanged(&invalid_, kPropertyEffectsNone);
@@ -574,7 +576,7 @@ void Textfield::SetObscuredGlyphSpacing(int spacing) {
 
 void Textfield::SetExtraInsets(const gfx::Insets& insets) {
   extra_insets_ = insets;
-  UpdateBorder();
+  UpdateDefaultBorder();
 }
 
 void Textfield::FitToLocalBounds() {
@@ -597,6 +599,13 @@ void Textfield::FitToLocalBounds() {
   bounds.set_x(GetMirroredXForRect(bounds));
   GetRenderText()->SetDisplayRect(bounds);
   UpdateAfterChange(TextChangeType::kNone, true);
+}
+
+bool Textfield::GetUseDefaultBorder() const {
+  return use_default_border_;
+}
+void Textfield::SetUseDefaultBorder(bool use_default_border) {
+  use_default_border_ = use_default_border;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -625,6 +634,7 @@ gfx::Size Textfield::GetMinimumSize() const {
 void Textfield::SetBorder(std::unique_ptr<Border> b) {
   FocusRing::Remove(this);
   View::SetBorder(std::move(b));
+  use_default_border_ = false;
 }
 
 ui::Cursor Textfield::GetCursor(const ui::MouseEvent& event) {
@@ -2507,7 +2517,12 @@ void Textfield::UpdateBackgroundColor() {
   OnPropertyChanged(&model_ + kTextfieldBackgroundColor, kPropertyEffectsPaint);
 }
 
-void Textfield::UpdateBorder() {
+void Textfield::UpdateDefaultBorder() {
+  // Only update the border if SetBorder() has not been called. This is to avoid
+  // overriding any custom borders.
+  if (!use_default_border_) {
+    return;
+  }
   auto border = std::make_unique<views::FocusableBorder>();
   const LayoutProvider* provider = LayoutProvider::Get();
   border->SetColorId(ui::kColorTextfieldOutline);
@@ -2830,6 +2845,7 @@ void Textfield::OnCursorBlinkTimerFired() {
 void Textfield::OnEnabledChanged() {
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
+  UpdateDefaultBorder();
 }
 
 void Textfield::DropDraggedText(
