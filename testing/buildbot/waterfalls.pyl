@@ -6531,6 +6531,7 @@
         'test_suites': {
           'isolated_scripts': 'android_finch_smoke_tests',
         },
+        'os_type': 'android',
       },
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': {
         'additional_compile_targets': [
@@ -6561,6 +6562,7 @@
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
+        'os_type': 'linux',
       },
       'mac-arm64-finch-smoke-chrome': {
         'mixins': [
@@ -6570,6 +6572,7 @@
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
+        'os_type': 'mac',
       },
       'mac-chrome-reclient': {
         'additional_compile_targets': [
@@ -6619,6 +6622,7 @@
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
+        'os_type': 'win',
       },
     },
   },
@@ -6649,7 +6653,9 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_browser_finch_tests',
+          'isolated_scripts': 'chrome_finch_smoke_tests',
         },
+        'os_type': 'chromeos',
       },
       'chromeos-brya-chrome-skylab-fyi': {
         'additional_compile_targets': [

@@ -460,16 +460,15 @@
     'chrome_finch_smoke_tests': {
       'variations_desktop_smoke_tests': {
         'isolate_name': 'variations_desktop_smoke_tests',
-        'mixins': [
-          'skia_gold_test',
+        'lacros_args': [
+          '--target-platform=lacros',
         ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single'
-        },
-      },
-      'variations_smoke_tests': {
-        'isolate_name': 'variations_smoke_tests',
+        'android_args': [
+          '--target-platform=android',
+        ],
+        'chromeos_args': [
+          '--target-platform=cros',
+        ],
         'mixins': [
           'skia_gold_test',
         ],
