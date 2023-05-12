@@ -323,7 +323,7 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
   // TODO(accessibility) Combine this with the AXMode we store in AXPlatformNode
   // into a single global AXMode tracker in ui/accessibility. The current
   // situation of storing in two places could lead to misalignment.
-  DCHECK_EQ(accessibility_mode_, ui::AXPlatformNode::GetAccessibilityMode())
+  CHECK_EQ(accessibility_mode_, ui::AXPlatformNode::GetAccessibilityMode())
       << "Accessibility modes in content and UI are misaligned.";
   return accessibility_mode_;
 }
@@ -407,7 +407,7 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     return;
   }
 
-  bool disallow_changes;
+  bool disallow_changes = false;
 
   // If the --force-renderer-accessibility command line flag is present and an
   // AXMode bundle has been provided as an argument, then the AXMode bundle
