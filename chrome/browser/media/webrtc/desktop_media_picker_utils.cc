@@ -4,10 +4,16 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
+
+void RecordUma(GDMPreferCurrentTabResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction", result);
+}
 
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   const gfx::Rect scaled_rect = media::ComputeLetterboxRegion(

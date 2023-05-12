@@ -5,14 +5,17 @@
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -40,6 +43,19 @@ namespace {
 
 constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
 constexpr int kAudioToggleChildSpacing = 8;
+
+void RecordUmaDismissal() {
+  RecordUma(GDMPreferCurrentTabResult::kDialogDismissed);
+}
+
+void RecordUmaCancellation() {
+  RecordUma(GDMPreferCurrentTabResult::kUserCancelled);
+}
+
+void RecordUmaSelection() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab);
+}
 
 }  // namespace
 
@@ -150,6 +166,7 @@ bool ShareThisTabDialogView::Accept() {
     desktop_media_id.audio_share =
         audio_toggle_button_ && audio_toggle_button_->GetIsOn();
     parent_->NotifyDialogResult(desktop_media_id);
+    RecordUmaSelection();
   }
 
   // Return true to close the window.
@@ -160,6 +177,7 @@ bool ShareThisTabDialogView::Cancel() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   source_view_->StopRefreshing();
   activation_timer_.Stop();
+  RecordUmaCancellation();
   return views::DialogDelegateView::Cancel();
 }
 
@@ -234,6 +252,7 @@ ShareThisTabDialogViews::ShareThisTabDialogViews() : dialog_(nullptr) {
 ShareThisTabDialogViews::~ShareThisTabDialogViews() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (dialog_) {
+    RecordUmaDismissal();
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
   }
