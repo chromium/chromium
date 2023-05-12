@@ -869,8 +869,8 @@ testcase.hideSearchInTrash = async () => {
   // Navigate to Trash and confirm that the search button is now hidden.
   await navigateWithDirectoryTree(appId, '/Trash');
   searchButton = await remoteCall.waitForElementStyles(
-      appId, ['#search-button'], ['display']);
-  chrome.test.assertTrue(searchButton.styles['display'] === 'none');
+      appId, ['#search-button'], ['visibility']);
+  chrome.test.assertTrue(searchButton.styles['visibility'] === 'hidden');
 
   // Try to use keyboard shortcuts Ctrl+F to launch search anyway.
   const ctrlF = ['#file-list', 'f', true, false, false];
@@ -884,8 +884,8 @@ testcase.hideSearchInTrash = async () => {
   // Go back to Downloads and confirm that the search button is visible again.
   await navigateWithDirectoryTree(appId, '/My files/Downloads');
   searchButton = await remoteCall.waitForElementStyles(
-      appId, ['#search-button'], ['display']);
-  chrome.test.assertTrue(searchButton.styles['display'] !== 'none');
+      appId, ['#search-button'], ['visibility']);
+  chrome.test.assertTrue(searchButton.styles['visibility'] !== 'hidden');
 
   // Make sure that search still works.
   await remoteCall.typeSearchText(appId, 'hello');

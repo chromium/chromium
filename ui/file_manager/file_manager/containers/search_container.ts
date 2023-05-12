@@ -633,13 +633,13 @@ export class SearchContainer extends EventTarget {
     // in the OPENING state, without ever getting to OPEN state.
     if (this.inputState_ === SearchInputState.CLOSED) {
       this.inputState_ = SearchInputState.OPENING;
-      this.inputElement_.disabled = false;
-      this.inputElement_.tabIndex = 0;
-      this.inputElement_.focus();
       this.inputElement_.addEventListener('transitionend', () => {
         this.inputState_ = SearchInputState.OPEN;
         this.searchWrapper_.removeAttribute('collapsed');
       }, {once: true, passive: true, capture: true});
+      this.inputElement_.disabled = false;
+      this.inputElement_.tabIndex = 0;
+      this.inputElement_.focus();
       this.searchWrapper_.classList.add('has-cursor', 'has-text');
       this.searchBox_.classList.add('has-cursor', 'has-text');
       this.searchButton_.tabIndex = -1;
@@ -656,17 +656,17 @@ export class SearchContainer extends EventTarget {
     // Do not initiate close transition if we are not open. This would leave us
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
-      this.hideOptionsElement_();
-      this.hidePathDisplayElement_();
-      this.store_.dispatch(clearSearch());
       this.inputState_ = SearchInputState.CLOSING;
-      this.inputElement_.tabIndex = -1;
-      this.inputElement_.disabled = true;
-      this.inputElement_.blur();
       this.inputElement_.addEventListener('transitionend', () => {
         this.inputState_ = SearchInputState.CLOSED;
         this.searchWrapper_.setAttribute('collapsed', '');
       }, {once: true, passive: true, capture: true});
+      this.hideOptionsElement_();
+      this.hidePathDisplayElement_();
+      this.store_.dispatch(clearSearch());
+      this.inputElement_.tabIndex = -1;
+      this.inputElement_.disabled = true;
+      this.inputElement_.blur();
       this.inputElement_.value = '';
       this.searchWrapper_.classList.remove('has-cursor', 'has-text');
       this.searchBox_.classList.remove('has-cursor', 'has-text');

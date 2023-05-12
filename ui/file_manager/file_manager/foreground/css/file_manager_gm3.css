@@ -648,7 +648,7 @@ body.check-select #cancel-selection-button-wrapper {
 
 /* Search button */
 body.check-select-v1 #search-button {
-  display: none;
+  visibility: hidden;
 }
 
 /* Search box */
@@ -661,10 +661,6 @@ body.check-select-v1 #search-button {
 .dialog-header.files-ng #search-box cr-input::part(input) {
   caret-color: var(--cros-sys-primary);
   margin-inline-end: 16px;
-}
-
-body.check-select-v1 #search-box {
-  display: none;
 }
 
 .dialog-header.files-ng #search-box.has-cursor,
