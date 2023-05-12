@@ -549,8 +549,6 @@ bool PasswordManager::IsPasswordFieldDetectedOnPage() const {
 
 void PasswordManager::OnPasswordFormSubmitted(PasswordManagerDriver* driver,
                                               const FormData& form_data) {
-  base::UmaHistogramEnumeration("PasswordManager.FormSubmission.PerProfileType",
-                                client_->GetProfileType());
   ProvisionallySaveForm(form_data, driver, false);
 }
 

@@ -3845,8 +3845,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ParserAnnotations) {
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-// Test if |PasswordManager.FormVisited.PerProfileType| and
-// |PasswordManager.FormSubmission.PerProfileType| metrics are recorded as
+// Test if |PasswordManager.FormVisited.PerProfileType| metrics are recorded as
 // expected.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        ProfileTypeMetricSubmission) {
@@ -3858,8 +3857,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FormVisited.PerProfileType",
       profile_metrics::BrowserProfileType::kRegular, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.FormSubmission.PerProfileType", 0);
 
   // Fill a form and submit through a <input type="submit"> button. Nothing
   // special.
@@ -3870,11 +3867,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecJs(WebContents(), kFillAndSubmit));
   ASSERT_TRUE(observer.Wait());
-
-  // Test if submission is properly recorded.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.FormSubmission.PerProfileType",
-      profile_metrics::BrowserProfileType::kRegular, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,

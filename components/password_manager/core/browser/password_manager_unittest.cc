@@ -4254,8 +4254,8 @@ TEST_F(PasswordManagerTest, IsFormManagerPendingPasswordUpdate) {
   EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
 }
 
-// Test submission of "PasswordManager.FormVisited.PerProfileType" and
-// "PasswordManager.FormSubmission.PerProfileType" for Incognito mode.
+// Test submission of "PasswordManager.FormVisited.PerProfileType" for
+// Incognito mode.
 TEST_F(PasswordManagerTest, IncognitoProfileTypeMetricSubmission) {
   base::HistogramTester histogram_tester;
 
@@ -4272,27 +4272,18 @@ TEST_F(PasswordManagerTest, IncognitoProfileTypeMetricSubmission) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FormVisited.PerProfileType",
       profile_metrics::BrowserProfileType::kIncognito, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.FormSubmission.PerProfileType", 0);
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form.form_data);
 
-  // Test if submission is properly recorded.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.FormSubmission.PerProfileType",
-      profile_metrics::BrowserProfileType::kIncognito, 1);
-
   // And nothing in other buckets.
   histogram_tester.ExpectTotalCount(
       "PasswordManager.FormVisited.PerProfileType", 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.FormSubmission.PerProfileType", 1);
 }
 
-// Test submission of "PasswordManager.FormVisited.PerProfileType" and
-// "PasswordManager.FormSubmission.PerProfileType" for Guest mode.
+// Test submission of "PasswordManager.FormVisited.PerProfileType" for Guest
+// mode.
 TEST_F(PasswordManagerTest, GuestProfileTypeMetricSubmission) {
   base::HistogramTester histogram_tester;
 
@@ -4309,23 +4300,14 @@ TEST_F(PasswordManagerTest, GuestProfileTypeMetricSubmission) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FormVisited.PerProfileType",
       profile_metrics::BrowserProfileType::kGuest, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.FormSubmission.PerProfileType", 0);
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form.form_data);
 
-  // Test if submission is properly recorded.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.FormSubmission.PerProfileType",
-      profile_metrics::BrowserProfileType::kGuest, 1);
-
   // And nothing in other buckets.
   histogram_tester.ExpectTotalCount(
       "PasswordManager.FormVisited.PerProfileType", 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.FormSubmission.PerProfileType", 1);
 }
 
 // Tests that the login is not detected twice.
