@@ -48,6 +48,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/auth.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -336,7 +337,10 @@ const int kMultiRealmTestAuthRequestsCount = 4;
 const char kSingleRealmTestPage[] = "/login/single_realm.html";
 
 const char kAuthBasicPage[] = "/auth-basic";
+const char kAuthBasicSubframePage[] = "/auth-basic-subframe.html";
 const char kAuthDigestPage[] = "/auth-digest";
+
+const char kTitlePage[] = "/title1.html";
 
 // It does not matter what pages are selected as no-auth, as long as they exist.
 // Navigating to non-existing pages caused flakes in the past
@@ -437,6 +441,124 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
     SetAuthForAndWait(*observer.handlers().begin(), controller);
     ExpectSuccessfulBasicAuthTitle(contents);
   }
+}
+
+// Test that a BasicAuth prompt from the main frame prevents the page from
+// entering back/forward cache but that a successful authentication does not.
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
+                       TestBasicAuthPromptBlocksBackForwardCache) {
+  // Don't run this test if BackForwardCache is disabled.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
+  GURL title_page = embedded_test_server()->GetURL("a.com", kTitlePage);
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigationController* controller = &contents->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+
+  // Navigate to the page and wait for the auth prompt.
+  {
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    browser()->OpenURL(OpenURLParams(test_page, Referrer(),
+                                     WindowOpenDisposition::CURRENT_TAB,
+                                     ui::PAGE_TRANSITION_TYPED, false));
+    auth_needed_waiter.Wait();
+  }
+  content::RenderFrameHostWrapper rfh(contents->GetPrimaryMainFrame());
+
+  // Navigate away.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), title_page));
+
+  // We expect the previous page to be destroyed without entering back/forward
+  // cache.
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
+
+  // Go back to the page and wait for the auth prompt.
+  {
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    controller->GoBack();
+    auth_needed_waiter.Wait();
+  }
+
+  // Complete the authentication.
+  SetAuthForAndWait(*observer.handlers().begin(), controller);
+  ExpectSuccessfulBasicAuthTitle(contents);
+
+  // Navigate away and go back again.
+  content::RenderFrameHostWrapper rfh2(contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), title_page));
+  ASSERT_TRUE(content::HistoryGoBack(contents));
+
+  // This time the page should have been restored from the cache.
+  ASSERT_EQ(rfh2.get(), contents->GetPrimaryMainFrame());
+}
+
+// Test that a BasicAuth prompt from a subframe prevents the page from
+// entering back/forward cache.
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
+                       TestBasicAuthPromptSubframeBlocksBackForwardCache) {
+  // Don't run this test if BackForwardCache is disabled.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL test_page = embedded_test_server()->GetURL(kAuthBasicSubframePage);
+  GURL title_page = embedded_test_server()->GetURL("a.com", kTitlePage);
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigationController* controller = &contents->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+
+  // Navigate to the page and wait for the auth prompt.
+  {
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    browser()->OpenURL(OpenURLParams(test_page, Referrer(),
+                                     WindowOpenDisposition::CURRENT_TAB,
+                                     ui::PAGE_TRANSITION_TYPED, false));
+    auth_needed_waiter.Wait();
+  }
+  content::RenderFrameHostWrapper rfh(contents->GetPrimaryMainFrame());
+
+  // Navigate away.
+  // TODO(https://crbug.com/1444329): Use `NavigateToURL`.
+  WindowedAuthCancelledObserver auth_cancelled_waiter(controller);
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(contents, title_page));
+  auth_cancelled_waiter.Wait();
+
+  // We expect the previous page to be destroyed without entering back/forward
+  // cache.
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
+
+  // Go back to the page and wait for the auth prompt.
+  {
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    controller->GoBack();
+    auth_needed_waiter.Wait();
+  }
+
+  // Complete the authentication.
+  SetAuthForAndWait(*observer.handlers().begin(), controller);
+  content::WaitForLoadStop(contents);
+  ASSERT_EQ(ExpectedTitleFromAuth(u"basicuser", u"secret"),
+            content::EvalJs(contents, "subframe.contentDocument.title"));
+
+  // Navigate away and go back again.
+  content::RenderFrameHostWrapper rfh2(contents->GetPrimaryMainFrame());
+  // TODO(https://crbug.com/1444329): Use `NavigateToURL`.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(contents, title_page));
+  ASSERT_TRUE(content::HistoryGoBack(contents));
+
+  // This time the page should have been restored from the cache.
+  ASSERT_EQ(rfh2.get(), contents->GetPrimaryMainFrame());
 }
 
 // Test that "Digest" HTTP authentication works.
