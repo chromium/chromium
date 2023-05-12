@@ -106,9 +106,8 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 
 }  // namespace
 
-ScreensaverImageDownloader::Job::Job(const std::string& image_url,
-                                     ResultCallback result_callback)
-    : image_url(image_url), result_callback(std::move(result_callback)) {}
+ScreensaverImageDownloader::Job::Job(const std::string& image_url)
+    : image_url(image_url) {}
 
 ScreensaverImageDownloader::Job::~Job() = default;
 
@@ -120,12 +119,14 @@ std::string ScreensaverImageDownloader::Job::file_name() const {
 
 ScreensaverImageDownloader::ScreensaverImageDownloader(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    const base::FilePath& download_directory)
+    const base::FilePath& download_directory,
+    ImageListUpdatedCallback image_list_updated_callback)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       shared_url_loader_factory_(shared_url_loader_factory),
-      download_directory_(download_directory) {}
+      download_directory_(download_directory),
+      image_list_updated_callback_(image_list_updated_callback) {}
 
 ScreensaverImageDownloader::~ScreensaverImageDownloader() = default;
 
@@ -288,11 +289,8 @@ void ScreensaverImageDownloader::FinishDownloadJob(
   // TODO(b/276208772): Track result with metrics
   if (result == ScreensaverImageDownloadResult::kSuccess) {
     downloaded_images_.insert(*path);
-
-    CHECK(!download_job->result_callback.is_null());
-    std::move(download_job->result_callback)
-        .Run(std::vector<base::FilePath>(downloaded_images_.begin(),
-                                         downloaded_images_.end()));
+    image_list_updated_callback_.Run(std::vector<base::FilePath>(
+        downloaded_images_.begin(), downloaded_images_.end()));
   }
 
   if (downloading_queue_.empty()) {

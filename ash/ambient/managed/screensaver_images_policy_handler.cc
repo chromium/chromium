@@ -64,7 +64,10 @@ ScreensaverImagesPolicyHandler::ScreensaverImagesPolicyHandler(
 
   AmbientClient& ambient_client = CHECK_DEREF(AmbientClient::Get());
   image_downloader_ = std::make_unique<ScreensaverImageDownloader>(
-      ambient_client.GetURLLoaderFactory(), GetDownloaderRootPath());
+      ambient_client.GetURLLoaderFactory(), GetDownloaderRootPath(),
+      base::BindRepeating(
+          &ScreensaverImagesPolicyHandler::OnDownloadedImageListUpdated,
+          base::Unretained(this)));
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
@@ -114,19 +117,16 @@ void ScreensaverImagesPolicyHandler::
       LOG(WARNING) << "Ignored invalid URL: " << url;
       continue;
     }
-    auto job = std::make_unique<ScreensaverImageDownloader::Job>(
-        url.spec(),
-        base::BindOnce(&ScreensaverImagesPolicyHandler::OnDownloadJobCompleted,
-                       weak_ptr_factory_.GetWeakPtr()));
+    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url.spec());
 
     image_downloader_->QueueDownloadJob(std::move(job));
   }
 }
 
-void ScreensaverImagesPolicyHandler::OnDownloadJobCompleted(
-    const std::vector<base::FilePath>& image_list) {
+void ScreensaverImagesPolicyHandler::OnDownloadedImageListUpdated(
+    const std::vector<base::FilePath>& images) {
   if (on_images_updated_callback_) {
-    on_images_updated_callback_.Run(image_list);
+    on_images_updated_callback_.Run(images);
   }
 }
 

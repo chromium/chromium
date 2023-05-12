@@ -52,20 +52,17 @@ class ASH_EXPORT ScreensaverImageDownloader {
   };
 
  public:
-  // Convenience definition for the callback provided by clients wanting to
-  // download images.
-  using ResultCallback =
-      base::OnceCallback<void(const std::vector<base::FilePath>& image_list)>;
+  using ImageListUpdatedCallback =
+      base::RepeatingCallback<void(const std::vector<base::FilePath>& images)>;
 
   // Represents a single image download request from `image_url` to
   // `download_directory_`. Once this job has been completed, `result_callback`
   // will be invoked with the actual result, and the path to the downloaded file
   // if the operation succeeded.
-  // TODO(b/280810255): Delete result_callback, and use a class level repeating
-  // callback.
+  // TODO(b/280810255): Delete this class, and use a plain std::string.
   struct Job {
     Job() = delete;
-    Job(const std::string& image_url, ResultCallback result_callback);
+    explicit Job(const std::string& image_url);
     ~Job();
 
     // Creates a unique name based on a hash operation on the image URL to
@@ -73,14 +70,14 @@ class ASH_EXPORT ScreensaverImageDownloader {
     std::string file_name() const;
 
     const std::string image_url;
-    ResultCallback result_callback;
   };
 
   ScreensaverImageDownloader() = delete;
 
   ScreensaverImageDownloader(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      const base::FilePath& download_directory);
+      const base::FilePath& download_directory,
+      ImageListUpdatedCallback image_list_updated_callback);
 
   ~ScreensaverImageDownloader();
 
@@ -157,6 +154,9 @@ class ASH_EXPORT ScreensaverImageDownloader {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   base::FilePath download_directory_;
+
+  // Used to notify changes in the list of downloaded images.
+  ImageListUpdatedCallback image_list_updated_callback_;
 
   base::WeakPtrFactory<ScreensaverImageDownloader> weak_ptr_factory_{this};
 };

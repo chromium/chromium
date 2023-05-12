@@ -44,8 +44,7 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
 
   void OnAmbientModeManagedScreensaverImagesPrefChanged();
 
-  // Download completion handler.
-  void OnDownloadJobCompleted(const std::vector<base::FilePath>& image_list);
+  void OnDownloadedImageListUpdated(const std::vector<base::FilePath>& images);
 
   raw_ptr<PrefService> user_pref_service_ = nullptr;
 

@@ -15,8 +15,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,11 +35,11 @@ constexpr char kTestDownloadFolder[] = "test_download_folder";
 
 }  // namespace
 
-using DownloadResultFuture =
-    base::test::TestFuture<const std::vector<base::FilePath>&>;
-
 class ScreensaverImageDownloaderTest : public testing::Test {
  public:
+  using ImageListUpdatedFuture =
+      base::test::RepeatingTestFuture<const std::vector<base::FilePath>&>;
+
   ScreensaverImageDownloaderTest() = default;
 
   ScreensaverImageDownloaderTest(const ScreensaverImageDownloaderTest&) =
@@ -58,7 +58,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
         std::make_unique<ScreensaverImageDownloader>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &url_loader_factory_),
-            test_download_folder_);
+            test_download_folder_, image_list_updated_future_.GetCallback());
   }
 
   ScreensaverImageDownloader* screensaver_image_downloader() {
@@ -82,15 +82,9 @@ class ScreensaverImageDownloaderTest : public testing::Test {
               screensaver_image_downloader_->downloading_queue_.size());
   }
 
-  std::unique_ptr<DownloadResultFuture> QueueNewJobWithFuture(
-      const std::string& url) {
-    std::unique_ptr<DownloadResultFuture> future_callback =
-        std::make_unique<DownloadResultFuture>();
-    auto job = std::make_unique<ScreensaverImageDownloader::Job>(
-        url, future_callback->GetCallback());
+  void QueueNewImageDownload(const std::string& url) {
+    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url);
     screensaver_image_downloader_->QueueDownloadJob(std::move(job));
-
-    return future_callback;
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
@@ -100,13 +94,13 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   }
 
   void VerifySucessfulImageRequest(
-      std::unique_ptr<DownloadResultFuture> result_future,
       const std::vector<std::pair<base::FilePath, std::string>>&
           expected_images) {
-    ASSERT_TRUE(result_future.get());
-    ASSERT_TRUE(result_future->Wait()) << "Callback expected to be called.";
+    ASSERT_TRUE(image_list_updated_future_.Wait())
+        << "Callback expected to be called.";
 
-    const std::vector<base::FilePath> image_list = result_future->Take();
+    const std::vector<base::FilePath> image_list =
+        image_list_updated_future_.Take();
     ASSERT_EQ(expected_images.size(), image_list.size());
 
     for (const auto& [path, file_content] : expected_images) {
@@ -127,6 +121,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   base::ScopedTempDir tmp_dir_;
   base::FilePath test_download_folder_;
   network::TestURLLoaderFactory url_loader_factory_;
+  ImageListUpdatedFuture image_list_updated_future_;
 
   // Class under test
   std::unique_ptr<ScreensaverImageDownloader> screensaver_image_downloader_;
@@ -163,12 +158,13 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
   std::vector<std::pair<base::FilePath, std::string>> expected_images;
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
-                              expected_images);
+
+  QueueNewImageDownload(kImageUrl1);
+  VerifySucessfulImageRequest(expected_images);
 
   // Queue the request that should not download any file.
-  QueueNewJobWithFuture(kImageUrl2);
-  QueueNewJobWithFuture(kImageUrl3);
+  QueueNewImageDownload(kImageUrl2);
+  QueueNewImageDownload(kImageUrl3);
 
   // Verify that the downloader did not create image files for the error
   // downloads.
@@ -190,14 +186,14 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
   std::vector<std::pair<base::FilePath, std::string>> expected_images;
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
-                              expected_images);
+  QueueNewImageDownload(kImageUrl1);
+  VerifySucessfulImageRequest(expected_images);
   EXPECT_EQ(1u, urls_requested);
 
   // Attempting to download the same URL should not create a new network
   // request.
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
-                              expected_images);
+  QueueNewImageDownload(kImageUrl1);
+  VerifySucessfulImageRequest(expected_images);
   EXPECT_EQ(1u, urls_requested);
 
   url_loader_factory()->SetInterceptor(
@@ -209,17 +205,15 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
   // A different URL should create a new network request.
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl2),
-                              expected_images);
+  QueueNewImageDownload(kImageUrl2);
+  VerifySucessfulImageRequest(expected_images);
   EXPECT_EQ(2u, urls_requested);
 }
 
 TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   // Push two jobs and check the internal downloading queue
-  std::unique_ptr<DownloadResultFuture> result_future1 =
-      QueueNewJobWithFuture(kImageUrl1);
-  std::unique_ptr<DownloadResultFuture> result_future2 =
-      QueueNewJobWithFuture(kImageUrl2);
+  QueueNewImageDownload(kImageUrl1);
+  QueueNewImageDownload(kImageUrl2);
 
   // First job should be executing and expecting the URL response, verify that
   // the second job is in the queue
@@ -232,7 +226,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   std::vector<std::pair<base::FilePath, std::string>> expected_images;
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(std::move(result_future1), expected_images);
+  VerifySucessfulImageRequest(expected_images);
 
   // First job has been resolved, second job should be executing and expecting
   // the URL response.
@@ -240,8 +234,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   VerifyDownloadingQueueSize(0u);
 
   // Queue a third job while the second job is still waiting
-  std::unique_ptr<DownloadResultFuture> result_future3 =
-      QueueNewJobWithFuture(kImageUrl3);
+  QueueNewImageDownload(kImageUrl3);
 
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
@@ -251,7 +244,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(std::move(result_future2), expected_images);
+  VerifySucessfulImageRequest(expected_images);
 
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
@@ -261,7 +254,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl3),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(std::move(result_future3), expected_images);
+  VerifySucessfulImageRequest(expected_images);
 
   // Ensure that the queue remains empty
   base::RunLoop().RunUntilIdle();
@@ -276,13 +269,13 @@ TEST_F(ScreensaverImageDownloaderTest, DeleteDownloadedImagesTest) {
   std::vector<std::pair<base::FilePath, std::string>> expected_images;
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
-                              expected_images);
+  QueueNewImageDownload(kImageUrl1);
+  VerifySucessfulImageRequest(expected_images);
 
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl2),
-                              expected_images);
+  QueueNewImageDownload(kImageUrl2);
+  VerifySucessfulImageRequest(expected_images);
 
   // Verify that images saved into disk are deleted properly.
   screensaver_image_downloader()->DeleteDownloadedImages();
@@ -293,12 +286,9 @@ TEST_F(ScreensaverImageDownloaderTest, DeleteDownloadedImagesTest) {
 TEST_F(ScreensaverImageDownloaderTest, ClearRequestQueueTest) {
   // Queue 3 download request, the first one one will be executed, the latter
   // will be queued.
-  std::unique_ptr<DownloadResultFuture> result_future1 =
-      QueueNewJobWithFuture(kImageUrl1);
-  std::unique_ptr<DownloadResultFuture> result_future2 =
-      QueueNewJobWithFuture(kImageUrl2);
-  std::unique_ptr<DownloadResultFuture> result_future3 =
-      QueueNewJobWithFuture(kImageUrl3);
+  QueueNewImageDownload(kImageUrl1);
+  QueueNewImageDownload(kImageUrl2);
+  QueueNewImageDownload(kImageUrl3);
 
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(2u);
@@ -311,7 +301,7 @@ TEST_F(ScreensaverImageDownloaderTest, ClearRequestQueueTest) {
   std::vector<std::pair<base::FilePath, std::string>> expected_images;
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
                                std::string(kFileContents));
-  VerifySucessfulImageRequest(std::move(result_future1), expected_images);
+  VerifySucessfulImageRequest(expected_images);
 
   // Verify that the downloader did not create image files for the cancelled
   // downloads.
