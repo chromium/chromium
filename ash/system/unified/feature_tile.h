@@ -17,7 +17,6 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
-class FlexLayoutView;
 class ImageButton;
 class ImageView;
 class InkDropContainerView;
@@ -152,7 +151,6 @@ class ASH_EXPORT FeatureTile : public views::Button {
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_ = nullptr;
 
   // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> icon_container_ = nullptr;
   raw_ptr<views::ImageButton, ExperimentalAsh> icon_button_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;

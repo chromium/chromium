@@ -26,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 using views::FlexLayout;
 using views::FlexLayoutView;
@@ -43,23 +44,22 @@ constexpr float kFocusRingPadding = 3.0f;
 // Primary tile constants
 constexpr int kPrimarySubtitleLineHeight = 18;
 constexpr gfx::Size kDefaultSize(180, kFeatureTileHeight);
-constexpr gfx::Size kIconContainerSize(48, kFeatureTileHeight);
 constexpr gfx::Size kIconButtonSize(36, 52);
 constexpr int kIconButtonCornerRadius = 12;
-constexpr gfx::Size kTitlesContainerSize(92, kFeatureTileHeight);
-constexpr gfx::Size kDrillContainerSize(40, kFeatureTileHeight);
+constexpr gfx::Insets kIconButtonMargins = gfx::Insets::VH(6, 6);
+constexpr gfx::Size kTitlesContainerSize(98, kFeatureTileHeight);
+constexpr gfx::Insets kDrillInArrowMargins = gfx::Insets::TLBR(0, 4, 0, 10);
 
 // Compact tile constants
 constexpr int kCompactWidth = 86;
 constexpr int kCompactTitleLineHeight = 14;
 constexpr gfx::Size kCompactSize(kCompactWidth, kFeatureTileHeight);
-constexpr gfx::Size kCompactIconContainerSize(kCompactWidth, 30);
 constexpr gfx::Size kCompactIconButtonSize(kIconSize, kIconSize);
+constexpr gfx::Insets kCompactIconButtonMargins =
+    gfx::Insets::TLBR(6, 22, 4, 22);
 constexpr gfx::Size kCompactTitleContainerSize(kCompactWidth, 34);
 constexpr gfx::Size kCompactTitleLabelSize(kCompactWidth - 32,
                                            kCompactTitleLineHeight * 2);
-constexpr gfx::Insets kCompactIconContainerInteriorMargin(
-    gfx::Insets::TLBR(0, 0, 4, 0));
 
 // Creates an ink drop hover highlight for `host` with `color_id`.
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
@@ -136,24 +136,14 @@ void FeatureTile::CreateChildViews() {
 
   SetPreferredSize(is_compact ? kCompactSize : kDefaultSize);
 
-  icon_container_ = AddChildView(std::make_unique<FlexLayoutView>());
-  icon_container_->SetCanProcessEventsWithinSubtree(false);
-  icon_container_->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  icon_container_->SetCrossAxisAlignment(is_compact
-                                             ? views::LayoutAlignment::kEnd
-                                             : views::LayoutAlignment::kCenter);
-  icon_container_->SetPreferredSize(is_compact ? kCompactIconContainerSize
-                                               : kIconContainerSize);
-  if (is_compact) {
-    icon_container_->SetInteriorMargin(kCompactIconContainerInteriorMargin);
-  }
-
-  icon_button_ =
-      icon_container_->AddChildView(std::make_unique<views::ImageButton>());
+  icon_button_ = AddChildView(std::make_unique<views::ImageButton>());
   icon_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   icon_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   icon_button_->SetPreferredSize(is_compact ? kCompactIconButtonSize
                                             : kIconButtonSize);
+  icon_button_->SetProperty(views::kMarginsKey, is_compact
+                                                    ? kCompactIconButtonMargins
+                                                    : kIconButtonMargins);
   // By default the icon button is not separately clickable.
   icon_button_->SetEnabled(false);
   icon_button_->SetCanProcessEventsWithinSubtree(false);
@@ -205,10 +195,6 @@ void FeatureTile::CreateChildViews() {
 void FeatureTile::SetIconClickable(bool clickable) {
   CHECK_EQ(type_, TileType::kPrimary);
   is_icon_clickable_ = clickable;
-  // Allow `icon_button_` to receive hover and click events. This results in a
-  // tiny area inside `icon_container_` near the button's edge that does not
-  // have a tooltip, but it's unlikely users will notice.
-  icon_container_->SetCanProcessEventsWithinSubtree(clickable);
   icon_button_->SetCanProcessEventsWithinSubtree(clickable);
   icon_button_->SetEnabled(clickable);
 
@@ -236,7 +222,8 @@ void FeatureTile::CreateDecorativeDrillInArrow() {
 
   drill_in_arrow_ = AddChildView(std::make_unique<views::ImageView>());
   // The icon is set in UpdateDrillArrowColor().
-  drill_in_arrow_->SetPreferredSize(kDrillContainerSize);
+  drill_in_arrow_->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
+  drill_in_arrow_->SetProperty(views::kMarginsKey, kDrillInArrowMargins);
   // Allow hover events to fall through to show tooltips from the main view.
   drill_in_arrow_->SetCanProcessEventsWithinSubtree(false);
   UpdateDrillInArrowColor();
