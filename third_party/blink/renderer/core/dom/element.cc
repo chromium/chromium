@@ -7116,10 +7116,10 @@ ScriptValue Element::requestPointerLock(ScriptState* script_state,
         "is no frame or that frame has no page.");
   }
 
-    if (exception_state.HadException()) {
-      resolver->Reject(exception_state);
-    }
-    return promise.AsScriptValue();
+  if (exception_state.HadException()) {
+    resolver->Reject(exception_state);
+  }
+  return promise.AsScriptValue();
 }
 
 SpellcheckAttributeState Element::GetSpellcheckAttributeState() const {
@@ -8574,21 +8574,28 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
 
   const Attribute& existing_attribute =
       GetElementData()->Attributes().at(index);
-  AtomicString existing_attribute_value = existing_attribute.Value();
-  QualifiedName existing_attribute_name = existing_attribute.GetName();
+  const QualifiedName& existing_attribute_name = existing_attribute.GetName();
 
-  if (reason !=
-      AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
-    WillModifyAttribute(existing_attribute_name, existing_attribute_value,
-                        new_value);
-  }
-  if (new_value != existing_attribute_value) {
-    EnsureUniqueElementData().Attributes().at(index).SetValue(new_value);
-  }
-  if (reason !=
-      AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
-    DidModifyAttribute(existing_attribute_name, existing_attribute_value,
-                       new_value, reason);
+  if (new_value == existing_attribute.Value()) {
+    if (reason !=
+        AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
+      WillModifyAttribute(existing_attribute_name, new_value, new_value);
+      DidModifyAttribute(existing_attribute_name, new_value, new_value, reason);
+    }
+  } else {
+    Attribute& new_attribute = EnsureUniqueElementData().Attributes().at(index);
+    AtomicString existing_attribute_value = std::move(new_attribute.Value());
+    if (reason !=
+        AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
+      WillModifyAttribute(existing_attribute_name, existing_attribute_value,
+                          new_value);
+    }
+    new_attribute.SetValue(new_value);
+    if (reason !=
+        AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
+      DidModifyAttribute(existing_attribute_name, existing_attribute_value,
+                         new_value, reason);
+    }
   }
 }
 
