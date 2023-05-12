@@ -1,9 +1,16 @@
 <style include="cr-shared-style">
+  ::slotted([slot=bottom-nav-content-drawer]) {
+    position: absolute;
+  }
+
+  ::slotted([slot=bottom-nav-content-panel]) {
+    position: fixed;
+  }
+
   ::slotted([slot=bottom-nav-content-drawer]),
   ::slotted([slot=bottom-nav-content-panel]) {
     bottom: 24px;
     inset-inline-start: 16px;
-    position: fixed;
   }
 
   ::slotted([slot=banner]) {
