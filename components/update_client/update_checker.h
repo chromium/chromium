@@ -31,9 +31,9 @@ class UpdateChecker {
       int error,
       int retry_after_sec)>;
 
-  using Factory =
-      std::unique_ptr<UpdateChecker> (*)(scoped_refptr<Configurator> config,
-                                         PersistedData* persistent);
+  using Factory = base::RepeatingCallback<std::unique_ptr<UpdateChecker>(
+      scoped_refptr<Configurator> config,
+      PersistedData* persistent)>;
 
   UpdateChecker(const UpdateChecker&) = delete;
   UpdateChecker& operator=(const UpdateChecker&) = delete;

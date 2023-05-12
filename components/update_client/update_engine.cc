@@ -103,7 +103,6 @@ UpdateEngine::UpdateEngine(
     scoped_refptr<PingManager> ping_manager,
     const NotifyObserversCallback& notify_observers_callback)
     : config_(config),
-
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
       metadata_(
@@ -244,7 +243,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
     update_context->components[id]->Handle(base::DoNothing());
 
   update_context->update_checker =
-      update_checker_factory_(config_, metadata_.get());
+      update_checker_factory_.Run(config_, metadata_.get());
 
   update_context->update_checker->CheckForUpdates(
       update_context, config_->ExtraRequestParams(),

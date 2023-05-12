@@ -348,7 +348,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -566,7 +566,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -800,7 +800,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1033,7 +1033,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1152,7 +1152,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1405,7 +1405,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -1768,7 +1768,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2090,7 +2090,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2408,7 +2408,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2599,7 +2599,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -2815,7 +2815,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
   {
     EXPECT_FALSE(config()->GetPrefService()->FindPreference(
         "updateclientdata.apps.jebgalgnebhfojomionfpkfelancnnkf.pv"));
@@ -2956,7 +2956,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -3093,7 +3093,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
@@ -3197,7 +3197,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   const std::vector<std::string> empty_id_list;
   update_client->Update(
@@ -3266,7 +3266,7 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   CrxComponent crx;
   crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
@@ -3389,7 +3389,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
 
@@ -3672,7 +3672,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -3815,7 +3815,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -3982,7 +3982,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -4220,7 +4220,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   update_client->Install(
       std::string("gjpmebpgbhcamgdgjcmnjfhggjpgcimm"),
@@ -4392,7 +4392,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   const std::vector<std::string> ids = {"gjpmebpgbhcamgdgjcmnjfhggjpgcimm"};
   update_client->Update(
@@ -4519,7 +4519,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   class Observer : public UpdateClient::Observer {
    public:
@@ -4737,7 +4737,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -4887,7 +4887,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   base::RepeatingClosure cancel;
 
@@ -5068,7 +5068,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   base::RepeatingClosure cancel;
 
@@ -5186,7 +5186,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5335,7 +5335,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5445,7 +5445,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5576,7 +5576,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5664,7 +5664,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
@@ -5838,7 +5838,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
-          &MockUpdateChecker::Create);
+          base::BindRepeating(&MockUpdateChecker::Create));
 
   MockObserver observer;
   {
