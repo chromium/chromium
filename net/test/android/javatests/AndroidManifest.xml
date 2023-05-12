@@ -11,7 +11,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application android:label="ChromiumNetTestSupport">
+    <application android:label="ChromiumNetTestSupport"
+             android:name="androidx.multidex.MultiDexApplication">
 
         <uses-library android:name="android.test.runner" />
 
