@@ -19,6 +19,14 @@ BASE_DECLARE_FEATURE(kSingleNtp);
 // Feature for the Magic Stack.
 BASE_DECLARE_FEATURE(kMagicStack);
 
+// A parameter to indicate whether the Most Visited Tiles should be in the Magic
+// Stack.
+extern const char kMagicStackMostVisitedModuleParam[];
+
+// A parameter representing how much to reduce the NTP top space margin. If it
+// is negative, it will increase the top space margin.
+extern const char kReducedSpaceParam[];
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 // TODO(crbug.com/1385512): Remove this.
@@ -30,5 +38,11 @@ bool IsDiscoverFeedEnabled();
 
 // Whether the Magic Stack should be shown.
 bool IsMagicStackEnabled();
+
+// Whether the Most Visited Sites should be put into the Magic Stack.
+bool ShouldPutMostVisitedSitesInMagicStack();
+
+// How much the NTP top margin should be reduced by for the Magic Stack design.
+double ReducedNTPTopMarginSpaceForMagicStack();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

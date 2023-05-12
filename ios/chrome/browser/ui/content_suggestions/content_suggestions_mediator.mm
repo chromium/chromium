@@ -222,9 +222,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsMagicStackEnabled()) {
-    [self.consumer setMagicStackOrder:@[
-      @(int(ContentSuggestionsModuleType::kShortcuts))
-    ]];
+    [self.consumer setMagicStackOrder:[self magicStackOrder]];
   }
 }
 
@@ -647,6 +645,19 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
                          kTileAblationHideAll ||
          behavior == ntp_tiles::NewTabPageRetentionExperimentBehavior::
                          kTileAblationHideMVTOnly;
+}
+
+// Returns an array that represents the order of the modules to be shown in the
+// Magic Stack.
+- (NSArray<NSNumber*>*)magicStackOrder {
+  if (ShouldPutMostVisitedSitesInMagicStack()) {
+    return @[
+      @(int(ContentSuggestionsModuleType::kMostVisited)),
+      @(int(ContentSuggestionsModuleType::kShortcuts))
+    ];
+  } else {
+    return @[ @(int(ContentSuggestionsModuleType::kShortcuts)) ];
+  }
 }
 
 #pragma mark - Properties

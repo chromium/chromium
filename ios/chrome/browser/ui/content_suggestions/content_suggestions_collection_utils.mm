@@ -104,6 +104,8 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
       top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
                         ui_util::SystemSuggestedFontSizeMultiplier());
+  // If Magic Stack is not enabled, this value is zero (e.g. no-op).
+  top_margin -= ReducedNTPTopMarginSpaceForMagicStack();
   if (ShouldShrinkLogoForStartSurface() && !IsCompactHeight(trait_collection)) {
     top_margin += kShrunkDoodleTopMarginOther;
   } else {

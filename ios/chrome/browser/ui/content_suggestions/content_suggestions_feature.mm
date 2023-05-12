@@ -24,6 +24,10 @@ BASE_FEATURE(kSingleNtp, "SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature disabled by default.
 BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
+
+const char kReducedSpaceParam[] = "ReducedNTPTopSpace";
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -34,4 +38,14 @@ bool IsDiscoverFeedEnabled() {
 
 bool IsMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kMagicStack);
+}
+
+bool ShouldPutMostVisitedSitesInMagicStack() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kMagicStack, kMagicStackMostVisitedModuleParam, false);
+}
+
+double ReducedNTPTopMarginSpaceForMagicStack() {
+  return base::GetFieldTrialParamByFeatureAsDouble(kMagicStack,
+                                                   kReducedSpaceParam, 0);
 }

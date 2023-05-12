@@ -354,6 +354,25 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
+const FeatureEntry::FeatureParam kMagicStackMostVisitedModule[] = {
+    {kMagicStackMostVisitedModuleParam, "true"},
+    {kReducedSpaceParam, "-80"}};
+const FeatureEntry::FeatureParam kMagicStackPushedDown[] = {
+    {kMagicStackMostVisitedModuleParam, "false"},
+    {kReducedSpaceParam, "-30"}};
+const FeatureEntry::FeatureParam kMagicStackReducedNTPTopSpace[] = {
+    {kMagicStackMostVisitedModuleParam, "false"},
+    {kReducedSpaceParam, "20"}};
+
+const FeatureEntry::FeatureVariation kMagicStackVariations[]{
+    {"Most Visited Tiles in Magic Stack", kMagicStackMostVisitedModule,
+     std::size(kMagicStackMostVisitedModule), nullptr},
+    {"Magic Stack with more NTP Top Space", kMagicStackPushedDown,
+     std::size(kMagicStackPushedDown), nullptr},
+    {"Magic Stack with Reduced NTP Top Space", kMagicStackReducedNTPTopSpace,
+     std::size(kMagicStackReducedNTPTopSpace), nullptr},
+};
+
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params.
 const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
@@ -1056,7 +1075,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableFeedCardMenuSignInPromo)},
     {"content-suggestions-magic-stack", flag_descriptions::kMagicStackName,
      flag_descriptions::kMagicStackDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kMagicStack)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kMagicStack,
+                                    kMagicStackVariations,
+                                    flag_descriptions::kMagicStackName)},
     {"default-browser-intents-show-settings",
      flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
      flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,

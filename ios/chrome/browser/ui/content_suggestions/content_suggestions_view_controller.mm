@@ -100,6 +100,7 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 
 @implementation ContentSuggestionsViewController {
   UIScrollView* _magicStackScrollView;
+  UIStackView* _magicStack;
   BOOL _shouldShowMagicStack;
   NSArray<NSNumber*>* _magicStackModuleOrder;
   NSLayoutConstraint* _magicStackScrollViewWidthAnchor;
@@ -155,8 +156,6 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
                        constant:-bottomSpacing]
   ]];
 
-  CGFloat horizontalSpacing =
-      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
   if (self.returnToRecentTabTile) {
     UIView* parentView = self.returnToRecentTabTile;
     [self addUIElement:self.returnToRecentTabTile
@@ -171,25 +170,7 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
     ]];
   }
   if ([self.mostVisitedViews count] > 0) {
-    self.mostVisitedStackView = [[UIStackView alloc] init];
-    self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
-    self.mostVisitedStackView.spacing = horizontalSpacing;
-    self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-    if (!IsMagicStackEnabled()) {
-      [self addUIElement:self.mostVisitedStackView
-          withCustomBottomSpacing:kMostVisitedBottomMargin];
-      CGFloat width =
-          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-      CGFloat height =
-          MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
-              .height;
-      [NSLayoutConstraint activateConstraints:@[
-        [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-        [self.mostVisitedStackView.heightAnchor
-            constraintGreaterThanOrEqualToConstant:height]
-      ]];
-    }
+    [self createAndInsertMostVisitedModule];
     [self populateMostVisitedModule];
   }
   if (self.shortcutsViews) {
@@ -341,6 +322,11 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
     [self.mostVisitedViews addObject:view];
     index++;
   }
+  // If viewDidLoad has been called before the first valid Most Visited Tiles
+  // are available, construct `mostVisitedStackView`.
+  if (self.verticalStackView && !self.mostVisitedStackView) {
+    [self createAndInsertMostVisitedModule];
+  }
   [self populateMostVisitedModule];
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
   // Trigger a relayout so that the MVTs will be counted in the Content
@@ -399,7 +385,8 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 
 - (CGFloat)contentSuggestionsHeight {
   CGFloat height = 0;
-  if ([self.mostVisitedViews count] > 0) {
+  if ([self.mostVisitedViews count] > 0 &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
     height += MostVisitedCellSize(
                   UIApplication.sharedApplication.preferredContentSizeCategory)
                   .height +
@@ -511,54 +498,53 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
   }
 }
 
-// Add the elements in `mostVisitedViews` into `verticalStackView`, constructing
-// `verticalStackView` beforehand if it has not been yet.
-- (void)populateMostVisitedModule {
-  // If viewDidLoad has been called before the first valid Most Visited Tiles
-  // are available, construct `mostVisitedStackView`.
-  if (self.verticalStackView && !self.mostVisitedStackView) {
-    self.mostVisitedStackView = [[UIStackView alloc] init];
-    self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-    self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
-    self.mostVisitedStackView.spacing =
-        ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
+- (void)createAndInsertMostVisitedModule {
+  CGFloat horizontalSpacing =
+      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
+  self.mostVisitedStackView = [[UIStackView alloc] init];
+  self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
+  self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
+  self.mostVisitedStackView.spacing = horizontalSpacing;
+  self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
 
-    if (IsMagicStackEnabled()) {
-      self.mostVisitedModuleContainer = [[ActionListModule alloc]
-          initWithContentView:self.mostVisitedStackView
-                         type:ContentSuggestionsModuleType::kMostVisited];
-      // Find correct insertion position in the stack.
-      int insertionIndex = 0;
-      if (self.returnToRecentTabTile) {
-        insertionIndex++;
-      }
+  // Find correct insertion position in the stack.
+  int insertionIndex = 0;
+  if (self.returnToRecentTabTile) {
+    insertionIndex++;
+  }
+  if (IsMagicStackEnabled()) {
+    self.mostVisitedModuleContainer = [[ActionListModule alloc]
+        initWithContentView:self.mostVisitedStackView
+                       type:ContentSuggestionsModuleType::kMostVisited];
+    if (ShouldPutMostVisitedSitesInMagicStack()) {
+      [_magicStack insertArrangedSubview:self.mostVisitedModuleContainer
+                                 atIndex:0];
+    } else {
       [self.verticalStackView
           insertArrangedSubview:self.mostVisitedModuleContainer
                         atIndex:insertionIndex];
       [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
                                      afterView:self.mostVisitedModuleContainer];
-    } else {
-      // Find correct insertion position in the stack.
-      int insertionIndex = 0;
-      if (self.returnToRecentTabTile) {
-        insertionIndex++;
-      }
-      [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
-                                            atIndex:insertionIndex];
-      [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
-                                     afterView:self.mostVisitedStackView];
-      CGFloat width =
-          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-      CGSize size = MostVisitedCellSize(
-          self.traitCollection.preferredContentSizeCategory);
-      [NSLayoutConstraint activateConstraints:@[
-        [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-        [self.mostVisitedStackView.heightAnchor
-            constraintEqualToConstant:size.height]
-      ]];
     }
+  } else {
+    [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
+                                          atIndex:insertionIndex];
+    [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
+                                   afterView:self.mostVisitedStackView];
+    CGFloat width =
+        MostVisitedTilesContentHorizontalSpace(self.traitCollection);
+    CGSize size =
+        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory);
+    [NSLayoutConstraint activateConstraints:@[
+      [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
+      [self.mostVisitedStackView.heightAnchor
+          constraintEqualToConstant:size.height]
+    ]];
   }
+}
+
+// Add the elements in `mostVisitedViews` into `verticalStackView`.
+- (void)populateMostVisitedModule {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
     view.menuProvider = self.menuProvider;
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
@@ -605,13 +591,13 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
   [self addUIElement:_magicStackScrollView
       withCustomBottomSpacing:kMostVisitedBottomMargin];
 
-  UIStackView* magicStack = [[UIStackView alloc] init];
-  magicStack.translatesAutoresizingMaskIntoConstraints = NO;
-  magicStack.axis = UILayoutConstraintAxisHorizontal;
-  magicStack.distribution = UIStackViewDistributionEqualSpacing;
-  magicStack.spacing = 10;
-  magicStack.alignment = UIStackViewAlignmentCenter;
-  [_magicStackScrollView addSubview:magicStack];
+  _magicStack = [[UIStackView alloc] init];
+  _magicStack.translatesAutoresizingMaskIntoConstraints = NO;
+  _magicStack.axis = UILayoutConstraintAxisHorizontal;
+  _magicStack.distribution = UIStackViewDistributionEqualSpacing;
+  _magicStack.spacing = 10;
+  _magicStack.alignment = UIStackViewAlignmentCenter;
+  [_magicStackScrollView addSubview:_magicStack];
 
   // Add Magic Stack modules in order dictated by `_magicStackModuleOrder`.
   for (NSNumber* moduleType in _magicStackModuleOrder) {
@@ -622,13 +608,18 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
         self.shortcutsModuleContainer = [[ActionListModule alloc]
             initWithContentView:self.shortcutsStackView
                            type:type];
-        [magicStack addArrangedSubview:self.shortcutsModuleContainer];
+        [_magicStack addArrangedSubview:self.shortcutsModuleContainer];
+        break;
+      case ContentSuggestionsModuleType::kMostVisited:
+        if (ShouldPutMostVisitedSitesInMagicStack()) {
+          [_magicStack addArrangedSubview:self.mostVisitedModuleContainer];
+        }
         break;
       default:
         break;
     }
   }
-  AddSameConstraints(magicStack, _magicStackScrollView);
+  AddSameConstraints(_magicStack, _magicStackScrollView);
   // Define width of ScrollView. Instrinsic content height of the
   // StackView within the ScrollView will define the height of the
   // ScrollView.
@@ -636,7 +627,7 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
       [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
   [NSLayoutConstraint activateConstraints:@[
     // Ensures only horizontal scrolling
-    [magicStack.heightAnchor
+    [_magicStack.heightAnchor
         constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
     _magicStackScrollViewWidthAnchor
   ]];

@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -57,6 +58,10 @@ const int kModuleWidthRegular = 382;
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
     case ContentSuggestionsModuleType::kMostVisited:
+      if (ShouldPutMostVisitedSitesInMagicStack()) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
+      }
       return @"";
     default:
       NOTREACHED();

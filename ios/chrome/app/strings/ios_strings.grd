@@ -769,7 +769,7 @@ See your search engine’s instructions for deleting your search history, if app
         More
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
-        Frequently Visited
+        Most Visisted Sites
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_READING_LIST" desc="The Reading List title on the new tab page [Length: 10em]">
         Reading List
