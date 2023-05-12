@@ -149,7 +149,8 @@ void ChromeBrowserMainExtraPartsAsh::PreCreateMainMessageLoop() {
 }
 
 void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
-  if (base::FeatureList::IsEnabled(arc::kEnableArcIdleManager)) {
+  if (base::FeatureList::IsEnabled(arc::kEnableArcIdleManager) ||
+      base::FeatureList::IsEnabled(arc::kVmmSwapPolicy)) {
     // Early init so that later objects can rely on this one.
     arc_window_watcher_ = std::make_unique<ash::ArcWindowWatcher>();
   }
