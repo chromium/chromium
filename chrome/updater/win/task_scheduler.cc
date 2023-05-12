@@ -44,7 +44,6 @@ const wchar_t kV2Library[] = L"taskschd.dll";
 // Text for times used in the V2 API of the Task Scheduler.
 const wchar_t kOneHourText[] = L"PT1H";
 const wchar_t kFiveHoursText[] = L"PT5H";
-const wchar_t kFifteenMinutesText[] = L"PT15M";
 const wchar_t kOneDayText[] = L"P1D";
 
 const size_t kNumDeleteTaskRetry = 3;
@@ -636,13 +635,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
         if (FAILED(hr)) {
           PLOG(ERROR) << "Can't query trigger for 'ILogonTrigger'. " << std::hex
                       << hr;
-          return false;
-        }
-
-        hr = logon_trigger->put_Delay(
-            base::win::ScopedBstr(kFifteenMinutesText).Get());
-        if (FAILED(hr)) {
-          PLOG(ERROR) << "Can't put 'Delay'. " << std::hex << hr;
           return false;
         }
       }
