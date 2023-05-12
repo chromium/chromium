@@ -35,7 +35,8 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:showText="false"
-            android:text="@string/url_keyed_anonymized_data_title" />
+            android:text="@string/url_keyed_anonymized_data_title"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
             android:layout_width="match_parent"
