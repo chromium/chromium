@@ -807,8 +807,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   VideoEncodeAccelerator::SupportedRateControlMode
   GetSupportedRateControlMode();
 
-  std::vector<uint32_t> EnumerateSupportedPixelformats(v4l2_buf_type buf_type);
-
   // NOTE: The below methods to query capabilities have a side effect of
   // closing the previously-open device, if any, and should not be called after
   // Open().

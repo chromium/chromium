@@ -27,6 +27,7 @@
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_status.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 
@@ -389,9 +390,10 @@ bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
   DCHECK_EQ(state_, State::kInitialized);
 
   // Check if the format is supported.
-  std::vector<uint32_t> formats = device_->EnumerateSupportedPixelformats(
+  const auto v4l2_codecs_as_pix_fmts = EnumerateSupportedPixFmts(
+      base::BindRepeating(&V4L2Device::Ioctl, device_),
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-  if (!base::Contains(formats, fourcc)) {
+  if (!base::Contains(v4l2_codecs_as_pix_fmts, fourcc)) {
     DVLOGF(1) << FourccToString(fourcc) << " not recognised, skipping...";
     return false;
   }
@@ -426,10 +428,12 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   DVLOGF(3) << "size: " << size.ToString()
             << ", visible_rect: " << visible_rect.ToString();
 
-  // Get the supported output formats and their corresponding negotiated sizes.
+  const auto v4l2_pix_fmts = EnumerateSupportedPixFmts(
+      base::BindRepeating(&V4L2Device::Ioctl, device_),
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+
   std::vector<PixelLayoutCandidate> candidates;
-  for (const uint32_t& pixfmt : device_->EnumerateSupportedPixelformats(
-           V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
+  for (const uint32_t& pixfmt : v4l2_pix_fmts) {
     const auto candidate = Fourcc::FromV4L2PixFmt(pixfmt);
     if (!candidate) {
       DVLOGF(1) << FourccToString(pixfmt) << " is not recognised, skipping...";
