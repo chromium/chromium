@@ -17,6 +17,7 @@
 
 namespace {
 const CGFloat kContentViewCornerRadius = 12.0f;
+const CGFloat kMagicStackContentViewCornerRadius = 24.0f;
 const CGFloat kContentViewBorderWidth = 1.0f;
 const CGFloat kIconCornerRadius = 4.0f;
 const CGFloat kContentViewSubviewSpacing = 12.0f;
@@ -31,8 +32,13 @@ const CGFloat kIconWidth = 32.0f;
     [self.layer
         setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
     [self.layer setBorderWidth:kContentViewBorderWidth];
-    self.layer.cornerRadius = kContentViewCornerRadius;
+    self.layer.cornerRadius = IsMagicStackEnabled()
+                                  ? kMagicStackContentViewCornerRadius
+                                  : kContentViewCornerRadius;
     self.layer.masksToBounds = YES;
+    if (IsMagicStackEnabled()) {
+      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    }
 
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.isAccessibilityElement = NO;
