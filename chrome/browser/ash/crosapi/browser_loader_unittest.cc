@@ -193,6 +193,22 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsOlder) {
   EXPECT_EQ(stateful_lacros_version, future.Get<2>());
 }
 
+TEST_F(BrowserLoaderTest, OnLoadVersionSelectionSameVersions) {
+  // Use stateful when rootfs and stateful lacros-chrome versions are the same.
+  const base::Version stateful_lacros_version = base::Version("2.0.0");
+  browser_loader_->stateful_lacros_loader_->SetVersionForTesting(
+      stateful_lacros_version);
+  const base::Version rootfs_lacros_version = base::Version("2.0.0");
+  browser_loader_->rootfs_lacros_loader_->SetVersionForTesting(
+      rootfs_lacros_version);
+
+  base::test::TestFuture<const base::FilePath&, LacrosSelection, base::Version>
+      future;
+  browser_loader_->Load(future.GetCallback());
+  EXPECT_EQ(LacrosSelection::kStateful, future.Get<1>());
+  EXPECT_EQ(stateful_lacros_version, future.Get<2>());
+}
+
 TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs) {
   ScopedLacrosSelectionCache cache(
       browser_util::LacrosSelectionPolicy::kRootfs);

@@ -179,9 +179,9 @@ void BrowserLoader::OnLoadVersionSelection(
 
   LacrosSelection selection;
   if (rootfs_lacros_version.IsValid() && stateful_lacros_version.IsValid()) {
-    selection = rootfs_lacros_version < stateful_lacros_version
-                    ? LacrosSelection::kStateful
-                    : LacrosSelection::kRootfs;
+    selection = stateful_lacros_version < rootfs_lacros_version
+                    ? LacrosSelection::kRootfs
+                    : LacrosSelection::kStateful;
   } else if (rootfs_lacros_version.IsValid()) {
     selection = LacrosSelection::kRootfs;
   } else {

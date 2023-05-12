@@ -75,6 +75,8 @@ class BrowserLoader {
                            OnLoadVersionSelectionRootfsIsNewer);
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
                            OnLoadVersionSelectionRootfsIsOlder);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadVersionSelectionSameVersions);
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs);
   FRIEND_TEST_ALL_PREFIXES(
       BrowserLoaderTest,
