@@ -2738,6 +2738,226 @@ TEST_P(FormDataImporterTest,
               FormDataImporter::CreditCardImportType::kNoCard);
 }
 
+// Ensures that `credit_card_import_type_` is set as kServerCard when the flag
+// `kAutofillOfferToSaveCardWithSameLastFour` is turned on and a full server
+// card is found with the same number.
+TEST_P(FormDataImporterTest,
+       ExtractFormData_ExtractCreditCardRecordType_ServerCardWithSameLastFour) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillOfferToSaveCardWithSameLastFour);
+  // Add a valid server card.
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "a123");
+  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
+                          "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
+  test::SetServerCreditCards(autofill_table_, server_cards);
+
+  // Make sure everything is set up correctly.
+  personal_data_manager_->Refresh();
+  WaitForOnPersonalDataChanged();
+  ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+
+  // Simulate a form submission with the same card number but different
+  // expiration date.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "02",
+                        "2999");
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true);
+  ASSERT_TRUE(extracted_data.extracted_credit_card);
+  // `credit_card_import_type_` should be kServerCard because a server card with
+  // the same card number was found.
+  ASSERT_TRUE(form_data_importer().credit_card_import_type_for_testing() ==
+              FormDataImporter::CreditCardImportType::kServerCard);
+}
+
+// Ensures that `credit_card_import_type_` is set as kNewCard when the flag
+// `kAutofillOfferToSaveCardWithSameLastFour` is turned on when there is a
+// masked server card with the same last four but different expiration date.
+TEST_P(
+    FormDataImporterTest,
+    ExtractFormData_ExtractCreditCardRecordType_MaskedServerCardWithSameLastFour) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillOfferToSaveCardWithSameLastFour);
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
+                          "1111" /* Visa */, "01", "2999", "");
+  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
+  test::SetServerCreditCards(autofill_table_, server_cards);
+
+  // Make sure everything is set up correctly.
+  personal_data_manager_->Refresh();
+  WaitForOnPersonalDataChanged();
+  ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+
+  // Simulate a form submission with the card with same last four but different
+  // expiration date.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "02",
+                        "2999");
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true);
+  ASSERT_TRUE(extracted_data.extracted_credit_card);
+  ASSERT_EQ(extracted_data.extracted_credit_card->expiration_month(), 2);
+  // `credit_card_import_type_` should be kNewCard because a server card with
+  // the same card number was found, but they have different expiration date.
+  ASSERT_TRUE(form_data_importer().credit_card_import_type_for_testing() ==
+              FormDataImporter::CreditCardImportType::kNewCard);
+}
+
+// Ensures that `credit_card_import_type_` is set correctly when there are two
+// masked server card with the same last four and the extracted credit card has
+// same last four with both of them.
+// Also, verify that `SubmittedServerCardExpirationStatus` will be logged only
+// once.
+// This test includes two cases:
+// 1. The extracted credit card has the same expiration with the second masked
+//    server card.
+// 2. The extracted credit card's expiraion date is not the same as any of the
+//    the masked server cards.
+TEST_P(
+    FormDataImporterTest,
+    ExtractFormData_ExtractCreditCardRecordType_TwoMaskedServerCardWithSameLastFour) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillOfferToSaveCardWithSameLastFour);
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
+                          "1111" /* Visa */, "01", "2111", "");
+  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
+
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a124");
+  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
+                          "1111" /* Visa */, "02", "2112", "");
+  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
+
+  test::SetServerCreditCards(autofill_table_, server_cards);
+
+  // Make sure everything is set up correctly.
+  personal_data_manager_->Refresh();
+  WaitForOnPersonalDataChanged();
+  EXPECT_EQ(2U, personal_data_manager_->GetCreditCards().size());
+
+  {
+    // A user fills/enters the card's information on a checkout form but changes
+    // the expiration date of the card. Ensure that an expiration date mismatch
+    // is recorded.
+    FormData form;
+    form.url = GURL("https://www.foo.com");
+
+    AddFullCreditCardForm(&form, "Clyde Barrow", "4444 3333 2222 1111", "04",
+                          "2345");
+
+    base::HistogramTester histogram_tester;
+    FormStructure form_structure(form);
+    form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+    auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
+        form_structure, /*profile_autofill_enabled=*/true,
+        /*payment_methods_autofill_enabled=*/true);
+    ASSERT_TRUE(extracted_data.extracted_credit_card);
+    // `credit_card_import_type_` should be kNewCard because a masked server
+    // card with the same card number was found, but they have different
+    // expiration date.
+    ASSERT_TRUE(form_data_importer().credit_card_import_type_for_testing() ==
+                FormDataImporter::CreditCardImportType::kNewCard);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SubmittedServerCardExpirationStatus",
+        AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH, 1);
+  }
+  {
+    // Simulate a form submission with the card with same last four but same
+    // expiration date as the first masked server card.
+    FormData form;
+    form.url = GURL("https://www.foo.com");
+
+    AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "02",
+                          "2112");
+
+    base::HistogramTester histogram_tester;
+    FormStructure form_structure(form);
+    form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+    auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
+        form_structure, /*profile_autofill_enabled=*/true,
+        /*payment_methods_autofill_enabled=*/true);
+    ASSERT_TRUE(extracted_data.extracted_credit_card);
+    ASSERT_TRUE(
+        extracted_data.extracted_credit_card->Compare(server_cards[1]) == 0);
+    // `credit_card_import_type_` should be kServerCard because a masked server
+    // card with the same card number and expiration date was found.
+    ASSERT_TRUE(form_data_importer().credit_card_import_type_for_testing() ==
+                FormDataImporter::CreditCardImportType::kServerCard);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SubmittedServerCardExpirationStatus",
+        AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED, 1);
+  }
+}
+
+// Ensures that `credit_card_import_type_` is set as kServerCard and the first
+// card is matched when the flag `kAutofillOfferToSaveCardWithSameLastFour `is
+// turned off and there are two masked server card with the same last four
+// saved, where the second one has a matching expiration date.
+TEST_P(
+    FormDataImporterTest,
+    ExtractFormData_ExtractCreditCardRecordType_TwoMaskedServerCardWithSameLastFour_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillOfferToSaveCardWithSameLastFour);
+  // Add two masked server card.
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
+                          "1111" /* Visa */, "01", "2999", "");
+  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
+  test::SetServerCreditCards(autofill_table_, server_cards);
+
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
+  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
+                          "1111" /* Visa */, "04", "2999", "");
+  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
+  test::SetServerCreditCards(autofill_table_, server_cards);
+
+  // Make sure everything is set up correctly.
+  personal_data_manager_->Refresh();
+  WaitForOnPersonalDataChanged();
+  ASSERT_EQ(2U, personal_data_manager_->GetCreditCards().size());
+
+  // Simulate a form submission with the card with same last four but different
+  // expiration date.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "04",
+                        "2999");
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true);
+  ASSERT_TRUE(extracted_data.extracted_credit_card);
+  ASSERT_EQ(extracted_data.extracted_credit_card->Compare(server_cards[0]), 0);
+  // `credit_card_import_type_` should be kNewCard because a server card with
+  // the same card number was found, but they have different expiration date.
+  ASSERT_TRUE(form_data_importer().credit_card_import_type_for_testing() ==
+              FormDataImporter::CreditCardImportType::kServerCard);
+}
+
 // ExtractFormData tests (both addresses and credit cards).
 
 // Test that a form with both address and credit card sections imports the

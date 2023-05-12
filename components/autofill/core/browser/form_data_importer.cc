@@ -827,46 +827,79 @@ absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     }
   }
 
-  // Attempt to find a matching server card. If such a server card exists,
-  // return it (rather than the extracted card) because we want the server to be
-  // the source of truth.
-  auto is_matching_server_card = [&cand = candidate](const CreditCard* card) {
-    return (card->record_type() == CreditCard::MASKED_SERVER_CARD &&
-            card->LastFourDigits() == cand.LastFourDigits()) ||
-           (card->record_type() == CreditCard::FULL_SERVER_CARD &&
-            cand.MatchingCardDetails(*card));
-  };
-  auto find_matching_server_card = [&]() {
-    const auto& server_cards = personal_data_manager_->GetServerCreditCards();
-    const auto it =
-        base::ranges::find_if(server_cards, is_matching_server_card);
-    return it != server_cards.end() ? absl::optional<CreditCard>(**it)
-                                    : absl::nullopt;
-  };
-  absl::optional<CreditCard> server_card = find_matching_server_card();
-  if (!server_card)
-    return candidate;
+  // Return `candidate` if no server card is matched but the card in the form is
+  // a valid card.
+  return TryMatchingExistingServerCard(candidate);
+}
 
-  if (candidate.expiration_month() == 0 || candidate.expiration_year() == 0)
-    return absl::nullopt;
+absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
+    const CreditCard& candidate) {
+  // Used for logging purposes later if we found a matching masked server card
+  // with the same last four digits, but different expiration date as
+  // `candidate`, and we treat it as a new card.
+  bool same_last_four_but_different_expiration_date = false;
 
-  credit_card_import_type_ = CreditCardImportType::kServerCard;
+  for (auto* server_card : personal_data_manager_->GetServerCreditCards()) {
+    if (!server_card->HasSameNumberAs(candidate)) {
+      continue;
+    }
 
-  if (candidate.expiration_month() == server_card->expiration_month() &&
-      candidate.expiration_year() == server_card->expiration_year()) {
-    AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
-        server_card->record_type() == CreditCard::FULL_SERVER_CARD
-            ? AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED
-            : AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED);
-  } else {
-    AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
-        server_card->record_type() == CreditCard::FULL_SERVER_CARD
-            ? AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH
-            : AutofillMetrics::
-                  MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
+    // Cards with invalid expiration dates can be uploaded due to the existence
+    // of the expiration date fix flow, however, since a server card with same
+    // number is found, the imported card is treated as invalid card, abort
+    // importing.
+    if (!candidate.HasValidExpirationDate()) {
+      return absl::nullopt;
+    }
+
+    if (server_card->record_type() == CreditCard::FULL_SERVER_CARD) {
+      AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
+          server_card->HasSameExpirationDateAs(candidate)
+              ? AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED
+              : AutofillMetrics::
+                    FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
+      // Return that we found a full server card with a matching card number
+      // to `candidate`.
+      credit_card_import_type_ = CreditCardImportType::kServerCard;
+      return *server_card;
+    }
+
+    bool has_same_expiration_date =
+        server_card->HasSameExpirationDateAs(candidate);
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillOfferToSaveCardWithSameLastFour) ||
+        has_same_expiration_date) {
+      AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
+          has_same_expiration_date
+              ? AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED
+              : AutofillMetrics::
+                    MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
+
+      // Return that we found a masked server card with matching last four
+      // digits.
+      credit_card_import_type_ = CreditCardImportType::kServerCard;
+      return *server_card;
+    } else {
+      // Keep track of the fact that we found a server card with matching
+      // last four digits as `candidate`, but with a different expiration
+      // date. If we do not end up finding a masked server card with
+      // matching last four digits and the same expiration date as
+      // `candidate`, we will later use
+      // `same_last_four_but_different_expiration_date` for logging
+      // purposes.
+      same_last_four_but_different_expiration_date = true;
+    }
   }
 
-  return server_card;
+  // The only case that this is true is that we found a masked server card has
+  // the same number as `candidate`, but with different expiration dates. Thus
+  // we want to log this information once.
+  if (same_last_four_but_different_expiration_date) {
+    AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
+        AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
+  }
+
+  return candidate;
 }
 
 absl::optional<IBAN> FormDataImporter::ExtractIBAN(const FormStructure& form) {
