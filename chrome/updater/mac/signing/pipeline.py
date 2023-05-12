@@ -113,6 +113,7 @@ def _package_zip(paths, config):
 def sign_all(orig_paths,
              config,
              disable_packaging=False,
+             notarization=model.NotarizeAndStapleLevel.STAPLE,
              skip_brands=[],
              channels=[]):
     """Code signs, packages, and signs the package, placing the result into
@@ -123,6 +124,9 @@ def sign_all(orig_paths,
         orig_paths: A |model.Paths| object.
         config: The |config.CodeSignConfig| object.
         disable_packaging: Ignored.
+        notarization: The level of notarization to be performed. If
+            |disable_packaging| is False, the dmg will undergo the same
+            notarization.
         skip_brands: Ignored.
         channels: Ignored.
     """
@@ -134,7 +138,7 @@ def sign_all(orig_paths,
                                     config.packaging_basename)
             _sign_app(paths, config, dest_dir)
 
-            if config.notarize.should_notarize():
+            if notarization.should_notarize():
                 zip_file = os.path.join(notary_paths.work,
                                         config.packaging_basename + '.zip')
                 commands.run_command([
@@ -145,10 +149,10 @@ def sign_all(orig_paths,
                 uuid = notarize.submit(zip_file, config)
 
         # Wait for the app notarization result to come back and staple.
-        if config.notarize.should_wait():
+        if notarization.should_wait():
             for _ in notarize.wait_for_results([uuid], config):
                 pass  # We are only waiting for a single notarization.
-            if config.notarize.should_staple():
+            if notarization.should_staple():
                 notarize.staple_bundled_parts(
                     # Only staple to the outermost app.
                     parts.get_parts(config)[-1:],
@@ -165,9 +169,9 @@ def sign_all(orig_paths,
         dmg_path = _package_and_sign_dmg(package_paths, config)
 
         # Notarize the package, then staple.
-        if config.notarize.should_wait():
+        if notarization.should_wait():
             for _ in notarize.wait_for_results(
                 [notarize.submit(dmg_path, config)], config):
                 pass  # We are only waiting for a single notarization.
-            if config.notarize.should_staple():
+            if notarization.should_staple():
                 notarize.staple(dmg_path)
