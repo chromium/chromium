@@ -4,6 +4,7 @@
 
 package org.chromium.ui.accessibility;
 
+import static android.accessibilityservice.AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES;
 import static android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_SPOKEN;
 import static android.accessibilityservice.AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
 
@@ -89,6 +90,9 @@ public class AccessibilityState {
         // True when the user has touch exploration enabled. False otherwise.
         public final boolean isTouchExplorationEnabled;
 
+        // True when a service that requested to perform gestures is enabled. False otherwise.
+        public final boolean isPerformGesturesEnabled;
+
         // True when at least one accessibility service is enabled. False otherwise.
         public final boolean isAnyAccessibilityServiceEnabled;
 
@@ -110,11 +114,12 @@ public class AccessibilityState {
         public final boolean isOnlyPasswordManagersEnabled;
 
         public State(boolean isScreenReaderEnabled, boolean isTouchExplorationEnabled,
-                boolean isAnyAccessibilityServiceEnabled, boolean isAccessibilityToolPresent,
-                boolean isSpokenFeedbackServicePresent, boolean isTextShowPasswordEnabled,
-                boolean isOnlyPasswordManagersEnabled) {
+                boolean isPerformGesturesEnabled, boolean isAnyAccessibilityServiceEnabled,
+                boolean isAccessibilityToolPresent, boolean isSpokenFeedbackServicePresent,
+                boolean isTextShowPasswordEnabled, boolean isOnlyPasswordManagersEnabled) {
             this.isScreenReaderEnabled = isScreenReaderEnabled;
             this.isTouchExplorationEnabled = isTouchExplorationEnabled;
+            this.isPerformGesturesEnabled = isPerformGesturesEnabled;
             this.isAnyAccessibilityServiceEnabled = isAnyAccessibilityServiceEnabled;
             this.isAccessibilityToolPresent = isAccessibilityToolPresent;
             this.isSpokenFeedbackServicePresent = isSpokenFeedbackServicePresent;
@@ -209,6 +214,11 @@ public class AccessibilityState {
         return sState.isTouchExplorationEnabled;
     }
 
+    public static boolean isPerformGesturesEnabled() {
+        if (!sInitialized) updateAccessibilityServices();
+        return sState.isPerformGesturesEnabled;
+    }
+
     public static boolean isAnyAccessibilityServiceEnabled() {
         if (!sInitialized) updateAccessibilityServices();
         return sState.isAnyAccessibilityServiceEnabled;
@@ -242,7 +252,7 @@ public class AccessibilityState {
 
     static void updateAccessibilityServices() {
         if (!sInitialized) {
-            sState = new State(false, false, false, false, false, false, false);
+            sState = new State(false, false, false, false, false, false, false, false);
         }
         sInitialized = true;
         sEventTypeMask = 0;
@@ -438,10 +448,12 @@ public class AccessibilityState {
         boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
         boolean isTouchExplorationEnabled =
                 (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
+        boolean isPerformGesturesEnabled =
+                (0 != (sCapabilitiesMask & CAPABILITY_CAN_PERFORM_GESTURES));
         updateAndNotifyStateChange(new State(isScreenReaderEnabled, isTouchExplorationEnabled,
-                isAnyAccessibilityServiceEnabled, isAccessibilityToolPresent,
-                isSpokenFeedbackServicePresent, isTextShowPasswordEnabled,
-                isOnlyPasswordManagersEnabled));
+                isPerformGesturesEnabled, isAnyAccessibilityServiceEnabled,
+                isAccessibilityToolPresent, isSpokenFeedbackServicePresent,
+                isTextShowPasswordEnabled, isOnlyPasswordManagersEnabled));
     }
 
     private static void updateAndNotifyStateChange(State newState) {
@@ -629,6 +641,7 @@ public class AccessibilityState {
         State newState = new State(
             enabled,
             sState.isTouchExplorationEnabled,
+            sState.isPerformGesturesEnabled,
             sState.isAnyAccessibilityServiceEnabled,
             sState.isAccessibilityToolPresent,
             sState.isSpokenFeedbackServicePresent,
@@ -644,6 +657,24 @@ public class AccessibilityState {
 
         State newState = new State(
             sState.isScreenReaderEnabled,
+            enabled,
+            sState.isPerformGesturesEnabled,
+            sState.isAnyAccessibilityServiceEnabled,
+            sState.isAccessibilityToolPresent,
+            sState.isSpokenFeedbackServicePresent,
+            sState.isTextShowPasswordEnabled,
+            sState.isOnlyPasswordManagersEnabled);
+
+        updateAndNotifyStateChange(newState);
+    }
+
+    @VisibleForTesting
+    public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        State newState = new State(
+            sState.isScreenReaderEnabled,
+            sState.isTouchExplorationEnabled,
             enabled,
             sState.isAnyAccessibilityServiceEnabled,
             sState.isAccessibilityToolPresent,
@@ -661,6 +692,7 @@ public class AccessibilityState {
         State newState = new State(
             sState.isScreenReaderEnabled,
             sState.isTouchExplorationEnabled,
+            sState.isPerformGesturesEnabled,
             enabled,
             sState.isAccessibilityToolPresent,
             sState.isSpokenFeedbackServicePresent,
@@ -677,6 +709,7 @@ public class AccessibilityState {
         State newState = new State(
             sState.isScreenReaderEnabled,
             sState.isTouchExplorationEnabled,
+            sState.isPerformGesturesEnabled,
             sState.isAnyAccessibilityServiceEnabled,
             enabled,
             sState.isSpokenFeedbackServicePresent,
@@ -693,6 +726,7 @@ public class AccessibilityState {
         State newState = new State(
             sState.isScreenReaderEnabled,
             sState.isTouchExplorationEnabled,
+            sState.isPerformGesturesEnabled,
             sState.isAnyAccessibilityServiceEnabled,
             sState.isAccessibilityToolPresent,
             enabled,
@@ -709,6 +743,7 @@ public class AccessibilityState {
         State newState = new State(
             sState.isScreenReaderEnabled,
             sState.isTouchExplorationEnabled,
+            sState.isPerformGesturesEnabled,
             sState.isAnyAccessibilityServiceEnabled,
             sState.isAccessibilityToolPresent,
             sState.isSpokenFeedbackServicePresent,
@@ -725,6 +760,7 @@ public class AccessibilityState {
         State newState = new State(
             sState.isScreenReaderEnabled,
             sState.isTouchExplorationEnabled,
+            sState.isPerformGesturesEnabled,
             sState.isAnyAccessibilityServiceEnabled,
             sState.isAccessibilityToolPresent,
             sState.isSpokenFeedbackServicePresent,
