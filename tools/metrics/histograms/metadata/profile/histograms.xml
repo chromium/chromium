@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.KeyedService.Count.SystemProfile{ProfileType}"
-    units="services" expires_after="2023-06-22">
+    units="services" expires_after="2024-06-22">
   <owner>droger@chromium.org</owner>
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
