@@ -72,7 +72,7 @@ class PLATFORM_EXPORT HeapObserverSet {
   void Trace(Visitor* visitor) const { visitor->Trace(observers_); }
 
  private:
-  using ObserverSet = HeapHashSet<WeakMember<ObserverType>>;
+  using ObserverSet = HeapHashSet<WeakMember<ObserverType>, WTF::MemberHashRecordReplayRegisteredPointerId<ObserverType>>;
 
   // TODO(keishi): Clean up iteration state once transition from
   // LifecycleObserver is complete.

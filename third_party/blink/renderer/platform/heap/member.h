@@ -110,12 +110,12 @@ struct MemberHashRecordReplayRegisteredPointerId
   static unsigned GetHash(const T* key) {
     if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       int ptr = recordreplay::PointerId(key);
-      CHECK(ptr != 0);
-      return Base::GetHash(ptr);
-    } else {
-      cppgc::internal::MemberBase::RawStorage st(key);
-      return Base::GetHash(st.GetAsInteger());
+      if (ptr) {
+        return Base::GetHash(ptr);
+      }
     }
+    cppgc::internal::MemberBase::RawStorage st(key);
+    return Base::GetHash(st.GetAsInteger());
   }
 
   template <typename Member,
@@ -123,11 +123,11 @@ struct MemberHashRecordReplayRegisteredPointerId
   static unsigned GetHash(const Member& m) {
     if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       int ptr = recordreplay::PointerId(m.Get());
-      CHECK(ptr != 0);
-      return Base::GetHash(ptr);
-    } else {
-      return Base::GetHash(m.GetRawStorage().GetAsInteger());
+      if (ptr) {
+        return Base::GetHash(ptr);
+      }
     }
+    return Base::GetHash(m.GetRawStorage().GetAsInteger());
   }
 
   template <typename U, typename V>
