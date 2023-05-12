@@ -105061,6 +105061,19 @@
         {}
        ]
       ],
+      "container-units-rule-cache.html": [
+       "cc93f7793ae6bd57a8ee30e5d6322a6ff43e93cb",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/container-queries/container-units-rule-cache-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "counters-in-container-dynamic.html": [
        "d85ab6cb425ba792914b39901cd3f3ba3943b606",
        [
@@ -146535,6 +146548,71 @@
          {}
         ]
        ],
+       "clip-path-path-interpolation-001.html": [
+        "0c988e090e6b5775242208909b51e7dc83876664",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-path-interpolation-002.html": [
+        "4c1c485f7f814d6849b3dc41b0a1d2f0295068e3",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-002-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-path-interpolation-with-zoom.html": [
+        "50dc5e6f4e75cf8a1abfb5a972d94e6db23fa8c9",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-with-zoom-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-shape-interpolation-001.html": [
+        "dae7f24d37cb39b34728664a2d854dfd53bc8c48",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-shape-interpolation-002.html": [
+        "6af23c37d6b7bb4ed6780769be720d446f30fc2b",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-002-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-transition-custom-timing-function.html": [
         "47b0cd6e751fe8c2282ce8c44746fa01d0340b30",
         [
@@ -147725,45 +147803,6 @@
         {}
        ]
       ],
-      "clip-path-path-interpolation-001.html": [
-       "9b12621b9d6bbd2575ce50ddd121faf69d436423",
-       [
-        null,
-        [
-         [
-          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "clip-path-path-interpolation-002.html": [
-       "4cf6fb4a07d36891dd4785df5a742c6611f9dd0a",
-       [
-        null,
-        [
-         [
-          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-002-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "clip-path-path-interpolation-with-zoom.html": [
-       "4d54708da198d2c35bc5980857a8248b9159d3d4",
-       [
-        null,
-        [
-         [
-          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-with-zoom-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "clip-path-path-with-zoom.html": [
        "5879917f36e7efb74db4b1aaeb8a05bee96f39cd",
        [
@@ -148138,32 +148177,6 @@
         [
          [
           "/css/css-masking/clip-path/reference/clip-path-shape-004-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "clip-path-shape-interpolation-001.html": [
-       "1d881e5bd58e070b76b87f04ff8aa61544c67e41",
-       [
-        null,
-        [
-         [
-          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "clip-path-shape-interpolation-002.html": [
-       "9d8ab65b2d99b522342d1ce2a599d404474ea188",
-       [
-        null,
-        [
-         [
-          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-002-ref.html",
           "=="
          ]
         ],
@@ -177080,6 +177093,19 @@
        [
         [
          "/css/css-tables/row-margin-border-padding-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "rules-groups.html": [
+      "d07aa0b765892ec5fb153228271add2dfa21bc6f",
+      [
+       null,
+       [
+        [
+         "/css/css-tables/rules-groups-ref.html",
          "=="
         ]
        ],
@@ -264977,7 +265003,7 @@
    "selection": {
     "caret": {
      "collapse-pre-linestart-1.html": [
-      "6863456f06e0173789634eff5a8ec22035f91388",
+      "e8bd262868cb1bdc2734a50a934d3222e6d69fe0",
       [
        null,
        [
@@ -264990,7 +265016,7 @@
       ]
      ],
      "collapse-pre-linestart-2.html": [
-      "ac119cbb3167ee5e5f88742420d849b15dd58664",
+      "0feee464c98a66a73eb718dbaf76061a67a08610",
       [
        null,
        [
@@ -272078,11 +272104,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "0bb90fda9c840125686543e379cfc07d12d1024f",
+     "77cc0f9907dfbb638badda5f1d0a42e864a96985",
      []
     ],
     "mtime.json": [
-     "0e312d869811e605d318d877ddfaab61e87ba908",
+     "870fae931b1edc95a2627598516c6ca556f65df5",
      []
     ]
    },
@@ -287941,6 +287967,30 @@
        "c32e08624afa28bb4997479d40f539ed4a52b1ef",
        []
       ],
+      "animation-delay-end-computed.tentative-expected.txt": [
+       "6d84745e7b18113980ac769b7f38c327f18f91ec",
+       []
+      ],
+      "animation-delay-end-valid.tentative-expected.txt": [
+       "71233d1aebe285e7a8989c8ffda59728099e3bb8",
+       []
+      ],
+      "animation-delay-shorthand-computed-expected.txt": [
+       "94b49acfe099599de5d1d60c9d22eae698e344fd",
+       []
+      ],
+      "animation-delay-shorthand-expected.txt": [
+       "4663aaaf0e2dd075bb6f7ddba292c4f351d9ced1",
+       []
+      ],
+      "animation-delay-start-computed.tentative-expected.txt": [
+       "75dec90a103d4e638b8eaf8369f9d97c72d9c650",
+       []
+      ],
+      "animation-delay-start-valid.tentative-expected.txt": [
+       "3d4cc51069d8ddada0b28d2cd6f1459ccde7ad99",
+       []
+      ],
       "animation-name-computed-expected.txt": [
        "bbe7ac5483167f5926f25f928dd8e1df04956ac6",
        []
@@ -292687,6 +292737,10 @@
       ],
       "container-units-gradient-ref.html": [
        "dbdabd9bc4ecee3eec34406e7fd13a1e04141978",
+       []
+      ],
+      "container-units-rule-cache-ref.html": [
+       "6c8261959f674aa8a80f1f1f8fda343e64450114",
        []
       ],
       "counters-ref.html": [
@@ -310720,6 +310774,26 @@
         "99126195a13b6e09a9e6080277a454d19c8576bf",
         []
        ],
+       "clip-path-path-interpolation-001-ref.html": [
+        "4e26ac61f62a61c3edb91d91acbd1aa1d5b35655",
+        []
+       ],
+       "clip-path-path-interpolation-002-ref.html": [
+        "567764a30124c2bc8821a508e2a7f8b6f0787c7e",
+        []
+       ],
+       "clip-path-path-interpolation-with-zoom-ref.html": [
+        "7e0d2a54266f3855dbc8e8e87167a06ea0cc323b",
+        []
+       ],
+       "clip-path-shape-interpolation-001.html.ini": [
+        "87f511da9191cd6a1755392f1ae10dc3f5a09211",
+        []
+       ],
+       "clip-path-shape-interpolation-002.html.ini": [
+        "7bdee6ab1a84131f1600cd22fd3b608d7eb0ea30",
+        []
+       ],
        "clip-path-transition-ref.html": [
         "af164c30f06808c3394cf3210ca13bc41792d53c",
         []
@@ -311001,14 +311075,6 @@
        "1fb9548298be40be84ae08438674516e1e915a02",
        []
       ],
-      "clip-path-shape-interpolation-001.html.ini": [
-       "87f511da9191cd6a1755392f1ae10dc3f5a09211",
-       []
-      ],
-      "clip-path-shape-interpolation-002.html.ini": [
-       "7bdee6ab1a84131f1600cd22fd3b608d7eb0ea30",
-       []
-      ],
       "clip-path-strokeBox-1a.html.ini": [
        "8193e11f12d30b391930905a53ff9dc1c933888b",
        []
@@ -311088,18 +311154,6 @@
        ],
        "clip-path-path-002-ref.html": [
         "d9ea5183fb1e6aa745c01f02e702df065d4945e6",
-        []
-       ],
-       "clip-path-path-interpolation-001-ref.html": [
-        "4e26ac61f62a61c3edb91d91acbd1aa1d5b35655",
-        []
-       ],
-       "clip-path-path-interpolation-002-ref.html": [
-        "567764a30124c2bc8821a508e2a7f8b6f0787c7e",
-        []
-       ],
-       "clip-path-path-interpolation-with-zoom-ref.html": [
-        "7e0d2a54266f3855dbc8e8e87167a06ea0cc323b",
         []
        ],
        "clip-path-path-with-zoom-ref.html": [
@@ -319470,6 +319524,10 @@
      ],
      "row-margin-border-padding-ref.html": [
       "68cbcfc9c1ec6aa1fb940f5b26735e3b2fa3587e",
+      []
+     ],
+     "rules-groups-ref.html": [
+      "8da4884f80b690933ed9ea9fb17454474422fd44",
       []
      ],
      "subpixel-collapsed-borders-ref.html": [
@@ -328110,8 +328168,12 @@
         "43f6e799905d8a6f84c7d452ff9a07e691760891",
         []
        ],
-       "animation-delay-expected.txt": [
-        "236b5bbbaf3f31d295da02e6e251830608b840aa",
+       "animation-delay-end.tentative-expected.txt": [
+        "cd252b859a8950fe843a7f0fd53d6e4de057096d",
+        []
+       ],
+       "animation-delay-start.tentative-expected.txt": [
+        "2ec7b3a8a1271025b75e20352a77705d4afcd04f",
         []
        ],
        "animation-delay.html.ini": [
@@ -382584,6 +382646,10 @@
      []
     ],
     "css": {
+     "animation-shorthand-expected.txt": [
+      "5b9ea08d71d542889f1653491829e3421a452735",
+      []
+     ],
      "animation-update-ref.html": [
       "7e375a1df7f063ba6cdbbdad92beb73915b84d6e",
       []
@@ -401590,10 +401656,6 @@
      }
     },
     "modules": {
-     "dedicated-worker-import-meta-expected.txt": [
-      "229c339fe84726d41b1e1ee9b92d1a8428cef90a",
-      []
-     ],
      "dedicated-worker-import-meta.html.ini": [
       "1457ee30dc6f11cbb7c828c35e02aecbb3d8d32a",
       []
@@ -439449,21 +439511,21 @@
         {}
        ]
       ],
-      "animation-delay-end-computed.html": [
+      "animation-delay-end-computed.tentative.html": [
        "77f96706383df2fb9a25478b5b35807b67bedf2d",
        [
         null,
         {}
        ]
       ],
-      "animation-delay-end-invalid.html": [
+      "animation-delay-end-invalid.tentative.html": [
        "7cabd4e8e54d96d7c3b36fc9473022cf530f664d",
        [
         null,
         {}
        ]
       ],
-      "animation-delay-end-valid.html": [
+      "animation-delay-end-valid.tentative.html": [
        "162c781bb010066bfb17e87f64932180abb472c8",
        [
         null,
@@ -439491,21 +439553,21 @@
         {}
        ]
       ],
-      "animation-delay-start-computed.html": [
+      "animation-delay-start-computed.tentative.html": [
        "bfb89d0267f5ad9a5ef7cb01e8ad6dc4b536a2fc",
        [
         null,
         {}
        ]
       ],
-      "animation-delay-start-invalid.html": [
+      "animation-delay-start-invalid.tentative.html": [
        "bff31f3789a4fd9e8ff8be99e1af61882d46af62",
        [
         null,
         {}
        ]
       ],
-      "animation-delay-start-valid.html": [
+      "animation-delay-start-valid.tentative.html": [
        "f52286444edb71cdeb24bc57f8de8d566113730a",
        [
         null,
@@ -439703,13 +439765,6 @@
       ],
       "animation-shorthand.html": [
        "8b482ff900f0d0a31189add815b08a7c6ca406b1",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-shorthand.tentative.html": [
-       "04d06080e5efd7b9a00bfc6d5e191902c0396cde",
        [
         null,
         {}
@@ -456322,6 +456377,27 @@
       ],
       "scroll-start-shorthand.html": [
        "22e206ec627012b7672341638690e76e1df9956d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-start-target-computed.html": [
+       "5dedf2483137e18bd5795d771aa2084949b3371a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-start-target-invalid.html": [
+       "a08ef87237efbf383a4b6b8b9cef05c3e45e7305",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-start-target-valid.html": [
+       "f972967acd5c63f2d1e852711792da2a276bbe35",
        [
         null,
         {}
@@ -658721,7 +658797,7 @@
       ]
      ],
      "dedicated-worker-import-meta.html": [
-      "cff8e91488e8239abe213619d12d5a603072fbea",
+      "97a5da870f8d713287ace636660d759b9e61486b",
       [
        null,
        {}
