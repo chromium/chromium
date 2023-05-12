@@ -11,14 +11,17 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,6 +39,7 @@ namespace ash {
 
 namespace {
 constexpr auto kLabelInsets = gfx::Insets::VH(0, 4);
+constexpr int kTitleLabelLineHeight = 48;
 }
 
 PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
@@ -81,12 +85,21 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
   title_->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kStart);
   title_->SetProperty(views::kMarginsKey, kLabelInsets);
-  title_->SetLineHeight(48);
   auto label_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   title_->SetEnabledColor(label_color);
-  TrayPopupUtils::SetLabelFontList(title_,
-                                   TrayPopupUtils::FontStyle::kSubHeader);
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
+                                          *title_);
+  } else {
+    TrayPopupUtils::SetLabelFontList(title_,
+                                     TrayPopupUtils::FontStyle::kSubHeader);
+  }
+
+  // Overriding because the typography line height set does not match Phone
+  // Hub specs.
+  title_->SetLineHeight(kTitleLabelLineHeight);
 
   // Set up multi-line description view.
   description_ =
@@ -98,11 +111,19 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded, true));
   description_->SetEnabledColor(label_color);
-  TrayPopupUtils::SetLabelFontList(
-      description_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   description_->SetMultiLine(true);
-  description_->SetLineHeight(20);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    // TODO(b/281844561): Migrate the |description_| to usea slightly lighter
+    // text color when tokens have been finalized.
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                          *description_);
+  } else {
+    TrayPopupUtils::SetLabelFontList(
+        description_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  }
+  description_->SetLineHeight(20);
 
   // Set up button container view, which should be right-aligned.
   button_container_ =

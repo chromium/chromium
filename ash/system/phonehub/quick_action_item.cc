@@ -7,8 +7,10 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -25,14 +27,19 @@ void ConfigureLabel(views::Label* label, int line_height, int font_size) {
   label->SetSubpixelRenderingEnabled(false);
   label->SetCanProcessEventsWithinSubtree(false);
 
-  label->SetLineHeight(line_height);
+  if (chromeos::features::IsJellyrollEnabled()) {
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
+                                          *label);
+  } else {
+    gfx::Font default_font;
+    gfx::Font label_font =
+        default_font.Derive(font_size - default_font.GetFontSize(),
+                            gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
+    gfx::FontList font_list(label_font);
+    label->SetFontList(font_list);
+  }
 
-  gfx::Font default_font;
-  gfx::Font label_font =
-      default_font.Derive(font_size - default_font.GetFontSize(),
-                          gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
-  gfx::FontList font_list(label_font);
-  label->SetFontList(font_list);
+  label->SetLineHeight(line_height);
 }
 
 }  // namespace
@@ -70,6 +77,8 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
   ConfigureLabel(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
                  kUnifiedFeaturePodSubLabelFontSize);
 
+  // TODO(b/281844561): Update |sub_label_color_| in accordance to the Phone Hub
+  // specs. Needs additional logic for the EnableHotspotQuickAction controls.
   sub_label_color_ = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary);
 

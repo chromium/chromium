@@ -28,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -76,6 +77,9 @@ class OnboardingMainView : public PhoneHubInterstitialView {
         IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION));
 
     // Add "Dismiss" and "Get started" buttons.
+    // TODO(b/281844561): Migrate the "Dismiss" button to use
+    // |PillButton::Type::kSecondaryWithoutIcon| when the PillButton colors
+    // are updated with better contrast-ratios.
     auto dismiss = std::make_unique<PillButton>(
         base::BindRepeating(&OnboardingMainView::DismissButtonPressed,
                             base::Unretained(this)),
@@ -90,7 +94,10 @@ class OnboardingMainView : public PhoneHubInterstitialView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON),
-        PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
+        chromeos::features::IsJellyrollEnabled()
+            ? PillButton::Type::kPrimaryWithoutIcon
+            : PillButton::Type::kDefaultWithoutIcon,
+        /*icon=*/nullptr);
     get_started->SetID(PhoneHubViewID::kOnboardingGetStartedButton);
     AddButton(std::move(get_started));
   }

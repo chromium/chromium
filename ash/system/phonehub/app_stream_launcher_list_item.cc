@@ -6,6 +6,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,6 +52,7 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
 
   std::u16string accessible_name = GetAppAccessibleName(app_metadata);
 
+  // TODO(b/254874005): Migrate the |app_button_->label()| font to Google Sans.
   app_button_ = AddChildView(std::make_unique<views::LabelButton>(
       callback, app_metadata.visible_app_name));
 

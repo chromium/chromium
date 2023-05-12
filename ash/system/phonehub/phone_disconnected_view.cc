@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -44,6 +45,9 @@ PhoneDisconnectedView::PhoneDisconnectedView(
       IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION));
 
   // Add "Learn more" and "Refresh" buttons.
+  // TODO(b/281844561): Migrate the "Learn More" button to use
+  // |PillButton::Type::kSecondaryWithoutIcon| when the PillButton colors
+  // are updated with better contrast-ratios.
   auto learn_more = std::make_unique<PillButton>(
       base::BindRepeating(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
@@ -69,7 +73,10 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               base::Unretained(connection_scheduler_))),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON),
-      PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
+      chromeos::features::IsJellyrollEnabled()
+          ? PillButton::Type::kPrimaryWithoutIcon
+          : PillButton::Type::kDefaultWithoutIcon,
+      /*icon=*/nullptr);
   refresh->SetID(PhoneHubViewID::kDisconnectedRefreshButton);
   content_view_->AddButton(std::move(refresh));
 

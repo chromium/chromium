@@ -15,10 +15,13 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/typography.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -105,6 +108,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_->SetAutoColorReadabilityEnabled(false);
 
+    if (chromeos::features::IsJellyrollEnabled()) {
+      TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
+                                            *title_);
+    }
+
     title_->SetPaintToLayer();
     title_->layer()->SetFillsBoundsOpaquely(false);
 
@@ -164,6 +172,9 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
     body_->SetPaintToLayer();
     body_->layer()->SetFillsBoundsOpaquely(false);
+
+    // TODO(b/254874005): Migrate the |body_| font to Google Sans. Use the same
+    // TypographyProvider StyleLabel() but use ash::Typography::kCrosBody.
 
     // Add button row.
     auto* button_row = AddChildView(std::make_unique<views::View>());
