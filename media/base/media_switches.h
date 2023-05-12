@@ -138,8 +138,6 @@ MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
 // to take effect.
 MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
 
-MEDIA_EXPORT extern const char kDisableUseMojoVideoDecoderForPepper[];
-
 #if !BUILDFLAG(IS_ANDROID)
 // If enabled, overrides the target playout delay for a casting mirroring
 // session. The value will be parsed as milliseconds. Lowering this value will
@@ -430,7 +428,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoDecoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoEncoding);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMojoVideoDecoderForPepper);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSequencedTaskRunnerForMediaService);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseTaskRunnerForMojoVEAService);

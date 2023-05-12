@@ -285,12 +285,6 @@ const char kCastStreamingForceEnableHardwareH264[] =
 const char kCastStreamingForceEnableHardwareVp8[] =
     "cast-streaming-force-enable-hardware-vp8";
 
-// Disables the code path that makes Pepper use the MojoVideoDecoder for
-// hardware accelerated video decoding. It overrides the value of the
-// kUseMojoVideoDecoderForPepper feature flag.
-const char kDisableUseMojoVideoDecoderForPepper[] =
-    "disable-use-mojo-video-decoder-for-pepper";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kCastMirroringTargetPlayoutDelay[] =
     "cast-mirroring-target-playout-delay";
@@ -1282,13 +1276,6 @@ const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoDecoding{
 const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoEncoding{
     "UseOutOfProcessVideoEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-// Make the PepperVideoDecoderHost use the MojoVideoDecoder to talk to hardware
-// decoders instead of using the GpuVideoDecodeAcceleratorHost. Note: this
-// doesn't affect the PPB_VideoDecoder_Impl which will continue to use the
-// GpuVideoDecodeAcceleratorHost for the PPB_VideoDecoder_Dev interface.
-const base::Feature MEDIA_EXPORT kUseMojoVideoDecoderForPepper{
-    "UseMojoVideoDecoderForPepper", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Use SequencedTaskRunner for MediaService.
 BASE_FEATURE(kUseSequencedTaskRunnerForMediaService,

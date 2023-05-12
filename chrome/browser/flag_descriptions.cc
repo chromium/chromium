@@ -307,12 +307,6 @@ const char kUseCustomMessagesDomainDescription[] =
     "Use a custom URL as part of the \"Messages\" feature under "
     "\"Connected Devices\" settings.";
 
-const char kUseMojoVideoDecoderForPepperName[] =
-    "Use the MojoVideoDecoder for hardware video decoding in Pepper";
-const char kUseMojoVideoDecoderForPepperDescription[] =
-    "Switches Pepper to use the MojoVideoDecoder for hardware accelerated "
-    "video decoding instead of the legacy video decoder.";
-
 const char kUseDMSAAForTilesName[] = "Use DMSAA for tiles";
 const char kUseDMSAAForTilesDescription[] =
     "Switches skia to use DMSAA instead of MSAA for tile raster";

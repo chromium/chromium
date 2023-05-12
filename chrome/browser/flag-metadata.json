@@ -7424,11 +7424,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "use-mojo-video-decoder-for-pepper",
-    "owners": [ "pmolinalopez", "andrescj" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "use-multi-plane-format-for-hardware-video",
     "owners": [ "hitawala", "vasilyt" ],
     "expiry_milestone": 124

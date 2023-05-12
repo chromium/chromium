@@ -1580,8 +1580,6 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kNewBaseUrlInheritanceBehaviorAllowed,
                                 true);
   registry->RegisterBooleanPref(
-      policy::policy_prefs::kUseMojoVideoDecoderForPepperAllowed, true);
-  registry->RegisterBooleanPref(
       policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI, false);
@@ -3007,11 +3005,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     DCHECK(g_browser_process);
     PrefService* local_state = g_browser_process->local_state();
     DCHECK(local_state);
-    if (!local_state->GetBoolean(
-            policy::policy_prefs::kUseMojoVideoDecoderForPepperAllowed)) {
-      command_line->AppendSwitch(
-          ::switches::kDisableUseMojoVideoDecoderForPepper);
-    }
     if (!local_state->GetBoolean(
             policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed)) {
       command_line->AppendSwitch(

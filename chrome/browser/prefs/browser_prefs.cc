@@ -815,6 +815,10 @@ const char kVideoTutorialsLastUpdatedTimeKey[] =
     "video_tutorials.last_updated_time";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Deprecated 05/2023
+const char kUseMojoVideoDecoderForPepperAllowed[] =
+    "policy.use_mojo_video_decoder_for_pepper_allowed";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -904,6 +908,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastChromadMigrationAttemptTime,
                              /*default_value=*/base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 05/2023.
+  registry->RegisterBooleanPref(kUseMojoVideoDecoderForPepperAllowed, true);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1884,6 +1891,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kEnrollmentIdUploadedOnChromad);
   local_state->ClearPref(kLastChromadMigrationAttemptTime);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 05/2023.
+  local_state->ClearPref(kUseMojoVideoDecoderForPepperAllowed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

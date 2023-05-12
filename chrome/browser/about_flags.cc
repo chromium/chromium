@@ -9938,11 +9938,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillOfferToSaveCardWithSameLastFour)},
 
-    {"use-mojo-video-decoder-for-pepper",
-     flag_descriptions::kUseMojoVideoDecoderForPepperName,
-     flag_descriptions::kUseMojoVideoDecoderForPepperDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kUseMojoVideoDecoderForPepper)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"app-deduplication-service-fondue",
      flag_descriptions::kAppDeduplicationServiceFondueName,
