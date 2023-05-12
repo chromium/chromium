@@ -68,6 +68,11 @@ void ReplaceSharedElementWithRenderPass(
       shared_element_quad.rect, shared_pass_output_rect);
   copied_quad_state->quad_to_target_transform.PreConcat(transform);
 
+  shared_element_content_pass->transform_to_root_target =
+      copied_quad_state->quad_to_target_transform;
+  shared_element_content_pass->transform_to_root_target.PostConcat(
+      target_render_pass->transform_to_root_target);
+
   auto* render_pass_quad =
       target_render_pass
           ->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
