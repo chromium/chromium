@@ -686,13 +686,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    VLOG(2) << "Registering Task with XML: " << [&task]() -> std::wstring {
-      base::win::ScopedBstr task_xml;
-      if (SUCCEEDED(task->get_XmlText(task_xml.Receive()))) {
-        return task_xml.Get();
-      }
-      return L"";
-    }();
+    base::win::ScopedBstr task_xml;
+    task->get_XmlText(task_xml.Receive());
+    VLOG(2) << "Registering Task with XML: " << task_xml.Get();
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     base::win::ScopedVariant user(user_name.Get());
@@ -706,8 +702,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
         is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
         base::win::ScopedVariant::kEmptyVariant, &registered_task);
     if (FAILED(hr)) {
-      LOG(ERROR) << "RegisterTaskDefinition failed. " << std::hex << hr << ": "
-                 << logging::SystemErrorCodeToString(hr);
+      LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr << ": "
+                 << logging::SystemErrorCodeToString(hr)
+                 << ": Task XML: " << task_xml.Get();
       return false;
     }
 

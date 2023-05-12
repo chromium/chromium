@@ -470,9 +470,10 @@ TEST_F(TaskSchedulerTests, GetTaskInfoTriggerTypes) {
     RunGetTaskInfoTriggerTypesTest(expected_trigger_type);
   }
 
-  RunGetTaskInfoTriggerTypesTest(TaskScheduler::TRIGGER_TYPE_POST_REBOOT |
-                                 TaskScheduler::TRIGGER_TYPE_HOURLY |
-                                 TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
+  RunGetTaskInfoTriggerTypesTest(
+      (::IsUserAnAdmin() ? TaskScheduler::TRIGGER_TYPE_POST_REBOOT : 0) |
+      TaskScheduler::TRIGGER_TYPE_HOURLY |
+      TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
 }
 
 TEST(TaskSchedulerTest, NoSubfolders) {
