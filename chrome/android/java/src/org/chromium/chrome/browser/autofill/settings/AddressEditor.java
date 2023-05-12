@@ -38,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,6 +51,9 @@ public class AddressEditor {
     private final EditorDialog mEditorDialog;
     private final Delegate mDelegate;
     private final Context mContext;
+    private final AutofillProfile mProfileToEdit;
+    private final AutofillAddress mAddressToEdit;
+    private final boolean mIsProfileNew;
     private final boolean mSaveToDisk;
     private final boolean mIsUpdate;
     private final boolean mIsMigrationToAccount;
@@ -74,8 +76,6 @@ public class AddressEditor {
     @Nullable
     private String mCustomDoneButtonText;
     private EditorModel mEditor;
-    private AutofillProfile mProfile;
-    private boolean mIsProfileNew;
 
     /**
      * Delegate used to subscribe to AddressEditor user interactions.
@@ -137,7 +137,7 @@ public class AddressEditor {
     }
 
     /**
-     * Builds an address editor.
+     * Builds an address editor for a new address profile.
      *
      * @param editorDialog Editor's view displayed to the user.
      * @param delegate Delegate to react to users interactions with the editor.
@@ -148,10 +148,39 @@ public class AddressEditor {
      */
     public AddressEditor(EditorDialog editorDialog, Delegate delegate, boolean saveToDisk,
             boolean isUpdate, boolean isMigrationToAccount) {
-        Objects.requireNonNull(editorDialog, "editor dialog can't be null");
         mEditorDialog = editorDialog;
         mDelegate = delegate;
         mContext = editorDialog.getContext();
+        mProfileToEdit = new AutofillProfile();
+        mAddressToEdit = new AutofillAddress(editorDialog.getContext(), mProfileToEdit);
+        mIsProfileNew = true;
+        mSaveToDisk = saveToDisk;
+        mIsUpdate = isUpdate;
+        mIsMigrationToAccount = isMigrationToAccount;
+        mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
+        mPhoneValidator = new CountryAwarePhoneNumberValidator(true);
+    }
+
+    /**
+     * Builds an address editor for an existing address profile.
+     *
+     * @param editorDialog Editor's view displayed to the user.
+     * @param delegate Delegate to react to users interactions with the editor.
+     * @param addressToEdit Address the user wants to modify.
+     * @param saveToDisk Whether to save changes to disk after editing.
+     * @param isUpdate Whether an existing address profile is being edited.
+     * @param isMigrationToAccount Whether this editor is shown during address profile migration to
+     *         Google account.
+     */
+    public AddressEditor(EditorDialog editorDialog, Delegate delegate,
+            AutofillAddress addressToEdit, boolean saveToDisk, boolean isUpdate,
+            boolean isMigrationToAccount) {
+        mEditorDialog = editorDialog;
+        mDelegate = delegate;
+        mContext = editorDialog.getContext();
+        mProfileToEdit = addressToEdit.getProfile();
+        mAddressToEdit = addressToEdit;
+        mIsProfileNew = false;
         mSaveToDisk = saveToDisk;
         mIsUpdate = isUpdate;
         mIsMigrationToAccount = isMigrationToAccount;
@@ -201,19 +230,12 @@ public class AddressEditor {
      *
      * TODO(crbug.com/1421056): Split this method for better code readability.
      */
-    public void edit(@Nullable final AutofillAddress toEdit) {
+    public void showEditorDialog() {
         if (mAutofillProfileBridge == null) mAutofillProfileBridge = new AutofillProfileBridge();
 
-        mIsProfileNew = toEdit == null;
         final String editTitle = mIsProfileNew
                 ? mContext.getString(R.string.autofill_create_profile)
                 : mContext.getString(R.string.autofill_edit_address_dialog_title);
-        // When creating a new autofill profile, we use the country code of the default locale on
-        // the device.
-        final AutofillAddress address =
-                mIsProfileNew ? new AutofillAddress(mContext, new AutofillProfile()) : toEdit;
-
-        mProfile = address.getProfile();
 
         @Nullable
         final String footerMessageText = getSourceNoticeText();
@@ -255,7 +277,7 @@ public class AddressEditor {
 
         // Country dropdown is cached, so the selected item needs to be updated for the new profile
         // that's being edited. This will not fire the dropdown callback.
-        mCountryField.setValue(AutofillAddress.getCountryCode(mProfile));
+        mCountryField.setValue(AutofillAddress.getCountryCode(mProfileToEdit));
 
         // Phone number validator and formatter are cached, so their country code needs to be
         // updated for the new profile that's being edited.
@@ -271,7 +293,7 @@ public class AddressEditor {
                         mContext.getString(R.string.autofill_profile_editor_honorific_prefix));
             }
             // Retrieve and set the honorific prefix value.
-            mHonorificField.setValue(mProfile.getHonorificPrefix());
+            mHonorificField.setValue(mProfileToEdit.getHonorificPrefix());
         }
 
         // There's a finite number of fields for address editing. Changing the country will re-order
@@ -291,7 +313,7 @@ public class AddressEditor {
         }
         // Phone number field is cached, so its value needs to be updated for every new profile
         // that's being edited.
-        mPhoneField.setValue(mProfile.getPhoneNumber());
+        mPhoneField.setValue(mProfileToEdit.getPhoneNumber());
 
         if (mEmailField == null) {
             mEmailField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
@@ -302,7 +324,7 @@ public class AddressEditor {
                     EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
         }
         // Retrieve and set the email address field.
-        mEmailField.setValue(mProfile.getEmailAddress());
+        mEmailField.setValue(mProfileToEdit.getEmailAddress());
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)) {
@@ -313,25 +335,26 @@ public class AddressEditor {
             }
         }
 
-        // If the user clicks [Cancel], send |toEdit| address back to the caller, which was the
-        // original state (could be null, a complete address, a partial address).
+        // If the user clicks [Cancel], send |addressToEdit| address back to the caller, which was
+        // the original state (could be null, a complete address, a partial address).
         mEditor.setCancelCallback(mDelegate::onCancel);
 
         // If the user clicks [Done], save changes on disk, mark the address "complete" if possible,
         // and send it back to the caller.
         mEditor.setDoneCallback(() -> {
-            commitChanges(mProfile);
+            commitChanges(mProfileToEdit);
 
             // The address cannot be marked "complete" because it has not been checked
             // for all required fields.
-            address.updateAddress(mProfile);
+            mAddressToEdit.updateAddress(mProfileToEdit);
 
-            mDelegate.onDone(address);
+            mDelegate.onDone(mAddressToEdit);
         });
 
         // This should be called when all required fields are put in mAddressField.
         setAddressFieldValuesFromCache();
-        addAddressFieldsToEditor(mCountryField.getValue().toString(), mProfile.getLanguageCode());
+        addAddressFieldsToEditor(
+                mCountryField.getValue().toString(), mProfileToEdit.getLanguageCode());
         mEditorDialog.show(mEditor);
     }
 
@@ -374,7 +397,7 @@ public class AddressEditor {
 
         // Save the edited autofill profile locally.
         if (mSaveToDisk) {
-            profile.setGUID(PersonalDataManager.getInstance().setProfileToLocal(mProfile));
+            profile.setGUID(PersonalDataManager.getInstance().setProfileToLocal(mProfileToEdit));
         }
 
         if (profile.getGUID().isEmpty()) {
@@ -433,7 +456,8 @@ public class AddressEditor {
         // Address fields are cached, so their values need to be updated for every new profile
         // that's being edited.
         for (Map.Entry<Integer, EditorFieldModel> entry : mAddressFields.entrySet()) {
-            entry.getValue().setValue(AutofillAddress.getProfileField(mProfile, entry.getKey()));
+            entry.getValue().setValue(
+                    AutofillAddress.getProfileField(mProfileToEdit, entry.getKey()));
         }
     }
 
@@ -482,7 +506,7 @@ public class AddressEditor {
             return true;
         }
 
-        if (mProfile.getSource() == Source.ACCOUNT && !mIsUpdate) {
+        if (mProfileToEdit.getSource() == Source.ACCOUNT && !mIsUpdate) {
             return true; // Only already saved address can be updated.
         }
 
@@ -493,7 +517,7 @@ public class AddressEditor {
     }
 
     private boolean isAlreadySavedInAccount() {
-        return mProfile.getSource() == Source.ACCOUNT && mIsUpdate;
+        return mProfileToEdit.getSource() == Source.ACCOUNT && mIsUpdate;
     }
 
     private boolean isAccountAddressProfile() {
@@ -515,7 +539,7 @@ public class AddressEditor {
         if (!component.isRequired) return false;
 
         boolean isContentEmpty =
-                TextUtils.isEmpty(AutofillAddress.getProfileField(mProfile, component.id));
+                TextUtils.isEmpty(AutofillAddress.getProfileField(mProfileToEdit, component.id));
         // Already empty fields in existing address profiles are made optional even if they
         // are required by account storage rules. This allows users to save address profiles
         // as is without making them more complete during the process.

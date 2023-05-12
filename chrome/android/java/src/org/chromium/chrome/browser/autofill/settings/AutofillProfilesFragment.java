@@ -46,6 +46,26 @@ import org.chromium.components.sync.UserSelectableType;
 public class AutofillProfilesFragment
         extends PreferenceFragmentCompat implements PersonalDataManager.PersonalDataManagerObserver,
                                                     FragmentHelpAndFeedbackLauncher {
+    private static AddressEditor.Delegate sAddressEditorDelegate = new AddressEditor.Delegate() {
+        // User has either created a new address, or edited an existing address.
+        // We should save changes in any case.
+        @Override
+        public void onDone(AutofillAddress address) {
+            PersonalDataManager.getInstance().setProfile(address.getProfile());
+            SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressUpdated(address);
+            if (sObserverForTest != null) {
+                sObserverForTest.onEditorReadyToEdit();
+            }
+        }
+
+        // User canceled edited meaning that |autofillAddress| has stayed intact.
+        @Override
+        public void onCancel() {
+            if (sObserverForTest != null) {
+                sObserverForTest.onEditorReadyToEdit();
+            }
+        }
+    };
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
     private @Nullable EditorDialog mEditorDialog;
@@ -192,21 +212,26 @@ public class AutofillProfilesFragment
 
     @Override
     public void onDisplayPreferenceDialog(Preference preference) {
-        if (preference instanceof AutofillProfileEditorPreference) {
-            String guid = ((AutofillProfileEditorPreference) preference).getGUID();
-            mEditorDialog = prepareEditorDialog(guid);
-            AutofillAddress autofillAddress = null;
-            if (guid != null) {
-                AutofillProfile profile = PersonalDataManager.getInstance().getProfile(guid);
-                if (profile != null) {
-                    autofillAddress = new AutofillAddress(getActivity(), profile);
-                }
-            }
-            editAddress(mEditorDialog, autofillAddress);
+        if (!(preference instanceof AutofillProfileEditorPreference)) {
+            super.onDisplayPreferenceDialog(preference);
             return;
         }
-
-        super.onDisplayPreferenceDialog(preference);
+        AutofillProfileEditorPreference editorPreference =
+                (AutofillProfileEditorPreference) preference;
+        mEditorDialog = prepareEditorDialog(editorPreference.getGUID());
+        AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
+        if (autofillAddress == null) {
+            AddressEditor addressEditor = new AddressEditor(mEditorDialog, sAddressEditorDelegate,
+                    /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
+                    /*isMigrationToAccount=*/false);
+            addressEditor.showEditorDialog();
+        } else {
+            AddressEditor addressEditor =
+                    new AddressEditor(mEditorDialog, sAddressEditorDelegate, autofillAddress,
+                            /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
+                            /*isMigrationToAccount=*/false);
+            addressEditor.showEditorDialog();
+        }
     }
 
     @VisibleForTesting
@@ -223,32 +248,17 @@ public class AutofillProfilesFragment
                 getActivity(), runnable, Profile.getLastUsedRegularProfile(), false);
     }
 
-    private void editAddress(EditorDialog dialog, AutofillAddress autofillAddress) {
-        AddressEditor.Delegate delegate = new AddressEditor.Delegate() {
-            // User has either created a new address, or edited an existing address.
-            // We should save changes in any case.
-            @Override
-            public void onDone(AutofillAddress address) {
-                PersonalDataManager.getInstance().setProfile(address.getProfile());
-                SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressUpdated(address);
-                if (sObserverForTest != null) {
-                    sObserverForTest.onEditorReadyToEdit();
-                }
-            }
-
-            // User canceled edited meaning that |autofillAddress| has stayed intact.
-            @Override
-            public void onCancel() {
-                if (sObserverForTest != null) {
-                    sObserverForTest.onEditorReadyToEdit();
-                }
-            }
-        };
-        AddressEditor addressEditor = new AddressEditor(dialog, delegate,
-                /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
-                /*isMigrationToAccount=*/false);
-
-        addressEditor.edit(autofillAddress);
+    @Nullable
+    private AutofillAddress getAutofillAddress(AutofillProfileEditorPreference preference) {
+        String guid = preference.getGUID();
+        if (guid == null) {
+            return null;
+        }
+        AutofillProfile profile = PersonalDataManager.getInstance().getProfile(guid);
+        if (profile == null) {
+            return null;
+        }
+        return new AutofillAddress(getActivity(), profile);
     }
 
     private boolean isAddressSyncEnabled() {

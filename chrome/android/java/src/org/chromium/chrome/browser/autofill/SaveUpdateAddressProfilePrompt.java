@@ -82,15 +82,15 @@ public class SaveUpdateAddressProfilePrompt {
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         AddressEditor.Delegate delegate = new AddressEditor.Delegate() {
             @Override
-            public void onDone(AutofillAddress autofillAddress) {
-                onEdited(autofillAddress);
+            public void onDone(AutofillAddress address) {
+                onEdited(address);
             }
         };
-        mAddressEditor = new AddressEditor(
-                mEditorDialog, delegate, /*saveToDisk=*/false, isUpdate, isMigrationToAccount);
-        AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
+        mAddressEditor = new AddressEditor(mEditorDialog, delegate,
+                new AutofillAddress(activity, autofillProfile),
+                /*saveToDisk=*/false, isUpdate, isMigrationToAccount);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
-            mAddressEditor.edit(autofillAddress);
+            mAddressEditor.showEditorDialog();
         });
     }
 

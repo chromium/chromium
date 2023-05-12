@@ -293,6 +293,6 @@ public class SaveUpdateAddressProfilePromptTest {
         View dialog = mPrompt.getDialogViewForTesting();
         ImageButton editButton = dialog.findViewById(R.id.edit_button);
         editButton.performClick();
-        verify(mAddressEditor).edit(any());
+        verify(mAddressEditor).showEditorDialog();
     }
 }
