@@ -3032,7 +3032,7 @@
     },
     {
       name: "ScrollTimeline",
-      status: "experimental",
+      status: "stable",
       implied_by: ["AnimationWorklet"]
     },
     // Implements documentElement.scrollTop/Left and bodyElement.scrollTop/Left

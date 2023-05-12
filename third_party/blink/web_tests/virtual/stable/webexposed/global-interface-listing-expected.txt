@@ -63,6 +63,8 @@ interface Animation : EventTarget
     getter pending
     getter playState
     getter playbackRate
+    getter rangeEnd
+    getter rangeStart
     getter ready
     getter replaceState
     getter startTime
@@ -83,6 +85,8 @@ interface Animation : EventTarget
     setter onfinish
     setter onremove
     setter playbackRate
+    setter rangeEnd
+    setter rangeStart
     setter startTime
     setter timeline
 interface AnimationEffect
@@ -105,7 +109,9 @@ interface AnimationPlaybackEvent : Event
 interface AnimationTimeline
     attribute @@toStringTag
     getter currentTime
+    getter duration
     method constructor
+    method getCurrentTime
 interface Attr : Node
     attribute @@toStringTag
     getter localName
@@ -8052,6 +8058,11 @@ interface ScriptProcessorNode : AudioNode
     getter onaudioprocess
     method constructor
     setter onaudioprocess
+interface ScrollTimeline : AnimationTimeline
+    attribute @@toStringTag
+    getter axis
+    getter source
+    method constructor
 interface SecurityPolicyViolationEvent : Event
     attribute @@toStringTag
     getter blockedURI
@@ -8885,6 +8896,12 @@ interface VideoPlaybackQuality
     getter creationTime
     getter droppedVideoFrames
     getter totalVideoFrames
+    method constructor
+interface ViewTimeline : ScrollTimeline
+    attribute @@toStringTag
+    getter endOffset
+    getter startOffset
+    getter subject
     method constructor
 interface ViewTransition
     attribute @@toStringTag
