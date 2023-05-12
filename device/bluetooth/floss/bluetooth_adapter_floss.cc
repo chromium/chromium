@@ -1402,11 +1402,9 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
     observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
 
-  // We are currently in an LE discovery session. Update properties and emit
-  // a |DeviceFound| if newly found or |DeviceChanged|.
-  if (le_discovery_session_) {
-    UpdateDeviceProperties(false, device_ptr->AsFlossDeviceId());
-  }
+  // Update properties and emit a |DeviceFound| if newly found or
+  // |DeviceChanged|.
+  UpdateDeviceProperties(false, device_ptr->AsFlossDeviceId());
 }
 
 void BluetoothAdapterFloss::AdvertisementFound(uint8_t scanner_id,
