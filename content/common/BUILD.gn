@@ -299,6 +299,8 @@ source_set("common") {
       "font_list_android.cc",
     ]
 
+    deps += [ "//cc/slim" ]
+
     if (use_seccomp_bpf) {
       sources += [
         "//sandbox/policy/linux/bpf_base_policy_linux.cc",

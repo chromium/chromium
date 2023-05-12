@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.AndroidResourceType;
@@ -224,7 +225,10 @@ public class CompositorView
     public void onSelectionHandlesStateChanged(boolean active) {
         // If the feature is disabled or we're in Vr mode, we are already rendering directly to the
         // SurfaceView.
-        if (!mIsSurfaceControlEnabled || mIsInXr) return;
+        if (!mIsSurfaceControlEnabled || mIsInXr
+                || !SelectionPopupController.needsSurfaceViewDuringSelection()) {
+            return;
+        }
 
         if (mSelectionHandlesActive == active) return;
         mSelectionHandlesActive = active;

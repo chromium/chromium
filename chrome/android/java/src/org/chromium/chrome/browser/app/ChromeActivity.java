@@ -704,6 +704,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mInflateInitialLayoutBeginMs = SystemClock.elapsedRealtime();
         try (TraceEvent te = TraceEvent.scoped("ChromeActivity.triggerLayoutInflation")) {
             SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();
+            SelectionPopupController.setAllowSurfaceControlMagnifier();
 
             enableHardwareAcceleration();
             setLowEndTheme();

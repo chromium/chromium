@@ -8,9 +8,11 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/common/features.h"
 #include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -25,6 +27,17 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
+
+static jboolean
+JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
+    JNIEnv* env) {
+  GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
+  return manager->IsGpuFeatureInfoAvailable() &&
+         manager->GetFeatureStatus(
+             gpu::GpuFeatureType::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL) ==
+             gpu::kGpuFeatureStatusEnabled &&
+         IsAndroidSurfaceControlMagnifierEnabled();
+}
 
 jlong JNI_SelectionPopupControllerImpl_Init(
     JNIEnv* env,
