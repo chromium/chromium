@@ -30,18 +30,6 @@ namespace {
 
 using H264DecoderStatus = H264Decoder::H264Accelerator::Status;
 
-// Converts SubsampleEntry to D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK.
-void AppendSubsamples(
-    const std::vector<SubsampleEntry>& from,
-    std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>* to) {
-  for (const auto& from_entry : from) {
-    D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK subsample = {};
-    subsample.ClearSize = from_entry.clear_bytes;
-    subsample.EncryptedSize = from_entry.cypher_bytes;
-    to->push_back(subsample);
-  }
-}
-
 }  // namespace
 
 class D3D11H264Picture : public H264Picture {
@@ -92,13 +80,6 @@ H264DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listb0,
     const H264Picture::Vector& ref_pic_listb1,
     scoped_refptr<H264Picture> pic) {
-  const bool is_encrypted = pic->decrypt_config();
-  if (is_encrypted) {
-    RecordFailure("Cannot find decrypt context for the frame.",
-                  D3D11Status::Codes::kCryptoConfigFailed);
-    return H264DecoderStatus::kFail;
-  }
-
   HRESULT hr;
   for (;;) {
     D3D11H264Picture* d3d11_pic = pic->AsD3D11H264Picture();
@@ -331,7 +312,6 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-  const bool is_encrypted = pic->decrypt_config();
   DXVA_PicParams_H264 pic_param = {};
   FillPicParamsWithConstants(&pic_param);
 
@@ -430,30 +410,6 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
 
   size_t remaining_bitstream = out_bitstream_size;
   size_t start_location = 0;
-
-  if (is_encrypted) {
-    // For now, the entire frame has to fit into the bitstream buffer. This way
-    // the subsample ClearSize adjustment below should work.
-    if (bitstream_buffer_size_ < remaining_bitstream) {
-      RecordFailure("Input slice NALU (" + std::to_string(remaining_bitstream) +
-                        ") too big to fit in the bistream buffer (" +
-                        base::NumberToString(bitstream_buffer_size_) + ").",
-                    D3D11Status::Codes::kBitstreamBufferSliceTooBig);
-      return H264DecoderStatus::kFail;
-    }
-
-    AppendSubsamples(subsamples, &subsamples_);
-    if (!subsamples.empty()) {
-      // 3 added to clear bytes because a start code is prepended to the slice
-      // NALU.
-      // TODO(rkuroiwa): This should be done right after the start code is
-      // written to the buffer, but currently the start code is written in the
-      // loop (which is not the right place, there's only one slice NALU passed
-      // into this function) and it's not easy to identify where the subsample
-      // starts in the buffer.
-      subsamples_[subsamples_.size() - subsamples.size()].ClearSize += 3;
-    }
-  }
 
   while (remaining_bitstream > 0) {
     if (bitstream_buffer_size_ < remaining_bitstream &&
@@ -554,24 +510,12 @@ bool D3D11H264Accelerator::SubmitSliceData() {
   buffers[3].DataOffset = 0;
   buffers[3].DataSize = current_offset_;
 
-  if (!frame_iv_.empty()) {
-    buffers[3].pIV = frame_iv_.data();
-    buffers[3].IVSize = frame_iv_.size();
-    // Subsmaples matter iff there is IV, for decryption.
-    if (!subsamples_.empty()) {
-      buffers[3].pSubSampleMappingBlock = subsamples_.data();
-      buffers[3].SubSampleMappingCount = subsamples_.size();
-    }
-  }
-
   hr = video_context_->SubmitDecoderBuffers(video_decoder_.Get(),
                                             std::size(buffers), buffers);
   current_offset_ = 0;
   slice_info_.clear();
   bitstream_buffer_bytes_ = nullptr;
   bitstream_buffer_size_ = 0;
-  frame_iv_.clear();
-  subsamples_.clear();
   if (!SUCCEEDED(hr)) {
     RecordFailure("SubmitDecoderBuffers failed",
                   D3D11Status::Codes::kSubmitDecoderBuffersFailed, hr);

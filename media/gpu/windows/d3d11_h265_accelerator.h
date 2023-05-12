@@ -197,12 +197,6 @@ class D3D11H265Accelerator : public D3DAccelerator,
   // For HEVC this number needs to be larger than 1 and different
   // in each call to Execute().
   int current_status_report_feedback_num_ = 1;
-
-  // This contains the subsamples (clear and encrypted) of the slice data
-  // in D3D11_VIDEO_DECODER_BUFFER_BITSTREAM buffer.
-  std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> subsamples_;
-  // IV for the current frame.
-  std::vector<uint8_t> frame_iv_;
 };
 
 }  // namespace media

@@ -25,17 +25,6 @@ using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
     }                                               \
   } while (0)
 
-std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>
-CreateSubsampleMappingBlock(const std::vector<SubsampleEntry>& from) {
-  std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> to(from.size());
-  for (const auto& entry : from) {
-    D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK subsample = {
-        .ClearSize = entry.clear_bytes, .EncryptedSize = entry.cypher_bytes};
-    to.push_back(subsample);
-  }
-  return to;
-}
-
 D3D11VP9Accelerator::D3D11VP9Accelerator(
     D3D11VideoDecoderClient* client,
     MediaLog* media_log,
@@ -57,15 +46,6 @@ scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
 }
 
 bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
-  const bool is_encrypted = pic.decrypt_config();
-  if (is_encrypted) {
-    RecordFailure(
-        "crypto_config: Cannot find the decrypt context for the "
-        "frame.",
-        D3D11Status::Codes::kCryptoConfigFailed);
-    return false;
-  }
-
   HRESULT hr;
   do {
     ID3D11VideoDecoderOutputView* output_view = nullptr;
@@ -321,18 +301,6 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     buffers[2].BufferType = D3D11_VIDEO_DECODER_BUFFER_BITSTREAM;
     buffers[2].DataOffset = 0;
     buffers[2].DataSize = copy_size;
-
-    const DecryptConfig* config = pic.decrypt_config();
-    if (config) {
-      buffers[2].pIV = const_cast<char*>(config->iv().data());
-      buffers[2].IVSize = config->iv().size();
-      // Subsamples matter iff there is IV, for decryption.
-      if (!config->subsamples().empty()) {
-        buffers[2].pSubSampleMappingBlock =
-            CreateSubsampleMappingBlock(config->subsamples()).data();
-        buffers[2].SubSampleMappingCount = config->subsamples().size();
-      }
-    }
 
     RETURN_ON_HR_FAILURE(SubmitDecoderBuffers,
                          video_context_->SubmitDecoderBuffers(

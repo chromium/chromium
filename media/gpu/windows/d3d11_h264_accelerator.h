@@ -102,12 +102,6 @@ class D3D11H264Accelerator : public D3DAccelerator,
   size_t current_offset_ = 0;
   size_t bitstream_buffer_size_ = 0;
   raw_ptr<uint8_t, AllowPtrArithmetic> bitstream_buffer_bytes_ = nullptr;
-
-  // This contains the subsamples (clear and encrypted) of the slice data
-  // in D3D11_VIDEO_DECODER_BUFFER_BITSTREAM buffer.
-  std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> subsamples_;
-  // IV for the current frame.
-  std::vector<uint8_t> frame_iv_;
 };
 
 }  // namespace media
