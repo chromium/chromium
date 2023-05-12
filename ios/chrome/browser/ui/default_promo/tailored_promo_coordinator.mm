@@ -135,6 +135,8 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
             IOSDefaultBrowserFullscreenPromoAction::kCancel];
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithTailoredFullscreenPromo();
+
+  [self.handler hidePromo];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
