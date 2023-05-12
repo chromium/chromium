@@ -73,6 +73,18 @@
   </div>
 </div>
 
+<template is="dom-if" if="[[showSpeakOnMuteDetectionPage_]]" restamp>
+  <settings-toggle-button
+      class="settings-box"
+      pref="{{prefs.ash.user.speak_on_mute_detection_enabled}}"
+      id="speakonmuteDetectionToggle"
+      label="$i18n{speakOnMuteDetectionToggleTitle}"
+      sub-label="$i18n{speakOnMuteDetectionToggleSubtext}"
+      deep-link-focus-id$="[[Setting.kSpeakOnMuteDetectionOnOff]]"
+      learn-more-url="$i18n{speakOnMuteDetectionLearnMoreURL}">
+  </settings-toggle-button>
+</template>
+
 <!-- Location toggle is not to be shown in dogfooded version of Privacy Hub -->
 <template is="dom-if" if="[[showPrivacyHubMVPPage_]]" restamp>
   <settings-toggle-button

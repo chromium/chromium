@@ -77773,6 +77773,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1117" label="Privacy: Microphone Software Switch"/>
   <int value="1118" label="Privacy: Geolocation Software Switch"/>
   <int value="1119" label="Privacy: Lock Screen Notification Switch"/>
+  <int value="1120" label="Privacy: Speak-on-mute Detection Software Switch"/>
   <int value="1200" label="Add Language"/>
   <int value="1201" label="Show Input Options In Shelf"/>
   <int value="1202" label="Show Personal Information Suggestions (Deprecated)"/>
