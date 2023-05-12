@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/cws_info_service.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
@@ -204,15 +205,21 @@ TEST_F(CWSInfoServiceTest, IgnoresNonCWSExtensions) {
 }
 
 TEST_F(CWSInfoServiceTest, IgnoresNetworkErrorAndBadServerResponse) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /* updates_from_cws= */ true);
-
   SetUpResponseWithNetworkError(
       GURL(cws_info_service_->GetRequestURLForTesting()));
   cws_info_service_->CheckAndMaybeFetchInfo();
   task_environment_.FastForwardBy(base::Seconds(0));
+
   EXPECT_TRUE(VerifyStats(/*requests=*/1, /*responses=*/0, /*changes=*/0,
                           /*errors=*/1));
+  histogram_tester.ExpectBucketCount(
+      "Extensions.CWSInfoService.NetworkResponseCodeOrError",
+      net::HTTP_NOT_FOUND, 1);
+  histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
+                                     false, 1);
   EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == absl::nullopt);
 
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
@@ -221,13 +228,17 @@ TEST_F(CWSInfoServiceTest, IgnoresNetworkErrorAndBadServerResponse) {
   task_environment_.FastForwardBy(base::Seconds(0));
   EXPECT_TRUE(VerifyStats(/*requests=*/2, /*responses=*/0, /*changes=*/0,
                           /*errors=*/2));
+  histogram_tester.ExpectBucketCount(
+      "Extensions.CWSInfoService.NetworkResponseCodeOrError", net::HTTP_OK, 1);
+  histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
+                                     false, 2);
   EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == absl::nullopt);
 }
 
 TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /*updates_from_cws=*/true);
-
   base::Time last_update_time = base::Time::Now() - base::Days(31);
   BatchGetStoreMetadatasResponse response_proto;
   *response_proto.add_store_metadatas() =
@@ -245,6 +256,16 @@ TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
   EXPECT_EQ(base::Time::Now(),
             cws_info_service_->GetCWSInfoTimestampForTesting());
   EXPECT_TRUE(info_change_notification_received_);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.CWSInfoService.NetworkResponseCodeOrError", net::HTTP_OK, 1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.CWSInfoService.NumRequestsInFetch", /*requests=*/1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.CWSInfoService.NetworkRetriesTillSuccess", 0, 1);
+  histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.CWSInfoService.MetadataChanged", true, 1);
 
   absl::optional<CWSInfoService::CWSInfo> info =
       cws_info_service_->GetCWSInfo(*test1);
@@ -252,6 +273,7 @@ TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
 }
 
 TEST_F(CWSInfoServiceTest, HandlesMultipleRequestsPerInfoCheck) {
+  base::HistogramTester histogram_tester;
   // Set max of 2 extension ids per request.
   cws_info_service_->SetMaxExtensionIdsPerRequestForTesting(2);
 
@@ -276,18 +298,19 @@ TEST_F(CWSInfoServiceTest, HandlesMultipleRequestsPerInfoCheck) {
   base::Time test2_last_update_time = base::Time::Now() - base::Days(31);
   StoreMetadata test2_metadata =
       BuildStoreMetadata(test2->id(), test2_last_update_time);
+
   // Override builder defaults.
   test2_metadata.set_is_live(false);
   test2_metadata.set_violation_type("malware");
   test2_metadata.add_labels("unpublished-long-ago");
   test2_metadata.add_labels("no-privacy-practice");
-
   // Create response proto with metadata for only 2 extensions.
   BatchGetStoreMetadatasResponse response;
   *response.add_store_metadatas() = test1_metadata;
   *response.add_store_metadatas() = test2_metadata;
   std::string response_str = response.SerializeAsString();
   ASSERT_TRUE(!response_str.empty());
+
   // Set up server response for requests and start the info check.
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
@@ -298,6 +321,10 @@ TEST_F(CWSInfoServiceTest, HandlesMultipleRequestsPerInfoCheck) {
   EXPECT_EQ(2u, test_url_loader_factory_.total_requests());
   EXPECT_TRUE(VerifyStats(/*requests=*/2, /*responses=*/2, /*changes=*/2,
                           /*errors=*/0));
+  histogram_tester.ExpectBucketCount(
+      "Extensions.CWSInfoService.NumRequestsInFetch", /*requests=*/2, 1);
+  histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
+                                     true, 1);
 
   // Retrieve information for 1st extension and verify.
   absl::optional<CWSInfoService::CWSInfo> info =

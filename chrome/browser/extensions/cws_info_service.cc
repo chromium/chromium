@@ -27,18 +27,23 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "google_apis/google_api_keys.h"
+#include "net/base/load_flags.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
-constexpr int kMaxExtensionIdsPerRequest = 100;
+constexpr int kMaxExtensionIdsPerRequest = 3;
+constexpr int kMaxRetriesPerRequest = 2;
 constexpr int kStartupCheckDelaySeconds = 30;
 constexpr int kCheckIntervalSeconds = 3 * 60 * 60;
 constexpr int kFetchIntervalSeconds = 24 * 60 * 60;
 constexpr char kRequestUrl[] =
-    "https://chromewebstore.googleapis.com/v2/items/-/StoreMetadata:batchGet";
+    "https://chromewebstore.googleapis.com/v2/items/-/storeMetadata:batchGet";
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("cws_info_service", R"(
       semantics {
@@ -98,6 +103,39 @@ std::string GetIdFromName(const std::string& name) {
 }
 std::string GetNameFromId(const std::string& id) {
   return "items/" + id + "/storeMetadata";
+}
+
+// Histogram helpers.
+void RecordFetchSuccess(bool success) {
+  base::UmaHistogramBoolean("Extensions.CWSInfoService.FetchSuccess", success);
+}
+void RecordMetadataChanged(bool changed) {
+  base::UmaHistogramBoolean("Extensions.CWSInfoService.MetadataChanged",
+                            changed);
+}
+void RecordNumRequestsInFetch(int num_requests) {
+  base::UmaHistogramCounts100("Extensions.CWSInfoService.NumRequestsInFetch",
+                              num_requests);
+}
+void RecordNetworkHistograms(const network::SimpleURLLoader* url_loader) {
+  int net_error = url_loader->NetError();
+  int response_code = 0;
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
+    response_code = url_loader->ResponseInfo()->headers->response_code();
+  }
+  base::UmaHistogramSparse(
+      "Extensions.CWSInfoService.NetworkResponseCodeOrError",
+      net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE
+          ? response_code
+          : net_error);
+  if (net_error == net::OK && response_code == net::HTTP_OK) {
+    base::UmaHistogramExactLinear(
+        "Extensions.CWSInfoService.NetworkRetriesTillSuccess",
+        url_loader->GetNumRetries(), kMaxRetriesPerRequest + 1);
+  } else {
+    DVLOG(1) << "Request net error:" << net_error
+             << ", response code:" << response_code;
+  }
 }
 
 }  // namespace
@@ -259,6 +297,7 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
       info_check_timer_.Stop();
       // Save the fetch context and send the (first) request.
       active_fetch_ = std::move(fetch_context);
+      RecordNumRequestsInFetch(active_fetch_->requests.size());
       SendRequest();
       return;
     }
@@ -328,6 +367,7 @@ std::unique_ptr<CWSInfoService::FetchContext> CWSInfoService::CreateRequests(
     // No extensions require a CWS info fetch.
     return nullptr;
   }
+
   // Return the fetch context - contains information about number of requests to
   // send and which ids are included in each request.
   return fetch_context;
@@ -338,11 +378,16 @@ void CWSInfoService::SendRequest() {
   resource_request->url = GURL(kRequestUrl);
   // A POST request is sent with an override to GET due to server requirements.
   resource_request->method = "POST";
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
+  resource_request->headers.SetHeader("X-Goog-Api-Key",
+                                      google_apis::GetAPIKey());
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
+  url_loader_->SetRetryOptions(kMaxRetriesPerRequest,
+                               network::SimpleURLLoader::RETRY_ON_5XX);
   std::string request_str =
       active_fetch_->requests.front().proto.SerializeAsString();
   url_loader_->AttachStringForUpload(request_str, "application/x-protobuf");
@@ -355,6 +400,8 @@ void CWSInfoService::SendRequest() {
 
 void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
   CHECK(url_loader_);
+  RecordNetworkHistograms(url_loader_.get());
+
   bool error = false;
   if (response) {
     BatchGetStoreMetadatasResponse response_proto;
@@ -370,7 +417,6 @@ void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
       error = true;
     }
   } else {
-    DVLOG(1) << "Request failed with error: " << url_loader_->NetError();
     info_errors_++;
     error = true;
   }
@@ -389,6 +435,7 @@ void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
     // prefs.
     pref_service_->SetTime(prefs::kCWSInfoTimestamp, base::Time::Now());
 
+    RecordMetadataChanged(active_fetch_->metadata_changed);
     if (active_fetch_->metadata_changed) {
       // Notify observers if the metadata changed.
       for (auto& observer : observers_) {
@@ -397,7 +444,9 @@ void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
     }
   }
 
-  // All requests completed. Schedule the next check.
+  // All requests completed successfully OR a request failed. In either case,
+  // schedule the next check.
+  RecordFetchSuccess(!error);
   active_fetch_.reset();
   ScheduleCheck(kCheckIntervalSeconds);
 }
