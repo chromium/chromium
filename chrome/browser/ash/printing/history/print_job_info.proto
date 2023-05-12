@@ -118,6 +118,8 @@ message PrintJobInfo {
     UNKNOWN_ERROR = 10;
     // The authorization with the printer has failed.
     CLIENT_UNAUTHORIZED = 11;
+    // The SSL certificate in the printer is expired.
+    EXPIRED_CERTIFICATE = 12;
   }
 
   // The ID of the job.

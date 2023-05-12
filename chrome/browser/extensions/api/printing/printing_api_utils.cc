@@ -140,6 +140,8 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
       return idl::PRINTER_STATUS_OUTPUT_FULL;
     case chromeos::PrinterErrorCode::STOPPED:
       return idl::PRINTER_STATUS_STOPPED;
+    case chromeos::PrinterErrorCode::EXPIRED_CERTIFICATE:
+      return idl::PRINTER_STATUS_EXPIRED_CERTIFICATE;
     default:
       break;
   }

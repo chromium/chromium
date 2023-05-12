@@ -648,6 +648,9 @@
         <message name="IDS_PRINT_MANAGEMENT_CLIENT_UNAUTHORIZED_ERROR_STATUS" desc="The error status displayed next to a print job to indicate to users that their print job failed because their authorization with printer has failed.">
           Failed - Authorization Failed
         </message>
+        <message name="IDS_PRINT_MANAGEMENT_EXPIRED_CERTIFICATE_ERROR_STATUS" desc="The error status displayed next to a print job to indicate to users that their print job failed because their printer has an expired SSL certificate.">
+          Failed - Certificate Expired
+        </message>
         <message name="IDS_PRINT_MANAGEMENT_UNKNOWN_ERROR_STATUS" desc="The error status displayed next to a print job to indicate to users that their print job failed due to an unknown error.">
           Failed - Unknown error
         </message>

@@ -81,6 +81,7 @@ struct StatusReason {
     kPrinterUnreachable,
     kStopped,
     kTrayMissing,
+    [MinVersion=1] kExpiredCertificate,
   };
   [Stable, Extensible]
   enum Severity {

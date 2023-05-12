@@ -30,6 +30,7 @@ enum PrinterErrorCode {
   kFilterFailed,
   kUnknownError,
   kClientUnauthorized,
+  kExpiredCertificate,
 };
 
 // Contains information about a completed print job. Completed print jobs are

@@ -47,6 +47,9 @@ std::u16string GetNotificationTitleForFailure(
     case PrinterErrorCode::CLIENT_UNAUTHORIZED:
       return l10n_util::GetStringUTF16(
           IDS_PRINT_JOB_AUTHORIZATION_ERROR_NOTIFICATION_TITLE);
+    case PrinterErrorCode::EXPIRED_CERTIFICATE:
+      return l10n_util::GetStringUTF16(
+          IDS_PRINT_JOB_EXPIRED_CERT_ERROR_NOTIFICATION_TITLE);
     default:
       return l10n_util::GetStringUTF16(IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE);
   }
@@ -81,6 +84,9 @@ std::u16string GetNotificationTitleForError(
     case PrinterErrorCode::STOPPED:
       return l10n_util::GetStringUTF16(
           IDS_PRINT_JOB_STOPPED_NOTIFICATION_TITLE);
+    case PrinterErrorCode::EXPIRED_CERTIFICATE:
+      return l10n_util::GetStringUTF16(
+          IDS_PRINT_JOB_EXPIRED_CERT_ERROR_NOTIFICATION_TITLE);
     default:
       return l10n_util::GetStringUTF16(IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE);
   }

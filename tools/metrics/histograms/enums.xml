@@ -86043,6 +86043,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="31" label="DEVELOPER_LOW"/>
   <int value="32" label="DEVELOPER_EMPTY"/>
   <int value="33" label="INTERPRETER_RESOURCE_UNAVAILABLE"/>
+  <int value="34" label="CUPS_PKI_EXPIRED"/>
 </enum>
 
 <enum name="PrintJobResult">

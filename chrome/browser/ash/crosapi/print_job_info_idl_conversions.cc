@@ -139,6 +139,8 @@ api::printing::PrinterStatus PrinterErrorCodeToIdl(
     case proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR:
     case proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED:
       return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+    case proto::PrintJobInfo_PrinterErrorCode_EXPIRED_CERTIFICATE:
+      return api::printing::PRINTER_STATUS_EXPIRED_CERTIFICATE;
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::

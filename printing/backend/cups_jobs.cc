@@ -111,6 +111,7 @@ constexpr char kDeveloperLow[] = "developer-low";
 constexpr char kDeveloperEmpty[] = "developer-empty";
 constexpr char kInterpreterResourceUnavailable[] =
     "interpreter-resource-unavailable";
+constexpr char kCupsPkiExpired[] = "cups-pki-expired";
 
 constexpr char kIppScheme[] = "ipp";
 constexpr char kIppsScheme[] = "ipps";
@@ -195,6 +196,7 @@ PrinterStatus::PrinterReason::Reason ToReason(base::StringPiece reason) {
           {kDeveloperEmpty, PReason::kDeveloperEmpty},
           {kInterpreterResourceUnavailable,
            PReason::kInterpreterResourceUnavailable},
+          {kCupsPkiExpired, PReason::kCupsPkiExpired},
       });
 
   const auto* entry = kLabelToReasonMap.find(reason);

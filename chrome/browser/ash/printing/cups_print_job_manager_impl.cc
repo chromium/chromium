@@ -495,6 +495,8 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
         return "Stopped";
       case StatusReason::kTrayMissing:
         return "TrayMissing";
+      case StatusReason::kExpiredCertificate:
+        return "ExpiredCertificate";
     }
   }
 
