@@ -1020,7 +1020,8 @@ void AutocompleteController::UpdateResult(
       default_match_to_preserve.reset();
     }
 
-  } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
+  } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled() &&
+             provider_client_->GetAutocompleteScoringModelService()) {
     // The async scoring model is only run once all the providers are done. Use
     // a WeakPtr since the model is not owned and `this` may no longer be alive.
     // `SortCullAndAnnotateResult()` is called when the model is done.
