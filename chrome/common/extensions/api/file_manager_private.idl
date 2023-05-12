@@ -333,6 +333,11 @@ enum PolicyErrorType {
   dlp_warning_timeout
 };
 
+enum PolicyDialogType {
+  warning,
+  error
+};
+
 enum RecentDateBucket {
   today,
   yesterday,
@@ -1103,7 +1108,7 @@ dictionary ProgressStatus {
 
   // Type of policy error that occurred, if any.
   // Used only if Data Leak Prevention or Enterprise Connectors policies apply.
-  PolicyErrorType policyError;
+  PolicyErrorType? policyError;
 
   // Name of the first source entry.
   DOMString sourceName;
@@ -1943,6 +1948,10 @@ interface Functions {
   // Resumes an I/O task by id. Task ids are communicated to the Files App in
   // each I/O task's progress status.
   static void resumeIOTask(long taskId, ResumeParams params);
+
+  // Shows a policy dialog for a task. Task ids are communicated to the Files
+  // App in each I/O task's progress status.
+  static void showPolicyDialog(long taskId, PolicyDialogType type);
 
   // Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task
   // progress status.

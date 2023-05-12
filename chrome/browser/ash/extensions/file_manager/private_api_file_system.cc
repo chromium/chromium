@@ -1690,6 +1690,23 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+FileManagerPrivateShowPolicyDialogFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using extensions::api::file_manager_private::ShowPolicyDialog::Params;
+  const absl::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (params->task_id <= 0) {
+    return RespondNow(Error("Invalid task id"));
+  }
+
+  // TODO(b/279436140): Call FilesPolicyNotificationManager.
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 FileManagerPrivateProgressPausedTasksFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

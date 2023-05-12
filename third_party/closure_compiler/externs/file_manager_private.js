@@ -388,6 +388,14 @@ chrome.fileManagerPrivate.PolicyErrorType = {
 /**
  * @enum {string}
  */
+chrome.fileManagerPrivate.PolicyDialogType = {
+  WARNING: 'warning',
+  ERROR: 'error',
+};
+
+/**
+ * @enum {string}
+ */
 chrome.fileManagerPrivate.RecentDateBucket = {
   TODAY: 'today',
   YESTERDAY: 'yesterday',
@@ -1703,6 +1711,14 @@ chrome.fileManagerPrivate.cancelIOTask = function(taskId) {};
  * @param {!chrome.fileManagerPrivate.ResumeParams} params
  */
 chrome.fileManagerPrivate.resumeIOTask = function(taskId, params) {};
+
+/**
+ * Shows a policy dialog for a task. Task ids are communicated to the Files App
+ * in each I/O task's progress status.
+ * @param {number} taskId
+ * @param {!chrome.fileManagerPrivate.PolicyDialogType} type
+ */
+chrome.fileManagerPrivate.showPolicyDialog = function(taskId, type) {};
 
 /**
  * Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task

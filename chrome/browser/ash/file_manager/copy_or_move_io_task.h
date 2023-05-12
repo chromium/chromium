@@ -51,6 +51,7 @@ class CopyOrMoveIOTask : public IOTask {
                CompleteCallback complete_callback) override;
 
   // Resumes the copy or move.
+  // TODO(b/281973963): Adapt for policy warnings.
   void Resume(ResumeParams params) override;
 
   // Cancels the copy or move.

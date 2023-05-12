@@ -559,6 +559,20 @@ class FileManagerPrivateProgressPausedTasksFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.showPolicyDialog method.
+class FileManagerPrivateShowPolicyDialogFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.showPolicyDialog",
+                             FILEMANAGERPRIVATE_SHOWPOLICYDIALOG)
+
+ protected:
+  ~FileManagerPrivateShowPolicyDialogFunction() override = default;
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+};
+
 class FileManagerPrivateInternalParseTrashInfoFilesFunction
     : public LoggedExtensionFunction {
  public:

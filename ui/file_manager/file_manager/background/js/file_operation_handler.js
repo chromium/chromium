@@ -95,10 +95,21 @@ export class FileOperationHandler {
           item.state = ProgressItemState.PAUSED;
           // TODO(b/279435843): Replace with translation strings.
           const extraButtonText =
-              (event.itemCount > 1) ? 'Review' : `${event.type} anyway`;
-          // TODO(aidazolic): Pass real callbacks.
+              (event.itemCount === 1) ? `${event.type} anyway` : 'Review';
           item.setExtraButton(ProgressItemState.PAUSED, extraButtonText, () => {
-            console.log('Not implemented yet');
+            if (event.itemCount === 1) {
+              // Single item: the user can continue the action directly from
+              // the notification.
+              chrome.fileManagerPrivate.resumeIOTask(
+                  event.taskId,
+                  chrome.fileManagerPrivate.ResumeParams('', false));
+            } else {
+              // Multiple items: the user can continue the action from the
+              // review dialog.
+              chrome.fileManagerPrivate.showPolicyDialog(
+                  event.taskId,
+                  chrome.fileManagerPrivate.PolicyDialogType.WARNING);
+            }
           });
           break;
         }
@@ -138,13 +149,15 @@ export class FileOperationHandler {
         } else {  // ERROR
           item.state = ProgressItemState.ERROR;
           // Check if there was a policy error.
+          // If more than one file was blocked, add the "Review" button.
           if (item.policyError &&
               item.policyError !== PolicyErrorType.DLP_WARNING_TIMEOUT &&
               event.itemCount > 1) {
-            // TODO(aidazolic): Pass real callbacks.
             // TODO(b/279435843): Replace with translation strings.
             item.setExtraButton(ProgressItemState.ERROR, 'Review', () => {
-              console.log('Not implemented yet');
+              chrome.fileManagerPrivate.showPolicyDialog(
+                  event.taskId,
+                  chrome.fileManagerPrivate.PolicyDialogType.ERROR);
             });
           }
         }
