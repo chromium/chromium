@@ -22,6 +22,9 @@ extern const char kShoppingListDescription[];
 extern const char kChromeCartDomBasedHeuristicsName[];
 extern const char kChromeCartDomBasedHeuristicsDescription[];
 
+extern const char kPriceInsightsName[];
+extern const char kPriceInsightsDescription[];
+
 extern const char kPriceTrackingChipExperimentName[];
 extern const char kPriceTrackingChipExperimentDescription[];
 

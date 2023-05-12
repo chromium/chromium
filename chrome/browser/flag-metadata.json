@@ -6186,6 +6186,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "price-insights",
+    "owners": [ "zhiyuancai", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "print-management-jelly",
     "owners": [
       "//ash/webui/print_management/OWNERS"

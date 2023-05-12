@@ -60540,6 +60540,7 @@ from previous Chrome versions.
   <int value="-1068084507" label="ShareSheetCustomActionsPolish:enabled"/>
   <int value="-1067635248" label="SpeculativeResourcePrefetching:disabled"/>
   <int value="-1065887406" label="PictureInPictureV2:disabled"/>
+  <int value="-1065697407" label="PriceInsights:enabled"/>
   <int value="-1065227777" label="CrOSAutoSelect:disabled"/>
   <int value="-1064733740" label="ui-show-composited-layer-borders"/>
   <int value="-1064302126"
@@ -62959,6 +62960,7 @@ from previous Chrome versions.
   <int value="228107154"
       label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
   <int value="228845546" label="ShimlessRMAOsUpdate:enabled"/>
+  <int value="229312162" label="PriceInsights:disabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>
   <int value="231949727" label="ClipboardHistoryReorder:enabled"/>
