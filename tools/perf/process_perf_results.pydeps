@@ -470,6 +470,7 @@ benchmarks/blink_perf.py
 benchmarks/blink_perf_unittest.py
 benchmarks/desktop_ui.py
 benchmarks/dummy_benchmark.py
+benchmarks/dummy_wpr_benchmark.py
 benchmarks/jetstream2.py
 benchmarks/loading.py
 benchmarks/loading_metrics_category.py
@@ -629,6 +630,7 @@ page_sets/desktop_ui/url_list.py
 page_sets/desktop_ui/webui_tab_strip_story.py
 page_sets/desktop_ui/webui_utils.py
 page_sets/dummy_story_set.py
+page_sets/dummy_wpr_story_set.py
 page_sets/google_pages.py
 page_sets/helpers/__init__.py
 page_sets/helpers/override_online.py

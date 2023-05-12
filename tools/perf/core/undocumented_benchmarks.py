@@ -17,6 +17,7 @@ UNDOCUMENTED_BENCHMARKS = {
     'system_health.webview_startup',
     'tab_switching.typical_25',
     'tracing_perftests',
+    'UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr',
     'v8.runtime_stats.top_25',
     'views_perftests',
     'wasmpspdfkit',
