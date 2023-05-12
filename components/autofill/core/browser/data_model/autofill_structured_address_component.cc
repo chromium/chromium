@@ -326,12 +326,13 @@ void AddressComponent::FillTreeGaps() {
     component->FillTreeGaps();
   }
 
-  bool children_has_value = base::ranges::any_of(
-      Subcomponents(), [](const auto* c) { return !c->GetValue().empty(); });
-
-  if (GetValue().empty() && children_has_value &&
+  if (GetValue().empty() &&
       GetVerificationStatus() == VerificationStatus::kNoStatus) {
-    FormatValueFromSubcomponents();
+    std::u16string formatted_value = GetFormattedValueFromSubcomponents();
+    if (!formatted_value.empty() &&
+        IsValueCompatibleWithAncestors(formatted_value)) {
+      SetValue(formatted_value, VerificationStatus::kFormatted);
+    }
   }
 }
 
@@ -502,6 +503,14 @@ bool AddressComponent::AllDescendantsAreEmpty() const {
   return base::ranges::all_of(Subcomponents(), [](const auto* c) {
     return c->GetValue().empty() && c->AllDescendantsAreEmpty();
   });
+}
+
+bool AddressComponent::IsValueCompatibleWithAncestors(
+    const std::u16string& value) const {
+  bool is_node_compatible =
+      GetValue().empty() || (GetValue().find(value) != std::string::npos);
+  return is_node_compatible &&
+         (!parent_ || parent_->IsValueCompatibleWithAncestors(value));
 }
 
 bool AddressComponent::IsStructureValid() const {
