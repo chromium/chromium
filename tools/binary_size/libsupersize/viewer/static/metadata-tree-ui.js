@@ -57,7 +57,10 @@ class MetadataTreeModel {
   renderSimpleValue(value) {
     if (value === null)
       return 'null';
-    if (typeof value !== 'object')
+    const t = typeof value;
+    if (t === 'number')
+      return formatNumber(value);
+    if (t !== 'object')
       return value.toString();
     if (Array.isArray(value)) {
       if (value.every((v) => v === null || typeof v !== 'object'))
@@ -220,9 +223,14 @@ class MetadataTreeUi extends TreeUi {
     for (const item of items) {
       const tr = document.createElement('tr');
       tr.appendChild(dom.textElement('td', item.name, ''));
-      if (diffMode)
-        tr.appendChild(dom.textElement('td', item.beforeValue.toString(), ''));
-      tr.appendChild(dom.textElement('td', item.value.toString(), ''));
+      const s2 = item.value.toString();
+      const td = dom.textElement('td', s2, '');
+      if (diffMode) {
+        const s1 = item.beforeValue.toString();
+        tr.appendChild(dom.textElement('td', s1, ''));
+        td.classList.toggle('metadata-changed', s1 !== s2);
+      }
+      tr.appendChild(td);
       table.appendChild(tr);
     }
   }

@@ -50,6 +50,7 @@
         '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
         'font-weight:bold;color:red;', '')
 
+    window.supersize.metadata = metadata;
     for (const key of ['size_file', 'before_size_file']) {
       if (metadata.hasOwnProperty(key))
         preprocessSizeFileInPlace(metadata[key]);

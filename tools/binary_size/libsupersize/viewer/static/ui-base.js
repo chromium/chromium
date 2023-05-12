@@ -78,6 +78,23 @@ const _OTHER_SYMBOL_TYPE = 'o';
 const _LOCALE =
     /** @type {Array<string>} */ (navigator.languages) || navigator.language;
 
+/** @type {Object} */
+window.supersize = window.supersize || {};
+
+/** @type {?Worker} */
+window.supersize.worker = null;
+
+/** @type {?Object} **/
+window.supersize.metadata = null;
+
+/**
+ * Helper to render cached metadata.
+ * @type {!function(): void}
+ **/
+window.supersize.prettyMetadata = () => {
+  console.log(JSON.stringify(window.supersize.metadata, null, 2));
+};
+
 /**
  * Returns shortName for a tree node.
  * @param {TreeNode} treeNode

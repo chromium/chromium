@@ -336,6 +336,10 @@ ul {
   white-space: pre;
 }
 
+#div-metadata-view table td.metadata-changed {
+  background: #ffc;
+}
+
 #div-review-info{
   font-size: 13px;
 }
