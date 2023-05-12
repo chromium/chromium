@@ -277,7 +277,6 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
-      {"Access-Control-Allow-Methods", "PUT"},
       {"Access-Control-Allow-Origin", "https://foo.example"},
       {"Access-Control-Allow-Credentials", "true"},
   });
@@ -288,6 +287,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
 
+  // Even though `Access-Control-Allow-Methods` is also missing, the PNA header
+  // missing is noticed first. See https://crbug.com/1424847.
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
   expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
