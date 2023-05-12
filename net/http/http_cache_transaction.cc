@@ -3648,14 +3648,6 @@ void HttpCache::Transaction::DoneWithEntryForRestartWithCache() {
 
 int HttpCache::Transaction::OnCacheReadError(int result, bool restart) {
   DLOG(ERROR) << "ReadData failed: " << result;
-  const int result_for_histogram = std::max(0, -result);
-  if (restart) {
-    base::UmaHistogramSparse("HttpCache.ReadErrorRestartable",
-                             result_for_histogram);
-  } else {
-    base::UmaHistogramSparse("HttpCache.ReadErrorNonRestartable",
-                             result_for_histogram);
-  }
 
   // Avoid using this entry in the future.
   if (cache_.get())
