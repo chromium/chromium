@@ -103,6 +103,11 @@ void LogSaveCardPromptOfferMetric(SaveCardPromptOffer metric,
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".WithMultipleLegalLines", metric);
   }
+  if (options.has_same_last_four_as_server_card_but_different_expiration_date) {
+    base::UmaHistogramEnumeration(metric_with_destination_and_show +
+                                      ".WithSameLastFourButDifferentExpiration",
+                                  metric);
+  }
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
     base::UmaHistogramEnumeration(

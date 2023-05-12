@@ -516,6 +516,16 @@ void CreditCardSaveManager::OfferCardUploadSave() {
     user_did_accept_upload_prompt_ = false;
     if (observer_for_testing_)
       observer_for_testing_->OnOfferUploadSave();
+    auto server_cards = personal_data_manager_->GetServerCreditCards();
+    // At this point of the flow, we know there are no maksed server cards with
+    // the same last four digits and expiration date as the card we are
+    // attempting to save, since if there were any we would have matched it and
+    // not be saving this card.
+    bool found_server_card_with_same_last_four_but_different_expiration =
+        base::ranges::any_of(server_cards, [&](const auto* server_card) {
+          return server_card->HasSameNumberAs(upload_request_.card) &&
+                 !server_card->HasSameExpirationDateAs(upload_request_.card);
+        });
     client_->ConfirmSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,
         AutofillClient::SaveCreditCardOptions()
@@ -525,7 +535,9 @@ void CreditCardSaveManager::OfferCardUploadSave() {
             .with_should_request_name_from_user(should_request_name_from_user_)
             .with_should_request_expiration_date_from_user(
                 should_request_expiration_date_from_user_)
-            .with_show_prompt(show_save_prompt_.value_or(true)),
+            .with_show_prompt(show_save_prompt_.value_or(true))
+            .with_same_last_four_as_server_card_but_different_expiration_date(
+                found_server_card_with_same_last_four_but_different_expiration),
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnUploadSave,
                        weak_ptr_factory_.GetWeakPtr()));
     client_->LoadRiskData(

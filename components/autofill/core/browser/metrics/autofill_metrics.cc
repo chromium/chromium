@@ -837,6 +837,12 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
         "Autofill.CreditCardInfoBar" + destination + ".WithMultipleLegalLines",
         metric, NUM_INFO_BAR_METRICS);
   }
+
+  if (options.has_same_last_four_as_server_card_but_different_expiration_date) {
+    base::UmaHistogramEnumeration("Autofill.CreditCardInfoBar" + destination +
+                                      ".WithSameLastFourButDifferentExpiration",
+                                  metric, NUM_INFO_BAR_METRICS);
+  }
 }
 
 // static

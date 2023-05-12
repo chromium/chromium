@@ -261,12 +261,20 @@ class AutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    SaveCreditCardOptions&
+    with_same_last_four_as_server_card_but_different_expiration_date(bool b) {
+      has_same_last_four_as_server_card_but_different_expiration_date = b;
+      return *this;
+    }
+
     bool from_dynamic_change_form = false;
     bool has_non_focusable_field = false;
     bool should_request_name_from_user = false;
     bool should_request_expiration_date_from_user = false;
     bool show_prompt = false;
     bool has_multiple_legal_lines = false;
+    bool has_same_last_four_as_server_card_but_different_expiration_date =
+        false;
   };
 
   // Used for options of save (and update) address profile prompt.
