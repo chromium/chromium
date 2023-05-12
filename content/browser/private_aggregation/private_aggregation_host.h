@@ -55,8 +55,8 @@ class CONTENT_EXPORT PrivateAggregationHost
   static constexpr char kApiReportVersion[] = "0.1";
 
   // The maximum number of contributions that can go in an `AggregatableReport`.
-  // Aligns with `blink::kMaxAttributionAggregationKeysPerSourceOrTrigger`.
-  static constexpr int kMaxNumberOfContributions = 50;
+  // Aligns with `attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger`.
+  static constexpr int kMaxNumberOfContributions = 20;
 
   // The maximum allowed context_id string length.
   static constexpr int kMaxContextIdLength = 64;
