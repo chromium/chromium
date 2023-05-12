@@ -603,6 +603,16 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
     DCHECK(extension);
   }
 
+  // `ValidateSourceContextAndExtractExtensionId` is called before coming here.
+  // Therefore, possible origins are either an extension origin or an opaque
+  // origin created by an extension. See https://crbug.com/1407087.
+  url::Origin source_origin = url::Origin();
+  if (source.is_for_render_frame()) {
+    source_origin = source.GetRenderFrameHost()->GetLastCommittedOrigin();
+  } else if (source.is_for_service_worker() && extension) {
+    source_origin = extension->origin();
+  }
+
   BrowserContext* receiver_context = receiver_contents->GetBrowserContext();
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(receiver_context,
                                                        context_));
@@ -613,9 +623,8 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
           ExtensionApiFrameIdMap::FrameData(), receiver.release(),
           receiver_port_id, MessagingEndpoint::ForExtension(extension_id),
           std::move(opener_port), extension_id,
-          GURL(),         // Source URL doesn't make sense for opening to tabs.
-          url::Origin(),  // Origin URL doesn't make sense for opening to tabs.
-          channel_type, channel_name,
+          GURL(),  // Source URL doesn't make sense for opening to tabs.
+          source_origin, channel_type, channel_name,
           false);  // Connections to tabs aren't webview guests.
   OpenChannelImpl(receiver_context, std::move(params), extension,
                   false /* did_enqueue */);

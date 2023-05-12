@@ -147,6 +147,8 @@ function testConnectFromTabError() {
 
 // For test sendMessage.
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  chrome.test.assertEq({id: chrome.runtime.id, origin: 'null'}, sender);
+  const extensionOrigin = new URL(chrome.runtime.getURL('')).origin;
+  chrome.test.assertEq(
+      { id: chrome.runtime.id, origin: extensionOrigin }, sender);
   sendResponse({success: (request.step2 == 1)});
 });
