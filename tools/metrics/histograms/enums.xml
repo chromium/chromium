@@ -60007,6 +60007,8 @@ from previous Chrome versions.
   <int value="-1330409814" label="ContextMenuCopyImage:enabled"/>
   <int value="-1329990210"
       label="UserCloudSigninRestrictionPolicyFetcher:disabled"/>
+  <int value="-1329973081"
+      label="CrOSLateBootArcVmAAudioMMAPLowLatency:enabled"/>
   <int value="-1329586063"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:disabled"/>
   <int value="-1328090640" label="DesktopPWAsAppHomePage:enabled"/>
@@ -65368,6 +65370,8 @@ from previous Chrome versions.
   <int value="1553777815" label="enable-search-prefetch-service"/>
   <int value="1556554961" label="DriveFsBidirectionalNativeMessaging:enabled"/>
   <int value="1556739957" label="Jelly:disabled"/>
+  <int value="1556835732"
+      label="CrOSLateBootArcVmAAudioMMAPLowLatency:disabled"/>
   <int value="1557680135" label="PartitionedCookies:disabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
   <int value="1558757619"

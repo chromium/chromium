@@ -2938,6 +2938,9 @@ extern const char kArcVmmSwapKBShortcutDesc[];
 extern const char kArcEnableAAudioMMAPName[];
 extern const char kArcEnableAAudioMMAPDescription[];
 
+extern const char kArcAAudioMMAPLowLatencyName[];
+extern const char kArcAAudioMMAPLowLatencyDescription[];
+
 extern const char kArcEnableVirtioBlkForDataName[];
 extern const char kArcEnableVirtioBlkForDataDesc[];
 

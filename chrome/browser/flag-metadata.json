@@ -227,6 +227,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "arc-aaudio-mmap-low-latency",
+    "owners": [ "pteerapong", "chromeos-audio@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "arc-arc-on-demand",
     "owners": [ "yuholong" ],
     "expiry_milestone": 130

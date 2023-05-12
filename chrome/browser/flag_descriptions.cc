@@ -5128,6 +5128,11 @@ const char kArcEnableAAudioMMAPDescription[] =
     "Enable AAudio MMAP support for ARCVM which provides low latency audio "
     "for supported apps.";
 
+const char kArcAAudioMMAPLowLatencyName[] =
+    "Enable ARCVM AAudio MMAP low latency";
+const char kArcAAudioMMAPLowLatencyDescription[] =
+    "When enabled, ARCVM AAudio MMAP will use low latency setting.";
+
 const char kArcEnableVirtioBlkForDataName[] =
     "Enable virtio-blk for ARCVM /data";
 const char kArcEnableVirtioBlkForDataDesc[] =
