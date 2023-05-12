@@ -10168,6 +10168,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadingList.SyncStateMatchesBookmarks" enum="BooleanMatched"
     expires_after="2022-11-20">
+  <obsolete>
+    No longer recorded as of 2023-05.
+  </obsolete>
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
