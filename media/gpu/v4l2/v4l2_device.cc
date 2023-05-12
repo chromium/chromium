@@ -1945,16 +1945,32 @@ V4L2Device::GetSupportedRateControlMode() {
   return rate_control_mode;
 }
 
+std::vector<uint32_t> V4L2Device::EnumerateSupportedPixelformats(
+    v4l2_buf_type buf_type) {
+  std::vector<uint32_t> pixelformats;
+
+  v4l2_fmtdesc fmtdesc;
+  memset(&fmtdesc, 0, sizeof(fmtdesc));
+  fmtdesc.type = buf_type;
+
+  for (; Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0; ++fmtdesc.index) {
+    DVLOGF(3) << "Found " << FourccToString(fmtdesc.pixelformat) << " ("
+              << fmtdesc.description << ")";
+    pixelformats.push_back(fmtdesc.pixelformat);
+  }
+
+  return pixelformats;
+}
+
 VideoDecodeAccelerator::SupportedProfiles
 V4L2Device::EnumerateSupportedDecodeProfiles(const size_t num_formats,
                                              const uint32_t pixelformats[]) {
   VideoDecodeAccelerator::SupportedProfiles profiles;
 
-  const auto v4l2_codecs_as_pix_fmts =
-      EnumerateSupportedPixFmts(base::BindRepeating(&V4L2Device::Ioctl, this),
-                                V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+  const auto& supported_pixelformats =
+      EnumerateSupportedPixelformats(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 
-  for (uint32_t pixelformat : v4l2_codecs_as_pix_fmts) {
+  for (uint32_t pixelformat : supported_pixelformats) {
     if (std::find(pixelformats, pixelformats + num_formats, pixelformat) ==
         pixelformats + num_formats)
       continue;
@@ -1990,11 +2006,10 @@ VideoEncodeAccelerator::SupportedProfiles
 V4L2Device::EnumerateSupportedEncodeProfiles() {
   VideoEncodeAccelerator::SupportedProfiles profiles;
 
-  const auto v4l2_codecs_as_pix_fmts =
-      EnumerateSupportedPixFmts(base::BindRepeating(&V4L2Device::Ioctl, this),
-                                V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+  const auto& supported_pixelformats =
+      EnumerateSupportedPixelformats(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 
-  for (const auto& pixelformat : v4l2_codecs_as_pix_fmts) {
+  for (const auto& pixelformat : supported_pixelformats) {
     VideoEncodeAccelerator::SupportedProfile profile;
     profile.max_framerate_numerator = 30;
     profile.max_framerate_denominator = 1;
