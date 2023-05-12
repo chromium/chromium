@@ -223,7 +223,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // ContentAutofillRouter to potentially a different ContentAutofillDriver and
   // then passed to AutofillAgent in the renderer.
   //
-  // These events are private to to avoid accidental in the browser.
+  // These events are private to avoid accidental use in the browser.
   // They can be accessed explicitly through browser_events().
   std::vector<FieldGlobalId> FillOrPreviewForm(
       mojom::RendererFormDataAction action,
@@ -261,7 +261,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // page, so we validate calls accordingly. If we receive an unexpected call,
   // we shut down the renderer and log the bad message.
   //
-  // These events are private to to avoid accidental in the browser.
+  // These events are private to avoid accidental use in the browser.
   // They can be accessed explicitly through renderer_events().
   void SetFormToBeProbablySubmitted(
       const absl::optional<FormData>& form) override;
