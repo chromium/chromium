@@ -9,33 +9,43 @@
     Serializable,
     RuntimeEnabled=FileSystemAccess
 ] interface FileSystemFileHandle : FileSystemHandle {
-    [CallWith=ScriptState, RaisesException]
-    Promise<FileSystemWritableFileStream> createWritable(
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        Measure
+    ] Promise<FileSystemWritableFileStream> createWritable(
         optional FileSystemCreateWritableOptions options = {});
-
-    [CallWith=ScriptState, RaisesException] Promise<File> getFile();
 
     [
         CallWith=ScriptState,
         RaisesException,
-        Exposed=DedicatedWorker,
-        RuntimeEnabled=FileSystemAccessAccessHandle,
         Measure
+    ] Promise<File> getFile();
+
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        Measure,
+        Exposed=DedicatedWorker,
+        RuntimeEnabled=FileSystemAccessAccessHandle
     ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
 
     [
         CallWith=ScriptState,
         RaisesException,
+        MeasureAs=FileSystemAccessMoveRename,
         RuntimeEnabled=FileSystemAccessAccessHandle
     ]  Promise<void> move(USVString new_entry_name);
     [
         CallWith=ScriptState,
         RaisesException,
+        MeasureAs=FileSystemAccessMoveReparent,
         RuntimeEnabled=FileSystemAccessAccessHandle
     ]  Promise<void> move(FileSystemDirectoryHandle destination_directory);
     [
         CallWith=ScriptState,
         RaisesException,
+        MeasureAs=FileSystemAccessMoveReparentAndRename,
         RuntimeEnabled=FileSystemAccessAccessHandle
     ]  Promise<void> move(FileSystemDirectoryHandle destination_directory,
                           USVString new_entry_name);

@@ -3901,6 +3901,14 @@ enum WebFeature {
   kLinkRelPreloadAsFont = 4561,
   kCrossWindowAccessToBrowserGeneratedDocument = 4562,
   kSpeculationRulesNoVarySearchHint = 4563,
+  kFileSystemAccessMoveRename = 4564,
+  kFileSystemAccessMoveReparent = 4565,
+  kFileSystemAccessMoveReparentAndRename = 4566,
+  kV8FileSystemDirectoryHandle_RemoveEntry_Method = 4567,
+  kV8FileSystemFileHandle_CreateWritable_Method = 4568,
+  kV8FileSystemFileHandle_GetFile_Method = 4569,
+  kV8FileSystemHandle_GetUniqueId_Method = 4570,
+  kV8FileSystemHandle_Remove_Method = 4571,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

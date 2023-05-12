@@ -42403,6 +42403,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4561" label="LinkRelPreloadAsFont"/>
   <int value="4562" label="CrossWindowAccessToBrowserGeneratedDocument"/>
   <int value="4563" label="SpeculationRulesNoVarySearchHint"/>
+  <int value="4564" label="FileSystemAccessMoveRename"/>
+  <int value="4565" label="FileSystemAccessMoveReparent"/>
+  <int value="4566" label="FileSystemAccessMoveReparentAndRename"/>
+  <int value="4567" label="V8FileSystemDirectoryHandle_RemoveEntry_Method"/>
+  <int value="4568" label="V8FileSystemFileHandle_CreateWritable_Method"/>
+  <int value="4569" label="V8FileSystemFileHandle_GetFile_Method"/>
+  <int value="4570" label="V8FileSystemHandle_GetUniqueId_Method"/>
+  <int value="4571" label="V8FileSystemHandle_Remove_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

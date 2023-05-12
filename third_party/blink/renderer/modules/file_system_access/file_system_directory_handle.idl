@@ -17,10 +17,27 @@
     [RaisesException] FileSystemDirectoryIterator keys();
     [RaisesException] FileSystemDirectoryIterator values();
 
-    [CallWith=ScriptState,RaisesException] Promise<FileSystemFileHandle> getFileHandle(USVString name, optional FileSystemGetFileOptions options = {});
-    [CallWith=ScriptState,RaisesException] Promise<FileSystemDirectoryHandle> getDirectoryHandle(USVString name, optional FileSystemGetDirectoryOptions options = {});
+    [
+        CallWith=ScriptState,
+        RaisesException
+    ] Promise<FileSystemFileHandle> getFileHandle(USVString name,
+        optional FileSystemGetFileOptions options = {});
+    [
+        CallWith=ScriptState,
+        RaisesException
+    ] Promise<FileSystemDirectoryHandle> getDirectoryHandle(USVString name,
+        optional FileSystemGetDirectoryOptions options = {});
 
-    [CallWith=ScriptState,RaisesException] Promise<void> removeEntry(USVString name, optional FileSystemRemoveOptions options = {});
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        Measure
+    ] Promise<void> removeEntry(USVString name,
+        optional FileSystemRemoveOptions options = {});
 
-    [CallWith=ScriptState, Measure,RaisesException] Promise<sequence<USVString>?> resolve(FileSystemHandle possibleChild);
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        Measure
+    ] Promise<sequence<USVString>?> resolve(FileSystemHandle possibleChild);
 };
