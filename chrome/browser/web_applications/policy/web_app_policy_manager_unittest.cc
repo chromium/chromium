@@ -97,12 +97,10 @@ constexpr char kDefaultCustomIconUrl[] = "https://windowed.example/icon.png";
 constexpr char kUnsecureIconUrl[] = "http://windowed.example/icon.png";
 constexpr char kDefaultCustomIconHash[] = "abcdef";
 
-base::Value GetWindowedItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
-  item.SetKey(kDefaultLaunchContainerKey,
-              base::Value(kDefaultLaunchContainerWindowValue));
-  return item;
+base::Value::Dict GetWindowedItem() {
+  return base::Value::Dict()
+      .Set(kUrlKey, kWindowedUrl)
+      .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue);
 }
 
 ExternalInstallOptions GetWindowedInstallOptions() {
@@ -118,12 +116,10 @@ ExternalInstallOptions GetWindowedInstallOptions() {
   return options;
 }
 
-base::Value GetTabbedItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kTabbedUrl));
-  item.SetKey(kDefaultLaunchContainerKey,
-              base::Value(kDefaultLaunchContainerTabValue));
-  return item;
+base::Value::Dict GetTabbedItem() {
+  return base::Value::Dict()
+      .Set(kUrlKey, kTabbedUrl)
+      .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerTabValue);
 }
 
 ExternalInstallOptions GetTabbedInstallOptions() {
@@ -139,10 +135,8 @@ ExternalInstallOptions GetTabbedInstallOptions() {
   return options;
 }
 
-base::Value GetNoContainerItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
-  return item;
+base::Value::Dict GetNoContainerItem() {
+  return base::Value::Dict().Set(kUrlKey, kNoContainerUrl);
 }
 
 ExternalInstallOptions GetNoContainerInstallOptions() {
@@ -158,10 +152,8 @@ ExternalInstallOptions GetNoContainerInstallOptions() {
   return options;
 }
 
-base::Value GetCreateDesktopShortcutDefaultItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
-  return item;
+base::Value::Dict GetCreateDesktopShortcutDefaultItem() {
+  return base::Value::Dict().Set(kUrlKey, kNoContainerUrl);
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions() {
@@ -177,11 +169,10 @@ ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions() {
   return options;
 }
 
-base::Value GetCreateDesktopShortcutFalseItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
-  item.SetKey(kCreateDesktopShortcutKey, base::Value(false));
-  return item;
+base::Value::Dict GetCreateDesktopShortcutFalseItem() {
+  return base::Value::Dict()
+      .Set(kUrlKey, kNoContainerUrl)
+      .Set(kCreateDesktopShortcutKey, false);
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions() {
@@ -197,11 +188,10 @@ ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions() {
   return options;
 }
 
-base::Value GetCreateDesktopShortcutTrueItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
-  item.SetKey(kCreateDesktopShortcutKey, base::Value(true));
-  return item;
+base::Value::Dict GetCreateDesktopShortcutTrueItem() {
+  return base::Value::Dict()
+      .Set(kUrlKey, kNoContainerUrl)
+      .Set(kCreateDesktopShortcutKey, true);
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions() {
@@ -233,13 +223,11 @@ class MockAppRegistrarObserver : public AppRegistrarObserver {
   int on_policy_changed_call_count = 0;
 };
 
-base::Value GetFallbackAppNameItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
-  item.SetKey(kDefaultLaunchContainerKey,
-              base::Value(kDefaultLaunchContainerWindowValue));
-  item.SetKey(kFallbackAppNameKey, base::Value(kDefaultFallbackAppName));
-  return item;
+base::Value::Dict GetFallbackAppNameItem() {
+  return base::Value::Dict()
+      .Set(kUrlKey, kWindowedUrl)
+      .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue)
+      .Set(kFallbackAppNameKey, kDefaultFallbackAppName);
 }
 
 ExternalInstallOptions GetFallbackAppNameInstallOptions() {
@@ -256,13 +244,11 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions() {
   return options;
 }
 
-base::Value GetCustomAppNameItem(std::string name) {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
-  item.SetKey(kDefaultLaunchContainerKey,
-              base::Value(kDefaultLaunchContainerWindowValue));
-  item.SetKey(kCustomNameKey, base::Value(std::move(name)));
-  return item;
+base::Value::Dict GetCustomAppNameItem(std::string name) {
+  return base::Value::Dict()
+      .Set(kUrlKey, kWindowedUrl)
+      .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue)
+      .Set(kCustomNameKey, std::move(name));
 }
 
 ExternalInstallOptions GetCustomAppNameInstallOptions(std::string name) {
@@ -279,17 +265,15 @@ ExternalInstallOptions GetCustomAppNameInstallOptions(std::string name) {
   return options;
 }
 
-base::Value GetCustomAppIconItem(bool secure = true) {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
-  item.SetKey(kDefaultLaunchContainerKey,
-              base::Value(kDefaultLaunchContainerWindowValue));
-  base::Value sub_item(base::Value::Type::DICT);
-  sub_item.SetKey(kCustomIconURLKey, base::Value(secure ? kDefaultCustomIconUrl
-                                                        : kUnsecureIconUrl));
-  sub_item.SetKey(kCustomIconHashKey, base::Value(kDefaultCustomIconHash));
-  item.SetKey(kCustomIconKey, std::move(sub_item));
-  return item;
+base::Value::Dict GetCustomAppIconItem(bool secure = true) {
+  return base::Value::Dict()
+      .Set(kUrlKey, kWindowedUrl)
+      .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue)
+      .Set(kCustomIconKey,
+           base::Value::Dict()
+               .Set(kCustomIconURLKey,
+                    secure ? kDefaultCustomIconUrl : kUnsecureIconUrl)
+               .Set(kCustomIconHashKey, kDefaultCustomIconHash));
 }
 
 ExternalInstallOptions GetCustomAppIconInstallOptions() {

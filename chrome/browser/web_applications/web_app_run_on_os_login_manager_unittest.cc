@@ -171,12 +171,11 @@ class WebAppRunOnOsLoginManagerSimpleSettingsTest
     : public WebAppRunOnOsLoginManagerTestBase {
  protected:
   void SetWebAppSettingsPref() override {
-    base::Value item(base::Value::Type::DICT);
-    item.SetKey(kManifestId, base::Value(kTestApp));
-    item.SetKey(kRunOnOsLogin, base::Value(kRunWindowed));
-    base::Value::List list;
-    list.Append(std::move(item));
-    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, std::move(list));
+    profile()->GetPrefs()->SetList(
+        prefs::kWebAppSettings,
+        base::Value::List().Append(base::Value::Dict()
+                                       .Set(kManifestId, kTestApp)
+                                       .Set(kRunOnOsLogin, kRunWindowed)));
   }
 
   void InstallWebApp() {
