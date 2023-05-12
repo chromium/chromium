@@ -139,14 +139,17 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   void Build(Browser* browser);
 };
 
-class AutofillSubMenuModel : public ui::SimpleMenuModel {
+class PasswordsAndAutofillSubMenuModel : public ui::SimpleMenuModel {
  public:
-  explicit AutofillSubMenuModel(ui::SimpleMenuModel::Delegate* delegate);
+  explicit PasswordsAndAutofillSubMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate);
 
-  AutofillSubMenuModel(const AutofillSubMenuModel&) = delete;
-  AutofillSubMenuModel& operator=(const AutofillSubMenuModel&) = delete;
+  PasswordsAndAutofillSubMenuModel(const PasswordsAndAutofillSubMenuModel&) =
+      delete;
+  PasswordsAndAutofillSubMenuModel& operator=(
+      const PasswordsAndAutofillSubMenuModel&) = delete;
 
-  ~AutofillSubMenuModel() override;
+  ~PasswordsAndAutofillSubMenuModel() override;
 };
 
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {

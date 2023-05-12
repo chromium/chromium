@@ -354,9 +354,9 @@ void ExtensionsMenuModel::Build(Browser* browser) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillSubMenuModel
+// PasswordsAndAutofillSubMenuModel
 
-AutofillSubMenuModel::AutofillSubMenuModel(
+PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate)
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndIcon(
@@ -373,7 +373,7 @@ AutofillSubMenuModel::AutofillSubMenuModel(
                                      ui::kColorMenuIcon, kDefaultIconSize));
 }
 
-AutofillSubMenuModel::~AutofillSubMenuModel() = default;
+PasswordsAndAutofillSubMenuModel::~PasswordsAndAutofillSubMenuModel() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FindAndEditSubMenuModel
@@ -1051,8 +1051,10 @@ void AppMenuModel::Build() {
       features::IsChromeRefresh2023() &&
       !base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerRedesign)) {
-    sub_menus_.push_back(std::make_unique<AutofillSubMenuModel>(this));
-    AddSubMenuWithStringId(IDC_AUTOFILL_MENU, IDS_PASSWORDS_AND_AUTOFILL_MENU,
+    sub_menus_.push_back(
+        std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
+    AddSubMenuWithStringId(IDC_PASSWORDS_AND_AUTOFILL_MENU,
+                           IDS_PASSWORDS_AND_AUTOFILL_MENU,
                            sub_menus_.back().get());
   }
 
@@ -1290,7 +1292,7 @@ void AppMenuModel::Build() {
     set_icon(IDC_TRANSLATE_PAGE, kTranslateChromeRefreshIcon);
     set_icon(IDC_ROUTE_MEDIA, kCastMenuIcon);
     set_icon(IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
-    set_icon(IDC_AUTOFILL_MENU, kKeyChromeRefreshIcon);
+    set_icon(IDC_PASSWORDS_AND_AUTOFILL_MENU, kKeyChromeRefreshIcon);
     set_icon(IDC_MORE_TOOLS_MENU, kMoreToolsMenuIcon);
     set_icon(IDC_OPTIONS, kSettingsMenuIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
