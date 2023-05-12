@@ -6814,3 +6814,6 @@ crbug.com/1444049 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prere
 # Sheriff 2023-05-11
 crbug.com/1444592 [ Linux ] external/wpt/js-self-profiling/function-anonymous-names.https.html [ Failure ]
 crbug.com/1444626 [ Mac ] external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Failure ]
+
+# Fails on win-10-rel (only) with no stack trace or other help
+crbug.com/1444368 [ Win ] fast/selectors/specificity-overflow.html [ Crash Pass ]
