@@ -741,6 +741,7 @@ test("gfx_unittests") {
     sources += [ "font_fallback_linux_unittest.cc" ]
   }
   if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "IOSurface.framework" ]
   }
   if (is_mac) {

@@ -14,6 +14,10 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Helper function to return a UIImage with the given size and scale.
@@ -76,7 +80,7 @@ TEST_F(ImageIOSTest, ImageConversionWithUnsupportedScaleFactor) {
       ASSERT_EQ(source_scale, ui_image.scale);
 
       // Convert to SkBitmap and test its size.
-      gfx::Image to_skbitmap([ui_image retain]);
+      gfx::Image to_skbitmap(ui_image);
       const SkBitmap* bitmap = to_skbitmap.ToSkBitmap();
       ASSERT_TRUE(bitmap != NULL);
       EXPECT_EQ(kWidth * ui::GetScaleForResourceScaleFactor(supported_scale),
@@ -85,7 +89,7 @@ TEST_F(ImageIOSTest, ImageConversionWithUnsupportedScaleFactor) {
                 bitmap->height());
 
       // Convert to ImageSkia and test its size.
-      gfx::Image to_imageskia([ui_image retain]);
+      gfx::Image to_imageskia(ui_image);
       const gfx::ImageSkia* imageskia = to_imageskia.ToImageSkia();
       EXPECT_EQ(kWidth, imageskia->width());
       EXPECT_EQ(kHeight, imageskia->height());

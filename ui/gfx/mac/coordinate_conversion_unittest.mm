@@ -13,6 +13,10 @@
 #import "testing/platform_test.h"
 #include "ui/gfx/geometry/rect.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 const int kTestWidth = 320;
 const int kTestHeight = 200;
 
@@ -33,7 +37,7 @@ namespace {
 
 class MacCoordinateConversionTest : public PlatformTest {
  public:
-  MacCoordinateConversionTest() {}
+  MacCoordinateConversionTest() = default;
 
   MacCoordinateConversionTest(const MacCoordinateConversionTest&) = delete;
   MacCoordinateConversionTest& operator=(const MacCoordinateConversionTest&) =
@@ -50,7 +54,7 @@ class MacCoordinateConversionTest : public PlatformTest {
 void MacCoordinateConversionTest::SetUp() {
   // Before swizzling, do a sanity check that the primary screen's origin is
   // (0, 0). This should always be true.
-  NSRect primary_screen_frame = [[[NSScreen screens] firstObject] frame];
+  NSRect primary_screen_frame = NSScreen.screens.firstObject.frame;
   EXPECT_EQ(0, primary_screen_frame.origin.x);
   EXPECT_EQ(0, primary_screen_frame.origin.y);
 
@@ -58,7 +62,7 @@ void MacCoordinateConversionTest::SetUp() {
       [NSScreen class], [MacCoordinateConversionTestScreenDonor class],
       @selector(frame));
 
-  primary_screen_frame = [[[NSScreen screens] firstObject] frame];
+  primary_screen_frame = NSScreen.screens.firstObject.frame;
   EXPECT_EQ(kTestWidth, primary_screen_frame.size.width);
   EXPECT_EQ(kTestHeight, primary_screen_frame.size.height);
 }
