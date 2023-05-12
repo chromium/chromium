@@ -396,6 +396,7 @@ source_set("web_applications") {
     "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/sync",
+    "//components/ukm",
     "//components/user_manager",
     "//components/web_package",
     "//components/webapps/browser",

@@ -4,10 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
-#include <stdint.h>
-#include <algorithm>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -22,18 +19,14 @@
 #include "base/one_shot_event.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/pass_key.h"
-#include "base/value_iterators.h"
-#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -46,15 +39,13 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/sync/base/model_type.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
@@ -62,10 +53,6 @@
 
 using DisplayMode = blink::mojom::DisplayMode;
 using content::WebContents;
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 namespace web_app {
 
@@ -457,8 +444,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   }
   last_recorded_web_app_start_url_ = features.start_url;
 
-  FlushOldRecordsAndUpdate(features, profile_,
-                           SyncServiceFactory::GetForProfile(profile_));
+  FlushOldRecordsAndUpdate(features, profile_);
 }
 
 }  // namespace web_app

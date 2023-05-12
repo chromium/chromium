@@ -64,7 +64,7 @@ bool IsAllowlistedSourceId(SourceId source_id) {
       return true;
     }
     case ukm::SourceIdObj::Type::DEFAULT:
-    case ukm::SourceIdObj::Type::DESKTOP_WEB_APP_ID:
+    case ukm::SourceIdObj::Type::DEPRECATED_DESKTOP_WEB_APP_ID:
     case ukm::SourceIdObj::Type::WORKER_ID:
       return false;
   }
@@ -833,7 +833,7 @@ UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
     case SourceIdType::HISTORY_ID:
     case SourceIdType::WEBAPK_ID:
     case SourceIdType::PAYMENT_APP_ID:
-    case SourceIdType::DESKTOP_WEB_APP_ID:
+    case SourceIdType::DEPRECATED_DESKTOP_WEB_APP_ID:
     case SourceIdType::WORKER_ID:
     case SourceIdType::NO_URL_ID:
     case SourceIdType::REDIRECT_ID:
@@ -899,7 +899,7 @@ void UkmRecorderImpl::MaybeMarkForDeletion(SourceId source_id) {
     }
     case ukm::SourceIdObj::Type::DEFAULT:
     case ukm::SourceIdObj::Type::APP_ID:
-    case ukm::SourceIdObj::Type::DESKTOP_WEB_APP_ID:
+    case ukm::SourceIdObj::Type::DEPRECATED_DESKTOP_WEB_APP_ID:
     case ukm::SourceIdObj::Type::NAVIGATION_ID:
     case ukm::SourceIdObj::Type::WORKER_ID:
     case ukm::SourceIdObj::Type::REDIRECT_ID:
