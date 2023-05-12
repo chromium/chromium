@@ -187,6 +187,70 @@ Preload::PreloadingStatus PreloadingTriggeringOutcomeToProtocol(
   }
 }
 
+Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
+  switch (status) {
+    case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+      return Preload::PrefetchStatusEnum::PrefetchNotUsedProbeFailed;
+    case PrefetchStatus::kPrefetchNotStarted:
+      return Preload::PrefetchStatusEnum::PrefetchNotStarted;
+    case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligibleUserHasCookies;
+    case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleUserHasServiceWorker;
+    case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligibleSchemeIsNotHttps;
+    case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleNonDefaultStoragePartition;
+    case PrefetchStatus::kPrefetchNotFinishedInTime:
+      return Preload::PrefetchStatusEnum::PrefetchNotFinishedInTime;
+    case PrefetchStatus::kPrefetchFailedNetError:
+      return Preload::PrefetchStatusEnum::PrefetchFailedNetError;
+    case PrefetchStatus::kPrefetchFailedNon2XX:
+      return Preload::PrefetchStatusEnum::PrefetchFailedNon2XX;
+    case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+      return Preload::PrefetchStatusEnum::PrefetchFailedMIMENotSupported;
+    case PrefetchStatus::kPrefetchSuccessful:
+      return Preload::PrefetchStatusEnum::PrefetchSuccessfulButNotUsed;
+    case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+      return Preload::PrefetchStatusEnum::PrefetchIneligibleRetryAfter;
+    case PrefetchStatus::kPrefetchProxyNotAvailable:
+      return Preload::PrefetchStatusEnum::PrefetchProxyNotAvailable;
+    case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+      return Preload::PrefetchStatusEnum::PrefetchIsPrivacyDecoy;
+    case PrefetchStatus::kPrefetchIsStale:
+      return Preload::PrefetchStatusEnum::PrefetchIsStale;
+    case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+      return Preload::PrefetchStatusEnum::PrefetchNotUsedCookiesChanged;
+    case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligibleHostIsNonUnique;
+    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligibleDataSaverEnabled;
+    case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligibleExistingProxy;
+    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleBrowserContextOffTheRecord;
+    case PrefetchStatus::kPrefetchHeldback:
+      return Preload::PrefetchStatusEnum::PrefetchHeldback;
+    case PrefetchStatus::kPrefetchAllowed:
+      return Preload::PrefetchStatusEnum::PrefetchAllowed;
+    case PrefetchStatus::kPrefetchResponseUsed:
+      return Preload::PrefetchStatusEnum::PrefetchResponseUsed;
+    case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+      return Preload::PrefetchStatusEnum::PrefetchFailedInvalidRedirect;
+    case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+      return Preload::PrefetchStatusEnum::PrefetchFailedIneligibleRedirect;
+    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+      return Preload::PrefetchStatusEnum::PrefetchFailedPerPageLimitExceeded;
+    case PrefetchStatus::
+        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy;
+  }
+}
+
 bool PreloadingTriggeringOutcomeSupportedByPrefetch(
     PreloadingTriggeringOutcome feature) {
   // TODO(crbug/1384419): revisit the unsupported cases call sites to make sure
@@ -295,7 +359,8 @@ void PreloadHandler::DidUpdatePrefetchStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::string& initiating_frame_id,
     const GURL& prefetch_url,
-    PreloadingTriggeringOutcome status) {
+    PreloadingTriggeringOutcome status,
+    PrefetchStatus prefetch_status) {
   if (!enabled_) {
     return;
   }
@@ -309,7 +374,8 @@ void PreloadHandler::DidUpdatePrefetchStatus(
   if (PreloadingTriggeringOutcomeSupportedByPrefetch(status)) {
     frontend_->PrefetchStatusUpdated(
         std::move(preloading_attempt_key), initiating_frame_id,
-        prefetch_url.spec(), PreloadingTriggeringOutcomeToProtocol(status));
+        prefetch_url.spec(), PreloadingTriggeringOutcomeToProtocol(status),
+        PrefetchStatusToProtocol(prefetch_status));
   }
 }
 

@@ -12,6 +12,7 @@
 
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/preload.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "url/gurl.h"
 
@@ -47,7 +48,8 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const std::string& initiating_frame_id,
       const GURL& prefetch_url,
-      PreloadingTriggeringOutcome status);
+      PreloadingTriggeringOutcome status,
+      PrefetchStatus prefetch_status);
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const std::string& initiating_frame_id,
