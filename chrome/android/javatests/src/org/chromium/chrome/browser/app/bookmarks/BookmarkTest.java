@@ -114,6 +114,7 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
@@ -1774,7 +1775,8 @@ public class BookmarkTest {
         mAdapter = (DragReorderableRecyclerViewAdapter) mItemsContainer.getAdapter();
         mToolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
 
-        runOnUiThreadBlocking(() -> mDelegate.getDragStateDelegate().setA11yStateForTesting(false));
+        runOnUiThreadBlocking(
+                () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
     }
 
     private boolean isItemPresentInBookmarkList(final String expectedTitle) {

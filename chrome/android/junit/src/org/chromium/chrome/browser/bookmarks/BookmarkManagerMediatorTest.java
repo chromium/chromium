@@ -23,10 +23,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -145,8 +143,6 @@ public class BookmarkManagerMediatorTest {
     @Mock
     private BookmarkUndoController mBookmarkUndoController;
     @Mock
-    private AccessibilityManager mAccessibilityManager;
-    @Mock
     private Runnable mHideKeyboardRunnable;
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;
@@ -249,9 +245,6 @@ public class BookmarkManagerMediatorTest {
             doReturn(mSelectableListLayoutHandleBackPressChangedSupplier)
                     .when(mSelectableListLayout)
                     .getHandleBackPressChangedSupplier();
-            doReturn(mAccessibilityManager)
-                    .when(mActivity)
-                    .getSystemService(Context.ACCESSIBILITY_SERVICE);
 
             // Setup BookmarkUIObserver.
             doRunnable(() -> mMediator.removeUiObserver(mBookmarkUiObserver))
@@ -417,7 +410,6 @@ public class BookmarkManagerMediatorTest {
         mMediator.onDestroy();
         verify(mBookmarkUiObserver).onDestroy();
         verify(mBookmarkUndoController).destroy();
-        verify(mAccessibilityManager).removeAccessibilityStateChangeListener(any());
     }
 
     @Test

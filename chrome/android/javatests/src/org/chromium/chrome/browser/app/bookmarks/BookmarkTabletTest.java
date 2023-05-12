@@ -36,6 +36,7 @@ import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for the bookmark manager on tablet. */
@@ -76,7 +77,7 @@ public class BookmarkTabletTest {
                         .getManagerForTesting();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false));
+                () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
     }
 
     private BookmarkDelegate getBookmarkDelegate() {

@@ -1737,6 +1737,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/junit",
       "//third_party/metrics_proto:metrics_proto_java",
       "//third_party/mockito:mockito_java",
+      "//ui/accessibility:ax_base_java",
       "//ui/android:clipboard_java_test_support",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
