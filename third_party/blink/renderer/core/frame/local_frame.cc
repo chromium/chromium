@@ -1203,10 +1203,10 @@ scoped_refptr<InspectorTaskRunner> LocalFrame::GetInspectorTaskRunner() {
 }
 
 void LocalFrame::StartPrinting(const gfx::SizeF& page_size,
-                               const gfx::SizeF& original_page_size,
+                               const gfx::SizeF& aspect_ratio,
                                float maximum_shrink_ratio) {
   DCHECK(!saved_scroll_offsets_);
-  SetPrinting(true, page_size, original_page_size, maximum_shrink_ratio);
+  SetPrinting(true, page_size, aspect_ratio, maximum_shrink_ratio);
 }
 
 void LocalFrame::EndPrinting() {
@@ -1216,7 +1216,7 @@ void LocalFrame::EndPrinting() {
 
 void LocalFrame::SetPrinting(bool printing,
                              const gfx::SizeF& page_size,
-                             const gfx::SizeF& original_page_size,
+                             const gfx::SizeF& aspect_ratio,
                              float maximum_shrink_ratio) {
   // In setting printing, we should not validate resources already cached for
   // the document.  See https://bugs.webkit.org/show_bug.cgi?id=43704
@@ -1231,7 +1231,7 @@ void LocalFrame::SetPrinting(bool printing,
     text_autosizer->UpdatePageInfo();
 
   if (ShouldUsePrintingLayout()) {
-    View()->ForceLayoutForPagination(page_size, original_page_size,
+    View()->ForceLayoutForPagination(page_size, aspect_ratio,
                                      maximum_shrink_ratio);
   } else {
     if (LayoutView* layout_view = View()->GetLayoutView()) {
@@ -1352,26 +1352,27 @@ void LocalFrame::RestoreScrollOffsets() {
 }
 
 gfx::SizeF LocalFrame::ResizePageRectsKeepingRatio(
-    const gfx::SizeF& original_size,
+    const gfx::SizeF& aspect_ratio,
     const gfx::SizeF& expected_size) const {
   auto* layout_object = ContentLayoutObject();
   if (!layout_object)
     return gfx::SizeF();
 
   bool is_horizontal = layout_object->StyleRef().IsHorizontalWritingMode();
-  float width = original_size.width();
-  float height = original_size.height();
-  if (!is_horizontal)
-    std::swap(width, height);
-  DCHECK_GT(fabs(width), std::numeric_limits<float>::epsilon());
-  float ratio = height / width;
+  float numerator =
+      is_horizontal ? aspect_ratio.height() : aspect_ratio.width();
+  float denominator =
+      is_horizontal ? aspect_ratio.width() : aspect_ratio.height();
+  DCHECK_GT(fabs(denominator), std::numeric_limits<float>::epsilon());
+  float ratio = numerator / denominator;
 
-  float result_width =
+  float inline_size =
       floorf(is_horizontal ? expected_size.width() : expected_size.height());
-  float result_height = floorf(result_width * ratio);
-  if (!is_horizontal)
-    std::swap(result_width, result_height);
-  return gfx::SizeF(result_width, result_height);
+  float block_size = floorf(inline_size * ratio);
+  if (!is_horizontal) {
+    return gfx::SizeF(block_size, inline_size);
+  }
+  return gfx::SizeF(inline_size, block_size);
 }
 
 void LocalFrame::SetPageZoomFactor(float factor) {

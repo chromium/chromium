@@ -151,10 +151,10 @@ void PrintContext::BeginPrintMode(float width, float height) {
   // without going back to screen mode.
   is_printing_ = true;
 
-  gfx::SizeF original_page_size(width, height);
-  gfx::SizeF min_layout_size = frame_->ResizePageRectsKeepingRatio(
-      original_page_size, gfx::SizeF(width * kPrintingMinimumShrinkFactor,
-                                     height * kPrintingMinimumShrinkFactor));
+  gfx::SizeF aspect_ratio(width, height);
+  gfx::SizeF floored_min_layout_size = frame_->ResizePageRectsKeepingRatio(
+      aspect_ratio, gfx::SizeF(width * kPrintingMinimumShrinkFactor,
+                               height * kPrintingMinimumShrinkFactor));
 
   const Settings* settings = frame_->GetSettings();
   DCHECK(settings);
@@ -164,7 +164,7 @@ void PrintContext::BeginPrintMode(float width, float height) {
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.
   frame_->StartPrinting(
-      min_layout_size, original_page_size,
+      floored_min_layout_size, aspect_ratio,
       printingMaximumShrinkFactor / kPrintingMinimumShrinkFactor);
 }
 
