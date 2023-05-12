@@ -101,7 +101,7 @@ SavedTabGroupButton::SavedTabGroupButton(
               base::Unretained(this)),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
   SetAccessibilityProperties(
-      ax::mojom::Role::kButton, /*name=*/absl::nullopt,
+      ax::mojom::Role::kButton, /*name=*/GetAccessibleNameForButton(),
       /*description=*/absl::nullopt,
       l10n_util::GetStringUTF16(
           IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
@@ -124,6 +124,7 @@ SavedTabGroupButton::SavedTabGroupButton(
       ChromeDistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(0),
                                                 kButtonRadius);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
 
   set_drag_controller(this);
 }
@@ -147,6 +148,21 @@ std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
              ? GetText()
              : std::u16string();
 }
+
+bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
+    ShowContextMenu(GetKeyboardContextMenuLocation(),
+                    ui::MenuSourceType::MENU_SOURCE_KEYBOARD);
+    return true;
+  } else if (event.key_code() == ui::KeyboardCode::VKEY_SPACE) {
+    NotifyClick(event);
+    return true;
+  }
+
+  return false;
+}
+
+void SavedTabGroupButton::OnFocus() {}
 
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::MenuButton::GetAccessibleNodeData(node_data);

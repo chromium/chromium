@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -74,6 +75,7 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
  public:
   explicit OverflowMenu(SavedTabGroupBar& parent_bar)
       : parent_bar_(parent_bar) {}
+
   ~OverflowMenu() override = default;
 
   bool GetDropFormats(
@@ -187,9 +189,7 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
       animations_enabled_(animations_enabled) {
   SetAccessibilityProperties(
       ax::mojom::Role::kToolbar,
-      /*name=*/l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS),
-      /*description=*/absl::nullopt,
-      /*role_description=*/absl::nullopt);
+      /*name=*/l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
 
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupBarElementId);
 
@@ -211,8 +211,8 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   overflow_button_ = AddChildView(
       std::make_unique<SavedTabGroupOverflowButton>(base::BindRepeating(
           &SavedTabGroupBar::MaybeShowOverflowMenu, base::Unretained(this))));
-  HideOverflowButton();
 
+  HideOverflowButton();
   LoadAllButtonsFromModel();
   ReorderChildView(overflow_button_, children().size());
 }
@@ -603,16 +603,19 @@ views::View* SavedTabGroupBar::GetButton(const base::Uuid& guid) {
 void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
                                                const ui::Event& event) {
   DCHECK(saved_tab_group_model_ && saved_tab_group_model_->Contains(id));
-
   const SavedTabGroup* group = saved_tab_group_model_->Get(id);
 
-  // TODO: Handle click if group has already been opened (crbug.com/1238539)
-  // left click on a saved tab group opens all links in new group
-  if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
-    if (group->saved_tabs().empty()) {
-      return;
-    }
-    SavedTabGroupKeyedService* keyed_service =
+  if (group->saved_tabs().empty()) {
+    return;
+  }
+
+  bool space_pressed = event.IsKeyEvent() && event.AsKeyEvent()->key_code() ==
+                                                 ui::KeyboardCode::VKEY_SPACE;
+
+  bool left_mouse_button_pressed = event.flags() & ui::EF_LEFT_MOUSE_BUTTON;
+
+  if (left_mouse_button_pressed || space_pressed) {
+    SavedTabGroupKeyedService* const keyed_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
 
     keyed_service->OpenSavedTabGroupInBrowser(browser_, group->saved_guid());
@@ -630,29 +633,10 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
     return;
   }
 
-  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      overflow_button_, views::BubbleBorder::TOP_LEFT);
+  // 1. Build the vertical list of buttons in the over flow menu.
+  auto overflow_menu = std::make_unique<OverflowMenu>(*this);
 
-  bubble_delegate_ = bubble_delegate.get();
-  bubble_delegate_->SetShowTitle(false);
-  bubble_delegate_->SetShowCloseButton(false);
-  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate_->set_margins(gfx::Insets());
-  bubble_delegate_->set_fixed_width(200);
-  bubble_delegate_->set_adjust_if_offscreen(true);
-  bubble_delegate_->set_close_on_deactivate(true);
-
-  overflow_menu_ =
-      bubble_delegate_->SetContentsView(std::make_unique<OverflowMenu>(*this));
-
-  const gfx::Insets insets = gfx::Insets::TLBR(16, 16, 16, 48);
-  auto box = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, insets,
-      kOverflowMenuButtonPadding);
-  box->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
-  overflow_menu_->SetLayoutManager(std::move(box));
-
-  // Add all buttons that are not currently visible to the overflow menu
+  // Add all buttons that are not currently visible to the overflow menu.
   for (const auto* const child : children()) {
     if (child->GetVisible() ||
         !views::IsViewClass<SavedTabGroupButton>(child)) {
@@ -664,7 +648,7 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
     const SavedTabGroup* const group =
         saved_tab_group_model_->Get(button->guid());
 
-    overflow_menu_->AddChildView(std::make_unique<SavedTabGroupButton>(
+    overflow_menu->AddChildView(std::make_unique<SavedTabGroupButton>(
         *group,
         base::BindRepeating(&SavedTabGroupBar::page_navigator,
                             base::Unretained(this)),
@@ -673,13 +657,37 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
         browser_, animations_enabled_));
   }
 
+  // Make the list of buttons vertical.
+  const gfx::Insets insets = gfx::Insets::TLBR(16, 16, 16, 48);
+  auto box = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, insets,
+      kOverflowMenuButtonPadding);
+  box->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
+  overflow_menu->SetLayoutManager(std::move(box));
+
+  // 2. Create the bubble / background which will hold the overflow menu.
+  // TODO(dljames): Set the background color to match the current theme.
+  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
+      overflow_button_, views::BubbleBorder::TOP_LEFT);
+  bubble_delegate->set_fixed_width(200);
+  bubble_delegate->set_margins(gfx::Insets());
+  bubble_delegate->set_adjust_if_offscreen(true);
+  bubble_delegate->set_close_on_deactivate(true);
+  bubble_delegate->SetShowTitle(false);
+  bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate->SetShowCloseButton(false);
+  bubble_delegate->SetEnableArrowKeyTraversal(true);
+  bubble_delegate->SetContentsView(std::move(overflow_menu));
+
+  bubble_delegate_ = bubble_delegate.get();
+  overflow_menu_ =
+      views::AsViewClass<OverflowMenu>(bubble_delegate->GetContentsView());
+
+  // 3. Display the menu.
   auto* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
-
   widget_observation_.Observe(widget);
-
   widget->Show();
-  return;
 }
 
 void SavedTabGroupBar::HideOverflowMenu() {
