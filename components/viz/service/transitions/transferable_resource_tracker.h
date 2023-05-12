@@ -43,9 +43,6 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
     ResourceFrame& operator=(ResourceFrame&& other);
 
-    // The cached resource for the root content.
-    PositionedResource root;
-
     // The cached resource for each shared element. The entries here are
     // optional since copy request for an element may fail or a
     // [src_element, dst_element] has a null src_element.

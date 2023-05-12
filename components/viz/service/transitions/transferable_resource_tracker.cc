@@ -42,8 +42,6 @@ TransferableResourceTracker::ImportResources(
   const auto& directive = saved_frame->directive();
 
   ResourceFrame resource_frame;
-  resource_frame.root = ImportResource(std::move(frame_copy->root_result));
-
   resource_frame.shared.resize(frame_copy->shared_results.size());
   for (size_t i = 0; i < frame_copy->shared_results.size(); ++i) {
     auto& shared_result = frame_copy->shared_results[i];
@@ -124,7 +122,6 @@ TransferableResourceTracker::ImportResource(
 }
 
 void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
-  UnrefResource(frame.root.resource.id, /*count=*/1);
   for (const auto& shared : frame.shared) {
     if (shared.has_value())
       UnrefResource(shared->resource.id, /*count=*/1);

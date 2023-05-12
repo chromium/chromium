@@ -76,7 +76,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   bool FilterSharedElementsWithRenderPassOrResource(
       std::vector<TransferableResource>* resource_list,
       const base::flat_map<ViewTransitionElementResourceId,
-                           const CompositorRenderPass*>* element_id_to_pass,
+                           CompositorRenderPass*>* element_id_to_pass,
       const DrawQuad& quad,
       CompositorRenderPass& copy_pass);
 
