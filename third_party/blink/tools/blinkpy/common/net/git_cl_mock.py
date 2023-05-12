@@ -12,7 +12,7 @@ from blinkpy.common.system.executive import ScriptError
 class MockGitCL(object):
     def __init__(self,
                  host,
-                 try_job_results=None,
+                 try_job_results={},
                  status='closed',
                  issue_number='1234',
                  time_out=False,
