@@ -190,7 +190,7 @@
 <translation id="2597774443162333062">Файлдар мүчүлүштүктөрдү оңдоо үчүн Google'га жөнөтүлөт</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
-<translation id="2620436844016719705">Тутум</translation>
+<translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Аккаунтка кирүү сүрөтү</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> альбому тандалды</translation>
 <translation id="2712812801627182647">TLS аутентификация ачкычы</translation>
@@ -229,7 +229,7 @@
 <translation id="315116470104423982">Мобилдик Интернет</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-бет скандалууда...</translation>
 <translation id="315738237743207937">Кирүү бети аныкталды</translation>
-<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Тутум жана колдонмо тууралуу маалыматты<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />көрсөткүчтөрдү<ph name="END_LINK2" /> жөнөтүү</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Система жана колдонмо тууралуу маалыматты<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />көрсөткүчтөрдү<ph name="END_LINK2" /> жөнөтүү</translation>
 <translation id="3170673040743561620">Документиңизди сканерге коюңуз</translation>
 <translation id="3188257591659621405">Менин файлдарым</translation>
 <translation id="319101249942218879">Аватардын сүрөтү өзгөрдү</translation>

@@ -4642,7 +4642,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5155327081870541046">Na barra de enderezos, escribe o atallo do sitio no que queres realizar buscas (por exemplo: "@marcadores"). Despois preme o atallo de teclado que prefiras e escribe o termo de busca.</translation>
 <translation id="5156638757840305347">Destácase o cursor cando aparece ou cando se move</translation>
 <translation id="5157635116769074044">Fixar esta páxina á pantalla de inicio...</translation>
-<translation id="5158206172605340248">Pechouse o menú de acentos gráficos.</translation>
+<translation id="5158206172605340248">Pechouse o menú de acentos.</translation>
 <translation id="5159094275429367735">Configurar Crostini</translation>
 <translation id="5159419673777902220">Teu pai ou túa nai desactivou os permisos para as extensións</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
@@ -5333,7 +5333,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">Non se puido activar a recuperación de datos locais</translation>
-<translation id="5805268472388605531">Mantén premidas as teclas para ver os acentos gráficos e outros caracteres especiais</translation>
+<translation id="5805268472388605531">Mantén premidas as teclas para ver os acentos e outros caracteres especiais</translation>
 <translation id="5805697420284793859">Xestor de ventás</translation>
 <translation id="5806447147478173900">Almacenamento total usado polos sitios mostrados: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (predeterminado)</translation>
@@ -7792,7 +7792,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032244173881942855">Non se puido emitir a pestana.</translation>
 <translation id="8032569120109842252">Seguindo</translation>
-<translation id="8033023935541439900">Abriuse o menú de acentos gráficos. Preme esquerda ou dereita para desprazarte e Introducir para escribir un.</translation>
+<translation id="8033023935541439900">Abriuse o menú de acentos. Preme esquerda ou dereita para desprazarte e Introducir para escribir un.</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Tempo de espera esgotado</translation>
 <translation id="8035059678007243127">Páxina de incógnito almacenada na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>

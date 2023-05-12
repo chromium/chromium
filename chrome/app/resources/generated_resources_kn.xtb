@@ -2999,7 +2999,7 @@
 <translation id="3642699533549879077">ಬೇರೆ ಯಾರೋ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ನೋಡಿದಾಗ, ನಿಮಗೆ ಅಲರ್ಟ್ ದೊರೆಯುತ್ತದೆ ಮತ್ತು ಅಧಿಸೂಚನೆಯ ವಿಷಯವನ್ನು ಮರೆಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="3643962751030964445">ಈ ಸಾಧನವನ್ನು <ph name="DEVICE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="DEVICE_MANAGER" /> ಪ್ರಕಾರ, <ph name="USER_EMAIL_ADDRESS" /> ಖಾತೆಗಾಗಿ ಹೊಸ ಪ್ರೊಫೈಲ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3645372836428131288">ಫಿಂಗರ್‌‌ಪ್ರಿಂಟ್‌‌ನ ಬೇರೊಂದು ಭಾಗವನ್ನು ಸೆರೆಹಿಡಿಯಲು ಬೆರಳನ್ನು ನಿಧಾನವಾಗಿ ಸರಿಸಿ.</translation>
-<translation id="3647051300407077858">ಅಧಿಸೂಚನೆ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="3647051300407077858">ನೋಟಿಫಿಕೇಶನ್ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3647654707956482440">ಈ ಲಿಂಕ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಲು, ಟೈಪಿಂಗ್ ದೋಷವಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಬೇರೊಂದು ಲಿಂಕ್ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ಪತ್ತೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -5634,7 +5634,7 @@
 <translation id="6059276912018042191">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6059652578941944813">ಪ್ರಮಾಣಪತ್ರ ಶ್ರೇಣಿ ವ್ಯವಸ್ಥೆ</translation>
 <translation id="6059925163896151826">USB ಸಾಧನಗಳು</translation>
-<translation id="6061408389284235459"><ph name="DEVICE_NAME" /> ಸಾಧನಕ್ಕೆ ಅಧಿಸೂಚನೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
+<translation id="6061408389284235459"><ph name="DEVICE_NAME" /> ಸಾಧನಕ್ಕೆ ನೋಟಿಫಿಕೇಶನ್ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="6063284707309177505">QR ಕೋಡ್ ರಚಿಸಿ</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ಗಮನಿಸಿ<ph name="END_BOLD" />: ಇದೇ ರೀತಿಯ ಧ್ವನಿ ಅಥವಾ ರೆಕಾರ್ಡಿಂಗ್ <ph name="SUPERVISED_USER_NAME" /> ಅವರ ವೈಯಕ್ತಿಕ ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗಬಹುದು. ಬ್ಯಾಟರಿಯನ್ನು ಉಳಿಸಲು, ಈ ಸಾಧನವನ್ನು ವಿದ್ಯುತ್ ಮೂಲಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಿದಾಗ ಮಾತ್ರ ನೀವು "Ok Google" ಅನ್ನು ಪತ್ತೆಮಾಡಲು ನೀವು <ph name="SUPERVISED_USER_NAME" /> ಅವರ Assistant ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಯ್ಕೆಮಾಡಬಹುದು.</translation>
 <translation id="6064217302520318294">ಸ್ಕ್ರೀನ್ ಲಾಕ್</translation>
@@ -8943,7 +8943,7 @@
 <translation id="9056810968620647706">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈ ಕೆಳಗಿನ ವಿಷಯವನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸುತ್ತಿದ್ದಾರೆ:</translation>
 <translation id="9057354806206861646">ಅಪ್‌ಡೇಟ್ ವೇಳಾಪಟ್ಟಿ</translation>
-<translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ದಿನಕ್ಕೆ ಸುಮಾರು 1 ಅಧಿಸೂಚನೆ}one{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ಅಧಿಸೂಚನೆಗಳು}other{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ದಿನಕ್ಕೆ ಸುಮಾರು 1 ನೋಟಿಫಿಕೇಶನ್}one{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="9058760336383947367">ಪ್ರಿಂಟರ್ PPD ಅನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="9061383912634843744">ಉಳಿಸಲಾದ ರುಜುವಾತುಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. ಆಫ್ ಮಾಡಿದರೆ, ಸೈಟ್ ಅಥವಾ ಆ್ಯಪ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವ ಮೊದಲು ಪ್ರತಿ ಬಾರಿ ದೃಢೀಕರಣಕ್ಕಾಗಿ ನಿಮ್ಮನ್ನು ಕೇಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="9062468308252555888">14x</translation>
