@@ -209,6 +209,7 @@ SuccessStatus GetSuccessStatusFromError(
     case AndroidBackendErrorType::kGMSVersionNotSupported:
     case AndroidBackendErrorType::kExternalError:
     case AndroidBackendErrorType::kBackendNotAvailable:
+    case AndroidBackendErrorType::kFailedToCreateFacetId:
       return SuccessStatus::kError;
   }
   NOTREACHED();
