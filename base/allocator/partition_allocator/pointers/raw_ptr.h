@@ -168,14 +168,6 @@ struct TraitsToImpl;
 template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
 class raw_ptr;
 
-#if BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
-using raw_ptr_experimental = raw_ptr<T, Traits>;
-#else
-template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
-using raw_ptr_experimental = T*;
-#endif  // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-
 }  // namespace base
 
 // This type is to be used internally, or in callbacks arguments when it is
@@ -1156,7 +1148,6 @@ using RemovePointerT = typename RemovePointer<T>::type;
 }  // namespace base
 
 using base::raw_ptr;
-using base::raw_ptr_experimental;
 
 // DisableDanglingPtrDetection option for raw_ptr annotates
 // "intentional-and-safe" dangling pointers. It is meant to be used at the

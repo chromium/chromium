@@ -954,45 +954,6 @@ TEST(RawRef, CrossKindAssignment) {
               CountersMatch());
 }
 
-// Verifies that `raw_ref_experimental` is aliased appropriately.
-//
-// The `DisableDanglingPtrDetection` trait is arbitrarily chosen and is
-// just there to ensure that `raw_ref_experimental` knows how to field
-// the traits template argument.
-#if BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-static_assert(
-    std::is_same_v<raw_ref_experimental<int, DisableDanglingPtrDetection>,
-                   raw_ref<int, DisableDanglingPtrDetection>>);
-static_assert(
-    std::is_same_v<raw_ref_experimental<const int, DisableDanglingPtrDetection>,
-                   raw_ref<const int, DisableDanglingPtrDetection>>);
-static_assert(
-    std::is_same_v<
-        const raw_ref_experimental<const int, DisableDanglingPtrDetection>,
-        const raw_ref<const int, DisableDanglingPtrDetection>>);
-#else   // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-// `DisableDanglingPtrDetection` means nothing here and is silently
-// ignored.
-static_assert(
-    std::is_same_v<raw_ref_experimental<int, DisableDanglingPtrDetection>,
-                   int&>);
-static_assert(
-    std::is_same_v<raw_ref_experimental<const int, DisableDanglingPtrDetection>,
-                   const int&>);
-
-// `const raw_ref` is a thing, but `T& const` is not. Therefore, when
-// `raw_ref_experimental` is `T&`, we cannot utter the type
-// `const raw_ref_experimental`.
-#endif  // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-
-// Verifies that `base::GetRawReference()` returns a T&.
-TEST(RawRef, GetRawReference) {
-  int x = 123;
-  raw_ref_experimental<int> miracle_ref(x);
-  static_assert(
-      std::is_same_v<decltype(base::GetRawReference(miracle_ref)), int&>);
-}
-
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 TEST(AsanBackupRefPtrImpl, RawRefGet) {

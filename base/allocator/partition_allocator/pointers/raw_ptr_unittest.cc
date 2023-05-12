@@ -1499,37 +1499,6 @@ TEST_F(RawPtrTest, ToAddressGivesBackRawAddress) {
   EXPECT_EQ(base::to_address(raw), base::to_address(miracle));
 }
 
-// Verifies that `raw_ptr_experimental` is aliased appropriately.
-//
-// The `DisableDanglingPtrDetection` trait is arbitrarily chosen and is
-// just there to ensure that `raw_ptr_experimental` knows how to field
-// the traits template argument.
-#if BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-static_assert(
-    std::is_same_v<raw_ptr_experimental<int, DisableDanglingPtrDetection>,
-                   raw_ptr<int, DisableDanglingPtrDetection>>);
-static_assert(
-    std::is_same_v<raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-                   raw_ptr<const int, DisableDanglingPtrDetection>>);
-static_assert(
-    std::is_same_v<
-        const raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-        const raw_ptr<const int, DisableDanglingPtrDetection>>);
-#else   // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-// `DisableDanglingPtrDetection` means nothing here and is silently
-// ignored.
-static_assert(
-    std::is_same_v<raw_ptr_experimental<int, DisableDanglingPtrDetection>,
-                   int*>);
-static_assert(
-    std::is_same_v<raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-                   const int*>);
-static_assert(
-    std::is_same_v<
-        const raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-        const int* const>);
-#endif  // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-
 }  // namespace
 
 namespace base {
