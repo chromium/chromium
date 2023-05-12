@@ -91,6 +91,7 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
 
   last_provided_independent_metrics_ = base::Time::Now();
 
+  Recorder::GetInstance()->OnProvideIndependentMetrics(uma_proto);
   recorder().ProvideEventMetrics(*uma_proto);
 
   // Independent events should not be associated with the client_id, so clear
