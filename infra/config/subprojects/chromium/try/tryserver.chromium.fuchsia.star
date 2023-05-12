@@ -140,7 +140,8 @@ try_.orchestrator_builder(
         "weetbix.enable_weetbix_exonerations": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
+    # TODO(crbug.com/1445005): Restore when runhooks is fixed.
+    #tryjob = try_.job(),
     use_clang_coverage = True,
 )
 
