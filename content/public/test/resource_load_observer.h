@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_TEST_RESOURCE_LOAD_OBSERVER_H_
-#define CONTENT_TEST_RESOURCE_LOAD_OBSERVER_H_
+#ifndef CONTENT_PUBLIC_TEST_RESOURCE_LOAD_OBSERVER_H_
+#define CONTENT_PUBLIC_TEST_RESOURCE_LOAD_OBSERVER_H_
 
 #include <string>
 #include <vector>
@@ -12,11 +12,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/shell/browser/shell.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+class Shell;
+class WebContents;
 
 // Observer class to track resource loads.
 class ResourceLoadObserver : public WebContentsObserver {
@@ -29,11 +30,13 @@ class ResourceLoadObserver : public WebContentsObserver {
     ResourceLoadEntry& operator=(ResourceLoadEntry&&);
     ResourceLoadEntry(const ResourceLoadEntry&) = delete;
     ResourceLoadEntry& operator=(const ResourceLoadEntry&) = delete;
+
     blink::mojom::ResourceLoadInfoPtr resource_load_info;
     bool resource_is_associated_with_main_frame;
   };
 
   explicit ResourceLoadObserver(Shell* shell);
+  explicit ResourceLoadObserver(WebContents* web_contents);
 
   ResourceLoadObserver(const ResourceLoadObserver&) = delete;
   ResourceLoadObserver& operator=(const ResourceLoadObserver&) = delete;
@@ -90,4 +93,4 @@ class ResourceLoadObserver : public WebContentsObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_RESOURCE_LOAD_OBSERVER_H_
+#endif  // CONTENT_PUBLIC_TEST_RESOURCE_LOAD_OBSERVER_H_

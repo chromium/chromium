@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -52,6 +51,7 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/resource_load_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api_test_utils.h"
@@ -268,39 +268,57 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
                               "has been blocked by CORS policy")));
   }
 
-  void VerifyFetchWasBlockedByCorb(const base::HistogramTester& histograms) {
-    // Make sure that histograms logged in other processes (e.g. in
-    // NetworkService process) get synced.
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-    histograms.ExpectBucketCount("SiteIsolation.XSD.Browser.Action",
-                                 CORBAction::kResponseStarted, 1);
-    histograms.ExpectBucketCount("SiteIsolation.XSD.Browser.Action",
-                                 CORBAction::kBlockedWithoutSniffing, 1);
+  // Setup resource load observer. We will frequently be testing against
+  // active_web_contents, so we use that as default when no web_contents
+  // is passed in.
+  void ObserveResourceLoads(content::WebContents* web_contents = nullptr) {
+    if (!web_contents) {
+      web_contents = active_web_contents();
+    }
+    resource_load_observer_ =
+        std::make_unique<content::ResourceLoadObserver>(web_contents);
   }
 
-  void VerifyFetchWasAllowedByCorb(const base::HistogramTester& histograms,
-                                   bool expecting_sniffing = false) {
-    // Make sure that histograms logged in other processes (e.g. in
-    // NetworkService process) get synced.
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  void VerifyFetchWasBlockedByCorb(const GURL& url) {
+    // The test must setup resource_load_observer_ for the appropriate web
+    // contents before calling this method.
+    EXPECT_TRUE(resource_load_observer_);
+    resource_load_observer_->WaitForResourceCompletion(url);
+    EXPECT_TRUE(resource_load_observer_->GetResource(url));
+    EXPECT_EQ(0, (*resource_load_observer_->GetResource(url))->raw_body_bytes);
 
-    histograms.ExpectBucketCount("SiteIsolation.XSD.Browser.Action",
-                                 CORBAction::kResponseStarted, 1);
-    histograms.ExpectBucketCount("SiteIsolation.XSD.Browser.Action",
-                                 expecting_sniffing
-                                     ? CORBAction::kAllowedAfterSniffing
-                                     : CORBAction::kAllowedWithoutSniffing,
-                                 1);
+    // For ORB "v0.2" the error code lets us determine precisely whether a
+    // fetch was blocked by ORB. For previous versions, we have to rely on
+    // circumstantial evidence (like an empty body, which could have other
+    // reasons).
+    if (base::FeatureList::IsEnabled(
+            network::features::kOpaqueResponseBlockingV02)) {
+      EXPECT_EQ(net::ERR_BLOCKED_BY_ORB,
+                (*resource_load_observer_->GetResource(url))->net_error);
+    }
   }
 
-  void VerifyCorbWasDisabled(const base::HistogramTester& histograms) {
-    // Make sure that histograms logged in other processes (e.g. in
-    // NetworkService process) get synced.
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  void VerifyFetchWasAllowedByCorb(const GURL& url) {
+    // The test must setup resource_load_observer_ for the appropriate web
+    // contents before calling this method.
+    EXPECT_TRUE(resource_load_observer_);
+    EXPECT_TRUE(resource_load_observer_->GetResource(url));
 
-    EXPECT_THAT(histograms.GetTotalCountsForPrefix("SiteIsolation.XSD.Browser"),
-                ::testing::IsEmpty());
+    // Non-cors requests may return an opaque response. The ResourceLoadObserver
+    // is based on WebContentObserver, which models these as a generic network
+    // error (rather than any of the specific network errors). So we accept a
+    // resource has having been allowed if the error code is either OK, or
+    // the generic FAILED (but no other error state).
+    EXPECT_THAT((*resource_load_observer_->GetResource(url))->net_error,
+                testing::AnyOf(
+                    testing::Eq(net::OK),         // Request passes.
+                    testing::Eq(net::ERR_FAILED)  // Non-cors opaque response.
+                    ));
+  }
+
+  void VerifyCorbWasDisabled(const GURL& url) {
+    // If CORB/ORB doesn't apply, it should not block any request.
+    VerifyFetchWasAllowedByCorb(url);
   }
 
   // Verifies that fetching a CORB-eligible resource from a content script will
@@ -310,7 +328,6 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   // like MIME types not covered by CORB (e.g. application/octet-stream) or
   // same-origin responses.
   void VerifyCorbEligibleFetchFromContentScript(
-      const base::HistogramTester& histograms,
       const content::WebContentsConsoleObserver& console_observer,
       const std::string& actual_fetch_result,
       const std::string& expected_fetch_result) {
@@ -331,12 +348,12 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   }
 
   void VerifyNonCorbElligibleFetchFromContentScript(
-      const base::HistogramTester& histograms,
+      const GURL& url,
       const content::WebContentsConsoleObserver& console_observer,
       const std::string& actual_fetch_result,
       const std::string& expected_fetch_result_prefix) {
     // Verify that CORB allowed the response.
-    VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
+    VerifyFetchWasAllowedByCorb(url);
 
     // Verify that the response body was blocked by CORS.
     EXPECT_EQ(kCorsErrorWhenFetching, actual_fetch_result);
@@ -562,6 +579,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   }
 
   raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
+  std::unique_ptr<content::ResourceLoadObserver> resource_load_observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
@@ -576,7 +594,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // navigation of the main frame.
   {
     // Monitor CORB behavior + result of the fetch.
-    base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     content::DOMMessageQueue message_queue(active_web_contents());
 
@@ -597,15 +614,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
     // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                             "nosniff.xml - body\n");
   }
 
   // Test case #2: Declarative script injected after a renderer-initiated
   // creation of an about:blank frame.
   {
     // Monitor CORB behavior + result of the fetch.
-    base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     content::DOMMessageQueue message_queue(active_web_contents());
 
@@ -623,8 +639,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
     // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                             "nosniff.xml - body\n");
   }
 }
 
@@ -649,7 +665,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
-  base::HistogramTester histograms;
   content::WebContentsConsoleObserver console_observer(active_web_contents());
   GURL cross_site_resource(
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
@@ -659,8 +674,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
   // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(
-      histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                           "nosniff.xml - body\n");
 }
 
 // Tests that extension permission to bypass CORS is revoked after the extension
@@ -722,15 +737,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     )";
   {
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
 
     content::DOMMessageQueue queue(active_web_contents());
     content::ExecuteScriptAsync(active_web_contents(), kFetchInitiatingScript);
     std::string fetch_result = PopString(&queue);
 
-    VerifyCorbEligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                             "nosniff.xml - body\n");
   }
 
   // Unload the extension and try fetching again.  The content script should
@@ -742,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       extension->id()));
   {
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     content::WebContentsConsoleObserver console_observer(active_web_contents());
 
     content::DOMMessageQueue queue(active_web_contents());
@@ -753,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // `no-cors` requests.)
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     VerifyFetchWasBlockedByCors(console_observer);
-    VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
+    VerifyFetchWasAllowedByCorb(cross_site_resource);
   }
 }
 
@@ -782,7 +796,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // permissions).
   {
     SCOPED_TRACE(::testing::Message() << "Allowed by policy");
-    base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     GURL cross_site_resource(
         embedded_test_server()->GetURL("public.example.com", "/nosniff.xml"));
@@ -792,15 +805,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
     // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                             "nosniff.xml - body\n");
   }
 
   // Test fetch from a host blocked by the policy (and allowed by the extension
   // permissions).
   {
     SCOPED_TRACE(::testing::Message() << "Blocked by policy");
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     GURL cross_site_resource(
         embedded_test_server()->GetURL("example.com", "/nosniff.xml"));
@@ -811,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // `no-cors` requests.)
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     VerifyFetchWasBlockedByCors(console_observer);
-    VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
+    VerifyFetchWasAllowedByCorb(cross_site_resource);
   }
 }
 
@@ -840,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // permissions).
   {
     SCOPED_TRACE(::testing::Message() << "Allowed by policy");
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     GURL cross_site_resource(embedded_test_server()->GetURL(
         "public.example.com", "/save_page/text.txt"));
@@ -850,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // Verify that the fetch was allowed by CORB.  CORS expectations differ
     // depending on exact scenario.
     VerifyNonCorbElligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result,
+        cross_site_resource, console_observer, fetch_result,
         "text-object.txt: ae52dd09-9746-4b7e-86a6-6ada5e2680c2");
   }
 
@@ -858,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // permissions).
   {
     SCOPED_TRACE(::testing::Message() << "Blocked by policy");
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     GURL cross_site_resource(
         embedded_test_server()->GetURL("example.com", "/save_page/text.txt"));
@@ -867,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify that the fetch was blocked by CORS.
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
-    VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
+    VerifyFetchWasAllowedByCorb(cross_site_resource);
     VerifyFetchWasBlockedByCors(console_observer);
   }
 }
@@ -949,7 +962,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
-  base::HistogramTester histograms;
   content::WebContentsConsoleObserver console_observer(active_web_contents());
   GURL cross_site_resource(
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
@@ -959,10 +971,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
   // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(
-      histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                           "nosniff.xml - body\n");
 }
-
 // Verification that granting file access to extensions doesn't relax CORS in
 // case of requests to file: URLs (even from content scripts of extensions with
 // <all_urls> permission).  See also https://crbug.com/1049604#c14.
@@ -1007,8 +1018,8 @@ IN_PROC_BROWSER_TEST_F(
   // treated as an opaque origin, so all such XHRs would be considered
   // cross-origin.)
   {
-    base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
+    ObserveResourceLoads();
     content::DOMMessageQueue queue(active_web_contents());
     ExecuteScriptAsync(active_web_contents(), script);
     std::string xhr_result = PopString(&queue);
@@ -1017,13 +1028,7 @@ IN_PROC_BROWSER_TEST_F(
     // FileURLLoaderFactory.
     EXPECT_EQ("XHR ERROR", xhr_result);
     VerifyFetchWasBlockedByCors(console_observer);
-
-    // CORB is not used from FileURLLoaderFactory - verify that no CORB UMAs
-    // have been logged.
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    EXPECT_EQ(
-        0u,
-        histograms.GetTotalCountsForPrefix("SiteIsolation.XSD.Browser").size());
+    VerifyFetchWasAllowedByCorb(same_dir_resource);
   }
 
   // Inject a content script that performs a cross-origin XHR from another file:
@@ -1037,8 +1042,8 @@ IN_PROC_BROWSER_TEST_F(
   // because the fetch API doesn't support file: requests currently
   // (see https://crbug.com/1051594#c9 and https://crbug.com/1051597#c19).
   {
-    base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
+    ObserveResourceLoads();
     content::DOMMessageQueue queue(active_web_contents());
     ExecuteContentScript(active_web_contents(), script);
     std::string xhr_result = PopString(&queue);
@@ -1048,13 +1053,7 @@ IN_PROC_BROWSER_TEST_F(
     // and was granted file access).
     EXPECT_EQ("XHR ERROR", xhr_result);
     VerifyFetchWasBlockedByCors(console_observer);
-
-    // CORB is not used from FileURLLoaderFactory - verify that no CORB UMAs
-    // have been logged.
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    EXPECT_EQ(
-        0u,
-        histograms.GetTotalCountsForPrefix("SiteIsolation.XSD.Browser").size());
+    VerifyFetchWasAllowedByCorb(same_dir_resource);
   }
 }
 
@@ -1083,7 +1082,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   for (const GURL& allowed_url : kAllowedUrls) {
     SCOPED_TRACE(::testing::Message() << "allowed_url = " << allowed_url);
 
-    base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     std::string fetch_result =
         FetchViaContentScript(allowed_url, active_web_contents());
@@ -1091,8 +1089,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
     // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                             "nosniff.xml - body\n");
   }
 }
 
@@ -1117,7 +1115,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
-  base::HistogramTester histograms;
   content::WebContentsConsoleObserver console_observer(active_web_contents());
   GURL cross_site_resource(
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
@@ -1130,8 +1127,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
   // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(
-      histograms, console_observer, fetch_result, "nosniff.xml - body\n");
+  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+                                           "nosniff.xml - body\n");
 }
 
 // Test that verifies CORS-allowed fetches work for targets that are not
@@ -1153,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a cross-origin fetch to
   // other-without-permission.com.
-  base::HistogramTester histograms;
+  ObserveResourceLoads();
   GURL cross_site_resource(embedded_test_server()->GetURL(
       "other-without-permission.com", "/cors-ok.txt"));
   std::string fetch_result =
@@ -1162,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Verify that the fetch succeeded (because of the server's
   // Access-Control-Allow-Origin response header).
   EXPECT_EQ("cors-ok.txt - body\n", fetch_result);
-  VerifyFetchWasAllowedByCorb(histograms);
+  VerifyFetchWasAllowedByCorb(cross_site_resource);
 }
 
 // Test that verifies that CORS blocks non-CORB-eligible fetches for targets
@@ -1184,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a cross-origin fetch to
   // other-without-permission.com.
-  base::HistogramTester histograms;
+  ObserveResourceLoads();
   content::WebContentsConsoleObserver console_observer(active_web_contents());
   GURL cross_site_resource(embedded_test_server()->GetURL(
       "other-without-permission.com", "/save_page/text.txt"));
@@ -1199,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Verify that the fetch was allowed by CORB (because CORB doesn't apply to
   // CORS requests).
-  VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
+  VerifyFetchWasAllowedByCorb(cross_site_resource);
 }
 
 // Tests that same-origin fetches (same-origin relative to the webpage the
@@ -1222,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a same-origin fetch to
   // fetch-initiator.com.
-  base::HistogramTester histograms;
+  ObserveResourceLoads();
   GURL same_origin_resource(
       embedded_test_server()->GetURL("fetch-initiator.com", "/nosniff.xml"));
   std::string fetch_result =
@@ -1230,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Verify that no blocking occurred.
   EXPECT_THAT(fetch_result, ::testing::StartsWith("nosniff.xml - body"));
-  VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
+  VerifyFetchWasAllowedByCorb(same_origin_resource);
 }
 
 // Test that responses that would have been allowed by CORB anyway are not
@@ -1252,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
-  base::HistogramTester histograms;
+  ObserveResourceLoads();
   content::WebContentsConsoleObserver console_observer(active_web_contents());
   GURL cross_site_resource(
       embedded_test_server()->GetURL("cross-site.com", "/save_page/text.txt"));
@@ -1262,7 +1259,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Verify that the fetch was allowed by CORB.  CORS expectations differ
   // depending on exact scenario.
   VerifyNonCorbElligibleFetchFromContentScript(
-      histograms, console_observer, fetch_result,
+      cross_site_resource, console_observer, fetch_result,
       "text-object.txt: ae52dd09-9746-4b7e-86a6-6ada5e2680c2");
 }
 
@@ -1380,14 +1377,14 @@ IN_PROC_BROWSER_TEST_F(
 
     // Inject a content script that performs a cross-origin fetch to
     // cross-site.com.
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     std::string fetch_result =
         FetchViaContentScript(allowed_url, active_web_contents());
 
     // Verify that CORB sniffing allowed the response.
     VerifyNonCorbElligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result,
+        allowed_url, console_observer, fetch_result,
         "text-object.txt: ae52dd09-9746-4b7e-86a6-6ada5e2680c2");
   }
 }
@@ -1412,7 +1409,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com (to a PNG image that is incorrectly labelled as
   // `Content-Type: text/html`).
-  base::HistogramTester histograms;
+  ObserveResourceLoads();
   content::WebContentsConsoleObserver console_observer(active_web_contents());
   GURL cross_site_resource(embedded_test_server()->GetURL(
       "cross-site.com", "/downloads/image-labeled-as-html.png"));
@@ -1420,8 +1417,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       FetchViaContentScript(cross_site_resource, active_web_contents());
 
   // Verify that CORB sniffing allowed the response.
-  VerifyNonCorbElligibleFetchFromContentScript(histograms, console_observer,
-                                               fetch_result, "\xEF\xBF\xBDPNG");
+  VerifyNonCorbElligibleFetchFromContentScript(
+      cross_site_resource, console_observer, fetch_result, "\xEF\xBF\xBDPNG");
 }
 
 // Test that responses are blocked by CORB, but have empty response body are not
@@ -1443,7 +1440,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
-  base::HistogramTester histograms;
   content::WebContentsConsoleObserver console_observer(active_web_contents());
   GURL cross_site_resource(
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.empty"));
@@ -1453,8 +1449,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
   // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(histograms, console_observer,
-                                           fetch_result,
+  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
                                            "" /* expected_response_body */);
 }
 
@@ -1469,16 +1464,21 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // only a single background page (i.e. no separate incognito background page).
   EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension()));
 
+  content::WebContents* background_web_contents =
+      ProcessManager::Get(browser()->profile())
+          ->GetBackgroundHostForExtension(extension()->id())
+          ->host_contents();
+
   // Performs a cross-origin fetch from the background page.
   {
-    base::HistogramTester histograms;
+    ObserveResourceLoads(background_web_contents);
     GURL cross_site_resource(
         embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
     std::string fetch_result = FetchViaBackgroundPage(cross_site_resource);
 
     // Verify that no blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
-    VerifyCorbWasDisabled(histograms);
+    VerifyCorbWasDisabled(cross_site_resource);
   }
 }
 
@@ -1630,9 +1630,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       } )";
   ASSERT_TRUE(InstallExtensionWithManifest(kManifest));
 
+  content::WebContents* background_web_contents =
+      ProcessManager::Get(browser()->profile())
+          ->GetBackgroundHostForExtension(extension()->id())
+          ->host_contents();
+
   // Perform a cross-origin CORS fetch from the background page.
   {
-    base::HistogramTester histograms;
+    ObserveResourceLoads(background_web_contents);
     GURL cross_site_resource1(
         embedded_test_server()->GetURL("cross-site.com", "/nosniff.empty"));
     std::string fetch_result = FetchViaBackgroundPage(cross_site_resource1);
@@ -1644,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
 
     // CORB only applies to `no-cors` requests.
-    VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
+    VerifyFetchWasAllowedByCorb(cross_site_resource1);
   }
 
   // Perform a cross-origin `no-cors` request from the background page.
@@ -1658,12 +1663,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     request_init.Set("method", "GET");
     request_init.Set("mode", "no-cors");
 
-    content::WebContents* background_web_contents =
-        ProcessManager::Get(browser()->profile())
-            ->GetBackgroundHostForExtension(extension()->id())
-            ->host_contents();
-
-    base::HistogramTester histograms;
+    ObserveResourceLoads(background_web_contents);
     content::DOMMessageQueue queue(background_web_contents);
     content::ExecuteScriptAsync(
         background_web_contents,
@@ -1676,8 +1676,16 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // extension background page uses a URLLoaderFactory created with
     // URLLoaderFactoryParams::is_corb_enabled set to the default, secure value
     // of `true`.
-    EXPECT_EQ("", fetch_result);  // `no-cors` = empty, opaque response.
-    VerifyFetchWasBlockedByCorb(histograms);
+    //
+    // ORB v0.2 (and higher): Error message, because the fetch failed.
+    // CORB & ORB v0.1: Empty result, because of no-cors.
+    if (base::FeatureList::IsEnabled(
+            network::features::kOpaqueResponseBlockingV02)) {
+      EXPECT_THAT(fetch_result, HasSubstr("TypeError: Failed to fetch"));
+    } else {
+      EXPECT_EQ(fetch_result, "");
+    }
+    VerifyFetchWasBlockedByCorb(cross_site_resource2);
   }
 }
 
@@ -1715,12 +1723,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
   url::Origin cross_site_origin = url::Origin::Create(cross_site_url);
   {
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     std::string fetch_result = FetchViaFrame(cross_site_url, test_frame);
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
 
     // In presence of optional HTTP permissions CORB is disabled.
-    VerifyCorbWasDisabled(histograms);
+    VerifyCorbWasDisabled(cross_site_url);
   }
 
   // Grant the optional permissions to the extension.
@@ -1742,12 +1750,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Performs a cross-origin fetch from the background page and verify that it
   // didn't get blocked by CORS.
   {
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     std::string fetch_result = FetchViaFrame(cross_site_url, test_frame);
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 
     // In presence of optional HTTP permissions CORB is disabled.
-    VerifyCorbWasDisabled(histograms);
+    VerifyCorbWasDisabled(cross_site_url);
   }
 }
 
@@ -2060,7 +2068,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     GURL nosniff_xml_with_permission(
         embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
     content::DOMMessageQueue queue(active_web_contents());
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     content::ExecuteScriptAsync(
         active_web_contents(),
         content::JsReplace(kFetchTemplate, nosniff_xml_with_permission));
@@ -2070,7 +2078,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 
     // CORB should be disabled for extension origins.
-    VerifyCorbWasDisabled(histograms);
+    VerifyCorbWasDisabled(nosniff_xml_with_permission);
   }
 
   // Test a request to a website *not* covered by extension permissions.
@@ -2078,7 +2086,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     GURL nosniff_xml_with_permission(embedded_test_server()->GetURL(
         "other-without-permission.com", "/nosniff.xml"));
     content::DOMMessageQueue queue(active_web_contents());
-    base::HistogramTester histograms;
+    ObserveResourceLoads();
     ServiceWorkerConsoleObserver console_observer(
         active_web_contents()->GetBrowserContext());
     content::ExecuteScriptAsync(
@@ -2092,7 +2100,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     VerifyFetchWasBlockedByCors(console_observer);
 
     // CORB should be disabled for extension origins.
-    VerifyCorbWasDisabled(histograms);
+    VerifyCorbWasDisabled(nosniff_xml_with_permission);
   }
 }
 

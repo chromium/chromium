@@ -974,11 +974,11 @@ static_library("browsertest_support") {
     "../public/test/content_browser_test_utils.h",
     "../public/test/content_cert_verifier_browser_test.cc",
     "../public/test/content_cert_verifier_browser_test.h",
+    "../public/test/resource_load_observer.cc",
+    "../public/test/resource_load_observer.h",
     "content_browser_test_utils_internal.cc",
     "content_browser_test_utils_internal.h",
     "content_test_launcher.cc",
-    "resource_load_observer.cc",
-    "resource_load_observer.h",
   ]
 
   public_deps = [

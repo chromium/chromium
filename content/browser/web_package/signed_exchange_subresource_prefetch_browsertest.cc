@@ -50,7 +50,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_cache.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
-#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/common/switches.h"
@@ -924,23 +923,23 @@ class SignedExchangeSubresourcePrefetchBrowserTest
   // |mime_type| is the MIME tyepe of the inner response of the SXG subresource.
   // When |has_nosniff| is set, the inner response header of the SXG subresource
   // has "x-content-type-options: nosniff" header.
-  // |expected_title| is the expected title after loading the SXG page. If the
-  // content load should not be blocked, this should be the title which is set
-  // by executing |content|, otherwise this should be "original title".
-  // |expected_action| is the expected CrossOriginReadBlocking::Action which is
-  // recorded in the histogram.
-  void RunCrossOriginReadBlockingTest(
-      bool cross_origin,
-      const std::string& content,
-      const std::string& mime_type,
-      bool has_nosniff,
-      const std::string& expected_title,
-      network::corb::CrossOriginReadBlocking::Action expected_action) {
+  // |corb_allowed| is whether we expect CORB/ORB to allow this resource. We
+  // will check this based on the document title.
+  void RunCrossOriginReadBlockingTest(bool cross_origin,
+                                      const std::string& content,
+                                      const std::string& mime_type,
+                                      bool has_nosniff,
+                                      bool corb_allowed) {
     const char* prefetch_path = "/prefetch.html";
     const char* target_sxg_path = "/target.sxg";
     const char* target_path = "/target.html";
     const char* script_sxg_path = "/script_js.sxg";
     const char* script_path = "/script.js";
+
+    // If CORB/ORB blocks the resource, it will retain its original title,
+    // "original title". If the resource is allowed, it will modify the title
+    // to "done".
+    const char* expected_title = corb_allowed ? "done" : "original title";
 
     auto script_sxg_request_counter = RequestCounter::CreateAndMonitor(
         embedded_test_server(), script_sxg_path);
@@ -1011,15 +1010,7 @@ class SignedExchangeSubresourcePrefetchBrowserTest
 
     EXPECT_EQ(2u, GetCachedExchanges(shell()).size());
 
-    {
-      base::HistogramTester histograms;
-      NavigateToURLAndWaitTitle(target_sxg_url, expected_title);
-      histograms.ExpectBucketCount(
-          "SiteIsolation.XSD.Browser.Action",
-          network::corb::CrossOriginReadBlocking::Action::kResponseStarted, 1);
-      histograms.ExpectBucketCount("SiteIsolation.XSD.Browser.Action",
-                                   expected_action, 1);
-    }
+    NavigateToURLAndWaitTitle(target_sxg_url, expected_title);
 
     EXPECT_EQ(1, script_sxg_request_counter->GetRequestCount());
     EXPECT_EQ(0, script_request_counter->GetRequestCount());
@@ -2062,32 +2053,28 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
                        CrossOriginReadBlocking_AllowedAfterSniffing) {
   RunCrossOriginReadBlockingTest(
       true /* cross_origin */, "document.title=\"done\"", "text/javascript",
-      false /* has_nosniff */, "done",
-      network::corb::CrossOriginReadBlocking::Action::kAllowedAfterSniffing);
+      false /* has_nosniff */, true /* corb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
                        CrossOriginReadBlocking_BlockedAfterSniffing) {
   RunCrossOriginReadBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
-      false /* has_nosniff */, "original title",
-      network::corb::CrossOriginReadBlocking::Action::kBlockedAfterSniffing);
+      false /* has_nosniff */, false /* corb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
                        CrossOriginReadBlocking_AllowedWithoutSniffing) {
   RunCrossOriginReadBlockingTest(
       false /* cross_origin */, "document.title=\"done\"", "text/javascript",
-      true /* has_nosniff */, "done",
-      network::corb::CrossOriginReadBlocking::Action::kAllowedWithoutSniffing);
+      true /* has_nosniff */, true /* corb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
                        CrossOriginReadBlocking_BlockedWithoutSniffing) {
   RunCrossOriginReadBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
-      true /* has_nosniff */, "original title",
-      network::corb::CrossOriginReadBlocking::Action::kBlockedWithoutSniffing);
+      true /* has_nosniff */, false /* corb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,

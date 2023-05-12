@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/test/resource_load_observer.h"
+#include "content/public/test/resource_load_observer.h"
 
 #include <string>
 #include <vector>
@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_paths.h"
+#include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -34,6 +35,9 @@ ResourceLoadObserver::ResourceLoadEntry::operator=(
 ResourceLoadObserver::ResourceLoadObserver(Shell* shell)
     : WebContentsObserver(shell->web_contents()) {}
 
+ResourceLoadObserver::ResourceLoadObserver(WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
+
 ResourceLoadObserver::~ResourceLoadObserver() = default;
 
 // Use this method with the SCOPED_TRACE macro, so it shows the caller context
@@ -53,8 +57,9 @@ void ResourceLoadObserver::CheckResourceLoaded(
   bool resource_load_info_found = false;
   for (const auto& resource_load_entry : resource_load_entries_) {
     const auto& resource_load_info = resource_load_entry.resource_load_info;
-    if (resource_load_info->original_url != original_url)
+    if (resource_load_info->original_url != original_url) {
       continue;
+    }
 
     resource_load_info_found = true;
     int64_t file_size = -1;
@@ -68,8 +73,9 @@ void ResourceLoadObserver::CheckResourceLoaded(
     EXPECT_EQ(referrer, resource_load_info->referrer);
     EXPECT_EQ(load_method, resource_load_info->method);
     EXPECT_EQ(request_destination, resource_load_info->request_destination);
-    if (!first_network_request)
+    if (!first_network_request) {
       EXPECT_GT(resource_load_info->request_id, 0);
+    }
     EXPECT_EQ(mime_type, resource_load_info->mime_type);
     ASSERT_TRUE(resource_load_info->network_info->remote_endpoint);
     EXPECT_EQ(ip_address, resource_load_info->network_info->remote_endpoint
@@ -103,8 +109,9 @@ void ResourceLoadObserver::CheckResourceLoaded(
 blink::mojom::ResourceLoadInfoPtr* ResourceLoadObserver::GetResource(
     const GURL& original_url) {
   for (auto& entry : resource_load_entries_) {
-    if (entry.resource_load_info->original_url == original_url)
+    if (entry.resource_load_info->original_url == original_url) {
       return &entry.resource_load_info;
+    }
   }
   return nullptr;
 }
@@ -117,8 +124,9 @@ void ResourceLoadObserver::Reset() {
 void ResourceLoadObserver::WaitForResourceCompletion(const GURL& original_url) {
   // If we've already seen the resource, return immediately.
   for (const auto& entry : resource_load_entries_) {
-    if (entry.resource_load_info->original_url == original_url)
+    if (entry.resource_load_info->original_url == original_url) {
       return;
+    }
   }
 
   // Otherwise wait for it.
