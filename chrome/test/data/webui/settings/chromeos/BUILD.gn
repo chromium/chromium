@@ -180,7 +180,7 @@ build_webui_tests("build") {
     "multidevice_page/multidevice_combined_setup_item_test.ts",
     "multidevice_page/multidevice_feature_item_test.ts",
     "multidevice_page/multidevice_feature_toggle_test.ts",
-    "multidevice_page/multidevice_notification_access_setup_dialog_tests.js",
+    "multidevice_page/multidevice_notification_access_setup_dialog_test.ts",
     "multidevice_page/multidevice_permissions_setup_dialog_tests.js",
     "multidevice_page/multidevice_smartlock_item_test.ts",
     "multidevice_page/multidevice_subpage_tests.js",

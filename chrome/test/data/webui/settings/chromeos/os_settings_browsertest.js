@@ -408,7 +408,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'MultidevicePageMultideviceNotificationAccessSetupDialog',
-   'multidevice_page/multidevice_notification_access_setup_dialog_tests.js',
+   'multidevice_page/multidevice_notification_access_setup_dialog_test.js',
  ],
  [
    'MultidevicePageMultidevicePermissionsSetupDialog',

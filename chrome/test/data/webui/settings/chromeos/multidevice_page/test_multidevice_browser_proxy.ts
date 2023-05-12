@@ -67,6 +67,7 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       'logPhoneHubPermissionSetUpScreenAction',
       'logPhoneHubPermissionOnboardingSetupMode',
       'logPhoneHubPermissionOnboardingSetupResult',
+      'getSmartLockSignInAllowed',
     ]);
   }
 
@@ -166,6 +167,10 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       completedMode: PhoneHubPermissionsSetupFeatureCombination): void {
     this.methodCalled(
         'logPhoneHubPermissionOnboardingSetupResult', [completedMode]);
+  }
+
+  getSmartLockSignInAllowed(): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   removeHostDevice(): void {}
