@@ -458,11 +458,11 @@ TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
 
 TEST_F(TaskSchedulerTests, GetTaskInfoTriggerTypes) {
   for (const TaskScheduler::TriggerType expected_trigger_type : {
-           TaskScheduler::TRIGGER_TYPE_POST_REBOOT,
+           TaskScheduler::TRIGGER_TYPE_LOGON,
            TaskScheduler::TRIGGER_TYPE_HOURLY,
            TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS,
        }) {
-    if (expected_trigger_type == TaskScheduler::TRIGGER_TYPE_POST_REBOOT &&
+    if (expected_trigger_type == TaskScheduler::TRIGGER_TYPE_LOGON &&
         !::IsUserAnAdmin()) {
       continue;
     }
@@ -471,7 +471,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoTriggerTypes) {
   }
 
   RunGetTaskInfoTriggerTypesTest(
-      (::IsUserAnAdmin() ? TaskScheduler::TRIGGER_TYPE_POST_REBOOT : 0) |
+      (::IsUserAnAdmin() ? TaskScheduler::TRIGGER_TYPE_LOGON : 0) |
       TaskScheduler::TRIGGER_TYPE_HOURLY |
       TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
 }

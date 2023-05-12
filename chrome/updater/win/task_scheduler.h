@@ -33,9 +33,9 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
   // The types of trigger to register for this task. Multiple triggers types can
   // be combined using the bitwise OR operator.
   enum TriggerType {
-    TRIGGER_TYPE_POST_REBOOT = 1 << 0,  // Only run once post-reboot.
-    TRIGGER_TYPE_NOW = 1 << 1,          // Run right now (mainly for tests).
-    TRIGGER_TYPE_HOURLY = 1 << 2,       // Run every hour.
+    TRIGGER_TYPE_LOGON = 1 << 0,   // Run when any user logs on.
+    TRIGGER_TYPE_NOW = 1 << 1,     // Run right now (mainly for tests).
+    TRIGGER_TYPE_HOURLY = 1 << 2,  // Run every hour.
     TRIGGER_TYPE_EVERY_FIVE_HOURS = 1 << 3,
     TRIGGER_TYPE_MAX = 1 << 4,
   };

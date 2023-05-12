@@ -293,7 +293,7 @@ void CheckInstallation(UpdaterScope scope,
     EXPECT_EQ(task_info.trigger_types,
               TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
                   (IsSystemInstall(scope)
-                       ? TaskScheduler::TriggerType::TRIGGER_TYPE_POST_REBOOT
+                       ? TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON
                        : 0));
   } else {
     task_scheduler->ForEachTaskWithPrefix(

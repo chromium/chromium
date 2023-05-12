@@ -521,7 +521,7 @@ bool RegisterWakeTaskWorkItem::DoImpl() {
           task_name.c_str(), GetTaskDisplayName(scope_).c_str(), run_command_,
           TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
               (IsSystemInstall(scope_)
-                   ? TaskScheduler::TriggerType::TRIGGER_TYPE_POST_REBOOT
+                   ? TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON
                    : 0),
           true)) {
     return false;

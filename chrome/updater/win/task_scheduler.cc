@@ -539,7 +539,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
 
     for (const TriggerType trigger_type :
-         {TRIGGER_TYPE_POST_REBOOT, TRIGGER_TYPE_NOW, TRIGGER_TYPE_HOURLY,
+         {TRIGGER_TYPE_LOGON, TRIGGER_TYPE_NOW, TRIGGER_TYPE_HOURLY,
           TRIGGER_TYPE_EVERY_FIVE_HOURS}) {
       if (!(trigger_types & trigger_type)) {
         continue;
@@ -548,7 +548,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       TASK_TRIGGER_TYPE2 task_trigger_type = TASK_TRIGGER_EVENT;
       base::win::ScopedBstr repetition_interval;
       switch (trigger_type) {
-        case TRIGGER_TYPE_POST_REBOOT:
+        case TRIGGER_TYPE_LOGON:
           task_trigger_type = TASK_TRIGGER_LOGON;
           break;
         case TRIGGER_TYPE_NOW:
@@ -630,7 +630,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
         }
       }
 
-      if (trigger_type == TRIGGER_TYPE_POST_REBOOT) {
+      if (trigger_type == TRIGGER_TYPE_LOGON) {
         Microsoft::WRL::ComPtr<ILogonTrigger> logon_trigger;
         hr = trigger.As(&logon_trigger);
         if (FAILED(hr)) {
@@ -1209,7 +1209,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
       switch (task_trigger_type) {
         case TASK_TRIGGER_LOGON:
-          *trigger_types |= TRIGGER_TYPE_POST_REBOOT;
+          *trigger_types |= TRIGGER_TYPE_LOGON;
           break;
         case TASK_TRIGGER_REGISTRATION:
           *trigger_types |= TRIGGER_TYPE_NOW;
