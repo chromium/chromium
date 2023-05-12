@@ -1,0 +1,74 @@
+<!doctype html>
+<title>
+  Verify that we consider browsing context group reuse for COOP reporting.
+</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/html/cross-origin-opener-policy/reporting/resources/reporting-common.js"></script>
+<script src="/html/cross-origin-opener-policy/reporting/resources/try-access.js"></script>
+<script src="/html/cross-origin-opener-policy/resources/common.js"></script>
+<script>
+
+const same_origin = get_host_info().HTTPS_ORIGIN;
+const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
+
+promise_test(async test => {
+  const driver_token = token(); // For this window.
+  const report_token = token();
+  const reportTo = reportToHeaders(report_token);
+
+  // 1. Start by opening a first window that will act as the opener in this test
+  // scenario. It sets COOP-RO: restrict-properties.
+  const opener_token = token(); // The current test window.
+  const opener_url = same_origin + executor_path + reportTo.header +
+      reportTo.coopReportOnlyRestrictPropertiesHeader +
+      `&uuid=${opener_token}`;
+  const opener = window.open(opener_url);
+  test.add_cleanup(() => send(opener_token, "window.close()"));
+
+  // 2. From the opener, open a popup without any COOP. It should be in a
+  // different virtual browsing context group.
+  const initial_openee_token = token();
+  const initial_openee_url = cross_origin + executor_path +
+      `&uuid=${initial_openee_token}`;
+  send(opener_token, `
+    window.openee = window.open('${initial_openee_url}');
+  `);
+  test.add_cleanup(() => send(opener_token, "window.close()"));
+
+  // 3. Navigate the openee to a COOP-RO: restrict-properties page. If the
+  // policy was enforced, it would live in the same browsing context group as
+  // the opener. The virtual browsing context group should similarly be equal.
+  // Note: We omit the reporting endpoint header, because it is not possible to
+  // easily escape it. Since it is not necessary in this test, we skip it.
+  const final_openee_token = token();
+  const final_openee_url = same_origin + executor_path +
+      reportTo.coopReportOnlyRestrictPropertiesHeader +
+      `&uuid=${final_openee_token}`;
+
+  send(initial_openee_token, `location.href = '${final_openee_url}';`);
+  test.add_cleanup(() => send(final_openee_token, "window.close()"));
+
+  // Wait for the final openee to load.
+  send(final_openee_token,
+    `send("${driver_token}", "Ready");
+  `);
+  assert_equals(await receive(driver_token), "Ready");
+
+  // 4. Try to access the openee from the opener. No report should be sent.
+  send(opener_token, addScriptAndTriggerOnload(
+    "/html/cross-origin-opener-policy/reporting/resources/try-access.js",
+    "tryAccess(window.openee);")
+  );
+
+  let report =
+    await receiveReport(report_token, "access-from-coop-page-to-openee")
+  assert_equals(report, "timeout");
+
+}, "access-reporting-browsing-context-group-reuse");
+
+</script>
