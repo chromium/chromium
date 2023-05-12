@@ -262,6 +262,15 @@ void ClipboardPortalInjector::SelectionRead(std::string mime_type) {
   DCHECK(cancellable_);
   DCHECK(!session_handle_.empty());
 
+  // we can only process one `SelectionRead` at a time, so eat any extra
+  // requests we receive. if any requests get eaten, then we perform another
+  // read to capture the latest contents.
+  if (pending_selection_read_) {
+    queued_selection_read_ = true;
+    return;
+  }
+  pending_selection_read_ = true;
+
   g_dbus_proxy_call_with_unix_fd_list(
       proxy_, "SelectionRead",
       g_variant_new("(os)", session_handle_.c_str(), mime_type.c_str()),
@@ -281,8 +290,17 @@ void ClipboardPortalInjector::OnSelectionReadCallback(GObject* object,
   Scoped<GError> error;
   Scoped<GUnixFDList> outlist;
 
+  that->pending_selection_read_ = false;
+
   Scoped<GVariant> variant(g_dbus_proxy_call_with_unix_fd_list_finish(
       proxy, outlist.receive(), result, error.receive()));
+
+  if (that->queued_selection_read_) {
+    that->queued_selection_read_ = false;
+    that->SelectionRead(TranslateMimeTypeForPortal(kMimeTypeTextUtf8));
+    return;
+  }
+
   if (!variant) {
     LOG(ERROR) << "Failed to read selection: " << error->message;
     return;

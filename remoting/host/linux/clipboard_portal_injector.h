@@ -96,6 +96,9 @@ class ClipboardPortalInjector {
   std::unordered_set<std::string> readable_mime_type_set_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  bool pending_selection_read_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool queued_selection_read_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
   guint selection_owner_changed_signal_id_ = 0;
   guint selection_transfer_signal_id_ = 0;
 };
