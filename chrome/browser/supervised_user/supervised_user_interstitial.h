@@ -15,10 +15,10 @@
 
 namespace supervised_user {
 class WebContentHandler;
+class SupervisedUserService;
 }
 
 class PrefService;
-class SupervisedUserService;
 
 // This class is used by SupervisedUserNavigationObserver to handle requests
 // from supervised user error page. The error page is shown when a page is
@@ -71,12 +71,12 @@ class SupervisedUserInterstitial {
 
   static std::unique_ptr<SupervisedUserInterstitial> Create(
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
-      SupervisedUserService& supervised_user_service,
+      supervised_user::SupervisedUserService& supervised_user_service,
       const GURL& url,
       supervised_user::FilteringBehaviorReason reason);
 
   static std::string GetHTMLContents(
-      SupervisedUserService* supervised_user_service,
+      supervised_user::SupervisedUserService* supervised_user_service,
       PrefService* pref_service,
       supervised_user::FilteringBehaviorReason reason,
       bool already_sent_request,
@@ -96,12 +96,13 @@ class SupervisedUserInterstitial {
  private:
   SupervisedUserInterstitial(
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
-      SupervisedUserService& supervised_user_service,
+      supervised_user::SupervisedUserService& supervised_user_service,
       const GURL& url,
       supervised_user::FilteringBehaviorReason reason);
   void OutputRequestPermissionSourceMetric();
 
-  const raw_ref<SupervisedUserService> supervised_user_service_;
+  const raw_ref<supervised_user::SupervisedUserService>
+      supervised_user_service_;
 
   std::unique_ptr<supervised_user::WebContentHandler> web_content_handler_;
 

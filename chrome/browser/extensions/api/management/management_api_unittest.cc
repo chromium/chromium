@@ -52,10 +52,10 @@
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1053,7 +1053,7 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
     return params;
   }
 
-  SupervisedUserService* GetSupervisedUserService() {
+  supervised_user::SupervisedUserService* GetSupervisedUserService() {
     return SupervisedUserServiceFactory::GetForProfile(profile());
   }
 

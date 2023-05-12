@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SERVICE_H_
-#define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SERVICE_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_
 
 #include <stddef.h>
 #include <string>
@@ -21,16 +21,12 @@
 #include "components/supervised_user/core/common/supervised_users.h"
 
 class PrefService;
-class Profile;
 class SupervisedUserServiceObserver;
+class SupervisedUserServiceFactory;
 
 namespace base {
 class Version;
 }  // namespace base
-
-namespace supervised_user {
-class SupervisedUserSettingsService;
-}  // namespace supervised_user
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -40,12 +36,14 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+namespace supervised_user {
+class SupervisedUserSettingsService;
+
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
 // overrides).
-class SupervisedUserService
-    : public KeyedService,
-      public supervised_user::SupervisedUserURLFilter::Observer {
+class SupervisedUserService : public KeyedService,
+                              public SupervisedUserURLFilter::Observer {
  public:
   class Delegate {
    public:
@@ -102,10 +100,6 @@ class SupervisedUserService
   // is empty, or the empty string if there is no second custodian.
   std::string GetSecondCustodianName() const;
 
-  // Returns a message saying that extensions can only be modified by the
-  // custodian.
-  std::u16string GetExtensionsLockedMessage() const;
-
   // Returns true if the extensions permissions parental control is enabled.
   bool AreExtensionsPermissionsEnabled() const;
 
@@ -153,7 +147,7 @@ class SupervisedUserService
 
  private:
   friend class SupervisedUserServiceExtensionTestBase;
-  friend class SupervisedUserServiceFactory;
+  friend class ::SupervisedUserServiceFactory;
   FRIEND_TEST_ALL_PREFIXES(
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls);
@@ -164,14 +158,14 @@ class SupervisedUserService
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
   SupervisedUserService(
-      Profile* profile,
       KidsChromeManagementClient* kids_chrome_management_client,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
       syncer::SyncService& sync_service,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
-          url_filter_delegate);
+          url_filter_delegate,
+      bool can_show_first_time_interstitial_banner);
 
   void SetActive(bool active);
 
@@ -202,9 +196,6 @@ class SupervisedUserService
 
   const raw_ref<syncer::SyncService> sync_service_;
 
-  // Owns us via the KeyedService mechanism.
-  raw_ptr<Profile> profile_;
-
   raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
 
   bool active_ = false;
@@ -219,10 +210,12 @@ class SupervisedUserService
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;
 
-  supervised_user::SupervisedUserURLFilter url_filter_;
+  SupervisedUserURLFilter url_filter_;
+
+  const bool can_show_first_time_interstitial_banner_;
 
   // Manages remote web approvals.
-  supervised_user::RemoteWebApprovalsManager remote_web_approvals_manager_;
+  RemoteWebApprovalsManager remote_web_approvals_manager_;
 
   base::ObserverList<SupervisedUserServiceObserver>::Unchecked observer_list_;
 
@@ -237,11 +230,12 @@ class SupervisedUserService
   // prefs::kDefaultSupervisedUserFilteringBehavior and
   // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
   // reports. Initialized in the SetActive().
-  supervised_user::SupervisedUserURLFilter::WebFilterType
-      current_web_filter_type_ =
-          supervised_user::SupervisedUserURLFilter::WebFilterType::kMaxValue;
+  SupervisedUserURLFilter::WebFilterType current_web_filter_type_ =
+      SupervisedUserURLFilter::WebFilterType::kMaxValue;
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SERVICE_H_
+}  // namespace supervised_user
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_

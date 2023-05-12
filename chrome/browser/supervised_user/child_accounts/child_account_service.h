@@ -14,13 +14,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "net/base/backoff_entry.h"
 
@@ -34,9 +34,10 @@ class Profile;
 // This class handles detection of child accounts (on sign-in as well as on
 // browser restart), and triggers the appropriate behavior (e.g. enable the
 // supervised user experience, fetch information about the parent(s)).
-class ChildAccountService : public KeyedService,
-                            public signin::IdentityManager::Observer,
-                            public SupervisedUserService::Delegate {
+class ChildAccountService
+    : public KeyedService,
+      public signin::IdentityManager::Observer,
+      public supervised_user::SupervisedUserService::Delegate {
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
 

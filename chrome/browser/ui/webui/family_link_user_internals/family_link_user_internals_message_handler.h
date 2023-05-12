@@ -8,8 +8,8 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -37,7 +37,7 @@ class FamilyLinkUserInternalsMessageHandler
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
 
-  SupervisedUserService* GetSupervisedUserService();
+  supervised_user::SupervisedUserService* GetSupervisedUserService();
 
   void HandleRegisterForEvents(const base::Value::List& args);
   void HandleGetBasicInfo(const base::Value::List& args);

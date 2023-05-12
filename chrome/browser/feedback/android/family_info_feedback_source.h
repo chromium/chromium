@@ -12,9 +12,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 
 class Profile;
 
@@ -53,7 +53,7 @@ class FamilyInfoFeedbackSource {
   // Cleans up following the call to ListFamilyMembers
   void OnComplete();
 
-  raw_ptr<SupervisedUserService> supervised_user_service_;
+  raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
   std::unique_ptr<
       KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
                           kids_chrome_management::ListFamilyMembersResponse>>

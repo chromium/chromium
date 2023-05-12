@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -26,6 +25,7 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -596,7 +596,7 @@ void ParentPermissionDialogView::ShowDialogInternal() {
 void ParentPermissionDialogView::LoadParentEmailAddresses() {
   // Get the parents' email addresses.  There can be a max of 2 parent email
   // addresses, the primary and the secondary.
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
   std::u16string primary_parent_email =
@@ -630,7 +630,7 @@ void ParentPermissionDialogView::CloseWithReason(
 
 std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
     const std::u16string& parent_email) const {
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
   if (service->GetCustodianEmailAddress() == base::UTF16ToUTF8(parent_email))

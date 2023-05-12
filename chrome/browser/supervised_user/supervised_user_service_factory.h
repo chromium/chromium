@@ -13,16 +13,21 @@ namespace content {
 class BrowserContext;
 }
 class Profile;
+
+namespace supervised_user {
 class SupervisedUserService;
+}  // namespace supervised_user
 
 class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static SupervisedUserService* GetForProfile(Profile* profile);
+  static supervised_user::SupervisedUserService* GetForProfile(
+      Profile* profile);
 
-  static SupervisedUserService* GetForBrowserContext(
+  static supervised_user::SupervisedUserService* GetForBrowserContext(
       content::BrowserContext* context);
 
-  static SupervisedUserService* GetForProfileIfExists(Profile* profile);
+  static supervised_user::SupervisedUserService* GetForProfileIfExists(
+      Profile* profile);
 
   static SupervisedUserServiceFactory* GetInstance();
 

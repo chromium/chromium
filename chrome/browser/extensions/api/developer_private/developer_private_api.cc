@@ -124,8 +124,8 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif
 
 namespace extensions {
@@ -506,7 +506,7 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
     Profile* profile) {
   std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   info->is_child_account = service->AreExtensionsPermissionsEnabled();
 #else
@@ -1074,7 +1074,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   PrefService* prefs = profile->GetPrefs();
   if (update.in_developer_mode) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    SupervisedUserService* service =
+    supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile);
     if (service->AreExtensionsPermissionsEnabled()) {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
@@ -1304,7 +1304,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   if (service->AreExtensionsPermissionsEnabled()) {
     return RespondNow(
@@ -1890,7 +1890,7 @@ ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   return RespondNow(WithArguments(service->AreExtensionsPermissionsEnabled()));
 #else

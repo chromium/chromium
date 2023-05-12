@@ -6,10 +6,10 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/browser_context.h"
 
 // static

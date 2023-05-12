@@ -17,9 +17,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -47,7 +47,7 @@ std::u16string GetActiveUserFirstName() {
 // static
 std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
     std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
-    SupervisedUserService& supervised_user_service,
+    supervised_user::SupervisedUserService& supervised_user_service,
     const GURL& url,
     supervised_user::FilteringBehaviorReason reason) {
   std::unique_ptr<SupervisedUserInterstitial> interstitial = base::WrapUnique(
@@ -61,7 +61,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
 
 SupervisedUserInterstitial::SupervisedUserInterstitial(
     std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
-    SupervisedUserService& supervised_user_service,
+    supervised_user::SupervisedUserService& supervised_user_service,
     const GURL& url,
     supervised_user::FilteringBehaviorReason reason)
     : supervised_user_service_(supervised_user_service),
@@ -72,7 +72,7 @@ SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
 
 // static
 std::string SupervisedUserInterstitial::GetHTMLContents(
-    SupervisedUserService* supervised_user_service,
+    supervised_user::SupervisedUserService* supervised_user_service,
     PrefService* pref_service,
     supervised_user::FilteringBehaviorReason reason,
     bool already_sent_request,

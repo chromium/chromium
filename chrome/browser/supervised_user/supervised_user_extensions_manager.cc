@@ -10,10 +10,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "extensions/browser/extension_prefs.h"
@@ -116,7 +116,7 @@ bool SupervisedUserExtensionsManager::IsExtensionAllowed(
 }
 
 bool SupervisedUserExtensionsManager::CanInstallExtensions() const {
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
   return supervised_user_service->HasACustodian() &&
          user_prefs_->GetBoolean(
@@ -273,7 +273,7 @@ void SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs() {
 }
 
 void SupervisedUserExtensionsManager::SetActiveForSupervisedUsers() {
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
   is_active_policy_for_supervised_users_ =
       supervised_user_service->IsSubjectToParentalControls();
@@ -317,7 +317,7 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
 
 std::u16string SupervisedUserExtensionsManager::GetExtensionsLockedMessage()
     const {
-  SupervisedUserService* supervised_user_service =
+  supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
   return l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_LOCKED_SUPERVISED_USER,

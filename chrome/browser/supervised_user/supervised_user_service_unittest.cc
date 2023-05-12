@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 
 #include <stddef.h>
 
@@ -137,7 +137,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    SupervisedUserService* service =
+    supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
     service->Init();
   }
@@ -156,7 +156,7 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
 };
 
 TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(profile_->IsChild());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -180,7 +180,7 @@ TEST_F(SupervisedUserServiceTest,
       supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
   EXPECT_TRUE(profile_->IsChild());
 
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
@@ -196,7 +196,7 @@ TEST_F(SupervisedUserServiceTest,
       supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
   EXPECT_TRUE(profile_->IsChild());
 
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
@@ -308,7 +308,7 @@ class SupervisedUserServiceTestUnsupervised
 };
 
 TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service->IsURLFilteringEnabled());
 
@@ -324,7 +324,7 @@ TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
 
 TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
   EXPECT_FALSE(profile_->IsChild());
-  SupervisedUserService* service =
+  supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
 }

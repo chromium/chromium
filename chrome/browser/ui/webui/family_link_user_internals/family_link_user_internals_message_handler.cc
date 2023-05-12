@@ -132,7 +132,7 @@ void FamilyLinkUserInternalsMessageHandler::OnURLFilterChanged() {
   SendBasicInfo();
 }
 
-SupervisedUserService*
+supervised_user::SupervisedUserService*
 FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
   Profile* profile = Profile::FromWebUI(web_ui());
   return SupervisedUserServiceFactory::GetForProfile(

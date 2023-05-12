@@ -981,6 +981,10 @@ static_library("extensions") {
     "//url",
   ]
 
+  if (enable_supervised_users) {
+    deps += [ "//components/supervised_user/core/browser" ]
+  }
+
   if (is_linux || is_mac || is_win) {
     sources += [
       "api/system_indicator/system_indicator_api.cc",
