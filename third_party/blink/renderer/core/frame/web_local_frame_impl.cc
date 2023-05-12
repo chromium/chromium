@@ -349,16 +349,18 @@ class ChromePrintContext : public PrintContext {
     return printed_page_width_ / page_rect.width();
   }
 
-  float SpoolSinglePage(cc::PaintCanvas* canvas, int page_number) {
+  void SpoolSinglePage(cc::PaintCanvas* canvas, int page_number) {
     DispatchEventsForPrintingOnAllFrames();
     if (!GetFrame()->GetDocument() ||
-        !GetFrame()->GetDocument()->GetLayoutView())
-      return 0;
+        !GetFrame()->GetDocument()->GetLayoutView()) {
+      return;
+    }
 
     GetFrame()->View()->UpdateLifecyclePhasesForPrinting();
     if (!GetFrame()->GetDocument() ||
-        !GetFrame()->GetDocument()->GetLayoutView())
-      return 0;
+        !GetFrame()->GetDocument()->GetLayoutView()) {
+      return;
+    }
 
     // The page rect gets scaled and translated, so specify the entire
     // print content area here as the recording rect.
@@ -367,9 +369,8 @@ class ChromePrintContext : public PrintContext {
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
     context.BeginRecording();
-    float scale = SpoolPage(context, page_number);
+    SpoolPage(context, page_number);
     canvas->drawPicture(context.EndRecording());
-    return scale;
   }
 
   void SpoolPagesWithBoundariesForTesting(
@@ -462,10 +463,8 @@ class ChromePrintContext : public PrintContext {
   }
 
  protected:
-  virtual float SpoolPage(GraphicsContext& context, int page_number) {
+  virtual void SpoolPage(GraphicsContext& context, int page_number) {
     gfx::Rect page_rect = page_rects_[page_number];
-    float scale = printed_page_width_ / page_rect.width();
-
     AffineTransform transform;
     transform.Translate(static_cast<float>(-page_rect.x()),
                         static_cast<float>(-page_rect.y()));
@@ -495,8 +494,6 @@ class ChromePrintContext : public PrintContext {
 
     context.DrawRecord(builder->EndRecording(property_tree_state.Unalias()));
     context.Restore();
-
-    return scale;
   }
 
  private:
@@ -568,15 +565,10 @@ class ChromePluginPrintContext final : public ChromePrintContext {
   }
 
  protected:
-  // Spools the printed page, a subrect of frame(). Skip the scale step.
-  // NativeTheme doesn't play well with scaling. Scaling is done browser side
-  // instead. Returns the scale to be applied.
-  float SpoolPage(GraphicsContext& context, int page_number) override {
+  void SpoolPage(GraphicsContext& context, int page_number) override {
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
     plugin_->PrintPage(page_number, builder->Context());
     context.DrawRecord(builder->EndRecording());
-
-    return 1.0;
   }
 
  private:
@@ -1902,12 +1894,12 @@ float WebLocalFrameImpl::GetPrintPageShrink(uint32_t page) {
   return print_context_->GetPageShrink(page);
 }
 
-float WebLocalFrameImpl::PrintPage(uint32_t page, cc::PaintCanvas* canvas) {
+void WebLocalFrameImpl::PrintPage(uint32_t page, cc::PaintCanvas* canvas) {
   DCHECK(print_context_);
   DCHECK(GetFrame());
   DCHECK(GetFrame()->GetDocument());
 
-  return print_context_->SpoolSinglePage(canvas, page);
+  print_context_->SpoolSinglePage(canvas, page);
 }
 
 void WebLocalFrameImpl::PrintEnd() {
