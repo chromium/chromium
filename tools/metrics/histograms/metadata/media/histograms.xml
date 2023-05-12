@@ -1433,10 +1433,9 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether an AudioOutputController succeeded in creating and opening an output
-    stream proxy. Only logged for the initial creation, subsequent re-creations
-    due to device change events are logged in the
-    Media.AudioOutputController.ProxyStreamCreationResultForDeviceChange
-    histogram.
+    stream proxy after receiving a default device change event. Note: in
+    September 2021 this histogram unintentionally swapped its meaning with
+    Media.AudioOutputController.ProxyStreamCreationResultForDeviceChange.
   </summary>
 </histogram>
 
@@ -1448,7 +1447,11 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether an AudioOutputController succeeded in creating and opening an output
-    stream proxy after receiving a default device change event.
+    stream proxy. Only logged for the initial creation, subsequent re-creations
+    due to device change events are logged in the
+    Media.AudioOutputController.ProxyStreamCreationResult histogram. Note: in
+    September 2021 this histogram unintentionally swapped its meaning with
+    Media.AudioOutputController.ProxyStreamCreationResult.
   </summary>
 </histogram>
 
