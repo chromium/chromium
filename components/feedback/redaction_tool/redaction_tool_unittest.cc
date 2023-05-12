@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
@@ -189,6 +190,34 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "/root/(HASH:2754 1)/foo", PIIType::kStableIdentifier},  // Hash string.
     {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "(UID: 1)",
      PIIType::kStableIdentifier},
+    {"foo=4012-8888-8888-1881", "foo=(CREDITCARD: 1)", PIIType::kCreditCard},
+    {"foo=40 12 88 88 88 88 18 81", "foo=(CREDITCARD: 1)",
+     PIIType::kCreditCard},
+    // Max length
+    {"foo=5019717010103742", "foo=(CREDITCARD: 2)", PIIType::kCreditCard},
+    {"foo=5-0-1-9-7-1-7-0-1-0-1-0-3-7-4-2-7-8-7", "foo=(CREDITCARD: 3)",
+     PIIType::kCreditCard},
+    // Too long to match.
+    {"foo=5-0-1-9-7-1-7-0-1-0-1-0-3-7-4-2-7-8-7-2",
+     "foo=5-0-1-9-7-1-7-0-1-0-1-0-3-7-4-2-7-8-7-2", PIIType::kNone},
+    // Number is too long.
+    {"foo=12345678901234567894", "foo=12345678901234567894", PIIType::kNone},
+    // Number is too short.
+    {"foo=12345678903", "foo=12345678903", PIIType::kNone},
+    // Luhn checksum doesn't validate.
+    {"foo=4111 1111 1111 1112", "foo=4111 1111 1111 1112", PIIType::kNone},
+    // This is probably just a timestamp.
+    {"foo=4012888888881881ms", "foo=4012888888881881ms", PIIType::kNone},
+    // This is probably just a timestamp as well.
+    {"foo=4012888888881881 ms", "foo=4012888888881881 ms", PIIType::kNone},
+    // Probably a log entry.
+    {"foo=12:00:00.359  1000   155   155 INFO",
+     "foo=12:00:00.359  1000   155   155 INFO", PIIType::kNone},
+    // Invalid IIN.
+    {"foo=0000-0000-0000-0000", "foo=0000-0000-0000-0000", PIIType::kNone},
+    // This is not a timestamp even though "ms" appears after the number.
+    {"Use 4012888888881881 or moms creditcard",
+     "Use (CREDITCARD: 1)or moms creditcard", PIIType::kCreditCard},
 #if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -572,16 +601,40 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithoutContext) {
 }
 
 TEST_F(RedactionToolTest, RedactChunk) {
+  redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
+  constexpr char kHistogramName[] = "Feedback.RedactionTool.CreditCardMatch";
+  enum class CreditCardDetection {
+    kRegexMatch = 1,
+    kTimestamp = 2,
+    kRepeatedChars = 3,
+    kDoesntValidate = 4,
+    kValidated = 5,
+  };
+  using enum CreditCardDetection;
+  const base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 0);
+
   for (const auto& s : kStringsWithRedactions) {
     redaction_input.append(s.pre_redaction).append("\n");
     redaction_output.append(s.post_redaction).append("\n");
   }
   EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
+
+  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 11);
+  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 2);
+  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 3);
+  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 5);
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelected) {
+  redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
   for (const auto& s : kStringsWithRedactions) {
@@ -731,12 +784,14 @@ TEST_F(RedactionToolTest, DetectPII) {
              "64:ff9b::6473:5c01",
              "::0101:ffff:c0a8:640a",
          }},
-        {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}}, {
-      PIIType::kStableIdentifier, {
-        "27540283740a0897ab7c8de0f809add2bacde78f",
-            "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
-      }
-    }
+        {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}},
+        {PIIType::kStableIdentifier,
+         {
+             "27540283740a0897ab7c8de0f809add2bacde78f",
+             "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
+         }},
+        {PIIType::kCreditCard,
+         {"4012888888881881", "5019717010103742", "5019717010103742787"}},
   };
 
   EXPECT_EQ(pii_in_data, redactor_.Detect(redaction_input));

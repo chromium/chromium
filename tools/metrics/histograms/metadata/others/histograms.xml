@@ -6111,6 +6111,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.RedactionTool.CreditCardMatch"
+    enum="CreditCardDetection" expires_after="2023-12-01">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>dpchromeos-core-eng@google.com</owner>
+  <summary>
+    The redaction tool can be used to redact potential PII on the client side
+    before logs and other data is sent to servers. This histogram is recorded
+    when attempting to verify if a matched string is a credit card. Since we
+    don't have guaranteed context for credit cards in our logs, unlike e.g.
+    shill log format, we have to do apply some heuristic. There are several
+    steps where the validation could detect a false positive and we want to
+    measure how effective these mechanisms are.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ReportSending.Online" units="boolean"
     expires_after="2023-08-27">
   <owner>xiangdongkong@google.com</owner>

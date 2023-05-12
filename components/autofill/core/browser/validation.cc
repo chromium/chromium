@@ -53,6 +53,11 @@ bool IsValidCreditCardExpirationYear(int year, const base::Time& now) {
   return year >= now_exploded.year;
 }
 
+// Credit card validation logic is duplicated in
+// components/feedback/redaction_tool/validation.cc. Any changes here must
+// be copied there.
+// TODO(b/281812289) Deduplicate the logic and let the autofill component
+// depend on the code in //components/feedback/redaction_tool/.
 bool IsValidCreditCardNumber(const std::u16string& text) {
   const std::u16string number = CreditCard::StripSeparators(text);
 

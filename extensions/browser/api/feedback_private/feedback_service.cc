@@ -83,6 +83,7 @@ constexpr char kLacrosLogEntryPrefix[] = "Lacros ";
 
 void RedactFeedbackData(scoped_refptr<feedback::FeedbackData> feedback_data) {
   redaction::RedactionTool redactor(nullptr);
+  redactor.EnableCreditCardRedaction(true);
   feedback_data->RedactDescription(redactor);
 }
 

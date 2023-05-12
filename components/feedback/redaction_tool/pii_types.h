@@ -68,7 +68,9 @@ enum class PIIType {
   kVolumeLabel = 13,
   // Extensible Authentication Protocol (EAP) properties provided by shill.
   kEAP = 14,
-  kMaxValue = kEAP,
+  // Credit card numbers.
+  kCreditCard = 15,
+  kMaxValue = kCreditCard,
 };
 
 }  // namespace redaction

@@ -22104,6 +22104,15 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Site marked as legitimate"/>
 </enum>
 
+<enum name="CreditCardDetection">
+  <int value="1" label="Regex matched a piece of text that looks like a CC"/>
+  <int value="2" label="False positive, likely just a timestamp"/>
+  <int value="3" label="False positive, there are repeated separating chars"/>
+  <int value="4"
+      label="False positive, validation against IIN or Luhn checksum failed"/>
+  <int value="5" label="Validated, likely a credit card number"/>
+</enum>
+
 <enum name="CreditCardSeamlessFill">
   <int value="0" label=":-D Full fill"/>
   <int value="1" label=":-) Optional name missing"/>
@@ -82556,6 +82565,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="12" label="Stable identifiers"/>
   <int value="13" label="Volume labels presented in the 'blkid' tool"/>
   <int value="14" label="Extensible Authentication Protocol (EAP) properties"/>
+  <int value="15" label="Credit card number"/>
 </enum>
 
 <enum name="PinAutosubmitBackfillEvent">

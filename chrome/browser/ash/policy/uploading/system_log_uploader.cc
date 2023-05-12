@@ -137,6 +137,7 @@ std::unique_ptr<SystemLogUploader::SystemLogs> ReadFiles() {
   auto system_logs = std::make_unique<SystemLogUploader::SystemLogs>();
   redaction::RedactionTool redactor(
       extension_misc::kBuiltInFirstPartyExtensionIds);
+  redactor.EnableCreditCardRedaction(true);
   for (const char* file_path : kSystemLogFileNames) {
     if (!base::PathExists(base::FilePath(file_path)))
       continue;
