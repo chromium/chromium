@@ -65,6 +65,11 @@ export class Preview {
   private faceOverlay: FaceOverlay|null = null;
 
   /**
+   * The observer to monitor average FPS of the preview stream.
+   */
+  private fpsObserver: util.FpsObserver|null = null;
+
+  /**
    * Current active stream.
    */
   private streamInternal: MediaStream|null = null;
@@ -534,29 +539,12 @@ export class Preview {
     const resolution = `${videoWidth}x${videoHeight}`;
     const videoTrack = this.getVideoTrack();
     const deviceName = videoTrack.label;
-
-    // Currently there is no easy way to calculate the fps of a video element.
-    // Here we use the metadata events to calculate a reasonable approximation.
-    const updateFps = (() => {
-      const FPS_MEASURE_FRAMES = 100;
-      const timestamps: number[] = [];
-      return () => {
-        const now = performance.now();
-        timestamps.push(now);
-        if (timestamps.length > FPS_MEASURE_FRAMES) {
-          timestamps.shift();
-        }
-        if (timestamps.length === 1) {
-          return null;
-        }
-        return (timestamps.length - 1) / (now - timestamps[0]) * 1000;
-      };
-    })();
-
     const deviceOperator = DeviceOperator.getInstance();
     if (deviceOperator === null) {
       return;
     }
+
+    this.fpsObserver = new util.FpsObserver(this.video);
 
     const {deviceId} = getVideoTrackSettings(videoTrack);
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
@@ -586,9 +574,11 @@ export class Preview {
     const callback = (metadata: CameraMetadata) => {
       showValue('#preview-resolution', resolution);
       showValue('#preview-device-name', deviceName);
-      const fps = updateFps();
-      if (fps !== null) {
-        showValue('#preview-fps', `${fps.toFixed(0)} FPS`);
+      if (this.fpsObserver !== null) {
+        const fps = this.fpsObserver.getAverageFps();
+        if (fps !== null) {
+          showValue('#preview-fps', `${fps.toFixed(0)} FPS`);
+        }
       }
 
       let faceMode = AndroidStatisticsFaceDetectMode
@@ -652,6 +642,11 @@ export class Preview {
     if (this.faceOverlay !== null) {
       this.faceOverlay.clear();
       this.faceOverlay = null;
+    }
+
+    if (this.fpsObserver !== null) {
+      this.fpsObserver.stop();
+      this.fpsObserver = null;
     }
   }
 

@@ -478,3 +478,37 @@ export function getFpsRangeFromConstraints(frameRate: ConstrainDouble|
   }
   return {minFps, maxFps};
 }
+
+// Observer to monitor the average FPS of preview within an interval.
+export class FpsObserver {
+  private readonly timestamps: number[] = [];
+
+  private callbackId = 0;
+
+  constructor(private readonly videoElement: HTMLVideoElement) {
+    const FPS_MEASUREMENT_MAX_SAMPLE_COUNT = 100;
+    const updateFps = () => {
+      this.timestamps.push(performance.now());
+      if (this.timestamps.length > FPS_MEASUREMENT_MAX_SAMPLE_COUNT) {
+        this.timestamps.shift();
+      }
+      this.callbackId = this.videoElement.requestVideoFrameCallback(updateFps);
+    };
+    this.callbackId = this.videoElement.requestVideoFrameCallback(updateFps);
+  }
+
+  // Returns the average FPS according to the collected timestamps. If the
+  // amount of data is not enough, returns null instead.
+  getAverageFps(): number|null {
+    if (this.timestamps.length <= 1) {
+      return null;
+    }
+    return (this.timestamps.length - 1) /
+        (this.timestamps[this.timestamps.length - 1] - this.timestamps[0]) *
+        1000;
+  }
+
+  stop(): void {
+    this.videoElement.cancelVideoFrameCallback(this.callbackId);
+  }
+}

@@ -14,7 +14,7 @@ import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {Facing, Mode, Resolution} from '../type.js';
-import {assertEnumVariant, sleep} from '../util.js';
+import {assertEnumVariant, FpsObserver, sleep} from '../util.js';
 import {windowController} from '../window_controller.js';
 
 import {
@@ -519,5 +519,9 @@ export class CCATest {
     assert(option !== undefined, 'Invalid SettingOption value.');
     const component = SETTING_OPTION_MAP[option].component;
     CCATest.click(component);
+  }
+
+  static getFpsObserver(): FpsObserver {
+    return new FpsObserver(getPreviewVideo());
   }
 }
