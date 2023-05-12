@@ -775,4 +775,29 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
             sync_service()->GetTransportState());
 }
 
+TEST_F(SyncServiceImplStartupTest,
+       ShouldClearMetadataForAlreadyDisabledTypesBeforeConfigurationDone) {
+  sync_prefs()->SetFirstSetupComplete();
+  // Simulate types disabled during previous run.
+  sync_prefs()->SetSelectedTypes(
+      /*keep_everything_synced=*/false,
+      /*registered_types=*/
+      {UserSelectableType::kBookmarks, UserSelectableType::kReadingList},
+      /*selected_types=*/{UserSelectableType::kBookmarks});
+  sync_prefs()->SetSyncRequested(true);
+
+  SimulateTestUserSigninAndEnableSyncFeature();
+
+  CreateSyncService(SyncServiceImpl::MANUAL_START,
+                    /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
+
+  sync_service()->Initialize();
+
+  // Metadata was cleared for disabled types ...
+  EXPECT_EQ(1,
+            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  // ... but not for the ones not disabled.
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+}
+
 }  // namespace syncer

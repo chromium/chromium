@@ -286,6 +286,24 @@ void SyncServiceImpl::Initialize() {
                          user_settings_->IsFirstSetupComplete(),
                          is_regular_profile_for_uma_);
 
+  if (base::FeatureList::IsEnabled(
+          kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
+      // Selected types may soon start depending on the signin state. This check
+      // should help avoid accidentally clearing stuff.
+      // For localsync, it can be assumed that all info is fully loaded.
+      (IsLocalSyncEnabled() ||
+       auth_manager_->IsActiveAccountInfoFullyLoaded())) {
+    // Call Stop() on controllers for non-preferred types to clear metadata.
+    // This allows clearing metadata for types disabled in previous run early-on
+    // during initialization.
+    ModelTypeSet preferred_types = GetDataTypesToConfigure();
+    for (auto& [type, controller] : data_type_controllers_) {
+      if (!preferred_types.Has(type)) {
+        controller->Stop(CLEAR_METADATA, base::DoNothing());
+      }
+    }
+  }
+
   // Auto-start means the first time the profile starts up, sync should start up
   // immediately. Since IsSyncRequested() is false by default and nobody else
   // will set it, we need to set it here.
