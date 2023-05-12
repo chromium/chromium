@@ -21,6 +21,8 @@ ArcSystemStateObservation::ArcSystemStateObservation(
 
   // Observe ARC window in ash.
   AddObserver(std::make_unique<ArcWindowObserver>());
+
+  StartObservers();
 }
 
 ArcSystemStateObservation::~ArcSystemStateObservation() = default;
