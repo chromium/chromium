@@ -34,6 +34,7 @@ namespace {
 SearchSuggestionParser::SuggestResult BuildSuggestion(
     const std::u16string& query,
     AutocompleteMatchType::Type type,
+    omnibox::SuggestType suggest_type,
     std::vector<int> subtypes,
     const std::string& additional_query_params,
     int relevance,
@@ -44,6 +45,7 @@ SearchSuggestionParser::SuggestResult BuildSuggestion(
   return SearchSuggestionParser::SuggestResult(
       /*suggestion=*/query,
       /*type=*/type,
+      /*suggest_type=*/suggest_type,
       /*subtypes=*/subtypes,
       /*match_contents=*/query,
       /*match_contents_prefix=*/u"",
@@ -148,7 +150,7 @@ TEST_P(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   answer.set_type(2334);
 
   SearchSuggestionParser::SuggestResult more_relevant(
-      query, AutocompleteMatchType::SEARCH_HISTORY,
+      query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/1300, /*relevance_from_server=*/true,
       /*input_text=*/query);
@@ -158,7 +160,7 @@ TEST_P(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
       TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
 
   SearchSuggestionParser::SuggestResult less_relevant(
-      query, AutocompleteMatchType::SEARCH_SUGGEST,
+      query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_QUERY,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
@@ -175,10 +177,12 @@ TEST_P(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
 
   EXPECT_TRUE(answer.Equals(*match.answer));
   EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, match.type);
+  EXPECT_EQ(omnibox::TYPE_NATIVE_CHROME, match.suggest_type);
   EXPECT_EQ(1300, match.relevance);
 
   EXPECT_TRUE(answer.Equals(*duplicate.answer));
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, duplicate.type);
+  EXPECT_EQ(omnibox::TYPE_QUERY, duplicate.suggest_type);
   EXPECT_EQ(850, duplicate.relevance);
 
   // Ensure answers are not copied over existing answers.
@@ -186,7 +190,7 @@ TEST_P(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   SuggestionAnswer answer2;
   answer2.set_type(8242);
   more_relevant = SearchSuggestionParser::SuggestResult(
-      query, AutocompleteMatchType::SEARCH_HISTORY,
+      query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/1300, /*relevance_from_server=*/true,
       /*input_text=*/query);
@@ -206,10 +210,12 @@ TEST_P(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
 
   EXPECT_TRUE(answer2.Equals(*match.answer));
   EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, match.type);
+  EXPECT_EQ(omnibox::TYPE_NATIVE_CHROME, match.suggest_type);
   EXPECT_EQ(1300, match.relevance);
 
   EXPECT_TRUE(answer.Equals(*duplicate.answer));
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, duplicate.type);
+  EXPECT_EQ(omnibox::TYPE_QUERY, duplicate.suggest_type);
   EXPECT_EQ(850, duplicate.relevance);
 }
 
@@ -223,10 +229,11 @@ TEST_P(BaseSearchProviderTest, PreserveAdditionalQueryParamsWhenDeduplicating) {
 
   // Ensure that a match with empty additional query params is added to the map
   // without a pre-computed `stripped_destination_url`.
-  SearchSuggestionParser::SuggestResult plain_text = BuildSuggestion(
-      query, AutocompleteMatchType::SEARCH_HISTORY, {omnibox::SUBTYPE_PERSONAL},
-      /*additional_query_params=*/"",
-      /*relevance=*/1300, /*should_prerender=*/false);
+  SearchSuggestionParser::SuggestResult plain_text =
+      BuildSuggestion(query, AutocompleteMatchType::SEARCH_HISTORY,
+                      omnibox::TYPE_NATIVE_CHROME, {omnibox::SUBTYPE_PERSONAL},
+                      /*additional_query_params=*/"",
+                      /*relevance=*/1300, /*should_prerender=*/false);
   provider_->AddMatchToMap(
       plain_text, std::string(), AutocompleteInput(), template_url.get(),
       client_->GetTemplateURLService()->search_terms_data(),
@@ -243,10 +250,11 @@ TEST_P(BaseSearchProviderTest, PreserveAdditionalQueryParamsWhenDeduplicating) {
   // additional query params, and with a lower relevance is added as a duplicate
   // of the existing match in the map without a pre-computed
   // `stripped_destination_url`.
-  SearchSuggestionParser::SuggestResult duplicate_plain_text = BuildSuggestion(
-      query, AutocompleteMatchType::SEARCH_HISTORY, {omnibox::SUBTYPE_PERSONAL},
-      /*additional_query_params=*/"",
-      /*relevance=*/1299, /*should_prerender=*/false);
+  SearchSuggestionParser::SuggestResult duplicate_plain_text =
+      BuildSuggestion(query, AutocompleteMatchType::SEARCH_HISTORY,
+                      omnibox::TYPE_NATIVE_CHROME, {omnibox::SUBTYPE_PERSONAL},
+                      /*additional_query_params=*/"",
+                      /*relevance=*/1299, /*should_prerender=*/false);
   provider_->AddMatchToMap(
       duplicate_plain_text, std::string(), AutocompleteInput(),
       template_url.get(), client_->GetTemplateURLService()->search_terms_data(),
@@ -263,10 +271,11 @@ TEST_P(BaseSearchProviderTest, PreserveAdditionalQueryParamsWhenDeduplicating) {
   // Ensure that the first match, with duplicate search terms and a unique
   // non-empty additional query params, is added to the map without a
   // pre-computed `stripped_destination_url`.
-  SearchSuggestionParser::SuggestResult entity_1 = BuildSuggestion(
-      query, AutocompleteMatchType::SEARCH_HISTORY, {omnibox::SUBTYPE_PERSONAL},
-      /*additional_query_params=*/"gs_ssp=1",
-      /*relevance=*/1298, /*should_prerender=*/false);
+  SearchSuggestionParser::SuggestResult entity_1 =
+      BuildSuggestion(query, AutocompleteMatchType::SEARCH_HISTORY,
+                      omnibox::TYPE_NATIVE_CHROME, {omnibox::SUBTYPE_PERSONAL},
+                      /*additional_query_params=*/"gs_ssp=1",
+                      /*relevance=*/1298, /*should_prerender=*/false);
   provider_->AddMatchToMap(
       entity_1, std::string(), AutocompleteInput(), template_url.get(),
       client_->GetTemplateURLService()->search_terms_data(),
@@ -283,10 +292,11 @@ TEST_P(BaseSearchProviderTest, PreserveAdditionalQueryParamsWhenDeduplicating) {
   // non-empty additional query params, is added to the map with a pre-computed
   // `stripped_destination_url`, if omnibox::kDisambiguateEntitySuggestions is
   // enabled.
-  SearchSuggestionParser::SuggestResult entity_2 = BuildSuggestion(
-      query, AutocompleteMatchType::SEARCH_HISTORY, {omnibox::SUBTYPE_PERSONAL},
-      /*additional_query_params=*/"gs_ssp=2",
-      /*relevance=*/1297, /*should_prerender=*/false);
+  SearchSuggestionParser::SuggestResult entity_2 =
+      BuildSuggestion(query, AutocompleteMatchType::SEARCH_HISTORY,
+                      omnibox::TYPE_NATIVE_CHROME, {omnibox::SUBTYPE_PERSONAL},
+                      /*additional_query_params=*/"gs_ssp=2",
+                      /*relevance=*/1297, /*should_prerender=*/false);
   provider_->AddMatchToMap(
       entity_2, std::string(), AutocompleteInput(), template_url.get(),
       client_->GetTemplateURLService()->search_terms_data(),
@@ -303,10 +313,11 @@ TEST_P(BaseSearchProviderTest, PreserveAdditionalQueryParamsWhenDeduplicating) {
   // Ensure that a duplicate match, with identical search terms and additional
   // query params, and with a lower relevance is added as a duplicate of the
   // existing match in the map.
-  SearchSuggestionParser::SuggestResult duplicate_1_entity_2 = BuildSuggestion(
-      query, AutocompleteMatchType::SEARCH_HISTORY, {omnibox::SUBTYPE_PERSONAL},
-      /*additional_query_params=*/"gs_ssp=2",
-      /*relevance=*/1296, /*should_prerender=*/false);
+  SearchSuggestionParser::SuggestResult duplicate_1_entity_2 =
+      BuildSuggestion(query, AutocompleteMatchType::SEARCH_HISTORY,
+                      omnibox::TYPE_NATIVE_CHROME, {omnibox::SUBTYPE_PERSONAL},
+                      /*additional_query_params=*/"gs_ssp=2",
+                      /*relevance=*/1296, /*should_prerender=*/false);
   provider_->AddMatchToMap(
       duplicate_1_entity_2, std::string(), AutocompleteInput(),
       template_url.get(), client_->GetTemplateURLService()->search_terms_data(),
@@ -325,10 +336,11 @@ TEST_P(BaseSearchProviderTest, PreserveAdditionalQueryParamsWhenDeduplicating) {
   // query params, and with a higher relevance replaces the existing match in
   // the map with a pre-computed `stripped_destination_url`, if
   // omnibox::kDisambiguateEntitySuggestions is enabled.
-  SearchSuggestionParser::SuggestResult duplicate_2_entity_2 = BuildSuggestion(
-      query, AutocompleteMatchType::SEARCH_HISTORY, {omnibox::SUBTYPE_PERSONAL},
-      /*additional_query_params=*/"gs_ssp=2",
-      /*relevance=*/1301, /*should_prerender=*/false);
+  SearchSuggestionParser::SuggestResult duplicate_2_entity_2 =
+      BuildSuggestion(query, AutocompleteMatchType::SEARCH_HISTORY,
+                      omnibox::TYPE_NATIVE_CHROME, {omnibox::SUBTYPE_PERSONAL},
+                      /*additional_query_params=*/"gs_ssp=2",
+                      /*relevance=*/1301, /*should_prerender=*/false);
   provider_->AddMatchToMap(
       duplicate_2_entity_2, std::string(), AutocompleteInput(),
       template_url.get(), client_->GetTemplateURLService()->search_terms_data(),
@@ -355,10 +367,10 @@ TEST_P(BaseSearchProviderTest, MatchTailSuggestionProperly) {
 
   std::u16string query = u"angeles now";
   std::u16string suggestion = u"weather los " + query;
-  SearchSuggestionParser::SuggestResult suggest_result =
-      BuildSuggestion(suggestion, AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
-                      /*subtypes=*/{}, /*additional_query_params=*/"",
-                      /*relevance=*/1300, /*should_prerender=*/false);
+  SearchSuggestionParser::SuggestResult suggest_result = BuildSuggestion(
+      suggestion, AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
+      omnibox::TYPE_TAIL, /*subtypes=*/{}, /*additional_query_params=*/"",
+      /*relevance=*/1300, /*should_prerender=*/false);
 
   TestBaseSearchProvider::MatchMap map;
   provider_->AddMatchToMap(
@@ -386,6 +398,7 @@ TEST_P(BaseSearchProviderTest, DeleteDuplicateMatch) {
 
   SearchSuggestionParser::SuggestResult more_relevant(
       query, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+      omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
@@ -395,7 +408,7 @@ TEST_P(BaseSearchProviderTest, DeleteDuplicateMatch) {
       TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
 
   SearchSuggestionParser::SuggestResult less_relevant(
-      query, AutocompleteMatchType::SEARCH_HISTORY,
+      query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/735, /*relevance_from_server=*/true,
       /*input_text=*/query);
@@ -427,7 +440,7 @@ TEST_P(BaseSearchProviderTest, PrerenderDefaultMatch) {
 
   SearchSuggestionParser::SuggestResult default_suggestion(
       query, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-      /*subtypes=*/{}, /*from_keyword=*/false,
+      omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
@@ -437,10 +450,10 @@ TEST_P(BaseSearchProviderTest, PrerenderDefaultMatch) {
       /*mark_as_deletable=*/false,
       /*in_keyword_mode=*/false, &map);
 
-  SearchSuggestionParser::SuggestResult prerender_suggestion =
-      BuildSuggestion(query, AutocompleteMatchType::SEARCH_SUGGEST,
-                      /*subtypes=*/{}, /*additional_query_params=*/"",
-                      /*relevance=*/850, /*should_prerender=*/true);
+  SearchSuggestionParser::SuggestResult prerender_suggestion = BuildSuggestion(
+      query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_QUERY,
+      /*subtypes=*/{}, /*additional_query_params=*/"",
+      /*relevance=*/850, /*should_prerender=*/true);
   provider_->AddMatchToMap(
       prerender_suggestion, std::string(), AutocompleteInput(),
       template_url.get(), client_->GetTemplateURLService()->search_terms_data(),
@@ -487,5 +500,7 @@ TEST_P(BaseSearchProviderTest, CreateOnDeviceSearchSuggestion) {
     ASSERT_EQ(match.type, is_tail_suggestion
                               ? AutocompleteMatchType::SEARCH_SUGGEST_TAIL
                               : AutocompleteMatchType::SEARCH_SUGGEST);
+    ASSERT_EQ(match.suggest_type,
+              is_tail_suggestion ? omnibox::TYPE_TAIL : omnibox::TYPE_QUERY);
   }
 }

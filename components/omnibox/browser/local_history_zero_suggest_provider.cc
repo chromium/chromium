@@ -215,6 +215,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     SearchSuggestionParser::SuggestResult suggestion(
         /*suggestion=*/result->normalized_term,
         AutocompleteMatchType::SEARCH_HISTORY,
+        /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
         /*subtypes=*/{}, /*from_keyword=*/false, relevance--,
         /*relevance_from_server=*/false,
         /*input_text=*/base::ASCIIToUTF16(std::string()));

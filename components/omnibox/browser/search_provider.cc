@@ -987,6 +987,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     SearchSuggestionParser::SuggestResult verbatim(
         /*suggestion=*/trimmed_verbatim,
         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+        /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
         /*subtypes=*/{}, /*from_keyword=*/false, verbatim_relevance,
         relevance_from_server,
         /*input_text=*/trimmed_verbatim);
@@ -1021,6 +1022,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         SearchSuggestionParser::SuggestResult verbatim(
             /*suggestion=*/trimmed_verbatim,
             AutocompleteMatchType::SEARCH_OTHER_ENGINE,
+            /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
             /*subtypes=*/{}, /*from_keyword=*/true, keyword_verbatim_relevance,
             keyword_relevance_from_server,
             /*input_text=*/trimmed_verbatim);
@@ -1203,7 +1205,9 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
     }
     SearchSuggestionParser::SuggestResult history_suggestion(
         /*suggestion=*/trimmed_suggestion,
-        AutocompleteMatchType::SEARCH_HISTORY, {}, is_keyword, relevance,
+        AutocompleteMatchType::SEARCH_HISTORY,
+        /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
+        is_keyword, relevance,
         /*relevance_from_server=*/false, /*input_text=*/trimmed_input);
     // History results are synchronous; they are received on the last keystroke.
     history_suggestion.set_received_after_last_keystroke(false);
@@ -1448,6 +1452,7 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
   AutocompleteMatch match(this, navigation.relevance(), false,
                           navigation.type());
   match.destination_url = navigation.url();
+  match.suggest_type = navigation.suggest_type();
   for (const int subtype : navigation.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
   }

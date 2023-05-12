@@ -51,6 +51,7 @@ AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
                              int relevance,
                              AutocompleteMatchType::Type type) {
   AutocompleteMatch match(provider, relevance, true, type);
+  match.suggest_type = omnibox::TYPE_NAVIGATION;
   match.destination_url = url;
 
   match.fill_into_edit +=

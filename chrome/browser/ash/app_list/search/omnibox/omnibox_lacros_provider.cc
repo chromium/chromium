@@ -65,7 +65,8 @@ void OmniboxLacrosProvider::Start(const std::u16string& query) {
       AutocompleteInput input;
 
       SearchSuggestionParser::SuggestResult suggest_result(
-          query, AutocompleteMatchType::URL_WHAT_YOU_TYPED, /*subtypes=*/{},
+          query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+          /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
           /*from_keyword=*/false,
           /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
           /*input_text=*/query);

@@ -53,6 +53,7 @@ class SearchSuggestionParser {
            int relevance,
            bool relevance_from_server,
            AutocompleteMatchType::Type type,
+           omnibox::SuggestType suggest_type,
            std::vector<int> subtypes,
            const std::string& deletion_url);
     Result(const Result& other);
@@ -66,6 +67,7 @@ class SearchSuggestionParser {
     }
 
     AutocompleteMatchType::Type type() const { return type_; }
+    omnibox::SuggestType suggest_type() const { return suggest_type_; }
     const std::vector<int>& subtypes() const { return subtypes_; }
     int relevance() const { return relevance_; }
     void set_relevance(int relevance) { relevance_ = relevance; }
@@ -99,7 +101,11 @@ class SearchSuggestionParser {
     // True if the result came from a keyword suggestion.
     bool from_keyword_;
 
+    // AutocompleteMatch type.
     AutocompleteMatchType::Type type_;
+
+    // Suggestion type.
+    omnibox::SuggestType suggest_type_;
 
     // Suggestion subtypes.
     std::vector<int> subtypes_;
@@ -130,6 +136,7 @@ class SearchSuggestionParser {
    public:
     SuggestResult(const std::u16string& suggestion,
                   AutocompleteMatchType::Type type,
+                  omnibox::SuggestType suggest_type,
                   std::vector<int> subtypes,
                   bool from_keyword,
                   int relevance,
@@ -137,6 +144,7 @@ class SearchSuggestionParser {
                   const std::u16string& input_text);
     SuggestResult(const std::u16string& suggestion,
                   AutocompleteMatchType::Type type,
+                  omnibox::SuggestType suggest_type,
                   std::vector<int> subtypes,
                   const std::u16string& match_contents,
                   const std::u16string& match_contents_prefix,
@@ -225,6 +233,7 @@ class SearchSuggestionParser {
     NavigationResult(const AutocompleteSchemeClassifier& scheme_classifier,
                      const GURL& url,
                      AutocompleteMatchType::Type type,
+                     omnibox::SuggestType suggest_type,
                      std::vector<int> subtypes,
                      const std::u16string& description,
                      const std::string& deletion_url,

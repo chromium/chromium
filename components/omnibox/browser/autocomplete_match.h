@@ -744,23 +744,36 @@ struct AutocompleteMatch {
   // Type of this match.
   Type type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 
-  // True if we saw a tab that matched this suggestion.
-  // Unset if it has not been computed yet.
-  absl::optional<bool> has_tab_match;
+  // The type of this suggestion as reported from and back to the suggest server
+  // via the server response and the ChromeSearchboxStats (reported in the match
+  // destination URL) respectively.
+  // The default value indicates a native Chrome suggestion which must include a
+  // SUBTYPE_OMNIBOX_* in `subtypes`.
+  //
+  // The value is always present in omnibox::SuggestType enum. Although the list
+  // of types in omnibox::SuggestType enum may not be exhaustive, the known type
+  // names found in the server response are mapped to the equivalent enum values
+  // and the unknown types fall back to omnibox::TYPE_QUERY.
+  omnibox::SuggestType suggest_type{omnibox::TYPE_NATIVE_CHROME};
 
   // Used to identify the specific source / type for suggestions by the
   // suggest server. See SuggestSubtype in types.proto for more details.
   // Uses flat_set to deduplicate subtypes (e.g., as a result of Chrome adding
-  // additional subtypes). The order of elements reported back via AQS is
-  // irrelevant. flat_set uses std::vector as a container, reducing memory
-  // overhead of keeping a handful of integers, while offering similar
-  // functionality as std::set.
-  // Note this set may contain int values not present in omnibox::SuggestSubtype
+  // additional subtypes). The order of elements reported back via
+  // ChromeSearchboxStats is irrelevant. flat_set uses std::vector as a
+  // container, reducing memory overhead of keeping a handful of integers, while
+  // offering similar functionality as std::set.
+  //
+  // This set may contain int values not present in omnibox::SuggestSubtype
   // enum. This is because the list of subtypes in omnibox::SuggestSubtype enum
   // is not exhaustive. However, casting int values into omnibox::SuggestSubtype
   // enum without testing membership is expected to be safe as
   // omnibox::SuggestSubtype enum has a fixed int underlying type.
   base::flat_set<omnibox::SuggestSubtype> subtypes;
+
+  // True if we saw a tab that matched this suggestion.
+  // Unset if it has not been computed yet.
+  absl::optional<bool> has_tab_match;
 
   // Set with a keyword provider match if this match can show a keyword hint.
   // For example, if this is a SearchProvider match for "www.amazon.com",

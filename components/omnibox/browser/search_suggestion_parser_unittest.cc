@@ -300,8 +300,8 @@ TEST(SearchSuggestionParserTest, ParseBothPrefetchAndPrerenderSuggestion) {
 
 TEST(SearchSuggestionParserTest, SuggestClassification) {
   SearchSuggestionParser::SuggestResult result(
-      u"foobar", AutocompleteMatchType::SEARCH_SUGGEST, {}, false, 400, true,
-      std::u16string());
+      u"foobar", AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_QUERY, {},
+      false, 400, true, std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
 
@@ -344,8 +344,8 @@ TEST(SearchSuggestionParserTest, NavigationClassification) {
   TestSchemeClassifier scheme_classifier;
   SearchSuggestionParser::NavigationResult result(
       scheme_classifier, GURL("https://news.google.com/"),
-      AutocompleteMatchType::Type::NAVSUGGEST, {}, std::u16string(),
-      std::string(), false, 400, true, u"google");
+      AutocompleteMatchType::Type::NAVSUGGEST, omnibox::TYPE_NAVIGATION, {},
+      std::u16string(), std::string(), false, 400, true, u"google");
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kBoldMiddle = {

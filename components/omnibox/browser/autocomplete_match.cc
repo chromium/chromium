@@ -280,8 +280,9 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       answer(match.answer),
       transition(match.transition),
       type(match.type),
-      has_tab_match(match.has_tab_match),
+      suggest_type(match.suggest_type),
       subtypes(match.subtypes),
+      has_tab_match(match.has_tab_match),
       associated_keyword(match.associated_keyword
                              ? new AutocompleteMatch(*match.associated_keyword)
                              : nullptr),
@@ -341,8 +342,9 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   answer = std::move(match.answer);
   transition = std::move(match.transition);
   type = std::move(match.type);
-  has_tab_match = std::move(match.has_tab_match);
+  suggest_type = std::move(match.suggest_type);
   subtypes = std::move(match.subtypes);
+  has_tab_match = std::move(match.has_tab_match);
   associated_keyword = std::move(match.associated_keyword);
   keyword = std::move(match.keyword);
   from_keyword = std::move(match.from_keyword);
@@ -405,8 +407,9 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   answer = match.answer;
   transition = match.transition;
   type = match.type;
-  has_tab_match = match.has_tab_match;
+  suggest_type = match.suggest_type;
   subtypes = match.subtypes;
+  has_tab_match = match.has_tab_match;
   associated_keyword.reset(
       match.associated_keyword
           ? new AutocompleteMatch(*match.associated_keyword)
@@ -1357,6 +1360,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
       fill_into_edit == duplicate_match.fill_into_edit &&
       IsSearchHistoryType(duplicate_match.type)) {
     type = duplicate_match.type;
+    suggest_type = duplicate_match.suggest_type;
   }
 
   // And always absorb the higher relevance score of duplicates.

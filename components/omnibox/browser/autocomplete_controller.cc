@@ -208,10 +208,12 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
   if (match.provider) {
     if (match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST &&
         (match.type == AutocompleteMatchType::SEARCH_SUGGEST ||
+         match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
          match.type == AutocompleteMatchType::NAVSUGGEST)) {
       // Make sure changes here are reflected in UpdateAssistedQueryStats()
       // below in which the zero-prefix suggestions are counted.
-      if (match.type == AutocompleteMatchType::NAVSUGGEST) {
+      if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+          match.type == AutocompleteMatchType::NAVSUGGEST) {
         subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
       }
       // We abuse this subtype and use it to for zero-suggest suggestions that
@@ -247,7 +249,6 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
     }
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED: {
       *type = omnibox::TYPE_PERSONALIZED_QUERY;
-      ;
       subtypes->emplace(omnibox::SUBTYPE_PERSONAL);
       return;
     }
@@ -255,6 +256,7 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
       *type = omnibox::TYPE_ENTITY;
       return;
     }
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NAVSUGGEST: {
       // Do not set subtype here; subtype may have been set above.
       *type = omnibox::TYPE_NAVIGATION;
@@ -1244,6 +1246,9 @@ void AutocompleteController::UpdateAssistedQueryStats(
     auto subtypes = match->subtypes;
     omnibox::SuggestType type = omnibox::TYPE_NATIVE_CHROME;
     GetMatchTypeAndExtendSubtypes(*match, &type, &subtypes);
+    DCHECK_EQ(match->suggest_type, type)
+        << "AutocompleteMatchType: "
+        << AutocompleteMatchType::ToString(match->type);
 
     // Count any suggestions that constitute zero-prefix suggestions.
     if (subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY) ||
