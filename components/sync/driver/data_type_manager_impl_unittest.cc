@@ -773,6 +773,10 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureDuringPurge) {
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   observer_.ResetExpectations();
 
+  // Called during the first call to Configure() and during PurgeForMigration().
+  EXPECT_EQ(2,
+            GetController(PREFERENCES)->model()->clear_metadata_call_count());
+
   // Before the backend configuration completes, ask for a different
   // set of types.  This request asks for
   // - BOOKMARKS: which is redundant because it was already enabled,
@@ -795,7 +799,8 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureDuringPurge) {
 
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
-  EXPECT_EQ(0,
+  // No clears during/after the last Configure().
+  EXPECT_EQ(2,
             GetController(PREFERENCES)->model()->clear_metadata_call_count());
 }
 
@@ -1497,11 +1502,8 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStarting) {
 
   // This should have purged the data for the excluded type.
   EXPECT_TRUE(last_configure_params().to_purge.Has(BOOKMARKS));
-  // Stop(CLEAR_METADATA) has *not* been called on the controller though; that
-  // happens only when stopping or reconfiguring, not when (re)starting without
-  // the type.
-  // TODO(crbug.com/897628): Metadata *should* probably be cleared here.
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  // Stop(CLEAR_METADATA) is called if (re)started without the type.
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnReconfiguring) {

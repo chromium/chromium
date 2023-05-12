@@ -82,7 +82,12 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
     DVLOG(1) << "ModelLoadManager: Stopping disabled types.";
     for (const auto& [type, dtc] : *controllers_) {
       if (!preferred_types_without_errors_.Has(dtc->type()) &&
-          dtc->state() != DataTypeController::NOT_RUNNING) {
+          (dtc->state() != DataTypeController::NOT_RUNNING ||
+           // If feature is enabled, call Stop() even on types not running to
+           // allow clearing metadata. This is useful to clear metadata for
+           // types which were disabled during configuration.
+           base::FeatureList::IsEnabled(
+               kSyncAllowClearingMetadataWhenDataTypeIsStopped))) {
         SyncStopMetadataFate metadata_fate =
             preferred_types.Has(dtc->type())
                 ? SyncStopMetadataFate::KEEP_METADATA

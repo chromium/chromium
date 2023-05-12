@@ -802,4 +802,71 @@ TEST_F(SyncServiceImplStartupTest,
   EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
+TEST_F(SyncServiceImplStartupTest,
+       ShouldClearMetadataForTypesDisabledBeforeInitCompletion) {
+  SimulateTestUserSigninAndEnableSyncFeature();
+  sync_prefs()->SetSyncRequested(true);
+  sync_prefs()->SetFirstSetupComplete();
+
+  CreateSyncService(SyncServiceImpl::MANUAL_START,
+                    /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
+
+  component_factory()->AllowFakeEngineInitCompletion(false);
+  sync_service()->Initialize();
+  FastForwardUntilNoTasksRemain();
+
+  // Simulate opening sync settings before engine init is over.
+  std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
+      sync_service()->GetSetupInProgressHandle();
+  // Disable READING_LIST type before engine init is over.
+  sync_prefs()->SetSelectedTypes(
+      /*keep_everything_synced=*/false,
+      /*registered_types=*/UserSelectableTypeSet::All(),
+      /*selected_types=*/{UserSelectableType::kBookmarks});
+  setup_in_progress_handle.reset();
+
+  engine()->TriggerInitializationCompletion(/*success=*/true);
+  ASSERT_TRUE(sync_service()->IsEngineInitialized());
+  // Metadata was cleared for disabled types ...
+  EXPECT_EQ(1,
+            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  // ... but not for the ones not disabled.
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+}
+
+TEST_F(SyncServiceImplStartupTest,
+       ShouldClearMetadataForTypesDisabledWhileInit) {
+  SimulateTestUserSigninAndEnableSyncFeature();
+  sync_prefs()->SetSyncRequested(true);
+  sync_prefs()->SetFirstSetupComplete();
+
+  CreateSyncService(SyncServiceImpl::MANUAL_START,
+                    /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
+
+  component_factory()->AllowFakeEngineInitCompletion(false);
+  sync_service()->Initialize();
+  FastForwardUntilNoTasksRemain();
+
+  // Simulate opening sync settings before engine init is over.
+  std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
+      sync_service()->GetSetupInProgressHandle();
+  engine()->TriggerInitializationCompletion(/*success=*/true);
+  ASSERT_TRUE(sync_service()->IsEngineInitialized());
+
+  // Disable READING_LIST type.
+  sync_prefs()->SetSelectedTypes(
+      /*keep_everything_synced=*/false,
+      /*registered_types=*/UserSelectableTypeSet::All(),
+      /*selected_types=*/{UserSelectableType::kBookmarks});
+
+  // This should trigger reconfiguration.
+  setup_in_progress_handle.reset();
+
+  // Metadata was cleared for disabled types ...
+  EXPECT_EQ(1,
+            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  // ... but not for the ones not disabled.
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+}
+
 }  // namespace syncer
