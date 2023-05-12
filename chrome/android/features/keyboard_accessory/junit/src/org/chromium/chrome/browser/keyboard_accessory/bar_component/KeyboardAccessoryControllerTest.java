@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
+import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
@@ -241,8 +242,11 @@ public class KeyboardAccessoryControllerTest {
                 new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        PropertyProvider<Action[]> credManProvider =
+                new PropertyProvider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
 
         mCoordinator.registerActionProvider(generationProvider);
+        mCoordinator.registerActionProvider(credManProvider);
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
 
         AutofillSuggestion suggestion1 = new AutofillSuggestion("FirstSuggestion", "",
@@ -250,18 +254,22 @@ public class KeyboardAccessoryControllerTest {
         AutofillSuggestion suggestion2 = new AutofillSuggestion("SecondSuggestion", "",
                 /* itemTag= */ "", 0, false, 0, false, false, false, /* featureForIPH= */ "");
         Action generationAction = new Action("Generate", GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
+        Action credManAction =
+                new Action("Show Passkeys", CREDMAN_CONDITIONAL_UI_REENTRY, (a) -> {});
         autofillSuggestionProvider.notifyObservers(
                 new AutofillSuggestion[] {suggestion1, suggestion2});
         generationProvider.notifyObservers(new Action[] {generationAction});
+        credManProvider.notifyObservers(new Action[] {credManAction});
 
         // Autofill suggestions should always come last before mandatory tab switcher.
-        assertThat(mModel.get(BAR_ITEMS).size(), is(3));
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
-        assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
-        AutofillBarItem autofillBarItem1 = (AutofillBarItem) mModel.get(BAR_ITEMS).get(1);
-        assertThat(autofillBarItem1.getSuggestion(), is(suggestion1));
+        assertThat(mModel.get(BAR_ITEMS).size(), is(4));
+        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(credManAction));
+        assertThat(mModel.get(BAR_ITEMS).get(1).getAction(), is(generationAction));
         assertThat(mModel.get(BAR_ITEMS).get(2), instanceOf(AutofillBarItem.class));
-        AutofillBarItem autofillBarItem2 = (AutofillBarItem) mModel.get(BAR_ITEMS).get(2);
+        AutofillBarItem autofillBarItem1 = (AutofillBarItem) mModel.get(BAR_ITEMS).get(2);
+        assertThat(autofillBarItem1.getSuggestion(), is(suggestion1));
+        assertThat(mModel.get(BAR_ITEMS).get(3), instanceOf(AutofillBarItem.class));
+        AutofillBarItem autofillBarItem2 = (AutofillBarItem) mModel.get(BAR_ITEMS).get(3);
         assertThat(autofillBarItem2.getSuggestion(), is(suggestion2));
     }
 

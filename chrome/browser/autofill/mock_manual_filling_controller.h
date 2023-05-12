@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
 
 #include "chrome/browser/autofill/manual_filling_controller.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockManualFillingController
@@ -20,27 +21,46 @@ class MockManualFillingController
 
   ~MockManualFillingController() override;
 
-  MOCK_METHOD1(RefreshSuggestions, void(const autofill::AccessorySheetData&));
-  MOCK_METHOD2(NotifyFocusedInputChanged,
-               void(autofill::FieldRendererId,
-                    autofill::mojom::FocusedFieldType));
-  MOCK_METHOD2(UpdateSourceAvailability,
-               void(ManualFillingController::FillingSource, bool));
-  MOCK_METHOD0(Hide, void());
-  MOCK_METHOD1(OnAutomaticGenerationStatusChanged, void(bool));
-  MOCK_METHOD1(ShowAccessorySheetTab, void(const autofill::AccessoryTabType&));
-  MOCK_METHOD2(OnFillingTriggered,
-               void(autofill::AccessoryTabType type,
-                    const autofill::AccessorySheetField&));
-  MOCK_CONST_METHOD1(OnOptionSelected,
-                     void(autofill::AccessoryAction selected_action));
-  MOCK_CONST_METHOD2(OnToggleChanged,
-                     void(autofill::AccessoryAction toggled_action,
-                          bool enabled));
-  MOCK_METHOD2(RequestAccessorySheet,
-               void(autofill::AccessoryTabType,
-                    base::OnceCallback<void(autofill::AccessorySheetData)>));
-  MOCK_CONST_METHOD0(container_view, gfx::NativeView());
+  MOCK_METHOD(void,
+              RefreshSuggestions,
+              (const autofill::AccessorySheetData&),
+              (override));
+  MOCK_METHOD((void),
+              NotifyFocusedInputChanged,
+              (autofill::FieldRendererId, autofill::mojom::FocusedFieldType),
+              (override));
+  MOCK_METHOD((void),
+              UpdateSourceAvailability,
+              (ManualFillingController::FillingSource, bool),
+              (override));
+  MOCK_METHOD((void), Hide, (), (override));
+  MOCK_METHOD((void),
+              OnAccessoryActionAvailabilityChanged,
+              (ShouldShowAction, autofill::AccessoryAction),
+              (override));
+  MOCK_METHOD(void,
+              ShowAccessorySheetTab,
+              (const autofill::AccessoryTabType&),
+              (override));
+  MOCK_METHOD((void),
+              OnFillingTriggered,
+              (autofill::AccessoryTabType type,
+               const autofill::AccessorySheetField&),
+              (override));
+  MOCK_METHOD((void),
+              OnOptionSelected,
+              (autofill::AccessoryAction selected_action),
+              (const, override));
+  MOCK_METHOD((void),
+              OnToggleChanged,
+              (autofill::AccessoryAction toggled_action, bool enabled),
+              (const, override));
+  MOCK_METHOD((void),
+              RequestAccessorySheet,
+              (autofill::AccessoryTabType,
+               base::OnceCallback<void(autofill::AccessorySheetData)>),
+              (override));
+  MOCK_METHOD((gfx::NativeView), container_view, (), (const, override));
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_

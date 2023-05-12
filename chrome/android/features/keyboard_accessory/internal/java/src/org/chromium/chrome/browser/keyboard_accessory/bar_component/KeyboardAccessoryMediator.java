@@ -223,6 +223,7 @@ class KeyboardAccessoryMediator
             case AccessoryAction.AUTOFILL_SUGGESTION:
                 return BarItem.Type.SUGGESTION;
             case AccessoryAction.GENERATE_PASSWORD_AUTOMATIC:
+            case AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY:
                 return BarItem.Type.ACTION_BUTTON;
             case AccessoryAction.MANAGE_PASSWORDS: // Intentional fallthrough - no view defined.
             case AccessoryAction.COUNT:

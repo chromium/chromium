@@ -41,7 +41,9 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
 
   // ManualFillingViewInterface:
   void OnItemsAvailable(autofill::AccessorySheetData data) override;
-  void OnAutomaticGenerationStatusChanged(bool available) override;
+  void OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction shouldShowAction,
+      autofill::AccessoryAction action) override;
   void CloseAccessorySheet() override;
   void SwapSheetWithKeyboard() override;
   void Show(WaitForKeyboard wait_for_keyboard) override;

@@ -56,6 +56,7 @@ class ManualFillingViewInterface {
   };
 
   using WaitForKeyboard = base::StrongAlias<struct WaitForKeyboardTag, bool>;
+  using ShouldShowAction = base::StrongAlias<struct ShouldShowActionTag, bool>;
 
   virtual ~ManualFillingViewInterface() = default;
 
@@ -63,9 +64,10 @@ class ManualFillingViewInterface {
   // accessory sheet of the same type.
   virtual void OnItemsAvailable(autofill::AccessorySheetData data) = 0;
 
-  // Called when the generation action should be offered or rescinded
-  // in the keyboard accessory.
-  virtual void OnAutomaticGenerationStatusChanged(bool available) = 0;
+  // Called when a keyboard accessory action should be offered or rescinded.
+  virtual void OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction shouldShowAction,
+      autofill::AccessoryAction action) = 0;
 
   // Called to inform the view that the accessory sheet should be closed now.
   virtual void CloseAccessorySheet() = 0;

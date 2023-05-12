@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -43,6 +45,8 @@ class ManualFillingController {
     CREDIT_CARD_FALLBACKS,
     ADDRESS_FALLBACKS,
   };
+
+  using ShouldShowAction = base::StrongAlias<struct ShouldShowActionTag, bool>;
 
   ManualFillingController() = default;
 
@@ -94,12 +98,10 @@ class ManualFillingController {
   // E.g. after autofilling suggestions, or generating a password.
   virtual void Hide() = 0;
 
-  // Notifies the view that automatic password generation status changed.
-  //
-  // TODO(crbug.com/905669): This controller doesn't need to know about password
-  // generation. Generalize this to send to the UI the information that an
-  // action (given by an enum param) is available.
-  virtual void OnAutomaticGenerationStatusChanged(bool available) = 0;
+  // Notifies the view that availability of the given action changed.
+  virtual void OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction shouldShowAction,
+      autofill::AccessoryAction action) = 0;
 
   // Instructs the view to show the manual filling sheet for the given
   // |tab_type|.

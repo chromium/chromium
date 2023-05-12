@@ -52,6 +52,7 @@ using testing::WithArgs;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using WaitForKeyboard = ManualFillingViewInterface::WaitForKeyboard;
+using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 AccessorySheetData empty_passwords_sheet() {
   constexpr char16_t kTitle[] = u"Example title";
@@ -404,12 +405,19 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
                                          /*has_suggestions=*/false);
 }
 
-TEST_F(ManualFillingControllerLegacyTest, OnAutomaticGenerationStatusChanged) {
-  EXPECT_CALL(*view(), OnAutomaticGenerationStatusChanged(true));
-  controller()->OnAutomaticGenerationStatusChanged(true);
+TEST_F(ManualFillingControllerLegacyTest,
+       OnAccessoryActionAvailabilityChanged) {
+  EXPECT_CALL(*view(), OnAccessoryActionAvailabilityChanged(
+                           ShouldShowAction(true),
+                           AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
+  controller()->OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction(true), AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
 
-  EXPECT_CALL(*view(), OnAutomaticGenerationStatusChanged(false));
-  controller()->OnAutomaticGenerationStatusChanged(false);
+  EXPECT_CALL(*view(), OnAccessoryActionAvailabilityChanged(
+                           ShouldShowAction(false),
+                           AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
+  controller()->OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction(false), AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
 }
 
 TEST_F(ManualFillingControllerLegacyTest,

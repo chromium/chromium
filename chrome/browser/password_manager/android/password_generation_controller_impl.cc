@@ -17,6 +17,7 @@
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
@@ -32,6 +33,7 @@
 using autofill::mojom::FocusedFieldType;
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::metrics_util::GenerationDialogChoice;
+using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 PasswordGenerationControllerImpl::~PasswordGenerationControllerImpl() = default;
 
@@ -128,7 +130,9 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
   }
 
   DCHECK(manual_filling_controller_);
-  manual_filling_controller_->OnAutomaticGenerationStatusChanged(true);
+  manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction(true),
+      autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
 }
 
 void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
@@ -274,7 +278,9 @@ bool PasswordGenerationControllerImpl::IsActiveFrameDriver(
 
 void PasswordGenerationControllerImpl::ResetFocusState() {
   if (manual_filling_controller_)
-    manual_filling_controller_->OnAutomaticGenerationStatusChanged(false);
+    manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
+        ShouldShowAction(false),
+        autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
   active_frame_driver_.reset();
   generation_element_data_.reset();
   dialog_view_.reset();
