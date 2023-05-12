@@ -4,8 +4,27 @@
 #include <map>
 #include <vector>
 
-#define EXPECT_EQ(x, y) x == y
-#define ASSERT_EQ(x, y) EXPECT_EQ(x, y)
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace base {
+template <typename Signature>
+class RepeatingCallback;
+
+template <typename R, typename... Args>
+class RepeatingCallback<R(Args...)> {
+ public:
+  RepeatingCallback() {}
+
+  RepeatingCallback(const RepeatingCallback&) = default;
+  RepeatingCallback& operator=(const RepeatingCallback&) = default;
+
+  RepeatingCallback(RepeatingCallback&&) = default;
+  RepeatingCallback& operator=(RepeatingCallback&&) = default;
+
+  R Run(Args... args) const& { return R(); }
+  R Run(Args... args) && { return R(); }
+};
+}  // namespace base
 
 struct S {};
 
@@ -21,6 +40,14 @@ struct obj {
 
   typedef std::map<int, VECTOR> MAP;
   MAP member2;
+
+  // No rewrite expected.
+  base::RepeatingCallback<void(std::vector<S*>&)> callback1_;
+
+  // No rewrite expected.
+  using RB = base::RepeatingCallback<void(std::vector<int*>)>;
+
+  RB callback2_;
 };
 
 // Expected rewrite: std::vector<raw_ptr<S>> get_value();

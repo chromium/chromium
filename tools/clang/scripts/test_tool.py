@@ -213,6 +213,16 @@ def main(argv):
                                     '../..',
                                     'testing/gmock/include')))
 
+  include_paths.append(
+      os.path.realpath(
+          os.path.join(tools_clang_directory, '../..',
+                       'third_party/googletest/src/googletest/include')))
+
+  include_paths.append(
+      os.path.realpath(
+          os.path.join(tools_clang_directory, '../..',
+                       'third_party/googletest/src/googlemock/include')))
+
   if len(actual_files) == 0:
     print('Tool "%s" does not have compatible test files.' % tool_to_test)
     return 1

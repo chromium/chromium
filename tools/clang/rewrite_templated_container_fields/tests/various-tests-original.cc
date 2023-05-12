@@ -7,6 +7,8 @@
 #include <numeric>
 #include <vector>
 
+#include "testing/gmock/include/gmock/gmock.h"
+
 #define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
 
 struct S {};
@@ -395,6 +397,10 @@ class O {
     auto* ptr3 = temp2.back();
     (void)ptr3;
 
+    int index = 0;
+    auto* ptr4 = temp2.at(index);
+    (void)ptr4;
+
     return temp2;
   }
 
@@ -620,4 +626,35 @@ struct S {
   }
 };
 }  // namespace B
+}  // namespace
+
+namespace {
+class AA {
+ public:
+  // Expected rewrite: set(std::vector<raw_ptr<int>> arg)
+  virtual void set(std::vector<int*> arg) = 0;
+};
+
+class BB : public AA {
+ public:
+  // Expected rewrite: set(std::vector<raw_ptr<int>> arg)
+  void set(std::vector<int*> arg) override { member = arg; }
+
+ private:
+  // Expected rewrite: std::vector<raw_ptr<int>> member;
+  std::vector<int*> member;
+};
+
+class Mocked1 : public AA {
+ public:
+  // Expected rewrite: void, set, (std::vector<raw_ptr<int>>)
+  MOCK_METHOD(void, set, (std::vector<int*>));
+};
+
+class Mocked2 : public AA {
+ public:
+  // Expected rewrite: set, void(std::vector<raw_ptr<int>> arg)
+  MOCK_METHOD1(set, void(std::vector<int*> args));
+};
+
 }  // namespace
