@@ -254,9 +254,13 @@
   E_CPONLY(kColorButtonForegroundTonal) \
   E_CPONLY(kColorButtonHoverBackgroundText) \
   E_CPONLY(kColorMultitaskMenuNudgePulse) \
-  E_CPONLY(kColorCheckboxBackgroundDisabled) \
+  E_CPONLY(kColorCheckboxCheck) \
+  E_CPONLY(kColorCheckboxCheckDisabled) \
+  E_CPONLY(kColorCheckboxContainer) \
+  E_CPONLY(kColorCheckboxContainerDisabled) \
+  E_CPONLY(kColorCheckboxOutline) \
+  E_CPONLY(kColorCheckboxOutlineDisabled) \
   E_CPONLY(kColorCheckboxForegroundChecked) \
-  E_CPONLY(kColorCheckboxForegroundDisabled) \
   E_CPONLY(kColorCheckboxForegroundUnchecked) \
   E_CPONLY(kColorComboboxBackground) \
   E_CPONLY(kColorComboboxBackgroundDisabled) \
