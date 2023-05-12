@@ -274,6 +274,16 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
 
 }  // namespace
 
+// The default values specify a strict revocation checking mode, in case users
+// fail to fully set the parameters.
+RevocationPolicy::RevocationPolicy()
+    : check_revocation(true),
+      networking_allowed(false),
+      crl_allowed(true),
+      allow_missing_info(false),
+      allow_unable_to_check(false),
+      enforce_baseline_requirements(true) {}
+
 void CheckValidatedChainRevocation(
     const ParsedCertificateList& certs,
     const RevocationPolicy& policy,
