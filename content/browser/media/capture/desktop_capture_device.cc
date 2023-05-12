@@ -97,28 +97,6 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
-int GetMaximumCpuConsumptionPercentage() {
-  int max_cpu_consumption_percentage = kDefaultMaximumCpuConsumptionPercentage;
-
-  std::string string_value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kWebRtcMaxCpuConsumptionPercentage);
-  int tmp_percentage = 0;
-  if (base::StringToInt(string_value, &tmp_percentage)) {
-    // If the max cpu percentage provided by the user is outside [1, 100] then
-    // |max_cpu_consumption_percentage_| is left to the default value. Same if
-    // no value is provided by the user, i.e. |string_value| will be empty and
-    // base::StringToInt will set |tmp_percentage| to 0.
-    if (tmp_percentage > 0 && tmp_percentage <= 100)
-      max_cpu_consumption_percentage = tmp_percentage;
-  }
-
-  UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.MaxCpuConsumptionIsDefault",
-                        max_cpu_consumption_percentage ==
-                            kDefaultMaximumCpuConsumptionPercentage);
-  return max_cpu_consumption_percentage;
-}
-
 void LogDesktopCaptureZeroHzIsActive(DesktopMediaID::Type capturer_type,
                                      bool zero_hz_is_active) {
   if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
@@ -327,7 +305,7 @@ DesktopCaptureDevice::Core::Core(
       desktop_capturer_(std::move(capturer)),
       capture_timer_(new base::OneShotTimer()),
       request_refresh_frame_timer_(new base::OneShotTimer()),
-      max_cpu_consumption_percentage_(GetMaximumCpuConsumptionPercentage()),
+      max_cpu_consumption_percentage_(kDefaultMaximumCpuConsumptionPercentage),
       capture_in_progress_(false),
       first_capture_returned_(false),
       first_permanent_error_logged(false),

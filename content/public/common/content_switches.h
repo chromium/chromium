@@ -242,7 +242,6 @@ CONTENT_EXPORT extern const char kWebOtpBackendUserConsent[];
 CONTENT_EXPORT extern const char kWebOtpBackendAuto[];
 CONTENT_EXPORT extern const char kWebRtcLocalEventLogging[];
 extern const char kWebRtcMaxCaptureFramerate[];
-extern const char kWebRtcMaxCpuConsumptionPercentage[];
 CONTENT_EXPORT extern const char kWebXrForceRuntime[];
 CONTENT_EXPORT extern const char kWebXrRuntimeNone[];
 CONTENT_EXPORT extern const char kWebXrRuntimeOrientationSensors[];

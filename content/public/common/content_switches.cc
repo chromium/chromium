@@ -922,12 +922,6 @@ const char kForceWebRtcIPHandlingPolicy[] = "force-webrtc-ip-handling-policy";
 // This flag expects a value.  Example: --max-gum-fps=17.5
 const char kWebRtcMaxCaptureFramerate[] = "max-gum-fps";
 
-// Configure the maximum CPU time percentage of a single core that can be
-// consumed for desktop capturing. Default is 50. Set 100 to disable the
-// throttling of the capture.
-const char kWebRtcMaxCpuConsumptionPercentage[] =
-    "webrtc-max-cpu-consumption-percentage";
-
 // Enable capture and local storage of WebRTC event logs without visiting
 // chrome://webrtc-internals. This is useful for automated testing. It accepts
 // the path to which the local logs would be stored. Disabling is not possible

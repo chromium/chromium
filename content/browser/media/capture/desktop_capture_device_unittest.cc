@@ -906,41 +906,4 @@ TEST_F(DesktopCaptureDeviceThrottledTest, ThrottledOn_Async) {
   EXPECT_LE(actual_framerate, expected_framerate + 0.1);
 }
 
-// The test verifies that the capture pipeline is not throttled when passing
-// --webrtc-max-cpu-consumption-percentage=100.
-TEST_F(DesktopCaptureDeviceThrottledTest, ThrottledOff) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      "--webrtc-max-cpu-consumption-percentage", "100");
-
-  const double actual_framerate = CaptureFrames();
-
-  // Throttling is disabled so the test expects the configured framerate.
-  const int expected_framerate = kFrameRate;
-
-  // The test succeeds if the actual framerate is near the expected_framerate.
-  EXPECT_GE(actual_framerate, expected_framerate);
-  EXPECT_LE(actual_framerate, expected_framerate + 0.1);
-}
-
-// The test verifies that the capture pipeline is throttled when passing
-// --webrtc-max-cpu-consumption-percentage=80.
-TEST_F(DesktopCaptureDeviceThrottledTest, Throttled80) {
-  const int max_cpu_consumption_percentage = 80;
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      "--webrtc-max-cpu-consumption-percentage",
-      base::NumberToString(max_cpu_consumption_percentage));
-
-  const double actual_framerate = CaptureFrames();
-
-  // The pipeline is throttled to ensure that the cpu is idle for at least
-  // N% of the time.
-  const int expected_framerate =
-      (kFrameRate * max_cpu_consumption_percentage) / 100;
-
-  // The test succeeds if the actual framerate is near the expected_framerate.
-  EXPECT_GE(actual_framerate, expected_framerate);
-  EXPECT_LE(actual_framerate, expected_framerate + 0.1);
-}
-
 }  // namespace content
