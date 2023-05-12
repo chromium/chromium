@@ -388,7 +388,7 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
   --secondary-color: white;
 }
 
-:is(#start-takephoto, #video-snapshot):enabled:hover::after {
+:is(#start-takephoto, #video-snapshot, #stop-takephoto):enabled:hover::after {
   background: var(--cros-sys-hover_on_prominent);
   border-radius: 50%;
   content: '';
@@ -397,7 +397,8 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
   position: absolute;
 }
 
-:is(#start-takephoto, #video-snapshot):enabled:active svg-wrapper {
+:is(#start-takephoto, #video-snapshot, #stop-takephoto):enabled:active
+  svg-wrapper {
   color: var(--cros-sys-secondary);
 }
 
@@ -405,12 +406,9 @@ body.taking #start-takephoto:active {
   transform: unset;
 }
 
-#stop-takephoto {
-  background-image: url(/images/camera_shutter_photo_stop.svg);
-}
-
-#stop-takephoto:hover {
-  background-image: url(/images/camera_shutter_photo_stop_hover.svg);
+#stop-takephoto svg-wrapper {
+  color: var(--cros-sys-inverse_surface);
+  --secondary-color: var(--cros-sys-secondary_container);
 }
 
 #recordvideo {

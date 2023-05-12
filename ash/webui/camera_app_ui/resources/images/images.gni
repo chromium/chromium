@@ -30,7 +30,6 @@ in_app_images = [
   "camera_mode_scan.svg",
   "camera_mode_video.svg",
   "camera_shutter_photo_start.svg",
-  "camera_shutter_photo_stop_hover.svg",
   "camera_shutter_photo_stop.svg",
   "camera_shutter_video_pause.svg",
   "camera_shutter_video_snapshot.svg",
