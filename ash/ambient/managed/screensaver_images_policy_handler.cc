@@ -87,9 +87,6 @@ void ScreensaverImagesPolicyHandler::
     return;
   }
 
-  // TODO(b/278857721): Do not download/cache images if the ScreensaverEnabled
-  // pref is false.
-
   const base::Value::List& url_list = user_pref_service_->GetList(
       ash::ambient::prefs::kAmbientModeManagedScreensaverImages);
   if (url_list.empty()) {
@@ -127,17 +124,9 @@ void ScreensaverImagesPolicyHandler::
 }
 
 void ScreensaverImagesPolicyHandler::OnDownloadJobCompleted(
-    ScreensaverImageDownloadResult result,
-    absl::optional<base::FilePath> path) {
-  if (result != ScreensaverImageDownloadResult::kSuccess) {
-    return;
-  }
-  CHECK(path.has_value());
-  downloaded_images_.insert(*path);
-
+    const std::vector<base::FilePath>& image_list) {
   if (on_images_updated_callback_) {
-    on_images_updated_callback_.Run(std::vector<base::FilePath>(
-        downloaded_images_.begin(), downloaded_images_.end()));
+    on_images_updated_callback_.Run(image_list);
   }
 }
 
@@ -149,17 +138,15 @@ void ScreensaverImagesPolicyHandler::SetScreensaverImagesUpdatedCallback(
 
 void ScreensaverImagesPolicyHandler::SetImagesForTesting(
     const std::vector<base::FilePath>& images_file_paths) {
-  downloaded_images_ = base::flat_set<base::FilePath>(images_file_paths);
-  if (on_images_updated_callback_) {
-    on_images_updated_callback_.Run(std::vector<base::FilePath>(
-        downloaded_images_.begin(), downloaded_images_.end()));
-  }
+  image_downloader_->SetImagesForTesting(images_file_paths);  // IN-TEST
 }
 
 std::vector<base::FilePath>
 ScreensaverImagesPolicyHandler::GetScreensaverImages() {
-  return std::vector<base::FilePath>(downloaded_images_.begin(),
-                                     downloaded_images_.end());
+  if (image_downloader_) {
+    return image_downloader_->GetScreensaverImages();
+  }
+  return std::vector<base::FilePath>();
 }
 
 }  // namespace ash

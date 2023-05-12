@@ -77,10 +77,10 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void TriggerOnDownloadJobCompleted(ScreensaverImageDownloadResult result,
-                                     absl::optional<base::FilePath> path) {
+  void TriggerOnDownloadJobCompleted(
+      const std::vector<base::FilePath>& image_list) {
     ASSERT_TRUE(policy_handler());
-    policy_handler_->OnDownloadJobCompleted(result, path);
+    policy_handler_->OnDownloadJobCompleted(image_list);
   }
 
   ScreensaverImageDownloader* GetPrivateImageDownloader(
@@ -191,8 +191,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, ShouldRunCallbackIfImagesUpdated) {
   // Expect callbacks when images are downloaded.
   base::FilePath file_path1(kFakeFilePath1);
   {
-    TriggerOnDownloadJobCompleted(ScreensaverImageDownloadResult::kSuccess,
-                                  file_path1);
+    TriggerOnDownloadJobCompleted({file_path1});
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     ASSERT_EQ(1u, file_paths.size());
@@ -200,8 +199,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, ShouldRunCallbackIfImagesUpdated) {
   }
   base::FilePath file_path2(kFakeFilePath2);
   {
-    TriggerOnDownloadJobCompleted(ScreensaverImageDownloadResult::kSuccess,
-                                  file_path2);
+    TriggerOnDownloadJobCompleted({file_path1, file_path2});
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     ASSERT_EQ(2u, file_paths.size());

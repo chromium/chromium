@@ -36,8 +36,7 @@ constexpr char kTestDownloadFolder[] = "test_download_folder";
 }  // namespace
 
 using DownloadResultFuture =
-    base::test::TestFuture<ScreensaverImageDownloadResult,
-                           absl::optional<base::FilePath>>;
+    base::test::TestFuture<const std::vector<base::FilePath>&>;
 
 class ScreensaverImageDownloaderTest : public testing::Test {
  public:
@@ -102,20 +101,24 @@ class ScreensaverImageDownloaderTest : public testing::Test {
 
   void VerifySucessfulImageRequest(
       std::unique_ptr<DownloadResultFuture> result_future,
-      const std::string& url,
-      const std::string& file_contents) {
+      const std::vector<std::pair<base::FilePath, std::string>>&
+          expected_images) {
     ASSERT_TRUE(result_future.get());
     ASSERT_TRUE(result_future->Wait()) << "Callback expected to be called.";
 
-    auto [result, optional_path] = result_future->Take();
-    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result);
-    ASSERT_TRUE(optional_path.has_value());
-    EXPECT_EQ(GetExpectedFilePath(url), *optional_path);
+    const std::vector<base::FilePath> image_list = result_future->Take();
+    ASSERT_EQ(expected_images.size(), image_list.size());
 
-    ASSERT_TRUE(base::PathExists(*optional_path));
-    std::string actual_file_contents;
-    EXPECT_TRUE(base::ReadFileToString(*optional_path, &actual_file_contents));
-    EXPECT_EQ(file_contents, actual_file_contents);
+    for (const auto& [path, file_content] : expected_images) {
+      bool found = std::find(image_list.begin(), image_list.end(), path) !=
+                   image_list.end();
+      ASSERT_TRUE(found);
+      ASSERT_TRUE(base::PathExists(path));
+
+      std::string actual_file_contents;
+      EXPECT_TRUE(base::ReadFileToString(path, &actual_file_contents));
+      EXPECT_EQ(file_content, actual_file_contents);
+    }
   }
 
  private:
@@ -130,47 +133,48 @@ class ScreensaverImageDownloaderTest : public testing::Test {
 };
 
 TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
-  // Test successful download.
-  url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1), kImageUrl1,
-                              kFileContents);
-
-  // Test download with a fake network error.
-  {
-    auto response_head = network::mojom::URLResponseHead::New();
-    response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-    response_head->headers->SetHeader("Content-Type", "image/jpg");
-    response_head->headers->ReplaceStatusLine("HTTP/1.1 404 Not found");
-    url_loader_factory()->AddResponse(
-        GURL(kImageUrl2), std::move(response_head), std::string(),
-        network::URLLoaderCompletionStatus(net::OK));
-
-    std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl2);
-    EXPECT_EQ(ScreensaverImageDownloadResult::kNetworkError,
-              result_future->Get<0>());
-    EXPECT_FALSE(result_future->Get<1>().has_value());
-  }
-
-  // Test a file save error result by deleting the destination folder before the
-  // URL request is solved.
-  {
-    std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl3);
-
-    // Wait until the request has been made to delete the tmp folder
-    url_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
-        [&](const network::ResourceRequest& request) {
-          ASSERT_TRUE(request.url.is_valid());
-          EXPECT_EQ(kImageUrl3, request.url);
-
+  // Setup the fake URL responses:
+  //   * kImageUrl1 returns a valid response.
+  //   * kImageUrl2 returns a 404 error.
+  //   * kImageUrl3 deletes the download dir before returning a valid response.
+  url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        if (request.url == kImageUrl1) {
+          url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
+        }
+        if (request.url == kImageUrl2) {
+          auto response_head = network::mojom::URLResponseHead::New();
+          response_head->headers =
+              base::MakeRefCounted<net::HttpResponseHeaders>("");
+          response_head->headers->SetHeader("Content-Type", "image/jpg");
+          response_head->headers->ReplaceStatusLine("HTTP/1.1 404 Not found");
+          url_loader_factory()->AddResponse(
+              GURL(kImageUrl2), std::move(response_head), std::string(),
+              network::URLLoaderCompletionStatus(net::OK));
+        }
+        if (request.url == kImageUrl3) {
           DeleteTestDownloadFolder();
           url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
-        }));
-    EXPECT_EQ(ScreensaverImageDownloadResult::kFileSaveError,
-              result_future->Get<0>());
-    EXPECT_FALSE(result_future->Get<1>().has_value());
-  }
+        }
+      }));
+
+  // Test successful download.
+  std::vector<std::pair<base::FilePath, std::string>> expected_images;
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
+                              expected_images);
+
+  // Queue the request that should not download any file.
+  QueueNewJobWithFuture(kImageUrl2);
+  QueueNewJobWithFuture(kImageUrl3);
+
+  // Verify that the downloader did not create image files for the error
+  // downloads.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
+  EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl3)));
 }
 
 TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
@@ -183,27 +187,18 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
       }));
 
   // Test initial download.
-  {
-    std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl1);
-    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
-              result_future->Get<0>());
-    ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future->Get<1>());
-    EXPECT_EQ(1u, urls_requested);
-  }
+  std::vector<std::pair<base::FilePath, std::string>> expected_images;
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
+                              expected_images);
+  EXPECT_EQ(1u, urls_requested);
 
   // Attempting to download the same URL should not create a new network
   // request.
-  {
-    std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl1);
-    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
-              result_future->Get<0>());
-    ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future->Get<1>());
-    EXPECT_EQ(1u, urls_requested);
-  }
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
+                              expected_images);
+  EXPECT_EQ(1u, urls_requested);
 
   url_loader_factory()->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -212,15 +207,11 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
       }));
 
   // A different URL should create a new network request.
-  {
-    std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl2);
-    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
-              result_future->Get<0>());
-    ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(GetExpectedFilePath(kImageUrl2), result_future->Get<1>());
-    EXPECT_EQ(2u, urls_requested);
-  }
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl2),
+                              expected_images);
+  EXPECT_EQ(2u, urls_requested);
 }
 
 TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
@@ -237,8 +228,11 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   // Resolve the first job
   url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
-  VerifySucessfulImageRequest(std::move(result_future1), kImageUrl1,
-                              kFileContents);
+
+  std::vector<std::pair<base::FilePath, std::string>> expected_images;
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(std::move(result_future1), expected_images);
 
   // First job has been resolved, second job should be executing and expecting
   // the URL response.
@@ -254,16 +248,20 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   // Resolve the second job
   url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
-  VerifySucessfulImageRequest(std::move(result_future2), kImageUrl2,
-                              kFileContents);
+
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(std::move(result_future2), expected_images);
 
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
   // Resolve the third job
   url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
-  VerifySucessfulImageRequest(std::move(result_future3), kImageUrl3,
-                              kFileContents);
+
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl3),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(std::move(result_future3), expected_images);
 
   // Ensure that the queue remains empty
   base::RunLoop().RunUntilIdle();
@@ -274,10 +272,17 @@ TEST_F(ScreensaverImageDownloaderTest, DeleteDownloadedImagesTest) {
   // Download two images to attempt clearing later.
   url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
   url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1), kImageUrl1,
-                              kFileContents);
-  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl2), kImageUrl2,
-                              kFileContents);
+
+  std::vector<std::pair<base::FilePath, std::string>> expected_images;
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1),
+                              expected_images);
+
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl2),
+                              expected_images);
 
   // Verify that images saved into disk are deleted properly.
   screensaver_image_downloader()->DeleteDownloadedImages();
@@ -303,17 +308,16 @@ TEST_F(ScreensaverImageDownloaderTest, ClearRequestQueueTest) {
   screensaver_image_downloader()->ClearRequestQueue();
 
   // Verify that the pending request was executed until completion.
-  VerifySucessfulImageRequest(std::move(result_future1), kImageUrl1,
-                              kFileContents);
+  std::vector<std::pair<base::FilePath, std::string>> expected_images;
+  expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
+                               std::string(kFileContents));
+  VerifySucessfulImageRequest(std::move(result_future1), expected_images);
 
-  // Verify that the other requests were notified of them being cancelled.
-  EXPECT_EQ(ScreensaverImageDownloadResult::kCancelled,
-            result_future2->Get<0>());
-  EXPECT_FALSE(result_future2->Get<1>().has_value());
-
-  EXPECT_EQ(ScreensaverImageDownloadResult::kCancelled,
-            result_future3->Get<0>());
-  EXPECT_FALSE(result_future3->Get<1>().has_value());
+  // Verify that the downloader did not create image files for the cancelled
+  // downloads.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
+  EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl3)));
 }
 
 }  // namespace ash

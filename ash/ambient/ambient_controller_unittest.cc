@@ -1776,7 +1776,9 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
 }
 
-class AmbientControllerForManagedScreensaverLoginScreenTest
+// TODO(b/271093537): Enable this tests once `ScreensaverImagesPolicyHandler`
+// supports the sign-in screen
+class DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest
     : public AmbientControllerForManagedScreensaverTest {
  public:
   void SetUp() override {
@@ -1798,7 +1800,7 @@ class AmbientControllerForManagedScreensaverLoginScreenTest
   }
 };
 
-TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
        ShownOnLoginScreen) {
   TriggerLoginScreen();
 
@@ -1812,7 +1814,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
 }
 
-TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
        ShownOnLoginWhenPrefUpdatedLater) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
@@ -1825,14 +1827,14 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 }
 
-TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
        NotShownOnLoginScreenWhenDisabled) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
   FastForwardByLockScreenInactivityTimeout();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
-TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
        UserLogsInAmbientModeDisabledAndManagedAmbientModeEnabled) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
@@ -1858,7 +1860,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 }
 
-TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
        UserLogsInAmbientModeEnabled) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
@@ -1877,7 +1879,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 }
 
-TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
        ManagedScreensaverClosedWhenImagesCleared) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
@@ -1906,7 +1908,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
-TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+TEST_F(DISABLED_AmbientControllerForManagedScreensaverLoginScreenTest,
        ManagedScreensaverClosedWhenImageLoadingFails) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());

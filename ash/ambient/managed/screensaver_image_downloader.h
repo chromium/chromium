@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -53,13 +55,14 @@ class ASH_EXPORT ScreensaverImageDownloader {
   // Convenience definition for the callback provided by clients wanting to
   // download images.
   using ResultCallback =
-      base::OnceCallback<void(ScreensaverImageDownloadResult result,
-                              absl::optional<base::FilePath> path)>;
+      base::OnceCallback<void(const std::vector<base::FilePath>& image_list)>;
 
   // Represents a single image download request from `image_url` to
   // `download_directory_`. Once this job has been completed, `result_callback`
   // will be invoked with the actual result, and the path to the downloaded file
   // if the operation succeeded.
+  // TODO(b/280810255): Delete result_callback, and use a class level repeating
+  // callback.
   struct Job {
     Job() = delete;
     Job(const std::string& image_url, ResultCallback result_callback);
@@ -96,6 +99,11 @@ class ASH_EXPORT ScreensaverImageDownloader {
 
   // Clears out the download folder.
   void DeleteDownloadedImages();
+
+  std::vector<base::FilePath> GetScreensaverImages();
+
+  // Used for setting images in tests.
+  void SetImagesForTesting(const std::vector<base::FilePath>& images);
 
   base::FilePath GetDowloadDirForTesting();
 
@@ -143,6 +151,8 @@ class ASH_EXPORT ScreensaverImageDownloader {
   // To avoid multiple URL requests, only one job can be executed. Additional
   // jobs will be queued, and executed sequentially.
   base::queue<std::unique_ptr<Job>> downloading_queue_;
+
+  base::flat_set<base::FilePath> downloaded_images_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

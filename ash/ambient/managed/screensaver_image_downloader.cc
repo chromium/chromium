@@ -163,6 +163,16 @@ void ScreensaverImageDownloader::DeleteDownloadedImages() {
                      download_directory_));
 }
 
+std::vector<base::FilePath> ScreensaverImageDownloader::GetScreensaverImages() {
+  return std::vector<base::FilePath>(downloaded_images_.begin(),
+                                     downloaded_images_.end());
+}
+
+void ScreensaverImageDownloader::SetImagesForTesting(
+    const std::vector<base::FilePath>& images_file_paths) {
+  downloaded_images_ = base::flat_set<base::FilePath>(images_file_paths);
+}
+
 base::FilePath ScreensaverImageDownloader::GetDowloadDirForTesting() {
   return download_directory_;
 }
@@ -276,8 +286,14 @@ void ScreensaverImageDownloader::FinishDownloadJob(
     ScreensaverImageDownloadResult result,
     absl::optional<base::FilePath> path) {
   // TODO(b/276208772): Track result with metrics
-  CHECK(!download_job->result_callback.is_null());
-  std::move(download_job->result_callback).Run(result, path);
+  if (result == ScreensaverImageDownloadResult::kSuccess) {
+    downloaded_images_.insert(*path);
+
+    CHECK(!download_job->result_callback.is_null());
+    std::move(download_job->result_callback)
+        .Run(std::vector<base::FilePath>(downloaded_images_.begin(),
+                                         downloaded_images_.end()));
+  }
 
   if (downloading_queue_.empty()) {
     queue_state_ = QueueState::kWaiting;
