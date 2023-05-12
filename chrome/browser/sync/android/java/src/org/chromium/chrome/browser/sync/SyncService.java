@@ -175,7 +175,7 @@ public abstract class SyncService {
 
     public abstract void setFirstSetupComplete(int syncFirstSetupCompleteSource);
 
-    public abstract boolean isFirstSetupComplete();
+    public abstract boolean isInitialSyncFeatureSetupComplete();
 
     public abstract void setSyncRequested();
 

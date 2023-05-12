@@ -27,10 +27,11 @@ bool SyncService::HasCompletedSyncCycle() const {
 }
 
 bool SyncService::IsSyncFeatureEnabled() const {
-  // Note: IsFirstSetupComplete() shouldn't usually be true if we don't have a
-  // primary account, but it could happen if the account changes from primary to
-  // secondary.
-  return CanSyncFeatureStart() && GetUserSettings()->IsFirstSetupComplete();
+  // Note: IsInitialSyncFeatureSetupComplete() shouldn't usually be true if we
+  // don't have a primary account, but it could happen if the account changes
+  // from primary to secondary.
+  return CanSyncFeatureStart() &&
+         GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }
 
 bool SyncService::CanSyncFeatureStart() const {

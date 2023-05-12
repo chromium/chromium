@@ -283,7 +283,7 @@ void SyncServiceImpl::Initialize() {
   // RegisterForAuthNotifications(), because before that the authenticated
   // account isn't initialized.
   RecordSyncInitialState(GetDisableReasons(),
-                         user_settings_->IsFirstSetupComplete(),
+                         user_settings_->IsInitialSyncFeatureSetupComplete(),
                          is_regular_profile_for_uma_);
 
   if (base::FeatureList::IsEnabled(
@@ -316,7 +316,7 @@ void SyncServiceImpl::Initialize() {
   }
   bool force_immediate = (start_behavior_ == AUTO_START &&
                           !HasDisableReason(DISABLE_REASON_USER_CHOICE) &&
-                          !user_settings_->IsFirstSetupComplete());
+                          !user_settings_->IsInitialSyncFeatureSetupComplete());
   startup_controller_->TryStart(force_immediate);
 }
 
@@ -478,7 +478,7 @@ void SyncServiceImpl::StartUpSlowEngineComponents() {
   DCHECK(engine_);
 
   // Clear any old errors the first time sync starts.
-  if (!user_settings_->IsFirstSetupComplete()) {
+  if (!user_settings_->IsInitialSyncFeatureSetupComplete()) {
     last_actionable_error_ = SyncProtocolError();
   }
 
@@ -888,9 +888,9 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
 
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
-  // Auto-start means IsFirstSetupComplete gets set automatically.
+  // Auto-start means IsInitialSyncFeatureSetupComplete gets set automatically.
   if (start_behavior_ == AUTO_START &&
-      !user_settings_->IsFirstSetupComplete()) {
+      !user_settings_->IsInitialSyncFeatureSetupComplete()) {
     // This will trigger a configure if it completes setup.
     user_settings_->SetFirstSetupComplete(
         SyncFirstSetupCompleteSource::ENGINE_INITIALIZED_WITH_AUTO_START);
@@ -1194,7 +1194,8 @@ bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
   // This can return true only on ChromeOS Ash, upon DISABLE_SYNC_ON_CLIENT.
   // TODO(crbug.com/1443446): A simpler and more robust implementation for this
   // state would be to use a dedicated pref.
-  return user_settings_->IsFirstSetupComplete() && !IsLocalSyncEnabled() &&
+  return user_settings_->IsInitialSyncFeatureSetupComplete() &&
+         !IsLocalSyncEnabled() &&
          !IsSyncFeatureConsideredRequested(HasSyncConsent(), sync_prefs_);
 }
 

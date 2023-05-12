@@ -527,7 +527,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 }
 
 - (BOOL)syncConsentGiven {
-  return self.syncSetupService->IsFirstSetupComplete();
+  return self.syncSetupService->IsInitialSyncFeatureSetupComplete();
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate

@@ -114,7 +114,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(true));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -128,7 +128,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(false));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -146,7 +146,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
 
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(false));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -161,7 +161,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(true));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -175,7 +175,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithoutSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(false));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();

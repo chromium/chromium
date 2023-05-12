@@ -404,7 +404,7 @@ bool SyncServiceImplHarness::AwaitEngineInitialization() {
 }
 
 bool SyncServiceImplHarness::AwaitSyncSetupCompletion() {
-  CHECK(service()->GetUserSettings()->IsFirstSetupComplete())
+  CHECK(service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete())
       << "Waiting for setup completion can only succeed after the first setup "
       << "got marked complete. Did you call SetupSync on this client?";
   if (!SyncSetupChecker(service(), SyncSetupChecker::State::kFeatureActive)
@@ -610,7 +610,7 @@ std::string SyncServiceImplHarness::GetClientInfoString(
 }
 
 bool SyncServiceImplHarness::IsSyncEnabledByUser() const {
-  return service()->GetUserSettings()->IsFirstSetupComplete() &&
+  return service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
          !service()->HasDisableReason(
              SyncServiceImpl::DISABLE_REASON_USER_CHOICE);
 }

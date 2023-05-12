@@ -40,7 +40,7 @@
 + (BOOL)isSyncFirstSetupComplete {
   return SyncSetupServiceFactory::GetForBrowserState(
              chrome_test_util::GetOriginalBrowserState())
-      ->IsFirstSetupComplete();
+      ->IsInitialSyncFeatureSetupComplete();
 }
 
 @end

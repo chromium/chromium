@@ -142,7 +142,7 @@ using signin_metrics::PromoAction;
       SyncSetupServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   BOOL isSyncConsentGiven =
-      syncSetupService && syncSetupService->IsFirstSetupComplete();
+      syncSetupService && syncSetupService->IsInitialSyncFeatureSetupComplete();
 
   self.signOutCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController

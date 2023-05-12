@@ -111,8 +111,8 @@ void SyncSetupService::SetFirstSetupComplete(
   }
 }
 
-bool SyncSetupService::IsFirstSetupComplete() const {
-  return sync_service_->GetUserSettings()->IsFirstSetupComplete();
+bool SyncSetupService::IsInitialSyncFeatureSetupComplete() const {
+  return sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }
 
 void SyncSetupService::CommitSyncChanges() {

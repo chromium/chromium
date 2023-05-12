@@ -60,7 +60,7 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));
 
   ASSERT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
-  ASSERT_FALSE(sync_prefs_->IsFirstSetupComplete());
+  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(sync_prefs_->IsSyncRequested());
 
   sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
@@ -71,9 +71,9 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   EXPECT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
 
   sync_prefs_->SetFirstSetupComplete();
-  EXPECT_TRUE(sync_prefs_->IsFirstSetupComplete());
+  EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   sync_prefs_->ClearFirstSetupComplete();
-  EXPECT_FALSE(sync_prefs_->IsFirstSetupComplete());
+  EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
   sync_prefs_->SetSyncRequested(true);
   EXPECT_TRUE(sync_prefs_->IsSyncRequested());
@@ -97,9 +97,9 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
 #endif
 
 TEST_F(SyncPrefsTest, Basic) {
-  EXPECT_FALSE(sync_prefs_->IsFirstSetupComplete());
+  EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   sync_prefs_->SetFirstSetupComplete();
-  EXPECT_TRUE(sync_prefs_->IsFirstSetupComplete());
+  EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
   EXPECT_FALSE(sync_prefs_->IsSyncRequested());
   sync_prefs_->SetSyncRequested(true);
@@ -458,7 +458,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithAllTypes) {
   // The migration should have changed nothing.
   SyncPrefs prefs(&pref_service_);
   EXPECT_TRUE(prefs.IsSyncRequested());
-  EXPECT_TRUE(prefs.IsFirstSetupComplete());
+  EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_TRUE(prefs.HasKeepEverythingSynced());
 }
 
@@ -479,7 +479,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithSomeTypes) {
   // The migration should have changed nothing.
   SyncPrefs prefs(&pref_service_);
   EXPECT_TRUE(prefs.IsSyncRequested());
-  EXPECT_TRUE(prefs.IsFirstSetupComplete());
+  EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
   EXPECT_EQ(prefs.GetSelectedTypes(), enabled_types);
 }
@@ -496,7 +496,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithNoTypes) {
   // The migration should have changed nothing.
   SyncPrefs prefs(&pref_service_);
   EXPECT_TRUE(prefs.IsSyncRequested());
-  EXPECT_TRUE(prefs.IsFirstSetupComplete());
+  EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
   EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
 }
@@ -514,7 +514,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithNoTypes) {
   // types disabled.
   SyncPrefs prefs(&pref_service_);
   EXPECT_TRUE(prefs.IsSyncRequested());
-  EXPECT_TRUE(prefs.IsFirstSetupComplete());
+  EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
   EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
 }
@@ -537,7 +537,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithSomeTypes) {
   // data types.
   SyncPrefs prefs(&pref_service_);
   EXPECT_TRUE(prefs.IsSyncRequested());
-  EXPECT_TRUE(prefs.IsFirstSetupComplete());
+  EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
   EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
 }
@@ -562,7 +562,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithAllTypes) {
   // data types and the "sync everything" flag.
   SyncPrefs prefs(&pref_service_);
   EXPECT_TRUE(prefs.IsSyncRequested());
-  EXPECT_TRUE(prefs.IsFirstSetupComplete());
+  EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
   EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
 }

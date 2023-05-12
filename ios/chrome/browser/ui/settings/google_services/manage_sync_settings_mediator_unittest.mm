@@ -103,9 +103,10 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
   void FirstSetupSyncOnWithConsentEnabled() {
-    ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
+    ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
@@ -114,7 +115,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
   void FirstSetupSyncOff() {
-    ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
+    ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));

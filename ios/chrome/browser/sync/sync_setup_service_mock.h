@@ -35,7 +35,7 @@ class SyncSetupServiceMock : public SyncSetupService {
               SetFirstSetupComplete,
               (syncer::SyncFirstSetupCompleteSource),
               (override));
-  MOCK_METHOD(bool, IsFirstSetupComplete, (), (const override));
+  MOCK_METHOD(bool, IsInitialSyncFeatureSetupComplete, (), (const override));
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SYNC_SETUP_SERVICE_MOCK_H_

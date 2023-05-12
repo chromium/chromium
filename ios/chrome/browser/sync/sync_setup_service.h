@@ -71,7 +71,7 @@ class SyncSetupService : public KeyedService {
       syncer::SyncFirstSetupCompleteSource source);
 
   // Returns true if the user finished the Sync setup flow.
-  virtual bool IsFirstSetupComplete() const;
+  virtual bool IsInitialSyncFeatureSetupComplete() const;
 
   // Commits all the pending configuration changes to Sync.
   void CommitSyncChanges();

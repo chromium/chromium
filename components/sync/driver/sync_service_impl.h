@@ -61,8 +61,9 @@ class SyncServiceImpl : public SyncService,
                         public SyncServiceCrypto::Delegate,
                         public signin::IdentityManager::Observer {
  public:
-  // If AUTO_START, sync will set IsFirstSetupComplete() automatically and sync
-  // will begin syncing without the user needing to confirm sync settings.
+  // If AUTO_START, sync will set IsInitialSyncFeatureSetupComplete()
+  // automatically and sync will begin syncing without the user needing to
+  // confirm sync settings.
   // TODO(crbug.com/1443438): Remove StartBehavior altogether.
   enum StartBehavior {
     AUTO_START,

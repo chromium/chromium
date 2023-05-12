@@ -718,8 +718,9 @@ void SyncFileSystemService::OnFileStatusChanged(
 
 void SyncFileSystemService::UpdateSyncEnabledStatus(
     syncer::SyncService* sync_service) {
-  if (!sync_service->GetUserSettings()->IsFirstSetupComplete())
+  if (!sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     return;
+  }
   bool old_sync_enabled = sync_enabled_;
   sync_enabled_ = sync_service->GetActiveDataTypes().Has(syncer::APPS);
   remote_service_->SetSyncEnabled(sync_enabled_);

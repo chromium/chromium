@@ -248,7 +248,7 @@ void SupervisedUserService::SetActive(bool active) {
   // The logic to do this lives in the SupervisedUserSyncModelTypeController.
   // TODO(crbug.com/946473): Get rid of this hack and instead call
   // DataTypePreconditionChanged from the controller.
-  if (sync_service_->GetUserSettings()->IsFirstSetupComplete()) {
+  if (sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and
     // immediately releasing it again (via the temporary unique_ptr going away).
     sync_service_->GetSetupInProgressHandle();

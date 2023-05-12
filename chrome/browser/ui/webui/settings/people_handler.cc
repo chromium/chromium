@@ -788,10 +788,10 @@ void PeopleHandler::CloseSyncSetup() {
     // Don't log a cancel event if the sync setup dialog is being
     // automatically closed due to an auth error.
     if ((service->current_login_ui() == this) &&
-        (!sync_service ||
-         (!sync_service->GetUserSettings()->IsFirstSetupComplete() &&
-          sync_service->GetAuthError().state() ==
-              GoogleServiceAuthError::NONE))) {
+        (!sync_service || (!sync_service->GetUserSettings()
+                                ->IsInitialSyncFeatureSetupComplete() &&
+                           sync_service->GetAuthError().state() ==
+                               GoogleServiceAuthError::NONE))) {
       if (configuring_sync_) {
         // If the user clicked "Cancel" while setting up sync, disable sync
         // because we don't want the sync engine to remain in the
@@ -806,7 +806,8 @@ void PeopleHandler::CloseSyncSetup() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
           // Revoke sync consent on desktop Chrome if they click cancel during
           // initial setup or close sync setup without confirming sync.
-          if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
+          if (!sync_service->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete()) {
             IdentityManagerFactory::GetForProfile(profile_)
                 ->GetPrimaryAccountMutator()
                 ->RevokeSyncConsent(
@@ -903,7 +904,7 @@ void PeopleHandler::BeforeUnloadDialogCancelled() {
       signin::ConsentLevel::kSync));
   syncer::SyncService* service = GetSyncService();
   DCHECK(service && service->IsSetupInProgress() &&
-         !service->GetUserSettings()->IsFirstSetupComplete());
+         !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 
   base::RecordAction(
       base::UserMetricsAction("Signin_Signin_CancelAbortAdvancedSyncSettings"));
@@ -950,7 +951,7 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   sync_status.Set(
       "firstSetupInProgress",
       service && !disallowed_by_policy && service->IsSetupInProgress() &&
-          !service->GetUserSettings()->IsFirstSetupComplete() &&
+          !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   const SyncStatusLabels status_labels = GetSyncStatusLabels(profile_);
@@ -1089,8 +1090,9 @@ void PeopleHandler::MarkFirstSetupComplete() {
   service->SetSyncFeatureRequested();
 
   // If the first-time setup is already complete, there's nothing else to do.
-  if (service->GetUserSettings()->IsFirstSetupComplete())
+  if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     return;
+  }
 
   unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
       service->GetUserSettings(), profile_->GetPrefs());

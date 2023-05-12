@@ -91,12 +91,13 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         sync_service_->SetDisableReasons(
             {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
 
-        // On ChromeOS Ash, IsFirstSetupComplete gets cleared temporarily but
-        // immediately afterwards, it gets set again with
+        // On ChromeOS Ash, IsInitialSyncFeatureSetupComplete gets cleared
+        // temporarily but immediately afterwards, it gets set again with
         // ENGINE_INITIALIZED_WITH_AUTO_START. And yet, IsSyncFeatureEnabled()
         // stays false because the user needs to manually resume sync the
         // feature.
-        CHECK(sync_service_->GetUserSettings()->IsFirstSetupComplete());
+        CHECK(sync_service_->GetUserSettings()
+                  ->IsInitialSyncFeatureSetupComplete());
         CHECK(!sync_service_->IsSyncFeatureEnabled());
         break;
     }

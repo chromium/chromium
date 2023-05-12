@@ -197,7 +197,7 @@ IdentitySigninState GetPrimaryIdentitySigninState(
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
-      syncSetupService->IsFirstSetupComplete()) {
+      syncSetupService->IsInitialSyncFeatureSetupComplete()) {
     return IdentitySigninStateSignedInWithSyncEnabled;
   } else if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return IdentitySigninStateSignedInWithSyncDisabled;

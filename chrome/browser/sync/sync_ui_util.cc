@@ -109,7 +109,7 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
             IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
   }
 
-  if (service->GetUserSettings()->IsFirstSetupComplete()) {
+  if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     // Check for a passphrase error.
     if (service->GetUserSettings()
             ->IsPassphraseRequiredForPreferredDataTypes()) {
@@ -244,9 +244,9 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   if (!service->HasSyncConsent()) {
     // Only trusted vault errors can be shown if the account isn't a consented
     // primary account.
-    // Note the condition checked is not IsFirstSetupComplete(), because the
-    // setup incomplete case is treated separately below. See the comment in
-    // ShouldRequestSyncConfirmation() about dashboard resets.
+    // Note the condition checked is not IsInitialSyncFeatureSetupComplete(),
+    // because the setup incomplete case is treated separately below. See the
+    // comment in ShouldRequestSyncConfirmation() about dashboard resets.
     return GetTrustedVaultError(service, profile->GetPrefs());
   }
 
@@ -330,12 +330,12 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service) {
   // the dashboard.
   return !service->IsLocalSyncEnabled() && service->HasSyncConsent() &&
          !service->IsSetupInProgress() &&
-         !service->GetUserSettings()->IsFirstSetupComplete();
+         !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }
 
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
   const syncer::SyncUserSettings* settings = service->GetUserSettings();
-  return settings->IsFirstSetupComplete() &&
+  return settings->IsInitialSyncFeatureSetupComplete() &&
          settings->IsPassphraseRequiredForPreferredDataTypes();
 }
 
@@ -346,7 +346,7 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
     return false;
   }
 
-  if (settings->IsFirstSetupComplete()) {
+  if (settings->IsInitialSyncFeatureSetupComplete()) {
     return true;
   }
 
@@ -375,7 +375,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
     return false;
   }
 
-  if (settings->IsFirstSetupComplete()) {
+  if (settings->IsInitialSyncFeatureSetupComplete()) {
     return true;
   }
 

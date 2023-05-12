@@ -1068,7 +1068,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
   EXPECT_TRUE(sync_service->HasSyncConsent());
-  EXPECT_FALSE(sync_service->GetUserSettings()->IsFirstSetupComplete());
+  EXPECT_FALSE(
+      sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 
   // The color is not applied if the user enters settings.
   EXPECT_FALSE(ThemeServiceFactory::GetForProfile(profile_being_created)
@@ -1727,7 +1728,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
   EXPECT_TRUE(sync_service->HasSyncConsent());
-  EXPECT_FALSE(sync_service->GetUserSettings()->IsFirstSetupComplete());
+  EXPECT_FALSE(
+      sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 
   // The color is not applied if the user enters settings.
   EXPECT_FALSE(ThemeServiceFactory::GetForProfile(profile_being_created)

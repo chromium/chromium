@@ -122,7 +122,7 @@ public class SyncSettingsUtils {
                     : SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
         }
 
-        if (!syncService.isFirstSetupComplete()) {
+        if (!syncService.isInitialSyncFeatureSetupComplete()) {
             return SyncError.SYNC_SETUP_INCOMPLETE;
         }
 
@@ -232,7 +232,7 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_is_disabled_by_administrator);
         }
 
-        if (!syncService.isFirstSetupComplete()) {
+        if (!syncService.isInitialSyncFeatureSetupComplete()) {
             return context.getString(R.string.sync_settings_not_confirmed);
         }
 

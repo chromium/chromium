@@ -156,9 +156,11 @@ void SyncServiceAndroidBridge::SetSetupInProgress(JNIEnv* env,
   }
 }
 
-jboolean SyncServiceAndroidBridge::IsFirstSetupComplete(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete(
+    JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_sync_service_->GetUserSettings()->IsFirstSetupComplete();
+  return native_sync_service_->GetUserSettings()
+      ->IsInitialSyncFeatureSetupComplete();
 }
 
 void SyncServiceAndroidBridge::SetFirstSetupComplete(JNIEnv* env, jint source) {

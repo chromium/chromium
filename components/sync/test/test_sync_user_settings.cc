@@ -45,7 +45,7 @@ TestSyncUserSettings::TestSyncUserSettings(TestSyncService* service)
 
 TestSyncUserSettings::~TestSyncUserSettings() = default;
 
-bool TestSyncUserSettings::IsFirstSetupComplete() const {
+bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
   return first_setup_complete_;
 }
 

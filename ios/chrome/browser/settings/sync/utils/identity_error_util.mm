@@ -137,7 +137,8 @@ SyncState GetSyncState(syncer::SyncService* sync_service) {
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     // Sync is disabled by administrator policy.
     return SyncState::kSyncDisabledByAdministrator;
-  } else if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
+  } else if (!sync_service->GetUserSettings()
+                  ->IsInitialSyncFeatureSetupComplete()) {
     // User has not completed Sync setup in sign-in flow.
     return SyncState::kSyncConsentOff;
   } else if (!sync_service->CanSyncFeatureStart()) {

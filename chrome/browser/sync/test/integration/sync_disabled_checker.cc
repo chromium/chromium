@@ -12,10 +12,10 @@ SyncDisabledChecker::~SyncDisabledChecker() = default;
 bool SyncDisabledChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting until sync is disabled."
       << " IsSetupInProgress:" << service()->IsSetupInProgress()
-      << " IsFirstSetupComplete:"
-      << service()->GetUserSettings()->IsFirstSetupComplete();
+      << " IsInitialSyncFeatureSetupComplete:"
+      << service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
   return !service()->IsSetupInProgress() &&
-         !service()->GetUserSettings()->IsFirstSetupComplete();
+         !service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }
 
 void SyncDisabledChecker::WaitDone() {

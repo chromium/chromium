@@ -245,7 +245,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // non-syncing user.
 TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(false));
 
   CreateController();
@@ -274,7 +275,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // syncing user.
 TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service(), HasSyncConsent()).WillByDefault(Return(true));
 

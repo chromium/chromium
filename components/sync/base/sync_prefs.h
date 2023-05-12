@@ -56,16 +56,17 @@ class SyncPrefs {
 
   // First-Setup-Complete is conceptually similar to the user's consent to
   // enable sync-the-feature.
-  bool IsFirstSetupComplete() const;
+  bool IsInitialSyncFeatureSetupComplete() const;
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();
 
   // Whether the user wants Sync to run. This is false by default, but gets set
   // to true early in the Sync setup flow, after the user has pressed "turn on
   // Sync" but before they have actually confirmed the settings (that's
-  // IsFirstSetupComplete()). After Sync is enabled, this can get set to false
-  // via signout (which also clears IsFirstSetupComplete) or, on ChromeOS Ash,
-  // when Sync gets reset from the dashboard.
+  // IsInitialSyncFeatureSetupComplete()). After Sync is enabled, this can get
+  // set to false via signout (which also clears
+  // IsInitialSyncFeatureSetupComplete) or, on ChromeOS Ash, when Sync gets
+  // reset from the dashboard.
   bool IsSyncRequested() const;
   void SetSyncRequested(bool is_requested);
   bool IsSyncRequestedSetExplicitly() const;

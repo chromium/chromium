@@ -115,7 +115,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  BOOL syncEnabled = syncSetupService->IsFirstSetupComplete();
+  BOOL syncEnabled = syncSetupService->IsInitialSyncFeatureSetupComplete();
 
   // Need a first step to show logout contextual information about the forced
   // sign-in policy. Only return this state when sync is enabled because it is

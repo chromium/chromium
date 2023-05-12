@@ -40,7 +40,7 @@ class SyncUserSettings {
   // user has turned on Sync-the-Feature.
   // NOTE: On ChromeOS, this gets set automatically, so it doesn't really mean
   // anything. See |browser_defaults::kSyncAutoStarts|.
-  virtual bool IsFirstSetupComplete() const = 0;
+  virtual bool IsInitialSyncFeatureSetupComplete() const = 0;
   virtual void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) = 0;
 
   // The user's selected types. The "sync everything" flag means to sync all

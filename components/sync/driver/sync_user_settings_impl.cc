@@ -73,14 +73,15 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(
 
 SyncUserSettingsImpl::~SyncUserSettingsImpl() = default;
 
-bool SyncUserSettingsImpl::IsFirstSetupComplete() const {
-  return prefs_->IsFirstSetupComplete();
+bool SyncUserSettingsImpl::IsInitialSyncFeatureSetupComplete() const {
+  return prefs_->IsInitialSyncFeatureSetupComplete();
 }
 
 void SyncUserSettingsImpl::SetFirstSetupComplete(
     SyncFirstSetupCompleteSource source) {
-  if (IsFirstSetupComplete())
+  if (IsInitialSyncFeatureSetupComplete()) {
     return;
+  }
   UMA_HISTOGRAM_ENUMERATION("Signin.SyncFirstSetupCompleteSource", source);
   prefs_->SetFirstSetupComplete();
 }

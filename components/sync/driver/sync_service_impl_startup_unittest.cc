@@ -168,7 +168,7 @@ class SyncServiceImplStartupTest : public testing::Test {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // We've never completed startup.
-  ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
+  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -186,7 +186,7 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
 
   // Preferences should be back to defaults.
   EXPECT_EQ(base::Time(), sync_service()->GetLastSyncedTimeForDebugging());
-  EXPECT_FALSE(sync_prefs()->IsFirstSetupComplete());
+  EXPECT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 
   // Sign in and turn sync on, without marking the first setup as complete.
   SimulateTestUserSigninAndEnableSyncFeature();
@@ -373,7 +373,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
 
 TEST_F(SyncServiceImplStartupTest, StartCrosNoCredentials) {
   // We've never completed startup.
-  ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
+  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 
   // On ChromeOS, the user is always immediately signed in, but a refresh token
   // isn't necessarily available yet.
@@ -392,18 +392,19 @@ TEST_F(SyncServiceImplStartupTest, StartCrosNoCredentials) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
   // Since we're in AUTO_START mode, FirstSetupComplete gets set automatically.
-  EXPECT_TRUE(sync_service()->GetUserSettings()->IsFirstSetupComplete());
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 }
 
 TEST_F(SyncServiceImplStartupTest, StartCrosFirstTime) {
   // We've never completed Sync startup.
-  ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
+  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 
   // There is already a signed-in user.
   SimulateTestUserSigninAndEnableSyncFeature();
 
-  // Sync should become active, even though IsFirstSetupComplete wasn't set yet,
-  // due to AUTO_START.
+  // Sync should become active, even though IsInitialSyncFeatureSetupComplete
+  // wasn't set yet, due to AUTO_START.
   CreateSyncService(SyncServiceImpl::AUTO_START);
   sync_service()->Initialize();
   base::RunLoop().RunUntilIdle();
@@ -609,7 +610,8 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  EXPECT_FALSE(sync_service()->GetUserSettings()->IsFirstSetupComplete());
+  EXPECT_FALSE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
 }
@@ -623,7 +625,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   sync_prefs()->SetSyncRequested(true);
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSigninAndEnableSyncFeature();
-  ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
+  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
@@ -647,7 +649,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
-  ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
+  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 
   CreateSyncService(SyncServiceImpl::MANUAL_START, ModelTypeSet(SESSIONS));
   sync_service()->Initialize();

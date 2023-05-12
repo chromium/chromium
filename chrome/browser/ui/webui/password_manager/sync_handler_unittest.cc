@@ -69,7 +69,8 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
     auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
         "user@gmail.com", signin::ConsentLevel::kSync);
     ON_CALL(*sync_service(), HasSyncConsent).WillByDefault(Return(true));
-    ON_CALL(*sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+    ON_CALL(*sync_service()->GetMockUserSettings(),
+            IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service(), GetAccountInfo)
         .WillByDefault(Return(account_info));
@@ -237,7 +238,8 @@ TEST_F(SyncHandlerTest, AccountInfo) {
 
 TEST_F(SyncHandlerTest, NotEligibleForAccountStorageWhenSetupNotComplete) {
   CreateTestSyncAccount();
-  ON_CALL(*sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(false));
 
   base::Value::List args;

@@ -687,7 +687,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                    authenticationService:authenticationService
                                              prefService:_browserState
                                                              ->GetPrefs()] &&
-         !syncService->GetUserSettings()->IsFirstSetupComplete();
+         !syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }
 
 #pragma mark - Model Items

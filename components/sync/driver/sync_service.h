@@ -162,7 +162,8 @@ class SyncService : public KeyedService {
     INITIALIZING,
     // The Sync engine is initialized, but the process of configuring the data
     // types hasn't been started yet. This usually occurs if the user hasn't
-    // completed the initial Sync setup yet (i.e. IsFirstSetupComplete() is
+    // completed the initial Sync setup yet (i.e.
+    // IsInitialSyncFeatureSetupComplete() is
     // false), but it can also occur if a (non-initial) Sync setup happens to be
     // ongoing while the Sync service is starting up.
     PENDING_DESIRED_CONFIGURATION,
@@ -301,8 +302,8 @@ class SyncService : public KeyedService {
   // because the user cleared data from the Sync dashboard. It can be re-enabled
   // by invoking SetSyncFeatureRequested().
   // TODO(crbug.com/1443446): Consider removing this API, for example by
-  // reporting IsFirstSetupComplete()==false which is otherwise unreachable on
-  // ChromeOS Ash.
+  // reporting IsInitialSyncFeatureSetupComplete()==false which is otherwise
+  // unreachable on ChromeOS Ash.
   virtual bool IsSyncFeatureDisabledViaDashboard() const = 0;
 
   //////////////////////////////////////////////////////////////////////////////

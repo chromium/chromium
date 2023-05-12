@@ -577,7 +577,7 @@ public class SyncConsentFragmentTest {
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(SyncService.get().hasSyncConsent());
-            assertFalse(SyncService.get().isFirstSetupComplete());
+            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
             assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
             assertTrue(SyncService.get().hasKeepEverythingSynced());
         });
@@ -608,7 +608,7 @@ public class SyncConsentFragmentTest {
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(SyncService.get().hasSyncConsent());
-            assertFalse(SyncService.get().isFirstSetupComplete());
+            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
             assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
             assertFalse(SyncService.get().hasKeepEverythingSynced());
         });
@@ -643,7 +643,7 @@ public class SyncConsentFragmentTest {
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(SyncService.get().hasSyncConsent());
-            assertFalse(SyncService.get().isFirstSetupComplete());
+            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
         });
         // Click the cancel button to exit the activity.
         onView(withId(R.id.cancel_button)).perform(click());

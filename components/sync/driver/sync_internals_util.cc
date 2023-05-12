@@ -494,7 +494,8 @@ base::Value::Dict ConstructAboutInformation(
           token_status.connection_status == CONNECTION_OK);
   last_synced->Set(
       GetLastSyncedTimeString(service->GetLastSyncedTimeForDebugging()));
-  is_setup_complete->Set(service->GetUserSettings()->IsFirstSetupComplete());
+  is_setup_complete->Set(
+      service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   if (is_status_valid)
     is_syncing->Set(full_status.syncing);
   is_local_sync_enabled->Set(is_local_sync_enabled_state);

@@ -411,7 +411,8 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS Ash, the first setup is marked as complete automatically, due
   // AUTO_START used as StartBehavior.
-  ASSERT_TRUE(service()->GetUserSettings()->IsFirstSetupComplete());
+  ASSERT_TRUE(
+      service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 
   // On ChromeOS Ash, DISABLE_REASON_USER_CHOICE stays even after the policy is
   // removed, for historic reasons. It is unclear if this behavior is optimal,
@@ -425,7 +426,8 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
 #else
   // For any platform except ChromeOS Ash, the user needs to turn sync on
   // manually.
-  ASSERT_FALSE(service()->GetUserSettings()->IsFirstSetupComplete());
+  ASSERT_FALSE(
+      service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   service()->SetSyncFeatureRequested();
   service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
@@ -552,7 +554,8 @@ TEST_F(SyncServiceImplTest,
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
   InitializeForNthSync();
-  ASSERT_TRUE(service()->GetUserSettings()->IsFirstSetupComplete());
+  ASSERT_TRUE(
+      service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
 
@@ -566,7 +569,8 @@ TEST_F(SyncServiceImplTest,
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
   // These are specific to sync-the-feature and should be cleared.
-  EXPECT_FALSE(service()->GetUserSettings()->IsFirstSetupComplete());
+  EXPECT_FALSE(
+      service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
                                     SyncService::DISABLE_REASON_USER_CHOICE),

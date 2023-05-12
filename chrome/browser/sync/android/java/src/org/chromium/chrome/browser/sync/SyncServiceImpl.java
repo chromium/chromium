@@ -156,8 +156,9 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public boolean isFirstSetupComplete() {
-        return SyncServiceImplJni.get().isFirstSetupComplete(mSyncServiceAndroidBridge);
+    public boolean isInitialSyncFeatureSetupComplete() {
+        return SyncServiceImplJni.get().isInitialSyncFeatureSetupComplete(
+                mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -386,7 +387,7 @@ public class SyncServiceImpl extends SyncService {
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
         boolean isTransportStateActive(long nativeSyncServiceAndroidBridge);
         void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
-        boolean isFirstSetupComplete(long nativeSyncServiceAndroidBridge);
+        boolean isInitialSyncFeatureSetupComplete(long nativeSyncServiceAndroidBridge);
         void setFirstSetupComplete(
                 long nativeSyncServiceAndroidBridge, int syncFirstSetupCompleteSource);
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);

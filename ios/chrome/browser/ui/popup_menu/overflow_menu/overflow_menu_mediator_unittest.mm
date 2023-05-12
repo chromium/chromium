@@ -84,7 +84,8 @@ void SetupSyncServiceEnabledExpectations(
     syncer::MockSyncService* sync_service) {
   ON_CALL(*sync_service, GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
-  ON_CALL(*sync_service->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_service->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*sync_service->GetMockUserSettings(), GetSelectedTypes())
       .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));

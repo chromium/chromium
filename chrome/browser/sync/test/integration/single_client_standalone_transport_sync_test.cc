@@ -91,10 +91,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // IsFirstSetupComplete should remain false. It only gets set during the Sync
-  // setup flow, either by the Sync confirmation dialog or by the settings page
-  // if going through the advanced settings flow.
-  EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->IsFirstSetupComplete());
+  // IsInitialSyncFeatureSetupComplete should remain false. It only gets set
+  // during the Sync setup flow, either by the Sync confirmation dialog or by
+  // the settings page if going through the advanced settings flow.
+  EXPECT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
 
   EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
@@ -205,10 +207,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
             GetSyncService(0)->GetTransportState());
 
   // On platforms where Sync starts automatically (in practice, Android and
-  // ChromeOS), IsFirstSetupComplete gets set automatically, and so the full
-  // Sync feature will start upon sign-in to a primary account.
+  // ChromeOS), IsInitialSyncFeatureSetupComplete gets set automatically, and so
+  // the full Sync feature will start upon sign-in to a primary account.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->IsFirstSetupComplete());
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -234,10 +238,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
             GetSyncService(0)->GetTransportState());
 
   // On platforms where Sync starts automatically (in practice, Android and
-  // ChromeOS), IsFirstSetupComplete gets set automatically, and so the full
-  // Sync feature will start upon sign-in to a primary account.
+  // ChromeOS), IsInitialSyncFeatureSetupComplete gets set automatically, and so
+  // the full Sync feature will start upon sign-in to a primary account.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->IsFirstSetupComplete());
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
