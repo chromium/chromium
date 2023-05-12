@@ -64350,6 +64350,7 @@ from previous Chrome versions.
   <int value="996701528" label="SystemKeyboardLock:enabled"/>
   <int value="996987392" label="SearchNavigationPrefetch:disabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
+  <int value="998857679" label="DiscardExceptionsImprovements:enabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
   <int value="1000587036" label="OfflinePagesDescriptiveFailStatus:disabled"/>
   <int value="1000630368" label="lacros-stability"/>
@@ -64721,6 +64722,7 @@ from previous Chrome versions.
   <int value="1196670943" label="WebAuthFlowInBrowserTab:enabled"/>
   <int value="1196834473" label="disable-smart-virtual-keyboard"/>
   <int value="1197336536" label="printing-ppd-channel"/>
+  <int value="1198604672" label="DiscardExceptionsImprovements:disabled"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
   <int value="1199276782" label="HighEfficiencyMultistateMode:enabled"/>
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>

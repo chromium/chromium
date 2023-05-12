@@ -14806,12 +14806,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <if expr="use_titlecase">
         <message name="IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="In Title Case: Label for a button on the page action chip that adds the current active site to the exclusion list when clicked">
-          Never Deactivate this Site
+          Keep Site Active
         </message>
       </if>
       <if expr="not use_titlecase">
         <message name="IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="Label for a button on a dialog that adds the current active site to the exclusion list when clicked">
-          Never deactivate this site
+          Keep site active
         </message>
       </if>
       <if expr="use_titlecase">

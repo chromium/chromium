@@ -4483,7 +4483,7 @@ extern const char kHeuristicMemorySaverDescription[] =
     "background.";
 
 extern const char kHighEfficiencyModeTimeBeforeDiscardName[] =
-    "Configure discard time for Memory Saver";
+    "Configure discard timer for Memory Saver";
 extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[] =
     "When set, this controls the time before memory saver discards a tab.";
 
@@ -4499,6 +4499,13 @@ extern const char kHighEfficiencyDiscardedTabTreatmentName[] =
 extern const char kHighEfficiencyDiscardedTabTreatmentDescription[] =
     "When enabled, discarded tabs will have a modified favicon to indicate "
     "that state.";
+
+extern const char kHighEfficiencyDiscardExceptionsImprovementsName[] =
+    "Enable improvements to creating tab discard exceptions.";
+extern const char kHighEfficiencyDiscardExceptionsImprovementsDescription[] =
+    "When enabled, tab discard exceptions can be created from the Memory Saver "
+    "page action chip dialog and they can be created from currently open tabs "
+    "via the settings page.";
 
 extern const char kHighEfficiencySavingsReportingImprovementsName[] =
     "Enable improvements to how memory savings are reported.";

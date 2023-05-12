@@ -9677,6 +9677,13 @@ const FeatureEntry kFeatureEntries[] = {
          kDiscardedTabTreatmentVariations,
          "DiscardedTabTreatment")},
 
+    {"memory-saver-discard-exceptions-improvements",
+     flag_descriptions::kHighEfficiencyDiscardExceptionsImprovementsName,
+     flag_descriptions::kHighEfficiencyDiscardExceptionsImprovementsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kDiscardExceptionsImprovements)},
+
     {"memory-saver-savings-reporting-improvements",
      flag_descriptions::kHighEfficiencySavingsReportingImprovementsName,
      flag_descriptions::kHighEfficiencySavingsReportingImprovementsDescription,
