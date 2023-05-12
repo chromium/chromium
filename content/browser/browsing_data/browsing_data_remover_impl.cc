@@ -29,6 +29,7 @@
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -560,6 +561,14 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     network_context->ClearCorsPreflightCache(
         filter_builder->BuildNetworkServiceFilter(),
         CreateTaskCompletionClosureForMojo(TracingDataType::kPreflightCache));
+
+    // Clears the BFCache entries for the current browser context.
+    for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
+      if (web_contents->GetBrowserContext()->UniqueId() ==
+          browser_context_->UniqueId()) {
+        web_contents->GetController().GetBackForwardCache().Flush();
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
