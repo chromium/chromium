@@ -115,7 +115,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPWAsDefaultOfflinePage,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
-    &features::kAsyncSensorCalls,
     &features::kBackForwardCache,
     &features::kBackForwardTransitions,
     &features::kBlockMidiByDefault,

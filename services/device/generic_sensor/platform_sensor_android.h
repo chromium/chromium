@@ -12,6 +12,7 @@
 #include "services/device/generic_sensor/platform_sensor.h"
 
 namespace device {
+
 class PlatformSensorAndroid : public PlatformSensor {
  public:
   // Creates a new PlatformSensorAndroid for the given sensor type, returning
@@ -58,6 +59,7 @@ class PlatformSensorAndroid : public PlatformSensor {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 };
+
 }  // namespace device
 
 #endif  // SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_ANDROID_H_

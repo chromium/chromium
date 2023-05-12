@@ -15,7 +15,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.mojom.ReportingMode;
 import org.chromium.device.mojom.SensorType;
 
@@ -181,42 +180,9 @@ public class PlatformSensor implements SensorEventListener {
 
     /**
      * Requests sensor to start polling for data.
-     *
-     * @return boolean true if successful, false otherwise.
      */
     @CalledByNative
-    protected boolean startSensor(double frequency) {
-        // If we already polling hw with same frequency, do not restart the sensor.
-        if (mCurrentPollingFrequency == frequency) return true;
-
-        // Unregister old listener if polling frequency has changed.
-        unregisterListener();
-
-        mProvider.sensorStarted(this);
-        boolean sensorStarted;
-        try {
-            sensorStarted = mProvider.getSensorManager().registerListener(
-                    this, mSensor, getSamplingPeriod(frequency), mProvider.getHandler());
-        } catch (RuntimeException e) {
-            // This can fail due to internal framework errors. https://crbug.com/884190
-            Log.w(TAG, "Failed to register sensor listener.", e);
-            sensorStarted = false;
-        }
-
-        if (!sensorStarted) {
-            stopSensor();
-            return sensorStarted;
-        }
-
-        mCurrentPollingFrequency = frequency;
-        return sensorStarted;
-    }
-
-    /**
-     * Requests sensor to start polling for data.
-     */
-    @CalledByNative
-    protected void startSensor2(double frequency) {
+    protected void startSensor(double frequency) {
         // If we already polling hw with same frequency, do not restart the sensor.
         if (mCurrentPollingFrequency == frequency) return;
 
@@ -277,9 +243,6 @@ public class PlatformSensor implements SensorEventListener {
      */
     @CalledByNative
     protected void sensorDestroyed() {
-        if (!DeviceFeatureList.isEnabled(DeviceFeatureList.ASYNC_SENSOR_CALLS)) {
-            stopSensor();
-        }
         synchronized (mLock) {
             mNativePlatformSensorAndroid = 0;
         }
