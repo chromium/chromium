@@ -187,6 +187,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/download/OMADownloadHandlerTest.java",
   "javatests/src/org/chromium/chrome/browser/download/ServicificationDownloadTest.java",
   "javatests/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogIncognitoTest.java",
+  "javatests/src/org/chromium/chrome/browser/environment_integrity/EnvironmentIntegrityTest.java",
   "javatests/src/org/chromium/chrome/browser/externalnav/UrlOverridingTest.java",
   "javatests/src/org/chromium/chrome/browser/feature_engagement/ScreenshotTabObserverTest.java",
   "javatests/src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollectorTest.java",

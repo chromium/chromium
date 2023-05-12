@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("environment_integrity") {
   sources = [
+    "environment_integrity.cc",
+    "environment_integrity.h",
     "navigator_environment_integrity.cc",
     "navigator_environment_integrity.h",
   ]

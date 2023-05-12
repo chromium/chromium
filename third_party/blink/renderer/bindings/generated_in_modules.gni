@@ -1889,6 +1889,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_environment_integrity.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_environment_integrity.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_entry.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_entry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_entry_sync.cc",
