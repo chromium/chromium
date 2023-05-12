@@ -542,7 +542,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             net::CookieSettingOverrides(),
             net::CookieSettingOverrides(
-                net::CookieSettingOverride::kForceThirdPartyByUser))));
+                {net::CookieSettingOverride::kForceThirdPartyByUser}))));
 
 namespace {
 
@@ -2016,7 +2016,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             net::CookieSettingOverrides(),
             net::CookieSettingOverrides(
-                net::CookieSettingOverride::kForceThirdPartyByUser))));
+                {net::CookieSettingOverride::kForceThirdPartyByUser}))));
 
 class UnpartitionedCookiesRestrictedCookieManagerTest
     : public RestrictedCookieManagerTest {
@@ -2463,6 +2463,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             net::CookieSettingOverrides(),
             net::CookieSettingOverrides(
-                net::CookieSettingOverride::kForceThirdPartyByUser))));
+                {net::CookieSettingOverride::kForceThirdPartyByUser}))));
 
 }  // namespace network
