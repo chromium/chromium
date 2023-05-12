@@ -40,11 +40,17 @@ found in the LICENSE file.
 
   .text-row {
     min-height: var(--cr-section-min-height);
+    padding-bottom: 8px;
+    padding-top: 14px;
   }
 
   cr-input {
     --cr-input-error-display: none;
     width: 80px;
+  }
+
+  cr-expand-button {
+    margin-top: 20px;
   }
 
   #developerOptionsExpandButton {
@@ -68,30 +74,30 @@ found in the LICENSE file.
   </settings-toggle-button>
   <settings-toggle-button
       id="autoReadToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.auto_read}}"
       label="$i18n{chromeVoxAutoRead}">
   </settings-toggle-button>
   <settings-toggle-button
       id="speakTextUnderMouseToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.speak_text_under_mouse}}"
       label="$i18n{chromeVoxSpeakTextUnderMouse}">
   </settings-toggle-button>
   <settings-toggle-button
       id="announceRichTextAttributesToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.announce_rich_text_attributes}}"
       label="$i18n{chromeVoxAnnounceRichTextAttributes}">
   </settings-toggle-button>
   <settings-toggle-button
       id="usePitchChangesToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.use_pitch_changes}}"
       label="$i18n{chromeVoxUsePitchChanges}"
       on-change="onUsePitchChangesToggled_">
   </settings-toggle-button>
-  <div class="settings-box continuation">
+  <div class="settings-box">
     <div class="start settings-box-text" aria-hidden="true">
       $i18n{chromeVoxCapitalStrategy}
     </div>
@@ -101,7 +107,7 @@ found in the LICENSE file.
         menu-options="[[capitalStrategyOptions_]]">
     </settings-dropdown-menu>
   </div>
-  <div class="settings-box continuation">
+  <div class="settings-box">
     <div class="start settings-box-text" aria-hidden="true">
       $i18n{chromeVoxNumberReadingStyle}
     </div>
@@ -111,7 +117,7 @@ found in the LICENSE file.
         menu-options="[[numberReadingStyleOptions_]]">
     </settings-dropdown-menu>
   </div>
-  <div class="settings-box continuation">
+  <div class="settings-box">
     <div class="start settings-box-text" aria-hidden="true">
       $i18n{chromeVoxPunctuationEcho}
     </div>
@@ -123,17 +129,17 @@ found in the LICENSE file.
   </div>
   <settings-toggle-button
       id="announceDownloadNotificationsToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.announce_download_notifications}}"
       label="$i18n{chromeVoxAnnounceDownloadNotifications}">
   </settings-toggle-button>
   <settings-toggle-button
       id="smartStickyModeToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.smart_sticky_mode}}"
       label="$i18n{chromeVoxSmartStickyMode}">
   </settings-toggle-button>
-  <div class="settings-box continuation">
+  <div class="settings-box">
     <div class="start settings-box-text" aria-hidden="true">
       $i18n{chromeVoxAudioStrategy}
     </div>
@@ -158,7 +164,7 @@ found in the LICENSE file.
   </div>
   <settings-toggle-button
       id="languageSwitchingToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.language_switching}}"
       label="$i18n{chromeVoxLanguageSwitching}">
   </settings-toggle-button>
@@ -183,36 +189,38 @@ found in the LICENSE file.
   </div>
   <settings-toggle-button
       id="brailleWordWrapToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.braille_word_wrap}}"
       label="$i18n{chromeVoxBrailleWordWrap}">
   </settings-toggle-button>
   <settings-toggle-button
       id="menuBrailleCommandsToggle"
-      class="settings-box continuation"
+      class="settings-box"
       pref="{{prefs.settings.a11y.chromevox.menu_braille_commands}}"
       label="$i18n{chromeVoxMenuBrailleCommands}">
   </settings-toggle-button>
-  <bluetooth-braille-display-ui></bluetooth-braille-display-ui>
-  <div class="text-row">
+  <div class="hr">
+    <bluetooth-braille-display-ui></bluetooth-braille-display-ui>
+  </div>
+  <div class="text-row hr">
     <div>$i18n{chromeVoxVirtualBrailleDisplay}</div>
     <div class="secondary">$i18n{chromeVoxVirtualBrailleDisplayDetails}</div>
   </div>
-  <div class="settings-box continuation indented">
+  <div class="settings-box indented continuation">
     $i18n{chromeVoxVirtualBrailleDisplayRows}
     <cr-input id="virtualBrailleDisplayRowsInput" type="number" min="1" max="99"
         value="[[prefs.settings.a11y.chromevox.virtual_braille_rows.value]]"
         on-input="onBrailleRowsInput_" on-focusout="onBrailleRowsFocusout_">
     </cr-input>
   </div>
-  <div class="settings-box continuation indented">
+  <div class="settings-box indented">
     $i18n{chromeVoxVirtualBrailleDisplayColumns}
     <cr-input id="virtualBrailleDisplayColumnsInput" type="number" min="1" max="99"
         value="[[prefs.settings.a11y.chromevox.virtual_braille_columns.value]]"
         on-input="onBrailleColumnsInput_" on-focusout="onBrailleColumnsFocusout_">
     </cr-input>
   </div>
-  <div class="settings-box continuation indented">
+  <div class="settings-box indented">
     <div class="start settings-box-text" aria-hidden="true">
       $i18n{chromeVoxVirtualBrailleDisplayStyleLabel}
     </div>
@@ -229,7 +237,7 @@ found in the LICENSE file.
 </cr-expand-button>
 <iron-collapse opened="[[developerOptionsExpanded_]]">
   <div class="sub-item">
-    <cr-link-row class="settings-box"
+    <cr-link-row class="settings-box continuation"
         label="$i18n{chromeVoxEventLogLink}"
         sub-label="$i18n{chromeVoxEventLogDescription}"
         on-click="onEventLogClick_"
@@ -238,25 +246,25 @@ found in the LICENSE file.
     </cr-link-row>
     <settings-toggle-button
         id="enableSpeechLoggingToggle"
-        class="settings-box continuation"
+        class="settings-box"
         pref="{{prefs.settings.a11y.chromevox.enable_speech_logging}}"
         label="$i18n{chromeVoxEnableSpeechLogging}">
     </settings-toggle-button>
     <settings-toggle-button
         id="enableEarconLoggingToggle"
-        class="settings-box continuation"
+        class="settings-box"
         pref="{{prefs.settings.a11y.chromevox.enable_earcon_logging}}"
         label="$i18n{chromeVoxEnableEarconLogging}">
     </settings-toggle-button>
     <settings-toggle-button
         id="enableBrailleLoggingToggle"
-        class="settings-box continuation"
+        class="settings-box"
         pref="{{prefs.settings.a11y.chromevox.enable_braille_logging}}"
         label="$i18n{chromeVoxEnableBrailleLogging}">
     </settings-toggle-button>
     <settings-toggle-button
         id="enableEventStreamLoggingToggle"
-        class="settings-box continuation"
+        class="settings-box"
         pref="{{prefs.settings.a11y.chromevox.enable_event_stream_logging}}"
         label="$i18n{chromeVoxEnableEventStreamLogging}">
     </settings-toggle-button>
