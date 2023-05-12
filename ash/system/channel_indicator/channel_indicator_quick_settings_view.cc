@@ -346,7 +346,8 @@ class SubmitFeedbackButton : public IconButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     if (features::IsQsRevampEnabled()) {
-      flags.setColor(GetColorProvider()->GetColor(kColorAshSeparatorColor));
+      flags.setColor(
+          GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
       flags.setStyle(cc::PaintFlags::kStroke_Style);
     } else {
       flags.setColor(channel_indicator_utils::GetBgColor(channel_));
