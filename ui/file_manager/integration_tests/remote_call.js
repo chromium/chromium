@@ -1138,4 +1138,15 @@ export class RemoteCallFilesApp extends RemoteCall {
               items} and percentage=${percentage}`);
     });
   }
+
+  /**
+   * Clicks the enabled and visible move to trash button and ensures the delete
+   * button is hidden.
+   * @param {string} appId
+   */
+  async clickTrashButton(appId) {
+    await this.waitForElement(appId, '#delete-button[hidden]');
+    await this.waitAndClickElement(
+        appId, '#move-to-trash-button:not([hidden]):not([disabled])');
+  }
 }

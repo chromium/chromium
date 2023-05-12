@@ -52,9 +52,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::Time min_modified_time = base::Time::UnixEpoch();
   std::string query = std::string(reinterpret_cast<const char*>(data), size);
 
-  // Searching by fuzzed query. Using most broad parameters, accepting files of
-  // any time with modified date after 1 Jan 1970.
-  extensions::SearchByPattern(test_dir, query, min_modified_time,
+  // Searching by fuzzed query. Using most broad parameters, excluding no paths,
+  // accepting files of any time with modified date after 1 Jan 1970.
+  std::vector<base::FilePath> excluded_path;
+  extensions::SearchByPattern(test_dir, excluded_path, query, min_modified_time,
                               ash::RecentSource::FileType::kAll,
                               file_names.size());
   return 0;

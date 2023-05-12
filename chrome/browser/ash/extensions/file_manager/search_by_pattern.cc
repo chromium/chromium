@@ -43,6 +43,7 @@ std::string CreateFnmatchQuery(const std::string& query) {
 
 std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
     const base::FilePath& root,
+    const std::vector<base::FilePath>& excluded_paths,
     const std::string& query,
     const base::Time& min_timestamp,
     ash::RecentSource::FileType file_type,
@@ -61,6 +62,15 @@ std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
       continue;
     }
     if (!ash::RecentDiskSource::MatchesFileType(path, file_type)) {
+      continue;
+    }
+    // Reject files that have path in excluded paths.
+    if (base::ranges::any_of(
+            excluded_paths, [&path](const base::FilePath& excluded_path) {
+              DCHECK(!path.EndsWithSeparator());
+              DCHECK(!excluded_path.EndsWithSeparator());
+              return excluded_path == path || excluded_path.IsParent(path);
+            })) {
       continue;
     }
     if (base::StartsWith(path.BaseName().value(), query,
