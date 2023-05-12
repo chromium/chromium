@@ -656,12 +656,12 @@ void DesktopCaptureDevice::Core::CaptureFrame(bool is_refresh_frame) {
 
   if (!is_refresh_frame) {
     capture_in_progress_ = true;
-  } else {
-    refresh_in_progress_ = true;
     // Cancel any outstanding refresh attempts when we are about to capture a
     // frame the default way. The following is a no-op, if the timer was not
     // running.
     request_refresh_frame_timer_->Stop();
+  } else {
+    refresh_in_progress_ = true;
   }
 
   if (last_capture_time_.is_null()) {
