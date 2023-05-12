@@ -51,7 +51,20 @@ CompanionPageHandler::CompanionPageHandler(
 
 CompanionPageHandler::~CompanionPageHandler() = default;
 
-void CompanionPageHandler::PrimaryPageChanged(content::Page& page) {
+void CompanionPageHandler::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  if (page_url_.GetWithoutRef() ==
+      web_contents()->GetLastCommittedURL().GetWithoutRef()) {
+    return;
+  }
+
+  page_url_ = web_contents()->GetLastCommittedURL();
+
   ukm::SourceId ukm_source_id =
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   metrics_logger_ = std::make_unique<CompanionMetricsLogger>(ukm_source_id);
@@ -74,6 +87,7 @@ void CompanionPageHandler::ShowUI() {
     auto* active_web_contents =
         GetBrowser()->tab_strip_model()->GetActiveWebContents();
     Observe(active_web_contents);
+    page_url_ = active_web_contents->GetLastCommittedURL();
     ukm::SourceId ukm_source_id =
         web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     metrics_logger_ = std::make_unique<CompanionMetricsLogger>(ukm_source_id);

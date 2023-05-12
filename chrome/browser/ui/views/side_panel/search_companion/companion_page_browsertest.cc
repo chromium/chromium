@@ -47,6 +47,7 @@ namespace {
 const char kRelativeUrl1[] = "/english_page.html";
 const char kRelativeUrl2[] = "/german_page.html";
 const char kRelativeUrl3[] = "/simple.html";
+const char kRelativeUrl4[] = "/simple.html#part1";
 const char kHost[] = "foo.com";
 const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 
@@ -366,6 +367,20 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl3));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SamePageNavigation) {
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl3)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+
+  // Navigation to a same document URL. Verify that companion is not refreshed.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl4)));
+  auto proto = GetLastCompanionProtoFromPostMessage();
+  EXPECT_FALSE(proto.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,

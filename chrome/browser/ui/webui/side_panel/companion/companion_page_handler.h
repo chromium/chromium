@@ -12,6 +12,7 @@
 #include "chrome/browser/companion/core/msbb_delegate.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,7 +60,8 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void OnCqJumptagClicked(const std::string& text_directive) override;
 
   // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Informs the page handler that a new text query to initialize / reload the
   // page with was sent from client.
@@ -96,6 +98,9 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
 
   // Logs metrics for companion page. Reset when there is a new navigation.
   std::unique_ptr<CompanionMetricsLogger> metrics_logger_;
+
+  // The current URL of the main frame.
+  GURL page_url_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };
