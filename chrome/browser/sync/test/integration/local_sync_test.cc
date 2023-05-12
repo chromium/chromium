@@ -95,16 +95,29 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   // Windows.
   // TODO(crbug.com/1109640): Consider whether all of these types should really
   // be enabled in Local Sync mode.
-  syncer::ModelTypeSet expected_active_data_types = syncer::ModelTypeSet(
-      syncer::BOOKMARKS, syncer::READING_LIST, syncer::PREFERENCES,
-      syncer::PASSWORDS, syncer::AUTOFILL_PROFILE, syncer::AUTOFILL,
-      syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA,
-      syncer::THEMES, syncer::TYPED_URLS, syncer::EXTENSIONS,
-      syncer::SEARCH_ENGINES, syncer::SESSIONS, syncer::APPS,
-      syncer::APP_SETTINGS, syncer::EXTENSION_SETTINGS,
-      syncer::HISTORY_DELETE_DIRECTIVES, syncer::DEVICE_INFO,
-      syncer::PRIORITY_PREFERENCES, syncer::WEB_APPS, syncer::PROXY_TABS,
-      syncer::NIGORI);
+  syncer::ModelTypeSet expected_active_data_types = {
+      syncer::BOOKMARKS,
+      syncer::READING_LIST,
+      syncer::PREFERENCES,
+      syncer::PASSWORDS,
+      syncer::AUTOFILL_PROFILE,
+      syncer::AUTOFILL,
+      syncer::AUTOFILL_WALLET_DATA,
+      syncer::AUTOFILL_WALLET_METADATA,
+      syncer::THEMES,
+      syncer::TYPED_URLS,
+      syncer::EXTENSIONS,
+      syncer::SEARCH_ENGINES,
+      syncer::SESSIONS,
+      syncer::APPS,
+      syncer::APP_SETTINGS,
+      syncer::EXTENSION_SETTINGS,
+      syncer::HISTORY_DELETE_DIRECTIVES,
+      syncer::DEVICE_INFO,
+      syncer::PRIORITY_PREFERENCES,
+      syncer::WEB_APPS,
+      syncer::PROXY_TABS,
+      syncer::NIGORI};
 
   if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
     // If this feature is enabled, HISTORY replaces TYPED_URLS (and HISTORY

@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
   // Wait for data types to be ready for sync and trigger a sync cycle.
   // Otherwise, TriggerRefresh() would be no-op.
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-  GetSyncService(0)->TriggerRefresh(syncer::PASSWORDS);
+  GetSyncService(0)->TriggerRefresh({syncer::PASSWORDS});
 
   // After restart, the last sync cycle snapshot should be empty. Once a sync
   // request happened (e.g. by a poll), that snapshot is populated. We use the

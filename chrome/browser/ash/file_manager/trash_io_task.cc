@@ -532,8 +532,8 @@ void TrashIOTask::TrashFile(size_t source_idx,
 
   // File browsers generally default to preserving mtimes on copy/move so we
   // should do the same.
-  storage::FileSystemOperation::CopyOrMoveOptionSet options(
-      storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified);
+  storage::FileSystemOperation::CopyOrMoveOptionSet options = {
+      storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified};
 
   auto complete_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &TrashIOTask::OnMoveComplete, weak_ptr_factory_.GetWeakPtr(), source_idx,

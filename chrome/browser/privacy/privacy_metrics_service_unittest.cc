@@ -65,7 +65,7 @@ class PrivacyMetricsServiceTest : public testing::Test {
     sync_service()->SetTransportState(
         syncer::SyncService::TransportState::DISABLED);
     sync_service()->SetDisableReasons(
-        syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+        {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
     sync_service()->FireStateChanged();
   }
 

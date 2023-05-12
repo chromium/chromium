@@ -1172,11 +1172,10 @@ void Server::Rename(const RenameRequestProto& request_proto,
       base::BindOnce(&RunRenameCallbackBaseFileError, std::move(callback),
                      src_parsed->fs_context));
 
-  constexpr storage::FileSystemOperation::CopyOrMoveOptionSet options =
-      storage::FileSystemOperation::CopyOrMoveOptionSet(
-          storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified,
-          storage::FileSystemOperation::CopyOrMoveOption::
-              kRemovePartiallyCopiedFilesOnError);
+  constexpr storage::FileSystemOperation::CopyOrMoveOptionSet options = {
+      storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified,
+      storage::FileSystemOperation::CopyOrMoveOption::
+          kRemovePartiallyCopiedFilesOnError};
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

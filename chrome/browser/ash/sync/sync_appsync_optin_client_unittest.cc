@@ -72,8 +72,7 @@ class FakeSyncService : public syncer::TestSyncService {
   void SetAppsyncOptin(bool opted_in) {
     if (opted_in) {
       GetUserSettings()->SetSelectedOsTypes(
-          false, syncer::UserSelectableOsTypeSet(
-                     syncer::UserSelectableOsType::kOsApps));
+          false, {syncer::UserSelectableOsType::kOsApps});
     } else {
       GetUserSettings()->SetSelectedOsTypes(false,
                                             syncer::UserSelectableOsTypeSet());

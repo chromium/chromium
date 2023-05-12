@@ -90,7 +90,7 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetFirstSetupComplete(false);
       service->SetSetupInProgress(false);
       service->SetDisableReasons(
-          syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
+          {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       return {
         SyncStatusMessageType::kSyncError,
@@ -187,7 +187,7 @@ SyncStatusLabels SetUpDistinctCase(
     }
     case STATUS_CASE_SYNC_DISABLED_BY_POLICY: {
       service->SetDisableReasons(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
       service->SetFirstSetupComplete(false);
       service->SetTransportState(syncer::SyncService::TransportState::DISABLED);
       service->SetPassphraseRequired(false);
@@ -202,7 +202,7 @@ SyncStatusLabels SetUpDistinctCase(
       // DISABLE_REASON_USER_CHOICE can only occur if Sync was reset from the
       // dashboard, and the UI treats it as such.
       service->SetDisableReasons(
-          syncer::SyncService::DISABLE_REASON_USER_CHOICE);
+          {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
       service->SetSyncFeatureDisabledViaDashboard(true);
       service->SetFirstSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
@@ -254,7 +254,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
   environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetFirstSetupComplete(true);
   service.SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
+      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
 
   // First time action is not set. We should get unrecoverable error.
   service.SetDetailedSyncStatus(true, syncer::SyncStatus());
@@ -295,7 +295,7 @@ TEST(SyncUIUtilTest, ActionableProtocolErrorWithPassiveMessage) {
   environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetFirstSetupComplete(true);
   service.SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
+      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
 
   // Set action to SyncStatusActionType::kUpgradeClient.
   syncer::SyncStatus status;

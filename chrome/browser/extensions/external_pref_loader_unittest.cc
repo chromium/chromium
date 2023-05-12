@@ -136,7 +136,7 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   // Initially CanSyncFeatureStart() returns true, returning false will let
   // |loader| proceed.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_USER_CHOICE);
+      {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
   ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
   sync_service()->FireOnStateChanged();
   run_loop.Run();

@@ -32,10 +32,10 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
                 "Add new types below if they run in transport mode");
   // Only some special allowlisted types (and control types) are allowed in
   // standalone transport mode.
-  syncer::ModelTypeSet allowed_types(
-      syncer::DEVICE_INFO, syncer::USER_CONSENTS, syncer::SECURITY_EVENTS,
-      syncer::AUTOFILL_WALLET_DATA, syncer::CONTACT_INFO,
-      syncer::SHARING_MESSAGE);
+  syncer::ModelTypeSet allowed_types = {
+      syncer::DEVICE_INFO,     syncer::USER_CONSENTS,
+      syncer::SECURITY_EVENTS, syncer::AUTOFILL_WALLET_DATA,
+      syncer::CONTACT_INFO,    syncer::SHARING_MESSAGE};
   allowed_types.PutAll(syncer::ControlTypes());
   allowed_types.Put(syncer::SEND_TAB_TO_SELF);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

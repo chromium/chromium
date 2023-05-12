@@ -95,7 +95,7 @@ MATCHER_P(InterestedDataTypesAre, expected_data_types, "") {
   return data_types == expected_data_types;
 }
 
-MATCHER_P(InterestedDataTypesContain, expected_data_types, "") {
+MATCHER_P(InterestedDataTypesContain, expected_data_type, "") {
   syncer::ModelTypeSet data_types;
   for (const int field_number : arg.specifics()
                                     .device_info()
@@ -108,7 +108,7 @@ MATCHER_P(InterestedDataTypesContain, expected_data_types, "") {
     }
     data_types.Put(data_type);
   }
-  return data_types.HasAll(expected_data_types);
+  return data_types.Has(expected_data_type);
 }
 
 MATCHER(HasInstanceIdToken, "") {

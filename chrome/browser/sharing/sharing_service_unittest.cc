@@ -314,8 +314,7 @@ TEST_F(SharingServiceTest, DeviceRegistration) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -355,7 +354,7 @@ TEST_F(SharingServiceTest, DeviceRegistrationPreferenceNotAvailable) {
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
-  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -390,8 +389,7 @@ TEST_F(SharingServiceTest, DeviceRegistrationTransientError) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -432,8 +430,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   // Create new SharingService instance with feature enabled at constructor.
   GetSharingService();
@@ -513,8 +510,7 @@ TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
 
   // Create new SharingService instance with FCM already registered at
   // constructor.

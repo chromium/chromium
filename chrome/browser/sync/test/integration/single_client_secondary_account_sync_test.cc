@@ -25,9 +25,9 @@ namespace {
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
   // Only some special whitelisted types (and control types) are allowed in
   // standalone transport mode.
-  syncer::ModelTypeSet allowed_types(
+  syncer::ModelTypeSet allowed_types = {
       syncer::DEVICE_INFO, syncer::USER_CONSENTS, syncer::SECURITY_EVENTS,
-      syncer::AUTOFILL_WALLET_DATA, syncer::SHARING_MESSAGE);
+      syncer::AUTOFILL_WALLET_DATA, syncer::SHARING_MESSAGE};
   allowed_types.PutAll(syncer::ControlTypes());
   allowed_types.Put(syncer::SEND_TAB_TO_SELF);
   return allowed_types;

@@ -256,8 +256,7 @@ TEST_F(SharingDeviceRegistrationTest, IsSharedClipboardSupported_False) {
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_Success) {
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPreferences));
+      /*types=*/{syncer::UserSelectableType::kPreferences});
   SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
   SetInstanceIDFCMToken(kVapidFCMToken);
   fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
@@ -294,7 +293,7 @@ TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_Success) {
 
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_Vapid_Only) {
   // Make sync unavailable to force using vapid.
-  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
   SetInstanceIDFCMToken(kVapidFCMToken);
   fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
@@ -340,7 +339,7 @@ TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_SenderIDOnly) {
 
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_InternalError) {
   // Make sync unavailable to force using vapid.
-  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());

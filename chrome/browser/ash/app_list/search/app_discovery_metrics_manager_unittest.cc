@@ -172,7 +172,7 @@ TEST_F(AppDiscoveryMetricsManagerTest, OnOpenAppResultAppSyncDisabled) {
 
   // Disable app-sync.
   sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   TestSearchResult search_result(app_id, app_name, search_result_type);
 

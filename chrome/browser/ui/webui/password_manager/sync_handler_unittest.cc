@@ -146,9 +146,11 @@ TEST_F(SyncHandlerTest, HandleTrustedVaultBannerStateOfferOptIn) {
   ON_CALL(*sync_service(), GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
   ON_CALL(*sync_service(), GetActiveDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*sync_service()->GetMockUserSettings(), GetEncryptedDataTypes())
-      .WillByDefault(testing::Return(syncer::ModelTypeSet(syncer::PASSWORDS)));
+      .WillByDefault(
+          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
   ON_CALL(*sync_service()->GetMockUserSettings(), GetPassphraseType())
       .WillByDefault(Return(syncer::PassphraseType::kKeystorePassphrase));
   ON_CALL(*sync_service()->GetMockUserSettings(), IsPassphraseRequired())

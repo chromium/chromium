@@ -105,7 +105,7 @@ class SyncUserSettingsClientAshTest : public testing::Test {
 TEST_F(SyncUserSettingsClientAshTest, ShouldExposeAppsSyncEnabled) {
   ON_CALL(*sync_user_settings(), GetSelectedOsTypes())
       .WillByDefault(Return(syncer::UserSelectableOsTypeSet(
-          syncer::UserSelectableOsType::kOsApps)));
+          {syncer::UserSelectableOsType::kOsApps})));
   SetupClient();
 
   bool is_apps_sync_enabled = false;
@@ -126,7 +126,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldExposeAppsSyncDisabled) {
 TEST_F(SyncUserSettingsClientAshTest, ShouldSupportMultipleReceivers) {
   ON_CALL(*sync_user_settings(), GetSelectedOsTypes())
       .WillByDefault(Return(syncer::UserSelectableOsTypeSet(
-          syncer::UserSelectableOsType::kOsApps)));
+          {syncer::UserSelectableOsType::kOsApps})));
   SetupClient();
 
   mojo::Remote<crosapi::mojom::SyncUserSettingsClient> other_remote;
@@ -159,7 +159,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldNotifyObserver) {
   // Mimic apps sync being enabled.
   ON_CALL(*sync_user_settings(), GetSelectedOsTypes())
       .WillByDefault(Return(syncer::UserSelectableOsTypeSet(
-          syncer::UserSelectableOsType::kOsApps)));
+          {syncer::UserSelectableOsType::kOsApps})));
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
   ASSERT_THAT(observer.GetLastAppsSyncEnabled(), Ne(absl::nullopt));
@@ -188,7 +188,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldSupportMultipleObservers) {
   // Mimic apps sync being enabled.
   ON_CALL(*sync_user_settings(), GetSelectedOsTypes())
       .WillByDefault(Return(syncer::UserSelectableOsTypeSet(
-          syncer::UserSelectableOsType::kOsApps)));
+          {syncer::UserSelectableOsType::kOsApps})));
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
 

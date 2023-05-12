@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        ReportUsageDataWhenSyncDisabled) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(kEnableAppMetricsReporting));
   sync_service()->SetDisableReasons(
-      ::syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+      {::syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Install web app and simulate its usage.
   const auto& app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));

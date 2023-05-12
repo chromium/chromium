@@ -302,7 +302,7 @@ TEST_F(OsSyncHandlerTest, ShowSetupManuallySyncAll) {
 
 TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
-    UserSelectableOsTypeSet types(type);
+    const UserSelectableOsTypeSet types = {type};
     user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
     handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
 

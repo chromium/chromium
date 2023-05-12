@@ -407,8 +407,7 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
 TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   sync_service_->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
+      /*types=*/{syncer::UserSelectableType::kPasswords});
   sync_service_->SetIsUsingExplicitPassphrase(false);
 
   ChromePasswordManagerClient* client = GetClient();
@@ -432,8 +431,7 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   // Report correctly if we aren't syncing passwords.
   sync_service_->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kBookmarks));
+      /*types=*/{syncer::UserSelectableType::kBookmarks});
 
   EXPECT_EQ(password_manager::SyncState::kNotSyncing,
             client->GetPasswordSyncState());

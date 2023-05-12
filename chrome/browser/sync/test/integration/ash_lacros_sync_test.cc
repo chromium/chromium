@@ -61,15 +61,15 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
   // WifiConfigurations which are part of the selectable *OS* types.
   EXPECT_EQ(
       user_settings->GetRegisteredSelectableTypes(),
-      syncer::UserSelectableTypeSet(syncer::UserSelectableType::kBookmarks,
-                                    syncer::UserSelectableType::kPreferences,
-                                    syncer::UserSelectableType::kPasswords,
-                                    syncer::UserSelectableType::kAutofill,
-                                    syncer::UserSelectableType::kThemes,
-                                    syncer::UserSelectableType::kHistory,
-                                    syncer::UserSelectableType::kExtensions,
-                                    syncer::UserSelectableType::kReadingList,
-                                    syncer::UserSelectableType::kTabs))
+      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kBookmarks,
+                                     syncer::UserSelectableType::kPreferences,
+                                     syncer::UserSelectableType::kPasswords,
+                                     syncer::UserSelectableType::kAutofill,
+                                     syncer::UserSelectableType::kThemes,
+                                     syncer::UserSelectableType::kHistory,
+                                     syncer::UserSelectableType::kExtensions,
+                                     syncer::UserSelectableType::kReadingList,
+                                     syncer::UserSelectableType::kTabs}))
       << "Actual: "
       << syncer::UserSelectableTypeSetToString(
              user_settings->GetRegisteredSelectableTypes());
@@ -77,27 +77,48 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
   // All the OS types should be selectable in Ash too.
   EXPECT_EQ(user_settings->GetRegisteredSelectableOsTypes(),
             syncer::UserSelectableOsTypeSet(
-                syncer::UserSelectableOsType::kOsApps,
-                syncer::UserSelectableOsType::kOsPreferences,
-                syncer::UserSelectableOsType::kOsWifiConfigurations))
+                {syncer::UserSelectableOsType::kOsApps,
+                 syncer::UserSelectableOsType::kOsPreferences,
+                 syncer::UserSelectableOsType::kOsWifiConfigurations}))
       << "Actual: "
       << syncer::UserSelectableOsTypeSetToString(
              user_settings->GetRegisteredSelectableOsTypes());
 
-  syncer::ModelTypeSet expected_active_types(
-      syncer::BOOKMARKS, syncer::PREFERENCES, syncer::PASSWORDS,
-      syncer::AUTOFILL_PROFILE, syncer::AUTOFILL, syncer::AUTOFILL_WALLET_DATA,
-      syncer::AUTOFILL_WALLET_METADATA, syncer::AUTOFILL_WALLET_OFFER,
-      syncer::THEMES, syncer::EXTENSIONS, syncer::SEARCH_ENGINES,
-      syncer::SESSIONS, syncer::APPS, syncer::APP_SETTINGS,
-      syncer::EXTENSION_SETTINGS, syncer::HISTORY_DELETE_DIRECTIVES,
-      syncer::DICTIONARY, syncer::DEVICE_INFO, syncer::PRIORITY_PREFERENCES,
-      syncer::APP_LIST, syncer::ARC_PACKAGE, syncer::PRINTERS,
-      syncer::READING_LIST, syncer::USER_EVENTS, syncer::USER_CONSENTS,
-      syncer::SEND_TAB_TO_SELF, syncer::SECURITY_EVENTS,
-      syncer::WIFI_CONFIGURATIONS, syncer::OS_PREFERENCES,
-      syncer::OS_PRIORITY_PREFERENCES, syncer::SHARING_MESSAGE,
-      syncer::WORKSPACE_DESK, syncer::PROXY_TABS, syncer::NIGORI);
+  syncer::ModelTypeSet expected_active_types = {
+      syncer::BOOKMARKS,
+      syncer::PREFERENCES,
+      syncer::PASSWORDS,
+      syncer::AUTOFILL_PROFILE,
+      syncer::AUTOFILL,
+      syncer::AUTOFILL_WALLET_DATA,
+      syncer::AUTOFILL_WALLET_METADATA,
+      syncer::AUTOFILL_WALLET_OFFER,
+      syncer::THEMES,
+      syncer::EXTENSIONS,
+      syncer::SEARCH_ENGINES,
+      syncer::SESSIONS,
+      syncer::APPS,
+      syncer::APP_SETTINGS,
+      syncer::EXTENSION_SETTINGS,
+      syncer::HISTORY_DELETE_DIRECTIVES,
+      syncer::DICTIONARY,
+      syncer::DEVICE_INFO,
+      syncer::PRIORITY_PREFERENCES,
+      syncer::APP_LIST,
+      syncer::ARC_PACKAGE,
+      syncer::PRINTERS,
+      syncer::READING_LIST,
+      syncer::USER_EVENTS,
+      syncer::USER_CONSENTS,
+      syncer::SEND_TAB_TO_SELF,
+      syncer::SECURITY_EVENTS,
+      syncer::WIFI_CONFIGURATIONS,
+      syncer::OS_PREFERENCES,
+      syncer::OS_PRIORITY_PREFERENCES,
+      syncer::SHARING_MESSAGE,
+      syncer::WORKSPACE_DESK,
+      syncer::PROXY_TABS,
+      syncer::NIGORI};
   if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
     expected_active_types.Put(syncer::HISTORY);
   } else {
@@ -130,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {
   // But all the OS types should be selectable.
   EXPECT_EQ(user_settings->GetRegisteredSelectableOsTypes(),
             syncer::UserSelectableOsTypeSet(
-                syncer::UserSelectableOsType::kOsApps,
-                syncer::UserSelectableOsType::kOsPreferences,
-                syncer::UserSelectableOsType::kOsWifiConfigurations))
+                {syncer::UserSelectableOsType::kOsApps,
+                 syncer::UserSelectableOsType::kOsPreferences,
+                 syncer::UserSelectableOsType::kOsWifiConfigurations}))
       << "Actual: "
       << syncer::UserSelectableOsTypeSetToString(
              user_settings->GetRegisteredSelectableOsTypes());
@@ -141,10 +162,10 @@ IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {
   EXPECT_EQ(
       sync_service->GetActiveDataTypes(),
       syncer::ModelTypeSet(
-          syncer::DEVICE_INFO, syncer::APP_LIST, syncer::ARC_PACKAGE,
-          syncer::PRINTERS, syncer::USER_CONSENTS, syncer::WIFI_CONFIGURATIONS,
-          syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
-          syncer::WORKSPACE_DESK, syncer::NIGORI));
+          {syncer::DEVICE_INFO, syncer::APP_LIST, syncer::ARC_PACKAGE,
+           syncer::PRINTERS, syncer::USER_CONSENTS, syncer::WIFI_CONFIGURATIONS,
+           syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
+           syncer::WORKSPACE_DESK, syncer::NIGORI}));
 }
 
 }  // namespace

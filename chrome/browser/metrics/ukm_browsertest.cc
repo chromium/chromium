@@ -1551,7 +1551,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, AllowedStateChanged) {
               base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync));
   observer.ExpectAllowedStateChanged(
       base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync)
-          ? ukm::UkmConsentState(ukm::APPS)
+          ? ukm::UkmConsentState({ukm::APPS})
           : ukm::UkmConsentState());
 #endif
 
