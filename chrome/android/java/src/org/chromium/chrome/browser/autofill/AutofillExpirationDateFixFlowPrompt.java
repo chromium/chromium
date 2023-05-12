@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,6 +15,7 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * Prompt that asks users to confirm the expiration date before saving card to Google.
@@ -23,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * - Confirm if the month and year needs to be pre-populated in case partial data is available.
  */
 public class AutofillExpirationDateFixFlowPrompt
-        extends AutofillSaveCardPromptBase implements TextWatcher {
+        extends AutofillSaveCardPromptBase implements EmptyTextWatcher {
     /**
      * An interface to handle the interaction with an AutofillExpirationDateFixFlowPrompt object.
      */
@@ -98,12 +98,6 @@ public class AutofillExpirationDateFixFlowPrompt
     public void afterTextChanged(Editable s) {
         validate();
     }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
     @Override
     public void onClick(PropertyModel model, int buttonType) {

@@ -14,7 +14,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +63,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
@@ -247,13 +247,7 @@ public class NewTabPageLayout extends LinearLayout {
         TraceEvent.begin(TAG + ".initializeSearchBoxTextView()");
 
         mSearchBoxCoordinator.setSearchBoxClickListener(v -> mManager.focusSearchBox(false, null));
-        mSearchBoxCoordinator.setSearchBoxTextWatcher(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
+        mSearchBoxCoordinator.setSearchBoxTextWatcher(new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 0) return;

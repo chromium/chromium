@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -264,13 +265,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     }
 
     private TextWatcher nicknameTextWatcher() {
-        return new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
+        return new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 // Show an error message if nickname contains any digits.

@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.text.Editable;
-import android.text.TextWatcher;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * Android wrapper of i18n::phonenumbers::PhoneNumberUtil which provides convenient methods to
@@ -24,7 +24,7 @@ public class PhoneNumberUtil {
     /**
      * TextWatcher to watch phone number changes so as to format it based on country code.
      */
-    public static class CountryAwareFormatTextWatcher implements TextWatcher {
+    public static class CountryAwareFormatTextWatcher implements EmptyTextWatcher {
         /** Indicates the change was caused by ourselves. */
         private boolean mSelfChange;
         @Nullable
@@ -48,12 +48,6 @@ public class PhoneNumberUtil {
             s.replace(0, s.length(), formattedNumber, 0, formattedNumber.length());
             mSelfChange = false;
         }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
     }
 
     /**

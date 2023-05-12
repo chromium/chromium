@@ -58,6 +58,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -417,13 +418,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         AtomicBoolean titleTextUpdated = new AtomicBoolean();
         titleTextUpdated.set(false);
 
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
+        TextWatcher textWatcher = new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
                 titleTextUpdated.set(true);

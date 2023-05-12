@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.autofill;
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.ANIMATION_DURATION_MS;
 
 import android.content.Context;
-import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 
 import org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.ViewDelegate;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -131,17 +131,11 @@ public class OtpVerificationDialogView extends RelativeLayout {
     }
 
     private TextWatcher buildTextWatcher(ViewDelegate viewDelegate) {
-        return new TextWatcher() {
+        return new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 viewDelegate.onTextChanged(s);
             }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {}
         };
     }
 

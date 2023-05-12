@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,10 +26,11 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 /** Base class for Autofill editors (e.g. credit cards and profiles). */
 public abstract class AutofillEditorBase
-        extends Fragment implements OnItemSelectedListener, OnTouchListener, TextWatcher {
+        extends Fragment implements OnItemSelectedListener, OnTouchListener, EmptyTextWatcher {
     /** We know which profile to edit based on the GUID stuffed in extras. */
     public static final String AUTOFILL_GUID = "guid";
 
@@ -148,13 +147,4 @@ public abstract class AutofillEditorBase
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {}
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-    @Override
-    public void afterTextChanged(Editable s) {}
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 }

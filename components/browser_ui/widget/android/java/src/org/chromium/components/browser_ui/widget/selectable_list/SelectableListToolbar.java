@@ -9,9 +9,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +47,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
@@ -235,19 +234,13 @@ public class SelectableListToolbar<E>
         mSearchEditText = mSearchView.findViewById(R.id.search_text);
         mSearchEditText.setHint(hintStringResId);
         mSearchEditText.setOnEditorActionListener(this);
-        mSearchEditText.addTextChangedListener(new TextWatcher() {
+        mSearchEditText.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mClearTextButton.setVisibility(
                         TextUtils.isEmpty(s) ? View.INVISIBLE : View.VISIBLE);
                 if (isSearching()) mSearchDelegate.onSearchTextChanged(s.toString());
             }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {}
         });
 
         mClearTextButton = findViewById(R.id.clear_text_button);

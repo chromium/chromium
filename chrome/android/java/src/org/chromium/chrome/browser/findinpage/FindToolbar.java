@@ -13,11 +13,9 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.provider.Settings;
-import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -57,6 +55,7 @@ import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.components.find_in_page.FindResultBar;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -288,7 +287,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                 }
             }
         });
-        mFindQuery.addTextChangedListener(new TextWatcher() {
+        mFindQuery.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (mFindInPageBridge == null) return;
@@ -318,12 +317,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                     mLastUserSearch = s.toString();
                 }
             }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {}
         });
         mFindQuery.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

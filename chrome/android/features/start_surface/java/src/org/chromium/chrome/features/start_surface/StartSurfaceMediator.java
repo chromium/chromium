@@ -38,7 +38,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SE
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -101,6 +100,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
@@ -505,14 +505,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                             true, null, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP);
                     RecordUserAction.record("TasksSurface.FakeBox.Tapped");
                 });
-                mPropertyModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
+                mPropertyModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, new EmptyTextWatcher() {
                     @Override
                     public void afterTextChanged(Editable s) {
                         if (s.length() == 0) return;
