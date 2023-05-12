@@ -39,7 +39,7 @@ namespace blink {
 class ShapeClipPathOperation final : public ClipPathOperation {
  public:
   static scoped_refptr<ShapeClipPathOperation> Create(
-      scoped_refptr<BasicShape> shape) {
+      scoped_refptr<const BasicShape> shape) {
     return base::AdoptRef(new ShapeClipPathOperation(std::move(shape)));
   }
 
@@ -54,12 +54,12 @@ class ShapeClipPathOperation final : public ClipPathOperation {
   bool operator==(const ClipPathOperation&) const override;
   OperationType GetType() const override { return kShape; }
 
-  explicit ShapeClipPathOperation(scoped_refptr<BasicShape> shape)
+  explicit ShapeClipPathOperation(scoped_refptr<const BasicShape> shape)
       : shape_(std::move(shape)) {
     DCHECK(shape_);
   }
 
-  scoped_refptr<BasicShape> shape_;
+  scoped_refptr<const BasicShape> shape_;
 };
 
 template <>
@@ -74,11 +74,7 @@ inline bool ShapeClipPathOperation::operator==(
   if (!IsSameType(o)) {
     return false;
   }
-  BasicShape* other_shape = To<ShapeClipPathOperation>(o).shape_.get();
-  if (!shape_.get() || !other_shape) {
-    return static_cast<bool>(shape_.get()) == static_cast<bool>(other_shape);
-  }
-  return *shape_ == *other_shape;
+  return *shape_ == *To<ShapeClipPathOperation>(o).shape_;
 }
 
 }  // namespace blink

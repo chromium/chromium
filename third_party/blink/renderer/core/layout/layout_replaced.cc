@@ -193,7 +193,7 @@ LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
 
 absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const LayoutSize* overridden_intrinsic_size) const {
-  scoped_refptr<BasicShape> object_view_box = StyleRef().ObjectViewBox();
+  const BasicShape* object_view_box = StyleRef().ObjectViewBox();
   if (LIKELY(!object_view_box))
     return absl::nullopt;
 
