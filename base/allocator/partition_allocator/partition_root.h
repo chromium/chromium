@@ -180,11 +180,6 @@ struct PartitionOptions {
     kEnabled,
   };
 
-  enum class AddDummyRefCount : uint8_t {
-    kDisabled,
-    kEnabled,
-  };
-
   enum class UseConfigurablePool : uint8_t {
     kNo,
     kIfAvailable,
@@ -198,8 +193,7 @@ struct PartitionOptions {
       Cookie cookie,
       BackupRefPtr backup_ref_ptr,
       BackupRefPtrZapping backup_ref_ptr_zapping,
-      UseConfigurablePool use_configurable_pool,
-      AddDummyRefCount add_dummy_ref_count = AddDummyRefCount::kDisabled
+      UseConfigurablePool use_configurable_pool
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
       ,
       ThreadIsolationOption thread_isolation = ThreadIsolationOption()
@@ -226,7 +220,6 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr;
   BackupRefPtrZapping backup_ref_ptr_zapping;
   UseConfigurablePool use_configurable_pool;
-  AddDummyRefCount add_dummy_ref_count = AddDummyRefCount::kDisabled;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif

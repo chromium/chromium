@@ -330,7 +330,6 @@ class PartitionAllocTest
         partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
         partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-        partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
         partition_alloc::ThreadIsolationOption(pkey_),
     });
     if (UseThreadIsolatedPool() && pkey_ != kInvalidPkey) {
@@ -342,7 +341,6 @@ class PartitionAllocTest
           partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
           partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
           partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-          partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
           partition_alloc::ThreadIsolationOption(pkey_),
       });
       return;

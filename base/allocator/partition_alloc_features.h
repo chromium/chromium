@@ -104,11 +104,6 @@ enum class BackupRefPtrMode {
   // BRP is disabled, but the main partition *and* aligned partition are split
   // out, as if BRP was enabled in the "before allocation" mode.
   kDisabledButSplitPartitions3Way,
-
-  //  BRP is disabled, but add dummy ref count to each allocation. This will
-  // increase allocation size but not change any of the logic. If an issue
-  // reproduce in this mode, it means the increase in size is causing it.
-  kDisabledButAddDummyRefCount,
 };
 
 enum class AlternateBucketDistributionMode : uint8_t {

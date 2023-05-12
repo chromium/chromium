@@ -97,7 +97,6 @@ bool Partitions::InitializeOnce() {
            base::features::BackupRefPtrMode::kEnabledWithMemoryReclaimer) &&
       process_affected_by_brp_flag;
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  const bool process_affected_by_brp_flag = false;
   const bool enable_brp = false;
 #endif
   const auto brp_setting =
@@ -107,12 +106,6 @@ bool Partitions::InitializeOnce() {
       enable_brp && brp_mode == base::features::BackupRefPtrMode::kEnabled
           ? partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled
           : partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled;
-  const auto add_dummy_ref_count_setting =
-      process_affected_by_brp_flag &&
-              brp_mode ==
-                  base::features::BackupRefPtrMode::kDisabledButAddDummyRefCount
-          ? partition_alloc::PartitionOptions::AddDummyRefCount::kEnabled
-          : partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled;
   scan_is_enabled_ =
       !enable_brp &&
 #if BUILDFLAG(USE_STARSCAN)
@@ -149,7 +142,6 @@ bool Partitions::InitializeOnce() {
         brp_setting,
         brp_zapping_setting,
         partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-        add_dummy_ref_count_setting,
     });
     fast_malloc_root_ = fast_malloc_allocator->root();
   }
@@ -166,7 +158,6 @@ bool Partitions::InitializeOnce() {
       brp_setting,
       brp_zapping_setting,
       partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-      add_dummy_ref_count_setting,
   });
   buffer_root_ = buffer_allocator->root();
 

@@ -155,8 +155,6 @@ constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
      "disabled-but-2-way-split-with-memory-reclaimer"},
     {BackupRefPtrMode::kDisabledButSplitPartitions3Way,
      "disabled-but-3-way-split"},
-    {BackupRefPtrMode::kDisabledButAddDummyRefCount,
-     "disabled-but-add-dummy-ref-count"},
 };
 
 const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{

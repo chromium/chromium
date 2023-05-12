@@ -543,7 +543,6 @@ void ConfigurePartitions(
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    AddDummyRefCount add_dummy_ref_count,
     AlternateBucketDistribution use_alternate_bucket_distribution) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
@@ -603,11 +602,7 @@ void ConfigurePartitions(
               ? partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled
               : partition_alloc::PartitionOptions::BackupRefPtrZapping::
                     kDisabled,
-          partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-          add_dummy_ref_count
-              ? partition_alloc::PartitionOptions::AddDummyRefCount::kEnabled
-              : partition_alloc::PartitionOptions::AddDummyRefCount::
-                    kDisabled));
+          partition_alloc::PartitionOptions::UseConfigurablePool::kNo));
   partition_alloc::ThreadSafePartitionRoot* new_root = new_main_partition.get();
 
   partition_alloc::ThreadSafePartitionRoot* new_aligned_root;

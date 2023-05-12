@@ -953,13 +953,6 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       flags.extras_size += internal::kPartitionRefCountSizeAdjustment;
       flags.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
-    if (opts.add_dummy_ref_count ==
-        PartitionOptions::AddDummyRefCount::kEnabled) {
-      // AddDummyRefCount will increase the size to simulate adding
-      // PartitionRefCount, but non of the BRP logic will run.
-      PA_CHECK(!brp_enabled());
-      flags.extras_size += internal::kPartitionRefCountSizeAdjustment;
-    }
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
     // Re-confirm the above PA_CHECKs, by making sure there are no

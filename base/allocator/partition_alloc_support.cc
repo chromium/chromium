@@ -358,9 +358,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
       case features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
         brp_group_name = "DisabledBut3WaySplit";
         break;
-      case features::BackupRefPtrMode::kDisabledButAddDummyRefCount:
-        brp_group_name = "DisabledButAddDummyRefCount";
-        break;
     }
 
     if (features::kBackupRefPtrModeParam.Get() !=
@@ -899,7 +896,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   bool enable_brp_zapping = false;
   bool split_main_partition = false;
   bool use_dedicated_aligned_partition = false;
-  bool add_dummy_ref_count = false;
   bool process_affected_by_brp_flag = false;
   bool enable_memory_reclaimer = false;
 
@@ -975,14 +971,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         split_main_partition = true;
         use_dedicated_aligned_partition = true;
         break;
-
-      case base::features::BackupRefPtrMode::kDisabledButAddDummyRefCount:
-        split_main_partition = true;
-        add_dummy_ref_count = true;
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        use_dedicated_aligned_partition = true;
-#endif
-        break;
     }
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
@@ -997,10 +985,13 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
                         base::features::kPartitionAllocBackupRefPtrForAsh);
 #endif
 
-  return {enable_brp,           enable_brp_for_ash,
-          enable_brp_zapping,   enable_memory_reclaimer,
-          split_main_partition, use_dedicated_aligned_partition,
-          add_dummy_ref_count,  process_affected_by_brp_flag};
+  return {enable_brp,
+          enable_brp_for_ash,
+          enable_brp_zapping,
+          enable_memory_reclaimer,
+          split_main_partition,
+          use_dedicated_aligned_partition,
+          process_affected_by_brp_flag};
 }
 
 void PartitionAllocSupport::ReconfigureEarlyish(
@@ -1142,7 +1133,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::SplitMainPartition(brp_config.split_main_partition),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
-      allocator_shim::AddDummyRefCount(brp_config.add_dummy_ref_count),
       allocator_shim::AlternateBucketDistribution(bucket_distribution));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
