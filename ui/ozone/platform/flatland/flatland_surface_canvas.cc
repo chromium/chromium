@@ -106,7 +106,7 @@ void FlatlandSurfaceCanvas::Frame::InitializeBuffer(
 
   // Initialize `surface`.
   SkSurfaceProps props;
-  surface = SkSurface::MakeRasterDirect(
+  surface = SkSurfaces::WrapPixels(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
       memory_mapping.memory(), stride, &props);
   dirty_region.setRect(gfx::RectToSkIRect(gfx::Rect(size)));

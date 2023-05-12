@@ -81,7 +81,7 @@ void RasterBufferProvider::PlaybackToMemory(
       (format == viz::SinglePlaneFormat::kBGRA_8888) ||
       (format == viz::SinglePlaneFormat::kRGBA_F16)) {
     sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterDirect(info, memory, stride, &surface_props);
+        SkSurfaces::WrapPixels(info, memory, stride, &surface_props);
     // There are some rare crashes where this doesn't succeed and may be
     // indicative of memory stomps elsewhere.  Instead of displaying
     // invalid content, just crash the renderer and try again.
@@ -94,7 +94,7 @@ void RasterBufferProvider::PlaybackToMemory(
   }
 
   if (format == viz::SinglePlaneFormat::kRGBA_4444) {
-    sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &surface_props);
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(info, &surface_props);
     // TODO(reveman): Improve partial raster support by reducing the size of
     // playback rect passed to PlaybackToCanvas. crbug.com/519070
     raster_source->PlaybackToCanvas(surface->getCanvas(), content_size,

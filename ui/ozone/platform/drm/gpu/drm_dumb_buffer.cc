@@ -90,7 +90,7 @@ bool DrmDumbBuffer::MapDumbBuffer(const SkImageInfo& info) {
   }
 
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  surface_ = SkSurface::MakeRasterDirect(info, mmap_base_, stride_, &props);
+  surface_ = SkSurfaces::WrapPixels(info, mmap_base_, stride_, &props);
   if (!surface_) {
     LOG(ERROR) << "DrmDumbBuffer: Failed to create SkSurface: handle "
                << handle_;

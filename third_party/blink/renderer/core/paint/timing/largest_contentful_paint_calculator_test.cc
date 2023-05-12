@@ -70,7 +70,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
     sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
     SkImageInfo raster_image_info =
         SkImageInfo::MakeN32Premul(width, height, src_rgb_color_space);
-    sk_sp<SkSurface> surface(SkSurface::MakeRaster(raster_image_info));
+    sk_sp<SkSurface> surface(SkSurfaces::Raster(raster_image_info));
     sk_sp<SkImage> image = surface->makeImageSnapshot();
     scoped_refptr<UnacceleratedStaticBitmapImage> original_image_data =
         UnacceleratedStaticBitmapImage::Create(image);

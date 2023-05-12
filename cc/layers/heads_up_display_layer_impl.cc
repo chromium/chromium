@@ -390,8 +390,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
               staging_surface_->getCanvas()->getBaseLayerSize()) !=
               pool_resource.size()) {
         SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-        staging_surface_ = SkSurface::MakeRasterN32Premul(
-            pool_resource.size().width(), pool_resource.size().height(),
+        staging_surface_ = SkSurfaces::Raster(
+            SkImageInfo::MakeN32Premul(pool_resource.size().width(),
+                                       pool_resource.size().height()),
             &props);
       }
 
@@ -420,7 +421,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     auto* backing =
         static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    sk_sp<SkSurface> surface = SkSurface::MakeRasterDirect(
+    sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
         info, backing->shared_mapping.memory(), info.minRowBytes(), &props);
 
     SkiaPaintCanvas canvas(surface->getCanvas());

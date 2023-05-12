@@ -573,7 +573,7 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
       auto sk_color_type = surface_format == VK_FORMAT_B8G8R8A8_UNORM
                                ? kBGRA_8888_SkColorType
                                : kRGBA_8888_SkColorType;
-      sk_surface = SkSurface::MakeFromBackendRenderTarget(
+      sk_surface = SkSurfaces::WrapBackendRenderTarget(
           gr_context_.get(), render_target, kTopLeft_GrSurfaceOrigin,
           sk_color_type, gfx::ColorSpace::CreateSRGB().ToSkColorSpace(),
           &surface_props);

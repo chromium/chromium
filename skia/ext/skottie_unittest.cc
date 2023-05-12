@@ -41,7 +41,7 @@ TEST(Skottie, Basic) {
   EXPECT_EQ(anim->size().height(), 200.0f);
   EXPECT_EQ(anim->duration(), 5.0f);
 
-  auto surface = SkSurface::MakeRasterN32Premul(400, 200);
+  auto surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(400, 200));
   anim->seek(0);
   anim->render(surface->getCanvas());
 

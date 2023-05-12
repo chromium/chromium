@@ -205,8 +205,8 @@ class Buffer final : public ui::GbmBuffer {
     SkImageInfo info =
         SkImageInfo::MakeN32Premul(size_.width(), size_.height());
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    return SkSurface::MakeRasterDirectReleaseProc(
-        info, addr, stride, &Buffer::UnmapGbmBo, this, &props);
+    return SkSurfaces::WrapPixels(info, addr, stride, &Buffer::UnmapGbmBo, this,
+                                  &props);
   }
 
  private:

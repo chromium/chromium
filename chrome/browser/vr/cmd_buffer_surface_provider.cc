@@ -34,7 +34,7 @@ CmdBufferSurfaceProvider::CmdBufferSurfaceProvider() {
 CmdBufferSurfaceProvider::~CmdBufferSurfaceProvider() = default;
 
 sk_sp<SkSurface> CmdBufferSurfaceProvider::MakeSurface(const gfx::Size& size) {
-  return SkSurface::MakeRenderTarget(
+  return SkSurfaces::RenderTarget(
       gr_context_.get(), skgpu::Budgeted::kNo,
       SkImageInfo::MakeN32Premul(size.width(), size.height()), 0,
       kTopLeft_GrSurfaceOrigin, nullptr);

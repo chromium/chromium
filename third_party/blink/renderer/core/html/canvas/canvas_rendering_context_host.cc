@@ -60,7 +60,7 @@ CanvasRenderingContextHost::CreateTransparentImage(
       gfx::SizeToSkISize(size),
       GetRenderingContextSkColorInfo().makeAlphaType(kPremul_SkAlphaType));
   sk_sp<SkSurface> surface =
-      SkSurface::MakeRaster(info, info.minRowBytes(), nullptr);
+      SkSurfaces::Raster(info, info.minRowBytes(), nullptr);
   if (!surface)
     return nullptr;
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());

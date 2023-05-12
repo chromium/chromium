@@ -213,8 +213,8 @@ void PaintManager::DoPaint() {
                              : gfx::Size();
     gfx::Size new_size = GetNewContextSize(old_size, pending_size_);
     if (old_size != new_size || !surface_) {
-      surface_ =
-          SkSurface::MakeRasterN32Premul(new_size.width(), new_size.height());
+      surface_ = SkSurfaces::Raster(
+          SkImageInfo::MakeN32Premul(new_size.width(), new_size.height()));
       DCHECK(surface_);
 
       // TODO(crbug.com/1317832): Can we guarantee repainting some other way?

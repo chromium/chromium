@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 struct Environment {
   Environment() {
@@ -77,7 +78,7 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
   SkImageInfo image_info = SkImageInfo::MakeN32(
       kRasterDimension, kRasterDimension, kOpaque_SkAlphaType);
   context_provider->BindToCurrentSequence();
-  sk_sp<SkSurface> surface = SkSurface::MakeRenderTarget(
+  sk_sp<SkSurface> surface = SkSurfaces::RenderTarget(
       context_provider->GrContext(), skgpu::Budgeted::kYes, image_info);
   SkCanvas* canvas = surface->getCanvas();
 

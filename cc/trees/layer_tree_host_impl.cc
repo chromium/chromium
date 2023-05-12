@@ -4684,7 +4684,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
 
-      sk_sp<SkSurface> surface = SkSurface::MakeRasterDirect(
+      sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
           dst_info, shm.mapping.memory(), dst_info.minRowBytes());
       surface->getCanvas()->writePixels(
           src_info, const_cast<uint8_t*>(bitmap.GetPixels()),
@@ -4715,13 +4715,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     // directly into the shared memory backing.
     sk_sp<SkSurface> scaled_surface;
     if (layer_tree_frame_sink_->context_provider()) {
-      scaled_surface = SkSurface::MakeRasterN32Premul(upload_size.width(),
-                                                      upload_size.height());
+      scaled_surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(
+          upload_size.width(), upload_size.height()));
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-      scaled_surface = SkSurface::MakeRasterDirect(
-          dst_info, shm.mapping.memory(), dst_info.minRowBytes());
+      scaled_surface = SkSurfaces::WrapPixels(dst_info, shm.mapping.memory(),
+                                              dst_info.minRowBytes());
     }
     SkCanvas* scaled_canvas = scaled_surface->getCanvas();
     scaled_canvas->scale(canvas_scale_x, canvas_scale_y);

@@ -37,7 +37,7 @@ NativeGlSurfaceProvider::NativeGlSurfaceProvider() {
 NativeGlSurfaceProvider::~NativeGlSurfaceProvider() = default;
 
 sk_sp<SkSurface> NativeGlSurfaceProvider::MakeSurface(const gfx::Size& size) {
-  return SkSurface::MakeRenderTarget(
+  return SkSurfaces::RenderTarget(
       gr_context_.get(), skgpu::Budgeted::kNo,
       SkImageInfo::MakeN32Premul(size.width(), size.height()), 0,
       kTopLeft_GrSurfaceOrigin, nullptr);

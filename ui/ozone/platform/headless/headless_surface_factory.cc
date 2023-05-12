@@ -75,10 +75,10 @@ class FileSurface : public SurfaceOzoneCanvas {
   // SurfaceOzoneCanvas overrides:
   void ResizeCanvas(const gfx::Size& viewport_size, float scale) override {
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    surface_ = SkSurface::MakeRaster(
-        SkImageInfo::MakeN32Premul(viewport_size.width(),
-                                   viewport_size.height()),
-        &props);
+    surface_ =
+        SkSurfaces::Raster(SkImageInfo::MakeN32Premul(viewport_size.width(),
+                                                      viewport_size.height()),
+                           &props);
   }
   SkCanvas* GetCanvas() override { return surface_->getCanvas(); }
   void PresentCanvas(const gfx::Rect& damage) override {

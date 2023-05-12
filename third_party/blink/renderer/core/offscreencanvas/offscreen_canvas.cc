@@ -250,8 +250,8 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     const AlphaDisposition alpha_disposition) {
   if (!context_) {
     *status = kInvalidSourceImageStatus;
-    sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(size_.width(), size_.height());
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(size_.width(), size_.height()));
     return surface ? UnacceleratedStaticBitmapImage::Create(
                          surface->makeImageSnapshot())
                    : nullptr;

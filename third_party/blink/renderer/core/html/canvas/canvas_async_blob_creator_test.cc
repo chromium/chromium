@@ -146,7 +146,8 @@ class CanvasAsyncBlobCreatorTest : public PageTestBase {
 CanvasAsyncBlobCreatorTest::CanvasAsyncBlobCreatorTest() = default;
 
 scoped_refptr<StaticBitmapImage> CreateTransparentImage(int width, int height) {
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(width, height);
+  sk_sp<SkSurface> surface =
+      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(width, height));
   if (!surface)
     return nullptr;
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());

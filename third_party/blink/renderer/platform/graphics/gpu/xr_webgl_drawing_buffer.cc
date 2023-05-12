@@ -607,8 +607,8 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
     // to transferToImageBitmap are made back-to-back, if the framebuffer is
     // incomplete (likely due to a failed buffer allocation), or when the
     // context gets lost.
-    sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(size_.width(), size_.height());
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(
+        SkImageInfo::MakeN32Premul(size_.width(), size_.height()));
     return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
   }
 
