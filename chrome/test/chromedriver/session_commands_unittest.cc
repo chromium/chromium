@@ -476,11 +476,8 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_dotNotation) {
   base::Value::List args;
   args.Append("headless");
   caps.SetByDottedPath("goog:chromeOptions.args", base::Value(std::move(args)));
-
-  base::Value::Dict prefs;
-  prefs.SetByDottedPath("download.default_directory",
-                        base::Value("/examples/python/downloads"));
-  caps.SetByDottedPath("goog:chromeOptions.prefs", prefs.Clone());
+  caps.SetByDottedPath("goog:chromeOptions.prefs.download.default_directory",
+                       "/examples/python/downloads");
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;
@@ -501,11 +498,8 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_nestedMap) {
   base::Value::List args;
   args.Append("headless");
   caps.SetByDottedPath("goog:chromeOptions.args", base::Value(std::move(args)));
-
-  base::Value* prefs =
-      caps.SetByDottedPath("goog:chromeOptions.prefs", base::Value::Dict());
-  base::Value::Dict* download = prefs->GetDict().EnsureDict("download");
-  download->Set("default_directory", "/examples/python/downloads");
+  caps.SetByDottedPath("goog:chromeOptions.prefs.download.default_directory",
+                       "/examples/python/downloads");
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;
@@ -542,10 +536,8 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_noDownloadDir) {
 TEST(SessionCommandsTest, ConfigureHeadlessSession_notHeadless) {
   Capabilities capabilities;
   base::Value::Dict caps;
-  base::Value* prefs =
-      caps.SetByDottedPath("goog:chromeOptions.prefs", base::Value::Dict());
-  base::Value::Dict* download = prefs->GetDict().EnsureDict("download");
-  download->Set("default_directory", "/examples/python/downloads");
+  caps.SetByDottedPath("goog:chromeOptions.prefs.download.default_directory",
+                       "/examples/python/downloads");
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;
