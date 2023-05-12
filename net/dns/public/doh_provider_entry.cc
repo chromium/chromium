@@ -128,7 +128,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
       new DohProviderEntry(
           "Cox",
           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-              DohProviderCox, base::FEATURE_DISABLED_BY_DEFAULT),
+              DohProviderCox, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"68.105.28.11", "68.105.28.12", "2001:578:3f::30"},
           /*dns_over_tls_hostnames=*/{"dot.cox.net"},
