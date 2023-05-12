@@ -19,9 +19,7 @@ import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.mojom.ReportingMode;
 import org.chromium.device.mojom.SensorType;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Implementation of PlatformSensor that uses Android Sensor Framework. Lifetime is controlled by
@@ -77,12 +75,6 @@ public class PlatformSensor implements SensorEventListener {
      * Provides shared SensorManager and event processing thread Handler to PlatformSensor objects.
      */
     private final PlatformSensorProvider mProvider;
-
-    /**
-     * Detect crbug.com/1383180 by checking if multiple instances of PlatformSensor exist at the
-     * same time for the same sensor type.
-     */
-    private static Set<Integer> sExistingSensorObjects = new HashSet<>();
 
     /**
      * Creates new PlatformSensor.
@@ -152,10 +144,6 @@ public class PlatformSensor implements SensorEventListener {
         mSensor = sensor;
         mNativePlatformSensorAndroid = nativePlatformSensorAndroid;
         mMinDelayUsec = mSensor.getMinDelay();
-
-        Integer sensorType = Integer.valueOf(mSensor.getType());
-        assert !sExistingSensorObjects.contains(sensorType);
-        sExistingSensorObjects.add(sensorType);
     }
 
     /**
@@ -289,10 +277,6 @@ public class PlatformSensor implements SensorEventListener {
      */
     @CalledByNative
     protected void sensorDestroyed() {
-        Integer sensorType = Integer.valueOf(mSensor.getType());
-        assert sExistingSensorObjects.contains(sensorType);
-        sExistingSensorObjects.remove(sensorType);
-
         if (!DeviceFeatureList.isEnabled(DeviceFeatureList.ASYNC_SENSOR_CALLS)) {
             stopSensor();
         }
