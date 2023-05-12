@@ -2908,7 +2908,7 @@
   {
     "name": "enable-new-base-url-inheritance-behavior",
     "owners": [ "wjmaclean", "creis", "alexmos", "domenic" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "enable-new-download-api",
