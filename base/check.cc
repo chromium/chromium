@@ -161,10 +161,28 @@ CheckError CheckError::Check(const char* condition,
   return CheckError(log_message);
 }
 
+CheckError CheckError::CheckOp(char* log_message_str,
+                               const base::Location& location) {
+  auto* const log_message = new LogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL);
+  log_message->stream() << log_message_str;
+  free(log_message_str);
+  return CheckError(log_message);
+}
+
 CheckError CheckError::DCheck(const char* condition,
                               const base::Location& location) {
   auto* const log_message = new DCheckLogMessage(location, LOGGING_DCHECK);
   log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
+}
+
+CheckError CheckError::DCheckOp(char* log_message_str,
+                                const base::Location& location) {
+  auto* const log_message = new DCheckLogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL);
+  log_message->stream() << log_message_str;
+  free(log_message_str);
   return CheckError(log_message);
 }
 
@@ -276,22 +294,6 @@ NotReachedNoreturnError::~NotReachedNoreturnError() {
   // TODO(crbug.com/1409729): Replace this with NOTREACHED_NORETURN() once
   // LOG(FATAL) is [[noreturn]].
   base::ImmediateCrash();
-}
-
-LogMessage* CheckOpResult::CreateLogMessage(bool is_dcheck,
-                                            const char* file,
-                                            int line,
-                                            const char* expr_str,
-                                            char* v1_str,
-                                            char* v2_str) {
-  LogMessage* const log_message =
-      is_dcheck ? new DCheckLogMessage(file, line, LOGGING_DCHECK)
-                : new LogMessage(file, line, LOGGING_FATAL);
-  log_message->stream() << "Check failed: " << expr_str << " (" << v1_str
-                        << " vs. " << v2_str << ")";
-  free(v1_str);
-  free(v2_str);
-  return log_message;
 }
 
 void RawCheckFailure(const char* message) {

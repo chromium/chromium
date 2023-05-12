@@ -63,15 +63,22 @@ class LogMessage;
 // Class used for raising a check error upon destruction.
 class BASE_EXPORT CheckError {
  public:
-  // Used by CheckOp. Takes ownership of `log_message`.
-  explicit CheckError(LogMessage* log_message) : log_message_(log_message) {}
-
   static CheckError Check(
       const char* condition,
+      const base::Location& location = base::Location::Current());
+  // Takes ownership over (free()s after using) `log_message_str`, for use with
+  // CHECK_op macros.
+  static CheckError CheckOp(
+      char* log_message_str,
       const base::Location& location = base::Location::Current());
 
   static CheckError DCheck(
       const char* condition,
+      const base::Location& location = base::Location::Current());
+  // Takes ownership over (free()s after using) `log_message_str`, for use with
+  // DCHECK_op macros.
+  static CheckError DCheckOp(
+      char* log_message_str,
       const base::Location& location = base::Location::Current());
 
   static CheckError DumpWillBeCheck(
@@ -108,6 +115,9 @@ class BASE_EXPORT CheckError {
   }
 
  protected:
+  // Takes ownership of `log_message`.
+  explicit CheckError(LogMessage* log_message) : log_message_(log_message) {}
+
   LogMessage* const log_message_;
 };
 
