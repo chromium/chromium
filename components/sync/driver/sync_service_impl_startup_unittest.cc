@@ -6,6 +6,7 @@
 #include "components/sync/driver/sync_service_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
@@ -31,6 +32,7 @@ namespace syncer {
 namespace {
 
 const char kEmail[] = "test_user@gmail.com";
+const char kTimeDeferredHistogram[] = "Sync.Startup.TimeDeferred2";
 
 class MockSyncServiceObserver : public SyncServiceObserver {
  public:
@@ -272,22 +274,21 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   // There is a primary account. It is theoretically in the "web signout" aka
   // sync-paused error state, but the identity code hasn't detected that yet
   // (because auth errors are not persisted).
+  base::HistogramTester histogram_tester;
   SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetFirstSetupComplete();
-
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
 
+  // There should be a deferred start task scheduled.
   ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
             sync_service()->GetTransportState());
-
-  MockSyncServiceObserver observer;
-  sync_service()->AddObserver(&observer);
 
   // Entering the sync-paused state should trigger a notification.
   // Note: Depending on the exact sequence of IdentityManager::Observer calls
   // (refresh token changed and/or auth error changed), there might be multiple
   // notifications.
+  MockSyncServiceObserver observer;
   EXPECT_CALL(observer, OnStateChanged(sync_service()))
       .Times(testing::AtLeast(1))
       .WillRepeatedly([&]() {
@@ -295,14 +296,18 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
                   sync_service()->GetTransportState());
       });
 
-  // Now sign out on the web to enter the sync-paused state.
+  // Now sign out on the web to enter the sync-paused state. Wait for the
+  // deferred start task to run.
+  sync_service()->AddObserver(&observer);
   SimulateWebSignout();
+  sync_service()->RemoveObserver(&observer);
+  FastForwardUntilNoTasksRemain();
 
-  // SyncServiceImpl should now be in the paused state.
+  // SyncServiceImpl should now be in the paused state. The deferred task was
+  // a no-op.
   EXPECT_EQ(SyncService::TransportState::PAUSED,
             sync_service()->GetTransportState());
-
-  sync_service()->RemoveObserver(&observer);
+  EXPECT_TRUE(histogram_tester.GetAllSamples(kTimeDeferredHistogram).empty());
 }
 
 TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
@@ -408,26 +413,6 @@ TEST_F(SyncServiceImplStartupTest, StartCrosFirstTime) {
   CreateSyncService(SyncServiceImpl::AUTO_START);
   sync_service()->Initialize();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            sync_service()->GetTransportState());
-}
-
-TEST_F(SyncServiceImplStartupTest, StartNormal) {
-  // We have previously completed the initial Sync setup, and the user is
-  // already signed in.
-  sync_prefs()->SetFirstSetupComplete();
-  SimulateTestUserSigninAndEnableSyncFeature();
-
-  CreateSyncService(SyncServiceImpl::MANUAL_START);
-
-  // Since all conditions for starting Sync are already fulfilled, calling
-  // Initialize should immediately create and initialize the engine and
-  // configure the DataTypeManager. In this test, all of these operations are
-  // synchronous.
-  sync_service()->Initialize();
-  FastForwardUntilNoTasksRemain();
-  EXPECT_NE(nullptr, data_type_manager());
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 }
@@ -732,50 +717,110 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
 
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // The user is already signed in and has completed Sync setup before.
+  // Prevent engine initialization, to test TransportState::START_DEFERRED.
+  // Prevent one model initialization, to test TransportState::CONFIGURING.
   SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetFirstSetupComplete();
   sync_prefs()->SetSyncRequested(true);
-
+  component_factory()->AllowFakeEngineInitCompletion(false);
   CreateSyncService(SyncServiceImpl::MANUAL_START, ModelTypeSet(SESSIONS));
+  get_controller(SESSIONS)->model()->EnableManualModelStart();
+
+  // Kick off.
   sync_service()->Initialize();
-  ASSERT_TRUE(sync_service()->CanSyncFeatureStart());
 
   // Nothing is preventing Sync from starting, but it should be deferred so as
-  // to now slow down browser startup.
+  // to not slow down browser startup.
+  ASSERT_TRUE(sync_service()->CanSyncFeatureStart());
   EXPECT_EQ(SyncService::TransportState::START_DEFERRED,
             sync_service()->GetTransportState());
   EXPECT_EQ(nullptr, data_type_manager());
   EXPECT_FALSE(engine());
 
-  // Wait for the deferred startup timer to expire. The Sync service will start
-  // and initialize the engine.
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  // Cause the deferred startup timer to expire.
   FastForwardUntilNoTasksRemain();
+
+  // The Sync service should start initializing the engine.
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
             sync_service()->GetTransportState());
   EXPECT_EQ(nullptr, data_type_manager());
   EXPECT_TRUE(engine());
 
-  // Prevent immediate configuration of one datatype, to verify the state
-  // during CONFIGURING.
-  ASSERT_EQ(DataTypeController::NOT_RUNNING, get_controller(SESSIONS)->state());
-  get_controller(SESSIONS)->model()->EnableManualModelStart();
-
-  // Once the engine calls back and says it's initialized, the DataTypeManager
-  // will start configuring, since initial setup is already done.
+  // Allow engine initialization to finish.
   engine()->TriggerInitializationCompletion(/*success=*/true);
 
-  ASSERT_EQ(DataTypeController::MODEL_STARTING,
-            get_controller(SESSIONS)->state());
-  EXPECT_NE(nullptr, data_type_manager());
+  // The DataTypeManager should start configuring, since initial setup is
+  // already done.
+  EXPECT_EQ(SyncService::TransportState::CONFIGURING,
+            sync_service()->GetTransportState());
+  ASSERT_NE(nullptr, data_type_manager());
+  EXPECT_EQ(DataTypeManager::CONFIGURING, data_type_manager()->state());
   EXPECT_TRUE(engine());
 
-  // Finally, once the DataTypeManager says it's done with configuration, Sync
-  // is actually fully up and running.
+  // Finish model initialization.
   get_controller(SESSIONS)->model()->SimulateModelStartFinished();
+
+  // Sync is fully up and running.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
+  ASSERT_NE(nullptr, data_type_manager());
+  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
+  EXPECT_TRUE(engine());
 }
+
+TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
+  base::HistogramTester histogram_tester;
+  sync_prefs()->SetFirstSetupComplete();
+  SimulateTestUserSigninAndEnableSyncFeature();
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
+
+  // Kick off.
+  sync_service()->Initialize();
+
+  // A deferred start task should be scheduled.
+  EXPECT_EQ(sync_service()->GetTransportState(),
+            syncer::SyncService::TransportState::START_DEFERRED);
+  EXPECT_TRUE(histogram_tester.GetAllSamples(kTimeDeferredHistogram).empty());
+
+  // A data type requests immediate initialization.
+  sync_service()->OnDataTypeRequestsSyncStartup(BOOKMARKS);
+  base::RunLoop().RunUntilIdle();
+
+  // Deferral should be interrupted and sync started immediately. The premature
+  // start should be recorded in metrics.
+  EXPECT_EQ(sync_service()->GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  EXPECT_EQ(1u, histogram_tester.GetAllSamples(kTimeDeferredHistogram).size());
+
+  // There's still a deferred task scheduled. Let it run.
+  FastForwardUntilNoTasksRemain();
+
+  // The task should be a no-op.
+  EXPECT_EQ(sync_service()->GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  EXPECT_EQ(1u, histogram_tester.GetAllSamples(kTimeDeferredHistogram).size());
+}
+
+// ChromeOS does not support sign-in after startup.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
+  // Signed-out at first.
+  base::HistogramTester histogram_tester;
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
+  sync_service()->Initialize();
+
+  // Sign-in quickly, before the usual delay of a deferred startup. This can
+  // happen during FRE.
+  SimulateTestUserSigninAndEnableSyncFeature();
+  sync_prefs()->SetFirstSetupComplete();
+  FastForwardUntilNoTasksRemain();
+
+  // This should not be recorded as a deferred startup.
+  EXPECT_EQ(sync_service()->GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  EXPECT_TRUE(histogram_tester.GetAllSamples(kTimeDeferredHistogram).empty());
+}
+#endif
 
 TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForAlreadyDisabledTypesBeforeConfigurationDone) {

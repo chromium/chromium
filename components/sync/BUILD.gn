@@ -202,7 +202,6 @@ source_set("unit_tests") {
     "driver/model_load_manager_unittest.cc",
     "driver/model_type_controller_unittest.cc",
     "driver/passphrase_type_metrics_provider_unittest.cc",
-    "driver/startup_controller_unittest.cc",
     "driver/sync_auth_manager_unittest.cc",
     "driver/sync_internals_util_unittest.cc",
     "driver/sync_service_crypto_unittest.cc",

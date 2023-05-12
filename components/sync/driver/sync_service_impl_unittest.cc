@@ -199,10 +199,6 @@ class SyncServiceImplTest : public ::testing::Test {
         KeyDerivationParams::CreateForPbkdf2(), sync_pb::EncryptedData());
   }
 
-  void TriggerDataTypeStartRequest() {
-    service_->OnDataTypeRequestsSyncStartup(BOOKMARKS);
-  }
-
   signin::IdentityManager* identity_manager() {
     return sync_service_impl_bundle_.identity_manager();
   }

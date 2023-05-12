@@ -100507,6 +100507,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncDeferredInitTrigger">
+  <obsolete>
+    Removed 05/23.
+  </obsolete>
   <int value="0" label="Data type requested init."/>
   <int value="1" label="Fallback timer triggered init."/>
 </enum>
