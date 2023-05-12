@@ -136,7 +136,6 @@ source_set("common") {
     "input/web_touch_event_traits.cc",
     "input/web_touch_event_traits.h",
     "media/cdm_info.cc",
-    "media/constants.h",
     "mojo_core_library_support.cc",
     "mojo_core_library_support.h",
     "navigation_gesture.h",
