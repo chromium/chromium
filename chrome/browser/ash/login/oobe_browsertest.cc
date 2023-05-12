@@ -79,10 +79,6 @@ class OobeTest : public OobeBaseTest {
     OobeBaseTest::TearDownOnMainThread();
   }
 
-  LoginDisplay* GetLoginDisplay() {
-    return LoginDisplayHost::default_host()->GetLoginDisplay();
-  }
-
   views::Widget* GetLoginWindowWidget() {
     return static_cast<LoginDisplayHostWebUI*>(LoginDisplayHost::default_host())
         ->login_window_for_test();

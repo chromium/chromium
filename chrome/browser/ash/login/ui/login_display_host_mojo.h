@@ -36,7 +36,6 @@ class View;
 
 namespace ash {
 class ExistingUserController;
-class LoginDisplayMojo;
 class MojoSystemInfoDispatcher;
 class OobeUIDialogDelegate;
 class UserBoardViewMojo;
@@ -70,7 +69,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   }
 
   // LoginDisplayHost:
-  LoginDisplay* GetLoginDisplay() override;
   ExistingUserController* GetExistingUserController() override;
   gfx::NativeWindow GetNativeWindow() const override;
   views::Widget* GetLoginWindowWidget() const override;
@@ -206,8 +204,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
     base::OnceCallback<void(bool)> callback;
   };
   std::unique_ptr<AuthState> pending_auth_state_;
-
-  std::unique_ptr<LoginDisplayMojo> login_display_;
 
   std::unique_ptr<UserBoardViewMojo> user_board_view_mojo_;
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;

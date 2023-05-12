@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -75,9 +74,6 @@ class LoginDisplayHost {
 
   // Returns the default LoginDisplayHost instance if it has been created.
   static LoginDisplayHost* default_host() { return default_host_; }
-
-  // Returns an unowned pointer to the LoginDisplay instance.
-  virtual LoginDisplay* GetLoginDisplay() = 0;
 
   // Returns an unowned pointer to the ExistingUserController instance.
   virtual ExistingUserController* GetExistingUserController() = 0;

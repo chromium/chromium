@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/login/ui/mock_signin_ui.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
@@ -204,15 +203,11 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
-    mock_login_display_ = std::make_unique<MockLoginDisplay>();
     mock_signin_ui_ = std::make_unique<MockSigninUI>();
     SetUpLoginDisplay();
   }
 
   virtual void SetUpLoginDisplay() {
-    EXPECT_CALL(*mock_login_display_host_, GetLoginDisplay())
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(mock_login_display_.get()));
     EXPECT_CALL(*mock_login_display_host_, GetSigninUI())
         .Times(AnyNumber())
         .WillRepeatedly(Return(mock_signin_ui_.get()));
@@ -291,7 +286,6 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 
   std::unique_ptr<MockSigninUI> mock_signin_ui_;
-  std::unique_ptr<MockLoginDisplay> mock_login_display_;
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
 
   const AccountId ad_account_id_ =
@@ -435,9 +429,6 @@ class ExistingUserControllerPublicSessionTest
   }
 
   void SetUpLoginDisplay() override {
-    EXPECT_CALL(*mock_login_display_host_, GetLoginDisplay())
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(mock_login_display_.get()));
     EXPECT_CALL(*mock_login_display_host_, GetSigninUI())
         .Times(AnyNumber())
         .WillRepeatedly(Return(mock_signin_ui_.get()));

@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
-#include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -43,12 +42,9 @@ class ExistingUserControllerForcedOnlineAuthTest
  public:
   ExistingUserControllerForcedOnlineAuthTest() {
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
-    mock_login_display_ = std::make_unique<MockLoginDisplay>();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     existing_user_controller_ = std::make_unique<ExistingUserController>();
 
-    ON_CALL(*mock_login_display_host_, GetLoginDisplay())
-        .WillByDefault(Return(mock_login_display_.get()));
     ON_CALL(*mock_login_display_host_, GetExistingUserController())
         .WillByDefault(Return(existing_user_controller_.get()));
   }
@@ -77,7 +73,6 @@ class ExistingUserControllerForcedOnlineAuthTest
 
  private:
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
-  std::unique_ptr<MockLoginDisplay> mock_login_display_;
 
   // Required by ExistingUserController:
   ScopedCrosSettingsTestHelper settings_helper_;

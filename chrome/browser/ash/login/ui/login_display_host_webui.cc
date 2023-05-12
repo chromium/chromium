@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
-#include "chrome/browser/ash/login/ui/login_display_webui.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
@@ -431,15 +430,13 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
                       bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
                       media::AudioCodec::kPCM);
 
-  login_display_ = std::make_unique<LoginDisplayWebUI>();
-
   metrics::structured::NeutrinoDevicesLogWithLocalState(
       GetLocalState(),
       metrics::structured::NeutrinoDevicesLocation::kLoginDisplayHostWebUI);
 }
 
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
-  VLOG(4) << "~LoginDisplayWebUI";
+  VLOG(4) << __func__;
 
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
@@ -471,10 +468,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, LoginDisplayHost:
-
-LoginDisplay* LoginDisplayHostWebUI::GetLoginDisplay() {
-  return login_display_.get();
-}
 
 ExistingUserController* LoginDisplayHostWebUI::GetExistingUserController() {
   if (!existing_user_controller_)
@@ -601,8 +594,6 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   CreateExistingUserController();
 
   existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
-
-  CHECK(login_display_);
 
   ShowGaiaDialogCommon(EmptyAccountId());
 
