@@ -346,14 +346,11 @@ export class DriveSyncHandlerImpl extends EventTarget {
         ],
         completedValues);
 
-    // The UX spec determines completed sync status should be displayed for
-    // 300ms before transitioning to other statuses. Let's pull filtered states
-    // that have completed in 300ms from now.
+    // Hold "completed" state for 300ms to give users a chance to see it.
     await new Promise(r => setTimeout(r, 300));
 
     const {allEntries} = getStore().getState();
-    // Note: Volume Entries have to be filtered out because they are not
-    // accepted by the `MetadataModel.get()` method.
+    // Unwrap entries so they are accepted by the `MetadataModel.get()` method.
     const completedEntries = completedUrls.map(url => allEntries[url]?.entry)
                                  .filter(Boolean)
                                  .map(util.unwrapEntry);
