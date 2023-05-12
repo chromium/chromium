@@ -1130,7 +1130,10 @@ class CONTENT_EXPORT NavigationRequest
 
   // For subframe NavigationRequests, these set and return the main frame's
   // NavigationRequest token, in the case that the main frame returns it from
-  // GetNavigationTokenForDeferringSubframes().
+  // GetNavigationTokenForDeferringSubframes(). Note that by the time
+  // `main_frame_same_document_history_token()` is called, the NavigationRequest
+  // represented by that token may have already finished and been deleted, so
+  // any attempt to lookup based on this token must null-check the request.
   void set_main_frame_same_document_history_token(
       absl::optional<base::UnguessableToken> token) {
     main_frame_same_document_navigation_token_ = token;

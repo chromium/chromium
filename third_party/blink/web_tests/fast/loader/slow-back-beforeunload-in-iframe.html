@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<iframe id="i" src="resources/empty.html"></iframe>
+<script>
+promise_test(async t => {
+  // Wait for onload so push navigations don't get converted to replace.
+  await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+  await navigation.navigate("#forward").finished;
+  i.contentWindow.navigation.navigate("empty.html?forward");
+  await new Promise(r => i.onload = r);
+
+  navigation.onnavigate = () => {
+    // Dummy so that the browser process knows there's a navigate event handler.
+  }
+  // Now navigate both windows back. The main frame will navigate
+  // same-document quickly, but the cross-document iframe navigation will
+  // stall on this slow beforeunload handler. The browser process shouldn't
+  // crash when the iframe cross-document navigation returns to the browser
+  // when beforeunload completes.
+  i.contentWindow.onbeforeunload = () => {
+    let end = performance.now() + 20;
+    let dummy = 0;
+    while (performance.now() < end) {
+      dummy++;
+    }
+  }
+  let main_frame_finished_promise = navigation.back().finished;
+
+  // Both windows should successfully navigate.
+  await new Promise(r => i.onload = r);
+  await main_frame_finished_promise;
+});
+</script>
