@@ -9,6 +9,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerenderer_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
@@ -166,6 +167,41 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_for_testing_) {
     observer_for_testing_->UpdateSpeculationCandidates(candidates);
+  }
+
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  auto* preloading_data =
+      PreloadingData::GetOrCreateForWebContents(web_contents);
+  preloading_data->SetIsNavigationInDomainCallback(
+      content_preloading_predictor::kSpeculationRules,
+      base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
+        return ui::PageTransitionIsWebTriggerable(
+            navigation_handle->GetPageTransition());
+      }));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpeculationRulesPointerDownHeuristics)) {
+    preloading_data->SetIsNavigationInDomainCallback(
+        preloading_predictor::kUrlPointerDownOnAnchor,
+        base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
+          return ui::PageTransitionCoreTypeIs(
+                     navigation_handle->GetPageTransition(),
+                     ui::PageTransition::PAGE_TRANSITION_LINK) &&
+                 ui::PageTransitionIsNewNavigation(
+                     navigation_handle->GetPageTransition());
+        }));
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpeculationRulesPointerHoverHeuristics)) {
+    preloading_data->SetIsNavigationInDomainCallback(
+        preloading_predictor::kUrlPointerHoverOnAnchor,
+        base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
+          return ui::PageTransitionCoreTypeIs(
+                     navigation_handle->GetPageTransition(),
+                     ui::PageTransition::PAGE_TRANSITION_LINK) &&
+                 ui::PageTransitionIsNewNavigation(
+                     navigation_handle->GetPageTransition());
+        }));
   }
 
   // Here we look for all preloading candidates that are safe to perform, but
