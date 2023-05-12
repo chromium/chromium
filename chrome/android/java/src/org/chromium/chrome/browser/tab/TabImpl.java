@@ -1288,7 +1288,14 @@ public class TabImpl implements Tab {
         mIsLoading = false;
 
         RewindableIterator<TabObserver> observers = getTabObservers();
-        while (observers.hasNext()) observers.next().onCrash(this);
+        // When the renderer crashes for a hidden tab, we can skip notifying the observers to crash
+        // the underlying tab. This is because it is safe to keep the tab around without a renderer
+        // process, and since the tab is hidden, we don't need to show a sad tab. Since we already
+        // call setNeedsReload, when the tab goes foreground it will be reloaded instead of showing
+        // a sad tab.
+        if (!isHidden()) {
+            while (observers.hasNext()) observers.next().onCrash(this);
+        }
         mIsBeingRestored = false;
     }
 
