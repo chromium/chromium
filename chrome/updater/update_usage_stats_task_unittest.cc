@@ -111,14 +111,7 @@ class UpdateUsageStatsTaskTest : public testing::Test {
   std::vector<base::ScopedClosureRunner> cleanups_;
 };
 
-// Mac Google-branded builds may pick up Chrome or other Google software
-// usagestat opt-ins from outside this test. Disable the test in that
-// configuration.
-#if !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif
-
 #if BUILDFLAG(IS_WIN)
-
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
@@ -158,8 +151,10 @@ TEST_F(UpdateUsageStatsTaskTest,
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", false);
   ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1"}, GetTestScope()));
 }
-
 #elif !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Mac Google-branded builds may pick up Chrome or other Google software
+// usagestat opt-ins from outside this test. Disable the test in that
+// configuration.
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
