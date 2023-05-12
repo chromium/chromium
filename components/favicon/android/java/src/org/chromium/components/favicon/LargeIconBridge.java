@@ -118,7 +118,13 @@ public class LargeIconBridge {
     @Deprecated
     public boolean getLargeIconForStringUrl(
             final String pageUrl, int desiredSizePx, final LargeIconCallback callback) {
-        return getLargeIconForUrl(new GURL(pageUrl), desiredSizePx, callback);
+        return getLargeIconForUrl(new GURL(pageUrl), desiredSizePx, desiredSizePx, callback);
+    }
+
+    /** Similar to the called method, but with the minSize and desiredSize combined. */
+    public boolean getLargeIconForUrl(
+            final GURL pageUrl, int desiredSizePx, final LargeIconCallback callback) {
+        return getLargeIconForUrl(pageUrl, desiredSizePx, desiredSizePx, callback);
     }
 
     /**
@@ -129,19 +135,20 @@ public class LargeIconBridge {
      * given callback.
      *
      * @param pageUrl The URL of the page whose icon will be fetched.
+     * @param minSizePx The minimum acceptable size of the icon in pixels.
      * @param desiredSizePx The desired size of the icon in pixels.
      * @param callback The method to call asynchronously when the result is available. This callback
      *                 will not be called if this method returns false.
      * @return True if a callback should be expected.
      */
-    public boolean getLargeIconForUrl(
-            final GURL pageUrl, int desiredSizePx, final LargeIconCallback callback) {
+    public boolean getLargeIconForUrl(final GURL pageUrl, int minSizePx, int desiredSizePx,
+            final LargeIconCallback callback) {
         assert mNativeLargeIconBridge != 0;
         assert callback != null;
 
         if (mFaviconCache == null) {
             return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
-                    mBrowserContextHandle, pageUrl, desiredSizePx, callback);
+                    mBrowserContextHandle, pageUrl, minSizePx, desiredSizePx, callback);
         } else {
             CachedFavicon cached = mFaviconCache.get(pageUrl);
             if (cached != null) {
@@ -162,7 +169,7 @@ public class LargeIconBridge {
                 }
             };
             return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
-                    mBrowserContextHandle, pageUrl, desiredSizePx, callbackWrapper);
+                    mBrowserContextHandle, pageUrl, minSizePx, desiredSizePx, callbackWrapper);
         }
     }
 
@@ -178,7 +185,7 @@ public class LargeIconBridge {
         long init();
         void destroy(long nativeLargeIconBridge);
         boolean getLargeIconForURL(long nativeLargeIconBridge,
-                BrowserContextHandle browserContextHandle, GURL pageUrl, int desiredSizePx,
-                LargeIconCallback callback);
+                BrowserContextHandle browserContextHandle, GURL pageUrl, int minSizePx,
+                int desiredSizePx, LargeIconCallback callback);
     }
 }
