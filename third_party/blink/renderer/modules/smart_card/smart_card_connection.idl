@@ -20,6 +20,9 @@ enum SmartCardDisposition {
   [CallWith=ScriptState, RaisesException]
   Promise<void> disconnect(optional SmartCardDisposition disposition = "leave");
 
+  [CallWith=ScriptState, RaisesException]
+  Promise<ArrayBuffer> transmit(BufferSource sendBuffer);
+
   Promise<SmartCardConnectionStatus> status();
 
   // TODO(crbug.com/1386175): add the rest of the API

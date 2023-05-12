@@ -151,8 +151,12 @@ void SmartCardReader::OnConnectDone(
     return;
   }
 
+  device::mojom::blink::SmartCardConnectSuccessPtr& success =
+      result->get_success();
+
   auto* connection = MakeGarbageCollected<SmartCardConnection>(
-      std::move(result->get_success()->connection), GetExecutionContext());
+      std::move(success->connection), success->active_protocol,
+      GetExecutionContext());
 
   resolver->Resolve(connection);
 }
