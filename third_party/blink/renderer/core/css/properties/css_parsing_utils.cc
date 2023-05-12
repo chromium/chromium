@@ -2438,6 +2438,10 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
   }
 
   CSSValueID id = range.Peek().Id();
+  if ((id == CSSValueID::kAccentcolor || id == CSSValueID::kAccentcolortext) &&
+      !RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return nullptr;
+  }
   if (StyleColor::IsColorKeyword(id)) {
     if (!isValueAllowedInMode(id, context.Mode())) {
       return nullptr;
