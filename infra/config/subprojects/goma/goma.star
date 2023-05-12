@@ -662,54 +662,6 @@ goma_builder(
 )
 
 goma_builder(
-    name = "Chromium Android ARM 32-bit Goma RBE ToT",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["android"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "goma_failfast",
-                "goma_client_candidate",
-                "clobber",
-            ],
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "main_builder_mb"),
-    ),
-    execution_timeout = 5 * time.hour,
-    goma_backend = goma.backend.RBE_TOT,
-    goma_enable_ats = False,
-)
-
-goma_builder(
-    name = "Chromium Android ARM 32-bit Goma RBE ToT (ATS)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["android"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "goma_failfast",
-                "goma_client_candidate",
-                "clobber",
-            ],
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "main_builder_mb"),
-    ),
-    execution_timeout = 5 * time.hour,
-    goma_backend = goma.backend.RBE_TOT,
-    goma_enable_ats = True,
-)
-
-goma_builder(
     name = "Chromium Linux Goma RBE Staging",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -782,60 +734,6 @@ goma_builder(
     goma_enable_ats = True,
 )
 
-goma_builder(
-    name = "Chromium Linux Goma RBE ToT",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "goma_client_candidate",
-                "clobber",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_TOT,
-    goma_enable_ats = False,
-)
-
-goma_builder(
-    name = "Chromium Linux Goma RBE ToT (ATS)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "goma_client_candidate",
-                "clobber",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_TOT,
-    goma_enable_ats = True,
-)
-
-goma_builder(
-    name = "chromeos-amd64-generic-rel-goma-rbe-tot",
-    builder_spec = builder_config.copy_from(
-        "ci/chromeos-amd64-generic-rel",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = ["goma_client_candidate"],
-            ),
-        ),
-    ),
-    goma_backend = goma.backend.RBE_TOT,
-    goma_enable_ats = True,
-)
-
 def goma_mac_builder(
         *,
         name,
@@ -847,29 +745,6 @@ def goma_mac_builder(
         os = os,
         **kwargs
     )
-
-goma_mac_builder(
-    name = "Chromium iOS Goma RBE ToT",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "ios"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "mac_toolchain",
-                "goma_failfast",
-                "goma_client_candidate",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.IOS,
-        ),
-    ),
-    os = os.MAC_DEFAULT,
-    goma_backend = goma.backend.RBE_TOT,
-    xcode = xcode.x14main,
-)
 
 goma_mac_builder(
     name = "Chromium Mac Goma RBE Staging",
@@ -918,23 +793,6 @@ goma_mac_builder(
         ),
     ),
     goma_backend = goma.backend.RBE_STAGING,
-)
-
-goma_mac_builder(
-    name = "Chromium Mac Goma RBE ToT",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "goma_client_candidate",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_TOT,
 )
 
 def goma_windows_builder(
@@ -986,24 +844,6 @@ goma_windows_builder(
 )
 
 goma_windows_builder(
-    name = "Chromium Win Goma RBE ToT",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "goma_client_candidate",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_TOT,
-    goma_enable_ats = False,
-)
-
-goma_windows_builder(
     name = "Chromium Win Goma RBE ATS Staging",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -1035,23 +875,5 @@ goma_windows_builder(
         ),
     ),
     goma_backend = goma.backend.RBE_STAGING,
-    goma_enable_ats = True,
-)
-
-goma_windows_builder(
-    name = "Chromium Win Goma RBE ATS ToT",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-                "goma_client_candidate",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = True,
 )

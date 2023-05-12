@@ -3960,16 +3960,6 @@
     'name': 'chromium.goma',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Chromium Android ARM 32-bit Goma RBE ToT': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'Chromium Android ARM 32-bit Goma RBE ToT (ATS)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'Chromium Linux Goma RBE Staging': {
         'mixins': [
           'linux-bionic',
@@ -4049,32 +4039,11 @@
           'gtest_tests': 'goma_gtests',
         },
       },
-      'Chromium Mac Goma RBE ToT': {
-        'mixins': [
-          'mac_x64',
-        ],
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Chromium iOS Goma RBE ToT': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       # ChromeOS (simple chrome) builders.
       # Note:
       # chromeos-amd64-generic-rel-goma-* builders mirror targets of
       # chromeos-amd64-generic-rel.
       'chromeos-amd64-generic-rel-goma-rbe-staging': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-amd64-generic-rel-goma-rbe-tot': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],

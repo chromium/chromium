@@ -98,10 +98,6 @@ goma = struct(
             "server_host": "staging-goma.chromium.org",
             "rpc_extra_params": "?staging",
         },
-        RBE_TOT = {
-            "server_host": "staging-goma.chromium.org",
-            "rpc_extra_params": "?tot",
-        },
     ),
     jobs = struct(
         # This is for 4 cores mac. -j40 is too small, especially for clobber
