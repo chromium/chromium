@@ -272123,11 +272123,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "f858ce99254cb812bff9a54bb71efb184597704d",
+     "0728c63eafb98735f98144c7bd5297deeba33009",
      []
     ],
     "mtime.json": [
-     "3b47e108dfef6362491aea17abd13437ba353bc1",
+     "c9328e9f8d242a64c77b1f6f4a33095bbf7d7d1d",
      []
     ]
    },
@@ -283642,6 +283642,10 @@
       ],
       "block-formatting-contexts-015-ref.xht": [
        "7345888e9a1eadbb866c4f5f7d2669644ca8da62",
+       []
+      ],
+      "block-formatting-contexts-016.xht.ini": [
+       "bbedc86d3b26278acf37d3f8f0b633024a329378",
        []
       ],
       "block-in-inline-align-001-ref.html": [
@@ -323178,6 +323182,10 @@
        "73a0f031ccfa759178a2b86ed4d485f0f6586fe9",
        []
       ],
+      "text-transform-capitalize-010.html.ini": [
+       "52f0349faf6e1b203b0dbf208b1195a7ab0ceaf5",
+       []
+      ],
       "text-transform-capitalize-014.html.ini": [
        "4080d27f0bc429516e18336bf4fff03742a3a083",
        []
@@ -328999,6 +329007,10 @@
       "2131756c61ad815531882044808c8ff719612d46",
       []
      ],
+     "appearance-menulist-001.html.ini": [
+      "51b90878d5dd7a91a8ff6bee85b204379343679b",
+      []
+     ],
      "appearance-progress-bar-002-ref.html": [
       "d243f0c75c75f57e6fd1ca629ccf0d3d924a0c13",
       []
@@ -329168,6 +329180,10 @@
        "45c8c10b3d50fa0e7946ee1871f7d6e2d14f2b92",
        []
       ],
+      "kind-of-widget-fallback-color-input-border-inline-start-style-001.html.ini": [
+       "2885caae33f1641b730c95b46fc18585f8734cf2",
+       []
+      ],
       "kind-of-widget-fallback-color-input-border-left-width-001.html.ini": [
        "790ec0a2515cffe6f8324353c2a9273a6a1ebb11",
        []
@@ -329238,6 +329254,10 @@
       ],
       "kind-of-widget-fallback-input-button-border-inline-end-color-001.html.ini": [
        "1643f87d971fb1bada2291af2aa95f54063bda3d",
+       []
+      ],
+      "kind-of-widget-fallback-input-button-border-inline-start-color-001.html.ini": [
+       "c90f91f91ce3d11bd78028efe9c3060483d574dc",
        []
       ],
       "kind-of-widget-fallback-input-button-border-inline-start-width-001.html.ini": [
@@ -329385,7 +329405,11 @@
        []
       ],
       "kind-of-widget-fallback-input-search-border-inline-end-width-001.html.ini": [
-       "e54f0fc546f2552e9977030330f2514dc283d7c9",
+       "3c5a779719f01e9a44a05f573b702c0a01e22147",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-border-inline-start-color-001.html.ini": [
+       "2fc7ad2fbdf32b100c54aaec257bf18b97620e8a",
        []
       ],
       "kind-of-widget-fallback-input-search-border-inline-start-style-001.html.ini": [
@@ -329413,7 +329437,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-border-start-end-radius-001.html.ini": [
-       "0652ebf96f1ea0f2869e4027eb70580b29980065",
+       "122cb6287898930889578a1d3833c3fd1336381c",
        []
       ],
       "kind-of-widget-fallback-input-search-border-start-start-radius-001.html.ini": [
@@ -329657,7 +329681,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-left-width-001.html.ini": [
-       "7e86e3dde9c51af132c681e6c1b829bcefefbc34",
+       "1f7ab7ade35a0b03819a91c1031be3c6e17b6c4c",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-right-color-001.html.ini": [
@@ -336574,7 +336598,7 @@
       []
      ],
      "backdrop-filter-basic.html.ini": [
-      "c091770e6b43e14d979cd0234fce1712303997ae",
+      "1047f60c7a66f7f1cea4d439fa4001bcfa406528",
       []
      ],
      "backdrop-filter-clip-rect-ref.html": [
@@ -336694,7 +336718,7 @@
       []
      ],
      "backdrop-filter-svg-foreignObject.html.ini": [
-      "82031871ecb8c082be4808a30c5147e0ad199acc",
+      "6df726e6c60ca9f5644da63f8263b24fb10c1caa",
       []
      ],
      "backdrop-filter-update-ref.html": [
@@ -336730,7 +336754,7 @@
       []
      ],
      "backdrop-filters-grayscale-002.html.ini": [
-      "3465d14f6e100a28d4c34a3e0cc9a86efd030852",
+      "3f30c1142708545ae86e3b30eb8787f4453f404f",
       []
      ],
      "backdrop-filters-grayscale-003.html.ini": [
@@ -336895,6 +336919,10 @@
      ],
      "css-filters-animation-saturate-ref.html": [
       "c87c2fac63a54e56d77ce4866216507b18c1aebb",
+      []
+     ],
+     "css-filters-animation-saturate.html.ini": [
+      "ab0ed5d7a7ca394df1cacc464212aae1481c7851",
       []
      ],
      "css-filters-animation-sepia-ref.html": [
@@ -355827,6 +355855,22 @@
         "fb3b5b830d345d2aa858e41673e08f99977baf08",
         []
        ],
+       "2d.text.drawing.style.letterSpacing.measure.relative.html.ini": [
+        "9cb3a0a857bf2f20ad742761b47a914b5006355e",
+        []
+       ],
+       "2d.text.drawing.style.letterSpacing.measure.relative.worker.js.ini": [
+        "eca264d68019cdeb1da890cd55637c1db6629d3c",
+        []
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.relative.html.ini": [
+        "7a3721c0c12f0a8a3f7857688c1403b5068eb458",
+        []
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.relative.worker.js.ini": [
+        "2142c1260983365f0a7bf1f3370b8164e24be26d",
+        []
+       ],
        "2d.text.measure.width.space-expected.txt": [
         "31bf7882298ab07a8c62aa47d0f90533c6dc8a75",
         []
@@ -355935,7 +355979,7 @@
       "yaml": {
        "element": {
         "drawing-text-to-the-canvas.yaml": [
-         "e0de95560cb122a2a2d6ea9ac47fcbf93ad941e0",
+         "3443ad35b3cdccffb0dcb383b946dcd81a0521d5",
          []
         ],
         "fill-and-stroke-styles.yaml": [
@@ -355977,7 +356021,7 @@
          []
         ],
         "text.yaml": [
-         "80c54ca6b664e63b6f54e3978c6665f1c9ba2a24",
+         "784a099aca09747325bbc800a0976031a4324d08",
          []
         ],
         "the-canvas-state.yaml": [
@@ -357131,6 +357175,10 @@
       "restrict-properties": {
        "README.md": [
         "b3c24c3f82d2dbf07eefa9fa2e88fcf3817473d2",
+        []
+       ],
+       "access-reporting-closed.https.html.ini": [
+        "a6cab97d6268ab0bb189263aa3f38960939cefa5",
         []
        ],
        "access-reporting-openee-rp-ro.https-expected.txt": [
@@ -386380,7 +386428,7 @@
       []
      ],
      "unregister-immediately-during-extendable-events.https.html.ini": [
-      "099411deb66fa0fed34a5258192b037681df15b1",
+      "c346d607933e395a6f975f448e6d44f95ebd52f8",
       []
      ],
      "unregister-then-register-new-script.https-expected.txt": [
@@ -521423,21 +521471,21 @@
         ]
        ],
        "2d.text.drawing.style.invalid.spacing.html": [
-        "61ca6d4a91533ea75bcc7505a0d8f3969be1ee07",
+        "9bf2440900c2f8193b36c45725fb94db084d6182",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.letterSpacing.change.font.html": [
-        "5b42b89e3254c560810e35f1f571d85111503407",
+        "3b88ab6ee17c0b224f9a669335c567751c07699b",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.letterSpacing.measure.html": [
-        "fadfaaf2015f4a8a3ec1f51e3def3b474833b409",
+        "ba8656ec1a3d5d84b0c3e2cc7ea7879eb308c605",
         [
          null,
          {}
@@ -521472,7 +521520,7 @@
         ]
        ],
        "2d.text.drawing.style.wordSpacing.measure.html": [
-        "4cd3c237cd8db811f6c937d6518db021bd7b27c2",
+        "4898c23ee78177b6438ccc042eb8edb58624eda1",
         [
          null,
          {}
@@ -537870,14 +537918,14 @@
         ]
        ],
        "2d.text.drawing.style.invalid.spacing.html": [
-        "a117be03656e6552b4859cfb6560138c40cbff89",
+        "5030055567a76411fb3c51cddc14eb4bb79a5d22",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.invalid.spacing.worker.js": [
-        "7f6baf28b68d76b5e71020a19283b2a49e6058b7",
+        "e4b090cc76516851cabf6d1183326aaf5c1ab326",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.invalid.spacing.worker.html",
          {}
@@ -537897,17 +537945,31 @@
          {}
         ]
        ],
-       "2d.text.drawing.style.letterSpacing.measure.html": [
-        "b63c81b25579a022c61c1c566b9fcf55bf8eb1d9",
+       "2d.text.drawing.style.letterSpacing.measure.absolute.html": [
+        "5482c36b37080f962fb3b2289530b524caae2c28",
         [
          null,
          {}
         ]
        ],
-       "2d.text.drawing.style.letterSpacing.measure.worker.js": [
-        "b9189cba30cf6d757605d97c320d9d76edc45868",
+       "2d.text.drawing.style.letterSpacing.measure.absolute.worker.js": [
+        "22cab4cccd93e9b58ca9c81457167476338e2f5a",
         [
-         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.worker.html",
+         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.absolute.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.measure.relative.html": [
+        "fa5d2bce75459db2638669e64ea444f132f79c9c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.measure.relative.worker.js": [
+        "59d17ef82cf36f9d7f842b2506c84cefaa5f370c",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.relative.worker.html",
          {}
         ]
        ],
@@ -538009,17 +538071,31 @@
          {}
         ]
        ],
-       "2d.text.drawing.style.wordSpacing.measure.html": [
-        "9ef479bba2c061a5eec558a4db6d305919c28b08",
+       "2d.text.drawing.style.wordSpacing.measure.absolute.html": [
+        "07ca896f9752a2cf58928df7afa07c14b615bb47",
         [
          null,
          {}
         ]
        ],
-       "2d.text.drawing.style.wordSpacing.measure.worker.js": [
-        "3e850fcf3dfb2225b20f4b5cc838b8ff004688de",
+       "2d.text.drawing.style.wordSpacing.measure.absolute.worker.js": [
+        "ebfc05644fcbd3a395730ee4a89f54e5443adc29",
         [
-         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.measure.worker.html",
+         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.measure.absolute.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.relative.html": [
+        "95f87cb03d05b79e1ebb48155723672ae04903e0",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.relative.worker.js": [
+        "2bded51edcbe3571274bb4e9b36d19908127b4a3",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.measure.relative.worker.html",
          {}
         ]
        ],
