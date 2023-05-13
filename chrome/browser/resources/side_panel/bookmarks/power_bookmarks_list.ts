@@ -448,7 +448,10 @@ export class PowerBookmarksListElement extends PolymerElement {
         Object.keys(this.trackedProductInfos_)
             .some(key => this.get(`trackedProductInfos_.${key}`) !== null);
     if (showLabel) {
-      return [{
+      // Reuse the current price tracking label if one exists, to maintain its
+      // active state.
+      const currentLabel = this.get('labels_.0');
+      return [currentLabel ? currentLabel : {
         label: loadTimeData.getString('priceTrackingLabel'),
         icon: 'bookmarks:price-tracking',
         active: false,
