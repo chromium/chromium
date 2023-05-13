@@ -663,7 +663,13 @@ class DebuggerExtensionApiTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
+// TODO(crbug/1434257): Flaky on Lacros and Linux.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_Debugger DISABLED_Debugger
+#else
+#define MAYBE_Debugger Debugger
+#endif
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, MAYBE_Debugger) {
   ASSERT_TRUE(RunExtensionTest("debugger")) << message_;
 }
 
@@ -742,8 +748,8 @@ class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
   }
 };
 
-// TODO(crbug/1444625): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug/1440919): Flaky on Lacros and Linux.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Debugger DISABLED_Debugger
 #else
 #define MAYBE_Debugger Debugger
