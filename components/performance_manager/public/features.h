@@ -119,13 +119,31 @@ extern const base::FeatureParam<base::TimeDelta>
 // * If kHeuristicMemorySaver is enabled, HeuristicMemorySaverPolicy will be
 //   turned on.
 // * If kHeuristicMemorySaver is disabled, all memory saver policies will be
-//   turned off (for the control group of experiemnts).
+//   turned off (for the control group of experiments).
+//
+// This only affects the original UI. If the experimental multistate UI is
+// enabled (through the kHighEfficiencyMultistateMode feature), this is not
+// checked.
 //
 // Note: to get uniform control and experiment groups,
 // kForceHeuristicMemorySaver should only be tested for users who are valid for
 // randomized studies (eg. not for users with the HighEfficiencyModeState pref
 // managed by enterprise policy). It's always safe to read kHeuristicMemorySaver
 // without kForceHeuristicMemorySaver to get the policy params.
+//
+// To run an A/B experiment, the following feature configs should be used:
+//
+// * Experiment group(s):
+//   * kForceHeuristicMemorySaver ON
+//   * kHeuristicMemorySaver ON (with parameters to control the policy)
+//   * kHighEfficiencyMultistateMode OFF
+// * Control group:
+//   * kForceHeuristicMemorySaver ON
+//   * kHeuristicMemorySaver OFF
+//   * kHighEfficiencyMultistateMode OFF
+//
+// Users who enable kHighEfficiencyMultistateMode through chrome://flags will
+// be excluded from the experiment.
 BASE_DECLARE_FEATURE(kForceHeuristicMemorySaver);
 
 // Round 2 Performance Controls features

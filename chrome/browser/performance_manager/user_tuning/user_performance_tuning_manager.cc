@@ -690,20 +690,21 @@ void UserPerformanceTuningManager::Start() {
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
   HighEfficiencyModeState state =
       prefs::GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
-  if (!IsHighEfficiencyModeManaged() &&
-      base::FeatureList::IsEnabled(features::kForceHeuristicMemorySaver)) {
-    // Set the heuristic policy for experimentation regardless of the pref.
-    state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
-                ? HighEfficiencyModeState::kEnabled
-                : HighEfficiencyModeState::kDisabled;
-  } else if (state != HighEfficiencyModeState::kDisabled &&
-             !base::FeatureList::IsEnabled(
-                 features::kHighEfficiencyMultistateMode)) {
-    // The user has enabled high efficiency mode, but without the multistate UI
-    // they didn't choose a policy. The feature controls which policy to use.
-    state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
-                ? HighEfficiencyModeState::kEnabled
-                : HighEfficiencyModeState::kEnabledOnTimer;
+  if (!base::FeatureList::IsEnabled(features::kHighEfficiencyMultistateMode)) {
+    if (!IsHighEfficiencyModeManaged() &&
+        base::FeatureList::IsEnabled(features::kForceHeuristicMemorySaver)) {
+      // Set the heuristic policy for experimentation regardless of the pref.
+      state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
+                  ? HighEfficiencyModeState::kEnabled
+                  : HighEfficiencyModeState::kDisabled;
+    } else if (state != HighEfficiencyModeState::kDisabled) {
+      // The user has enabled high efficiency mode, but without the multistate
+      // UI they didn't choose a policy. The feature controls which policy to
+      // use.
+      state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
+                  ? HighEfficiencyModeState::kEnabled
+                  : HighEfficiencyModeState::kEnabledOnTimer;
+    }
   }
   high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(state);
   for (auto& obs : observers_) {
