@@ -75,10 +75,6 @@ template("chrome_ios_eg2_test_app_host") {
                              "info_plist",
                              "info_plist_target",
                              "output_name",
-                           ],
-                           [
-                             "deps",
-                             "public_deps",
                            ])
 
     testonly = true
