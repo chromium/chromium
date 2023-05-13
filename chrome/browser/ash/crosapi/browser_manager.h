@@ -569,7 +569,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by |params.logfd|.
-  void StartWithLogFile(LaunchParamsFromBackground params);
+  void StartWithLogFile(bool launching_at_login_screen,
+                        LaunchParamsFromBackground params);
 
   // ash::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
