@@ -23,8 +23,10 @@ namespace {
 
 base::flat_map</*error code*/ net::Error, /*error message*/ std::string>
     kTestCases{
-        {net::ERR_INTERNET_DISCONNECTED, "You're offline"},
-        {net::ERR_INVALID_URL, "DEFAULT IWA ERROR PAGE"},
+        {net::ERR_INVALID_WEB_BUNDLE, "This application is missing or damaged"},
+        {net::ERR_CONNECTION_REFUSED,
+         "The development server for this application cannot be reached"},
+        {net::ERR_INVALID_URL, "net::ERR_INVALID_URL"},
     };
 
 }  // namespace
