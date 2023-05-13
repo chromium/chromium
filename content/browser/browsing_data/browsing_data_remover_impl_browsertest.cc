@@ -317,9 +317,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
   EXPECT_FALSE(IsHttpAuthCacheSet());
 }
 
-// Disabled. See https://crbug.com/1444976
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
-                       DISABLED_ClearBackForwardCacheEntries) {
+                       ClearBackForwardCacheEntries) {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+
   GURL url_1 = ssl_server().GetURL("/title1.html");
   GURL url_2 = ssl_server().GetURL("/title2.html");
 
