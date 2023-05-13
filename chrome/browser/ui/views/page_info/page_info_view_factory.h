@@ -64,7 +64,8 @@ class PageInfoViewFactory {
 
   // Creates a separator view with padding on top and bottom. Use with flex
   // layout only.
-  [[nodiscard]] static std::unique_ptr<views::View> CreateSeparator();
+  [[nodiscard]] static std::unique_ptr<views::View> CreateSeparator(
+      int horizontal_inset = 0);
 
   // Creates a label container view with padding on left and right side.
   // Supports multiple multiline labels in a column (ex. title and subtitle

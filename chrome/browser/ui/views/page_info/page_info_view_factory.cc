@@ -81,7 +81,8 @@ int GetIconSize() {
 }  // namespace
 
 // static
-std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator() {
+std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator(
+    int horizontal_inset) {
   // Distance for multi content list is used, but split in half, since there is
   // a separator in the middle of it.
   const int separator_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -89,7 +90,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator() {
                                 2;
   auto separator = std::make_unique<views::Separator>();
   separator->SetProperty(views::kMarginsKey,
-                         gfx::Insets::VH(separator_spacing, 0));
+                         gfx::Insets::VH(separator_spacing, horizontal_inset));
   return separator;
 }
 
@@ -200,7 +201,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
                           base::Unretained(navigation_handler_),
                           base::DoNothing()),
-      vector_icons::kArrowBackIcon);
+      vector_icons::kArrowBackIcon, GetIconSize());
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button->SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON);
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -591,11 +592,14 @@ const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
+  // GetIconSize() does not work for subpage icons because the default size of
+  // kSubmenuArrowIcon is 8 rather than 16.
+  const int icon_size = features::IsChromeRefresh2023() ? 20 : 8;
   return ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023()
           ? vector_icons::kSubmenuArrowChromeRefreshIcon
           : vector_icons::kSubmenuArrowIcon,
-      ui::kColorIcon);
+      ui::kColorIcon, icon_size);
 }
 
 // static

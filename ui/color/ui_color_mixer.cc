@@ -141,7 +141,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorMenuItemForegroundHighlighted] = {kColorMenuItemForeground};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSecondaryForeground};
   mixer[kColorMenuItemForegroundSelected] = {kColorMenuItemForeground};
-  mixer[kColorMenuSeparator] = {kColorMidground};
+  mixer[kColorMenuSeparator] = {kColorSeparator};
   mixer[kColorNotificationActionsBackground] = {
       kColorNotificationBackgroundActive};
   mixer[kColorNotificationBackgroundActive] = {kColorSubtleEmphasisBackground};

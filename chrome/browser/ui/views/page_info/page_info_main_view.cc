@@ -37,6 +37,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -248,8 +249,9 @@ void PageInfoMainView::SetPermissionInfo(
     UpdateResetButton(permission_info_list);
     return;
   }
-
-  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+  const int separator_padding = features::IsChromeRefresh2023() ? 20 : 0;
+  permissions_view_->AddChildView(
+      PageInfoViewFactory::CreateSeparator(separator_padding));
 
   auto* scroll_view =
       permissions_view_->AddChildView(std::make_unique<views::ScrollView>());
@@ -334,7 +336,8 @@ void PageInfoMainView::SetPermissionInfo(
   // show reset button.
   reset_button_->SetVisible(false);
   UpdateResetButton(permission_info_list);
-  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+  permissions_view_->AddChildView(
+      PageInfoViewFactory::CreateSeparator(separator_padding));
 
   PreferredSizeChanged();
 }
@@ -562,7 +565,8 @@ void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets::VH(0, kIconColumnWidth));
+      ->SetInteriorMargin(
+          gfx::Insets::VH(0, features::IsChromeRefresh2023() ? 20 : 16));
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
       views::style::STYLE_PRIMARY,

@@ -65,11 +65,11 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorMenuIcon] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForeground] = {kColorSysOnSurface};
-  mixer[kColorMenuSeparator] = {kColorSysDivider};
   mixer[kColorRadioButtonForegroundChecked] = {kColorSysPrimary};
   mixer[kColorRadioButtonForegroundDisabled] = {
       kColorSysStateDisabledContainer};
   mixer[kColorRadioButtonForegroundUnchecked] = {kColorSysOutline};
+  mixer[kColorSeparator] = {kColorSysDivider};
   mixer[kColorSliderThumb] = {kColorSysPrimary};
   mixer[kColorSliderThumbMinimal] = {kColorSysSecondary};
   mixer[kColorSliderTrack] = {kColorSysOnPrimary};

@@ -88,7 +88,9 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       const gfx::Insets insets =
           LayoutProvider::GetInsetsMetric(views::INSETS_LABEL_BUTTON);
       const int horizontal_padding =
-          GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
+          features::IsChromeRefresh2023()
+              ? 20
+              : GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
       // Hover button in page info requires double the height compared to the
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);
