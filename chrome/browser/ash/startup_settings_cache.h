@@ -7,8 +7,7 @@
 
 #include <string>
 
-namespace ash {
-namespace startup_settings_cache {
+namespace ash::startup_settings_cache {
 
 // On Chrome OS, the application locale is stored in local state prefs. The
 // zygote needs the locale so it can load the correct resource bundle and
@@ -24,9 +23,8 @@ namespace startup_settings_cache {
 std::string ReadAppLocale();
 
 // Writes the locale string to a JSON file on disk. See above.
-void WriteAppLocale(std::string app_locale);
+void WriteAppLocale(const std::string& app_locale);
 
-}  // namespace startup_settings_cache
-}  // namespace ash
+}  // namespace ash::startup_settings_cache
 
 #endif  // CHROME_BROWSER_ASH_STARTUP_SETTINGS_CACHE_H_

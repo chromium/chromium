@@ -245,10 +245,10 @@ std::string GetClientId() {
 }
 
 const char* GetBoolPrefNameForApiProperty(const char* api_name) {
-  for (size_t i = 0; i < (sizeof(kPreferencesMap) / sizeof(*kPreferencesMap));
-       i++) {
-    if (strcmp(kPreferencesMap[i].api_name, api_name) == 0)
-      return kPreferencesMap[i].preference_name;
+  for (const auto& item : kPreferencesMap) {
+    if (strcmp(item.api_name, api_name) == 0) {
+      return item.preference_name;
+    }
   }
 
   return nullptr;
@@ -417,16 +417,17 @@ void ExtensionInfoPrivateAsh::BindReceiver(
 void ExtensionInfoPrivateAsh::GetSystemProperties(
     const std::vector<std::string>& property_names,
     GetSystemPropertiesCallback callback) {
-  base::Value result(base::Value::Type::DICT);
+  base::Value::Dict result;
   for (const std::string& property_name : property_names) {
     std::unique_ptr<base::Value> value = GetValue(property_name);
     if (value) {
-      result.SetKey(property_name,
-                    base::Value::FromUniquePtrValue(std::move(value)));
+      result.Set(property_name,
+                 base::Value::FromUniquePtrValue(std::move(value)));
     }
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), base::Value(std::move(result))));
 }
 
 void ExtensionInfoPrivateAsh::SetTimezone(const std::string& value) {

@@ -1028,9 +1028,9 @@ absl::optional<base::Value> GooglePhotosPhotosFetcher::CreateErrorResponse(
   // photos with the given attributes exist. We return an empty list of photos
   // to communicate this back to the caller.
   if (error_code == net::HTTP_NOT_FOUND) {
-    absl::optional<base::Value> empty_list(base::Value::Type::DICT);
-    empty_list->SetKey("item", base::Value(base::Value::Type::LIST));
-    return empty_list;
+    auto empty_list_response =
+        base::Value::Dict().Set("item", base::Value::List());
+    return base::Value(std::move(empty_list_response));
   }
   return absl::nullopt;
 }
