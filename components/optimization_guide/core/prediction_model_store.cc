@@ -161,8 +161,9 @@ bool PredictionModelStore::HasModel(
   if (!metadata) {
     return false;
   }
-  // Check the existence of model dir as an indication of validity.
-  return metadata->GetModelBaseDir().has_value();
+  // Model dir should exist and be a relative path.
+  return metadata->GetModelBaseDir() &&
+         !metadata->GetModelBaseDir()->IsAbsolute();
 }
 
 bool PredictionModelStore::HasModelWithVersion(
@@ -173,6 +174,11 @@ bool PredictionModelStore::HasModelWithVersion(
   auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
       local_state_, optimization_target, model_cache_key);
   if (!metadata) {
+    return false;
+  }
+  if (!metadata->GetModelBaseDir() ||
+      metadata->GetModelBaseDir()->IsAbsolute()) {
+    // Model dir should exist and be a relative path.
     return false;
   }
   auto actual_version = metadata->GetVersion();
@@ -205,19 +211,18 @@ void PredictionModelStore::LoadModel(
     return;
   }
   auto base_model_dir = metadata->GetModelBaseDir();
-  if (!base_model_dir) {
+  if (!base_model_dir || base_model_dir->IsAbsolute()) {
     RemoveModel(optimization_target, model_cache_key,
                 PredictionModelStoreModelRemovalReason::kInvalidModelDir);
     std::move(callback).Run(nullptr);
     return;
   }
-  DCHECK(base_store_dir_.IsParent(*base_model_dir));
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &PredictionModelStore::LoadAndVerifyModelInBackgroundThread,
-          optimization_target, *base_model_dir),
+          optimization_target, base_store_dir_.Append(*base_model_dir)),
       base::BindOnce(&PredictionModelStore::OnModelLoaded,
                      weak_ptr_factory_.GetWeakPtr(), optimization_target,
                      model_cache_key, std::move(callback)));
@@ -277,8 +282,7 @@ void PredictionModelStore::UpdateMetadataForExistingModel(
 
   ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
                                           model_cache_key);
-  auto base_model_dir = metadata.GetModelBaseDir();
-  DCHECK(base_store_dir_.IsParent(*base_model_dir));
+  DCHECK(!metadata.GetModelBaseDir()->IsAbsolute());
   metadata.SetVersion(model_info.version());
   if (model_info.has_valid_duration()) {
     metadata.SetExpiryTime(
@@ -308,7 +312,8 @@ void PredictionModelStore::UpdateModel(
            ? base::Seconds(model_info.valid_duration().seconds())
            : features::StoredModelsValidDuration()));
   metadata.SetKeepBeyondValidDuration(model_info.keep_beyond_valid_duration());
-  metadata.SetModelBaseDir(base_model_dir);
+  metadata.SetModelBaseDir(
+      ConvertToRelativePath(base_store_dir_, base_model_dir));
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -371,10 +376,16 @@ void PredictionModelStore::RemoveModel(
                                           model_cache_key);
   auto base_model_dir = metadata.GetModelBaseDir();
   if (base_model_dir) {
-    DCHECK(base_store_dir_.IsParent(*base_model_dir));
+    // Backward compatibility: Model dirs were absolute in the earlier versions,
+    // and it was only in experiment. The latest versions use relative paths.
+    DCHECK(!base_model_dir->IsAbsolute() ||
+           base_store_dir_.IsParent(*base_model_dir));
+    base::FilePath absolute_model_dir =
+        base_model_dir->IsAbsolute() ? *base_model_dir
+                                     : base_store_dir_.Append(*base_model_dir);
     ScopedDictPrefUpdate pref_update(
         local_state_, prefs::localstate::kStoreFilePathsToDelete);
-    pref_update->Set(FilePathToString(*base_model_dir), true);
+    pref_update->Set(FilePathToString(absolute_model_dir), true);
   }
   // Continue removing the metadata even if the model dirs does not exist.
   metadata.ClearMetadata();
@@ -385,11 +396,12 @@ void PredictionModelStore::PurgeInactiveModels() {
   DCHECK(local_state_);
   for (const auto& expired_model_dir :
        ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(local_state_)) {
-    DCHECK(base_store_dir_.IsParent(expired_model_dir));
+    DCHECK(!expired_model_dir.IsAbsolute());
     // This is called at startup. So no need to schedule the deletion of the
     // model dirs, and instead can be deleted immediately.
     background_task_runner_->PostTask(
-        FROM_HERE, base::GetDeletePathRecursivelyCallback(expired_model_dir));
+        FROM_HERE, base::GetDeletePathRecursivelyCallback(
+                       base_store_dir_.Append(expired_model_dir)));
   }
 }
 

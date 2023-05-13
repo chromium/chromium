@@ -168,6 +168,12 @@ TEST_F(PredictionModelStoreTest, ModelUpdateAndLoad) {
             model_detail.base_model_dir.Append(GetBaseFileNameForModels()));
   EXPECT_EQ(0, loaded_model->model_info().additional_files_size());
 
+  auto metadata_entry = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
+      local_state_prefs_.get(), kTestOptimizationTargetFoo, model_cache_key);
+  EXPECT_EQ(
+      model_detail.base_model_dir,
+      temp_models_dir_.GetPath().Append(*metadata_entry->GetModelBaseDir()));
+
   WaitForModeLoad(kTestOptimizationTargetBar, model_cache_key);
   EXPECT_FALSE(last_loaded_prediction_model());
 }
@@ -279,6 +285,9 @@ TEST_F(PredictionModelStoreTest, UpdateMetadataForExistingModel) {
       local_state_prefs_.get(), kTestOptimizationTargetFoo, model_cache_key);
   EXPECT_LE(base::Minutes(99),
             metadata_entry->GetExpiryTime() - base::Time::Now());
+  EXPECT_EQ(
+      model_detail.base_model_dir,
+      temp_models_dir_.GetPath().Append(*metadata_entry->GetModelBaseDir()));
   EXPECT_TRUE(metadata_entry->GetKeepBeyondValidDuration());
 }
 
