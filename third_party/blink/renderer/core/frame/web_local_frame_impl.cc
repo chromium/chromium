@@ -388,8 +388,6 @@ class ChromePrintContext : public PrintContext {
         !GetFrame()->GetDocument()->GetLayoutView())
       return;
 
-    ComputePageRects(page_size_in_pixels);
-
     gfx::RectF all_pages_rect(spool_size_in_pixels);
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
@@ -532,7 +530,11 @@ class ChromePluginPrintContext final : public ChromePrintContext {
     ChromePrintContext::Trace(visitor);
   }
 
-  void BeginPrintMode(float width, float height) override {}
+  void BeginPrintMode(float width, float height) override {
+    gfx::Rect rect(gfx::ToFlooredSize(gfx::SizeF(width, height)));
+    print_params_.print_content_area = rect;
+    page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
+  }
 
   void EndPrintMode() override {
     plugin_->PrintEnd();
@@ -551,17 +553,6 @@ class ChromePluginPrintContext final : public ChromePrintContext {
   float GetPageShrink(uint32_t page_number) const override {
     // We don't shrink the page (maybe we should ask the widget ??)
     return 1.0;
-  }
-
-  void ComputePageRects(const gfx::SizeF& print_size) override {
-    gfx::Rect rect(gfx::ToFlooredSize(print_size));
-    print_params_.print_content_area = rect;
-    page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
-  }
-
-  void ComputePageRectsWithPageSize(
-      const gfx::SizeF& page_size_in_pixels) override {
-    NOTREACHED();
   }
 
  protected:
@@ -1883,7 +1874,6 @@ uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
 
   gfx::SizeF size(print_params.print_content_area.size());
   print_context_->BeginPrintMode(size.width(), size.height());
-  print_context_->ComputePageRects(size);
 
   return print_context_->PageCount();
 }

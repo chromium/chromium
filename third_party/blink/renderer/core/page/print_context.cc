@@ -80,12 +80,6 @@ void PrintContext::ComputePageRects(const gfx::SizeF& print_size) {
   ComputePageRectsWithPageSizeInternal(page_size);
 }
 
-void PrintContext::ComputePageRectsWithPageSize(
-    const gfx::SizeF& page_size_in_pixels) {
-  page_rects_.clear();
-  ComputePageRectsWithPageSizeInternal(page_size_in_pixels);
-}
-
 void PrintContext::ComputePageRectsWithPageSizeInternal(
     const gfx::SizeF& page_size_in_pixels) {
   if (!IsFrameValid())
@@ -166,6 +160,8 @@ void PrintContext::BeginPrintMode(float width, float height) {
   frame_->StartPrinting(
       floored_min_layout_size, aspect_ratio,
       printingMaximumShrinkFactor / kPrintingMinimumShrinkFactor);
+
+  ComputePageRects(gfx::SizeF(width, height));
 }
 
 void PrintContext::EndPrintMode() {
@@ -197,12 +193,6 @@ int PrintContext::PageNumberForElement(Element* element,
       EnclosingBoxModelObject(element->GetLayoutObject());
   if (!box)
     return -1;
-
-  gfx::SizeF scaled_page_size = page_size_in_pixels;
-  scaled_page_size.Scale(
-      frame->View()->LayoutViewport()->ContentsSize().width() /
-      page_rect.width());
-  print_context->ComputePageRectsWithPageSize(scaled_page_size);
 
   int top = box->OffsetTop(box->OffsetParent()).ToInt();
   int left = box->OffsetLeft(box->OffsetParent()).ToInt();
@@ -323,17 +313,9 @@ int PrintContext::NumberOfPages(LocalFrame* frame,
                                 const gfx::SizeF& page_size_in_pixels) {
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
-  gfx::RectF page_rect(page_size_in_pixels);
   ScopedPrintContext print_context(frame);
-  print_context->BeginPrintMode(page_rect.width(), page_rect.height());
-  // Account for shrink-to-fit.
-  gfx::SizeF scaled_page_size = page_size_in_pixels;
-  const LayoutView* layout_view = frame->View()->GetLayoutView();
-  bool is_horizontal = layout_view->StyleRef().IsHorizontalWritingMode();
-  scaled_page_size.Scale(
-      layout_view->PageLogicalHeight() /
-      (is_horizontal ? page_rect.height() : page_rect.width()));
-  print_context->ComputePageRectsWithPageSize(scaled_page_size);
+  print_context->BeginPrintMode(page_size_in_pixels.width(),
+                                page_size_in_pixels.height());
   return print_context->PageCount();
 }
 

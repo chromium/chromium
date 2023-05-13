@@ -138,7 +138,6 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kTest);
 
-    GetPrintContext().ComputePageRects(gfx::SizeF(kPageWidth, kPageHeight));
     gfx::Rect page_rect = GetPrintContext().PageRect(page_number);
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();

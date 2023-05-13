@@ -55,17 +55,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
 
   LocalFrame* GetFrame() const { return frame_; }
 
-  // Break up a page into rects without relayout.
-  // FIXME: This means that CSS page breaks won't be on page boundary if the
-  // size is different than what was passed to BeginPrintMode(). That's probably
-  // not always desirable.
-  virtual void ComputePageRects(const gfx::SizeF& print_size);
-
-  // Deprecated. Page size computation is already in this class, clients
-  // shouldn't be copying it.
-  virtual void ComputePageRectsWithPageSize(
-      const gfx::SizeF& page_size_in_pixels);
-
   // These are only valid after page rects are computed.
   wtf_size_t PageCount() const { return page_rects_.size(); }
   const gfx::Rect& PageRect(wtf_size_t page_number) const {
@@ -114,6 +103,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   Vector<gfx::Rect> page_rects_;
 
  private:
+  void ComputePageRects(const gfx::SizeF& print_size);
   void ComputePageRectsWithPageSizeInternal(
       const gfx::SizeF& page_size_in_pixels);
   void CollectLinkedDestinations(Node*);
