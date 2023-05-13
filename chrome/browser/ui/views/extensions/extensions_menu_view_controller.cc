@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
@@ -389,9 +390,8 @@ void ExtensionsMenuViewController::UpdateSitePermissionsPage(
   extensions::ExtensionId extension_id = site_permissions_page->extension_id();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-  std::unique_ptr<ExtensionActionViewController> action_controller =
-      ExtensionActionViewController::Create(extension_id, browser_,
-                                            extensions_container_);
+  ToolbarActionViewController* action_controller =
+      extensions_container_->GetActionForId(extension_id);
 
   std::u16string extension_name = action_controller->GetActionName();
   ui::ImageModel extension_icon = action_controller->GetIcon(
