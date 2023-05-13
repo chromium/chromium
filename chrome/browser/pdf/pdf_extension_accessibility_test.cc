@@ -916,8 +916,10 @@ class PDFExtensionAccessibilityPdfOcrTest
   }
 };
 
+// TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
+// Select-to-Speak.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
-                       CheckUmaWhenTurnOnPdfOcrFromMoreActions) {
+                       DISABLED_CheckUmaWhenTurnOnPdfOcrFromMoreActions) {
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(guest_view);
@@ -933,8 +935,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
       /*expected_bucket_count=*/1);
 }
 
+// TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
+// Select-to-Speak.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
-                       CheckUmaWhenTurnOffPdfOcrFromMoreActions) {
+                       DISABLED_CheckUmaWhenTurnOffPdfOcrFromMoreActions) {
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(guest_view);
