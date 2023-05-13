@@ -172,10 +172,11 @@ void OneTimePermissionProvider::DeleteValuesMatchingGurl(
 
   while (rule_iterator && rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
-    if (rule.primary_pattern.Matches(origin_gurl) &&
-        rule.secondary_pattern.Matches(origin_gurl)) {
-      patterns_to_delete.insert({rule.primary_pattern, rule.secondary_pattern});
-      if (rule.metadata.expiration >= clock_->Now()) {
+    if (rule->primary_pattern.Matches(origin_gurl) &&
+        rule->secondary_pattern.Matches(origin_gurl)) {
+      patterns_to_delete.insert(
+          {rule->primary_pattern, rule->secondary_pattern});
+      if (rule->metadata.expiration >= clock_->Now()) {
         permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
             content_setting_type, trigger_event);
       }

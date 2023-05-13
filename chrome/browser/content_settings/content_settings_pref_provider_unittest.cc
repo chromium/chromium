@@ -448,13 +448,13 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
     std::unique_ptr<RuleIterator> it(
         normal_provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_5, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_5, it->Next()->primary_pattern);
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_3, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_3, it->Next()->primary_pattern);
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_4, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_4, it->Next()->primary_pattern);
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_1, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_1, it->Next()->primary_pattern);
     EXPECT_FALSE(it->HasNext());
   }
 
@@ -479,11 +479,11 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
     std::unique_ptr<RuleIterator> it(incognito_provider.GetRuleIterator(
         ContentSettingsType::COOKIES, false));
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_3, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_3, it->Next()->primary_pattern);
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_4, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_4, it->Next()->primary_pattern);
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_1, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_1, it->Next()->primary_pattern);
     EXPECT_FALSE(it->HasNext());
   }
 
@@ -492,7 +492,7 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
     std::unique_ptr<RuleIterator> it(
         incognito_provider.GetRuleIterator(ContentSettingsType::COOKIES, true));
     EXPECT_TRUE(it->HasNext());
-    EXPECT_EQ(pattern_2, it->Next().primary_pattern);
+    EXPECT_EQ(pattern_2, it->Next()->primary_pattern);
     EXPECT_FALSE(it->HasNext());
   }
 

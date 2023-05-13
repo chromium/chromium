@@ -93,11 +93,12 @@ class DefaultRuleIterator : public RuleIterator {
 
   bool HasNext() const override { return !is_done_; }
 
-  Rule Next() override {
+  std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
     is_done_ = true;
-    return Rule(ContentSettingsPattern::Wildcard(),
-                ContentSettingsPattern::Wildcard(), std::move(value_), {});
+    return std::make_unique<OwnedRule>(ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsPattern::Wildcard(),
+                                       std::move(value_), RuleMetaData{});
   }
 
  private:

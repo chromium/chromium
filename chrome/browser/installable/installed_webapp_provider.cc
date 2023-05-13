@@ -30,15 +30,16 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
 
   bool HasNext() const override { return index_ < rules_.size(); }
 
-  content_settings::Rule Next() override {
+  std::unique_ptr<content_settings::Rule> Next() override {
     DCHECK(HasNext());
     const GURL& origin = rules_[index_].first;
     ContentSetting setting = rules_[index_].second;
     index_++;
 
-    return content_settings::Rule(
+    return std::make_unique<content_settings::OwnedRule>(
         ContentSettingsPattern::FromURLNoWildcard(origin),
-        ContentSettingsPattern::Wildcard(), base::Value(setting), {});
+        ContentSettingsPattern::Wildcard(), base::Value(setting),
+        content_settings::RuleMetaData{});
   }
 
  private:

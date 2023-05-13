@@ -63,12 +63,12 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
   ASSERT_TRUE(rule_iterator->HasNext());
-  Rule rule = rule_iterator->Next();
+  std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
 
   // Re-enable the default geolocation setting.
   EXPECT_CALL(mock_observer_,
@@ -86,12 +86,12 @@ TEST_F(SupervisedUserProviderTest, CookiesTest) {
       provider_->GetRuleIterator(ContentSettingsType::COOKIES, false);
 
   ASSERT_TRUE(rule_iterator->HasNext());
-  Rule rule = rule_iterator->Next();
+  std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, ValueToContentSetting(rule.value));
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, ValueToContentSetting(rule->value()));
 
   // Re-enable the default cookie setting.
   EXPECT_CALL(mock_observer_,
@@ -124,12 +124,12 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   rule_iterator = provider_->GetRuleIterator(
       ContentSettingsType::MEDIASTREAM_CAMERA, false);
   ASSERT_TRUE(rule_iterator->HasNext());
-  Rule rule = rule_iterator->Next();
+  std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
 
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::MEDIASTREAM_MIC, false);
@@ -137,9 +137,9 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
 
   // Re-enable the default camera and microphone setting.
   EXPECT_CALL(

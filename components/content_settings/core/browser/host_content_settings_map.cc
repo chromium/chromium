@@ -332,10 +332,10 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
   if (rule_iterator) {
     ContentSettingsPattern wildcard = ContentSettingsPattern::Wildcard();
     while (rule_iterator->HasNext()) {
-      content_settings::Rule rule = rule_iterator->Next();
-      if (rule.primary_pattern == wildcard &&
-          rule.secondary_pattern == wildcard) {
-        return content_settings::ValueToContentSetting(rule.value);
+      std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+      if (rule->primary_pattern == wildcard &&
+          rule->secondary_pattern == wildcard) {
+        return content_settings::ValueToContentSetting(rule->value());
       }
     }
   }
@@ -533,7 +533,7 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
   // the permission for the given permission |type|. Then test whether the
   // existing rule is more specific than the rule we are about to create. If
   // the existing rule is more specific, than change the existing rule instead
-  // of creating a new rule that would be hidden behind the existing rule.
+  // of creating a new rule that would be hidden behind the existing rule->
   content_settings::SettingInfo info;
   GetWebsiteSettingInternal(primary_url, secondary_url, type, kFirstProvider,
                             &info);
@@ -785,15 +785,15 @@ void HostContentSettingsMap::AddSettingsForOneType(
     return;
 
   while (rule_iterator->HasNext()) {
-    content_settings::Rule rule = rule_iterator->Next();
-    base::Value value = std::move(rule.value);
+    std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+    base::Value value = rule->TakeValue();
 
     // We may be adding settings for only specific rule types. If that's the
     // case and this setting isn't a match, don't add it. We will also avoid
     // adding any expired rules since they are no longer valid.
-    if ((!rule.metadata.expiration.is_null() &&
-         (rule.metadata.expiration < clock_->Now())) ||
-        (session_model && (session_model != rule.metadata.session_model))) {
+    if ((!rule->metadata.expiration.is_null() &&
+         (rule->metadata.expiration < clock_->Now())) ||
+        (session_model && (session_model != rule->metadata.session_model))) {
       continue;
     }
 
@@ -802,15 +802,16 @@ void HostContentSettingsMap::AddSettingsForOneType(
     if (!incognito && is_off_the_record_) {
       base::Value inherit_value =
           ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
-      if (!inherit_value.is_none())
+      if (!inherit_value.is_none()) {
         value = std::move(inherit_value);
-      else
+      } else {
         continue;
+      }
     }
-    settings->emplace_back(rule.primary_pattern, rule.secondary_pattern,
+    settings->emplace_back(rule->primary_pattern, rule->secondary_pattern,
                            std::move(value),
                            kProviderNamesSourceMap[provider_type].provider_name,
-                           incognito, rule.metadata);
+                           incognito, rule->metadata);
   }
 }
 
@@ -968,18 +969,18 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     base::Clock* clock) {
   if (rule_iterator) {
     while (rule_iterator->HasNext()) {
-      const content_settings::Rule& rule = rule_iterator->Next();
-      if (rule.primary_pattern.Matches(primary_url) &&
-          rule.secondary_pattern.Matches(secondary_url) &&
-          (rule.metadata.expiration.is_null() ||
-           (rule.metadata.expiration > clock->Now()))) {
+      std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+      if (rule->primary_pattern.Matches(primary_url) &&
+          rule->secondary_pattern.Matches(secondary_url) &&
+          (rule->metadata.expiration.is_null() ||
+           (rule->metadata.expiration > clock->Now()))) {
         if (primary_pattern)
-          *primary_pattern = rule.primary_pattern;
+          *primary_pattern = rule->primary_pattern;
         if (secondary_pattern)
-          *secondary_pattern = rule.secondary_pattern;
+          *secondary_pattern = rule->secondary_pattern;
         if (metadata)
-          *metadata = rule.metadata;
-        return rule.value.Clone();
+          *metadata = rule->metadata;
+        return rule->TakeValue();
       }
     }
   }

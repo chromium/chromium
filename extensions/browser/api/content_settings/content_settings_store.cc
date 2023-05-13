@@ -302,15 +302,16 @@ base::Value::List ContentSettingsStore::GetSettingsForExtension(
       continue;
 
     while (rule_iterator->HasNext()) {
-      const Rule& rule = rule_iterator->Next();
+      std::unique_ptr<Rule> rule = rule_iterator->Next();
       base::Value::Dict setting_dict;
-      setting_dict.Set(kPrimaryPatternKey, rule.primary_pattern.ToString());
-      setting_dict.Set(kSecondaryPatternKey, rule.secondary_pattern.ToString());
+      setting_dict.Set(kPrimaryPatternKey, rule->primary_pattern.ToString());
+      setting_dict.Set(kSecondaryPatternKey,
+                       rule->secondary_pattern.ToString());
       setting_dict.Set(
           kContentSettingsTypeKey,
           content_settings_helpers::ContentSettingsTypeToString(key));
       ContentSetting content_setting =
-          content_settings::ValueToContentSetting(rule.value);
+          content_settings::ValueToContentSetting(rule->value());
       DCHECK_NE(CONTENT_SETTING_DEFAULT, content_setting);
 
       std::string setting_string =

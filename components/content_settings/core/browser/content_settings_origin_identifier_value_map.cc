@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -27,7 +28,7 @@ class RuleIteratorImpl : public RuleIterator {
   RuleIteratorImpl(
       const OriginIdentifierValueMap::Rules::const_iterator& current_rule,
       const OriginIdentifierValueMap::Rules::const_iterator& rule_end,
-      std::unique_ptr<base::AutoLock> auto_lock,
+      scoped_refptr<RefCountedAutoLock> auto_lock,
       base::AutoReset<bool> iterating)
       : current_rule_(current_rule),
         rule_end_(rule_end),
@@ -37,12 +38,12 @@ class RuleIteratorImpl : public RuleIterator {
 
   bool HasNext() const override { return (current_rule_ != rule_end_); }
 
-  Rule Next() override {
+  std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
-    Rule to_return(current_rule_->first.primary_pattern,
-                   current_rule_->first.secondary_pattern,
-                   current_rule_->second.value.Clone(),
-                   current_rule_->second.metadata);
+    auto to_return = std::make_unique<UnownedRule>(
+        current_rule_->first.primary_pattern,
+        current_rule_->first.secondary_pattern, &current_rule_->second.value,
+        auto_lock_, current_rule_->second.metadata);
     ++current_rule_;
     return to_return;
   }
@@ -50,7 +51,7 @@ class RuleIteratorImpl : public RuleIterator {
  private:
   OriginIdentifierValueMap::Rules::const_iterator current_rule_;
   OriginIdentifierValueMap::Rules::const_iterator rule_end_;
-  std::unique_ptr<base::AutoLock> auto_lock_;
+  scoped_refptr<RefCountedAutoLock> auto_lock_;
   base::AutoReset<bool> iterating_;
 };
 
@@ -80,8 +81,8 @@ std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
   // must be passed to the |RuleIteratorImpl| in a locked state, so that nobody
   // can access |entries_| after |find()| but before the |RuleIteratorImpl| is
   // created.
-  std::unique_ptr<base::AutoLock> auto_lock =
-      std::make_unique<base::AutoLock>(lock_);
+  scoped_refptr<RefCountedAutoLock> auto_lock =
+      MakeRefCounted<RefCountedAutoLock>(lock_);
   auto it = entries_.find(content_type);
   if (it == entries_.end()) {
     return nullptr;

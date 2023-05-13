@@ -27,13 +27,13 @@ namespace extensions {
 
 namespace {
 
-void CheckRule(const content_settings::Rule& rule,
+void CheckRule(std::unique_ptr<content_settings::Rule> rule,
                const ContentSettingsPattern& primary_pattern,
                const ContentSettingsPattern& secondary_pattern,
                ContentSetting setting) {
-  EXPECT_EQ(primary_pattern.ToString(), rule.primary_pattern.ToString());
-  EXPECT_EQ(secondary_pattern.ToString(), rule.secondary_pattern.ToString());
-  EXPECT_EQ(setting, content_settings::ValueToContentSetting(rule.value));
+  EXPECT_EQ(primary_pattern.ToString(), rule->primary_pattern.ToString());
+  EXPECT_EQ(secondary_pattern.ToString(), rule->secondary_pattern.ToString());
+  EXPECT_EQ(setting, content_settings::ValueToContentSetting(rule->value()));
 }
 
 // Helper class which returns monotonically-increasing base::Time objects.
@@ -69,11 +69,11 @@ ContentSetting GetContentSettingFromStore(
   return content_settings::ValueToContentSetting(setting);
 }
 
-std::vector<content_settings::Rule> GetSettingsForOneTypeFromStore(
-    const ContentSettingsStore* store,
-    ContentSettingsType content_type,
-    bool incognito) {
-  std::vector<content_settings::Rule> rules;
+std::vector<std::unique_ptr<content_settings::Rule>>
+GetSettingsForOneTypeFromStore(const ContentSettingsStore* store,
+                               ContentSettingsType content_type,
+                               bool incognito) {
+  std::vector<std::unique_ptr<content_settings::Rule>> rules;
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       store->GetRuleIterator(content_type, incognito));
   if (rule_iterator) {
@@ -169,9 +169,11 @@ TEST_F(ContentSettingsStoreTest, RegisterUnregister) {
 
 TEST_F(ContentSettingsStoreTest, GetAllSettings) {
   const bool incognito = false;
-  std::vector<content_settings::Rule> rules = GetSettingsForOneTypeFromStore(
-      store(), ContentSettingsType::COOKIES, incognito);
+  std::vector<std::unique_ptr<content_settings::Rule>> rules =
+      GetSettingsForOneTypeFromStore(store(), ContentSettingsType::COOKIES,
+                                     incognito);
   ASSERT_EQ(0u, rules.size());
+  rules.clear();
 
   // Register first extension.
   std::string ext_id("my_extension");
@@ -185,7 +187,8 @@ TEST_F(ContentSettingsStoreTest, GetAllSettings) {
   rules = GetSettingsForOneTypeFromStore(store(), ContentSettingsType::COOKIES,
                                          incognito);
   ASSERT_EQ(1u, rules.size());
-  CheckRule(rules[0], pattern, pattern, CONTENT_SETTING_ALLOW);
+  CheckRule(std::move(rules[0]), pattern, pattern, CONTENT_SETTING_ALLOW);
+  rules.clear();
 
   // Register second extension.
   std::string ext_id_2("my_second_extension");
@@ -200,8 +203,9 @@ TEST_F(ContentSettingsStoreTest, GetAllSettings) {
                                          incognito);
   ASSERT_EQ(2u, rules.size());
   // Rules appear in the reverse installation order of the extensions.
-  CheckRule(rules[0], pattern_2, pattern_2, CONTENT_SETTING_BLOCK);
-  CheckRule(rules[1], pattern, pattern, CONTENT_SETTING_ALLOW);
+  CheckRule(std::move(rules[0]), pattern_2, pattern_2, CONTENT_SETTING_BLOCK);
+  CheckRule(std::move(rules[1]), pattern, pattern, CONTENT_SETTING_ALLOW);
+  rules.clear();
 
   // Disable first extension.
   store()->SetExtensionState(ext_id, false);
@@ -209,7 +213,8 @@ TEST_F(ContentSettingsStoreTest, GetAllSettings) {
   rules = GetSettingsForOneTypeFromStore(store(), ContentSettingsType::COOKIES,
                                          incognito);
   ASSERT_EQ(1u, rules.size());
-  CheckRule(rules[0], pattern_2, pattern_2, CONTENT_SETTING_BLOCK);
+  CheckRule(std::move(rules[0]), pattern_2, pattern_2, CONTENT_SETTING_BLOCK);
+  rules.clear();
 
   // Uninstall second extension.
   store()->UnregisterExtension(ext_id_2);

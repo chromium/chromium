@@ -251,19 +251,26 @@ bool PrefProvider::SetLastVisitTime(
     return false;
   }
 
-  Rule rule;
   while (it->HasNext()) {
-    rule = it->Next();
-    if (rule.primary_pattern == primary_pattern &&
-        rule.secondary_pattern == secondary_pattern) {
+    std::unique_ptr<Rule> rule = it->Next();
+    if (rule->primary_pattern == primary_pattern &&
+        rule->secondary_pattern == secondary_pattern) {
       // This should only be updated for settings that are already tracked.
-      DCHECK(rule.metadata.last_visited != base::Time());
-      // Reset iterator to release lock before updating setting.
+      DCHECK(rule->metadata.last_visited != base::Time());
+
+      ContentSettingsPattern primary = std::move(rule->primary_pattern);
+      ContentSettingsPattern secondary = std::move(rule->secondary_pattern);
+      base::Value value = rule->TakeValue();
+      RuleMetaData metadata = std::move(rule->metadata);
+      metadata.last_visited = time;
+
+      // Reset iterator and Rule to release lock before updating setting.
       it.reset();
-      rule.metadata.last_visited = time;
+      rule.reset();
+
       GetPref(content_type)
-          ->SetWebsiteSetting(rule.primary_pattern, rule.secondary_pattern,
-                              std::move(rule.value), std::move(rule.metadata));
+          ->SetWebsiteSetting(std::move(primary), std::move(secondary),
+                              std::move(value), std::move(metadata));
       return true;
     }
   }

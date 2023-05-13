@@ -178,10 +178,10 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
                                           false /* incognito */);
   EXPECT_TRUE(rule_iterator->HasNext());
-  content_settings::Rule rule = rule_iterator->Next();
-  EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
+  std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+  EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            content_settings::ValueToContentSetting(rule.value));
+            content_settings::ValueToContentSetting(rule->value()));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -198,10 +198,10 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
                                           false /* incognito */);
   EXPECT_TRUE(rule_iterator->HasNext());
-  content_settings::Rule rule = rule_iterator->Next();
-  EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
+  std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+  EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(rule.value));
+            content_settings::ValueToContentSetting(rule->value()));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -221,10 +221,10 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
                                           false /* incognito */);
   EXPECT_TRUE(rule_iterator->HasNext());
-  content_settings::Rule rule = rule_iterator->Next();
-  EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
+  std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+  EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            content_settings::ValueToContentSetting(rule.value));
+            content_settings::ValueToContentSetting(rule->value()));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -244,10 +244,10 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
                                           false /* incognito */);
   EXPECT_TRUE(rule_iterator->HasNext());
-  content_settings::Rule rule = rule_iterator->Next();
-  EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
+  std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+  EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(rule.value));
+            content_settings::ValueToContentSetting(rule->value()));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -309,15 +309,15 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
                                           false /* incognito */);
   EXPECT_TRUE(rule_iterator->HasNext());
-  content_settings::Rule first_rule = rule_iterator->Next();
-  EXPECT_EQ(abc_pattern, first_rule.primary_pattern);
+  std::unique_ptr<content_settings::Rule> first_rule = rule_iterator->Next();
+  EXPECT_EQ(abc_pattern, first_rule->primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            content_settings::ValueToContentSetting(first_rule.value));
+            content_settings::ValueToContentSetting(first_rule->value()));
   EXPECT_TRUE(rule_iterator->HasNext());
-  content_settings::Rule second_rule = rule_iterator->Next();
-  EXPECT_EQ(xyz_pattern, second_rule.primary_pattern);
+  std::unique_ptr<content_settings::Rule> second_rule = rule_iterator->Next();
+  EXPECT_EQ(xyz_pattern, second_rule->primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(second_rule.value));
+            content_settings::ValueToContentSetting(second_rule->value()));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
