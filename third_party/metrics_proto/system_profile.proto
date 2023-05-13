@@ -1217,6 +1217,7 @@ message SystemProfileProto {
     enum CustomizationFacet {
       UNDEFINED = 0;
       CLOUD_GAMING_DEVICE = 1;
+      FEATURE_AWARE_DEVICE = 2;
     }
     repeated CustomizationFacet customization_facet = 3 [packed = true];
   }

@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -297,6 +298,8 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
       prefs->GetString(prefs::kDemoModeCountry);
   demo_app_installer_attributes["is_cloud_gaming_device"] =
       chromeos::features::IsCloudGamingDeviceEnabled() ? "true" : "false";
+  demo_app_installer_attributes["is_feature_aware_device"] =
+      ash::features::IsFeatureAwareDeviceDemoModeEnabled() ? "true" : "false";
   return demo_app_installer_attributes;
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
@@ -174,6 +175,11 @@ void ChromeOSSystemProfileProvider::WriteDemoModeDimensionMetrics(
     demo_mode_dimensions->add_customization_facet(
         metrics::
             SystemProfileProto_DemoModeDimensions_CustomizationFacet_CLOUD_GAMING_DEVICE);
+  }
+  if (ash::features::IsFeatureAwareDeviceDemoModeEnabled()) {
+    demo_mode_dimensions->add_customization_facet(
+        metrics::
+            SystemProfileProto_DemoModeDimensions_CustomizationFacet_FEATURE_AWARE_DEVICE);
   }
 }
 

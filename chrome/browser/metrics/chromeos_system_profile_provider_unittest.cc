@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -262,8 +263,10 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
   const std::string expected_country = "CA";
   const std::string expected_retailer_id = "ABC";
   const std::string expected_store_id = "12345";
-  scoped_feature_list_.InitAndEnableFeature(
-      chromeos::features::kCloudGamingDevice);
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kCloudGamingDevice,
+       ash::features::kFeatureManagementFeatureAwareDeviceDemoMode},
+      {});
   g_browser_process->local_state()->SetString("demo_mode.country",
                                               expected_country);
   g_browser_process->local_state()->SetString("demo_mode.retailer_id",
@@ -283,11 +286,15 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
       system_profile.demo_mode_dimensions().retailer().has_retailer_id());
   ASSERT_TRUE(system_profile.demo_mode_dimensions().retailer().has_store_id());
   EXPECT_EQ(system_profile.demo_mode_dimensions().customization_facet_size(),
-            1);
+            2);
   ASSERT_EQ(
       system_profile.demo_mode_dimensions().customization_facet().at(0),
       metrics::
           SystemProfileProto_DemoModeDimensions_CustomizationFacet_CLOUD_GAMING_DEVICE);
+  ASSERT_EQ(
+      system_profile.demo_mode_dimensions().customization_facet().at(1),
+      metrics::
+          SystemProfileProto_DemoModeDimensions_CustomizationFacet_FEATURE_AWARE_DEVICE);
   std::string country = system_profile.demo_mode_dimensions().country();
   std::string retailer_id =
       system_profile.demo_mode_dimensions().retailer().retailer_id();
