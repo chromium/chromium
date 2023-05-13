@@ -24,8 +24,8 @@ void ContextProviderImpl::Create(
     return;
   }
 
-  // The CreateInstanceForContextWithCopiedArgs() call below assumes that
-  // `params` has a service directory when called by ContextProvider.
+  // The CreateInstanceForContextWithCopiedArgs() call below requires that
+  // `params` has a service directory.
   if (!params.has_service_directory()) {
     context_request.Close(ZX_ERR_INVALID_ARGS);
     return;

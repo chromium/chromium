@@ -97,8 +97,11 @@ int main(int argc, char** argv) {
   const base::ScopedNaturalServiceBinding resolver_binding(outgoing_directory,
                                                            &resolver);
 
+  // Services from this component will be provided to each web instance.
+  WebInstanceHostWithServicesFromThisComponent web_instance_host(
+      *outgoing_directory);
+
   // Publish the fuchsia.component.runner.ComponentRunner for Cast apps.
-  WebInstanceHost web_instance_host(*outgoing_directory);
   CastRunner runner(
       web_instance_host,
       {.headless = command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||

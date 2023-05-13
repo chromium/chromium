@@ -39,7 +39,7 @@ class WebContentRunner {
       base::RepeatingCallback<zx_status_t(
           fuchsia::web::CreateContextParams params,
           fidl::InterfaceRequest<fuchsia::io::Directory> services_request,
-          base::CommandLine extra_args)>;
+          const base::CommandLine& extra_args)>;
 
   using GetWebInstanceConfigCallback =
       base::RepeatingCallback<WebInstanceConfig()>;
