@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2023-05-12 12:54 UTC
+// Last updated: 2023-05-13 12:54 UTC
 //
 {
   "pinsets": [
@@ -81,15 +81,6 @@
         "DigiCertECCSecureServerCA",
         "DigiCertEVRoot",
         "FacebookBackup"
-      ]
-    },
-    {
-      "name": "spideroak",
-      "static_spki_hashes": [
-        "GeoTrustGlobal",
-        "DigiCertEVRoot",
-        "SpiderOak2",
-        "SpiderOak3"
       ]
     },
     {
@@ -2412,11 +2403,6 @@
       "name": "dist.torproject.org",
       "include_subdomains": true,
       "pins": "tor"
-    },
-    {
-      "name": "spideroak.com",
-      "include_subdomains": true,
-      "pins": "spideroak"
     }
   ]
 }
