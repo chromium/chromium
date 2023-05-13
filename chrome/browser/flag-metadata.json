@@ -1914,7 +1914,7 @@
   },
   {
     "name": "enable-baseline-gm3-surface-colors",
-    "owners": ["nemco", "skavuluru"],
+    "owners": ["nemco@google.com", "skavuluru@google.com"],
     "expiry_milestone": 120
   },
   {
@@ -2230,7 +2230,7 @@
   },
   {
     "name": "enable-delay-temp-strip-removal",
-    "owners": [ "skavuluru", "nemco", "clank-app-team@google.com" ],
+    "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -2375,7 +2375,7 @@
   },
   {
     "name": "enable-empty-states",
-    "owners": [ "zheliooo", "skavuluru", "nemco", "clank-app-team@google.com" ],
+    "owners": [ "zheliooo@google.com", "skavuluru@google.com", "nemco@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -3338,12 +3338,12 @@
   },
   {
     "name": "enable-tab-strip-redesign",
-    "owners": [ "zheliooo", "skavuluru", "nemco", "clank-app-team@google.com" ],
+    "owners": [ "zheliooo@google.com", "skavuluru@google.com", "nemco@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "enable-tab-strip-startup-refactoring",
-    "owners": [ "skavuluru", "nemco", "clank-large-form-factors@google.com" ],
+    "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -4282,7 +4282,7 @@
   },
   {
     "name": "grid-tab-switcher-for-tablets",
-    "owners": [ "nemco", "clank-app-team@google.com" ],
+    "owners": [ "nemco@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 114
   },
   {
