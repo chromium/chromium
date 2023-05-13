@@ -15,6 +15,7 @@
 
 namespace views {
 class BoxLayoutView;
+class TableLayoutView;
 class Label;
 }  // namespace views
 
@@ -47,6 +48,10 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Returns all search result image views children of this view.
   std::vector<SearchResultImageView*> GetSearchResultImageViews();
 
+  const views::TableLayoutView* image_info_container_for_test() const {
+    return image_info_container_.get();
+  }
+
  private:
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -63,6 +68,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Owned by views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::BoxLayoutView> image_view_container_ = nullptr;
+  raw_ptr<views::TableLayoutView> image_info_container_ = nullptr;
   std::vector<SearchResultImageView*> image_views_;
 };
 

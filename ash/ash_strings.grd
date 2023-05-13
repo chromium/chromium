@@ -2064,6 +2064,18 @@ Style notes:
       <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_IMAGES" desc="Category title for the list of image results shown in launcher search relevant to the query in the search box.">
         Images
       </message>
+      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_SIZE" desc="The title for the file size of the image file search result, where the information is listed beside the launcher image result.">
+        Size
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_DATE_MODIFIED" desc="The title for the last modified date of the image file search result, where the information is listed beside the launcher image result.">
+        Date modified
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_TYPE" desc="The title for the file type of the image file search result, where the information is listed beside the launcher image result.">
+        Type
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION" desc="The title for the file location of the image file search result, where the information is listed beside the launcher image result.">
+        Location
+      </message>
       <message name="IDS_ASH_SEARCH_RESULT_SEPARATOR" desc="Separator between the title and details text in ash search result view.">
         ''' - '''
       </message>

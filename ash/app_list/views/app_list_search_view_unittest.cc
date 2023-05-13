@@ -35,6 +35,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_utils.h"
 
@@ -303,6 +304,45 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
     }
   }
 
+  client->set_search_callback(TestAppListClient::SearchCallback());
+}
+
+TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
+  GetAppListTestHelper()->ShowAppList();
+
+  TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
+  client->set_search_callback(
+      base::BindLambdaForTesting([&](const std::u16string& query) {
+        if (query.empty()) {
+          AppListModelProvider::Get()->search_model()->DeleteAllResults();
+          return;
+        }
+        EXPECT_EQ(u"a", query);
+
+        auto* test_helper = GetAppListTestHelper();
+        SearchModel::SearchResults* results = test_helper->GetSearchResults();
+        // Only shows 1 result.
+        SetUpImageSearchResults(results, 1, 1);
+      }));
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  // Check result container visibility.
+  std::vector<SearchResultContainerView*> result_containers =
+      GetSearchView()->result_container_views_for_test();
+  for (auto* container : result_containers) {
+    EXPECT_TRUE(container->RunScheduledUpdateForTest());
+  }
+
+  // SearchResultImageListView container should be visible.
+  EXPECT_TRUE(result_containers[2]->GetVisible());
+
+  SearchResultImageListView* image_list_view =
+      static_cast<SearchResultImageListView*>(result_containers[2]);
+
+  // Verify that the info container of the search result is visible
+  EXPECT_TRUE(image_list_view->image_info_container_for_test()->GetVisible());
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 

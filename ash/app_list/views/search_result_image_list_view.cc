@@ -5,6 +5,7 @@
 #include "ash/app_list/views/search_result_image_list_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 
 namespace ash {
 
@@ -33,6 +35,9 @@ constexpr int kPreferredTitleTopMargins = 12;
 constexpr int kPreferredTitleBottomMargins = 4;
 
 }  // namespace
+
+using views::LayoutAlignment;
+using views::TableLayout;
 
 SearchResultImageListView::SearchResultImageListView(
     AppListViewDelegate* view_delegate)
@@ -66,6 +71,40 @@ SearchResultImageListView::SearchResultImageListView(
     image_views_.back()->layer()->SetFillsBoundsOpaquely(false);
     image_views_.back()->SetVisible(true);
     image_view_container_->AddChildView(image_views_.back());
+  }
+
+  // TODO(crbug.com/1352636): replace mock results with real results.
+  std::vector<std::u16string> info_strings = {
+      u"3.46MB", u"Today 13:28", u"image/png", u"My files/Downloads/abc.png"};
+  std::vector<int> title_string_ids = {
+      IDS_ASH_SEARCH_RESULT_IMAGE_FILE_SIZE,
+      IDS_ASH_SEARCH_RESULT_IMAGE_DATE_MODIFIED,
+      IDS_ASH_SEARCH_RESULT_IMAGE_FILE_TYPE,
+      IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION};
+  const views::Label::CustomFont title_font = {
+      views::Label::GetDefaultFontList().DeriveWithWeight(
+          gfx::Font::Weight::MEDIUM)};
+
+  auto append_image_info = [&](int idx) {
+    image_info_container_->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(title_string_ids[idx]), title_font));
+    image_info_container_->AddChildView(
+        std::make_unique<views::Label>(info_strings[idx]));
+  };
+
+  image_info_container_ = image_view_container_->AddChildView(
+      std::make_unique<views::TableLayoutView>());
+  image_info_container_->SetVisible(false);
+  image_info_container_->AddColumn(
+      LayoutAlignment::kStart, LayoutAlignment::kStretch,
+      TableLayout::kFixedSize, TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  image_info_container_->AddPaddingColumn(TableLayout::kFixedSize, 5);
+  image_info_container_->AddColumn(
+      LayoutAlignment::kStart, LayoutAlignment::kStretch, 1.0f,
+      TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  image_info_container_->AddRows(title_string_ids.size(), 1.0f);
+  for (size_t i = 0; i < title_string_ids.size(); ++i) {
+    append_image_info(i);
   }
 }
 
@@ -149,6 +188,7 @@ int SearchResultImageListView::DoUpdate() {
       result_view->SetResult(nullptr);
     }
   }
+  image_info_container_->SetVisible(num_results == 1);
   SetVisible(num_results > 0);
   return num_results;
 }
