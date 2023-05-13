@@ -114,6 +114,35 @@ constexpr int kNewInstallDotPadding = 4;
 // icons.
 constexpr size_t kMaxItemCounterCount = 100u;
 
+class IconBackgroundLayer : public ui::LayerOwner {
+ public:
+  explicit IconBackgroundLayer(views::View* icon_view)
+      : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)),
+        icon_view_(icon_view) {
+    layer()->SetName("icon_background_layer");
+    icon_view_->AddLayerToRegion(layer(), views::LayerRegion::kBelow);
+  }
+
+  IconBackgroundLayer(const IconBackgroundLayer&) = delete;
+  IconBackgroundLayer& operator=(const IconBackgroundLayer) = delete;
+
+  ~IconBackgroundLayer() override {
+    icon_view_->RemoveLayerFromRegions(layer());
+  }
+
+  // ui::LayerOwner:
+  std::unique_ptr<ui::Layer> RecreateLayer() override {
+    std::unique_ptr<ui::Layer> old_layer = ui::LayerOwner::RecreateLayer();
+
+    icon_view_->RemoveLayerFromRegionsKeepInLayerTree(old_layer.get());
+    icon_view_->AddLayerToRegion(layer(), views::LayerRegion::kBelow);
+    return old_layer;
+  }
+
+ private:
+  views::View* const icon_view_;
+};
+
 // The class clips the provided folder icon image.
 class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
  public:
@@ -596,6 +625,7 @@ AppListItemView::~AppListItemView() {
     item_weak_->RemoveObserver(this);
   }
   StopObservingImplicitAnimations();
+  icon_background_layer_.reset();
 }
 
 void AppListItemView::UpdateIconView(bool update_item_icon) {
@@ -1428,8 +1458,8 @@ void AppListItemView::OnThemeChanged() {
         is_folder_ ? GetColorProvider()->GetColor(cros_tokens::kIconColorBlue)
                    : item_weak_->GetNotificationBadgeColor();
     notification_indicator_->SetColor(notification_indicator_color);
-    if (icon_background_layer_.OwnsLayer()) {
-      icon_background_layer_.layer()->SetColor(
+    if (icon_background_layer_) {
+      icon_background_layer_->layer()->SetColor(
           GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
     }
   }
@@ -1826,19 +1856,15 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
 void AppListItemView::EnsureIconBackgroundLayer() {
   const bool clip_inner_icons =
       is_folder_ && !features::IsAppCollectionFolderRefreshEnabled();
-  if (clip_inner_icons || icon_background_layer_.OwnsLayer()) {
+  if (clip_inner_icons || icon_background_layer_) {
     return;
   }
 
-  icon_background_layer_.Reset(
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR));
-  auto* background_layer = icon_background_layer_.layer();
-  background_layer->SetName("icon_background_layer");
+  icon_background_layer_ = std::make_unique<IconBackgroundLayer>(GetIconView());
   if (GetColorProvider()) {
-    background_layer->SetColor(
+    icon_background_layer_->layer()->SetColor(
         GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
   }
-  GetIconView()->AddLayerToRegion(background_layer, views::LayerRegion::kBelow);
 }
 
 ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
@@ -1859,8 +1885,7 @@ ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
 
 void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {
   if (!setting_up_icon_animation_ && !extend_icon && !is_folder_) {
-    GetIconView()->RemoveLayerFromRegions(icon_background_layer_.layer());
-    icon_background_layer_.ReleaseLayer();
+    icon_background_layer_.reset();
   }
 }
 
@@ -1869,7 +1894,10 @@ ui::Layer* AppListItemView::GetIconBackgroundLayer() {
     return GetIconView()->layer();
   }
 
-  return icon_background_layer_.layer();
+  if (!icon_background_layer_) {
+    return nullptr;
+  }
+  return icon_background_layer_->layer();
 }
 
 BEGIN_METADATA(AppListItemView, views::Button)

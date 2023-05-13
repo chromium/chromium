@@ -39,6 +39,8 @@
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
+#include "ash/display/display_configuration_controller.h"
+#include "ash/display/display_configuration_controller_test_api.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
@@ -50,6 +52,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
+#include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
@@ -2107,6 +2110,55 @@ TEST_P(AppListBubbleAndTabletTest,
 
   // Exiting the search results page should close the dialog.
   widget_close_waiter.Wait();
+}
+
+// Verifies that rotation the screen when launcher is shown does not crash.
+TEST_P(AppListBubbleAndTabletTest, RotationAnimationSmoke) {
+  test::AppListTestModel* model = GetAppListModel();
+  model->PopulateApps(15);
+  model->CreateAndPopulateFolderWithApps(3);
+  model->PopulateApps(15);
+
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  ScreenRotationAnimator* animator =
+      DisplayConfigurationControllerTestApi(
+          Shell::Get()->display_configuration_controller())
+          .GetScreenRotationAnimatorForDisplay(display.id());
+  animator->Rotate(display::Display::ROTATE_90,
+                   display::Display::RotationSource::USER,
+                   DisplayConfigurationController::ANIMATION_SYNC);
+}
+
+TEST_P(AppListBubbleAndTabletTest, RotationAnimationInSearchSmoke) {
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  // Show search page.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, 0);
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+
+  // Add suggestion results - the result that will be tested is in
+  // the second place.
+  GetSearchModel()->results()->Add(
+      CreateOmniboxSuggestionResult("Another suggestion"));
+  const std::string kTestResultId = "Test suggestion";
+  GetSearchModel()->results()->Add(
+      CreateOmniboxSuggestionResult(kTestResultId));
+  // The result list is updated asynchronously.
+  base::RunLoop().RunUntilIdle();
+
+  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  ScreenRotationAnimator* animator =
+      DisplayConfigurationControllerTestApi(
+          Shell::Get()->display_configuration_controller())
+          .GetScreenRotationAnimatorForDisplay(display.id());
+  animator->Rotate(display::Display::ROTATE_90,
+                   display::Display::RotationSource::USER,
+                   DisplayConfigurationController::ANIMATION_SYNC);
 }
 
 // Tests that mouse app list item drag is cancelled when mouse capture is lost
