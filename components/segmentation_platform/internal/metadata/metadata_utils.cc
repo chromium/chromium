@@ -447,7 +447,7 @@ proto::ClientResult CreateClientResultFromPredResult(
   return client_result;
 }
 
-bool ConfigUsesLegacyOutput(Config* config) {
+bool ConfigUsesLegacyOutput(const Config* config) {
   // List of config segments ids that doesn't support multi output and uses
   // legacy output. Please delete `SegmentId` from this list if segment is
   // migrated to support multi output.

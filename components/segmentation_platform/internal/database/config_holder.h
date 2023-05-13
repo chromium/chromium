@@ -39,6 +39,8 @@ class ConfigHolder {
   absl::optional<std::string> GetKeyForSegmentId(
       proto::SegmentId segment_id) const;
 
+  const Config* GetConfigForSegmentId(proto::SegmentId segment_id) const;
+
   // Returns true if the Config is legacy, does not support output config and
   // uses discrete mapping.
   bool IsLegacySegmentationKey(const std::string& segmentation_key) const;

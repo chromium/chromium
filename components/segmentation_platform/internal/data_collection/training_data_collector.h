@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
@@ -30,7 +31,6 @@ namespace processing {
 class FeatureListQueryProcessor;
 }
 
-struct Config;
 class HistogramSignalHandler;
 
 // Collect training data and report as Ukm message. Live on main thread.
@@ -43,9 +43,9 @@ class TrainingDataCollector {
       HistogramSignalHandler* histogram_signal_handler,
       UserActionSignalHandler* user_action_signal_handler,
       StorageService* storage_service,
-      const std::vector<std::unique_ptr<Config>>* configs,
       PrefService* profile_prefs,
-      base::Clock* clock);
+      base::Clock* clock,
+      CachedResultProvider* cached_result_provider);
 
   // Parameters used for reporting immediate output collections.
   struct ImmediaCollectionParam {

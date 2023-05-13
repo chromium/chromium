@@ -15,6 +15,8 @@
 #include "base/metrics/histogram_base.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
+#include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
@@ -27,7 +29,6 @@
 namespace segmentation_platform {
 using proto::SegmentId;
 
-struct Config;
 class SegmentationResultPrefs;
 
 // Implementation of TrainingDataCollector.
@@ -39,9 +40,9 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                             HistogramSignalHandler* histogram_signal_handler,
                             UserActionSignalHandler* user_action_signal_handler,
                             StorageService* storage_service,
-                            const std::vector<std::unique_ptr<Config>>* configs,
                             PrefService* profile_prefs,
-                            base::Clock* clock);
+                            base::Clock* clock,
+                            CachedResultProvider* cached_result_provider);
   ~TrainingDataCollectorImpl() override;
 
   // TrainingDataCollector implementation.
@@ -134,11 +135,13 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
   const raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
-  const raw_ptr<const std::vector<std::unique_ptr<Config>>> configs_;
+  const raw_ptr<const ConfigHolder> config_holder_;
   const raw_ptr<base::Clock> clock_;
 
   // Helper class to read/write results to the prefs.
   std::unique_ptr<SegmentationResultPrefs> result_prefs_;
+
+  const raw_ptr<CachedResultProvider> cached_result_provider_;
 
   // Cache class to temporarily store training data in the observation period.
   std::unique_ptr<TrainingDataCache> training_cache_;

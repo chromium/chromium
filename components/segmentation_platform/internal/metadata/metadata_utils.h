@@ -134,7 +134,7 @@ proto::ClientResult CreateClientResultFromPredResult(
 
 // Returns true if config has not migrated to multi output and uses legacy
 // output.
-bool ConfigUsesLegacyOutput(Config* config);
+bool ConfigUsesLegacyOutput(const Config* config);
 
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

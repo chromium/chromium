@@ -6,6 +6,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
@@ -47,7 +48,8 @@ void ExecutionService::Initialize(
     const PlatformOptions& platform_options,
     std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
     const std::vector<std::unique_ptr<Config>>* configs,
-    PrefService* profile_prefs) {
+    PrefService* profile_prefs,
+    CachedResultProvider* cached_result_provider) {
   storage_service_ = storage_service;
 
   feature_list_query_processor_ =
@@ -58,8 +60,8 @@ void ExecutionService::Initialize(
   training_data_collector_ = TrainingDataCollector::Create(
       feature_list_query_processor_.get(),
       signal_handler->deprecated_histogram_signal_handler(),
-      signal_handler->user_action_signal_handler(), storage_service, configs,
-      profile_prefs, clock);
+      signal_handler->user_action_signal_handler(), storage_service,
+      profile_prefs, clock, cached_result_provider);
 
   model_executor_ = std::make_unique<ModelExecutorImpl>(
       clock, feature_list_query_processor_.get());

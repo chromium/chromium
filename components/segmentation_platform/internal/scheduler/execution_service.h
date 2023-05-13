@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
@@ -60,7 +61,8 @@ class ExecutionService {
       const PlatformOptions& platform_options,
       std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
       const std::vector<std::unique_ptr<Config>>* configs,
-      PrefService* profile_prefs);
+      PrefService* profile_prefs,
+      CachedResultProvider* cached_result_provider);
 
   // Returns the training data collector.
   TrainingDataCollector* training_data_collector() {

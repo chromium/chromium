@@ -93,6 +93,7 @@ class StorageService {
                  std::unique_ptr<SignalDatabase> signal_database,
                  std::unique_ptr<SignalStorageConfig> signal_storage_config,
                  std::unique_ptr<DefaultModelManager> default_model_manager,
+                 std::unique_ptr<ConfigHolder> config_holder,
                  UkmDataManager* ukm_data_manager);
 
   ~StorageService();
@@ -112,7 +113,7 @@ class StorageService {
   // Executes all database maintenance tasks.
   void ExecuteDatabaseMaintenanceTasks(bool is_startup);
 
-  const ConfigHolder& config_holder() const { return *config_holder_; }
+  const ConfigHolder* config_holder() const { return config_holder_.get(); }
 
   CachedResultProvider* cached_result_provider() {
     return cached_result_provider_.get();

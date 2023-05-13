@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -187,6 +188,10 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     std::vector<float> results(prediction_result->result().begin(),
                                prediction_result->result().end());
     AddPredictionResultToUkmModelExecution(&execution_result, results);
+    base::Time prediction_time = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(prediction_result->timestamp_us()));
+    execution_result.SetOutputDelaySec(
+        (base::Time::Now() - prediction_time).InSeconds());
   }
   if (selected_segment.has_value()) {
     execution_result.SetSelectionResult(selected_segment->segment_id);

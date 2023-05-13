@@ -6,6 +6,7 @@
 
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 
@@ -48,6 +49,17 @@ absl::optional<std::string> ConfigHolder::GetKeyForSegmentId(
     return absl::nullopt;
   }
   return key_for_updated_segment->second;
+}
+
+const Config* ConfigHolder::GetConfigForSegmentId(
+    proto::SegmentId segment_id) const {
+  for (const auto& config : configs_) {
+    auto it = config->segments.find(segment_id);
+    if (it != config->segments.end()) {
+      return config.get();
+    }
+  }
+  return nullptr;
 }
 
 bool ConfigHolder::IsLegacySegmentationKey(

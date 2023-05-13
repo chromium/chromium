@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -116,7 +117,8 @@ class SignalFilterProcessorTest : public testing::Test {
     storage_service_ = std::make_unique<StorageService>(
         std::move(moved_segment_database), nullptr,
         std::move(moved_signal_config),
-        std::make_unique<TestDefaultModelManager>(), ukm_data_manager_.get());
+        std::make_unique<TestDefaultModelManager>(), nullptr,
+        ukm_data_manager_.get());
 
     signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
         storage_service_.get(), user_action_signal_handler_.get(),

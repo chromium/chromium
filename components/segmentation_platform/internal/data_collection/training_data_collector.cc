@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
 
 namespace segmentation_platform {
 
@@ -16,12 +17,12 @@ std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
     HistogramSignalHandler* histogram_signal_handler,
     UserActionSignalHandler* user_action_signal_handler,
     StorageService* storage_service,
-    const std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
-    base::Clock* clock) {
+    base::Clock* clock,
+    CachedResultProvider* cached_result_provider) {
   return std::make_unique<TrainingDataCollectorImpl>(
       processor, histogram_signal_handler, user_action_signal_handler,
-      storage_service, configs, profile_prefs, clock);
+      storage_service, profile_prefs, clock, cached_result_provider);
 }
 
 TrainingDataCollector::TrainingDataCollector() = default;

@@ -101,8 +101,10 @@ StorageService::StorageService(
     std::unique_ptr<SignalDatabase> signal_database,
     std::unique_ptr<SignalStorageConfig> signal_storage_config,
     std::unique_ptr<DefaultModelManager> default_model_manager,
+    std::unique_ptr<ConfigHolder> config_holder,
     UkmDataManager* ukm_data_manager)
-    : default_model_manager_(std::move(default_model_manager)),
+    : config_holder_(std::move(config_holder)),
+      default_model_manager_(std::move(default_model_manager)),
       segment_info_database_(std::move(segment_info_database)),
       signal_database_(std::move(signal_database)),
       signal_storage_config_(std::move(signal_storage_config)),

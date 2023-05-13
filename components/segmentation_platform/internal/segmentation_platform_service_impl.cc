@@ -79,15 +79,15 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         model_provider_factory_.get(), profile_prefs_);
   }
 
-  const auto& config_holder = storage_service_->config_holder();
+  const auto* config_holder = storage_service_->config_holder();
 
   prefs_migrator_ = std::make_unique<PrefsMigrator>(
-      init_params->profile_prefs.get(), config_holder.configs());
+      init_params->profile_prefs.get(), config_holder->configs());
 
   // Construct signal processors.
   signal_handler_.Initialize(
       storage_service_.get(), init_params->history_service,
-      config_holder.all_segment_ids(),
+      config_holder->all_segment_ids(),
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnModelRefreshNeeded,
           weak_ptr_factory_.GetWeakPtr()));
@@ -95,12 +95,12 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   prefs_migrator_->MigrateOldPrefsToNewPrefs();
 
   field_trial_recorder_->RecordFieldTrialAtStartup(
-      config_holder.configs(), storage_service_->cached_result_provider());
+      config_holder->configs(), storage_service_->cached_result_provider());
 
   request_dispatcher_ = std::make_unique<RequestDispatcher>(
-      &config_holder, storage_service_->cached_result_provider());
+      config_holder, storage_service_->cached_result_provider());
 
-  for (const auto& config : config_holder.configs()) {
+  for (const auto& config : config_holder->configs()) {
     if (!metadata_utils::ConfigUsesLegacyOutput(config.get())) {
       continue;
     }
@@ -116,11 +116,11 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   proxy_ = std::make_unique<ServiceProxyImpl>(
       storage_service_->segment_info_database(),
       storage_service_->default_model_manager(),
-      storage_service_->signal_storage_config(), &config_holder.configs(),
+      storage_service_->signal_storage_config(), &config_holder->configs(),
       platform_options_, &segment_selectors_);
   segment_score_provider_ =
       SegmentScoreProvider::Create(storage_service_->segment_info_database(),
-                                   config_holder.all_segment_ids());
+                                   config_holder->all_segment_ids());
 
   // Kick off initialization of all databases. Internal operations will be
   // delayed until they are all complete.
@@ -135,7 +135,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           init_params->device_info_tracker));
 
   result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
-      config_holder.configs(),
+      config_holder->configs(),
       std::move(storage_service_->cached_result_writer()), platform_options_);
 }
 
@@ -232,10 +232,10 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   storage_init_status_ = success;
   OnServiceStatusChanged();
 
-  const auto& config_holder = storage_service_->config_holder();
+  const auto* config_holder = storage_service_->config_holder();
 
   if (!success) {
-    for (const auto& config : config_holder.configs()) {
+    for (const auto& config : config_holder->configs()) {
       stats::RecordSegmentSelectionFailure(
           *config, stats::SegmentationSelectionFailureReason::kDBInitFailure);
     }
@@ -255,10 +255,10 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()),
-      task_runner_, config_holder.all_segment_ids(),
+      task_runner_, config_holder->all_segment_ids(),
       model_provider_factory_.get(), std::move(observers), platform_options_,
-      std::move(input_delegate_holder_), &config_holder.configs(),
-      profile_prefs_);
+      std::move(input_delegate_holder_), &config_holder->configs(),
+      profile_prefs_, storage_service_->cached_result_provider());
 
   proxy_->SetExecutionService(&execution_service_);
 
@@ -330,7 +330,7 @@ std::map<std::string, std::unique_ptr<SegmentResultProvider>>
 SegmentationPlatformServiceImpl::CreateSegmentResultProviders() {
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
-  for (const auto& config : storage_service_->config_holder().configs()) {
+  for (const auto& config : storage_service_->config_holder()->configs()) {
     result_providers[config->segmentation_key] = SegmentResultProvider::Create(
         storage_service_->segment_info_database(),
         storage_service_->signal_storage_config(),
