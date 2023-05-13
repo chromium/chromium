@@ -23,8 +23,8 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_ACCESSIBILITY_JS" file="${root_gen_dir}\chrome\browser\resources\accessibility\tsc\accessibility.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_COMPONENTS_COMPONENTS_HTML" file="resources\components\components.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_COMPONENTS_COMPONENTS_JS" file="${root_gen_dir}\chrome\browser\resources\components\tsc\components.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_DEVICE_LOG_UI_HTML" file="resources\device_log_ui\device_log_ui.html" type="BINDATA" />
-      <include name="IDR_DEVICE_LOG_UI_JS" file="resources\device_log_ui\device_log_ui.js" type="BINDATA" />
+      <include name="IDR_DEVICE_LOG_UI_HTML" file="resources\device_log_ui\device_log_ui.html" preprocess="true" type="BINDATA" />
+      <include name="IDR_DEVICE_LOG_UI_JS" file="resources\device_log_ui\device_log_ui.js" preprocess="true" type="BINDATA" />
       <include name="IDR_DEVICE_LOG_UI_CSS" file="resources\device_log_ui\device_log_ui.css" type="BINDATA" />
       <include name="IDR_MEMORY_INTERNALS_HTML" file="resources\memory_internals\memory_internals.html" type="BINDATA" />
       <include name="IDR_MEMORY_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\memory_internals\tsc\memory_internals.js" use_base_dir="false" type="BINDATA" />

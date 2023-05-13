@@ -145,6 +145,23 @@ const setRefresh = function() {
   }
 };
 
+// <if expr="chromeos_ash">
+const updateOsLink = function() {
+  sendWithPromise('isLacrosEnabled').then(function(isLacrosEnabled) {
+    $('os-link-container').hidden = !isLacrosEnabled;
+
+    // we hide the header text if Lacros is enabled because the Ash window doesn't
+    // have the navigation bar and the hint saying "Add a query param in URL to
+    // auto-refresh the page" is no longer helpful for users.
+    $('header').hidden = isLacrosEnabled;
+  });
+
+  $('os-link-href').onclick = function() {
+    chrome.send('openBrowserDeviceLog');
+  };
+};
+// </if>
+
 /**
  * Gets log information from WebUI.
  */
@@ -177,4 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   setRefresh();
   requestLog();
+  // <if expr="chromeos_ash">
+  updateOsLink();
+  // </if>
 });

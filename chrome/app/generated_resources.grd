@@ -13038,6 +13038,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="FILE_INFO">$2<ex>file:123</ex></ph>
         <ph name="EVENT_NAME">$3<ex>Event Description</ex></ph>
       </message>
+      <if expr="chromeos_ash">
+        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the os://device-log page from ChromeOS which directs a user to a page showing Chrome browser specific device-log">
+          Looking for the browser device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="#" id="os-link-href"&gt;</ph><ph name="CHROME_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+        </message>
+      </if>
+      <if expr="chromeos_lacros">
+        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the chrome://device-log page from ChromeOS which directs a user to a dialog showing OS specific device-log">
+          Looking for the system device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="$1" id="os-link-href"&gt;</ph><ph name="OS_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+        </message>
+      </if>
 
     <!-- WebUsb Notification -->
     <message name="IDS_WEBUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">

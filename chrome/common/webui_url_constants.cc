@@ -418,7 +418,6 @@ const char kOsUIBluetoothInternalsURL[] = "os://bluetooth-internals";
 const char kOsUICrashesURL[] = "os://crashes";
 const char kOsUICreditsURL[] = "os://credits";
 const char kOsUIDeviceEmulatorURL[] = "os://device-emulator";
-const char kOsUIDeviceLogURL[] = "os://device-log";
 const char kOsUIDriveInternalsURL[] = "os://drive-internals";
 const char kOsUIEmojiPickerURL[] = "os://emoji-picker";
 const char kOsUIExtensionsInternalsURL[] = "os://extensions-internals";
@@ -504,6 +503,7 @@ const char kOsUIAboutURL[] = "os://about";
 const char kOsUIComponentsURL[] = "os://components";
 const char kOsUIConnectivityDiagnosticsAppURL[] =
     "os://connectivity-diagnostics";
+const char kOsUIDeviceLogURL[] = "os://device-log";
 const char kOsUIDiagnosticsAppURL[] = "os://diagnostics";
 const char kOsUIFirmwareUpdaterAppURL[] = "os://accessory-update";
 const char kOsUIFlagsURL[] = "os://flags";
