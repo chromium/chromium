@@ -566,6 +566,23 @@
     Manage payment methods
   </message>
 
+  <!-- Mandatory Reauth related strings - start -->
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+    No Thanks
+  </message>
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+    Yes
+  </message>
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+    Always verify?
+  </message>
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+    For added security on shared devices, turn on verification every time you pay using autofill.
+  </message>
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the mandatory reauth opt-in bubble on Desktop. This bubble prompts users if they would like to enroll in mandatory reauth. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+    Enable mandatory re-authentication
+  </message>
+
   <!-- virtual cards related strings - start -->
   <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL" desc="Text shown in the button in the Autofill dropdown menu when a credit card form field is queried, to offer the option to use a virtual card.">

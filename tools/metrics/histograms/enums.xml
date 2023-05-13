@@ -78762,6 +78762,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="22" label="Virtual Card Manual Fallback"/>
   <int value="23" label="Zoom"/>
   <int value="24" label="Save IBAN"/>
+  <int value="25" label="Mandatory Reauth"/>
 </enum>
 
 <enum name="PageActionPageEvent">

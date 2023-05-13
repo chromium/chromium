@@ -175,6 +175,7 @@ chromium-metrics-reviews@google.com.
     <variant name="IntentPicker"/>
     <variant name="LocalCardMigration"/>
     <variant name="ManagePasswords"/>
+    <variant name="MandatoryReauth"/>
     <variant name="PaymentsOfferNotification"/>
     <variant name="PriceTracking"/>
     <variant name="PWAInstall"/>

@@ -507,6 +507,14 @@ class AutofillClient : public RiskDataLoader {
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback);
 
+  // Prompt the user to enable mandatory reauthentication for payment method
+  // autofill. When enabled, the user will be asked to authenticate using
+  // biometrics or device unlock before filling in payment method information.
+  virtual void ShowMandatoryReauthOptInPrompt(
+      base::OnceClosure accept_mandatory_reauth_callback,
+      base::OnceClosure cancel_mandatory_reauth_callback,
+      base::RepeatingClosure close_mandatory_reauth_callback);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();

@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -527,6 +528,17 @@ void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
   controller->ShowBubble(virtual_card_enrollment_fields,
                          std::move(accept_virtual_card_callback),
                          std::move(decline_virtual_card_callback));
+}
+
+void ChromeAutofillClient::ShowMandatoryReauthOptInPrompt(
+    base::OnceClosure accept_mandatory_reauth_callback,
+    base::OnceClosure cancel_mandatory_reauth_callback,
+    base::RepeatingClosure close_mandatory_reauth_callback) {
+  MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
+  MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
+      ->ShowBubble(std::move(accept_mandatory_reauth_callback),
+                   std::move(cancel_mandatory_reauth_callback),
+                   std::move(close_mandatory_reauth_callback));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
