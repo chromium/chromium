@@ -242,7 +242,6 @@ export class PowerBookmarksListElement extends PolymerElement {
       setTimeout(() => this.bookmarksApi_.showUi(), 0);
     });
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
-    this.focusOutlineManager_.visible = false;
     this.bookmarksService_.startListening();
     this.shoppingListApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
