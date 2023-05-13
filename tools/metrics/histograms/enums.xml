@@ -85405,6 +85405,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="kMainFrameSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation"/>
   <int value="67" label="kMemoryPressureOnTrigger"/>
   <int value="68" label="kMemoryPressureAfterTriggered"/>
+  <int value="69" label="SpeculationRuleRemoved"/>
+  <int value="70" label="TriggerPageNavigated"/>
+  <int value="71" label="OtherPrerenderedPageActivated"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

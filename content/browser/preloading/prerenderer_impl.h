@@ -5,13 +5,14 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDERER_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDERER_IMPL_H_
 
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerenderer.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 
-class PrerenderHostRegistry;
 class Page;
+class PrerenderHostRegistry;
 
 // Handles speculation-rules based prerenders.
 class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
@@ -32,7 +33,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
   bool ShouldWaitForPrerenderResult(const GURL& url) override;
 
  private:
-  void CancelStartedPrerenders();
+  void CancelStartedPrerenders(PrerenderFinalStatus final_status);
 
   // This is kept sorted by URL.
   struct PrerenderInfo;

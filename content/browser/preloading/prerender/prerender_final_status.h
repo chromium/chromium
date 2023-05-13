@@ -114,7 +114,14 @@ enum class PrerenderFinalStatus {
   kMemoryPressureOnTrigger = 67,
   kMemoryPressureAfterTriggered = 68,
 
-  kMaxValue = kMemoryPressureAfterTriggered,
+  // A trigger page removed a prerendering URL from
+  // <script type="speculationrules">.
+  kSpeculationRuleRemoved = 69,
+
+  kTriggerPageNavigated = 70,
+  kOtherPrerenderedPageActivated = 71,
+
+  kMaxValue = kOtherPrerenderedPageActivated,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

@@ -162,6 +162,12 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::MemoryPressureOnTrigger;
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
       return Preload::PrerenderFinalStatusEnum::MemoryPressureAfterTriggered;
+    case PrerenderFinalStatus::kSpeculationRuleRemoved:
+      return Preload::PrerenderFinalStatusEnum::SpeculationRuleRemoved;
+    case PrerenderFinalStatus::kTriggerPageNavigated:
+      return Preload::PrerenderFinalStatusEnum::TriggerPageNavigated;
+    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
+      return Preload::PrerenderFinalStatusEnum::OtherPrerenderedPageActivated;
   }
 }
 
