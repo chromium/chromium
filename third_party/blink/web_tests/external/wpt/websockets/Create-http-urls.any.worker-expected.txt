@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSocket: ensure both HTTP schemes are supported Failed to construct 'WebSocket': The URL's scheme must be either 'ws' or 'wss'. 'http' is not allowed.
+Harness: the test ran to completion.
+

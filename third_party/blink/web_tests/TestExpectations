@@ -72,7 +72,6 @@ crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.ht
 
 # The following tests pass or fail depending on the underlying protocol (HTTP/1.1 vs HTTP/2).
 # The results of failures could be also different depending on the underlying protocol.
-crbug.com/1048761 external/wpt/websockets/constructor/002.html?wss [ Failure Pass ]
 crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/close/close-connecting.html?wss [ Failure Pass ]
 crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/close/close-nested.html?wss [ Failure Pass ]
 crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/readyState/003.html?wss [ Failure Pass ]
@@ -1845,7 +1844,7 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 
 # Popover test timeout/flakiness
 crbug.com/1416284 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
-crbug.com/1443372 external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Pass Failure ]
+crbug.com/1443372 external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Failure Pass ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
@@ -2921,6 +2920,7 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/access-reporting-post-message.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
