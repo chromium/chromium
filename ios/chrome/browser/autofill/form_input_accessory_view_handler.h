@@ -21,11 +21,6 @@ class WebState;
 // Sets the frameId of the frame containing the form with the latest focus.
 - (void)setLastFocusFormActivityWebFrameID:(NSString*)frameID;
 
-// Notification that the keyboard accessory will be shown with a specific type
-// of suggestions. May be called multiple times before showing the keyboard
-// accessory.
-- (void)willShowKeyboardAccessory:(autofill::PopupType)suggestionType;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_VIEW_HANDLER_H_

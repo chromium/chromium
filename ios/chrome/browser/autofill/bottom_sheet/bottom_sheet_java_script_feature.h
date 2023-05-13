@@ -26,11 +26,6 @@ class BottomSheetJavaScriptFeature : public web::JavaScriptFeature {
   // the field that had originally triggered the bottom sheet.
   void DetachListenersAndRefocus(web::WebFrame* frame);
 
-  // This function will result in detaching listeners from the username
-  // and password fields, which will prevent the bottom sheet from showing
-  // up until the form reloads.
-  void DetachListeners(web::WebFrame* frame);
-
  private:
   friend class base::NoDestructor<BottomSheetJavaScriptFeature>;
 

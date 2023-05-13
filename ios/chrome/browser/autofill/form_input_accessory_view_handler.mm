@@ -11,7 +11,6 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -164,21 +163,6 @@ NSArray* FindDescendantToolbarItemsForActionName(
 
 - (void)setLastFocusFormActivityWebFrameID:(NSString*)frameID {
   _lastFocusFormActivityWebFrameID = frameID;
-}
-
-- (void)willShowKeyboardAccessory:(autofill::PopupType)suggestionType {
-  if (!_webState) {
-    return;
-  }
-
-  web::WebFrame* frame = [self webFrame];
-
-  if (frame) {
-    BottomSheetTabHelper* bottomSheetTabHelper =
-        BottomSheetTabHelper::FromWebState(_webState);
-    CHECK(bottomSheetTabHelper);
-    bottomSheetTabHelper->WillShowKeyboardAccessory(suggestionType, frame);
-  }
 }
 
 // Attempts to execute/tap/send-an-event-to the iOS built-in "next" and

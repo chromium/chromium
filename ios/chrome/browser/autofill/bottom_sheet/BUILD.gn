@@ -15,7 +15,6 @@ source_set("bottom_sheet") {
   deps = [
     ":bottom_sheet_ts",
     "//base",
-    "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/form_util",
     "//components/password_manager/core/common:features",

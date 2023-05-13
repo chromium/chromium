@@ -529,15 +529,6 @@ using base::UmaHistogramEnumeration;
   // If suggestions are enabled, update `currentProvider`.
   self.currentProvider = provider;
 
-  // Notify that we are showing the keyboard accessory for a given type of
-  // suggestion. Note that this is called here so that it does get called when
-  // the keyboard accessory is about to show a set of suggestions, but this
-  // notification should NOT get propagated if the suggestions are accessed
-  // by clicking the key icon on the keyboard. This is specifically for the
-  // keyboard accessory.
-  [self.formNavigationHandler
-      willShowKeyboardAccessory:provider.suggestionType];
-
   // Post it to the consumer.
   self.consumer.suggestionType = provider.suggestionType;
   self.consumer.currentFieldId = _lastSeenParams.unique_field_id;

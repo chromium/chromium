@@ -5,9 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_BOTTOM_SHEET_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_BOTTOM_SHEET_TAB_HELPER_H_
 
-#import "components/autofill/core/browser/ui/popup_types.h"
 #import "components/autofill/core/common/unique_ids.h"
-#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
@@ -21,8 +19,7 @@ class WebFrame;
 
 // TODO(crbug.com/1422361): Rename this class to include the notion of autofill.
 class BottomSheetTabHelper
-    : public web::WebStateObserver,
-      public web::WebStateUserData<BottomSheetTabHelper> {
+    : public web::WebStateUserData<BottomSheetTabHelper> {
  public:
   BottomSheetTabHelper(const BottomSheetTabHelper&) = delete;
   BottomSheetTabHelper& operator=(const BottomSheetTabHelper&) = delete;
@@ -48,17 +45,6 @@ class BottomSheetTabHelper
   // Detach the listeners, which will deactivate the bottom sheet.
   void DetachListenersAndRefocus(web::WebFrame* frame);
 
-  // Notification that the keyboard accessory will be shown with a specific type
-  // of suggestions. May be called multiple times before showing the keyboard
-  // accessory.
-  void WillShowKeyboardAccessory(autofill::PopupType suggestionType,
-                                 web::WebFrame* frame);
-
-  // WebStateObserver:
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
-  void WebStateDestroyed(web::WebState* web_state) override;
-
  private:
   friend class web::WebStateUserData<BottomSheetTabHelper>;
 
@@ -82,11 +68,6 @@ class BottomSheetTabHelper
 
   // The WebState with which this object is associated.
   web::WebState* const web_state_;
-
-  // Whether the bottom sheet is currently enabled. This prevents receiving
-  // async messages or commands to attach listeners once any request to disable
-  // the bottom sheet has been made.
-  bool enabled_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
