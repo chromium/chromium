@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">हालसालै कुनै पनि भिडियो हेरिएको छैन</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> वटा फाइलहरू चयन गरिएका छन्</translation>
 <translation id="3685122418104378273">Google ड्राइभ सिंक डिफल्ट रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको खपत गर्ने क्रममा।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द गर्नुहोस्।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, <ph name="CONNECTION_STATUS" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> छवि</translation>
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> वटा फोल्डर चयन गरिएका छन्</translation>
 <translation id="5580591966435005537">भर्चुअल मेसिन</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
 <translation id="5583664733673201137">विरामको चौडाइ पूर्ण छ</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">थाई पत्ताचोते किबोर्ड</translation>
 <translation id="57383366388012121">गत महिना</translation>
 <translation id="5756666464756035725">हंगेरी QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> वटा सामग्री चयन गरिएका छन्</translation>
 <translation id="5763377084591234761">जर्मन (स्विजरल्यान्ड)</translation>
 <translation id="5769519078756170258">वर्जित गर्नु पर्ने होस्ट वा डोमेन</translation>
 <translation id="5775750595919327203">उर्दू</translation>

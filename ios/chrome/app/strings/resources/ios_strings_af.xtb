@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
 <translation id="110724200315609752">Wissel na oop venster</translation>
 <translation id="1112015203684611006">Kon nie druk nie.</translation>
+<translation id="1113057722807951993">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie.
+
+<ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> as jy hierdie instelling wil verander.</translation>
 <translation id="1125564390852150847">Skep nuwe oortjie.</translation>
 <translation id="1126809382673880764">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jy sal steeds Veiligblaai-beskerming kry, indien beskikbaar, in ander Google-dienste, soos Gmail en Search.</translation>
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Blaai deur</translation>
 <translation id="1990820278544963435">Soek</translation>
 <translation id="199425419756152024">Bekyk wagwoord</translation>
+<translation id="2008357574463816229"><ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="2010008505735295285">Herlaai</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="2021670401941426298">Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
@@ -707,6 +711,9 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5745916533876677730">Gaan na vorige oortjie</translation>
 <translation id="5755162682436943950">Afgemeld. Maak dialoog oop om aan te meld en sinkronisering aan te skakel.</translation>
 <translation id="5758631781033351321">Jy sal jou leeslys hier kry</translation>
+<translation id="5762370665605786758">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie.
+
+Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur hulle gestoor nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="5765456154762864099">Kieslys → Instellings → Verstekblaaier</translation>
 <translation id="5777888488419460501">Stoor in rekening</translation>
 <translation id="5782227691023083829">Vertaal tans …</translation>
@@ -848,6 +855,9 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="6476800141292307438">Vertaal tans die bladsy in <ph name="LANGUAGE" />. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="648164694371393720">Stawingfout</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items uitgevee</translation>
+<translation id="6484712497741564393">Aangemeld as <ph name="EMAIL" />.
+
+Jou data is met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Google-rekening te gebruik en te stoor.</translation>
 <translation id="6497772452874122664">As jy <ph name="TIME" /> vertrou, kan jy 'n gestoorde wagwoord van 'n ander werf af gebruik.
 
 Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
@@ -894,6 +904,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6730682669179532099">Kan nie wagwoorde uitvoer nie</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6748108480210050150">Vanaf</translation>
+<translation id="6753469262000681876">Snelsluitmodus</translation>
 <translation id="6760509555861141183">Keer terug na onlangse oortjie</translation>
 <translation id="6762812039470893796">Ontkies alles</translation>
 <translation id="6780034285637185932">Poskode</translation>
@@ -1120,6 +1131,9 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8299417921174340354">Om wagwoorde te gebruik, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="8299613349954694191">Maak 'n Incognito-oortjie oop om privaat deur die web te blaai.</translation>
 <translation id="8316944564970119719">Voer werf en wagwoord in, en stoor dan</translation>
+<translation id="8317835149433843300">Betaalmetodes en -adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie in jou Google-rekening gestoor word nie.
+
+Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur hulle gestoor nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="8319076807703933069">Nuwe soektog</translation>
 <translation id="8323906514956095947">Raak en hou vir meer oortjieopsies</translation>
 <translation id="8328777765163860529">Maak almal toe</translation>
@@ -1142,6 +1156,9 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="8488923644885757471">Nuwe venster</translation>
 <translation id="8490978609246021741">Stoor veranderinge</translation>
+<translation id="8491300088149538575">Aangemeld as <ph name="EMAIL" />.
+
+Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Google-rekening te gebruik en te stoor.</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="850600235656508448">Maak in Incognito oop</translation>
 <translation id="8517375800490286174">Oopbronlisensies</translation>

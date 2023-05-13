@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Awekho amavidiyo akamuva</translation>
 <translation id="3634507049637220048">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Iphethwe umlawuli wakho, imininingwane</translation>
 <translation id="3645233063072417428">izinto ezihanjisiwe ezingu-<ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="3658269352872031728">Kukhethwe amafayela angu-<ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Ukuvumelanisa kwe-Google Drayivu kukhutshaziwe ngokuzenzakalela, uma kusetshenziswa idatha yeselula.</translation>
 <translation id="3689865792480713551">Khansela i-<ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Akusetshenzisiwe <ph name="CONNECTION_STATUS" />, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Imininingwane</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> isithombe</translation>
 <translation id="5534520101572674276">Ibala usayizi</translation>
 <translation id="554153475311314364">Ukuguqulwa kwamaletha kwesi-Greek</translation>
+<translation id="5554171655917412781">Kukhethwe amafolda angu-<ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">umshini we-virtual</translation>
 <translation id="5583640892426849032">I-Backspace</translation>
 <translation id="5583664733673201137">Ububanzi bezimpawu zokubhala Bugcwele</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Thai esinekhibhodi ye-Pattachote</translation>
 <translation id="57383366388012121">Inyanga edlule</translation>
 <translation id="5756666464756035725">I-Hungarian QWERTY</translation>
+<translation id="5760252553414789727">Kukhethwe izinto ezingu-<ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">German (Switzerland)</translation>
 <translation id="5769519078756170258">Umsingathi noma isizinda esizokhishwa</translation>
 <translation id="5775750595919327203">Isi-Urdu</translation>

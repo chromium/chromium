@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Mudar para janela aberta</translation>
 <translation id="1112015203684611006">Falha na impressão.</translation>
+<translation id="1113057722807951993">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
+
+Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Criar nova guia</translation>
 <translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1990820278544963435">Buscar</translation>
 <translation id="199425419756152024">Ver senha</translation>
+<translation id="2008357574463816229">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Atualizar</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="2021670401941426298">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
@@ -707,6 +711,9 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5745916533876677730">Ir para a guia anterior</translation>
 <translation id="5755162682436943950">Conta desconectada. Abre a caixa de diálogo para fazer login e ativar a sincronização.</translation>
 <translation id="5758631781033351321">Você encontrará sua lista de leituras aqui</translation>
+<translation id="5762370665605786758">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
+
+Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa senha não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menu → Configurações → Navegador padrão</translation>
 <translation id="5777888488419460501">Salvar na conta</translation>
 <translation id="5782227691023083829">Traduzindo...</translation>
@@ -848,6 +855,9 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
 <translation id="648164694371393720">Erro de autenticação</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens excluídos</translation>
+<translation id="6484712497741564393">Login feito como <ph name="EMAIL" />.
+
+Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="6497772452874122664">Se você confia em <ph name="TIME" />, pode usar uma senha salva de outro site.
 
 Tente usar uma senha exclusiva para cada site.</translation>
@@ -894,6 +904,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6730682669179532099">Não é possível exportar as senhas</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6753469262000681876">Modo de bloqueio total</translation>
 <translation id="6760509555861141183">Voltar à guia recente</translation>
 <translation id="6762812039470893796">Desmarcar tudo</translation>
 <translation id="6780034285637185932">CEP</translation>
@@ -1120,6 +1131,9 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8299417921174340354">Para usar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="8299613349954694191">Abra uma guia anônima para navegar com privacidade.</translation>
 <translation id="8316944564970119719">Insira o site, a senha e clique em "Salvar"</translation>
+<translation id="8317835149433843300">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será salvo na sua Conta do Google.
+
+Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa senha não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque no botão e mantenha-o pressionado para ver mais opções da guia</translation>
 <translation id="8328777765163860529">Fechar todos</translation>
@@ -1142,6 +1156,9 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="8488923644885757471">Nova janela</translation>
 <translation id="8490978609246021741">Salvar alterações</translation>
+<translation id="8491300088149538575">Login feito como <ph name="EMAIL" />.
+
+Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="850600235656508448">Abrir em modo de navegação anônima</translation>
 <translation id="8517375800490286174">Licenças de código aberto</translation>

@@ -1092,6 +1092,7 @@
 <translation id="3658742229777143148">ክለሳ</translation>
 <translation id="3664782872746246217">ቁልፍ ቃላት፦</translation>
 <translation id="3667704023705708645">ቬንቸር ካፒታል</translation>
+<translation id="3671117652518853176">በሚጠፋበት ጊዜ ለደህንነት ዓላማዎች ሲባል በየጊዜው እንዲያረጋግጡ ሊጠየቁ ይችላሉ</translation>
 <translation id="3671540257457995106">መጠን መቀየር ይፈቀድ?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> ላይ ስህተት፦ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ሦስተኛ ጥቅልል</translation>
@@ -1126,6 +1127,7 @@
 <translation id="3736520371357197498">ደህንነትዎ ላይ የሚያመጣቸውን ስጋቶች ከተረዱ አደገኛ ፕሮግራሞቹ ከመወገዳቸው በፊት <ph name="BEGIN_LINK" />ይህን ደህንነቱ ያልተጠበቀ ጣቢያ ሊጎብኙ<ph name="END_LINK" /> ይችላሉ።</translation>
 <translation id="3738166223076830879">የእርስዎ አሳሽ በእርስዎ አስተዳዳሪ የሚተዳደር ነው።</translation>
 <translation id="3740319564441798148">የረጅም ርቀት አውቶቡስ እና ባቡር</translation>
+<translation id="3743765582345153106">ራስ-ሙላ በሚጠቀሙበት ጊዜ ሁልጊዜ ያረጋግጡ</translation>
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
 <translation id="3744286742364977428">እርስዎ የሚያወርዷቸው ፋይሎች ወደ Google ደመና ወይም ሶስተኛ ወገኖች ለትንታኔ ይላካሉ። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ወይም ለተንኮል አዘል ዌር ሊቃኙ እና ምናልባት በኩባንያ መመሪያዎች መሰረት ሊከማቹ ይችላሉ።</translation>
 <translation id="3744899669254331632">የድር ጣቢያው Chromium ሊያስኬዳቸው የማይችሉ የተዘበራረቁ ምስክርነቶችን ስለላከ አሁን ላይ <ph name="SITE" />ን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች ብዙውን ጊዜ ጊዜያዊ ናቸው፣ ስለዚህ ይህ ገፅ በኋላ ላይ ምናልባት ሊሰራ ይችል ይሆናል።</translation>
@@ -1728,6 +1730,7 @@
 <translation id="5171045022955879922">ይፈልጉ ወይም ዩአርኤል ይጻፉ</translation>
 <translation id="5172758083709347301">ማሽን</translation>
 <translation id="5177076414499237632">ስለዚህ ገፅ ምንጭ እና ርዕስ ይወቁ</translation>
+<translation id="5179490652562926740">የክፍያ ማረጋገጫ ቅንብሮች ተቀምጠዋል</translation>
 <translation id="5179510805599951267">በ<ph name="ORIGINAL_LANGUAGE" /> አይደለም? ይህን ስህተት ሪፖርት ያድርጉ</translation>
 <translation id="518639307526414276">የቤት እንስሳት ምግብ እና የቤት እንስሳት እንክብካቤ አቅርቦቶች</translation>
 <translation id="5190072300954988691">ካሜራ እና ማይክሮፎን አይፈቀዱም</translation>

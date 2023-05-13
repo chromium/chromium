@@ -740,6 +740,7 @@
 <translation id="7130438335435247835">Igama lephoyinti lokufinyelela (APN)</translation>
 <translation id="7131634559772719176">Qinisekisa ukusetha ngaphambilini</translation>
 <translation id="7134436342991564651">{0,plural, =1{Igama leseva}one{Igama lamaseva}other{Igama lamaseva}}</translation>
+<translation id="7135814714616751706">Sesha izinqamuleli</translation>
 <translation id="7143207342074048698">Iyaxhuma</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
 <translation id="714876143603641390">Ukuxhumana kwe-LAN</translation>
@@ -770,6 +771,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Cindezela okuthi Sesha ne-Space ukuze ubone umphumela ku-Google Search.</translation>
 <translation id="7343649194310845056">Amadivayisi Enethiwekhi</translation>
+<translation id="7353413232959255829">Imiphumela yosesho engu-<ph name="LIST_POSITION" /> kwengu-<ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Cindezela u-Enter ukuze uzulele kusinqamuleli.</translation>
 <translation id="7359657277149375382">Uhlobo lwefayela</translation>
 <translation id="73631062356239394">Yabelana ngedatha yokuxilonga</translation>
 <translation id="7375053625150546623">I-EAP</translation>

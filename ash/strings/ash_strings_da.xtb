@@ -183,6 +183,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1774796056689732716">Kalender for <ph name="CURRENT_MONTH_YEAR" /> – <ph name="DATE" /> er valgt.</translation>
 <translation id="1787955149152357925">Fra</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
+<translation id="1815245884418711390">Slå hotspot til/fra. Hotspot er deaktiveret.</translation>
 <translation id="1816896987747843206">Dette giver alle apps og websites med kameratilladelse adgang til kameraet</translation>
 <translation id="1823280932251546115">Statusbakke, klokkeslæt <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2023558322300866873">Du kan til enhver tid afbryde registrering af pakker</translation>
 <translation id="2034971124472263449">Gem alligevel</translation>
 <translation id="2049240716062114887">Navnet på skrivebordet blev ændret til <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Fuld</translation>
 <translation id="2064048859448024834">Forhåndsvisning af kamera er slået til</translation>
 <translation id="2067602449040652523">Lysstyrke for tastatur</translation>
 <translation id="2075520525463668108">Slå <ph name="CAPTURE_MEDIUM" /> til/fra. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2339073806695260576">Tryk på knappen for styluspen på hylden for at skrive en note, tage et screenshot eller bruge lasermarkøren og luppen.</translation>
 <translation id="2341729377289034582">Altid lodret</translation>
 <translation id="2345226652884463045">Tryk på Enter eller søgetasten + mellemrumstasten for at vælge den tekst, der skal redigeres.</translation>
+<translation id="2349785431103945039">Vis oplysninger om hotspot. Opret forbindelse via mobildata for at bruge hotspot.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> behandles nu lokalt og kan bruges offline. Du kan skifte dikteringssprog i Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="2352467521400612932">Indstillinger for styluspen</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
@@ -335,6 +338,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2531025035050312891">langsom enhed</translation>
 <translation id="2542089167727451762">Tryk på dit profilbillede</translation>
 <translation id="254900897760075745">Kopiér valgt indhold til udklipsholderen</translation>
+<translation id="2549711466868162843">Fremhæv lys</translation>
 <translation id="255671100581129685">Google Assistent er ikke tilgængelig i en offentlig session.</translation>
 <translation id="256712445991462162">den fastgjorte lup</translation>
 <translation id="2573588302192866788">Forbindelsen til <ph name="NAME" /> kunne ikke oprettes</translation>
@@ -427,6 +431,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="301282384882049174">Delt af din administrator</translation>
+<translation id="301584155502740476">Vis oplysninger om hotspot. Hotspot er deaktiveret.</translation>
 <translation id="3018135054368884502">Spol frem i mediet</translation>
 <translation id="3033545621352269033">Til</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
@@ -487,6 +492,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3291862315280588024">Flyt til starten af ​​foregående ord</translation>
 <translation id="3294437725009624529">Gæst</translation>
 <translation id="3298690094479023523">Din pin- eller adgangskode kan stadig ikke verificeres. Prøv igen.</translation>
+<translation id="3300193645498960160">Du får besked, hvis du taler, mens mikrofonen er slået fra. Lyden forlader aldrig din enhed.</translation>
 <translation id="3307642347673023554">Skiftede til computertilstand</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan stadig logge ind senere.</translation>
 <translation id="3321628682574733415">Forkert forældrekode</translation>
@@ -570,6 +576,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621712662352432595">Lydindstillinger</translation>
 <translation id="3626281679859535460">Lysstyrke</translation>
+<translation id="3629640897379005903">Vis oplysninger om hotspot. Hotspot deaktiveres.</translation>
 <translation id="3630697955794050612">fra</translation>
 <translation id="3631369015426612114">Tillad notifikationer fra følgende</translation>
 <translation id="3633097874324966332">Åbn Bluetooth-indstillingerne for at parre din enhed</translation>
@@ -701,6 +708,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="423685346499232137">Det er ikke muligt at kopiere eller indsætte indhold på nuværende tidspunkt</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oversigtstilstand</translation>
+<translation id="4240756737570479726">Deaktiverer...</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4247123849143712100">Opdater, og sluk</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -839,6 +847,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4864369630010738180">Logger ind...</translation>
 <translation id="4864648187878336334">Skrivebord 15</translation>
 <translation id="4868492592575313542">aktiveret</translation>
+<translation id="4871905435473761992">Vis oplysninger om hotspot. Dit mobilnetværk understøtter ikke hotspot.</translation>
 <translation id="4872237917498892622">Alt+Søg eller Shift</translation>
 <translation id="4872852897273142380">Fokuser på eller fremhæv bogmærkelinjen (hvis den vises)</translation>
 <translation id="4881695831933465202">Åbn</translation>
@@ -898,6 +907,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5104236669533825617">Screencasten kan ikke oprettes</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Baggrundssløring</translation>
 <translation id="5117590920725113268">Vis næste måned</translation>
 <translation id="5121628974188116412">Gå til bunden af siden</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
@@ -909,6 +919,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5176318573511391780">Optag dele af skærmen</translation>
+<translation id="5187627942836026988">Vis oplysninger om hotspot. Hotspot er blokeret af din administrator.</translation>
 <translation id="5198413532174090167"><ph name="DATE" /> – <ph name="NUMBER" /> begivenheder</translation>
 <translation id="5198715732953550718">En ny mappe blev oprettet ved at slå <ph name="MOVED_APP_NAME" /> og <ph name="IN_PLACE_APP" /> sammen.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1080,6 +1091,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Overvåget bruger</translation>
+<translation id="5961960957587052807">Let</translation>
 <translation id="5965524703725988602">Slå Mørkt tema til/fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Tryk på Enter for at optage vinduet</translation>
 <translation id="5978382165065462689">Skærmdeling via Fjernsupport.</translation>
@@ -1252,6 +1264,7 @@ Installeret for nylig</translation>
 <translation id="6752912906630585008">Skrivebord <ph name="REMOVED_DESK" /> blev fjernet og slået sammen med Skrivebord <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">faner</translation>
 <translation id="6757237461819837179">Der afspilles ingen medier</translation>
+<translation id="6759628406555734414">Vis oplysninger om hotspot. Hotspot aktiveres.</translation>
 <translation id="6768043681523654438">lagerplads</translation>
 <translation id="6777216307882431711">Leverer strøm til tilsluttede USB-C-enheder</translation>
 <translation id="6781002679438061620">Skrivebord 9</translation>
@@ -1276,6 +1289,7 @@ Installeret for nylig</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Der skal angives ét ciffer mere}one{Der skal angives # ciffer mere}other{Der skal angives # cifre mere}}</translation>
 <translation id="6867938213751067702">Download af <ph name="FILENAME" /> er sat på pause</translation>
+<translation id="6874854809828346832">Vis oplysninger om hotspot. Hotspot er aktiveret.</translation>
 <translation id="6878400149835617132">Genvejen er deaktiveret</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}one{# app}other{# apps}}</translation>
 <translation id="6884665277231944629">Gå tilbage til i dag</translation>
@@ -1285,6 +1299,7 @@ Installeret for nylig</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6901883536534621389">Prøv at navigere ved hjælp af bevægelser</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
+<translation id="6920245099716267363">Slå hotspot til/fra. Hotspot er aktiveret, og 1 enhed er tilsluttet.</translation>
 <translation id="6931576957638141829">Gem i</translation>
 <translation id="6941333068993625698">Send feedback</translation>
 <translation id="6942518653766415536">Menu for optagelsesformat</translation>
@@ -1374,6 +1389,7 @@ Installeret for nylig</translation>
 <translation id="7378203170292176219">Træk for at vælge et område, der skal optages</translation>
 <translation id="7378594059915113390">Mediestyring</translation>
 <translation id="7378889811480108604">Tilstanden Batterisparefunktion er deaktiveret</translation>
+<translation id="7382640522316003298">Slå hotspot til/fra. Hotspot er aktiveret. <ph name="DEVICECOUNT" /> enheder er tilsluttet.</translation>
 <translation id="7382680553121047388">Til</translation>
 <translation id="7384028040782072252">Højreklik et vilkårligt sted for at omarrangere dine apps</translation>
 <translation id="7386767620098596324">Slå netværksforbindelse til/fra. <ph name="STATE_TEXT" />.</translation>
@@ -1424,6 +1440,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7593891976182323525">Søg eller Shift</translation>
 <translation id="7600875258240007829">Se alle notifikationer</translation>
+<translation id="7601417191446344542">Vil du aktivere påmindelse om at slå mikrofonen fra?</translation>
 <translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7609951632080598826">Kalendervisning, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Der blev oprettet forbindelse til kameraet igen.</translation>
@@ -1546,6 +1563,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8131994907636310308">Luk sorteringstoast</translation>
 <translation id="8132793192354020517">Forbundet til <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Slå hotspot til/fra. Hotspot er aktiveret, og der er ingen tilsluttede enheder.</translation>
 <translation id="8138705869659070104">Aktivér efter enhedskonfiguration</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8142441511840089262">Dobbeltklik</translation>
@@ -1726,6 +1744,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8990809378771970590"><ph name="IME_NAME" /> anvendes</translation>
 <translation id="8991617137207906966">Tilstanden for ombytning af farver er aktiveret. Tryk på Ctrl+søgetasten+H igen for at deaktivere den.</translation>
 <translation id="899350903320462459">Lås enheden op som <ph name="LOGIN_ID" /> for at udføre notifikationshandlingen</translation>
+<translation id="8993733019280019776">Taler du nu? Din mikrofon er slukket. Vælg mikrofonen for at tænde den.</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGERPLADS</translation>
 <translation id="9005984960510803406">Åbn Crosh Window</translation>
 <translation id="9017320285115481645">Angiv forældreadgangskoden til Family Link.</translation>

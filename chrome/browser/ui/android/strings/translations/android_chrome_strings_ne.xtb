@@ -56,6 +56,7 @@
 <translation id="1258753120186372309">Google केरकार: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
+<translation id="1269129608791067105">तपाईंको ब्राउजिङ हिस्ट्री यहाँ देखिने छ</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ब्लक गर्नुहोस्</translation>
 <translation id="1283039547216852943">विस्तृत गर्न ट्याप गर्नुहोस्</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट सम्बन्धी डेटा, क्यासलाई खाली गर्नुहोस्…</translation>
@@ -844,6 +845,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> मा घटना सिर्जना गर्नुहोस्</translation>
 <translation id="5683547024293500885">Chrome ले अपडेट उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सकेन</translation>
 <translation id="5686790454216892815">फाइलको नाम ज्यादै लामो छ</translation>
+<translation id="569435661099256888">तपाईं आफूले खोलेका पेजहरू हेर्न वा ब्राउजिङ हिस्ट्रीबाट ती पेजहरू हटाउन सक्नुहुन्छ</translation>
 <translation id="569536719314091526">थप विकल्पहरू नामक बटनबाट यस पृष्ठलाई जुनसुकै भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5696597120588531049">Chrome ले तपाईंलाई डेटा चोरीका घटना, असुरक्षित वेबसाइटहरू र थप समस्याहरूबाट जोगिन मद्दत गर्न सक्छ</translation>
 <translation id="570347048394355941">ट्याब प्रयोग गर्न थाल्नुहोस्</translation>

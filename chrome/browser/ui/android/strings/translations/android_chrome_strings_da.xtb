@@ -56,6 +56,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
+<translation id="1269129608791067105">Her kan du se din historik</translation>
 <translation id="1273937721055267968">Bloker <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tryk for at udvide</translation>
 <translation id="1291207594882862231">Ryd historik, cookies, websitedata, cache...</translation>
@@ -845,6 +846,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5665379678064389456">Opret begivenhed i <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome kan ikke søge efter opdateringer</translation>
 <translation id="5686790454216892815">Filnavnet er for langt</translation>
+<translation id="569435661099256888">Du kan se de sider, du har besøgt, eller rydde dem fra din historik</translation>
 <translation id="569536719314091526">Oversæt denne side til et hvilket som helst sprog via knappen Flere valgmuligheder</translation>
 <translation id="5696597120588531049">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere</translation>
 <translation id="570347048394355941">Skift til fanen</translation>

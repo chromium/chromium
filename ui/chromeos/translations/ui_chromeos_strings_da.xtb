@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Du har ikke åbnet nogen videoer for nylig</translation>
 <translation id="3634507049637220048">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administreret af din administrator, oplysninger</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer blev flyttet.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> filer er valgt</translation>
 <translation id="3685122418104378273">Synkronisering af Google Drev er som standard deaktiveret, når du bruger mobildata.</translation>
 <translation id="3689865792480713551">Annuller <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-billede</translation>
 <translation id="5534520101572674276">Beregner størrelse</translation>
 <translation id="554153475311314364">Græsk translitteration</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> mapper er valgt</translation>
 <translation id="5580591966435005537">virtuel maskine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Tegnsætningsbredden er Fuld</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Thai med Pattachote-tastatur</translation>
 <translation id="57383366388012121">Sidste måned</translation>
 <translation id="5756666464756035725">Ungarsk QWERTY-tastatur</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementer er valgt</translation>
 <translation id="5763377084591234761">Tysk (Schweiz)</translation>
 <translation id="5769519078756170258">Host eller domæne, der skal ekskluderes</translation>
 <translation id="5775750595919327203">Urdu</translation>

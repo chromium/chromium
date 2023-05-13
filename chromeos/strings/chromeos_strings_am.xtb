@@ -740,6 +740,7 @@
 <translation id="7130438335435247835">የመድረሻ ነጥብ ስም (ኤፒኤን)</translation>
 <translation id="7131634559772719176">ቅድመ-ቅምጥን ያረጋግጡ</translation>
 <translation id="7134436342991564651">{0,plural, =1{የስም አገልጋይ}one{የስም አገልጋዩች}other{የስም አገልጋዩች}}</translation>
+<translation id="7135814714616751706">የፍለጋ አቋራጮች</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="714876143603641390">የላን ተገናኝነት</translation>
@@ -770,6 +771,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; በGoogle ፍለጋ ውስጥ ውጤትን ለማየት ፍለጋን እና ክፍተትን ይጫኑ።</translation>
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
+<translation id="7353413232959255829">የፍለጋ ውጤት <ph name="LIST_POSITION" /> ከ<ph name="LIST_SIZE" />፦ <ph name="SEARCH_RESULT_TEXT" />። ወደ አቋራጭ ለማሰስ አስገባን ይጫኑ።</translation>
 <translation id="7359657277149375382">የፋይል ዓይነት</translation>
 <translation id="73631062356239394">የምርመራ ውሂብን ያጋሩ</translation>
 <translation id="7375053625150546623">EAP</translation>

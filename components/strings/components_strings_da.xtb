@@ -438,6 +438,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2003709556000175978">Nulstil din adgangskode nu</translation>
 <translation id="2003775180883135320">Fire huller øverst</translation>
 <translation id="201174227998721785">Administrer tilladelser og data, der gemmes på websites, i Chrome-indstillingerne</translation>
+<translation id="2012276282211112603">Der er ingen emner at vise lige nu</translation>
 <translation id="2019607688127825327">Knappen "Administrer indstillinger for hjælpefunktioner" – tryk på Enter for at personligt tilpasse dine hjælpefunktioner i Chrome-indstillingerne</translation>
 <translation id="2021333772895814435">Denne politik deaktiverer automatisk synkronisering på tværs af enheder for: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 tommer</translation>
@@ -1092,6 +1093,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3664782872746246217">Søgeord:</translation>
 <translation id="3667704023705708645">Risikovillig kapital</translation>
+<translation id="3671117652518853176">Når funktionen er deaktiveret, kan du af sikkerhedsmæssige årsager blive bedt om at verificere af og til</translation>
 <translation id="3671540257457995106">Vil du tillade valg af andre størrelser?</translation>
 <translation id="3672568546897166916">Fejl: <ph name="ERROR_PATH" /> – <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Tredje papirrulle</translation>
@@ -1126,6 +1128,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3736520371357197498">Hvis du forstår den sikkerhedsrisiko, du udsætter dig for, kan du <ph name="BEGIN_LINK" />gå til dette usikre website<ph name="END_LINK" />, inden de farlige programmer er fjernet.</translation>
 <translation id="3738166223076830879">Din browser administreres af din administrator.</translation>
 <translation id="3740319564441798148">Langtursbus og -tog</translation>
+<translation id="3743765582345153106">Verificer altid, når du bruger autofyld</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3744286742364977428">De filer, du downloader, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. blive scannet for følsomme oplysninger eller malware og kan blive gemt i henhold til virksomhedens politikker.</translation>
 <translation id="3744899669254331632">Du kan ikke gå til <ph name="SITE" /> lige nu, da websitet sendte krypterede loginoplysninger, som Chromium ikke kan behandle. Netværksfejl og angreb er normalt midlertidige, så denne side vil sandsynligvis fungere igen senere.</translation>
@@ -1728,6 +1731,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
 <translation id="5172758083709347301">Maskine</translation>
 <translation id="5177076414499237632">Få flere oplysninger om denne sides kilde og emne</translation>
+<translation id="5179490652562926740">Indstillingerne for verificering ved betaling blev gemt</translation>
 <translation id="5179510805599951267">Ikke på <ph name="ORIGINAL_LANGUAGE" />? Rapporter denne fejl</translation>
 <translation id="518639307526414276">Foder og udstyr til kæledyr</translation>
 <translation id="5190072300954988691">Adgang til kamera og mikrofon er ikke tilladt</translation>

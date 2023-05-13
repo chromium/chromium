@@ -5993,6 +5993,7 @@
 <translation id="6266532094411434237">正在連接 <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">請選取您在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
 <translation id="6268252012308737255">使用 <ph name="APP" /> 開啟</translation>
+<translation id="6270309713620950855">靜音自動提醒</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6270770586500173387">傳送<ph name="BEGIN_LINK1" />系統和應用程式資訊<ph name="END_LINK1" />，以及<ph name="BEGIN_LINK2" />指標數據<ph name="END_LINK2" /></translation>
 <translation id="6270896861225278704">瀏覽過程資訊卡</translation>
@@ -6327,6 +6328,7 @@
 <translation id="657866106756413002">網絡健康快覽</translation>
 <translation id="6579369886355986318">顯示所有控制項(&amp;C)</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已共用桌面內容</translation>
+<translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">掃瞄速度</translation>
 <translation id="6582080224869403177">重設您的 <ph name="DEVICE_TYPE" />，以進行安全性升級。</translation>
 <translation id="6582274660680936615">您目前是以訪客身分瀏覽</translation>
@@ -6948,6 +6950,7 @@
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請前往 [設定] &gt; [已連接的裝置] &gt; [您的手機] &gt; [Smart Lock]。</translation>
 <translation id="7115361495406486998">沒有可用的聯絡人</translation>
+<translation id="7116554090938189816">打印機 SSL 憑證已過期。請重新啟動打印機，並再試一次。</translation>
 <translation id="7117228822971127758">請稍後再試</translation>
 <translation id="711840821796638741">顯示受管理書籤</translation>
 <translation id="711985611146095797">您可在此頁面管理已登入的 Google 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -7232,6 +7235,7 @@
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已複製 1 個項目}other{已複製 {COUNT} 個項目}}</translation>
+<translation id="7393435859300249877">如果您在使用特定應用程式 (例如視像通訊應用程式) 時向已靜音的麥克風說話，系統將會顯示通知。音訊資料絕不會外洩。</translation>
 <translation id="7395774987022469191">整個螢幕畫面</translation>
 <translation id="7396017167185131589">共用資料夾將會在這裡顯示</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後，仍會在背景繼續執行。</translation>
