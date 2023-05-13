@@ -422,10 +422,12 @@ bool ValidHostPrefix(const std::string& host) {
   return false;
 }
 
-std::string FindStringKeyOrEmpty(const base::Value::Dict& value,
-                                 base::StringPiece key) {
+// If `value[key]`, returns it. Otherwise, returns `fallback`.
+std::string FindStringKeyOrFallback(const base::Value::Dict& value,
+                                    base::StringPiece key,
+                                    std::string fallback = "") {
   auto* ptr = value.FindString(key);
-  return ptr ? *ptr : "";
+  return ptr ? *ptr : fallback;
 }
 
 }  // namespace
@@ -807,8 +809,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     }
 
     const base::Value::Dict& result = result_value.GetDict();
-    const std::string title = FindStringKeyOrEmpty(result, "title");
-    const std::string url = FindStringKeyOrEmpty(result, "url");
+    const std::string title = FindStringKeyOrFallback(result, "title");
+    const std::string url = FindStringKeyOrFallback(result, "url");
     if (title.empty() || url.empty()) {
       continue;
     }
@@ -851,23 +853,22 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 
     AutocompleteMatch match(this, score, false,
                             AutocompleteMatchType::DOCUMENT_SUGGESTION);
-    // Use full URL for displayed text and navigation. Use "originalUrl" for
-    // deduping if present.
-    match.fill_into_edit = base::UTF8ToUTF16(url);
+    // Use full URL for navigation. If present, use "originalUrl" for display &
+    // deduping, as it's shorter.
+    const std::string short_url =
+        FindStringKeyOrFallback(result, "originalUrl", url);
+    match.fill_into_edit = base::UTF8ToUTF16(short_url);
     match.destination_url = GURL(url);
-    const std::string* original_url = result.FindString("originalUrl");
-    if (original_url) {
-      // |AutocompleteMatch::GURLToStrippedGURL()| will try to use
-      // |GetURLForDeduping()| to extract a doc ID and generate a canonical doc
-      // URL; this is ideal as it handles different URL formats pointing to the
-      // same doc. Otherwise, it'll resort to the typical stripped URL
-      // generation that can still be used for generic deduping and as a key to
-      // |matches_cache_|.
-      match.stripped_destination_url = AutocompleteMatch::GURLToStrippedGURL(
-          GURL(*original_url), input_, client_->GetTemplateURLService(),
-          std::u16string(), /*keep_search_intent_params=*/false,
-          /*normalize_search_terms=*/false);
-    }
+    // `AutocompleteMatch::GURLToStrippedGURL()` will try to use
+    // `GetURLForDeduping()` to extract a doc ID and generate a canonical doc
+    // URL; this is ideal as it handles different URL formats pointing to the
+    // same doc. Otherwise, it'll resort to the typical stripped URL generation
+    // that can still be used for generic deduping and as a key to
+    // `matches_cache_`.
+    match.stripped_destination_url = AutocompleteMatch::GURLToStrippedGURL(
+        GURL(short_url), input_, client_->GetTemplateURLService(),
+        std::u16string(), /*keep_search_intent_params=*/false,
+        /*normalize_search_terms=*/false);
 
     match.contents =
         AutocompleteMatch::SanitizeString(base::UTF8ToUTF16(title));
@@ -875,8 +876,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     const base::Value::Dict* metadata = result.FindDict("metadata");
     if (metadata) {
       const std::string update_time =
-          FindStringKeyOrEmpty(*metadata, "updateTime");
-      const std::string mimetype = FindStringKeyOrEmpty(*metadata, "mimeType");
+          FindStringKeyOrFallback(*metadata, "updateTime");
+      const std::string mimetype =
+          FindStringKeyOrFallback(*metadata, "mimeType");
       if (metadata->FindString("mimeType")) {
         match.document_type = GetIconForMIMEType(mimetype);
         match.RecordAdditionalInfo(
