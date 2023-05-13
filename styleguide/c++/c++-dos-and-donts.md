@@ -68,8 +68,9 @@ class TypeName {
 
 ## Variable initialization
 
-There are myriad ways to initialize variables in C++11.  Prefer the following
+There are myriad ways to initialize variables in C++. Prefer the following
 general rules:
+
 1. Use assignment syntax when performing "simple" initialization with one or
    more literal values which will simply be composed into the object:
 
@@ -125,6 +126,9 @@ general rules:
    ```cpp
    auto x{1};  // Until C++17, decltype(x) is std::initializer_list<int>, not int!
    ```
+
+For more reading, please see abseil's [Tip of the Week #88: Initialization: =,
+(), and {}](https://abseil.io/tips/88).
 
 ## Initialize members in the declaration where possible
 
