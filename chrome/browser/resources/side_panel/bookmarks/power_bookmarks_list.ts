@@ -350,6 +350,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkReordered', getBookmarkName(bookmark)));
     } else if (shouldUpdateUIAdded) {
+      const scrollIndex = this.$.shownBookmarksIronList.firstVisibleIndex;
       this.shownBookmarks_.unshift(...bookmarksToShow);
       this.bookmarksService_.sortBookmarks(
           this.shownBookmarks_, this.activeSortIndex_);
@@ -357,7 +358,9 @@ export class PowerBookmarksListElement extends PolymerElement {
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkMoved', getBookmarkName(bookmark),
           getBookmarkName(newParent)));
+      this.$.shownBookmarksIronList.scrollToIndex(scrollIndex);
     } else if (shouldUpdateUIRemoved) {
+      const scrollIndex = this.$.shownBookmarksIronList.firstVisibleIndex;
       this.splice('shownBookmarks_', this.visibleIndex_(bookmark.id), 1);
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkMoved', getBookmarkName(bookmark),
@@ -368,10 +371,12 @@ export class PowerBookmarksListElement extends PolymerElement {
       if (visibleIndex > -1) {
         this.notifyPath(`shownBookmarks_.${visibleIndex}.children`);
       }
+      this.$.shownBookmarksIronList.scrollToIndex(scrollIndex);
     }
   }
 
   onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    const scrollIndex = this.$.shownBookmarksIronList.firstVisibleIndex;
     const visibleIndex = this.visibleIndex_(bookmark.id);
     if (visibleIndex > -1) {
       this.splice('shownBookmarks_', visibleIndex, 1);
@@ -380,6 +385,9 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
     this.set(`trackedProductInfos_.${bookmark.id}`, null);
     this.availableProductInfos_.delete(bookmark.id);
+    if (visibleIndex > -1) {
+      this.$.shownBookmarksIronList.scrollToIndex(scrollIndex);
+    }
   }
 
   isPriceTracked(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
