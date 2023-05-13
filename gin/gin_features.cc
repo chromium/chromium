@@ -148,6 +148,10 @@ BASE_FEATURE(kV8DelayMemoryReducer,
 const base::FeatureParam<base::TimeDelta> kV8MemoryReducerStartDelay{
     &kV8DelayMemoryReducer, "delay", base::Seconds(30)};
 
+BASE_FEATURE(kV8ConcurrentMarkingHighPriorityThreads,
+             "V8ConcurrentMarkingHighPriorityThreads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kV8UseLibmTrigFunctions,
              "V8UseLibmTrigFunctions",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -258,6 +258,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
         static_cast<int>(
             features::kV8MemoryReducerStartDelay.Get().InMilliseconds()));
   }
+  SetV8FlagsIfOverridden(features::kV8ConcurrentMarkingHighPriorityThreads,
+                         "--concurrent-marking-high-priority-threads",
+                         "--no-concurrent-marking-high-priority-threads");
   SetV8FlagsIfOverridden(features::kV8LazyFeedbackAllocation,
                          "--lazy-feedback-allocation",
                          "--no-lazy-feedback-allocation");
