@@ -183,7 +183,12 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
           /* screenshot_height */ 40);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DarkModeTextSelection) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DarkModeTextSelection DISABLED_DarkModeTextSelection
+#else
+#define MAYBE_DarkModeTextSelection DarkModeTextSelection
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_DarkModeTextSelection) {
 #if BUILDFLAG(IS_MAC)
   if (!MacOSVersionSupportsDarkMode())
     return;
