@@ -52,6 +52,7 @@ std::unique_ptr<FeatureTile> HotspotFeaturePodController::CreateTile(
       base::BindRepeating(&HotspotFeaturePodController::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()));
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_HOTSPOT));
+  tile_->CreateDecorativeDrillInArrow();
 
   // Default the visibility to false and update it in `UpdateTileState()` since
   // it should only be shown if user has used the Hotspot from Settings before.
