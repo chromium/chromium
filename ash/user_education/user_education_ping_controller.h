@@ -47,7 +47,8 @@ class ASH_EXPORT UserEducationPingController {
  private:
   class Ping;
 
-  // Owns pings, mapping them to their associated IDs.
+  // Owns pings, mapping them to their associated IDs. Note that pings are
+  // removed from the map on ping animation ended/aborted.
   std::map<PingId, std::unique_ptr<Ping>> pings_by_id_;
 };
 
