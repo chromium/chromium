@@ -48,6 +48,7 @@ src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/image_utils.ts
 src/common/tools/presubmit.ts
 src/common/tools/run_wpt_ref_tests.ts
+src/common/tools/validate.ts
 src/common/tools/version.ts
 src/common/util/collect_garbage.ts
 src/common/util/preprocessor.ts
