@@ -24,6 +24,10 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <utility>
 
@@ -31,7 +35,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
@@ -126,7 +129,7 @@ void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
 // across platforms.
 bool ProtectedMediaIdentifierPermissionContext::
     IsProtectedMediaIdentifierEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   // Identifier is not allowed in incognito or guest mode.
   if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
@@ -135,14 +138,15 @@ bool ProtectedMediaIdentifierPermissionContext::
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(chromeos::switches::kSystemDevMode) &&
-      !command_line->HasSwitch(ash::switches::kAllowRAInDevMode)) {
+      !command_line->HasSwitch(switches::kAllowRAInDevMode)) {
     DVLOG(1) << "Protected media identifier disabled in dev mode.";
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // This could be disabled by the device policy or by a switch in content
   // settings.
   bool enabled_for_device = false;
@@ -154,7 +158,8 @@ bool ProtectedMediaIdentifierPermissionContext::
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
   return true;
 }

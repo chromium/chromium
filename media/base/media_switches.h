@@ -97,6 +97,7 @@ MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[];
+MEDIA_EXPORT extern const char kAllowRAInDevMode[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace autoplay {

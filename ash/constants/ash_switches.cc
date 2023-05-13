@@ -39,12 +39,6 @@ const char kAllowFailedPolicyFetchForTest[] =
 // allows the user to install from USB to disk.
 const char kAllowOsInstall[] = "allow-os-install";
 
-// Allows remote attestation (RA) in dev mode for testing purpose. Usually RA
-// is disabled in dev mode because it will always fail. However, there are cases
-// in testing where we do want to go through the permission flow even in dev
-// mode. This can be enabled by this flag.
-const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
-
 // Override for the URL used for the ChromeOS Almanac API. Used for local
 // testing with a non-production server (e.g.
 // "--almanac-api-url=http://localhost:8000").

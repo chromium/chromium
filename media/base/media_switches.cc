@@ -238,6 +238,12 @@ MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[] =
     "lacros-use-chromeos-protected-media";
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[] =
     "lacros-use-chromeos-protected-av1";
+
+// Allows remote attestation (RA) in dev mode for testing purpose. Usually RA
+// is disabled in dev mode because it will always fail. However, there are cases
+// in testing where we do want to go through the permission flow even in dev
+// mode. This can be enabled by this flag.
+const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace autoplay {

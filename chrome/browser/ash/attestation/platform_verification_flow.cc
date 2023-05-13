@@ -43,6 +43,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -83,7 +84,7 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
   bool IsInSupportedMode() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return !command_line->HasSwitch(chromeos::switches::kSystemDevMode) ||
-           command_line->HasSwitch(switches::kAllowRAInDevMode);
+           command_line->HasSwitch(::switches::kAllowRAInDevMode);
   }
 };
 

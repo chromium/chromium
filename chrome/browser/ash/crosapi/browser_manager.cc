@@ -80,6 +80,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/nacl/common/buildflags.h"
@@ -96,6 +97,7 @@
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
+#include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -1070,6 +1072,16 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
   // CrAS is the default audio server in Chrome OS.
   if (base::SysInfo::IsRunningOnChromeOS()) {
     argv.push_back("--use-cras");
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kSystemDevMode)) {
+    argv.push_back("--system-developer-mode");
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowRAInDevMode)) {
+    argv.push_back("--allow-ra-in-dev-mode");
   }
 
 #if BUILDFLAG(ENABLE_NACL)
