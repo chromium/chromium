@@ -95,7 +95,11 @@ bool CanWithholdPermissionsFromExtension(
     const Manifest::Type type,
     const mojom::ManifestLocation location);
 
-// Returns a unique int id for each context.
+// Returns a unique int id for each context. Prefer using
+// `BrowserContext::UniqueId()` directly.
+// TODO(crbug.com/1444279):  Migrate callers to use the `context` unique id
+// directly. For that we need to update all data keyed by integer context ids to
+// be keyed by strings instead
 int GetBrowserContextId(content::BrowserContext* context);
 
 // Returns whether the |extension| should be loaded in the given
