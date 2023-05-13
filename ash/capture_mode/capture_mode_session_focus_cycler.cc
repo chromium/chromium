@@ -585,7 +585,7 @@ bool CaptureModeSessionFocusCycler::OnSpacePressed() {
   // create a default region in this case.
   CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
   if (const CaptureModeSourceView* capture_source_view =
-          bar_view->capture_source_view();
+          bar_view->GetCaptureSourceView();
       capture_source_view &&
       view->GetView() == capture_source_view->region_toggle_button() &&
       CaptureModeController::Get()->source() == CaptureModeSource::kRegion) {
@@ -804,8 +804,8 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     case FocusGroup::kTypeSource: {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
-      CaptureModeTypeView* type_view = bar_view->capture_type_view();
-      CaptureModeSourceView* source_view = bar_view->capture_source_view();
+      CaptureModeTypeView* type_view = bar_view->GetCaptureTypeView();
+      CaptureModeSourceView* source_view = bar_view->GetCaptureSourceView();
       if (!type_view || !source_view) {
         break;
       }

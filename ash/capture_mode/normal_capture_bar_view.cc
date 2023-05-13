@@ -41,11 +41,11 @@ NormalCaptureBarView::NormalCaptureBarView(
 
 NormalCaptureBarView::~NormalCaptureBarView() = default;
 
-CaptureModeTypeView* NormalCaptureBarView::capture_type_view() const {
+CaptureModeTypeView* NormalCaptureBarView::GetCaptureTypeView() const {
   return capture_type_view_;
 }
 
-CaptureModeSourceView* NormalCaptureBarView::capture_source_view() const {
+CaptureModeSourceView* NormalCaptureBarView::GetCaptureSourceView() const {
   return capture_source_view_;
 }
 

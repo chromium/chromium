@@ -284,21 +284,21 @@ gfx::Image ReadAndDecodeImageFile(const base::FilePath& image_path) {
 IconButton* GetImageToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
-  auto* capture_type_view = GetCaptureModeBarView()->capture_type_view();
+  auto* capture_type_view = GetCaptureModeBarView()->GetCaptureTypeView();
   return capture_type_view ? capture_type_view->image_toggle_button() : nullptr;
 }
 
 IconButton* GetVideoToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
-  auto* capture_type_view = GetCaptureModeBarView()->capture_type_view();
+  auto* capture_type_view = GetCaptureModeBarView()->GetCaptureTypeView();
   return capture_type_view ? capture_type_view->video_toggle_button() : nullptr;
 }
 
 IconButton* GetFullscreenToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
-  auto* capture_source_view = GetCaptureModeBarView()->capture_source_view();
+  auto* capture_source_view = GetCaptureModeBarView()->GetCaptureSourceView();
   return capture_source_view ? capture_source_view->fullscreen_toggle_button()
                              : nullptr;
 }
@@ -306,7 +306,7 @@ IconButton* GetFullscreenToggleButton() {
 IconButton* GetRegionToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
-  auto* capture_source_view = GetCaptureModeBarView()->capture_source_view();
+  auto* capture_source_view = GetCaptureModeBarView()->GetCaptureSourceView();
   return capture_source_view ? capture_source_view->region_toggle_button()
                              : nullptr;
 }
@@ -314,7 +314,7 @@ IconButton* GetRegionToggleButton() {
 IconButton* GetWindowToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
-  auto* capture_source_view = GetCaptureModeBarView()->capture_source_view();
+  auto* capture_source_view = GetCaptureModeBarView()->GetCaptureSourceView();
   return capture_source_view ? capture_source_view->window_toggle_button()
                              : nullptr;
 }

@@ -31,12 +31,10 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   IconButton* settings_button() const { return settings_button_; }
   IconButton* close_button() const { return close_button_; }
 
-  // TODO(minch): Renames these two functions to GetCaptureTypeView and
-  // GetCaptureSourceView and updates all the clients.
   // These functions may return `nullptr` depending on the actual type of the
   // bar.
-  virtual CaptureModeTypeView* capture_type_view() const;
-  virtual CaptureModeSourceView* capture_source_view() const;
+  virtual CaptureModeTypeView* GetCaptureTypeView() const;
+  virtual CaptureModeSourceView* GetCaptureSourceView() const;
   virtual PillButton* GetStartRecordingButton() const;
 
   // Called when either the capture mode source or type changes.

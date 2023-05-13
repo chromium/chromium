@@ -50,8 +50,8 @@ class ASH_EXPORT NormalCaptureBarView : public CaptureModeBarView {
   ~NormalCaptureBarView() override;
 
   // CaptureModeBarView:
-  CaptureModeTypeView* capture_type_view() const override;
-  CaptureModeSourceView* capture_source_view() const override;
+  CaptureModeTypeView* GetCaptureTypeView() const override;
+  CaptureModeSourceView* GetCaptureSourceView() const override;
   void OnCaptureSourceChanged(CaptureModeSource new_source) override;
   void OnCaptureTypeChanged(CaptureModeType new_type) override;
 

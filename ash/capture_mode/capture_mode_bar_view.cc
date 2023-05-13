@@ -41,11 +41,11 @@ constexpr int kBorderRadius = 20;
 
 CaptureModeBarView::~CaptureModeBarView() = default;
 
-CaptureModeTypeView* CaptureModeBarView::capture_type_view() const {
+CaptureModeTypeView* CaptureModeBarView::GetCaptureTypeView() const {
   return nullptr;
 }
 
-CaptureModeSourceView* CaptureModeBarView::capture_source_view() const {
+CaptureModeSourceView* CaptureModeBarView::GetCaptureSourceView() const {
   return nullptr;
 }
 
