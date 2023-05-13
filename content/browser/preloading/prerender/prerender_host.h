@@ -277,7 +277,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // PreloadingFailureReason for PreloadingAttempt associated with this
   // PrerenderHost.
   void SetTriggeringOutcome(PreloadingTriggeringOutcome outcome);
-  void SetEligibility(PreloadingEligibility eligibility);
   void SetFailureReason(PrerenderFinalStatus status);
 
   ActivationNavigationParamsMatch

@@ -939,13 +939,6 @@ void PrerenderHost::SetTriggeringOutcome(PreloadingTriggeringOutcome outcome) {
   attempt_->SetTriggeringOutcome(outcome);
 }
 
-void PrerenderHost::SetEligibility(PreloadingEligibility eligibility) {
-  if (!attempt_)
-    return;
-
-  attempt_->SetEligibility(eligibility);
-}
-
 void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
   switch (status) {
     // When adding a new failure reason, consider whether it should be
