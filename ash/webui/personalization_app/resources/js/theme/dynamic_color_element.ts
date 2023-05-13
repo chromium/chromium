@@ -39,9 +39,16 @@ export interface DynamicColorElement {
   };
 }
 
+/**
+ * enumVal: the StaticColor enum value.
+ * fillVal: the color displayed on the button.
+ * seedVal: the color stored on the backend, used for calculating color
+ * palettes.
+ */
 export interface StaticColorInfo {
-  hexVal: string;
   enumVal: StaticColor;
+  fillVal: string;
+  seedVal: string;
 }
 
 interface OnStaticColorSelectedEvent {
@@ -119,22 +126,29 @@ export class DynamicColorElement extends WithPersonalizationStore {
   }
 
   private computePresetStaticColors_() {
+    const lightPink = convertToRgbHexStr(STATIC_COLOR_LIGHT_PINK);
+    const darkGreen = convertToRgbHexStr(STATIC_COLOR_DARK_GREEN);
+    const lightPurple = convertToRgbHexStr(STATIC_COLOR_LIGHT_PURPLE);
     return [
       {
-        hexVal: convertToRgbHexStr(STATIC_COLOR_GOOGLE_BLUE),
         enumVal: StaticColor.kGoogleBlue,
+        fillVal: '#4d72b4',
+        seedVal: convertToRgbHexStr(STATIC_COLOR_GOOGLE_BLUE),
       },
       {
-        hexVal: convertToRgbHexStr(STATIC_COLOR_LIGHT_PINK),
         enumVal: StaticColor.kLightPink,
+        fillVal: lightPink,
+        seedVal: lightPink,
       },
       {
-        hexVal: convertToRgbHexStr(STATIC_COLOR_DARK_GREEN),
         enumVal: StaticColor.kDarkGreen,
+        fillVal: darkGreen,
+        seedVal: darkGreen,
       },
       {
-        hexVal: convertToRgbHexStr(STATIC_COLOR_LIGHT_PURPLE),
         enumVal: StaticColor.kLightPurple,
+        fillVal: lightPurple,
+        seedVal: lightPurple,
       },
     ];
   }
@@ -150,7 +164,7 @@ export class DynamicColorElement extends WithPersonalizationStore {
     const staticColorInfo = event.model.staticColor;
     logDynamicColorStaticColorButtonClick(staticColorInfo.enumVal);
     setStaticColorPref(
-        hexColorToSkColor(staticColorInfo.hexVal), getThemeProvider(),
+        hexColorToSkColor(staticColorInfo.seedVal), getThemeProvider(),
         this.getStore());
   }
 
