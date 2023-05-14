@@ -102,6 +102,14 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   static PrerenderHost* GetPrerenderHostFromFrameTreeNode(
       FrameTreeNode& frame_tree_node);
 
+  // Checks whether two headers are the same in a case-insensitive and
+  // order-insensitive way.
+  // TODO(https://crbug.com/1443922): Migrate this method into
+  // `HttpRequestHeaders`.
+  static bool IsActivationHeaderMatch(
+      const net::HttpRequestHeaders& potential_activation_headers,
+      const net::HttpRequestHeaders& prerender_headers);
+
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt);

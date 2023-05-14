@@ -34,6 +34,40 @@ namespace content {
 namespace {
 
 using ::testing::_;
+
+TEST(IsActivationHeaderMatchTest, OrderInsensitive) {
+  net::HttpRequestHeaders prerender_headers;
+  prerender_headers.AddHeadersFromString(
+      "name1: value1 \r\n name2: value2 \r\n name3:value3");
+  net::HttpRequestHeaders potential_activation_headers;
+  potential_activation_headers.AddHeadersFromString(
+      "name2: value2 \r\n name3:value3  \r\n name1: value1 ");
+  EXPECT_TRUE(PrerenderHost::IsActivationHeaderMatch(
+      potential_activation_headers, prerender_headers));
+}
+
+TEST(IsActivationHeaderMatchTest, KeyCaseInsensitive) {
+  net::HttpRequestHeaders prerender_headers;
+  prerender_headers.AddHeadersFromString(
+      "NAME1: value1 \r\n name2: value2 \r\n name3:value3");
+  net::HttpRequestHeaders potential_activation_headers;
+  potential_activation_headers.AddHeadersFromString(
+      "name1: value1 \r\n name2: value2  \r\n name3: value3 ");
+  EXPECT_TRUE(PrerenderHost::IsActivationHeaderMatch(
+      potential_activation_headers, prerender_headers));
+}
+
+TEST(IsActivationHeaderMatchTest, ValueCaseInsensitive) {
+  net::HttpRequestHeaders prerender_headers;
+  prerender_headers.AddHeadersFromString(
+      "name1: value1 \r\n name2: value2 \r\n name3:value3");
+  net::HttpRequestHeaders potential_activation_headers;
+  potential_activation_headers.AddHeadersFromString(
+      "name1: value1 \r\n name2: VALUE2  \r\n name3: value3 ");
+  EXPECT_TRUE(PrerenderHost::IsActivationHeaderMatch(
+      potential_activation_headers, prerender_headers));
+}
+
 using ExpectedReadyForActivationState =
     base::StrongAlias<class ExpectedReadyForActivationStateType, bool>;
 
