@@ -213,6 +213,16 @@ static_library("content_shell_lib") {
 
   if (is_ios) {
     sources += [
+      "browser/bluetooth/ios/shell_bluetooth_chooser_coordinator.h",
+      "browser/bluetooth/ios/shell_bluetooth_chooser_coordinator.mm",
+      "browser/bluetooth/ios/shell_bluetooth_chooser_ios.h",
+      "browser/bluetooth/ios/shell_bluetooth_chooser_ios.mm",
+      "browser/bluetooth/ios/shell_bluetooth_chooser_mediator.h",
+      "browser/bluetooth/ios/shell_bluetooth_chooser_mediator.mm",
+      "browser/bluetooth/ios/shell_bluetooth_device_list_consumer.h",
+      "browser/bluetooth/ios/shell_bluetooth_device_list_delegate.h",
+      "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h",
+      "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.mm",
       "browser/bluetooth/shell_bluetooth_delegate_impl_client.cc",
       "browser/bluetooth/shell_bluetooth_delegate_impl_client.h",
       "browser/shell_file_select_helper.cc",
@@ -362,6 +372,7 @@ static_library("content_shell_lib") {
   if (is_ios) {
     deps += [
       "//components/permissions",
+      "//components/strings:components_strings",
       "//services/tracing/public/cpp",
       "//services/tracing/public/mojom:mojom",
       "//ui/shell_dialogs",
@@ -520,6 +531,17 @@ repack("pak") {
   if (!is_android) {
     deps += [ "//content/browser/tracing:resources" ]
     sources += [ "$root_gen_dir/content/browser/tracing/tracing_resources.pak" ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
+      "${root_gen_dir}/components/strings/components_strings_en-US.pak",
+    ]
+    deps += [
+      "//components/strings:components_strings",
+      "//device/bluetooth/strings/",
+    ]
   }
 
   if (shell_use_toolkit_views) {

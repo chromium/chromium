@@ -4,7 +4,12 @@
 
 #include "content/shell/browser/bluetooth/shell_bluetooth_delegate_impl_client.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "content/shell/browser/bluetooth/ios/shell_bluetooth_chooser_ios.h"
+#endif
 
 namespace content {
 
@@ -23,8 +28,11 @@ std::unique_ptr<content::BluetoothChooser>
 ShellBluetoothDelegateImplClient::RunBluetoothChooser(
     RenderFrameHost* frame,
     const BluetoothChooser::EventHandler& event_handler) {
-  // TODO(crbug.com/1431447): Implement BluetoothChooser for iOS.
+#if BUILDFLAG(IS_IOS)
+  return std::make_unique<ShellBluetoothChooserIOS>(frame, event_handler);
+#else
   return nullptr;
+#endif
 }
 
 std::unique_ptr<BluetoothScanningPrompt>
