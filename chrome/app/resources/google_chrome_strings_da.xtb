@@ -144,7 +144,7 @@
 <translation id="3541482654983822893">Chrome kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer.</translation>
 <translation id="3576528680708590453">Din systemadministrator har konfigureret Google Chrome til at åbne en anden browser for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3579965087968408543">Ryd altid websitedata fra din enhed, når du lukker Chrome</translation>
-<translation id="3582972582564653026">Synkroniser og tilpas Chrome på alle dine enheder</translation>
+<translation id="3582972582564653026">Synkroniser og personligt tilpas Chrome på alle dine enheder</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3622797965165704966">Nu er det blevet nemmere at bruge Chrome med din Google-konto og på delte computere.</translation>
 <translation id="3673813398384385993">Chrome har registreret malware i "<ph name="EXTENSION_NAME" />"</translation>
@@ -180,7 +180,7 @@
 <translation id="4251615635259297716">Vil du linke dine Chrome-data til denne konto?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chrome på denne enhed.</translation>
 <translation id="4281844954008187215">Servicevilkår</translation>
-<translation id="4293420128516039005">Log ind for at synkronisere og tilpasse Chrome på alle dine enheder</translation>
+<translation id="4293420128516039005">Log ind for at synkronisere og personligt tilpasse Chrome på alle dine enheder</translation>
 <translation id="430327780270213103">Tillad, at udvidelsen viser adgangsanmodninger på Chrome-værktøjslinjen</translation>
 <translation id="4328355335528187361">Udviklerversionen af Google Chrome (mDNS-In)</translation>
 <translation id="4334294535648607276">Download fuldført.</translation>
@@ -304,7 +304,7 @@
 De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Du kan administrere dine Google-konti under <ph name="SETTINGS_LINK_BEGIN" />Indstillinger<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chrome. Det er ikke tilladt at tilføje denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7071827361006050863">Chrome sletter snart browserdataene</translation>
-<translation id="7085332316435785646">Vælg, om du vil inkludere Chrome-historikken for at få mere tilpassede oplevelser i Googles tjenester</translation>
+<translation id="7085332316435785646">Vælg, om du vil inkludere Chrome-historikken for at få mere personligt tilpassede oplevelser i Googles tjenester</translation>
 <translation id="7088681679121566888">Chrome er opdateret</translation>
 <translation id="7098166902387133879">Google Chrome bruger din mikrofon.</translation>
 <translation id="7099479769133613710">Genstart og opdater &amp;Chrome OS</translation>
@@ -370,7 +370,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chrome kan estimere dine interesser. Senere kan et website, du besøger, anmode Chrome om at se dine interesser med henblik på at personligt tilpasse de annoncer, du ser.</translation>
 <translation id="8387459386171870978">Fortsæt med at bruge Chrome</translation>
 <translation id="8394720698884623075">Webadresser tjekkes i forhold til en liste over usikre websites, der er gemt i Chrome</translation>
-<translation id="8416347857511542594">Få flere oplysninger om personlig annoncetilpasning i Chrome</translation>
+<translation id="8416347857511542594">Få flere oplysninger om personlig tilpasning af annoncer i Chrome</translation>
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="8433638294851456451">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8451192282033883849">Din konto administreres af <ph name="MANAGER_NAME" />. Din administrator kan se og redigere denne Chrome-browserprofil og dens data som f.eks. bogmærker, historik og adgangskoder.</translation>

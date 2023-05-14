@@ -67,7 +67,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1335348992705722518">Gérer les paramètres</translation>
 <translation id="1340643665687018190">Fermer le menu</translation>
 <translation id="1358214951266274152">Consulter le lien copié</translation>
-<translation id="1360432990279830238">Se déconnecter et arrêter la synchro. ?</translation>
+<translation id="1360432990279830238">Se déconnecter et arrêter la synchronisation ?</translation>
 <translation id="1363028406613469049">Titre</translation>
 <translation id="1375321115329958930">Mots de passe enregistrés</translation>
 <translation id="1377255359165588604">La synchronisation s'est arrêtée.</translation>
@@ -596,7 +596,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5121618895923301719">Vous suivez déjà ce produit. Cette page est enregistrée dans <ph name="BEGIN_LINK" />Favoris sur mobile<ph name="END_LINK" />.</translation>
-<translation id="5132942445612118989">Synchroniser vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
+<translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} mot de passe peu sécurisé}one{{COUNT} mot de passe peu sécurisé}other{{COUNT} mots de passe peu sécurisés}}</translation>
 <translation id="5149188072385105201">Ajouter un mot de passe</translation>
 <translation id="5150492518600715772">Envoyer sur votre appareil</translation>
