@@ -60887,6 +60887,8 @@ from previous Chrome versions.
   <int value="-886912558" label="ChromeHomePromo:enabled"/>
   <int value="-886898803" label="CooperativeScheduling:enabled"/>
   <int value="-886509859" label="DefaultChromeAppUninstallSync:enabled"/>
+  <int value="-886296821"
+      label="NtpHistoryClustersModuleUseModelRanking:disabled"/>
   <int value="-885601782" label="enable-contextual-search"/>
   <int value="-885209667" label="FilesZipMount:disabled"/>
   <int value="-884864731" label="WebPaymentsSingleAppUiSkip:enabled"/>
@@ -62591,6 +62593,8 @@ from previous Chrome versions.
   <int value="23121136" label="MobileIdentityConsistencyVar:enabled"/>
   <int value="23556595" label="MarkHttpAs:enabled"/>
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>
+  <int value="26632553"
+      label="NtpHistoryClustersModuleUseModelRanking:enabled"/>
   <int value="26875005" label="disable-explicit-dma-fences"/>
   <int value="26945819" label="EnhancedDeskAnimations:disabled"/>
   <int value="27442980" label="ArcGameModeFeature:enabled"/>

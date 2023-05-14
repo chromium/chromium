@@ -5285,6 +5285,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "ntp-journeys-module-model-ranking",
+    "owners": [ "sophiechang", "tiborg" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "ntp-middle-slot-promo-dismissal",
     "owners": [ "pauladedeji", "tiborg" ],
     "expiry_milestone": 111

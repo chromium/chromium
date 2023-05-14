@@ -4563,6 +4563,12 @@ const char kNtpHistoryClustersModuleName[] = "NTP Journeys Module";
 const char kNtpHistoryClustersModuleDescription[] =
     "Shows the Journeys module on the New Tab Page.";
 
+const char kNtpHistoryClustersModuleUseModelRankingName[] =
+    "NTP Journeys Module Model Ranking";
+const char kNtpHistoryClustersModuleUseModelRankingDescription[] =
+    "Leverages a machine learning model to rank clusters for the Journeys "
+    "module on the New Tab Page.";
+
 const char kNtpChromeCartInHistoryClustersModuleName[] =
     "NTP ChromeCart in Journeys Module";
 const char kNtpChromeCartInHistoryClustersModuleDescription[] =

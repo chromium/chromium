@@ -2611,6 +2611,9 @@ extern const char kNtpDummyModulesDescription[];
 extern const char kNtpHistoryClustersModuleName[];
 extern const char kNtpHistoryClustersModuleDescription[];
 
+extern const char kNtpHistoryClustersModuleUseModelRankingName[];
+extern const char kNtpHistoryClustersModuleUseModelRankingDescription[];
+
 extern const char kNtpChromeCartInHistoryClustersModuleName[];
 extern const char kNtpChromeCartInHistoryClustersModuleDescription[];
 

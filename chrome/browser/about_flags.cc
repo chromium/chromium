@@ -6370,6 +6370,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpHistoryClustersModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-journeys-module-model-ranking",
+     flag_descriptions::kNtpHistoryClustersModuleUseModelRankingName,
+     flag_descriptions::kNtpHistoryClustersModuleUseModelRankingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         ntp_features::kNtpHistoryClustersModuleUseModelRanking)},
+
     {"ntp-modules-header-icon", flag_descriptions::kNtpModulesHeaderIconName,
      flag_descriptions::kNtpModulesHeaderIconDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesHeaderIcon)},
