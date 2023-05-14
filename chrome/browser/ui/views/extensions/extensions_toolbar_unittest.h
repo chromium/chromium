@@ -109,6 +109,11 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   extensions::PermissionsManager::UserSiteSetting GetUserSiteSetting(
       const GURL& url);
 
+  // Returns the user's `extension` site access for `url`.
+  extensions::PermissionsManager::UserSiteAccess GetUserSiteAccess(
+      const extensions::Extension& extension,
+      const GURL& url) const;
+
   // Returns a list of the views of the currently pinned extensions, in order
   // from left to right.
   std::vector<ToolbarActionView*> GetPinnedExtensionViews();

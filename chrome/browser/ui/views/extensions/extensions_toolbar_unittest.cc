@@ -184,6 +184,12 @@ ExtensionsToolbarUnitTest::GetUserSiteSetting(const GURL& url) {
   return permissions_manager_->GetUserSiteSetting(url::Origin::Create(url));
 }
 
+PermissionsManager::UserSiteAccess ExtensionsToolbarUnitTest::GetUserSiteAccess(
+    const extensions::Extension& extension,
+    const GURL& url) const {
+  return permissions_manager_->GetUserSiteAccess(extension, url);
+}
+
 std::vector<ToolbarActionView*>
 ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
   std::vector<ToolbarActionView*> result;

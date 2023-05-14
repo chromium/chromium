@@ -254,11 +254,12 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     ExtensionMenuItemView::SitePermissionsButtonAccess
         site_permissions_button_access,
     int index) {
+  // base::Unretained() below is safe because `menu_handler_` lifetime is
+  // tied to this view lifetime by the extensions menu coordinator.
   auto item = std::make_unique<ExtensionMenuItemView>(
       browser_, std::move(action_controller),
-      // TODO(crbug.com/1390952): Create callback that grants/withhelds site
-      // access when toggling the site access toggle.
-      base::RepeatingClosure(base::NullCallback()),
+      base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
+                          base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
                           base::Unretained(menu_handler_), extension_id));
   item->Update(site_access_toggle_state, site_permissions_button_state,

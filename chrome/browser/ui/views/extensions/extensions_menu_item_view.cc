@@ -173,7 +173,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
-    views::Button::PressedCallback site_access_toggle_callback,
+    base::RepeatingCallback<void(bool)> site_access_toggle_callback,
     views::Button::PressedCallback site_permissions_button_callback)
     : browser_(browser),
       controller_(std::move(controller)),
@@ -220,7 +220,14 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   // Site access toggle.
                   views::Builder<views::ToggleButton>()
                       .CopyAddressTo(&site_access_toggle_)
-                      .SetCallback(site_access_toggle_callback),
+                      .SetCallback(base::BindRepeating(
+                          [](views::ToggleButton* toggle_button,
+                             base::RepeatingCallback<void(bool)>
+                                 site_access_toggle_callback) {
+                            site_access_toggle_callback.Run(
+                                toggle_button->GetIsOn());
+                          },
+                          site_access_toggle_, site_access_toggle_callback)),
                   // Context menu button.
                   views::Builder<HoverButton>(
                       std::make_unique<HoverButton>(

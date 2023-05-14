@@ -7,6 +7,7 @@
 
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
+#include "ui/views/controls/button/toggle_button.h"
 
 // An interface that provides callbacks to the extensions menu pages.
 class ExtensionsMenuHandler {
@@ -28,6 +29,11 @@ class ExtensionsMenuHandler {
   virtual void OnSiteAccessSelected(
       extensions::ExtensionId extension_id,
       extensions::PermissionsManager::UserSiteAccess site_access) = 0;
+
+  // Grants or withhelds site access for `extension_id` depending on
+  // `site_access_toggle`.
+  virtual void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
+                                         bool is_on) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_HANDLER_H_
