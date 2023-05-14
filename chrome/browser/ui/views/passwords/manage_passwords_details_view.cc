@@ -257,19 +257,93 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   return password_label_with_eye_icon_view;
 }
 
+// Creates the label for the note with custom logic for logging
+// metrics for selecting and copying text of the note.
+class NoteLabel : public views::Label {
+ public:
+  explicit NoteLabel(std::u16string note)
+      : views::Label(note,
+                     views::style::CONTEXT_DIALOG_BODY_TEXT,
+                     views::style::STYLE_SECONDARY),
+        note_(std::move(note)) {
+    std::u16string note_to_display =
+        note_.empty()
+            ? l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EMPTY_NOTE)
+            : note_;
+    if (note_.empty()) {
+      SetText(note_to_display);
+    }
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_MANAGE_PASSWORDS_NOTE_ACCESSIBLE_NAME, note_to_display));
+  }
+
+ public:
+  void ExecuteCommand(int command_id, int event_flags) override {
+    views::Label::ExecuteCommand(command_id, event_flags);
+    if (note_.empty()) {
+      return;
+    }
+
+    if (command_id == MenuCommands::kCopy && HasSelection()) {
+      LogUserInteractionsInPasswordManagementBubble(
+          HasFullSelection()
+              ? PasswordManagementBubbleInteractions::kNoteFullyCopied
+              : PasswordManagementBubbleInteractions::kNotePartiallyCopied);
+    }
+
+    if (command_id == MenuCommands::kSelectAll) {
+      LogUserInteractionsInPasswordManagementBubble(
+          PasswordManagementBubbleInteractions::kNoteFullySelected);
+    }
+  }
+
+ protected:
+  bool OnKeyPressed(const ui::KeyEvent& event) override {
+    if (note_.empty()) {
+      return views::Label::OnKeyPressed(event);
+    }
+
+    const bool alt = event.IsAltDown() || event.IsAltGrDown();
+    const bool control = event.IsControlDown() || event.IsCommandDown();
+
+    if (control && !alt) {
+      if (event.key_code() == ui::VKEY_A) {
+        LogUserInteractionsInPasswordManagementBubble(
+            PasswordManagementBubbleInteractions::kNoteFullySelected);
+      }
+
+      if (event.key_code() == ui::VKEY_C && HasSelection()) {
+        LogUserInteractionsInPasswordManagementBubble(
+            HasFullSelection()
+                ? PasswordManagementBubbleInteractions::kNoteFullyCopied
+                : PasswordManagementBubbleInteractions::kNotePartiallyCopied);
+      }
+    }
+
+    return views::Label::OnKeyPressed(event);
+  }
+
+  void OnMouseReleased(const ui::MouseEvent& event) override {
+    views::Label::OnMouseReleased(event);
+    if (note_.empty() || !HasSelection()) {
+      return;
+    }
+
+    LogUserInteractionsInPasswordManagementBubble(
+        HasFullSelection()
+            ? PasswordManagementBubbleInteractions::kNoteFullySelected
+            : PasswordManagementBubbleInteractions::kNotePartiallySelected);
+  }
+
+ private:
+  std::u16string note_;
+};
+
 std::unique_ptr<views::View> CreateNoteLabel(
     const password_manager::PasswordForm& form) {
-  std::u16string note = form.GetNoteWithEmptyUniqueDisplayName();
-  std::u16string note_to_display =
-      note.empty() ? l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EMPTY_NOTE)
-                   : note;
-
-  auto note_label = std::make_unique<views::Label>(
-      note_to_display, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
+  auto note_label =
+      std::make_unique<NoteLabel>(form.GetNoteWithEmptyUniqueDisplayName());
   note_label->SetMultiLine(true);
-  note_label->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_MANAGE_PASSWORDS_NOTE_ACCESSIBLE_NAME, note_to_display));
   note_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   note_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   note_label->SetSelectable(true);

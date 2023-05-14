@@ -650,7 +650,11 @@ enum class PasswordManagementBubbleInteractions {
   kNoteEdited = 10,
   kNoteDeleted = 11,
   kCredentialRowWithNoteClicked = 12,
-  kMaxValue = kCredentialRowWithNoteClicked,
+  kNotePartiallySelected = 13,
+  kNoteFullySelected = 14,
+  kNotePartiallyCopied = 15,
+  kNoteFullyCopied = 16,
+  kMaxValue = kNoteFullyCopied,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

@@ -79821,6 +79821,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Note edited"/>
   <int value="11" label="Note deleted"/>
   <int value="12" label="Credential row with note clicked"/>
+  <int value="13" label="Part of a note selected"/>
+  <int value="14" label="Full note selected"/>
+  <int value="15" label="Part of a note copied"/>
+  <int value="16" label="Full note copied"/>
 </enum>
 
 <enum name="PasswordManager.AssistantStoppedBubble.CloseReason">
