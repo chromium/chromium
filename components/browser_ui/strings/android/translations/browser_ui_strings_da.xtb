@@ -12,7 +12,7 @@
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">Billederne på denne side er blevet optimeret af Google, så du sparer data.</translation>
 <translation id="129382876167171263">Filer, der gemmes af websites, vises her</translation>
-<translation id="131112695174432497">Data, der påvirker personlig annoncetilpasning, slettes</translation>
+<translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
 <translation id="1317194122196776028">Glem dette website</translation>
 <translation id="1343356790768851700">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites</translation>
 <translation id="1369915414381695676">Websitet <ph name="SITE_NAME" /> blev tilføjet</translation>
@@ -184,7 +184,7 @@
 <translation id="4338831206024587507">Alle websites på <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Bloker websites fra at vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
-<translation id="4428065317363009941">Annoncetilpasning</translation>
+<translation id="4428065317363009941">Personlig tilpasning af annoncer</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="4440642537584213025">Udvid <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
