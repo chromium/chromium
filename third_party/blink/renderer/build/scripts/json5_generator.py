@@ -55,27 +55,13 @@ default_metadata or an exception raised.
 """
 
 import argparse
-import ast
 import copy
+import json5
 import os
 import os.path
 import re
 
 from blinkbuild.name_style_converter import NameStyleConverter
-
-
-def _json5_load(lines):
-    # Use json5.loads when json5 is available. Currently we use simple
-    # regexs to convert well-formed JSON5 to PYL format.
-    # Strip away comments and quote unquoted keys.
-    re_comment = re.compile(r"^\s*//.*$|//+ .*$", re.MULTILINE)
-    re_map_keys = re.compile(r"^\s*([$A-Za-z_][\w]*)\s*:", re.MULTILINE)
-    pyl = re.sub(re_map_keys, r"'\1':", re.sub(re_comment, "", lines))
-    # Convert map values of true/false to Python version True/False.
-    re_true = re.compile(r":\s*true\b")
-    re_false = re.compile(r":\s*false\b")
-    pyl = re.sub(re_true, ":True", re.sub(re_false, ":False", pyl))
-    return ast.literal_eval(pyl)
 
 
 def _merge_doc(doc, doc2):
@@ -131,7 +117,7 @@ class Json5File(object):
         for path in file_paths:
             assert path.endswith(".json5")
             with open(os.path.abspath(path)) as json5_file:
-                doc = _json5_load(json5_file.read())
+                doc = json5.loads(json5_file.read())
                 if not merged_doc:
                     merged_doc = doc
                 else:

@@ -1631,6 +1631,7 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/depot_tools/pylint_main.py",
       "//third_party/depot_tools/pylintrc",
       "//third_party/ply/",
+      "//third_party/pyjson5/",
       "//third_party/wpt_tools/",
       "//tools/idl_parser/",
     ]

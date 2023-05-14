@@ -61,7 +61,10 @@ def main():
             path_finder.get_blink_tools_dir(),
             path_finder.get_build_scripts_dir(),
         ],
-        path=[path_finder.get_blinkpy_thirdparty_dir()])
+        path=[
+            path_finder.get_blinkpy_thirdparty_dir(),
+            finder.path_from_chromium_base('third_party', 'pyjson5', 'src')
+        ])
 
 
 if __name__ == "__main__":

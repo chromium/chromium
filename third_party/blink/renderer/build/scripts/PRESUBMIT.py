@@ -20,12 +20,13 @@ def _GenerateTestCommand(input_api, output_api, file_name, affected_list):
                                        file_name)
     cmd = [input_api.python3_executable, test_path]
 
-    # Adds "//third_party" to the path, so that the jinja2 module can be found
-    # during import.
+    # Adds paths for jinja2 and pyjson5
     env = input_api.environ.copy()
     import_path = [
         input_api.os_path.join(input_api.change.RepositoryRoot(),
-                               'third_party')
+                               'third_party'),
+        input_api.os_path.join(input_api.change.RepositoryRoot(),
+                               'third_party', 'pyjson5', 'src')
     ]
     if env.get('PYTHONPATH'):
         import_path.append(env.get('PYTHONPATH'))

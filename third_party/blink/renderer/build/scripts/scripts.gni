@@ -19,6 +19,7 @@ scripts_for_json5_files = [
   # dependency for whole jinja2 package
   "//third_party/jinja2/__init__.py",
   "//third_party/markupsafe/__init__.py",  # jinja2 dep
+  "//third_party/pyjson5/src/json5/__init__.py",
   "$_scripts_dir/blinkbuild/name_style_converter.py",
   "$_scripts_dir/hasher.py",
   "$_scripts_dir/json5_generator.py",
@@ -93,6 +94,8 @@ make_core_generated_deps = [
 # then run invoker.script.
 #  - //third_party/blink/renderer/build/scripts
 #  - //third_party
+#  - //third_party/pyjson5/src
+#  - //tools
 template("blink_python_runner") {
   action(target_name) {
     script = "$_scripts_dir/run_with_pythonpath.py"
@@ -112,6 +115,8 @@ template("blink_python_runner") {
              rebase_path(_scripts_dir, root_build_dir),
              "-I",
              rebase_path("//third_party", root_build_dir),
+             "-I",
+             rebase_path("//third_party/pyjson5/src", root_build_dir),
              "-I",
              rebase_path("//tools", root_build_dir),
              rebase_path(invoker.script, root_build_dir),
