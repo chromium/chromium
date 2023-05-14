@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2640549051766135490">ເລືອກອະລະບໍ້າ <ph name="TITLE" /> <ph name="DESC" /> ແລ້ວ</translation>
 <translation id="267442004702508783">ຣີເຟຣັຊ</translation>
+<translation id="268270014981824665">ຫຼີ່ແສງແປ້ນພິມ</translation>
 <translation id="2712812801627182647">ກະແຈການພິສູດຢືນຢັນ TLS</translation>
 <translation id="2713444072780614174">ສີ​ຂາວ</translation>
 <translation id="2717139507051041123">ເປີດການນຳໃຊ້ໂໝດສີມືດ</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">ແຊຣ໌ແລ້ວ</translation>
 <translation id="2751739896257479635">ການຮັບຮອງຄວາມຖືກຕ້ອງ EAP ໄລຍະທີ 2</translation>
 <translation id="2783010256799387990">ຜ່ານແລ້ວ</translation>
+<translation id="2787435249130282949">ແປ້ນພິມແຈ້ງຂຶ້ນ</translation>
 <translation id="2789486458103222910">ຕົກລົງ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
 <translation id="28232023175184696">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. ຄລິກເພື່ອລອງໃໝ່.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
 <translation id="3771294271822695279">ໄຟລ​໌​ວິ​ດີ​ໂອ</translation>
 <translation id="3784455785234192852">ລັອກ</translation>
+<translation id="380097101658023925">ການຄວບຄຸມ RGB</translation>
 <translation id="38114475217616659">ລຶບລ້າງປະຫວັດທັງໝົດ</translation>
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="3824259034819781947">ແນບໄຟລ໌</translation>
 <translation id="3838338534323494292">ລະຫັດຜ່ານໃໝ່</translation>
 <translation id="3845880861638660475">ກົດປຸ່ມ <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> ເພື່ອປິດກ່ອງໂຕ້ຕອບ.</translation>
+<translation id="3848280697030027394">ແປ້ນພິມມືດ</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="3862598938296403232">ຕ້ອງລະບຸຄຳອະທິບາຍ</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">ປິດ​ໃຊ້ງານ</translation>
 <translation id="439429847087949098">ກຳລັງຣີສະຕາດ <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">ປັບແຕ່ງແປ້ນພິມ</translation>
 <translation id="4415951057168511744">ຮູບແທນຕົວປັດຈຸບັນ</translation>
 <translation id="4422041425070339732">ລູກສອນລົງ</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -442,6 +447,7 @@
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4744944742468440486">ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
+<translation id="4771607256327216405">ແປ້ນພິມແຈ້ງ</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
 <translation id="4782311465517282004">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ຮູບ</translation>
@@ -490,6 +496,7 @@
 <translation id="500920857929044050">ຢຸດການທົດສອບ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ເມື່ອໜ້າຈໍຂອງທ່ານຢູ່ລ້າໆ, ໃຫ້ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນມີເດຍ.</translation>
+<translation id="5038292761217083259">ແປນພິມຫຼາກສີ</translation>
 <translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
 <translation id="5049856988445523908">ລັອກຊິມແລ້ວ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ຊື່​ກຸ່ມ​</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ເປີດໃຊ້ຮູບແບບສີສັນມືດ</translation>
 <translation id="6285899124799306373">ເປີດຕົວເປີດໃຊ້</translation>
+<translation id="629550705077076970">ການຫຼຸດແສງແປ້ນພິມ</translation>
 <translation id="6302401976930124515">ຍົກເລີກການທົດສອບ <ph name="TEST_NAME" /> ແລ້ວ</translation>
 <translation id="631063167932043783">ແອັບ Explore</translation>
 <translation id="6319207335391420837">ອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">ການຊອກຫາດ້ວຍໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="6410257289063177456">ໄຟລ​໌​ຮູບ​</translation>
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
+<translation id="6411934471898487866">ຄວາມແຈ້ງຂອງແປ້ນພິມ</translation>
 <translation id="6412715219990689313">ແປ້ນພິມໃນຕົວ</translation>
 <translation id="6417265370957905582">ຜູ້ຊ່ວຍ Google</translation>
 <translation id="6423239382391657905">ເປີດVPN</translation>
@@ -741,6 +750,7 @@
 <translation id="7130438335435247835">ຊື່ຈຸດການເຂົ້າເຖິງ (APN)</translation>
 <translation id="7131634559772719176">ຢືນຢັນການພຣີເຊັດ</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
+<translation id="7135814714616751706">ຊອກຫາທາງລັດ</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
@@ -771,6 +781,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ກົດຊອກຫາພ້ອມກັບຍະຫວ່າງເພື່ອເບິ່ງຜົນການຊອກຫາໃນ Google ຊອກຫາ.</translation>
 <translation id="7343649194310845056">ອຸປະກອນເຄືອຂ່າຍ</translation>
+<translation id="7353413232959255829">ຜົນການຊອກຫາ <ph name="LIST_POSITION" /> ຈາກ <ph name="LIST_SIZE" /> ລາຍການ: <ph name="SEARCH_RESULT_TEXT" />. ກົດ Enter ເພື່ອໄປທາງລັດ.</translation>
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
 <translation id="73631062356239394">ແບ່ງປັນຂໍ້ມູນການວິນິໄສ</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -807,10 +818,12 @@
 <translation id="7656388927906093505">ອຸປະກອນແມ່ນເມົ້າ.</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7665800271478495366">ປ່ຽນຮູບແທນຕົວ</translation>
+<translation id="7683228889864052081">ສີແປ້ນພິມ</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">ແສງແປ້ນພິມ</translation>
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7747039790905080783">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="7762130827864645708">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານສຳເລັດແລ້ວ. ກະລຸນາໃຊ້ລະຫັດຜ່ານໃໝ່ນັບຈາກນີ້ໄປ.</translation>
@@ -854,6 +867,7 @@
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
+<translation id="8082644724189923105">ໂຊນແປ້ນພິມ</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8094062939584182041">ອະນຸຍາດໃຫ້ Google ສົ່ງອີເມວຫາທ່ານກ່ຽວກັບບັນຫານີ້</translation>
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
@@ -902,6 +916,7 @@
 <translation id="8456761643544401578">ໂໝດມືດອັດຕະໂນມັດ</translation>
 <translation id="8461329675984532579">ຊື່ຜູ້ໃຫ້ບໍລິການ Home</translation>
 <translation id="8475690821716466388">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP PSK ທີ່ບໍ່ຮັດກຸມ</translation>
+<translation id="8476242415522716722">ແປ້ນພິມເຮືອງແສງ</translation>
 <translation id="8477551185774834963">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ເລັກນ້ອຍ</translation>
 <translation id="8483248364096924578">ທີ່ຢູ່ IP</translation>
 <translation id="8491311378305535241">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP ຈາກແອັບ Android ໄດ້</translation>
@@ -945,6 +960,7 @@
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
 <translation id="8855781559874488009">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP ໄດ້</translation>
 <translation id="885701979325669005">ການເກັບຂໍ້ມູນ</translation>
+<translation id="885704831271383379">ແປ້ນພິມເຂັ້ມຂຶ້ນ</translation>
 <translation id="8863170912498892583">ເປີດການນຳໃຊ້ຮູບແບບສີສັນມືດ</translation>
 <translation id="8863888432376731307">ຮັບ <ph name="INTENT" /> ສຳລັບ "<ph name="QUERY" />" ແລະ ອື່ນໆ</translation>
 <translation id="8864415976656252616">ບໍ່ມີເນື້ອຫາທີ່ແນະນຳ. ເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອຍອດນິຍົມ.</translation>

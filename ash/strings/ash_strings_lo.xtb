@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1351937230027495976">ຫຍໍ້ເມນູ</translation>
 <translation id="1360220746312242196">ເມື່ອຊອກຫາໃນໜ້າ, ໃຫ້ເຂົ້າໄປລາຍການກ່ອນໜ້າທີ່ກົງກັນກັບການຊອກຫາ</translation>
+<translation id="1360788414852622716">ກຳລັງປິດການນຳໃຊ້ໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="1364382257761975320">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃຊ້ລາຍນິ້ວມືຂອງທ່ານ</translation>
 <translation id="1365866993922957110">ຮັບການອັບເດດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1372545819342940910">ບັນທຶກໂຕະໄວ້ພາຍຫຼັງ</translation>
@@ -183,6 +184,7 @@
 <translation id="1774796056689732716">ປະຕິທິນ, <ph name="CURRENT_MONTH_YEAR" />, ຕອນນີ້ເລືອກ <ph name="DATE" /> ຢູ່.</translation>
 <translation id="1787955149152357925">ປິດ</translation>
 <translation id="181103072419391116">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
+<translation id="1815245884418711390">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດປິດຢູ່.</translation>
 <translation id="1816896987747843206">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໃຫ້ແກ່ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດການອະນຸຍາດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="1823280932251546115">ຖາດສະຖານະ, ເວລາ <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +243,7 @@
 <translation id="2023558322300866873">ທ່ານສາມາດຢຸດການບັນທຶກແພັກເກັດຕອນໃດກໍໄດ້</translation>
 <translation id="2034971124472263449">ຢືນຢັນການບັນທຶກ</translation>
 <translation id="2049240716062114887">ຊື່ໂຕະໄດ້ຖືກປ່ຽນເປັນ <ph name="DESK_NAME" /> ແລ້ວ</translation>
+<translation id="206377500836174974">ເຕັມຮູບແບບ</translation>
 <translation id="2064048859448024834">ເປີດຕົວຢ່າງກ້ອງຖ່າຍຮູບແລ້ວ</translation>
 <translation id="2067602449040652523">ຄວາມແຈ້ງຂອງແປ້ນພິມ</translation>
 <translation id="2075520525463668108">ສະຫຼັບ <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> ແມ່ນ <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +296,7 @@
 <translation id="2339073806695260576">ແຕະປຸ່ມປາກກາຢູ່ໃນຖ້ານເພື່ອຈົດບັນທຶກ, ຖ່າຍຮູບໜ້າຈໍ, ໃຊ້ຕົວຊີ້ເລເຊີ ຫຼື ແວ່ນຂະຫຍາຍ.</translation>
 <translation id="2341729377289034582">ລັອກເປັນລວງຕັ້ງ</translation>
 <translation id="2345226652884463045">ກົດ Enter ຫຼື ຊອກຫາ + ຍະຫວ່າງ ເພື່ອເລືອກຂໍ້ຄວາມເພື່ອແກ້ໄຂ.</translation>
+<translation id="2349785431103945039">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ເຊື່ອມຕໍ່ເຄືອຂ່າຍມືຖືເພື່ອໃຊ້ຮັອດສະປອດ.</translation>
 <translation id="2350794187831162545">ຕອນນີ້ປະມວນການເວົ້າພາສາ <ph name="LANGUAGE" /> ໃນເຄື່ອງແລ້ວ ແລະ ສາມາດເຮັດວຽກໄດ້ອອບລາຍ. ທ່ານສາມາດປ່ຽນການປ້ອນຂໍ້ມູນດ້ວຍສຽງຂອງທ່ານໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="2352467521400612932">ການຕັ້ງຄ່າປາຍປາກກາ</translation>
 <translation id="2354174487190027830">ກຳລັງເປີດນຳໃຊ້ <ph name="NAME" /></translation>
@@ -335,6 +339,7 @@
 <translation id="2531025035050312891">ອຸປະກອນເຮັດວຽກຊ້າ</translation>
 <translation id="2542089167727451762">ແຕະຮູບໂປຣໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="254900897760075745">ສຳເນົາເນື້ອຫາທີ່ເລືອກໃສ່ຄລິບບອດ</translation>
+<translation id="2549711466868162843">ປັບແສງ</translation>
 <translation id="255671100581129685">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ໃນເຊດຊັນສາທາລະນະ.</translation>
 <translation id="256712445991462162">ແວ່ນຂະຫຍາຍໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="2573588302192866788">ບໍ່ສາມາດເຊື່ອມຕໍ່ຫາ <ph name="NAME" /> ໄດ້</translation>
@@ -427,6 +432,7 @@
 <translation id="3009178788565917040">ຜົນອອກມາ</translation>
 <translation id="3009958530611748826">ເລືອກໂຟນເດີທີ່ຈະບັນທຶກໄວ້ໃນ</translation>
 <translation id="301282384882049174">ແບ່ງປັນໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
+<translation id="301584155502740476">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດປິດຢູ່.</translation>
 <translation id="3018135054368884502">ເລື່ອນມີເດຍໄປໜ້າ</translation>
 <translation id="3033545621352269033">ເປີດ</translation>
 <translation id="3033912566804961911">ຮວມກັບ <ph name="DESK_NAME" /></translation>
@@ -487,6 +493,7 @@
 <translation id="3291862315280588024">ຍ້າຍໄປໃສ່ຈຸດເລີ່ມຕົ້ນຂອງຄຳກ່ອນໜ້າ</translation>
 <translation id="3294437725009624529">ແຂກ</translation>
 <translation id="3298690094479023523">ຍັງບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່.</translation>
+<translation id="3300193645498960160">ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກທ່ານເວົ້າໃນລະຫວ່າງທີ່ປິດສຽງຢູ່. ໂດຍຈະບໍ່ມີການສົ່ງສຽງຜ່ານອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="3307642347673023554">ປ່ຽນເປັນໂໝດແລັບທັອບແລ້ວ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ສາມາດເຂົ້າສູ່ລະບົບໃນພາຍຫຼັງໄດ້ຄືເກົ່າ.</translation>
 <translation id="3321628682574733415">ລະຫັດພໍ່ແມ່ບໍ່ຖືກຕ້ອງ</translation>
@@ -537,6 +544,7 @@
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{ອັບເດດອຸປະກອນພາຍໃນ 1 ນາທີ}other{ອັບເດດອຸປະກອນພາຍໃນ # ນາທີ}}</translation>
+<translation id="3522979239100719575">ກຳລັງຊອກຫາໂປຣໄຟລ໌ທີ່ສາມາດໃຊ້ໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="3526440770046466733">ເປີດລິ້ງໃນແຖບໃໝ່ ແລະ ຢູ່ໃນແຖບປັດຈຸບັນຕໍ່ໄປ</translation>
 <translation id="353086728817903341">ເຊື່ອມຕໍ່ຫາ <ph name="NUM_DEVICES" /> ອຸປະກອນແລ້ວ</translation>
 <translation id="3533126039236445965">ແອັບໃນຖ້ານ</translation>
@@ -570,6 +578,7 @@
 <translation id="3621202678540785336">ການປ້ອນເຂົ້າ</translation>
 <translation id="3621712662352432595">ການຕັ້ງ​ຄ່າສຽງ</translation>
 <translation id="3626281679859535460">ຄວາມແຈ້ງ</translation>
+<translation id="3629640897379005903">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດປິດການນຳໃຊ້ຢູ່.</translation>
 <translation id="3630697955794050612">ປິດ</translation>
 <translation id="3631369015426612114">ອະ​ນຸ​ຍາດ​ການແຈ້ງ​ເຕືອນຈາກ​ສິ່ງຕໍ່​ໄປ​ນີ້​</translation>
 <translation id="3633097874324966332">ເປີດການຕັ້ງຄ່າ Bluetooth ເພື່ອຈັບຄູ່ອຸປະກອນຂອງທ່ານ</translation>
@@ -701,6 +710,7 @@
 <translation id="423685346499232137">ບໍ່ສາມາດສຳເນົາ ຫຼື ວາງເນື້ອຫາໄດ້ໃນຕອນນີ້</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ໂໝດພາບຮວມ</translation>
+<translation id="4240756737570479726">ກຳລັງປິດການນຳໃຊ້...</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="4247123849143712100">ອັບເດດ ແລະ ປິດເຄື່ອງ</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
@@ -839,6 +849,7 @@
 <translation id="4864369630010738180">ກຳລັງເຂົ້າສູ່ລະບົບ...</translation>
 <translation id="4864648187878336334">ໂຕະ 15</translation>
 <translation id="4868492592575313542">ເປີດນຳໃຊ້ແລ້ວ</translation>
+<translation id="4871905435473761992">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ເຄືອຂ່າຍມືຖືຂອງທ່ານບໍ່ຮອງຮັບຮັອດສະປອດ.</translation>
 <translation id="4872237917498892622">Alt+ຊອກຫາ ຫຼື Shift</translation>
 <translation id="4872852897273142380">ໂຟກັສ ຫຼື ໄຮໄລ້ແຖບບຸກມາກ (ຫາກສະແດງຢູ່)</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
@@ -898,6 +909,7 @@
 <translation id="5104236669533825617">ບໍ່ສາມາດສ້າງ screencast ໄດ້</translation>
 <translation id="5107522548814527560">ເວັບ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">ການມົວພື້ນຫຼັງ</translation>
 <translation id="5117590920725113268">ສະ​ແດງ​ເດືອນ​ຕໍ່​ໄປ</translation>
 <translation id="5121628974188116412">ໄປຫາສ່ວນລຸ່ມຂອງໜ້າ</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
@@ -909,6 +921,7 @@
 <translation id="5168181903108465623">ອຸປະກອນຄາສທ໌ທີ່ມີໃຫ້</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="5176318573511391780">ບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
+<translation id="5187627942836026988">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ນັດໝາຍ</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ຮວມກັນກັບ <ph name="IN_PLACE_APP" /> ເພື່ອສ້າງໂຟນເດີໃໝ່.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1080,6 +1093,7 @@
 <translation id="595202126637698455">ການຕິດຕາມການປະຕິບັດເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5955304353782037793">ແອັບ</translation>
 <translation id="5958529069007801266">ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມດູແລ</translation>
+<translation id="5961960957587052807">ໜ້ອຍ</translation>
 <translation id="5965524703725988602">ສະຫຼັບຮູບແບບສີສັນມືດ. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">ກົດ enter ເພື່ອບັນທຶກໜ້າຈໍ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
@@ -1252,6 +1266,7 @@
 <translation id="6752912906630585008">ລຶບເດັສ <ph name="REMOVED_DESK" /> ອອກ ແລະ ຮວມກັບເດັສ <ph name="RECEIVE_DESK" /> ແລ້ວ</translation>
 <translation id="6753390234084146956">ແຖບ</translation>
 <translation id="6757237461819837179">ບໍ່ມີການຫຼິ້ນມີເດຍ</translation>
+<translation id="6759628406555734414">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດເປີດການນຳໃຊ້ຢູ່.</translation>
 <translation id="6768043681523654438">ບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
 <translation id="6777216307882431711">ກຳລັງສາກອຸປະກອນ USB-C ທີ່ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="6781002679438061620">ໂຕະ 9</translation>
@@ -1276,6 +1291,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> ວິ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ຍັງເຫຼືອໜຶ່ງຕົວເລກ}other{ຍັງເຫຼືອ # ຕົວເລກ}}</translation>
 <translation id="6867938213751067702">ຢຸດດາວໂຫຼດ <ph name="FILENAME" /> ຊົ່ວຄາວແລ້ວ</translation>
+<translation id="6874854809828346832">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່.</translation>
 <translation id="6878400149835617132">ປິດທາງລັດແລ້ວ</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ແອັບ}other{# ແອັບ}}</translation>
 <translation id="6884665277231944629">ກັບໄປຫາມື້ນີ້</translation>
@@ -1285,6 +1301,7 @@
 <translation id="6896758677409633944">ກັອບປີ້</translation>
 <translation id="6901883536534621389">ລອງໃຊ້ທ່າທາງເພື່ອນຳທາງ</translation>
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>
+<translation id="6920245099716267363">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ 1 ອຸປະກອນ.</translation>
 <translation id="6931576957638141829">ບັນ​ທຶກ​ໄປ​ໃສ່</translation>
 <translation id="6941333068993625698">ສົ່ງຄຳຄິດເຫັນ</translation>
 <translation id="6942518653766415536">ເມນູຮູບແບບການບັນທຶກ</translation>
@@ -1374,6 +1391,7 @@
 <translation id="7378203170292176219">ລາກເພື່ອເລືອກພື້ນທີ່ເພື່ອບັນທຶກ</translation>
 <translation id="7378594059915113390">ການຄວບຄຸມສື່</translation>
 <translation id="7378889811480108604">ໂໝດຕົວປະຢັດແບັດເຕີຣີປິດຢູ່</translation>
+<translation id="7382640522316003298">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ <ph name="DEVICECOUNT" /> ອຸປະກອນ.</translation>
 <translation id="7382680553121047388">ເປີດ</translation>
 <translation id="7384028040782072252">ຄລິກຂວາໃສ່ບ່ອນໃດກໍໄດ້ເພື່ອຈັດຮຽງແອັບຂອງທ່ານຄືນໃໝ່</translation>
 <translation id="7386767620098596324">ສະຫຼັບການເຊື່ອມຕໍ່ເຄືອຂ່າຍ. <ph name="STATE_TEXT" />.</translation>
@@ -1424,6 +1442,7 @@
 <translation id="7579778809502851308">ການຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="7593891976182323525">ຄົ້ນ​ຫາ ຫຼື Shift</translation>
 <translation id="7600875258240007829">ເບິ່ງການແຈ້ງເຕືອນທັງໝົດ</translation>
+<translation id="7601417191446344542">ເປີດການສະກິດເຕືອນການປິດສຽງບໍ?</translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
 <translation id="7609951632080598826">ມຸມມອງປະຕິທິນ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ເຊື່ອມຕໍ່ກ້ອງຖ່າຍຮູບຄືນໃໝ່ແລ້ວ.</translation>
@@ -1535,6 +1554,7 @@
 <translation id="8083540854303889870">ບັນທຶກໄວ້ສໍາລັບພາຍຫຼັງ</translation>
 <translation id="8091153018031979607">ເລີ່ມຕົ້ນ <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ອັບເດດອັດຕະໂນມັດ</translation>
+<translation id="8092380135549145188">ການຄວບຄຸມການເລື່ອນ</translation>
 <translation id="8098591350844501178">ຢຸດການສົ່ງສັນຍານໜ້າຈໍຫາ <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">ຖອນໝຸດແອັບຈາກຖ້ານ</translation>
 <translation id="8113423164597455979">ເປີດ, ທຸກແອັບ</translation>
@@ -1546,6 +1566,7 @@
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8131994907636310308">ປິດຂໍ້ຄວາມໂທສການຈັດຮຽງ</translation>
 <translation id="8132793192354020517">ເຊື່ອມຕໍ່ກັບ <ph name="NAME" /> ແລ້ວ</translation>
+<translation id="8135163608236671037">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ບໍ່ມີອຸປະກອນເຊື່ອມຕໍ່.</translation>
 <translation id="8138705869659070104">ເປີດໃຊ້ຫຼັງຈາກຕິດຕັ້ງອຸປະກອນ</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8142441511840089262">ຄລິກສອງຄັ້ງ</translation>
@@ -1726,6 +1747,7 @@
 <translation id="8990809378771970590">ກຳລັງໃຊ້ <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">ໂໝດການປີ້ນສີເປີດການນຳໃຊ້ຢູ່. ກົດ Ctrl+Search+H ອີກຄັ້ງເພື່ອປິດມັນ.</translation>
 <translation id="899350903320462459">ປົດລັອກອຸປະກອນເປັນ <ph name="LOGIN_ID" /> ເພື່ອເຮັດການດຳເນີນການແຈ້ງເຕືອນ</translation>
+<translation id="8993733019280019776">ທ່ານກຳລັງເວົ້າບໍ? ໄມຂອງທ່ານປິດຢູ່. ກະລຸນາເລືອກໄມເພື່ອເປີດ.</translation>
 <translation id="9000771174482730261">ຈັດການບ່ອນເກັບຂໍ້ມູນ</translation>
 <translation id="9005984960510803406">ເປີດໜ້າຈໍ Crosh</translation>
 <translation id="9017320285115481645">ປ້ອນລະຫັດເຂົ້າເຖິງ Family Link ຂອງພໍ່ແມ່.</translation>

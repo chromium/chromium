@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Oxirgi videolar yoʻq</translation>
 <translation id="3634507049637220048">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish:<ph name="CONNECTION_STATUS" />, Administrator boshqaruvida, Batafsil</translation>
 <translation id="3645233063072417428">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ta fayl tanlandi.</translation>
 <translation id="3685122418104378273">Google Disk‘ni mobil internet orqali sinxronlash birlamchi holatda o‘chirib qo‘yilgan.</translation>
 <translation id="3689865792480713551">Bekor qilish <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, <ph name="CONNECTION_STATUS" />, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
@@ -576,6 +577,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> rasm</translation>
 <translation id="5534520101572674276">Hajm hisoblanmoqda...</translation>
 <translation id="554153475311314364">Grek tili transliteratsiyasi</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> ta jild tanlandi</translation>
 <translation id="5580591966435005537">virtual mashina</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Toʻliq enli imlo tekshiruvi</translation>
@@ -598,6 +600,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5724172041621205163">Tay (Pattachote klaviaturasi)</translation>
 <translation id="57383366388012121">Avvalgi oy</translation>
 <translation id="5756666464756035725">Venger QWERTY klaviaturasi</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ta element tanlandi</translation>
 <translation id="5763377084591234761">Nemis (Shveytsariya)</translation>
 <translation id="5769519078756170258">Istisno host yoki domen</translation>
 <translation id="5775750595919327203">Urdu</translation>

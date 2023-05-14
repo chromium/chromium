@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Geen onlangse video's nie</translation>
 <translation id="3634507049637220048">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items is geskuif.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> lêers is gekies</translation>
 <translation id="3685122418104378273">Google Drive-sinkronisering is by verstek afgeskakel wanneer dit mobiele data gebruik.</translation>
 <translation id="3689865792480713551">Kanselleer <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />; nie geaktiveer nie; <ph name="CONNECTION_STATUS" />; seinsterkte <ph name="SIGNAL_STRENGTH" />%; besonderhede</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-prent</translation>
 <translation id="5534520101572674276">Bereken tans grootte</translation>
 <translation id="554153475311314364">Griekse transliterasie</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> vouers is gekies</translation>
 <translation id="5580591966435005537">virtuele masjien</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Leestekenbreedte is vol</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Thai met Pattachote-sleutelbord</translation>
 <translation id="57383366388012121">Verlede maand</translation>
 <translation id="5756666464756035725">Hongaarse QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items is gekies</translation>
 <translation id="5763377084591234761">Duits (Switserland)</translation>
 <translation id="5769519078756170258">Gasheer of domein om uit te sluit</translation>
 <translation id="5775750595919327203">Oerdoe</translation>

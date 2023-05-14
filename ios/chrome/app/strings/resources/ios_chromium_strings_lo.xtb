@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ກຳລັງໃຊ້ Chromium ຢູ່ ແລະ ເປີດບຸກມາກ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆປະໄວ້ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="372658070733623520">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ.</translation>
 <translation id="3805899903892079518">Chromium ບໍ່​ມີ​ການ​ເຂົ້າ​ເຖິງ​ຮູບຖ່າຍ ຫຼື ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ. ເປີດ​ໃຊ້​ການ​ເຂົ້າເຖິງ​ຢູ່​ໃນ​ການ​ຕັ້ງ​ຄ່າ iOS &gt; Privacy &gt; Photos.</translation>
+<translation id="3955621079070267756">ເປີດ Chromium ຈາກແອັບໃດກໍໄດ້</translation>
 <translation id="4043291146360695975">ລະຫັດຜ່ານແມ່ນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
 <translation id="4099085513035183040">ບໍ່ຮອງຮັບໃນ Chromium Beta</translation>
 <translation id="4432744876818348753">ເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium ຫຼ້າສະໄໝແລ້ວ</translation>
 <translation id="9110075932708282655">ໃຊ້ Chromium ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="921174536258924340">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">ນຳໃຊ້ Chromium ໂດຍອັດຕະໂນມັດເມື່ອທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="985602178874221306">ຜູ້ຂຽນ Chromium</translation>
 </translationbundle>

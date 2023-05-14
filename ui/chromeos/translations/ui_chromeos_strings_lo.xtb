@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">ບໍ່ມີວິດີໂອຫຼ້າສຸດ</translation>
 <translation id="3634507049637220048">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="3645233063072417428">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
+<translation id="3658269352872031728">ເລືອກ <ph name="SELECTED_FILE_COUNT" /> ໄຟລ໌ແລ້ວ</translation>
 <translation id="3685122418104378273">ການ​ຊິງ​ຄ໌ Google Drive ປິດ​ໃຊ້​ງານ​ໂດຍ​ມາດ​ຕະ​ຖານ​ແລ້ວ, ເມື່ອ​ກຳ​ລັງ​ໃຊ້​ຂໍ້​ມູນ​ມື​ຖື.</translation>
 <translation id="3689865792480713551">ຍົກເລີກ <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ບໍ່ໄດ້ເປີດໃຊ້, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921">ຮູບ <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">ກໍາລັງຄິດໄລ່ຂະໜາດ</translation>
 <translation id="554153475311314364">ການແປທັບສັບພາສາກຣີກ</translation>
+<translation id="5554171655917412781">ເລືອກ <ph name="SELECTED_FOLDERS_COUNT" /> ໂຟນເດີແລ້ວ</translation>
 <translation id="5580591966435005537">ເຄື່ອງສະເໝືອນ</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
 <translation id="5583664733673201137">ຄວາມກວ້າງເຄື່ອງໝາຍວັກຕອນເຕັມແລ້ວ</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">ພາສາໄທທີ່ໃຊ້ແປ້ນພິມປັດຕາໂຊດ</translation>
 <translation id="57383366388012121">ເດືອນທີ່ຜ່ານມາ</translation>
 <translation id="5756666464756035725">QWERTY ພາ​ສາ​ຮົງ​ກາ​ລີ</translation>
+<translation id="5760252553414789727">ເລືອກ <ph name="SELECTED_FILES_COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="5763377084591234761">ພາສາເຢຍລະມັນ (ສະວິດເຊີແລນ)</translation>
 <translation id="5769519078756170258">ໂຮສ ຫຼື ໂດເມນທີ່ຈະຍົກເວັ້ນ</translation>
 <translation id="5775750595919327203">ພາສາອູຣະດູ</translation>
@@ -916,6 +919,7 @@
 <translation id="8264024885325823677">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="8269755669432358899">ຫຍໍ້ແຜງຄຳຕິຊົມໄຟລ໌ລົງ</translation>
 <translation id="8280151743281770066">ການອອກສຽງພາສາອາກເມນີ</translation>
+<translation id="8285791779547722821">ໄດ້ຖືກເຂົ້າລະຫັດ <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
 <translation id="8297012244086013755">ຮາງກຸລ 3 ຊຸດ (​ບໍ່​ໃຊ້ປຸ່ມ  shift)</translation>
 <translation id="8299269255470343364">ພາສາຍີ່ປຸ່ນ</translation>

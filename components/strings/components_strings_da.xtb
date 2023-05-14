@@ -739,7 +739,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Køre Diagnosticering af forbindelse<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Klassisk musik</translation>
 <translation id="2731382536835015353">44 x 68 tommer</translation>
-<translation id="2734319753272419592">Giv Google tilladelse til at bruge din kurv til at søge efter tilpassede rabatter. Hvis der er tilgængelige rabatter, vises de automatisk i din kurv.</translation>
+<translation id="2734319753272419592">Giv Google tilladelse til at bruge din kurv til at søge efter personligt tilpassede rabatter. Hvis der er tilgængelige rabatter, vises de automatisk i din kurv.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Bordtennis</translation>
 <translation id="2742870351467570537">Fjern valgte elementer</translation>
@@ -1418,7 +1418,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4414515549596849729">cookies og websitedata</translation>
 <translation id="4415426530740016218">Afhentningsadresse</translation>
 <translation id="4424024547088906515">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da Chrome ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
-<translation id="4428065317363009941">Annoncetilpasning</translation>
+<translation id="4428065317363009941">Personlig tilpasning af annoncer</translation>
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> accepterede ikke dit logincertifikat, eller der er ikke angivet et.</translation>
 <translation id="4432792777822557199">Sider på <ph name="SOURCE_LANGUAGE" /> oversættes fremover til <ph name="TARGET_LANGUAGE" /></translation>
@@ -2292,7 +2292,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6612010098632894193">Onlinevideo</translation>
 <translation id="6615297766614333076">Stabler 2</translation>
 <translation id="6624427990725312378">Kontaktoplysninger</translation>
-<translation id="6627727261837091711">Vis oplysninger om personlig annoncetilpasning</translation>
+<translation id="6627727261837091711">Vis oplysninger om personlig tilpasning af annoncer</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> -søgning</translation>
 <translation id="6630043285902923878">Finder USB-enheder...</translation>
 <translation id="6630809736994426279">Brugere med ondsindede hensigter, der i øjeblikket er på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, kan forsøge at installere farlige programmer på din Mac, som stjæler eller sletter dine oplysninger (f.eks. fotos, adgangskoder, beskeder og kreditkort). <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>

@@ -590,6 +590,7 @@
 <translation id="1506187449813838456">زيادة درجة الصوت</translation>
 <translation id="1507170440449692343">تم حظر دخول هذه الصفحة إلى الكاميرا التابعة لك.</translation>
 <translation id="1507246803636407672">إل&amp;غاء</translation>
+<translation id="1508931164824684991">‏السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
 <translation id="1509163368529404530">استعادة المجموعة</translation>
 <translation id="1509281256533087115">‏الوصول إلى أي <ph name="DEVICE_NAME_AND_VENDOR" /> عبر USB</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
@@ -847,6 +848,7 @@
 <translation id="1708291623166985230">نقطة الاتصال غير مفعَّلة.</translation>
 <translation id="1708338024780164500">(غير نشطة)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (رقم التعريف: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">عدم العرض عند اكتمال عمليات التنزيل</translation>
 <translation id="1709106626015023981">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (الأصلي)</translation>
 <translation id="1709217939274742847">اختَر تذكرة لاستخدامها في المصادقة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">إعدادات الشبكة</translation>
@@ -1670,6 +1672,7 @@
 <translation id="2398546389094871088">‏لن يؤدي إجراء عملية Powerwash لجهازك إلى إزالة الملفات التعريفية لشرائح eSIM. انتقِل إلى <ph name="LINK_BEGIN" />إعدادات الجوّال<ph name="LINK_END" /> لإزالة هذه الملفات التعريفية يدويًّا.</translation>
 <translation id="2399699884460174994">تم تفعيل الإشعارات</translation>
 <translation id="2399939490305346086">بيانات تسجيل الدخول على مفتاح الأمان</translation>
+<translation id="2400323785194108001">عدم إيقاف هذا الموقع الإلكتروني مطلقًا</translation>
 <translation id="2400664245143453337">مطلوب التحديث فورًا</translation>
 <translation id="2402226831639195063">النبرات</translation>
 <translation id="2406153734066939945">هل تريد حذف هذا الملف الشخصي وكل بياناته؟</translation>
@@ -1986,6 +1989,7 @@
 <translation id="2673135533890720193">قراءة سجل التصفح التابع لك</translation>
 <translation id="2674764818721168631">غير مفعَّل</translation>
 <translation id="2675570801872027281">‏حدث خطأ أثناء إزالة الجهاز الافتراضي Bruschetta. يُرجى إعادة المحاولة.</translation>
+<translation id="2676084251379299915">‏تم إيقاف هذه الإضافة بموجب سياسة المؤسسة لأنّها لم تعُد متوفّرة على "سوق Chrome الإلكتروني".</translation>
 <translation id="267708982776801183">فلتر للّونين الأحمر والأخضر (ضَعف إبصار الأحمر، غَطَشُ الأحمر)</translation>
 <translation id="2678063897982469759">إعادة تفعيل</translation>
 <translation id="2678100101831051676">تعذَّر البث</translation>
@@ -2084,6 +2088,7 @@
 <translation id="2755367719610958252">إدارة ميزات تسهيل الاستخدام
 </translation>
 <translation id="275662540872599901">الشاشة متوقفة</translation>
+<translation id="2756936198272359372">‏المواقع الإلكترونية التي لا يُسمح لها باستخدام JavaScript</translation>
 <translation id="2757161511365746634">عرض الطابعة</translation>
 <translation id="2757338480560142065">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> لم يتم عرض نتائج بحث عن "<ph name="SEARCH_QUERY" />".</translation>
@@ -2115,6 +2120,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">الإضافات مفعّلة على هذا الموقع الإلكتروني.</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
+<translation id="2783024642731649028">سلعة واحدة في سلة التسوّق متوفّرة بخصم ‫<ph name="DISCOUNT_TEXT" /> من "<ph name="MERCHANT_NAME" />" على <ph name="MERCHANT_DOMAIN" />، وتم الاطّلاع عليها <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">تم التنزيل</translation>
 <translation id="2783321960289401138">جارٍ إنشاء اختصار...</translation>
 <translation id="2783829359200813069">اختيار أنواع التشفير</translation>
@@ -2895,6 +2901,7 @@
 <translation id="3496213124478423963">تصغير</translation>
 <translation id="3496238553815913323">لم يتم اختيار <ph name="LANGUAGE" />.</translation>
 <translation id="3496689104192986836">مستوى شحن البطارية <ph name="PERCENTAGE" />%</translation>
+<translation id="3496995426334945408">‏تستخدم المواقع الإلكترونية عادةً JavaScript لعرض الميزات التفاعلية، مثل ألعاب الفيديو أو نماذج الويب.</translation>
 <translation id="3497501929010263034">‏أجهزة USB من <ph name="VENDOR_NAME" /> (المنتج <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">مشاركة رسومات الشعار المبتكرة</translation>
 <translation id="3500417806337761827">‏حدث خطأ أثناء تثبيت المشاركة. سبَق وأن تمّ تثبيت العديد من مشاركات بروتوكول Server Message Block ‏(SMB).</translation>
@@ -2939,6 +2946,7 @@
 <translation id="354060433403403521">‏محول AC</translation>
 <translation id="354068948465830244">يمكن أن يؤدي ذلك إلى قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
 <translation id="3541823293333232175">تم تخصيص المفتاح.</translation>
+<translation id="354204985370574425">عدم إيقاف هذا الموقع الإلكتروني مطلقًا</translation>
 <translation id="3543393733900874979">تعذّر التحديث (خطأ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">‏توقيع X9.62 ECDSA باستخدام SHA-512</translation>
 <translation id="3544058026430919413">يمكن للشركة تحديد مجموعة مواقع إلكترونية يمكنها استخدام ملفات تعريف الارتباط لمشاركة نشاطك في المجموعة. يتم إيقاف هذا الإعداد في "وضع التصفّح المتخفي".</translation>
@@ -3830,6 +3838,7 @@
 <translation id="4324577459193912240">ملف غير مكتمل</translation>
 <translation id="4325237902968425115">جارٍ إلغاء تثبيت <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">‏يوفِّر Chrome أعلى مستويات الأمان لحمايتك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
+<translation id="4326484226728068206">السلع في سلة التسوّق متوفّرة بخصم ‫<ph name="DISCOUNT_TEXT" /> من "<ph name="MERCHANT_NAME" />" على <ph name="MERCHANT_DOMAIN" />، وتم الاطّلاع عليها <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">ماء مثلج</translation>
 <translation id="4330387663455830245">عدم ترجمة <ph name="LANGUAGE" /> مطلقًا</translation>
 <translation id="4332976768901252016">إعداد أدوات الرقابة الأبوية</translation>
@@ -4516,6 +4525,7 @@
 <translation id="4940448324259979830">تتم إدارة هذا الحساب من قِبل <ph name="PROFILE_NAME" />.</translation>
 <translation id="4940845626435830013">حجز حجم القرص</translation>
 <translation id="4941074198479265146">‏تتّصل المواقع الإلكترونية عادةً بأجهزة MIDI لتتيح ميزات إنشاء الموسيقى وتعديلها.</translation>
+<translation id="4941243352516004658">‫<ph name="PRODUCT_ITEM_COUNT" /> سلعة في سلة التسوّق متوفّرة بخصم ‫<ph name="DISCOUNT_TEXT" /> من "<ph name="MERCHANT_NAME" />" على <ph name="MERCHANT_DOMAIN" />، تم الاطّلاع عليها <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">استخدام طلب الجهاز عند تسجيل الجهاز في إدارة المؤسسات:</translation>
 <translation id="4941627891654116707">حجم الخط</translation>
 <translation id="4941963255146903244">عرض الصور والوسائط والتطبيقات من هاتفك</translation>
@@ -5470,6 +5480,7 @@
 <translation id="5832970156002835240">السماح باستخدام الإضافة على جميع المواقع الإلكترونية</translation>
 <translation id="5833397272224757657">يتم استخدام المحتوى على المواقع الإلكترونية التي تزورها، بالإضافة إلى نشاط المتصفِّح وتفاعلاته للتخصيص.</translation>
 <translation id="5833726373896279253">يمكن تعديل هذه الإعدادات بواسطة المالك فقط: </translation>
+<translation id="5833899990800318936">‏عدم السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
 <translation id="583431638776747">لم يكن الموقع الإلكتروني متاحًا.</translation>
 <translation id="5834581999798853053">تتبقى <ph name="TIME" /> دقيقة تقريبًا</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{‏الإضافة التي لديها إمكانية الوصول إلى أجهزة HID: <ph name="EXTENSION1" />}=2{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" />}zero{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافة أخرى}few{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافات أخرى}many{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافة أخرى}other{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافة أخرى}}</translation>
@@ -5700,6 +5711,7 @@
 <translation id="6026819612896463875">‏<ph name="WINDOW_TITLE" /> - تم توصيل جهاز USB</translation>
 <translation id="6027945736510816438">هل كنت تقصد <ph name="WEBSITE" />؟</translation>
 <translation id="6028117231645531007">إضافة بصمة الإصبع</translation>
+<translation id="6030719887161080597">إدارة المعلومات التي تستخدمها المواقع الإلكترونية لقياس أداء الإعلانات</translation>
 <translation id="6031600495088157824">خيارات الإدخال في شريط الأدوات</translation>
 <translation id="6032715498678347852">للسماح للإضافة بالوصول إلى بيانات هذا الموقع الإلكتروني، انقر على الإضافة.</translation>
 <translation id="6032912588568283682">نظام الملفات</translation>
@@ -5934,6 +5946,7 @@
 <translation id="623755660902014047">وضع القراءة</translation>
 <translation id="6238767809035845642">‏النص الذي تمت مشاركته من Other Device (جهاز آخر)</translation>
 <translation id="6238923052227198598">إبقاء آخر ملاحظة على شاشة القفل</translation>
+<translation id="6238982280403036866">‏المواقع الإلكترونية التي يُسمح لها باستخدام JavaScript</translation>
 <translation id="6239558157302047471">تحديث الإطار</translation>
 <translation id="6240821072888636753">السؤال في كل مرة</translation>
 <translation id="6241530762627360640">الوصول إلى معلومات حول أجهزة البلوتوث المقترنة بنظامك واكتشاف أجهزة البلوتوث القريبة.</translation>

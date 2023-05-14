@@ -183,6 +183,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> is tans gekies.</translation>
 <translation id="1787955149152357925">Af</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
+<translation id="1815245884418711390">Wissel warmkol. Warmkol is af.</translation>
 <translation id="1816896987747843206">Dit gee kameratoegang vir alle apps en webwerwe met die kameratoestemming</translation>
 <translation id="1823280932251546115">Statuslaai, tyd <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2023558322300866873">Jy kan pakketvasvang enige tyd stop</translation>
 <translation id="2034971124472263449">Stoor in elk geval</translation>
 <translation id="2049240716062114887">Lessenaarnaam is verander na <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Vol</translation>
 <translation id="2064048859448024834">Kameravoorskou is aan</translation>
 <translation id="2067602449040652523">Sleutelbordhelderheid</translation>
 <translation id="2075520525463668108">Wissel <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2339073806695260576">Tik op die stilusknoppie op die rak om 'n nota te maak, 'n skermkiekie te neem, of om die laseraanwyser of vergrootglas te gebruik.</translation>
 <translation id="2341729377289034582">Gesluit op vertikaal</translation>
 <translation id="2345226652884463045">Druk Enter of Search+spasiebalk om die teks te kies wat jy wil wysig.</translation>
+<translation id="2349785431103945039">Wys warmkolbesonderhede. Koppel aan mobiele data om warmkol te gebruik.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" />-spraak word nou plaaslik verwerk en werk vanlyn. Jy kan jou dikteertaal in Instellings &gt; Toeganklikheid verander.</translation>
 <translation id="2352467521400612932">Stilusinstellings</translation>
 <translation id="2354174487190027830">Aktiveer tans <ph name="NAME" /></translation>
@@ -335,6 +338,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2531025035050312891">toestel stadig</translation>
 <translation id="2542089167727451762">Tik op jou profielprent</translation>
 <translation id="254900897760075745">Kopieer geselekteerde inhoud na knipbord</translation>
+<translation id="2549711466868162843">Verbeter beligting</translation>
 <translation id="255671100581129685">Die Google Assistent is nie in 'n publieke sessie beskikbaar nie.</translation>
 <translation id="256712445991462162">die gedokte vergrootglas</translation>
 <translation id="2573588302192866788">Kon nie <ph name="NAME" /> koppel nie</translation>
@@ -427,6 +431,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="301282384882049174">Gedeel deur jou administrateur</translation>
+<translation id="301584155502740476">Wys warmkolbesonderhede. Warmkol is af.</translation>
 <translation id="3018135054368884502">Spoel media vinnig vorentoe</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3033912566804961911">Kombineer met <ph name="DESK_NAME" /></translation>
@@ -487,6 +492,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3291862315280588024">Skuif na begin van vorige woord</translation>
 <translation id="3294437725009624529">Gas</translation>
 <translation id="3298690094479023523">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Probeer weer.</translation>
+<translation id="3300193645498960160">Jy sal in kennis gestel word as jy praat terwyl gedemp aan is. Oudio verlaat nooit jou toestel nie.</translation>
 <translation id="3307642347673023554">Het na skootrekenaarmodus oorgeskakel</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan steeds later aanmeld.</translation>
 <translation id="3321628682574733415">Verkeerde ouerkode</translation>
@@ -570,6 +576,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3621202678540785336">Invoer</translation>
 <translation id="3621712662352432595">Oudio-instellings</translation>
 <translation id="3626281679859535460">Helderheid</translation>
+<translation id="3629640897379005903">Wys warmkolbesonderhede. Warmkol tans gedeaktiveer.</translation>
 <translation id="3630697955794050612">af</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
 <translation id="3633097874324966332">Maak Bluetooth-instellings oop om jou toestel saam te bind</translation>
@@ -702,6 +709,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="423685346499232137">Kan nie op die oomblik inhoud kopieer of plak nie</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oorsigmodus</translation>
+<translation id="4240756737570479726">Deaktiveer tans …</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4247123849143712100">Dateer op en skakel af</translation>
 <translation id="4250229828105606438">Skermkiekie</translation>
@@ -840,6 +848,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4864369630010738180">Meld tans aan …</translation>
 <translation id="4864648187878336334">Lessenaar 15</translation>
 <translation id="4868492592575313542">geaktiveer</translation>
+<translation id="4871905435473761992">Wys warmkolbesonderhede. Jou mobiele netwerk gebruik nie warmkol nie.</translation>
 <translation id="4872237917498892622">Alt+Search of Shift</translation>
 <translation id="4872852897273142380">Fokus op of kleurmerk die boekmerkbalk (as dit gewys word)</translation>
 <translation id="4881695831933465202">Maak oop</translation>
@@ -899,6 +908,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5104236669533825617">Kan nie skermopname skep nie</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Agtergrondwasigheid</translation>
 <translation id="5117590920725113268">Wys volgende maand</translation>
 <translation id="5121628974188116412">Gaan na onderkant van bladsy</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
@@ -910,6 +920,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5168181903108465623">Uitsaaitoestelle is beskikbaar</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5176318573511391780">Neem gedeeltelike skerm op</translation>
+<translation id="5187627942836026988">Wys warmkolbesonderhede. Jou administrateur blokkeer warmkol.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> geleenthede</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is met <ph name="IN_PLACE_APP" /> gekombineer om 'n nuwe vouer te skep.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1081,6 +1092,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="595202126637698455">Prestasie-nasporing geaktiveer</translation>
 <translation id="5955304353782037793">program</translation>
 <translation id="5958529069007801266">Gebruiker onder toesig</translation>
+<translation id="5961960957587052807">Lig</translation>
 <translation id="5965524703725988602">Wissel Donkertema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Druk Enter om venster op te neem</translation>
 <translation id="5978382165065462689">Deel tans beheer oor jou skerm deur afstandbystand.</translation>
@@ -1253,6 +1265,7 @@ Nuwe installasie</translation>
 <translation id="6752912906630585008">Lessenaar <ph name="REMOVED_DESK" /> is verwyder en met lessenaar <ph name="RECEIVE_DESK" /> saamgevoeg</translation>
 <translation id="6753390234084146956">oortjies</translation>
 <translation id="6757237461819837179">Geen media speel tans nie</translation>
+<translation id="6759628406555734414">Wys warmkolbesonderhede. Aktiveer tans warmkol.</translation>
 <translation id="6768043681523654438">berging</translation>
 <translation id="6777216307882431711">Gee tans krag aan gekoppelde USB-C-toestelle</translation>
 <translation id="6781002679438061620">Lessenaar 9</translation>
@@ -1277,6 +1290,7 @@ Nuwe installasie</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Een syfer bly oor}other{# syfers bly oor}}</translation>
 <translation id="6867938213751067702">Aflaai is onderbreek <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Wys warmkolbesonderhede. Warmkol is aan.</translation>
 <translation id="6878400149835617132">Kortpad is afgeskakel</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
 <translation id="6884665277231944629">Gaan terug na vandag</translation>
@@ -1286,6 +1300,7 @@ Nuwe installasie</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6901883536534621389">Probeer gebare om te navigeer</translation>
 <translation id="6919251195245069855">Kon nie jou slimkaart herken nie. Probeer weer.</translation>
+<translation id="6920245099716267363">Wissel warmkol. Warmkol is aan; 1 toestel is gekoppel</translation>
 <translation id="6931576957638141829">Stoor in</translation>
 <translation id="6941333068993625698">Dien terugvoer in</translation>
 <translation id="6942518653766415536">Opnameformaatkieslys</translation>
@@ -1375,6 +1390,7 @@ Nuwe installasie</translation>
 <translation id="7378203170292176219">Sleep om 'n area te kies om op te neem</translation>
 <translation id="7378594059915113390">Media-kontroles</translation>
 <translation id="7378889811480108604">Batterybespaardermodus is af</translation>
+<translation id="7382640522316003298">Wissel warmkol. Warmkol is aan; <ph name="DEVICECOUNT" /> toestelle is gekoppel.</translation>
 <translation id="7382680553121047388">Aan</translation>
 <translation id="7384028040782072252">Regsklik op enige plek om jou programme te herrangskik</translation>
 <translation id="7386767620098596324">Wissel netwerkverbinding. <ph name="STATE_TEXT" />.</translation>
@@ -1425,6 +1441,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7579778809502851308">Skermskoot</translation>
 <translation id="7593891976182323525">Search of Shift</translation>
 <translation id="7600875258240007829">Sien alle kennisgewings</translation>
+<translation id="7601417191446344542">Sakel die demp-aanporder aan?</translation>
 <translation id="7607002721634913082">Laat wag</translation>
 <translation id="7609951632080598826">Kalenderaansig, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera is herkoppel.</translation>
@@ -1547,6 +1564,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8131994907636310308">Maak "sorteer opspringers" toe</translation>
 <translation id="8132793192354020517">Gekoppel aan <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Wissel warmkol. Warmkol is aan; geen toestel is gekoppel nie</translation>
 <translation id="8138705869659070104">Aktiveer ná toestelopstelling</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>
@@ -1727,6 +1745,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8990809378771970590">Gebruik tans <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Kleuromkeringmodus is geaktiveer. Druk weer Ctrl+Search+H om dit af te skakel.</translation>
 <translation id="899350903320462459">Ontsluit toestel as <ph name="LOGIN_ID" /> om die kennisgewinghandeling uit te voer</translation>
+<translation id="8993733019280019776">Praat jy tans? Jou mikrofoon is af. Kies die mikrofoon om dit aan te skakel.</translation>
 <translation id="9000771174482730261">BESTUUR BERGING</translation>
 <translation id="9005984960510803406">Maak Crosh-venster oop</translation>
 <translation id="9017320285115481645">Voer die Family Link-ouertoegangskode in.</translation>

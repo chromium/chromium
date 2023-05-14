@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Vždy preložiť nasledujúci jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Prepnúť na otvorené okno</translation>
 <translation id="1112015203684611006">Tlač zlyhala.</translation>
+<translation id="1113057722807951993">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy zo služby Google Pay.
+
+Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Vytvoriť novú kartu.</translation>
 <translation id="1126809382673880764">Nechráni vás pred nebezpečnými webmi, stiahnutými súbormi ani rozšíreniami. Ochrana Bezpečného prehliadania vám bude poskytovaná v náležitých prípadoch v ďalších službách Googlu, ako sú napríklad Gmail alebo Vyhľadávanie.</translation>
 <translation id="1145536944570833626">Odstrániť existujúce dáta.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Prehliadať</translation>
 <translation id="1990820278544963435">Nájsť</translation>
 <translation id="199425419756152024">Zobraziť heslo</translation>
+<translation id="2008357574463816229">Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Opätovné načítanie</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="2021670401941426298">Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
@@ -707,6 +711,9 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5745916533876677730">Prejsť na predchádzajúcu kartu</translation>
 <translation id="5755162682436943950">Účet je odhlásený. Otvorí dialógové okno, pomocou ktorého sa môžete prihlásiť a zapnúť synchronizáciu.</translation>
 <translation id="5758631781033351321">Tu nájdete svoj čitateľský zoznam</translation>
+<translation id="5762370665605786758">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy zo služby Google Pay.
+
+Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Ponuka → Nastavenia → Predvolený prehliadač</translation>
 <translation id="5777888488419460501">Uložiť do účtu</translation>
 <translation id="5782227691023083829">Prebieha preklad...</translation>
@@ -848,6 +855,9 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="648164694371393720">Chyba overenia</translation>
 <translation id="6482629121755362506">Počet odstránených položiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="6484712497741564393">Prihlásili ste sa ako <ph name="EMAIL" />.
+
+Údaje sú šifrované pomocou vašej prístupovej frázy. Zadajte ju, ak chcete používať a ukladať údaje Chromu do svojho účtu Google.</translation>
 <translation id="6497772452874122664">Ak webu <ph name="TIME" /> dôverujete, môžete použiť uložené heslo z iného webu.
 
 Pre každý web skúste použiť jedinečné heslo.</translation>
@@ -894,6 +904,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6730682669179532099">Heslá sa nedajú exportovať</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6748108480210050150">Od</translation>
+<translation id="6753469262000681876">Režim silnej zámky</translation>
 <translation id="6760509555861141183">Návrat na poslednú kartu</translation>
 <translation id="6762812039470893796">Zrušiť výber všetkého</translation>
 <translation id="6780034285637185932">PSČ</translation>
@@ -1120,6 +1131,9 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8299417921174340354">Ak chcete používať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="8299613349954694191">Otvorte kartu inkognito a prehliadajte internet v súkromí.</translation>
 <translation id="8316944564970119719">Zadajte web a heslo a potom kliknite na Uložiť</translation>
+<translation id="8317835149433843300">Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude ukladať do účtu Google.
+
+Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nové vyhľadávanie</translation>
 <translation id="8323906514956095947">Pridržaním zobrazíte ďalšie možnosti karty</translation>
 <translation id="8328777765163860529">Zavrieť všetky</translation>
@@ -1142,6 +1156,9 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8487700953926739672">K dispozícii offline</translation>
 <translation id="8488923644885757471">Nové okno</translation>
 <translation id="8490978609246021741">Uložiť zmeny</translation>
+<translation id="8491300088149538575">Prihlásili ste sa ako <ph name="EMAIL" />.
+
+Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. Zadajte ju, ak chcete používať a ukladať údaje Chromu do svojho účtu Google.</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="850600235656508448">Otvoriť v režime inkognito</translation>
 <translation id="8517375800490286174">Licencie open source</translation>

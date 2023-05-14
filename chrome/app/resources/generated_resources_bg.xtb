@@ -5993,6 +5993,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6266532094411434237">Установява се връзка с(ъс) <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Изберете сертификат, за удостоверите самоличността си пред <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Отваряне чрез <ph name="APP" /></translation>
+<translation id="6270309713620950855">Спиране на подсещането</translation>
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
 <translation id="6270770586500173387">Изпращане на <ph name="BEGIN_LINK1" />информация за системата и приложенията<ph name="END_LINK1" />, както и за <ph name="BEGIN_LINK2" />показателите<ph name="END_LINK2" /></translation>
 <translation id="6270896861225278704">Карта на пътищата</translation>
@@ -6327,6 +6328,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="657866106756413002">Моментна снимка на състоянието на мрежата</translation>
 <translation id="6579369886355986318">Показване на всички &amp;контроли</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – съдържанието на работния плот е споделено</translation>
+<translation id="6580060371127789208">Завършено: <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Скорост на сканиране</translation>
 <translation id="6582080224869403177">Нулирайте устройството си <ph name="DEVICE_TYPE" />, за да надстроите функциите за сигурност.</translation>
 <translation id="6582274660680936615">Сърфирате като гост</translation>
@@ -6948,6 +6950,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7114054701490058191">Паролите не са идентични</translation>
 <translation id="7114648273807173152">За да използвате Smart Lock за влизане в профила ви в Google, отворете „Настройки &gt; Свързани устройства &gt; Вашият телефон &gt; Smart Lock“.</translation>
 <translation id="7115361495406486998">Няма налични контакти</translation>
+<translation id="7116554090938189816">SSL сертификатът на принтера е изтекъл. Рестартирайте принтера и опитайте отново.</translation>
 <translation id="7117228822971127758">Моля, опитайте отново по-късно</translation>
 <translation id="711840821796638741">Показване на управляваните отметки</translation>
 <translation id="711985611146095797">От тази страница можете да управлявате профилите си в Google, в които сте влезли. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -7232,6 +7235,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7392118418926456391">Сканирането за вируси не бе успешно</translation>
 <translation id="7392915005464253525">По&amp;вторно отваряне на затворен прозорец</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Копирахте 1 елемент}other{Копирахте {COUNT} елемента}}</translation>
+<translation id="7393435859300249877">Ще получавате известия, ако говорите, докато микрофонът ви е заглушен, когато използвате определени приложения, като например тези за видеочат. Звукът никога не напуска устройството ви.</translation>
 <translation id="7395774987022469191">Цял екран</translation>
 <translation id="7396017167185131589">Споделените папки ще се показват тук</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ще се изпълнява при стартиране на системата и ще продължи да работи на заден план дори след като затворите всички други прозорци на <ph name="PRODUCT_NAME" />.</translation>
