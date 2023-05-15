@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 assert(use_blink, "Content is only supported in Blink builds.")
 
@@ -33,6 +34,7 @@ source_set("content") {
     "web_state/crc_web_view_proxy_impl.mm",
   ]
   deps = [
+    ":send_webkit_message_js",
     "//base",
     "//build:blink_buildflags",
     "//components/js_injection/browser",
@@ -61,4 +63,10 @@ source_set("threads") {
     "//content/public/browser",
     "//ios/web/public/thread",
   ]
+}
+
+optimize_ts("send_webkit_message_js") {
+  visibility = [ ":content" ]
+
+  sources = [ "js_messaging/resources/send_webkit_message.ts" ]
 }

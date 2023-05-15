@@ -6,6 +6,7 @@
 
 #import <set>
 
+#import "base/no_destructor.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/unguessable_token.h"
 #import "components/js_injection/browser/js_communication_host.h"
@@ -32,6 +33,23 @@ namespace {
 const char kHandlerNamePropertyName[] = "handler_name";
 const char kMessagePropertyName[] = "message";
 
+const char kSendWebKitMessageScriptName[] = "send_webkit_message";
+
+// This feature intercepts calls to window.webkit.messageHandlers and reroutes
+// them to window.webkitMessageHandler.
+JavaScriptFeature* GetSendWebKitMessageJavaScriptFeature() {
+  // Static storage is ok for `send_webkit_message_feature` as it holds no
+  // state.
+  static base::NoDestructor<JavaScriptFeature> send_webkit_message_feature(
+      ContentWorld::kPageContentWorld,
+      std::vector<const JavaScriptFeature::FeatureScript>(
+          {JavaScriptFeature::FeatureScript::CreateWithFilename(
+              kSendWebKitMessageScriptName,
+              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}));
+  return send_webkit_message_feature.get();
+}
+
 }  // namespace
 
 ContentWebFramesManager::ContentWebFramesManager(
@@ -52,10 +70,7 @@ ContentWebFramesManager::ContentWebFramesManager(
   std::vector<JavaScriptFeature*> java_script_features;
   java_script_features.push_back(
       java_script_features::GetBaseJavaScriptFeature());
-
-  // TODO(crbug.com/1423527): Insert another feature that overrides the
-  // definition of sendWebKitMessage from common.js, to use
-  // webkitMessageHandler.postMessage.
+  java_script_features.push_back(GetSendWebKitMessageJavaScriptFeature());
   java_script_features.push_back(
       java_script_features::GetCommonJavaScriptFeature());
   java_script_features.push_back(
