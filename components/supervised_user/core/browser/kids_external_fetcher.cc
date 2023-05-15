@@ -41,6 +41,7 @@ using ::base::BindOnce;
 using ::base::JoinString;
 using ::base::StrCat;
 using ::base::StringPiece;
+using ::base::StringPrintf;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
 using ::base::UmaHistogramEnumeration;
@@ -73,15 +74,16 @@ int CombineNetAndHttpErrors(const network::SimpleURLLoader& loader) {
   return loader.ResponseInfo()->headers->response_code();
 }
 
-std::string CreateAuthorizationHeader(StringPiece access_token) {
+std::string CreateAuthorizationHeader(
+    const signin::AccessTokenInfo& access_token_info) {
   // Do not use StringPiece with StringPrintf, see crbug/1444165
-  return base::JoinString({supervised_user::kAuthorizationHeader, access_token},
-                          " ");
+  return base::StrCat(
+      {supervised_user::kAuthorizationHeader, " ", access_token_info.token});
 }
 
 // TODO(b/276898959): Support payload for POST requests.
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
-    StringPiece access_token,
+    const signin::AccessTokenInfo access_token_info,
     const supervised_user::FetcherConfig& fetcher_config,
     const GURL& url) {
   std::unique_ptr<ResourceRequest> resource_request =
@@ -89,8 +91,9 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   resource_request->url = url;
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      CreateAuthorizationHeader(access_token));
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      CreateAuthorizationHeader(access_token_info));
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        fetcher_config.traffic_annotation());
@@ -155,11 +158,11 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
     std::move(callback).Run(status, std::move(response));
   }
 
-  std::string GetMetricKey(base::StringPiece metric_id) const {
+  std::string GetMetricKey(StringPiece metric_id) const {
     return JoinString({config_.histogram_basename, metric_id}, ".");
   }
-  std::string GetMetricKey(base::StringPiece metric_id,
-                           base::StringPiece metric_suffix) const {
+  std::string GetMetricKey(StringPiece metric_id,
+                           StringPiece metric_suffix) const {
     return JoinString({config_.histogram_basename, metric_id, metric_suffix},
                       ".");
   }
@@ -187,7 +190,7 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
 
     // TODO(b/276898959): add optional payload for POST requests.
     simple_url_loader_ = InitializeSimpleUrlLoader(
-        access_token.value().token, config_,
+        access_token.value(), config_,
         supervised_user::CreateRequestUrl<Request>(config_));
 
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
@@ -299,13 +302,11 @@ std::string KidsExternalFetcherStatus::ToString() const {
     case KidsExternalFetcherStatus::OK:
       return "KidsExternalFetcherStatus::OK";
     case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
-      return base::StrCat(
-          {"KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR: ",
-           google_service_auth_error().ToString()});
+      return StrCat({"KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR: ",
+                     google_service_auth_error().ToString()});
     case KidsExternalFetcherStatus::NET_OR_HTTP_ERROR:
-      return base::StringPrintf(
-          "KidsExternalFetcherStatus::NET_OR_HTTP_ERROR: %d",
-          net_or_http_error_code_.value());
+      return StringPrintf("KidsExternalFetcherStatus::NET_OR_HTTP_ERROR: %d",
+                          net_or_http_error_code_.value());
     case KidsExternalFetcherStatus::INVALID_RESPONSE:
       return "KidsExternalFetcherStatus::INVALID_RESPONSE";
     case KidsExternalFetcherStatus::DATA_ERROR:
