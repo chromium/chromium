@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/animation/sampled_effect.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/timing_input.h"
-#include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -303,9 +302,8 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     ScriptState* script_state) {
   if (Animation* animation = GetAnimation()) {
     animation->FlushPendingUpdates();
-    if (ViewTimeline* view_timeline =
-            DynamicTo<ViewTimeline>(animation->timeline())) {
-      view_timeline->ResolveTimelineOffsets();
+    if (AnimationTimeline* timeline = animation->timeline()) {
+      animation->ResolveTimelineOffsets(timeline->GetTimelineRange());
     }
   }
 
