@@ -74,8 +74,7 @@ class FuzzTestLauncherDelegate : public content::TestLauncherDelegate {
 
  private:
   std::unique_ptr<InProcessFuzzer> fuzzer_;
-  std::unique_ptr<content::ContentMainDelegate>
-      content_main_delegate_;  // TODO remove unique_ptr
+  std::unique_ptr<content::ContentMainDelegate> content_main_delegate_;
   std::vector<std::string> libfuzzer_arguments_;
 };
 

@@ -21,6 +21,19 @@
 //
 // Register your subclass with REGISTER_IN_PROCESS_FUZZER. There can only
 // be one per executable.
+//
+// Different fuzz frameworks might run this in different ways.
+// For instance,
+// * libfuzzer runs this in a multi-process Chrome browser_test
+//   environment.
+// * centipede runs it in single-process browser_test mode (currently),
+//   with an external fuzz co-ordinator running multiple instances
+//   of Chrome.
+// * in the future, snapshot fuzzers might pause a VM and resume
+//   clones of it (to ensure a cleaner state for each iteration)
+// To the extent possible, you should write your fuzzer to be
+// implementation-independent and semantically express what
+// should happen during such fuzzing of the whole browser.
 class InProcessFuzzer : virtual public InProcessBrowserTest {
  public:
   // Called by the main function to create this class.
