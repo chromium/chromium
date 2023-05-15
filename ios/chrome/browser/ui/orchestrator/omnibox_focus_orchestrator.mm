@@ -78,7 +78,7 @@
     // call to `animationFinished` after the toolbar animations finished was
     // interrupted and cleanup still needs to occur.
     if (self.inProgressAnimationCount == 0 && self.isAnimating) {
-      [self animationFinished];
+      [self cleanupAfterAnimations];
     }
   });
 }
@@ -331,6 +331,10 @@
 
 - (void)animationFinished {
   self.inProgressAnimationCount -= 1;
+  [self cleanupAfterAnimations];
+}
+
+- (void)cleanupAfterAnimations {
   // Make sure all the animations have been queued and finished.
   if (!self.areOmniboxChangesQueued || self.inProgressAnimationCount > 0) {
     return;
