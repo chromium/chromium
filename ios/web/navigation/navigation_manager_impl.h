@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "ios/web/navigation/navigation_initiation_type.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #include "ios/web/navigation/synthesized_session_restore.h"
@@ -93,7 +94,7 @@ extern const char kRestoreNavigationTime[];
 //   this state, all getters are serviced using the cached session history.
 //   Mutation methods are not allowed. The navigation manager returns to the
 //   attached state when a new navigation starts.
-class NavigationManagerImpl : public NavigationManager {
+class NavigationManagerImpl final : public NavigationManager {
  public:
   // Callback used to fetch WKWebView session data blob.
   using SessionDataBlobFetcher = base::OnceCallback<NSData*()>;
@@ -105,7 +106,7 @@ class NavigationManagerImpl : public NavigationManager {
   };
 
   NavigationManagerImpl();
-  ~NavigationManagerImpl() override;
+  ~NavigationManagerImpl() final;
 
   NavigationManagerImpl(const NavigationManagerImpl&) = delete;
   NavigationManagerImpl& operator=(const NavigationManagerImpl&) = delete;
@@ -255,7 +256,12 @@ class NavigationManagerImpl : public NavigationManager {
   // instead of the public NavigationItem interface.
   NavigationItemImpl* GetNavigationItemImplAtIndex(size_t index) const;
 
- protected:
+ private:
+  // NavigationManagerTest.TestGetVisibleWebViewOriginURLCache needs to access
+  // the `web_view_cache_` member field.
+  FRIEND_TEST_ALL_PREFIXES(NavigationManagerTest,
+                           TestGetVisibleWebViewOriginURLCache);
+
   // The SessionStorageBuilder functions require access to private variables of
   // NavigationManagerImpl.
   friend SessionStorageBuilder;
