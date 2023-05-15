@@ -197,8 +197,6 @@
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
-#include "ash/webui/print_management/print_management_ui.h"
-#include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "ash/webui/system_extensions_internals_ui/url_constants.h"
 #include "base/system/sys_info.h"
@@ -211,8 +209,6 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
-#include "chrome/browser/ash/printing/print_management/printing_manager.h"
-#include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
@@ -455,31 +451,6 @@ WebUIController* NewWebUI<HistoryClustersInternalsUI>(WebUI* web_ui,
           &SetUpWebUIDataSource, web_ui,
           history_clusters_internals::kChromeUIHistoryClustersInternalsHost));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-void BindPrintManagement(
-    Profile* profile,
-    mojo::PendingReceiver<
-        chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
-        receiver) {
-  ash::printing::print_management::PrintingManager* handler =
-      ash::printing::print_management::PrintingManagerFactory::GetForProfile(
-          profile);
-  if (handler)
-    handler->BindInterface(std::move(receiver));
-}
-
-template <>
-WebUIController* NewWebUI<ash::printing::printing_manager::PrintManagementUI>(
-    WebUI* web_ui,
-    const GURL& url) {
-  return new ash::printing::printing_manager::PrintManagementUI(
-      web_ui,
-      base::BindRepeating(&BindPrintManagement, Profile::FromWebUI(web_ui)));
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 template <>
@@ -753,8 +724,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
-  if (url.host_piece() == ash::kChromeUIPrintManagementHost)
-    return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (url.host_piece() == chrome::kChromeUIWebUIJsErrorHost)

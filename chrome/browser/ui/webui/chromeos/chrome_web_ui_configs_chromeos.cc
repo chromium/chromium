@@ -33,6 +33,7 @@
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
+#include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
+#include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
@@ -292,6 +294,11 @@ void RegisterAshChromeWebUIConfigs() {
           base::BindRepeating(
               ash::personalization_app::CreatePersonalizationAppUI)));
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
+  map.AddWebUIConfig(std::make_unique<
+                     ash::printing::printing_manager::PrintManagementUIConfig>(
+      base::BindRepeating(
+          &ash::printing::print_management::PrintingManagerFactory::
+              CreatePrintManagementUIController)));
   map.AddWebUIConfig(
       std::make_unique<ash::multidevice::ProximityAuthUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::RemoteMaintenanceCurtainUIConfig>());

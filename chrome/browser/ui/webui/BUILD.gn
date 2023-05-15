@@ -61,6 +61,7 @@ source_set("configs") {
       "//ash/webui/guest_os_installer:guest_os_installer",
       "//ash/webui/help_app_ui",
       "//ash/webui/os_feedback_ui",
+      "//ash/webui/print_management",
       "//ash/webui/scanning:scanning",
       "//ash/webui/shimless_rma:shimless_rma",
       "//ash/webui/shortcut_customization_ui",
