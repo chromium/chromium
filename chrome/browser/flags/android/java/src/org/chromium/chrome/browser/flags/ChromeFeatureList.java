@@ -4,165 +4,95 @@
 
 package org.chromium.chrome.browser.flags;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.FeatureMap;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Java accessor for base/feature_list.h state.
+ * A list of feature flags exposed to Java.
  *
- * This class provides methods to access values of feature flags registered in
- * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc and as a constant
- * in this class.
+ * This class lists flags exposed to Java as String constants. They should match
+ * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc.
  *
- * This class also provides methods to access values of field trial parameters associated to those
- * flags.
+ * This class also provides convenience methods to access values of flags and their field trial
+ * parameters through {@link ChromeFeatureMap}.
+ *
+ * Chrome-layer {@link CachedFlag}s are instantiated here as well.
  */
-@JNINamespace("chrome::android")
 public abstract class ChromeFeatureList {
     /** Prevent instantiation. */
     private ChromeFeatureList() {}
 
     /**
-     * Returns whether the specified feature is enabled or not in native.
-     *
-     * @param featureName The name of the feature to query.
-     * @return Whether the feature is enabled or not.
-     */
-    private static boolean isEnabledInNative(String featureName) {
-        assert FeatureList.isNativeInitialized();
-        return ChromeFeatureListJni.get().isEnabled(featureName);
-    }
-
-    /**
-     * Returns whether the specified feature is enabled or not.
+     * Convenience method to check Chrome-layer feature flags, see
+     * {@link FeatureMap#isEnabled(String)}}.
      *
      * Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
-     *
-     * Calling this has the side effect of bucketing this client, which may cause an experiment to
-     * be marked as active.
-     *
-     * Should be called only after native is loaded. If {@link FeatureList#isInitialized()} returns
-     * true, this method is safe to call.  In tests, this will return any values set through
-     * {@link FeatureList#setTestFeatures(Map)}, even before native is loaded.
-     *
-     * @param featureName The name of the feature to query.
-     * @return Whether the feature is enabled or not.
      */
     public static boolean isEnabled(String featureName) {
-        // FeatureFlags set for testing override the native default value.
-        Boolean testValue = FeatureList.getTestValueForFeature(featureName);
-        if (testValue != null) return testValue;
-        return isEnabledInNative(featureName);
+        return ChromeFeatureMap.getInstance().isEnabled(featureName);
     }
 
     /**
-     * Returns a field trial param for the specified feature.
+     * Convenience method to get Chrome-layer feature field trial params, see
+     * {@link FeatureMap#getFieldTrialParamByFeature(String, String)}}.
      *
      * Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
-     *
-     * @param featureName The name of the feature to retrieve a param for.
-     * @param paramName The name of the param for which to get as an integer.
-     * @return The parameter value as a String. The string is empty if the feature does not exist or
-     *   the specified parameter does not exist.
      */
     public static String getFieldTrialParamByFeature(String featureName, String paramName) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
-        if (testValue != null) return testValue;
-        if (FeatureList.hasTestFeatures()) return "";
-        assert FeatureList.isInitialized();
-        return ChromeFeatureListJni.get().getFieldTrialParamByFeature(featureName, paramName);
+        return ChromeFeatureMap.getInstance().getFieldTrialParamByFeature(featureName, paramName);
     }
 
     /**
-     * Returns a field trial param as an int for the specified feature.
+     * Convenience method to get Chrome-layer feature field trial params, see
+     * {@link FeatureMap#getFieldTrialParamByFeatureAsBoolean(String, boolean)}}.
      *
      * Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
-     *
-     * @param featureName The name of the feature to retrieve a param for.
-     * @param paramName The name of the param for which to get as an integer.
-     * @param defaultValue The integer value to use if the param is not available.
-     * @return The parameter value as an int. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value does not represent an int.
-     */
-    public static int getFieldTrialParamByFeatureAsInt(
-            String featureName, String paramName, int defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
-        if (testValue != null) return Integer.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
-        assert FeatureList.isInitialized();
-        return ChromeFeatureListJni.get().getFieldTrialParamByFeatureAsInt(
-                featureName, paramName, defaultValue);
-    }
-
-    /**
-     * Returns a field trial param as a double for the specified feature.
-     *
-     * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
-     *
-     * @param featureName The name of the feature to retrieve a param for.
-     * @param paramName The name of the param for which to get as an integer.
-     * @param defaultValue The double value to use if the param is not available.
-     * @return The parameter value as a double. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value does not represent a double.
-     */
-    public static double getFieldTrialParamByFeatureAsDouble(
-            String featureName, String paramName, double defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
-        if (testValue != null) return Double.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
-        assert FeatureList.isInitialized();
-        return ChromeFeatureListJni.get().getFieldTrialParamByFeatureAsDouble(
-                featureName, paramName, defaultValue);
-    }
-
-    /**
-     * Returns all the field trial parameters for the specified feature.
-     */
-    public static Map<String, String> getFieldTrialParamsForFeature(String featureName) {
-        Map<String, String> testValues =
-                FeatureList.getTestValuesForAllFieldTrialParamsForFeature(featureName);
-        if (testValues != null) return testValues;
-        if (FeatureList.hasTestFeatures()) return Collections.emptyMap();
-
-        assert FeatureList.isInitialized();
-        Map<String, String> result = new HashMap<>();
-        String[] flattenedParams =
-                ChromeFeatureListJni.get().getFlattedFieldTrialParamsForFeature(featureName);
-        for (int i = 0; i < flattenedParams.length; i += 2) {
-            result.put(flattenedParams[i], flattenedParams[i + 1]);
-        }
-        return result;
-    }
-
-    /**
-     * Returns a field trial param as a boolean for the specified feature.
-     *
-     * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
-     *
-     * @param featureName The name of the feature to retrieve a param for.
-     * @param paramName The name of the param for which to get as an integer.
-     * @param defaultValue The boolean value to use if the param is not available.
-     * @return The parameter value as a boolean. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value is neither "true" nor "false".
      */
     public static boolean getFieldTrialParamByFeatureAsBoolean(
             String featureName, String paramName, boolean defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
-        if (testValue != null) return Boolean.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
-        assert FeatureList.isInitialized();
-        return ChromeFeatureListJni.get().getFieldTrialParamByFeatureAsBoolean(
+        return ChromeFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
                 featureName, paramName, defaultValue);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see
+     * {@link FeatureMap#getFieldTrialParamByFeatureAsInt(String, String, int)}}.
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static int getFieldTrialParamByFeatureAsInt(
+            String featureName, String paramName, int defaultValue) {
+        return ChromeFeatureMap.getInstance().getFieldTrialParamByFeatureAsInt(
+                featureName, paramName, defaultValue);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see
+     * {@link FeatureMap#getFieldTrialParamByFeatureAsDouble(String, String, double)}}.
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static double getFieldTrialParamByFeatureAsDouble(
+            String featureName, String paramName, double defaultValue) {
+        return ChromeFeatureMap.getInstance().getFieldTrialParamByFeatureAsDouble(
+                featureName, paramName, defaultValue);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see
+     * {@link FeatureMap#getFieldTrialParamsForFeature(String)}}.
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static Map<String, String> getFieldTrialParamsForFeature(String featureName) {
+        return ChromeFeatureMap.getInstance().getFieldTrialParamsForFeature(featureName);
     }
 
     /* Alphabetical: */
@@ -667,17 +597,4 @@ public abstract class ChromeFeatureList {
             new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, false);
     public static final CachedFlag sWebApkTrampolineOnInitialIntent =
             new CachedFlag(WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true);
-
-    @NativeMethods
-    interface Natives {
-        boolean isEnabled(String featureName);
-        String getFieldTrialParamByFeature(String featureName, String paramName);
-        int getFieldTrialParamByFeatureAsInt(
-                String featureName, String paramName, int defaultValue);
-        double getFieldTrialParamByFeatureAsDouble(
-                String featureName, String paramName, double defaultValue);
-        boolean getFieldTrialParamByFeatureAsBoolean(
-                String featureName, String paramName, boolean defaultValue);
-        String[] getFlattedFieldTrialParamsForFeature(String featureName);
-    }
 }

@@ -13,6 +13,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/CachedFlag.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
     "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtils.java",
@@ -43,7 +44,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
-    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
   ]
 }
