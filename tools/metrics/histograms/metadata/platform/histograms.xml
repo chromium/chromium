@@ -609,6 +609,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Hibernate.Abort" enum="CrosHibernateAbortReason"
+    expires_after="2024-05-09">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The reason why an attempt to hibernate was aborted. Reported when a
+    hibernation attempt is aborted.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Hibernate.AdditionalMemoryNeeded" units="MiB"
     expires_after="2023-08-04">
   <owner>asavery@chromium.org</owner>
@@ -640,6 +651,16 @@ chromium-metrics-reviews@google.com.
     amount of space needed to successfully hibernate on ChromeOS devices when
     there is more memory available than needed when hibernate is triggered.
     Recorded at hibernate.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Hibernate.HibernateDuration" units="hours"
+    expires_after="2024-05-10">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    Time the system was hibernated. Reported at resume from hibernate.
   </summary>
 </histogram>
 
