@@ -11,9 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -37,7 +39,8 @@ namespace permissions {
 // on navigations and clears them periodically.
 class UnusedSitePermissionsService
     : public KeyedService,
-      public base::SupportsWeakPtr<UnusedSitePermissionsService> {
+      public base::SupportsWeakPtr<UnusedSitePermissionsService>,
+      public content_settings::Observer {
  public:
   struct ContentSettingEntry {
     ContentSettingsType type;
@@ -72,6 +75,12 @@ class UnusedSitePermissionsService
       delete;
 
   ~UnusedSitePermissionsService() override;
+
+  // content_settings::Observer implementation.
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -132,6 +141,12 @@ class UnusedSitePermissionsService
   void OnUnusedPermissionsMapRetrieved(base::OnceClosure callback,
                                        UnusedPermissionMap map);
 
+  // Removes a pattern from the list of revoked permissions so that the entry is
+  // no longer shown to the user. Does not affect permissions themselves.
+  void DeletePatternFromRevokedPermissionList(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
+
   // Revokes permissions that belong to sites that were last visited over 60
   // days ago.
   void RevokeUnusedPermissions();
@@ -150,6 +165,10 @@ class UnusedSitePermissionsService
   base::RepeatingTimer update_timer_;
 
   const scoped_refptr<HostContentSettingsMap> hcsm_;
+
+  // Observer to watch for content settings changed.
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_settings_observation_{this};
 
   raw_ptr<base::Clock> clock_;
 };

@@ -138,9 +138,35 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
     HostContentSettingsMap* hcsm)
     : hcsm_(hcsm), clock_(base::DefaultClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content_settings_observation_.Observe(hcsm);
 }
 
 UnusedSitePermissionsService::~UnusedSitePermissionsService() = default;
+
+void UnusedSitePermissionsService::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.Contains(
+          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
+    return;
+  }
+
+  // When permissions change for a pattern it is either (1) through resetting
+  // permissions, e.g. in page info or site settings, (2) user modifying
+  // permissions manually, or (3) through the auto-revocation that this module
+  // performs. In (1) and (2) the pattern should no longer be shown to the user.
+  // 1: After resetting permissions the browser state should be in a
+  //    state as if the permission had never been granted.
+  // 2: The user is actively engaging with the permissions of the site, so it is
+  //    no longer considered an unused site for the purposes of this module.
+  //    This includes the case where unrelated permissions to the revoked ones
+  //    are changed.
+  // 3: Current logic ensures this does not happen for sites that already have
+  //    revoked permissions. This module revokes permissions in an all-or-none
+  //    fashion.
+  DeletePatternFromRevokedPermissionList(primary_pattern, secondary_pattern);
+}
 
 void UnusedSitePermissionsService::Shutdown() {
   update_timer_.Stop();
@@ -193,9 +219,8 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
   IgnoreOriginForAutoRevocation(origin);
 
   // Remove origin from revoked permissions list.
-  hcsm_->SetWebsiteSettingCustomScope(
-      info.primary_pattern, info.secondary_pattern,
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
+  DeletePatternFromRevokedPermissionList(info.primary_pattern,
+                                         info.secondary_pattern);
 
   // Record the days elapsed from auto-revocation to regrant.
   base::Time revoked_time =
@@ -229,10 +254,9 @@ void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &settings);
 
   for (const auto& revoked_permissions : settings) {
-    hcsm_->SetWebsiteSettingCustomScope(
+    DeletePatternFromRevokedPermissionList(
         revoked_permissions.primary_pattern,
-        revoked_permissions.secondary_pattern,
-        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
+        revoked_permissions.secondary_pattern);
   }
 }
 
@@ -303,6 +327,14 @@ void UnusedSitePermissionsService::OnUnusedPermissionsMapRetrieved(
   if (callback) {
     std::move(callback).Run();
   }
+}
+
+void UnusedSitePermissionsService::DeletePatternFromRevokedPermissionList(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern) {
+  hcsm_->SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern,
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
 }
 
 void UnusedSitePermissionsService::RevokeUnusedPermissions() {

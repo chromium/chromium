@@ -99,10 +99,31 @@ NotificationPermissions::~NotificationPermissions() = default;
 
 NotificationPermissionsReviewService::NotificationPermissionsReviewService(
     HostContentSettingsMap* hcsm)
-    : hcsm_(hcsm) {}
+    : hcsm_(hcsm) {
+  content_settings_observation_.Observe(hcsm);
+}
 
 NotificationPermissionsReviewService::~NotificationPermissionsReviewService() =
     default;
+
+void NotificationPermissionsReviewService::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
+    return;
+  }
+  // Sites on the notification permission review blocklist are sites where the
+  // notification permission is ALLOW and the user has indicated the site should
+  // not be suggested again in the module for revocation. A change in the
+  // notification permission for such a site (e.g. by the user or by
+  // resetting permissions) is considered to be a signal that the site should
+  // not longer be ignored, in case the permission is allowed again in the
+  // future. Setting ContentSetting to ALLOW when it already is ALLOW will not
+  // trigger this function.
+  RemovePatternFromNotificationPermissionReviewBlocklist(primary_pattern,
+                                                         secondary_pattern);
+}
 
 void NotificationPermissionsReviewService::Shutdown() {}
 
