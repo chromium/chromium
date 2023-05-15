@@ -27,7 +27,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -238,6 +237,16 @@ void SystemDialogDelegateView::SetAcceptButtonText(
 void SystemDialogDelegateView::SetCancelButtonText(
     const std::u16string& cancel_text) {
   button_container_->SetCancelText(cancel_text);
+}
+
+void SystemDialogDelegateView::SetAdditionalContentCrossAxisAlignment(
+    views::LayoutAlignment alignment) {
+  DCHECK(additional_content_);
+  auto* cross_aligment =
+      additional_content_->GetProperty(views::kCrossAxisAlignmentKey);
+  if (!cross_aligment || *cross_aligment != alignment) {
+    additional_content_->SetProperty(views::kCrossAxisAlignmentKey, alignment);
+  }
 }
 
 gfx::Size SystemDialogDelegateView::GetMinimumSize() const {

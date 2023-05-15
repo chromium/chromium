@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -100,6 +101,10 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
     return raw_ptr;
   }
 
+  // Sets the cross axis alignment of current additional content which is center
+  // aligned by default.
+  void SetAdditionalContentCrossAxisAlignment(views::LayoutAlignment alignment);
+
   // views::WidgetDelegateView:
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
@@ -156,6 +161,8 @@ VIEW_BUILDER_PROPERTY(base::OnceClosure, CancelCallback)
 VIEW_BUILDER_PROPERTY(base::OnceClosure, CloseCallback)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalContentView)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalViewInButtonRow)
+VIEW_BUILDER_PROPERTY(views::LayoutAlignment,
+                      AdditionalContentCrossAxisAlignment)
 END_VIEW_BUILDER
 
 }  // namespace ash
