@@ -3079,16 +3079,30 @@ const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorFolio[] = {
 const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorDetached[] = {
     {"disable_ntb_anchor", "true"},
     {"enable_detached", "true"}};
+const FeatureEntry::FeatureParam
+    kTabStripRedesignDisableToolbarReorderingFolio[] = {
+        {"disable_toolbar_reordering", "true"},
+        {"enable_folio", "true"}};
+const FeatureEntry::FeatureParam
+    kTabStripRedesignDisableToolbarReorderingDetached[] = {
+        {"disable_toolbar_reordering", "true"},
+        {"enable_detached", "true"}};
 
 const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
     {"Folio", kTabStripRedesignFolio, std::size(kTabStripRedesignFolio),
      nullptr},
     {"Detached", kTabStripRedesignDetached,
      std::size(kTabStripRedesignDetached), nullptr},
-    {"Folio NTB Fixed Position", kTabStripRedesignDisableNtbAnchorFolio,
+    {"Folio NTB Unanchored ", kTabStripRedesignDisableNtbAnchorFolio,
      std::size(kTabStripRedesignDisableNtbAnchorFolio), nullptr},
-    {"Detached NTB Fixed Position", kTabStripRedesignDisableNtbAnchorDetached,
-     std::size(kTabStripRedesignDisableNtbAnchorDetached), nullptr}};
+    {"Detached NTB Unanchored", kTabStripRedesignDisableNtbAnchorDetached,
+     std::size(kTabStripRedesignDisableNtbAnchorDetached), nullptr},
+    {"Folio Shut off Toolbar Reordering ",
+     kTabStripRedesignDisableToolbarReorderingFolio,
+     std::size(kTabStripRedesignDisableToolbarReorderingFolio), nullptr},
+    {"Detached Shut off Toolbar Reordering",
+     kTabStripRedesignDisableToolbarReorderingDetached,
+     std::size(kTabStripRedesignDisableToolbarReorderingDetached), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
