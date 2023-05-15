@@ -168,5 +168,5 @@ int main(int argc, char** argv) {
   FuzzTestLauncherDelegate* fuzzer_launcher_delegate =
       new FuzzTestLauncherDelegate(std::move(fuzzer),
                                    std::move(libfuzzer_arguments));
-  return content::LaunchTests(fuzzer_launcher_delegate, 1, argc, argv);
+  return LaunchChromeTests(1, fuzzer_launcher_delegate, argc, argv);
 }
