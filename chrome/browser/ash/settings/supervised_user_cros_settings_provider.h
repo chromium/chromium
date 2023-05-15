@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_SETTINGS_SUPERVISED_USER_CROS_SETTINGS_PROVIDER_H_
 #define CHROME_BROWSER_ASH_SETTINGS_SUPERVISED_USER_CROS_SETTINGS_PROVIDER_H_
 
-#include <map>
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
-
-namespace base {
-class Value;
-}
 
 namespace ash {
 
@@ -29,13 +27,13 @@ class SupervisedUserCrosSettingsProvider : public CrosSettingsProvider {
   ~SupervisedUserCrosSettingsProvider() override;
 
   // CrosSettingsProvider:
-  const base::Value* Get(const std::string& path) const override;
+  const base::Value* Get(base::StringPiece path) const override;
   TrustedStatus PrepareTrustedValues(base::OnceClosure* callback) override;
-  bool HandlesSetting(const std::string& path) const override;
+  bool HandlesSetting(base::StringPiece path) const override;
 
  private:
   // Cros pref name to pref value.
-  std::map<std::string, base::Value> child_user_restrictions_;
+  base::flat_map<std::string, base::Value> child_user_restrictions_;
 };
 
 }  // namespace ash

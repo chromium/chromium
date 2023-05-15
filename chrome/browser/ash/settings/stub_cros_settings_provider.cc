@@ -27,8 +27,7 @@ StubCrosSettingsProvider::StubCrosSettingsProvider()
 StubCrosSettingsProvider::~StubCrosSettingsProvider() {
 }
 
-const base::Value* StubCrosSettingsProvider::Get(
-    const std::string& path) const {
+const base::Value* StubCrosSettingsProvider::Get(base::StringPiece path) const {
   DCHECK(HandlesSetting(path));
   const base::Value* value;
   if (values_.GetValue(path, &value))
@@ -43,7 +42,7 @@ StubCrosSettingsProvider::PrepareTrustedValues(base::OnceClosure* callback) {
   return trusted_status_;
 }
 
-bool StubCrosSettingsProvider::HandlesSetting(const std::string& path) const {
+bool StubCrosSettingsProvider::HandlesSetting(base::StringPiece path) const {
   return DeviceSettingsProvider::IsDeviceSetting(path);
 }
 
