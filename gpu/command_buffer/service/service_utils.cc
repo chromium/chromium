@@ -267,18 +267,26 @@ WebGPUAdapterName ParseWebGPUAdapterName(
     const base::CommandLine* command_line) {
   if (command_line->HasSwitch(switches::kUseWebGPUAdapter)) {
     auto value = command_line->GetSwitchValueASCII(switches::kUseWebGPUAdapter);
-    if (value.empty()) {
-      return WebGPUAdapterName::kDefault;
-    } else if (value == "opengles") {
-      return WebGPUAdapterName::kOpenGLES;
-    } else if (value == "swiftshader") {
-      return WebGPUAdapterName::kSwiftShader;
-    } else if (value == "default") {
-      return WebGPUAdapterName::kDefault;
-    } else {
-      DLOG(ERROR) << "Invalid switch " << switches::kUseWebGPUAdapter << "="
-                  << value << ".";
+
+    static const struct {
+      const char* name;
+      WebGPUAdapterName value;
+    } kAdapterNames[] = {
+        {"", WebGPUAdapterName::kDefault},
+        {"default", WebGPUAdapterName::kDefault},
+        {"d3d11", WebGPUAdapterName::kD3D11},
+        {"opengles", WebGPUAdapterName::kOpenGLES},
+        {"swiftshader", WebGPUAdapterName::kSwiftShader},
+    };
+
+    for (const auto& adapter_name : kAdapterNames) {
+      if (value == adapter_name.name) {
+        return adapter_name.value;
+      }
     }
+
+    DLOG(ERROR) << "Invalid switch " << switches::kUseWebGPUAdapter << "="
+                << value << ".";
   }
   return WebGPUAdapterName::kDefault;
 }

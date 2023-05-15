@@ -41,8 +41,9 @@ enum class VulkanImplementationName : uint32_t {
 
 enum class WebGPUAdapterName : uint32_t {
   kDefault = 0,
-  kOpenGLES = 1,
-  kSwiftShader = 2,
+  kD3D11 = 1,
+  kOpenGLES = 2,
+  kSwiftShader = 3,
 };
 
 // Affecting how chromium handles GPUPowerPreference in

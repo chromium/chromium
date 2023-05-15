@@ -53,6 +53,7 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <dawn/native/D3D11Backend.h>
 #include <dawn/native/D3D12Backend.h>
 #include "ui/gl/gl_angle_util_win.h"
 #endif
@@ -1524,8 +1525,15 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   d3d11_device.As(&dxgi_device);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   dxgi_device->GetAdapter(&dxgi_adapter);
-  dawn::native::d3d12::AdapterDiscoveryOptions options(std::move(dxgi_adapter));
-  dawn_instance_->DiscoverAdapters(&options);
+
+  dawn::native::d3d12::AdapterDiscoveryOptions d3d12Options(dxgi_adapter);
+  dawn_instance_->DiscoverAdapters(&d3d12Options);
+
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kD3D11) {
+    dawn::native::d3d11::AdapterDiscoveryOptions d3d11Options(
+        std::move(dxgi_adapter));
+    dawn_instance_->DiscoverAdapters(&d3d11Options);
+  }
 
 #if BUILDFLAG(ENABLE_VULKAN)
   // Also discover the SwiftShader adapter. It will be discovered by default
@@ -1574,7 +1582,11 @@ WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
       continue;
     }
 
-    if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
+    if (use_webgpu_adapter_ == WebGPUAdapterName::kD3D11) {
+      if (adapterProperties.backendType == WGPUBackendType_D3D11) {
+        adapters.push_back(adapter);
+      }
+    } else if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
       if (adapterProperties.backendType == WGPUBackendType_OpenGLES) {
         adapters.push_back(adapter);
       }
