@@ -14,9 +14,13 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   TestRunner.markStep('createIframesAndWaitForSourceMaps');
   await Promise.all([
     BindingsTestRunner.attachFrame('frame1', './resources/sourcemap-frame.html', '_test_create-iframe1.js'),
+    BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
+    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
+  ]);
+  await Promise.all([
     BindingsTestRunner.attachFrame('frame2', './resources/sourcemap-frame.html', '_test_create-iframe2.js'),
     BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
-    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map')
+    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
   ]);
   snapshot = BindingsTestRunner.dumpWorkspace(snapshot);
 
