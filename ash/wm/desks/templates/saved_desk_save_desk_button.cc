@@ -15,6 +15,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -45,8 +46,15 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderNoShadow
           : views::HighlightBorder::Type::kHighlightBorder2));
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kSaveDeskCornerRadius});
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+
+  View* background_view = AddChildView(std::make_unique<views::View>());
+  background_view->SetPaintToLayer();
+
+  background_view->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kSaveDeskCornerRadius});
+  background_view->layer()->SetBackgroundBlur(
+      ColorProvider::kBackgroundBlurSigma);
+  background_view->layer()->SetFillsBoundsOpaquely(false);
 }
 
 SavedDeskSaveDeskButton::~SavedDeskSaveDeskButton() = default;
