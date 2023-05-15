@@ -1772,7 +1772,7 @@ BASE_FEATURE(kPreferConstantFrameRate,
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kPrintManagementJelly,
              "PrintManagementJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new OS Printer Settings UI.
 BASE_FEATURE(kPrinterSettingsRevamp,
