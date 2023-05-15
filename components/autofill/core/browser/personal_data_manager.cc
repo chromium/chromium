@@ -1868,7 +1868,7 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
 
 bool PersonalDataManager::IsSyncEnabledFor(
     syncer::UserSelectableType data_type) const {
-  return sync_service_ != nullptr && sync_service_->CanSyncFeatureStart() &&
+  return sync_service_ != nullptr && sync_service_->IsSyncFeatureEnabled() &&
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(data_type);
 }
 
