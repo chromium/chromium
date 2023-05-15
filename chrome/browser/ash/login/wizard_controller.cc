@@ -51,7 +51,6 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
@@ -131,7 +130,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
@@ -789,13 +787,6 @@ WizardController::CreateScreens() {
     append(std::move(gaia_password_change_screen));
   }
 
-  append(std::make_unique<ActiveDirectoryPasswordChangeScreen>(
-      oobe_ui->GetView<ActiveDirectoryPasswordChangeScreenHandler>()
-          ->AsWeakPtr(),
-      base::BindRepeating(
-          &WizardController::OnActiveDirectoryPasswordChangeScreenExit,
-          weak_factory_.GetWeakPtr())));
-
   append(std::make_unique<FamilyLinkNoticeScreen>(
       oobe_ui->GetView<FamilyLinkNoticeScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnFamilyLinkNoticeScreenExit,
@@ -1170,12 +1161,6 @@ void WizardController::ShowAuthenticationSetupScreen() {
   }
 }
 
-void WizardController::ShowActiveDirectoryPasswordChangeScreen(
-    const std::string& username) {
-  GetScreen<ActiveDirectoryPasswordChangeScreen>()->SetUsername(username);
-  AdvanceToScreen(ActiveDirectoryPasswordChangeView::kScreenId);
-}
-
 void WizardController::ShowLacrosDataMigrationScreen() {
   SetCurrentScreen(GetScreen(LacrosDataMigrationScreenView::kScreenId));
 }
@@ -1197,12 +1182,6 @@ void WizardController::ShowCryptohomeRecoveryScreen(
   DCHECK(features::IsCryptohomeRecoveryEnabled());
   wizard_context_->user_context = std::move(user_context);
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
-}
-
-void WizardController::OnActiveDirectoryPasswordChangeScreenExit() {
-  OnScreenExit(ActiveDirectoryPasswordChangeView::kScreenId,
-               kDefaultExitReason);
-  ShowLoginScreen();
 }
 
 void WizardController::OnUserCreationScreenExit(
@@ -2480,7 +2459,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowGaiaInfoScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
-             screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
              screen_id == GaiaView::kScreenId ||
              screen_id == UserCreationView::kScreenId ||

@@ -42,7 +42,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/about_ui.h"
-#include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
@@ -436,9 +435,6 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<GaiaPasswordChangedScreenHandler>());
 
-  auto password_change_handler =
-      std::make_unique<ActiveDirectoryPasswordChangeScreenHandler>();
-
   if (features::IsOobeGaiaInfoScreenEnabled()) {
     AddScreenHandler(std::make_unique<GaiaInfoScreenHandler>());
   }
@@ -451,8 +447,6 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<SignInFatalErrorScreenHandler>());
 
   AddScreenHandler(std::make_unique<OfflineLoginScreenHandler>());
-
-  AddScreenHandler(std::move(password_change_handler));
 
   AddWebUIHandler(std::make_unique<SshConfiguredHandler>());
 

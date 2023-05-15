@@ -2809,8 +2809,6 @@ static_library("ui") {
       "webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h",
       "webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.cc",
       "webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h",
-      "webui/ash/login/active_directory_password_change_screen_handler.cc",
-      "webui/ash/login/active_directory_password_change_screen_handler.h",
       "webui/ash/login/app_downloading_screen_handler.cc",
       "webui/ash/login/app_downloading_screen_handler.h",
       "webui/ash/login/app_launch_splash_screen_handler.cc",
