@@ -283,6 +283,22 @@ void FireStorageAccessHistogram(StorageAccessResult result) {
   UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests2", result);
 }
 
+void FireStorageAccessInputHistogram(bool has_opt_in, bool has_grant) {
+  StorageAccessInputState input_state;
+  if (has_opt_in && has_grant) {
+    input_state = StorageAccessInputState::kOptInWithGrant;
+  } else if (has_opt_in && !has_grant) {
+    input_state = StorageAccessInputState::kOptInWithoutGrant;
+  } else if (!has_opt_in && has_grant) {
+    input_state = StorageAccessInputState::kGrantWithoutOptIn;
+  } else if (!has_opt_in && !has_grant) {
+    input_state = StorageAccessInputState::kNoOptInNoGrant;
+  } else {
+    NOTREACHED_NORETURN();
+  }
+  base::UmaHistogramEnumeration("API.StorageAccess.InputState", input_state);
+}
+
 bool DomainIsHostOnly(const std::string& domain_string) {
   return (domain_string.empty() || domain_string[0] != '.');
 }

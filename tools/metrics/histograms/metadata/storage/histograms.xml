@@ -92,6 +92,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="API.StorageAccess.InputState" enum="StorageAccessInputState"
+    expires_after="2024-05-12">
+  <owner>cfredric@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    Records the signals used to decide whether to unblock cookie access (in the
+    network service) via the Storage Access API. This metric is recorded each
+    time CookieSettings are queried and the Storage Access API is relevant (i.e.
+    third-party cookies are blocked by user setting, and there's no
+    site-specific override that takes precedence). This is recorded regardless
+    of whether the Storage Access API is enabled in the browser.
+
+    This metric is only recorded in the network service, not in the browser's
+    CookieSettings object, since the browser's accesses supply hardcoded
+    override signals and therefore are not interesting to analyze.
+  </summary>
+</histogram>
+
 <histogram name="API.StorageAccess.RequestOutcome"
     enum="StorageAccessAPIRequestOutcome" expires_after="2023-08-31">
   <owner>cfredric@chromium.org</owner>
