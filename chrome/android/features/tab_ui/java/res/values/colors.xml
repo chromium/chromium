@@ -18,28 +18,28 @@ found in the LICENSE file.
     <!-- Incognito colors for theme refactor 2021. -->
     <!-- TODO(https://crbug.com/1223976): Use semantic colors for incognito. -->
     <color name="incognito_tab_action_button_color">@color/baseline_neutral_variant_200</color>
-    <color name="incognito_tab_action_button_selected_color">@color/baseline_primary_800</color>
+    <color name="incognito_tab_action_button_selected_color">@color/baseline_primary_20</color>
 
     <color name="incognito_tab_bg_color">@color/default_bg_color_dark_elev_4_baseline</color>
-    <color name="incognito_tab_bg_selected_color">@color/baseline_primary_200</color>
+    <color name="incognito_tab_bg_selected_color">@color/baseline_primary_80</color>
 
     <color name="incognito_tab_group_hovered_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
-    <color name="incognito_tab_group_hovered_bg_selected_color">@color/baseline_primary_200_alpha_10</color>
+    <color name="incognito_tab_group_hovered_bg_selected_color">@color/baseline_primary_80_alpha_10</color>
 
     <color name="incognito_tab_title_color">@color/baseline_neutral_100</color>
-    <color name="incognito_tab_title_selected_color">@color/baseline_primary_800</color>
+    <color name="incognito_tab_title_selected_color">@color/baseline_primary_20</color>
 
     <color name="incognito_tab_thumbnail_placeholder_color">@color/baseline_neutral_variant_200_alpha_15</color>
-    <color name="incognito_tab_thumbnail_placeholder_selected_color">@color/baseline_primary_100</color>
+    <color name="incognito_tab_thumbnail_placeholder_selected_color">@color/baseline_primary_90</color>
 
     <color name="incognito_tab_tile_number_color">@color/baseline_neutral_100</color>
-    <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_800</color>
+    <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_20</color>
 
     <color name="incognito_tab_grid_dialog_background_color">@color/baseline_neutral_900</color>
 
-    <color name="incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color">@color/baseline_primary_200</color>
+    <color name="incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color">@color/baseline_primary_80</color>
 
-    <color name="incognito_tab_grid_dialog_ungroup_bar_text_color">@color/baseline_primary_200</color>
+    <color name="incognito_tab_grid_dialog_ungroup_bar_text_color">@color/baseline_primary_80</color>
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_hovered_color">@color/modern_white</color>
 
     <color name="incognito_tab_selection_editor_toolbar_bg_color">@color/toolbar_background_primary_dark</color>
