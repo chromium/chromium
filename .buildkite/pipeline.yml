@@ -16,9 +16,9 @@ steps:
       - "os=linux"
       - "queue=runtime"
     artifact_paths:
-      - "build_id/linux/**"
-  - label: "Build chromium - Mac"
-    key: "build-chromium-mac"
+      - "build_id/linux/x86_64/**"
+  - label: "Build chromium - Mac (x86)"
+    key: "build-chromium-mac-x86_64"
     plugins:
       - thedyrt/skip-checkout#v0.1.1: ~
     command: "cd /Users/administrator/chromium/src && node buildMac.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
@@ -30,7 +30,24 @@ steps:
       - "os=macos"
       - "queue=runtime"
     artifact_paths:
-      - "build_id/macOS/**"
+      - "build_id/macOS/x86_64/**"
+  - label: "Build chromium - Mac (arm64)"
+    key: "build-chromium-mac-arm64"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1: ~
+    command: "cd /Users/administrator/chromium/src && node buildMac.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+    env:
+      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
+      GOMACTL_USE_PROXY: false
+      REPLAY_BUILD_ARM: true
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=macos"
+      - "queue=runtime"
+    artifact_paths:
+      - "build_id/macOS/arm_64/**"
+    # TODO(dmiller): remove this once the arm mac build doesn't fail
+    soft_fail: true
   - label: "Build chromium - Windows"
     key: "build-chromium-windows"
     # TODO(dmiller): remove this once we have a windows build that doesn't fail
@@ -47,7 +64,7 @@ steps:
       - "os=windows"
       - "queue=runtime"
     artifact_paths:
-      - "build_id/windows/**"
+      - "build_id/windows/x86_64/**"
   - trigger: "testing-runtime-e2e"
-    label: ":hammer: Trigger Runtime Tests"
+    label: ":hammer: Trigger Runtime Tests (Linux)"
     depends_on: "build-chromium-linux"
