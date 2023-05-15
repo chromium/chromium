@@ -5174,7 +5174,13 @@ void NavigationRequest::CommitErrorPage(
     }
   }
 
+  base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
   ReadyToCommitNavigation(true /* is_error */);
+  // The caller above might result in the deletion of `this`. Return immediately
+  // if so.
+  if (!weak_self) {
+    return;
+  }
 
   PopulateDocumentTokenForCrossDocumentNavigation();
   // Use a separate cache shard, and no cookies, for error pages.
