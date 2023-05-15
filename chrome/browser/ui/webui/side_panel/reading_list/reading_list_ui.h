@@ -14,9 +14,14 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 class ReadingListPageHandler;
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 class ReadingListUI : public ui::MojoBubbleWebUIController,
                       public reading_list::mojom::PageHandlerFactory,
@@ -26,6 +31,10 @@ class ReadingListUI : public ui::MojoBubbleWebUIController,
   ReadingListUI(const ReadingListUI&) = delete;
   ReadingListUI& operator=(const ReadingListUI&) = delete;
   ~ReadingListUI() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          pending_receiver);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
@@ -54,6 +63,7 @@ class ReadingListUI : public ui::MojoBubbleWebUIController,
   mojo::Receiver<reading_list::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};

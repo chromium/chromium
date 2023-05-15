@@ -998,7 +998,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::cloud_upload::CloudUploadUI, ash::office_fallback::OfficeFallbackUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
-      InternalsUI>(map);
+      InternalsUI, ReadingListUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
