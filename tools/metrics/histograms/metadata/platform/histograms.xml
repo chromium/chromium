@@ -631,16 +631,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Hibernate.Duration.SetupLVMFiles" units="seconds"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The duration in seconds we wait for hibernate files to be setup on ChromeOS
-    devices with LVM. Reported at hibernate.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Hibernate.ExcessMemoryAvailable" units="MiB"
     expires_after="2023-08-04">
   <owner>asavery@chromium.org</owner>
@@ -650,68 +640,6 @@ chromium-metrics-reviews@google.com.
     amount of space needed to successfully hibernate on ChromeOS devices when
     there is more memory available than needed when hibernate is triggered.
     Recorded at hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.PreloadImage.Duration" units="seconds"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The duration in seconds spent preloading the hibernate image on ChromeOS
-    devices. Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.PreloadImage.Rate" units="MiB/s"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The rate in MiB/s we are preloading the hibernate image on ChromeOS devices.
-    Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.PreloadImage.Size" units="KiB"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The size in KiB of the hibernate image we preload on ChromeOS devices.
-    Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.ReadAllData.Duration" units="seconds"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The total duration in seconds spent preloading and moving the hibernate
-    image on ChromeOS devices. This should be the summation of the preloading
-    and main image durations. Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.ReadAllData.Rate" units="MiB/s"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The rate in MiB/s we preloaded and moved the hibernate image on ChromeOS
-    devices. Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.ReadAllData.Size" units="KiB"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The size in KiB of the hibernate image we preload and move on ChromeOS
-    devices. This should be the summation of the preloaded and main image sizes.
-    Reported at resume from hibernate.
   </summary>
 </histogram>
 
