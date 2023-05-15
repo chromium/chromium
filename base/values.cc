@@ -1152,10 +1152,6 @@ bool operator>=(const Value::List& lhs, const Value::List& rhs) {
   return !(lhs < rhs);
 }
 
-absl::optional<int> Value::FindIntKey(StringPiece key) const {
-  return GetDict().FindInt(key);
-}
-
 Value* Value::SetKey(StringPiece key, Value&& value) {
   return GetDict().Set(key, std::move(value));
 }
@@ -1188,16 +1184,8 @@ const Value* Value::FindPath(StringPiece path) const {
   return GetDict().FindByDottedPath(path);
 }
 
-absl::optional<bool> Value::FindBoolPath(StringPiece path) const {
-  return GetDict().FindBoolByDottedPath(path);
-}
-
 absl::optional<int> Value::FindIntPath(StringPiece path) const {
   return GetDict().FindIntByDottedPath(path);
-}
-
-absl::optional<double> Value::FindDoublePath(StringPiece path) const {
-  return GetDict().FindDoubleByDottedPath(path);
 }
 
 const std::string* Value::FindStringPath(StringPiece path) const {
@@ -1206,18 +1194,6 @@ const std::string* Value::FindStringPath(StringPiece path) const {
 
 std::string* Value::FindStringPath(StringPiece path) {
   return GetDict().FindStringByDottedPath(path);
-}
-
-const Value* Value::FindDictPath(StringPiece path) const {
-  const Value* cur = GetDict().FindByDottedPath(path);
-  if (!cur || cur->type() != Type::DICT) {
-    return nullptr;
-  }
-  return cur;
-}
-
-Value* Value::FindDictPath(StringPiece path) {
-  return const_cast<Value*>(std::as_const(*this).FindDictPath(path));
 }
 
 const Value* Value::FindListPath(StringPiece path) const {

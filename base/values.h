@@ -757,14 +757,6 @@ class BASE_EXPORT GSL_OWNER Value {
   };
 
   // ===== DEPRECATED methods that require `type() == Type::DICT` =====
-
-  // These are convenience forms of `FindKey`. They return `absl::nullopt` or
-  // `nullptr` if the value is not found or doesn't have the type specified in
-  // the function's name.
-  //
-  // DEPRECATED: prefer `Value::Dict::FindInt()`.
-  absl::optional<int> FindIntKey(StringPiece key) const;
-
   // `SetKey` looks up `key` in the underlying dictionary and sets the mapped
   // value to `value`. If `key` could not be found, a new element is inserted.
   // A pointer to the modified item is returned.
@@ -810,28 +802,15 @@ class BASE_EXPORT GSL_OWNER Value {
   // Convenience accessors used when the expected type of a value is known.
   // Similar to Find<Type>Key() but accepts paths instead of keys.
   //
-  // DEPRECATED: Use `Value::Dict::FindBoolByDottedPath()`, or
-  // `Value::Dict::FindBool()` if the path only has one component, i.e. has no
-  // dots.
-  absl::optional<bool> FindBoolPath(StringPiece path) const;
   // DEPRECATED: Use `Value::Dict::FindIntByDottedPath()`, or
   // `Value::Dict::FindInt()` if the path only has one component, i.e. has no
   // dots.
   absl::optional<int> FindIntPath(StringPiece path) const;
-  // DEPRECATED: Use `Value::Dict::FindDoubleByDottedPath()`, or
-  // `Value::Dict::FindDouble()` if the path only has one component, i.e. has no
-  // dots.
-  absl::optional<double> FindDoublePath(StringPiece path) const;
   // DEPRECATED: Use `Value::Dict::FindStringByDottedPath()`, or
   // `Value::Dict::FindString()` if the path only has one component, i.e. has no
   // dots.
   const std::string* FindStringPath(StringPiece path) const;
   std::string* FindStringPath(StringPiece path);
-  // DEPRECATED: Use `Value::Dict::FindDictByDottedPath()`, or
-  // `Value::Dict::FindDict()` if the path only has one component, i.e. has no
-  // dots.
-  Value* FindDictPath(StringPiece path);
-  const Value* FindDictPath(StringPiece path) const;
   // DEPRECATED: Use `Value::Dict::FindListByDottedPath()`, or
   // `Value::Dict::FindList()` if the path only has one component, i.e. has no
   // dots.
