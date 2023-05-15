@@ -294,7 +294,14 @@ void CaretDisplayItemClient::RecordSelection(GraphicsContext& context,
                                  paint_rect.bottom_left(), false};
   PaintedSelectionBound end = start;
 
-  context.GetPaintController().RecordSelection(start, end);
+  // Get real world data to help debug crbug.com/1441243.
+#if DCHECK_IS_ON()
+  String debug_info = drawing_rect.ToString();
+#else
+  String debug_info = "";
+#endif
+
+  context.GetPaintController().RecordSelection(start, end, debug_info);
 }
 
 String CaretDisplayItemClient::DebugName() const {

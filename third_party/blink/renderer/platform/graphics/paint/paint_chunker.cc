@@ -195,7 +195,8 @@ bool PaintChunker::AddRegionCaptureDataToCurrentChunk(
 
 void PaintChunker::AddSelectionToCurrentChunk(
     absl::optional<PaintedSelectionBound> start,
-    absl::optional<PaintedSelectionBound> end) {
+    absl::optional<PaintedSelectionBound> end,
+    String debug_info) {
   // We should have painted the selection when calling this method.
   DCHECK(chunks_);
   DCHECK(!chunks_->empty());
@@ -207,14 +208,14 @@ void PaintChunker::AddSelectionToCurrentChunk(
     gfx::Rect edge_rect = gfx::BoundingRect(start->edge_start, start->edge_end);
     DCHECK(chunk.bounds.Contains(edge_rect))
         << chunk.bounds.ToString() << " does not contain "
-        << edge_rect.ToString();
+        << edge_rect.ToString() << ", original bounds: " << debug_info;
   }
 
   if (end) {
     gfx::Rect edge_rect = gfx::BoundingRect(end->edge_start, end->edge_end);
     DCHECK(chunk.bounds.Contains(edge_rect))
         << chunk.bounds.ToString() << " does not contain "
-        << edge_rect.ToString();
+        << edge_rect.ToString() << ", original bounds: " << debug_info;
   }
 #endif
 

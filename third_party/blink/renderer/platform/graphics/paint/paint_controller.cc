@@ -115,9 +115,10 @@ void PaintController::RecordScrollHitTestData(
 
 void PaintController::RecordSelection(
     absl::optional<PaintedSelectionBound> start,
-    absl::optional<PaintedSelectionBound> end) {
+    absl::optional<PaintedSelectionBound> end,
+    String debug_info) {
   DCHECK(start.has_value() || end.has_value());
-  paint_chunker_.AddSelectionToCurrentChunk(start, end);
+  paint_chunker_.AddSelectionToCurrentChunk(start, end, debug_info);
 }
 
 bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,

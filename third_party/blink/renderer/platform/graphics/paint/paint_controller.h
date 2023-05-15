@@ -136,7 +136,8 @@ class PLATFORM_EXPORT PaintController {
       const gfx::Rect&);
 
   void RecordSelection(absl::optional<PaintedSelectionBound> start,
-                       absl::optional<PaintedSelectionBound> end);
+                       absl::optional<PaintedSelectionBound> end,
+                       String debug_info);
   void RecordAnySelectionWasPainted() {
     paint_chunker_.RecordAnySelectionWasPainted();
   }

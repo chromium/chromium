@@ -159,7 +159,7 @@ SelectionBoundsRecorder::~SelectionBoundsRecorder() {
                    PhysicalOffset(end->edge_end));
   }
 
-  paint_controller_.RecordSelection(start, end);
+  paint_controller_.RecordSelection(start, end, "");
 }
 
 bool SelectionBoundsRecorder::ShouldRecordSelection(
