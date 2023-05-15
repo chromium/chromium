@@ -188,8 +188,8 @@ ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetSelectedTypes(
 jboolean SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
                                                          jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK_GE(type, (int)syncer::UserSelectableType::kFirstType);
-  CHECK_LE(type, (int)syncer::UserSelectableType::kLastType);
+  CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
+  CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
   return native_sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
       static_cast<syncer::UserSelectableType>(type));
 }
@@ -205,8 +205,8 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 
   syncer::UserSelectableTypeSet user_selectable_types;
   for (int type : types_vector) {
-    CHECK_GE(type, (int)syncer::UserSelectableType::kFirstType);
-    CHECK_LE(type, (int)syncer::UserSelectableType::kLastType);
+    CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
+    CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
     user_selectable_types.Put(static_cast<syncer::UserSelectableType>(type));
   }
 
