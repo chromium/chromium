@@ -117,6 +117,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "bookmarks_folder_chooser_egtest.mm" ]
   deps = [
+    "//components/bookmarks/common",
     "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/bookmarks:constants",

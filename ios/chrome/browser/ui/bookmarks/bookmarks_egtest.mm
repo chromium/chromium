@@ -853,8 +853,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Choose to move the bookmark into a new folder and verify folder creator is
   // visible.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkCreateNewFolderCellIdentifier)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:
@@ -870,8 +870,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
           grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkCreateNewFolderCellIdentifier)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
       assertWithMatcher:grey_notVisible()];
 
   // Swipe TableView down and verify that we're back to the bookmarks list.

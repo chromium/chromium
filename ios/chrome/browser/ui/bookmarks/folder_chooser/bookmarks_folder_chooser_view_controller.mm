@@ -14,6 +14,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -143,7 +144,13 @@ using bookmarks::BookmarkNode;
   if (_allowsNewFolders) {
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
     if (itemType == ItemTypeCreateNewFolder) {
-      const BookmarkNode* parentNode = [_dataSource selectedFolderNode];
+      // Set the 'Mobile Bookmarks' folder of the corresponding section to be
+      // the parent folder.
+      const BookmarkNode* parentNode = nullptr;
+      if (!base::FeatureList::IsEnabled(
+              bookmarks::kEnableBookmarksAccountStorage)) {
+        parentNode = [_dataSource selectedFolderNode];
+      }
       if (!parentNode) {
         // If `parent` (selected folder) is `nullptr`, set the root folder of
         // the corresponding section to be the parent folder.
@@ -237,6 +244,10 @@ using bookmarks::BookmarkNode;
         [[TableViewBookmarksFolderItem alloc]
             initWithType:ItemTypeCreateNewFolder
                    style:BookmarksFolderStyleNewFolder];
+    createFolderItem.accessibilityIdentifier =
+        (sectionID == SectionIdentifierProfileBookmarks)
+            ? kBookmarkCreateNewProfileFolderCellIdentifier
+            : kBookmarkCreateNewAccountFolderCellIdentifier;
     createFolderItem.shouldDisplayCloudSlashIcon =
         (sectionID == SectionIdentifierProfileBookmarks) &&
         [_dataSource shouldDisplayCloudIconForProfileBookmarks];
@@ -261,6 +272,7 @@ using bookmarks::BookmarkNode;
                    style:BookmarksFolderStyleFolderEntry];
     folderItem.title = bookmark_utils_ios::TitleForBookmarkNode(folderNode);
     folderItem.currentFolder = ([_dataSource selectedFolderNode] == folderNode);
+    folderItem.accessibilityIdentifier = folderItem.title;
     folderItem.shouldDisplayCloudSlashIcon =
         (sectionID == SectionIdentifierProfileBookmarks) &&
         [_dataSource shouldDisplayCloudIconForProfileBookmarks];
