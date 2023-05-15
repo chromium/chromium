@@ -991,7 +991,7 @@ BASE_FEATURE(kFilesTrashDrive,
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kFirmwareUpdateJelly,
              "FirmwareUpdateJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables first party Vietnamese input method.
 BASE_FEATURE(kFirstPartyVietnameseInput,
