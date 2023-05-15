@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.auxiliary_search;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchGroup;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+
+/**
+ * Java bridge to provide information for the auxiliary search.
+ */
+public class AuxiliarySearchBridge {
+    private long mNativeBridge;
+
+    /**
+     * Constructs a bridge for the auxiliary search provider.
+     *
+     * @param profile The Profile to retrieve the corresponding information.
+     */
+    public AuxiliarySearchBridge(@NonNull Profile profile) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_APP_INTEGRATION)
+                || profile.isOffTheRecord()) {
+            mNativeBridge = 0;
+        } else {
+            mNativeBridge = AuxiliarySearchBridgeJni.get().getForProfile(profile);
+        }
+    }
+
+    /**
+     * @return AuxiliarySearchGroup, which is necessary for the auxiliary search.
+     */
+    public @Nullable AuxiliarySearchGroup getSearchableData() {
+        if (mNativeBridge != 0) {
+            try {
+                return AuxiliarySearchGroup.parseFrom(
+                        AuxiliarySearchBridgeJni.get().getSearchableData(mNativeBridge));
+
+            } catch (InvalidProtocolBufferException e) {
+            }
+        }
+
+        return null;
+    }
+
+    @NativeMethods
+    @VisibleForTesting
+    public interface Natives {
+        long getForProfile(Profile profile);
+        byte[] getSearchableData(long nativeAuxiliarySearchProvider);
+    }
+}
