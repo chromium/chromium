@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 
 #include <cstddef>
+#include "base/time/time.h"
 
 namespace security_interstitials::https_only_mode {
 
@@ -29,6 +30,11 @@ extern const char kSiteEngagementHeuristicHostCountHistogram[];
 // at some point due to the site engagement heuristic. Includes hosts that have
 // HTTP allowed.
 extern const char kSiteEngagementHeuristicAccumulatedHostCountHistogram[];
+
+// Histogram that records the duration a host has HFM enabled due to the site
+// engagement heuristic. Only recorded for hosts removed from the HFM list.
+// Recorded at the time of navigation when HFM upgrades trigger.
+extern const char kSiteEngagementHeuristicEnforcementDurationHistogram[];
 
 // Recorded by HTTPS-First Mode and HTTPS-Upgrade logic when a navigation is
 // upgraded, or is eligible to be upgraded but wasn't.
@@ -160,6 +166,9 @@ void RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState state);
 // at some point.
 void RecordSiteEngagementHeuristicCurrentHostCounts(size_t current_count,
                                                     size_t accumulated_count);
+
+void RecordSiteEngagementHeuristicEnforcementDuration(
+    base::TimeDelta enforcement_duration);
 
 }  // namespace security_interstitials::https_only_mode
 

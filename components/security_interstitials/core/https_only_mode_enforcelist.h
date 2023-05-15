@@ -8,9 +8,14 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "url/gurl.h"
+
+namespace base {
+class Clock;
+}
 
 namespace security_interstitials {
 
@@ -22,7 +27,8 @@ namespace security_interstitials {
 class HttpsOnlyModeEnforcelist {
  public:
   explicit HttpsOnlyModeEnforcelist(
-      HostContentSettingsMap* host_content_settings_map);
+      HostContentSettingsMap* host_content_settings_map,
+      base::Clock* clock);
 
   HttpsOnlyModeEnforcelist(const HttpsOnlyModeEnforcelist&) = delete;
   HttpsOnlyModeEnforcelist& operator=(const HttpsOnlyModeEnforcelist&) = delete;
@@ -58,11 +64,15 @@ class HttpsOnlyModeEnforcelist {
   // delete_end are removed.
   void ClearEnforcements(base::Time delete_begin, base::Time delete_end);
 
+  // Sets the test clock.
+  void SetClockForTesting(base::Clock* clock);
+
  private:
   // Records metrics about the host list.
   void RecordMetrics(bool is_nondefault_storage);
 
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<base::Clock, DanglingUntriaged> clock_;
 
   // Tracks sites that are not allowed to load over HTTP, for non-default
   // storage partitions. Enforced hosts are exact hostname matches -- subdomains

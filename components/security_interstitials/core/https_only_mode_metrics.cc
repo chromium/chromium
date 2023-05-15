@@ -25,6 +25,9 @@ const char kSiteEngagementHeuristicHostCountHistogram[] =
 const char kSiteEngagementHeuristicAccumulatedHostCountHistogram[] =
     "Security.HttpsFirstModeWithEngagementHeuristic.AccumulatedHostCount";
 
+const char kSiteEngagementHeuristicEnforcementDurationHistogram[] =
+    "Security.HttpsFirstModeWithEngagementHeuristic.Duration";
+
 // TODO(crbug.com/1394910): Rename these metrics now that they apply to both
 // HTTPS-First Mode and HTTPS Upgrades.
 void RecordHttpsFirstModeNavigation(
@@ -57,6 +60,12 @@ void RecordSiteEngagementHeuristicCurrentHostCounts(size_t current_count,
                                current_count);
   base::UmaHistogramCounts1000(
       kSiteEngagementHeuristicAccumulatedHostCountHistogram, accumulated_count);
+}
+
+void RecordSiteEngagementHeuristicEnforcementDuration(
+    base::TimeDelta enforcement_duration) {
+  base::UmaHistogramTimes(kSiteEngagementHeuristicEnforcementDurationHistogram,
+                          enforcement_duration);
 }
 
 }  // namespace security_interstitials::https_only_mode

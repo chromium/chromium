@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
+#include "base/time/clock.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
@@ -17,6 +18,10 @@ using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
 // Key in the HTTPS_ENFORCED website setting dictionary to indicate whether
 // HTTPS-First Mode is enabled on the site.
 const char kEnabledKey[] = "enabled";
+
+// Key in the HTTPS_ENFORCED website setting dictionary to store the
+// timestamp when HTTPS-First Mode is enabled on the site.
+const char kAdditionTimestamp[] = "added_time";
 
 // All SSL decisions are per host (and are shared arcoss schemes), so this
 // canonicalizes all hosts into a secure scheme GURL to use with content
@@ -32,8 +37,9 @@ GURL GetSecureGURLForHost(const std::string& host) {
 namespace security_interstitials {
 
 HttpsOnlyModeEnforcelist::HttpsOnlyModeEnforcelist(
-    HostContentSettingsMap* host_content_settings_map)
-    : host_content_settings_map_(host_content_settings_map) {}
+    HostContentSettingsMap* host_content_settings_map,
+    base::Clock* clock)
+    : host_content_settings_map_(host_content_settings_map), clock_(clock) {}
 
 HttpsOnlyModeEnforcelist::~HttpsOnlyModeEnforcelist() = default;
 
@@ -51,6 +57,8 @@ void HttpsOnlyModeEnforcelist::EnforceForHost(const std::string& host,
   GURL url = GetSecureGURLForHost(host);
   base::Value::Dict dict;
   dict.Set(kEnabledKey, true);
+  dict.Set(kAdditionTimestamp, base::TimeToValue(clock_->Now()));
+
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::HTTPS_ENFORCED,
       base::Value(std::move(dict)));
@@ -72,8 +80,21 @@ void HttpsOnlyModeEnforcelist::UnenforceForHost(const std::string& host,
   // We want to count how many HTTPS-enforced hosts accumulate over time, so
   // don't remove the value, just set it to false.
   GURL url = GetSecureGURLForHost(host);
-  base::Value::Dict dict;
+  base::Value value = host_content_settings_map_->GetWebsiteSetting(
+      url, url, ContentSettingsType::HTTPS_ENFORCED, nullptr);
+  DCHECK(value.is_dict());
+
+  base::Value::Dict& dict = value.GetDict();
   dict.Set(kEnabledKey, false);
+
+  // Record the duration HTTPS was enforced on this host.
+  auto* addition_timestamp_string = dict.Find(kAdditionTimestamp);
+  auto addition_timestamp = base::ValueToTime(addition_timestamp_string);
+  if (addition_timestamp.has_value()) {
+    base::TimeDelta duration = clock_->Now() - addition_timestamp.value();
+    https_only_mode::RecordSiteEngagementHeuristicEnforcementDuration(duration);
+  }
+
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::HTTPS_ENFORCED,
       base::Value(std::move(dict)));
@@ -147,6 +168,10 @@ void HttpsOnlyModeEnforcelist::RecordMetrics(bool is_nondefault_storage) {
       });
   https_only_mode::RecordSiteEngagementHeuristicCurrentHostCounts(
       current_host_count, accumulated_host_count);
+}
+
+void HttpsOnlyModeEnforcelist::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
 }
 
 }  // namespace security_interstitials
