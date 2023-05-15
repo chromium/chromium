@@ -125,7 +125,7 @@ class UsersPrivateApiTest : public ExtensionApiTest {
     scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util =
         new ownership::MockOwnerKeyUtil();
     owner_key_util->ImportPrivateKeyAndSetPublicKey(
-        crypto::RSAPrivateKey::Create(512));
+        crypto::RSAPrivateKey::Create(2048));
 
     ash::OwnerSettingsServiceAshFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util);
