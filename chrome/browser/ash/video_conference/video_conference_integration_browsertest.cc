@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browser_process.h"
@@ -418,6 +419,9 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        MicWithoutPermissionShouldNotShow) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-92ebd14e-9017-4734-ae47-e9dc6afc6e87");
+
   // Open a tab.
   content::WebContents* web_contents =
       NavigateTo("/video_conference_demo.html");
@@ -440,6 +444,9 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        CameraWithoutPermissionShouldNotShow) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-2d9bddf4-8d96-4304-a605-1140f9a0b45e");
+
   // Open a tab.
   content::WebContents* web_contents =
       NavigateTo("/video_conference_demo.html");
@@ -484,6 +491,9 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        ClickOnTheMicOrCameraIconsShouldMute) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-cc18f9a3-e46f-4192-b505-876975c5ef4b");
+
   // Trigger the VcTray with microphone.
   TriggeringTray(/*use_camera=*/false,
                  /*use_microphone=*/true,
@@ -614,6 +624,11 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, OneTabReturnToApp) {
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-f583c1ff-db6f-460e-b1f2-ddec173359a6");
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-3042cdd9-978d-432c-8488-77684b09a9e4");
+
   // Trigger the VcTray with microphone.
   content::WebContents* web_contents =
       TriggeringTray(/*use_camera=*/false,
