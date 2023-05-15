@@ -25,8 +25,8 @@ import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
-import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
 
 import {CategoryListItem} from './site_settings_list.js';
 import {getTemplate} from './site_settings_page.html.js';
@@ -478,9 +478,8 @@ export class SettingsSiteSettingsPageElement extends
   private noRecentSitePermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
   private unusedSitePermissionsEnabled_: boolean;
-  private siteSettingsPermissionsBrowserProxy_:
-      SiteSettingsPermissionsBrowserProxy =
-          SiteSettingsPermissionsBrowserProxyImpl.getInstance();
+  private siteSettingsPermissionsBrowserProxy_: SafetyHubBrowserProxy =
+      SafetyHubBrowserProxyImpl.getInstance();
 
   private lists_: {
     all: CategoryListItem[],

@@ -4,17 +4,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {UnusedSitePermissions, SiteSettingsPermissionsBrowserProxy} from 'chrome://settings/lazy_load.js';
+import {UnusedSitePermissions, SafetyHubBrowserProxy} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
 /**
- * A test version of SiteSettingsPermissionsBrowserProxy. Provides helper
+ * A test version of SafetyHubBrowserProxy. Provides helper
  * methods for allowing tests to know when a method was called, as well as
  * specifying mock responses.
  */
-export class TestSiteSettingsPermissionsBrowserProxy extends TestBrowserProxy
-    implements SiteSettingsPermissionsBrowserProxy {
+export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
+    SafetyHubBrowserProxy {
   private unusedSitePermissions_: UnusedSitePermissions[] = [];
 
   constructor() {

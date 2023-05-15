@@ -10,7 +10,7 @@
 // clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {ContentSettingsTypes} from './constants.js';
+import {ContentSettingsTypes} from '../site_settings/constants.js';
 // clang-format on
 
 export interface UnusedSitePermissions {
@@ -23,7 +23,7 @@ export interface UnusedSitePermissions {
  * TODO(crbug.com/1383197): Move functions related to notification permission
  * review here as well.
  */
-export interface SiteSettingsPermissionsBrowserProxy {
+export interface SafetyHubBrowserProxy {
   /**
    * Mark revoked permissions of unused sites as reviewed by the user so they
    * will not be shown again.
@@ -58,8 +58,7 @@ export interface SiteSettingsPermissionsBrowserProxy {
                                              UnusedSitePermissions): void;
 }
 
-export class SiteSettingsPermissionsBrowserProxyImpl implements
-    SiteSettingsPermissionsBrowserProxy {
+export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
   acknowledgeRevokedUnusedSitePermissionsList() {
     chrome.send('acknowledgeRevokedUnusedSitePermissionsList');
   }
@@ -85,14 +84,13 @@ export class SiteSettingsPermissionsBrowserProxyImpl implements
         'undoAllowPermissionsAgainForUnusedSite', [unusedSitePermissions]);
   }
 
-  static getInstance(): SiteSettingsPermissionsBrowserProxy {
-    return instance ||
-        (instance = new SiteSettingsPermissionsBrowserProxyImpl());
+  static getInstance(): SafetyHubBrowserProxy {
+    return instance || (instance = new SafetyHubBrowserProxyImpl());
   }
 
-  static setInstance(obj: SiteSettingsPermissionsBrowserProxy) {
+  static setInstance(obj: SafetyHubBrowserProxy) {
     instance = obj;
   }
 }
 
-let instance: SiteSettingsPermissionsBrowserProxy|null = null;
+let instance: SafetyHubBrowserProxy|null = null;

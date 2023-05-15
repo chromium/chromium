@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_HUB_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_HUB_HANDLER_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -18,19 +18,19 @@
  * settings page.
  */
 
-class SiteSettingsPermissionsHandler : public settings::SettingsPageUIHandler {
+class SafetyHubHandler : public settings::SettingsPageUIHandler {
  public:
-  explicit SiteSettingsPermissionsHandler(Profile* profile);
+  explicit SafetyHubHandler(Profile* profile);
 
-  ~SiteSettingsPermissionsHandler() override;
+  ~SafetyHubHandler() override;
 
  private:
-  friend class SiteSettingsPermissionsHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsPermissionsHandlerTest,
+  friend class SafetyHubHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            PopulateUnusedSitePermissionsData);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsPermissionsHandlerTest,
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleAllowPermissionsAgainForUnusedSite);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsPermissionsHandlerTest,
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleAcknowledgeRevokedUnusedSitePermissionsList);
 
   // SettingsPageUIHandler implementation.
@@ -75,4 +75,4 @@ class SiteSettingsPermissionsHandler : public settings::SettingsPageUIHandler {
   const raw_ptr<Profile> profile_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_HUB_HANDLER_H_

@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
-import {UnusedSitePermissions, SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl} from '../site_settings/site_settings_permissions_browser_proxy.js';
+import {UnusedSitePermissions, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
 
 import {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_child.js';
 import {getTemplate} from './safety_check_unused_site_permissions.html.js';
@@ -60,8 +60,8 @@ export class SettingsSafetyCheckUnusedSitePermissionsElement extends
   private headerString_: string;
   private iconStatus_: SafetyCheckIconStatus;
 
-  private browserProxy_: SiteSettingsPermissionsBrowserProxy =
-      SiteSettingsPermissionsBrowserProxyImpl.getInstance();
+  private browserProxy_: SafetyHubBrowserProxy =
+      SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

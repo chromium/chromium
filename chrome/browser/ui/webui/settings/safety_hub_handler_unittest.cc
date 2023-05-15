@@ -10,8 +10,8 @@
 #include "base/time/clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
-#include "chrome/browser/ui/webui/settings/site_settings_permissions_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -31,9 +31,9 @@ constexpr char kUsedTestSite[] = "https://example2.com";
 constexpr ContentSettingsType kUnusedPermission =
     ContentSettingsType::GEOLOCATION;
 
-class SiteSettingsPermissionsHandlerTest : public testing::Test {
+class SafetyHubHandlerTest : public testing::Test {
  public:
-  SiteSettingsPermissionsHandlerTest() {
+  SafetyHubHandlerTest() {
     feature_list_.InitAndEnableFeature(
         content_settings::features::kSafetyCheckUnusedSitePermissions);
   }
@@ -54,7 +54,7 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
     hcsm_->SetClockForTesting(&clock_);
 
-    handler_ = std::make_unique<SiteSettingsPermissionsHandler>(profile());
+    handler_ = std::make_unique<SafetyHubHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
 
@@ -103,21 +103,21 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
-  SiteSettingsPermissionsHandler* handler() { return handler_.get(); }
+  SafetyHubHandler* handler() { return handler_.get(); }
   HostContentSettingsMap* hcsm() { return hcsm_.get(); }
   base::SimpleTestClock* clock() { return &clock_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<SiteSettingsPermissionsHandler> handler_;
+  std::unique_ptr<SafetyHubHandler> handler_;
   std::unique_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
 };
 
-TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
+TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
   // Add GEOLOCATION setting for url but do not add to revoked list.
   const content_settings::ContentSettingConstraints constraint{
       .track_last_visit_for_autoexpiration = true};
@@ -135,8 +135,7 @@ TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
                 site_settings::kOrigin)));
 }
 
-TEST_F(SiteSettingsPermissionsHandlerTest,
-       HandleAllowPermissionsAgainForUnusedSite) {
+TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
   base::Value::List initial_unused_site_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   ExpectRevokedPermission();
@@ -164,7 +163,7 @@ TEST_F(SiteSettingsPermissionsHandlerTest,
   ExpectRevokedPermission();
 }
 
-TEST_F(SiteSettingsPermissionsHandlerTest,
+TEST_F(SafetyHubHandlerTest,
        HandleAcknowledgeRevokedUnusedSitePermissionsList) {
   const auto& revoked_permissions_before =
       handler()->PopulateUnusedSitePermissionsData();

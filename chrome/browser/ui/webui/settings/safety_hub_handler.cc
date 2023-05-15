@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/site_settings_permissions_handler.h"
+#include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 
 #include "base/check.h"
 #include "base/json/values_util.h"
@@ -63,11 +63,10 @@ GetUnusedSitePermissionsFromDict(
 }
 }  // namespace
 
-SiteSettingsPermissionsHandler::SiteSettingsPermissionsHandler(Profile* profile)
-    : profile_(profile) {}
-SiteSettingsPermissionsHandler::~SiteSettingsPermissionsHandler() = default;
+SafetyHubHandler::SafetyHubHandler(Profile* profile) : profile_(profile) {}
+SafetyHubHandler::~SafetyHubHandler() = default;
 
-void SiteSettingsPermissionsHandler::HandleGetRevokedUnusedSitePermissionsList(
+void SafetyHubHandler::HandleGetRevokedUnusedSitePermissionsList(
     const base::Value::List& args) {
   AllowJavascript();
 
@@ -79,7 +78,7 @@ void SiteSettingsPermissionsHandler::HandleGetRevokedUnusedSitePermissionsList(
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
 
-void SiteSettingsPermissionsHandler::HandleAllowPermissionsAgainForUnusedSite(
+void SafetyHubHandler::HandleAllowPermissionsAgainForUnusedSite(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   CHECK(args[0].is_string());
@@ -94,9 +93,8 @@ void SiteSettingsPermissionsHandler::HandleAllowPermissionsAgainForUnusedSite(
   SendUnusedSitePermissionsReviewList();
 }
 
-void SiteSettingsPermissionsHandler::
-    HandleUndoAllowPermissionsAgainForUnusedSite(
-        const base::Value::List& args) {
+void SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite(
+    const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   CHECK(args[0].is_dict());
 
@@ -109,9 +107,8 @@ void SiteSettingsPermissionsHandler::
   SendUnusedSitePermissionsReviewList();
 }
 
-void SiteSettingsPermissionsHandler::
-    HandleAcknowledgeRevokedUnusedSitePermissionsList(
-        const base::Value::List& args) {
+void SafetyHubHandler::HandleAcknowledgeRevokedUnusedSitePermissionsList(
+    const base::Value::List& args) {
   permissions::UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
 
@@ -119,9 +116,8 @@ void SiteSettingsPermissionsHandler::
   SendUnusedSitePermissionsReviewList();
 }
 
-void SiteSettingsPermissionsHandler::
-    HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
-        const base::Value::List& args) {
+void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
+    const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   CHECK(args[0].is_list());
 
@@ -141,8 +137,7 @@ void SiteSettingsPermissionsHandler::
   SendUnusedSitePermissionsReviewList();
 }
 
-base::Value::List
-SiteSettingsPermissionsHandler::PopulateUnusedSitePermissionsData() {
+base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   base::Value::List result;
   if (!base::FeatureList::IsEnabled(
           content_settings::features::kSafetyCheckUnusedSitePermissions)) {
@@ -187,38 +182,38 @@ SiteSettingsPermissionsHandler::PopulateUnusedSitePermissionsData() {
   return result;
 }
 
-void SiteSettingsPermissionsHandler::RegisterMessages() {
+void SafetyHubHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
   web_ui()->RegisterMessageCallback(
       "getRevokedUnusedSitePermissionsList",
-      base::BindRepeating(&SiteSettingsPermissionsHandler::
-                              HandleGetRevokedUnusedSitePermissionsList,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &SafetyHubHandler::HandleGetRevokedUnusedSitePermissionsList,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "allowPermissionsAgainForUnusedSite",
-      base::BindRepeating(&SiteSettingsPermissionsHandler::
-                              HandleAllowPermissionsAgainForUnusedSite,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &SafetyHubHandler::HandleAllowPermissionsAgainForUnusedSite,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "undoAllowPermissionsAgainForUnusedSite",
-      base::BindRepeating(&SiteSettingsPermissionsHandler::
-                              HandleUndoAllowPermissionsAgainForUnusedSite,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "acknowledgeRevokedUnusedSitePermissionsList",
-      base::BindRepeating(&SiteSettingsPermissionsHandler::
-                              HandleAcknowledgeRevokedUnusedSitePermissionsList,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &SafetyHubHandler::HandleAcknowledgeRevokedUnusedSitePermissionsList,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "undoAcknowledgeRevokedUnusedSitePermissionsList",
       base::BindRepeating(
-          &SiteSettingsPermissionsHandler::
+          &SafetyHubHandler::
               HandleUndoAcknowledgeRevokedUnusedSitePermissionsList,
           base::Unretained(this)));
 }
 
-void SiteSettingsPermissionsHandler::SendUnusedSitePermissionsReviewList() {
+void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {
   // Notify observers that the unused site permission review list could have
   // changed. Note that the list is not guaranteed to have changed. In places
   // where determining whether the list has changed is cause for performance
@@ -227,6 +222,6 @@ void SiteSettingsPermissionsHandler::SendUnusedSitePermissionsReviewList() {
                     PopulateUnusedSitePermissionsData());
 }
 
-void SiteSettingsPermissionsHandler::OnJavascriptAllowed() {}
+void SafetyHubHandler::OnJavascriptAllowed() {}
 
-void SiteSettingsPermissionsHandler::OnJavascriptDisallowed() {}
+void SafetyHubHandler::OnJavascriptDisallowed() {}
