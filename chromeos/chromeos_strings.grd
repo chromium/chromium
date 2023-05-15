@@ -4138,8 +4138,11 @@
         <message name="IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION" desc="Text explaining there is no APN information to show because the network has not been attempted to be connected with, and that the user might need to add a custom APN.">
           You are not connected yet. If your mobile carrier recommends a custom APN, enter the APN information by selecting "+ New APN"
         </message>
+        <message name="IDS_SETTINGS_APN_DATABASE_APNS_ERROR_MESSAGE" desc="Error message displayed when a cellular network fails to connect to any database APNs due to APN-related reasons.">
+          Can’t connect to this network using automatically detected APNs. Contact your mobile carrier for more information.
+        </message>
         <message name="IDS_SETTINGS_APN_CUSTOM_APNS_ERROR_MESSAGE" desc="Error message displayed when a cellular network fails to connect due to APN-related reasons, informing the user that none of the enabled custom APNs were successful in being used to connect.">
-          Can't connect to any enabled custom APNs. Contact your mobile carrier for more information.
+          Can’t connect to this network using any enabled custom APNs. Contact your mobile carrier for more information.
         </message>
         <message name="IDS_SETTINGS_APN_MENU_DETAILS" desc="Details button in three dotted menu for APNs">
           Details
@@ -4211,7 +4214,7 @@
           Automatically detected
         </message>
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE" desc="Warning Prompt describing why the APN can't be disabled or removed.">
-          Can't disable or remove this APN. Make sure enabled attached APNs are disabled or removed.
+          Can't disable or remove this APN. Make sure enabled attach APNs are disabled or removed.
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_ADD" desc="Text used for adding a new APN.">
           Add
