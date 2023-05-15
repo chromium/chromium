@@ -275,6 +275,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             mTab.handleDidFinishNavigation(navigation.getUrl(), navigation.pageTransition());
             mTab.setIsShowingErrorPage(navigation.isErrorPage());
 
+            // TODO(crbug.com/1434461) remove this call. onUrlUpdated should have been called
+            // by NotifyNavigationStateChanged, which is always called before didFinishNavigation
             observers.rewind();
             while (observers.hasNext()) {
                 observers.next().onUrlUpdated(mTab);
@@ -283,6 +285,14 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             // Stop swipe-to-refresh animation.
             SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
             if (handler != null) handler.didStopRefreshing();
+
+            // TODO(crbug.com/1434461) add this here to clear LocationBarModel's cache for
+            // being in a same site navigation. Remove this call when the onUrlUpdated call
+            // above is removed.
+            observers.rewind();
+            while (observers.hasNext()) {
+                observers.next().onDidFinishNavigationEnd();
+            }
         }
 
         @Override

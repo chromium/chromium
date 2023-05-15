@@ -845,8 +845,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     ntp.setUrlFocusAnimationsDisabled(false);
                     onTabOrModelChanged();
                 }
+            }
 
-                mLocationBarModel.notifyDidFinishNavigation(navigation.isSameDocument());
+            @Override
+            public void onDidFinishNavigationEnd() {
+                mLocationBarModel.notifyDidFinishNavigationEnd();
             }
 
             @Override
@@ -1930,10 +1933,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * inheriting classes the chance to update the button visuals as well.
      */
     private void updateButtonStatus() {
-        if (mLocationBarModel.shouldDoSameDocOptimzations()) {
-            return;
-        }
-
         Tab currentTab = mLocationBarModel.getTab();
         boolean tabCrashed = currentTab != null && SadTab.isShowing(currentTab);
 
