@@ -3729,7 +3729,10 @@ if (!is_android) {
         "../browser/ash/crosapi/video_conference_ash_browsertest.cc",
         "../browser/ash/crosapi/vpn_extension_observer_ash_browsertest.cc",
       ]
-      deps += [ "../browser/ash/video_conference" ]
+      deps += [
+        "../browser/ash/video_conference",
+        "//components/global_media_controls:test_support",
+      ]
 
       if (!is_official_build) {
         sources += [ "../browser/ash/crosapi/sharesheet_ash_browsertest.cc" ]

@@ -56,31 +56,33 @@ void MediaItemManagerImpl::HideItem(const std::string& id) {
 }
 
 void MediaItemManagerImpl::RefreshItem(const std::string& id) {
-  if (!dialog_delegate_)
+  if (!dialog_delegate_) {
     return;
-
+  }
   dialog_delegate_->RefreshMediaItem(id, GetItem(id));
 }
 
 void MediaItemManagerImpl::OnItemsChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnItemListChanged();
+  }
 }
 
 void MediaItemManagerImpl::SetDialogDelegate(MediaDialogDelegate* delegate) {
   dialog_opened_for_single_item_ = false;
   SetDialogDelegateCommon(delegate);
-  if (!dialog_delegate_)
+  if (!dialog_delegate_) {
     return;
-
+  }
   auto item_ids = GetActiveItemIds();
   for (const std::string& id : item_ids) {
     base::WeakPtr<media_message_center::MediaNotificationItem> item =
         GetItem(id);
     MediaItemUI* item_ui = dialog_delegate_->ShowMediaItem(id, item);
     auto* item_producer = GetItemProducer(id);
-    if (item_producer)
+    if (item_producer) {
       item_producer->OnItemShown(id, item_ui);
+    }
   }
 
   media_message_center::RecordConcurrentNotificationCount(item_ids.size());
@@ -92,31 +94,33 @@ void MediaItemManagerImpl::SetDialogDelegate(MediaDialogDelegate* delegate) {
 
 void MediaItemManagerImpl::SetDialogDelegateForId(MediaDialogDelegate* delegate,
                                                   const std::string& id) {
-  dialog_opened_for_single_item_ = true;
   SetDialogDelegateCommon(delegate);
-  if (!dialog_delegate_)
+  if (!dialog_delegate_) {
     return;
-
+  }
   auto* producer = GetItemProducer(id);
-  if (!producer)
+  if (!producer) {
     return;
-
+  }
   auto item = producer->GetMediaItem(id);
-  if (!item)
+  if (!item) {
     return;
-
+  }
+  dialog_opened_for_single_item_ = true;
   auto* item_ui = dialog_delegate_->ShowMediaItem(id, item);
   producer->OnItemShown(id, item_ui);
 }
 
 void MediaItemManagerImpl::FocusDialog() {
-  if (dialog_delegate_)
+  if (dialog_delegate_) {
     dialog_delegate_->Focus();
+  }
 }
 
 void MediaItemManagerImpl::HideDialog() {
-  if (dialog_delegate_)
+  if (dialog_delegate_) {
     dialog_delegate_->HideMediaDialog();
+  }
 }
 
 bool MediaItemManagerImpl::HasActiveItems() {
@@ -125,8 +129,9 @@ bool MediaItemManagerImpl::HasActiveItems() {
 
 bool MediaItemManagerImpl::HasFrozenItems() {
   for (auto* item_producer : item_producers_) {
-    if (item_producer->HasFrozenItems())
+    if (item_producer->HasFrozenItems()) {
       return true;
+    }
   }
   return false;
 }
@@ -161,22 +166,24 @@ std::list<std::string> MediaItemManagerImpl::GetActiveItemIds() {
 
 void MediaItemManagerImpl::ShowAndObserveItem(const std::string& id) {
   OnItemsChanged();
-  if (!dialog_delegate_)
+  if (!dialog_delegate_) {
     return;
-
+  }
   auto item = GetItem(id);
   auto* item_ui = dialog_delegate_->ShowMediaItem(id, item);
   auto* producer = GetItemProducer(id);
-  if (producer)
+  if (producer) {
     producer->OnItemShown(id, item_ui);
+  }
 }
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
 MediaItemManagerImpl::GetItem(const std::string& id) {
   for (auto* producer : item_producers_) {
     auto item = producer->GetMediaItem(id);
-    if (item)
+    if (item) {
       return item;
+    }
   }
   return nullptr;
 }
@@ -184,8 +191,9 @@ MediaItemManagerImpl::GetItem(const std::string& id) {
 MediaItemProducer* MediaItemManagerImpl::GetItemProducer(
     const std::string& item_id) {
   for (auto* producer : item_producers_) {
-    if (producer->GetMediaItem(item_id))
+    if (producer->GetMediaItem(item_id)) {
       return producer;
+    }
   }
   return nullptr;
 }
@@ -196,11 +204,13 @@ void MediaItemManagerImpl::SetDialogDelegateCommon(
   dialog_delegate_ = delegate;
 
   if (dialog_delegate_) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnMediaDialogOpened();
+    }
   } else {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnMediaDialogClosed();
+    }
   }
 }
 

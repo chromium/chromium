@@ -10,6 +10,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom-forward.h"
+#include "components/global_media_controls/public/test/mock_device_service.h"
 #include "content/public/test/browser_test.h"
 
 using testing::_;
@@ -32,31 +33,11 @@ class MockDeviceListClient : public ::mojom::DeviceListClient {
               (std::vector<global_media_controls::mojom::DevicePtr> devices));
 };
 
-class MockDeviceService : public ::mojom::DeviceService {
+class MockObserver : public MediaUIAsh::Observer {
  public:
-  mojo::PendingRemote<::mojom::DeviceService> TakeRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void ResetReceiver() { receiver_.reset(); }
-
   MOCK_METHOD(void,
-              GetDeviceListHostForSession,
-              (const std::string& session_id,
-               mojo::PendingReceiver<::mojom::DeviceListHost> host_receiver,
-               mojo::PendingRemote<::mojom::DeviceListClient> client_remote));
-  MOCK_METHOD(void,
-              GetDeviceListHostForPresentation,
-              (mojo::PendingReceiver<::mojom::DeviceListHost> host_receiver,
-               mojo::PendingRemote<::mojom::DeviceListClient> client_remote));
-
-  MOCK_METHOD(
-      void,
-      SetDevicePickerProvider,
-      (mojo::PendingRemote<::mojom::DevicePickerProvider> provider_remote));
-
- private:
-  mojo::Receiver<::mojom::DeviceService> receiver_{this};
+              OnDeviceServiceRegistered,
+              (global_media_controls::mojom::DeviceService * device_service));
 };
 
 }  // namespace
@@ -71,7 +52,7 @@ class MediaUIAshBrowserTest : public InProcessBrowserTest {
   // Returns the ID of the registered DeviceService.
   base::UnguessableToken RegisterDeviceService() {
     auto id = base::UnguessableToken::Create();
-    media_ui_remote_->RegisterDeviceService(id, device_service_.TakeRemote());
+    media_ui_remote_->RegisterDeviceService(id, device_service_.PassRemote());
     media_ui_remote_.FlushForTesting();
     return id;
   }
@@ -82,7 +63,7 @@ class MediaUIAshBrowserTest : public InProcessBrowserTest {
 
  protected:
   mojo::Remote<mojom::MediaUI> media_ui_remote_;
-  MockDeviceService device_service_;
+  global_media_controls::test::MockDeviceService device_service_;
   mojo::Remote<::mojom::DeviceListHost> device_list_host_remote_;
   MockDeviceListClient device_list_client_;
   mojo::Receiver<::mojom::DeviceListClient> device_list_client_receiver_{
@@ -118,6 +99,16 @@ IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, UnregisterDeviceService) {
   base::RunLoop().RunUntilIdle();
   device_service_ptr = media_ui_ash()->GetDeviceService(id);
   EXPECT_EQ(nullptr, device_service_ptr);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, AddObserver) {
+  MockObserver observer;
+  media_ui_ash()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnDeviceServiceRegistered);
+  RegisterDeviceService();
+
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  media_ui_ash()->RemoveObserver(&observer);
 }
 
 }  // namespace crosapi

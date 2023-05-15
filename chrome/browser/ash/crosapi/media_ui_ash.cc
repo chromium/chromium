@@ -30,6 +30,9 @@ void MediaUIAsh::RegisterDeviceService(
       std::move(pending_device_service)};
   device_service.set_disconnect_handler(base::BindOnce(
       &MediaUIAsh::RemoveDeviceService, base::Unretained(this), id));
+  for (Observer& observer : observers_) {
+    observer.OnDeviceServiceRegistered(device_service.get());
+  }
   device_services_.emplace(id, std::move(device_service));
 }
 
@@ -44,6 +47,14 @@ mojom::DeviceService* MediaUIAsh::GetDeviceService(
   auto service_it = device_services_.find(id);
   return service_it == device_services_.end() ? nullptr
                                               : service_it->second.get();
+}
+
+void MediaUIAsh::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MediaUIAsh::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void MediaUIAsh::RemoveDeviceService(const base::UnguessableToken& id) {

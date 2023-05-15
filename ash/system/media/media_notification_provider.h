@@ -65,6 +65,10 @@ class ASH_EXPORT MediaNotificationProvider {
       const media_message_center::NotificationTheme& color_theme) = 0;
 
   virtual global_media_controls::MediaItemManager* GetMediaItemManager() = 0;
+
+  // Performs initialization that must be done after the user session is
+  // initialized.
+  virtual void OnPrimaryUserSessionStarted() {}
 };
 
 }  // namespace ash

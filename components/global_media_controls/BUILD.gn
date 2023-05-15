@@ -89,6 +89,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "public/test/mock_device_service.cc",
+    "public/test/mock_device_service.h",
     "public/test/mock_media_dialog_delegate.cc",
     "public/test/mock_media_dialog_delegate.h",
     "public/test/mock_media_item_manager.cc",
@@ -109,6 +111,7 @@ static_library("test_support") {
 
   deps = [
     ":global_media_controls",
+    "public/mojom:device_service",
     "//components/media_message_center:test_support",
     "//skia",
     "//testing/gmock",

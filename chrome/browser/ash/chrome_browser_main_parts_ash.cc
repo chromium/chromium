@@ -295,8 +295,9 @@ void ChromeOSVersionCallback(const absl::optional<std::string>& version) {
 
 // Creates an instance of the NetworkPortalDetector implementation or a stub.
 void InitializeNetworkPortalDetector() {
-  if (network_portal_detector::SetForTesting())
+  if (network_portal_detector::SetForTesting()) {
     return;
+  }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kTestType)) {
     network_portal_detector::SetNetworkPortalDetector(
@@ -868,8 +869,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     g_browser_process->metrics_service()->InitPerUserMetrics();
   }
 
-  if (base::FeatureList::IsEnabled(::features::kWilcoDtc))
+  if (base::FeatureList::IsEnabled(::features::kWilcoDtc)) {
     wilco_dtc_supportd_manager_ = std::make_unique<WilcoDtcSupportdManager>();
+  }
 
   ScreenLocker::InitClass();
 
@@ -1115,8 +1117,9 @@ void GuestLanguageSetCallbackData::Callback(
   // The previous one must be "locale default layout".
   // First, enable all hardware input methods.
   input_methods = manager->GetInputMethodUtil()->GetHardwareInputMethodIds();
-  for (size_t i = 0; i < input_methods.size(); ++i)
+  for (size_t i = 0; i < input_methods.size(); ++i) {
     ime_state->EnableInputMethod(input_methods[i]);
+  }
 
   // Second, enable locale based input methods.
   const std::string locale_default_input_method =
@@ -1233,8 +1236,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     // Guest user profile is never initialized with locale settings,
     // so we need special handling for Guest session.
-    if (user_manager::UserManager::Get()->IsLoggedInAsGuest())
+    if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
       SetGuestLocale(profile);
+    }
 
     renderer_freezer_ = std::make_unique<RendererFreezer>(
         std::make_unique<FreezerCgroupProcessManager>());
@@ -1317,8 +1321,9 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
       accessibility_event_rewriter_delegate_.get());
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
-  if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation())
+  if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {
     event_rewriter_controller->SetKeyboardDrivenEventRewriterEnabled(true);
+  }
 
   // Add MagnificationManager as a pretarget handler after `Shell` is
   // initialized.
@@ -1437,20 +1442,23 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);
 
-  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting))
+  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Shutdown();
+  }
 
   // This needs to be called before the
   // ChromeBrowserMainPartsLinux::PostMainMessageLoopRun, because the
   // SessionControllerClientImpl is destroyed there.
   browser_manager_->RemoveObserver(SessionControllerClientImpl::Get());
 
-  if (lock_screen_apps_state_controller_)
+  if (lock_screen_apps_state_controller_) {
     lock_screen_apps_state_controller_->Shutdown();
+  }
 
   // This must be shut down before |arc_service_launcher_|.
-  if (pre_profile_init_called_)
+  if (pre_profile_init_called_) {
     NoteTakingHelper::Shutdown();
+  }
 
   arc_service_launcher_->Shutdown();
 
@@ -1460,15 +1468,17 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   assistant_state_client_.reset();
 
-  if (pre_profile_init_called_)
+  if (pre_profile_init_called_) {
     Shell::Get()->RemovePreTargetHandler(MagnificationManager::Get());
+  }
 
   // Unregister CrosSettings observers before CrosSettings is destroyed.
   shutdown_policy_forwarder_.reset();
 
   // Destroy the application name notifier for Kiosk mode.
-  if (pre_profile_init_called_)
+  if (pre_profile_init_called_) {
     KioskModeIdleAppNameNotification::Shutdown();
+  }
 
   // Tell DeviceSettingsService to stop talking to session_manager. Do not
   // shutdown DeviceSettingsService yet, it might still be accessed by
@@ -1486,8 +1496,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   renderer_freezer_.reset();
   fast_transition_observer_.reset();
   network_throttling_observer_.reset();
-  if (pre_profile_init_called_)
+  if (pre_profile_init_called_) {
     ScreenLocker::ShutDownClass();
+  }
   low_disk_notification_.reset();
   demo_mode_resources_remover_.reset();
   smart_charging_manager_.reset();
@@ -1500,16 +1511,19 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
-  if (features::IsTrafficCountersEnabled())
+  if (features::IsTrafficCountersEnabled()) {
     traffic_counters_handler_.reset();
+  }
   bluetooth_pref_state_observer_.reset();
   auth_events_recorder_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();
 
-  if (chromeos::login_screen_extension_ui::UiHandler::Get(false /*can_create*/))
+  if (chromeos::login_screen_extension_ui::UiHandler::Get(
+          false /*can_create*/)) {
     chromeos::login_screen_extension_ui::UiHandler::Shutdown();
+  }
 
   if (pre_profile_init_called_) {
     MagnificationManager::Shutdown();
@@ -1522,8 +1536,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Inform |NetworkCertLoader| that it should not notify observers anymore.
   // TODO(https://crbug.com/894867): Remove this when the root cause of the
   // crash is found.
-  if (NetworkCertLoader::IsInitialized())
+  if (NetworkCertLoader::IsInitialized()) {
     NetworkCertLoader::Get()->set_is_shutting_down();
+  }
 
   // Tear down BulkPrintersCalculators while we still have threads.
   bulk_printers_calculator_factory_.reset();
@@ -1534,8 +1549,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Let the UserManager unregister itself as an observer of the CrosSettings
   // singleton before it is destroyed. This also ensures that the UserManager
   // has no URLRequest pending (see http://crbug.com/276659).
-  if (g_browser_process->platform_part()->user_manager())
+  if (g_browser_process->platform_part()->user_manager()) {
     g_browser_process->platform_part()->user_manager()->Shutdown();
+  }
 
   // Let the DeviceDisablingManager unregister itself as an observer of the
   // CrosSettings singleton before it is destroyed.
@@ -1549,8 +1565,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   kiosk_app_manager_.reset();
 
   // Make sure that there is no pending URLRequests.
-  if (pre_profile_init_called_)
+  if (pre_profile_init_called_) {
     UserSessionManager::GetInstance()->Shutdown();
+  }
 
   // Give BrowserPolicyConnectorAsh a chance to unregister any observers
   // on services that are going to be deleted later but before its Shutdown()
@@ -1561,8 +1578,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // Shutdown the virtual keyboard UI before destroying `Shell` or the primary
   // profile.
-  if (chrome_keyboard_controller_client_)
+  if (chrome_keyboard_controller_client_) {
     chrome_keyboard_controller_client_->Shutdown();
+  }
 
   // Must occur before BrowserProcessImpl::StartTearDown() destroys the
   // ProfileManager.
@@ -1647,8 +1665,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Called after ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() (which
   // calls chrome::CloseAsh()) because some parts of WebUI depend on
   // NetworkPortalDetector.
-  if (pre_profile_init_called_)
+  if (pre_profile_init_called_) {
     network_portal_detector::Shutdown();
+  }
 
   g_browser_process->platform_part()->ShutdownSessionManager();
   // Ash needs to be closed before UserManager is destroyed.
@@ -1693,8 +1712,9 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
 void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Terminate immediately if feature is turned off.
-  if (!base::FeatureList::IsEnabled(features::kDeviceActiveClient))
+  if (!base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
     return;
+  }
 
   CrosSettingsProvider::TrustedStatus status =
       CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(

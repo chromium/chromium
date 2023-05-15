@@ -6,7 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/feature_list.h"
+#include "ash/shell.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -300,6 +301,8 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
         settings::PeripheralDataAccessHandler::GetPrefState());
 
     CrasAudioHandler::Get()->RefreshNoiseCancellationState();
+
+    Shell::Get()->media_notification_provider()->OnPrimaryUserSessionStarted();
   }
 }
 
