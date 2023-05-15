@@ -37,6 +37,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/tab_helper.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 using side_panel::mojom::MethodType;
 using side_panel::mojom::PromoAction;
 using side_panel::mojom::PromoType;
@@ -200,6 +204,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     content::WebContents* companion_web_contents =
         GetCompanionWebContents(browser());
     EXPECT_TRUE(companion_web_contents);
+
+    // Verify that extensions do not have access to the companion web contents.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    CHECK_EQ(nullptr,
+             extensions::TabHelper::FromWebContents(companion_web_contents));
+#endif
 
     // Wait for the navigations in both the frames to complete.
     content::TestNavigationObserver nav_observer(companion_web_contents, 2);
