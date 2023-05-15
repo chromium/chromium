@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -308,13 +310,12 @@ public class BidirectionalStreamQuicTest {
         assertTrue(stream.isDone());
         // Server terminated on us, so the stream must fail.
         // QUIC reports this as ERR_QUIC_PROTOCOL_ERROR. Sometimes we get ERR_CONNECTION_REFUSED.
-        assertNotNull(callback.mError);
-        assertTrue(callback.mError instanceof NetworkException);
+        assertThat(callback.mError).isInstanceOf(NetworkException.class);
         NetworkException networkError = (NetworkException) callback.mError;
         assertTrue(NetError.ERR_QUIC_PROTOCOL_ERROR == networkError.getCronetInternalErrorCode()
                 || NetError.ERR_CONNECTION_REFUSED == networkError.getCronetInternalErrorCode());
         if (NetError.ERR_CONNECTION_REFUSED == networkError.getCronetInternalErrorCode()) return;
-        assertTrue(callback.mError instanceof QuicException);
+        assertThat(callback.mError).isInstanceOf(QuicException.class);
     }
 
     @Test

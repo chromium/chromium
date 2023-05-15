@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -106,7 +108,8 @@ public class QuicTest {
         assertIsQuic(callback.mResponseInfo);
         // The total received bytes should be larger than the content length, to account for
         // headers.
-        assertTrue(callback.mResponseInfo.getReceivedByteCount() > expectedContent.length());
+        assertThat(callback.mResponseInfo.getReceivedByteCount())
+                .isGreaterThan((long) expectedContent.length());
         // This test takes a long time, since the update will only be scheduled
         // after kUpdatePrefsDelayMs in http_server_properties_manager.cc.
         while (true) {
@@ -147,7 +150,8 @@ public class QuicTest {
         assertIsQuic(callback.mResponseInfo);
         // The total received bytes should be larger than the content length, to account for
         // headers.
-        assertTrue(callback2.mResponseInfo.getReceivedByteCount() > expectedContent.length());
+        assertThat(callback2.mResponseInfo.getReceivedByteCount())
+                .isGreaterThan((long) expectedContent.length());
         cronetEngine.shutdown();
     }
 
@@ -205,15 +209,15 @@ public class QuicTest {
         // Wait for RTT observation (at the URL request layer) to be posted.
         rttListener.waitUntilFirstUrlRequestRTTReceived();
 
-        assertTrue(throughputListener.throughputObservationCount() > 0);
+        assertThat(throughputListener.throughputObservationCount()).isGreaterThan(0);
 
         // Check RTT observation count after throughput observation has been received. This ensures
         // that executor has finished posting the RTT observation to the RTT listeners.
         // NETWORK_QUALITY_OBSERVATION_SOURCE_URL_REQUEST
-        assertTrue(rttListener.rttObservationCount(0) > 0);
+        assertThat(rttListener.rttObservationCount(0)).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC
-        assertTrue(rttListener.rttObservationCount(2) > 0);
+        assertThat(rttListener.rttObservationCount(2)).isGreaterThan(0);
 
         // Verify that effective connection type callback is received and
         // effective connection type is correctly set.
@@ -222,9 +226,9 @@ public class QuicTest {
 
         // Verify that the HTTP RTT, transport RTT and downstream throughput
         // estimates are available.
-        assertTrue(cronetEngine.getHttpRttMs() >= 0);
-        assertTrue(cronetEngine.getTransportRttMs() >= 0);
-        assertTrue(cronetEngine.getDownstreamThroughputKbps() >= 0);
+        assertThat(cronetEngine.getHttpRttMs()).isAtLeast(0);
+        assertThat(cronetEngine.getTransportRttMs()).isAtLeast(0);
+        assertThat(cronetEngine.getDownstreamThroughputKbps()).isAtLeast(0);
 
         // Verify that the cached estimates were written to the prefs.
         while (true) {

@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -114,7 +116,7 @@ public class CronetUrlRequestTest {
         assertEquals(expectedHttpStatusCode, responseInfo.getHttpStatusCode());
         assertEquals(expectedHttpStatusText, responseInfo.getHttpStatusText());
         assertFalse(responseInfo.wasCached());
-        assertTrue(responseInfo.toString().length() > 0);
+        assertThat(responseInfo.toString()).isNotEmpty();
     }
 
     private void checkResponseInfoHeader(
@@ -2128,13 +2130,11 @@ public class CronetUrlRequestTest {
                 startAndWaitForComplete(MockUrlRequestJobFactory.getMockUrlWithFailure(
                         FailurePhase.START, NetError.ERR_QUIC_PROTOCOL_ERROR));
         assertNull(callback.mResponseInfo);
-        assertNotNull(callback.mError);
-        assertEquals(NetworkException.ERROR_QUIC_PROTOCOL_FAILED,
-                ((NetworkException) callback.mError).getErrorCode());
-        assertTrue(callback.mError instanceof QuicException);
+        assertThat(callback.mError).isInstanceOf(QuicException.class);
         QuicException quicException = (QuicException) callback.mError;
         // 1 is QUIC_INTERNAL_ERROR
         assertEquals(1, quicException.getQuicDetailedErrorCode());
+        assertEquals(NetworkException.ERROR_QUIC_PROTOCOL_FAILED, quicException.getErrorCode());
     }
 
     @Test
@@ -2145,15 +2145,13 @@ public class CronetUrlRequestTest {
                 startAndWaitForComplete(MockUrlRequestJobFactory.getMockUrlWithFailure(
                         FailurePhase.START, NetError.ERR_NETWORK_CHANGED));
         assertNull(callback.mResponseInfo);
-        assertNotNull(callback.mError);
-        assertEquals(NetworkException.ERROR_NETWORK_CHANGED,
-                ((NetworkException) callback.mError).getErrorCode());
-        assertTrue(callback.mError instanceof QuicException);
+        assertThat(callback.mError).isInstanceOf(QuicException.class);
         QuicException quicException = (QuicException) callback.mError;
         // QUIC_CONNECTION_MIGRATION_NO_NEW_NETWORK(83) is set in
         // URLRequestFailedJob::PopulateNetErrorDetails for this test.
         final int quicErrorCode = 83;
         assertEquals(quicErrorCode, quicException.getQuicDetailedErrorCode());
+        assertEquals(NetworkException.ERROR_NETWORK_CHANGED, quicException.getErrorCode());
     }
 
     /**
@@ -2196,7 +2194,7 @@ public class CronetUrlRequestTest {
 
             @Override
             public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException error) {
-                assertTrue(error instanceof NetworkException);
+                assertThat(error).isInstanceOf(NetworkException.class);
                 assertEquals(netError, ((NetworkException) error).getCronetInternalErrorCode());
                 failedExpectation.set(
                         ((NetworkException) error).getCronetInternalErrorCode() != netError);
@@ -2342,7 +2340,7 @@ public class CronetUrlRequestTest {
                 url, callback, callback.getExecutor());
         builder.build().start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test explicit tagging.
         tag = 0x12345678;
@@ -2353,7 +2351,7 @@ public class CronetUrlRequestTest {
         assertEquals(builder.setTrafficStatsTag(tag), builder);
         builder.build().start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test a different tag value to make sure reused connections are retagged.
         tag = 0x87654321;
@@ -2364,7 +2362,7 @@ public class CronetUrlRequestTest {
         assertEquals(builder.setTrafficStatsTag(tag), builder);
         builder.build().start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test tagging with our UID.
         tag = 0;
@@ -2375,7 +2373,7 @@ public class CronetUrlRequestTest {
         assertEquals(builder.setTrafficStatsUid(Process.myUid()), builder);
         builder.build().start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
     }
 
     @Test

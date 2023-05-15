@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -90,7 +92,7 @@ public class BidirectionalStreamTest {
         assertEquals(expectedHttpStatusCode, responseInfo.getHttpStatusCode());
         assertEquals(expectedHttpStatusText, responseInfo.getHttpStatusText());
         assertFalse(responseInfo.wasCached());
-        assertTrue(responseInfo.toString().length() > 0);
+        assertThat(responseInfo.toString()).isNotEmpty();
     }
 
     private static String createLongString(String base, int repetition) {
@@ -1298,8 +1300,8 @@ public class BidirectionalStreamTest {
             // connect timing metrics.
             MetricsTestUtil.checkTimingMetrics(metrics, startTime, endTime);
             MetricsTestUtil.checkHasConnectTiming(metrics, startTime, endTime, true);
-            assertTrue(metrics.getSentByteCount() > 0);
-            assertTrue(metrics.getReceivedByteCount() > 0);
+            assertThat(metrics.getSentByteCount()).isGreaterThan(0L);
+            assertThat(metrics.getReceivedByteCount()).isGreaterThan(0L);
         } else if (failureStep == ResponseStep.ON_STREAM_READY) {
             assertNotNull(metrics.getRequestStart());
             MetricsTestUtil.assertAfter(metrics.getRequestStart(), startTime);
@@ -1597,7 +1599,7 @@ public class BidirectionalStreamTest {
                 .build()
                 .start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test explicit tagging.
         tag = 0x12345678;
@@ -1609,7 +1611,7 @@ public class BidirectionalStreamTest {
         assertEquals(builder.setTrafficStatsTag(tag), builder);
         builder.build().start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test a different tag value to make sure reused connections are retagged.
         tag = 0x87654321;
@@ -1621,7 +1623,7 @@ public class BidirectionalStreamTest {
         assertEquals(builder.setTrafficStatsTag(tag), builder);
         builder.build().start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test tagging with our UID.
         tag = 0;
@@ -1633,6 +1635,6 @@ public class BidirectionalStreamTest {
         assertEquals(builder.setTrafficStatsUid(Process.myUid()), builder);
         builder.build().start();
         callback.blockForDone();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
     }
 }

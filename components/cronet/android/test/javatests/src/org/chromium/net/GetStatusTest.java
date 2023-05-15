@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -14,6 +16,8 @@ import android.os.ConditionVariable;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
+
+import com.google.common.collect.Range;
 
 import org.junit.After;
 import org.junit.Before;
@@ -100,10 +104,8 @@ public class GetStatusTest {
         urlRequest.getStatus(statusListener1);
         statusListener1.waitUntilOnStatusCalled();
         assertTrue(statusListener1.mOnStatusCalled);
-        assertTrue("Status is :" + statusListener1.mStatus, statusListener1.mStatus >= Status.IDLE);
-        assertTrue("Status is :" + statusListener1.mStatus,
-                statusListener1.mStatus <= Status.READING_RESPONSE);
-
+        assertThat(statusListener1.mStatus)
+                .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
         callback.waitForNextStep();
         assertEquals(ResponseStep.ON_RESPONSE_STARTED, callback.mResponseStep);
         callback.startNextRead(urlRequest);
@@ -113,8 +115,8 @@ public class GetStatusTest {
         urlRequest.getStatus(statusListener2);
         statusListener2.waitUntilOnStatusCalled();
         assertTrue(statusListener2.mOnStatusCalled);
-        assertTrue(statusListener1.mStatus >= Status.IDLE);
-        assertTrue(statusListener1.mStatus <= Status.READING_RESPONSE);
+        assertThat(statusListener1.mStatus)
+                .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
 
         callback.waitForNextStep();
         assertEquals(ResponseStep.ON_READ_COMPLETED, callback.mResponseStep);

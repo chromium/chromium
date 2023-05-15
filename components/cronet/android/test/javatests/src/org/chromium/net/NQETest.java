@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -176,7 +178,7 @@ public class NQETest {
                                          .build();
         ExperimentalCronetEngine.Builder cronetEngineBuilder =
                 new ExperimentalCronetEngine.Builder(getContext());
-        assertTrue(RttThroughputValues.INVALID_RTT_THROUGHPUT < 0);
+        assertThat(RttThroughputValues.INVALID_RTT_THROUGHPUT).isLessThan(0);
         Executor listenersExecutor = Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
         TestNetworkQualityRttListener rttListener =
                 new TestNetworkQualityRttListener(listenersExecutor);
@@ -215,20 +217,20 @@ public class NQETest {
         // Wait for RTT observation (at the URL request layer) to be posted.
         rttListener.waitUntilFirstUrlRequestRTTReceived();
 
-        assertTrue(throughputListener.throughputObservationCount() > 0);
+        assertThat(throughputListener.throughputObservationCount()).isGreaterThan(0);
 
         // Prefs must be read at startup.
         readCountHistogram.assertExpected();
 
         // Check RTT observation count after throughput observation has been received. This ensures
         // that executor has finished posting the RTT observation to the RTT listeners.
-        assertTrue(rttListener.rttObservationCount() > 0);
+        assertThat(rttListener.rttObservationCount()).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_URL_REQUEST
-        assertTrue(rttListener.rttObservationCount(0) > 0);
+        assertThat(rttListener.rttObservationCount(0)).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_TCP
-        assertTrue(rttListener.rttObservationCount(1) > 0);
+        assertThat(rttListener.rttObservationCount(1)).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC
         assertEquals(0, rttListener.rttObservationCount(2));
@@ -244,9 +246,9 @@ public class NQETest {
 
         // Verify that the HTTP RTT, transport RTT and downstream throughput
         // estimates are available.
-        assertTrue(cronetEngine.getHttpRttMs() >= 0);
-        assertTrue(cronetEngine.getTransportRttMs() >= 0);
-        assertTrue(cronetEngine.getDownstreamThroughputKbps() >= 0);
+        assertThat(cronetEngine.getHttpRttMs()).isAtLeast(0);
+        assertThat(cronetEngine.getTransportRttMs()).isAtLeast(0);
+        assertThat(cronetEngine.getDownstreamThroughputKbps()).isAtLeast(0);
 
         // Verify that the cached estimates were written to the prefs.
         while (true) {
@@ -307,7 +309,7 @@ public class NQETest {
 
             ExperimentalCronetEngine.Builder cronetEngineBuilder =
                     new ExperimentalCronetEngine.Builder(getContext());
-            assertTrue(RttThroughputValues.INVALID_RTT_THROUGHPUT < 0);
+            assertThat(RttThroughputValues.INVALID_RTT_THROUGHPUT).isLessThan(0);
             Executor listenersExecutor =
                     Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
             TestNetworkQualityRttListener rttListener =
@@ -348,7 +350,7 @@ public class NQETest {
             // Check RTT observation count after throughput observation has been received. This
             // ensures
             // that executor has finished posting the RTT observation to the RTT listeners.
-            assertTrue(rttListener.rttObservationCount() > 0);
+            assertThat(rttListener.rttObservationCount()).isGreaterThan(0);
 
             // Verify that effective connection type callback is received and
             // effective connection type is correctly set.
@@ -413,17 +415,17 @@ public class NQETest {
         // Wait for RTT observation (at the URL request layer) to be posted.
         rttListener.waitUntilFirstUrlRequestRTTReceived();
 
-        assertTrue(throughputListener.throughputObservationCount() > 0);
+        assertThat(throughputListener.throughputObservationCount()).isGreaterThan(0);
 
         // Check RTT observation count after throughput observation has been received. This ensures
         // that executor has finished posting the RTT observation to the RTT listeners.
-        assertTrue(rttListener.rttObservationCount() > 0);
+        assertThat(rttListener.rttObservationCount()).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_URL_REQUEST
-        assertTrue(rttListener.rttObservationCount(0) > 0);
+        assertThat(rttListener.rttObservationCount(0)).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_TCP
-        assertTrue(rttListener.rttObservationCount(1) > 0);
+        assertThat(rttListener.rttObservationCount(1)).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC
         assertEquals(0, rttListener.rttObservationCount(2));

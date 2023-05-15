@@ -4,6 +4,8 @@
 
 package org.chromium.net.apihelpers;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -117,7 +119,7 @@ public class UploadDataProvidersTest {
             builder.build().start();
             callback.blockForDone();
 
-            assertTrue(callback.mError.getCause() instanceof IllegalArgumentException);
+            assertThat(callback.mError).hasCauseThat().isInstanceOf(IllegalArgumentException.class);
         } finally {
             pipe[1].close();
         }
@@ -241,7 +243,7 @@ public class UploadDataProvidersTest {
         first.block();
         callback.blockForDone();
         assertFalse(callback.mOnCanceledCalled);
-        assertTrue(callback.mError instanceof CallbackException);
+        assertThat(callback.mError).isInstanceOf(CallbackException.class);
         assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
         assertContains(exceptionMessage, callback.mError.getCause().getMessage());
     }

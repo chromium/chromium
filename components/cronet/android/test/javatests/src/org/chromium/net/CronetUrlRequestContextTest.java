@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -953,7 +955,7 @@ public class CronetUrlRequestContextTest {
         urlRequestBuilder.allowDirectExecutor();
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertTrue(thrown.get() instanceof RuntimeException);
+        assertThat(thrown.get()).isInstanceOf(RuntimeException.class);
         cronetEngine.shutdown();
     }
 

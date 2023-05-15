@@ -1005,6 +1005,7 @@ android_library("cronet_common_javatests") {
            "//build/android:build_java",
            "//third_party/android_sdk:android_test_base_java",
            "//third_party/androidx:androidx_annotation_annotation_java",
+           "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
          ] + cronet_tests_androidx_common_srcs
 }
@@ -1103,6 +1104,7 @@ android_library("cronet_javatests") {
     ":cronet_api_java",
     ":cronet_impl_all_java",
     ":cronet_urlconnection_impl_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",

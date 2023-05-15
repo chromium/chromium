@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -120,14 +122,14 @@ public class MetricsTestUtil {
         RequestFinishedInfo.Metrics metrics = info.getMetrics();
         assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
         // Check old (deprecated) timing metrics
-        assertTrue(metrics.getTotalTimeMs() >= 0);
-        assertTrue(metrics.getTotalTimeMs() >= metrics.getTtfbMs());
+        assertThat(metrics.getTotalTimeMs()).isAtLeast(0L);
+        assertThat(metrics.getTotalTimeMs()).isAtLeast(metrics.getTtfbMs());
         // Check new timing metrics
         checkTimingMetrics(metrics, startTime, endTime);
         assertNull(metrics.getPushStart());
         assertNull(metrics.getPushEnd());
         // Check data use metrics
-        assertTrue(metrics.getSentByteCount() > 0);
-        assertTrue(metrics.getReceivedByteCount() > 0);
+        assertThat(metrics.getSentByteCount()).isGreaterThan(0L);
+        assertThat(metrics.getReceivedByteCount()).isGreaterThan(0L);
     }
 }

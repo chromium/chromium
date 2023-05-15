@@ -4,6 +4,8 @@
 
 package org.chromium.net.urlconnection;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -763,7 +765,7 @@ public class CronetHttpURLConnectionTest {
                 numBytesToRead = actualOutput.length - totalBytesRead;
             }
             int bytesRead = in.read(actualOutput, totalBytesRead, numBytesToRead);
-            assertTrue(bytesRead <= numBytesToRead);
+            assertThat(bytesRead).isAtMost(numBytesToRead);
             totalBytesRead += bytesRead;
             numBytesToRead++;
         }
@@ -1343,7 +1345,7 @@ public class CronetHttpURLConnectionTest {
         CronetHttpURLConnection urlConnection = (CronetHttpURLConnection) url.openConnection();
         assertEquals(200, urlConnection.getResponseCode());
         urlConnection.disconnect();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test explicit tagging.
         tag = 0x12345678;
@@ -1352,7 +1354,7 @@ public class CronetHttpURLConnectionTest {
         urlConnection.setTrafficStatsTag(tag);
         assertEquals(200, urlConnection.getResponseCode());
         urlConnection.disconnect();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test a different tag value.
         tag = 0x87654321;
@@ -1361,7 +1363,7 @@ public class CronetHttpURLConnectionTest {
         urlConnection.setTrafficStatsTag(tag);
         assertEquals(200, urlConnection.getResponseCode());
         urlConnection.disconnect();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test tagging with TrafficStats.
         tag = 0x12348765;
@@ -1370,7 +1372,7 @@ public class CronetHttpURLConnectionTest {
         TrafficStats.setThreadStatsTag(tag);
         assertEquals(200, urlConnection.getResponseCode());
         urlConnection.disconnect();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // Test tagging with our UID.
         // NOTE(pauljensen): Explicitly setting the UID to the current UID isn't a particularly
@@ -1387,7 +1389,7 @@ public class CronetHttpURLConnectionTest {
         urlConnection.setTrafficStatsUid(Process.myUid());
         assertEquals(200, urlConnection.getResponseCode());
         urlConnection.disconnect();
-        assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+        assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
         // TrafficStats.getThreadStatsUid() which is required for this feature is added in API level
         // 28.
@@ -1400,7 +1402,7 @@ public class CronetHttpURLConnectionTest {
             TrafficStats.setThreadStatsUid(Process.myUid());
             assertEquals(200, urlConnection.getResponseCode());
             urlConnection.disconnect();
-            assertTrue(CronetTestUtil.nativeGetTaggedBytes(tag) > priorBytes);
+            assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
         }
     }
 
