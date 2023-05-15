@@ -320,7 +320,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         kEndpointId, kAuthenticationToken);
   }
 
-  void CreateConnectionBroker() {
+  void CreateConnectionBroker(bool is_resume_after_update = false) {
     auto connection_factory = std::make_unique<FakeConnection::Factory>();
     connection_factory_ = connection_factory.get();
     connection_broker_ = std::make_unique<TargetDeviceConnectionBrokerImpl>(
@@ -328,7 +328,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         std::move(connection_factory),
         mojo::SharedRemote<mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()),
-        false);
+        is_resume_after_update);
   }
 
   void FinishFetchingBluetoothAdapter() {
@@ -423,12 +423,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
     TargetDeviceConnectionBroker::SharedSecret expected_shared_secret =
         GetSecondarySharedSecret();
 
-    connection_broker_ =
-        ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
-            fake_nearby_connections_manager_.GetWeakPtr(),
-            mojo::SharedRemote<mojom::QuickStartDecoder>(
-                fake_quick_start_decoder_->GetRemote()),
-            /*is_resume_after_update=*/true);
+    CreateConnectionBroker(/*is_resume_after_update=*/true);
     ASSERT_EQ(expected_random_session_id, GetRandomSessionId().ToString());
     ASSERT_EQ(expected_shared_secret, GetSharedSecret());
   }
@@ -869,6 +864,54 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
             fake_nearby_connections_manager_.advertising_power_level());
   EXPECT_TRUE(start_advertising_callback_called_);
   EXPECT_TRUE(start_advertising_callback_success_);
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       HandshakeInitiatedWhenResumeAfterUpdate_UseQRCodeAuthentication) {
+  ResumeAfterUpdate();
+  FinishFetchingBluetoothAdapter();
+  connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
+                                       /* use_pin_authentication= */ false,
+                                       base::DoNothing());
+  ASSERT_FALSE(connection_lifecycle_listener_.qr_code_data_);
+  NearbyConnectionsManager::IncomingConnectionListener*
+      incoming_connection_listener =
+          fake_nearby_connections_manager_.GetAdvertisingListener();
+  ASSERT_TRUE(incoming_connection_listener);
+  incoming_connection_listener->OnIncomingConnectionInitiated(
+      kEndpointId, std::vector<uint8_t>());
+  // On the first attempt to resume the connection after an update, no QR code
+  // or PIN should be generated on connection initiated.
+  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
+  incoming_connection_listener->OnIncomingConnectionAccepted(
+      kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
+
+  ASSERT_TRUE(connection());
+  EXPECT_TRUE(connection()->WasHandshakeInitiated());
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       HandshakeInitiatedWhenResumeAfterUpdate_UsePinAuthentication) {
+  ResumeAfterUpdate();
+  FinishFetchingBluetoothAdapter();
+  connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
+                                       /* use_pin_authentication= */ true,
+                                       base::DoNothing());
+  ASSERT_FALSE(connection_lifecycle_listener_.pin_);
+  NearbyConnectionsManager::IncomingConnectionListener*
+      incoming_connection_listener =
+          fake_nearby_connections_manager_.GetAdvertisingListener();
+  ASSERT_TRUE(incoming_connection_listener);
+  incoming_connection_listener->OnIncomingConnectionInitiated(
+      kEndpointId, std::vector<uint8_t>());
+  // On the first attempt to resume the connection after an update, no QR code
+  // or PIN should be generated on connection initiated.
+  EXPECT_FALSE(connection_lifecycle_listener_.pin_);
+  incoming_connection_listener->OnIncomingConnectionAccepted(
+      kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
+
+  ASSERT_TRUE(connection());
+  EXPECT_TRUE(connection()->WasHandshakeInitiated());
 }
 
 }  // namespace ash::quick_start
