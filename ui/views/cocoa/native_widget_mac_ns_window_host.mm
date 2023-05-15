@@ -344,8 +344,16 @@ NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSView() const {
 
 gfx::NativeViewAccessible
 NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSWindow() const {
-  if (in_process_ns_window_bridge_)
-    return in_process_ns_window_bridge_->ns_window();
+  if (in_process_ns_window_bridge_) {
+    // AppKit requires the return of the NSWindow that contains `ns_view()`,
+    // Failure to do so will result in VoiceOver not announcing focus changes.
+    // Typically, this would be `ns_window()`, but in fullscreen mode,
+    // the overlay window's contentView is moved to NSToolbarFullScreenWindow.
+    // Regardless of the mode (fullscreen or not), `[ns_view() window]` would
+    // always yield the correct NSWindow that contains `ns_view()`.
+    return [in_process_ns_window_bridge_->ns_view() window];
+  }
+
   return remote_window_accessible_.get();
 }
 
