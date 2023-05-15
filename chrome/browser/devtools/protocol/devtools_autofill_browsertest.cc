@@ -152,15 +152,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
   EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
 }
 
-// TODO(crbug.com/1416789): The test currently fails on chromeos probably
-// because of a difference in behaviour between the chrome-branded and not
-// chrome-branded patterns in Autofill.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TriggerCreditCardInIframe DISABLED_TriggerCreditCardInIframe
-#else
-#define MAYBE_TriggerCreditCardInIframe TriggerCreditCardInIframe
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, MAYBE_TriggerCreditCardInIframe) {
+// TODO(crbug.com/1445476): The test currently fails with Chrome-branded
+// patterns in Autofill.
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
+                       DISABLED_TriggerCreditCardInIframe) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
