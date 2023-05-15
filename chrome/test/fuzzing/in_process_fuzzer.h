@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_FUZZING_IN_PROCESS_FUZZ_TEST_H_
-#define CHROME_TEST_FUZZING_IN_PROCESS_FUZZ_TEST_H_
+#ifndef CHROME_TEST_FUZZING_IN_PROCESS_FUZZER_H_
+#define CHROME_TEST_FUZZING_IN_PROCESS_FUZZER_H_
 
 #include <optional>
 
@@ -21,14 +21,14 @@
 //
 // Register your subclass with REGISTER_IN_PROCESS_FUZZER. There can only
 // be one per executable.
-class InProcessFuzzTest : virtual public InProcessBrowserTest {
+class InProcessFuzzer : virtual public InProcessBrowserTest {
  public:
   // Called by the main function to create this class.
   // This is called prior to all the normal browser test setup,
   // so don't do anything important in your constructor.
   // Furthermore, this will be re-run even for child Chromium processes.
-  InProcessFuzzTest();
-  ~InProcessFuzzTest() override;
+  InProcessFuzzer();
+  ~InProcessFuzzer() override;
 
   // Called by the main function to run this fuzzer, after the browser_test
   // equivalent infrastructure has been set up.
@@ -62,24 +62,24 @@ class InProcessFuzzTest : virtual public InProcessBrowserTest {
   std::vector<std::string> libfuzzer_command_line_;
 };
 
-class InProcessFuzzTestFactoryBase {
+class InProcessFuzzerFactoryBase {
  public:
-  virtual std::unique_ptr<InProcessFuzzTest> CreateInProcessFuzzer() = 0;
+  virtual std::unique_ptr<InProcessFuzzer> CreateInProcessFuzzer() = 0;
 };
 
-extern InProcessFuzzTestFactoryBase* g_in_process_fuzz_test_factory;
+extern InProcessFuzzerFactoryBase* g_in_process_fuzzer_factory;
 
 // Class used to register a single in-process fuzzer in each executable.
 template <typename T>
-class InProcessFuzzTestFactory : public InProcessFuzzTestFactoryBase {
+class InProcessFuzzerFactory : public InProcessFuzzerFactoryBase {
  public:
-  InProcessFuzzTestFactory() { g_in_process_fuzz_test_factory = this; }
-  std::unique_ptr<InProcessFuzzTest> CreateInProcessFuzzer() override {
+  InProcessFuzzerFactory() { g_in_process_fuzzer_factory = this; }
+  std::unique_ptr<InProcessFuzzer> CreateInProcessFuzzer() override {
     return std::make_unique<T>();
   }
 };
 
 #define REGISTER_IN_PROCESS_FUZZER(fuzzer_class) \
-  InProcessFuzzTestFactory<fuzzer_class> fuzzer_instance;
+  InProcessFuzzerFactory<fuzzer_class> fuzzer_instance;
 
-#endif  // CHROME_TEST_FUZZING_IN_PROCESS_FUZZ_TEST_H_
+#endif  // CHROME_TEST_FUZZING_IN_PROCESS_FUZZER_H_

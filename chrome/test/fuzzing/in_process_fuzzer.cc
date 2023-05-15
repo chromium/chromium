@@ -10,8 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/chrome_test_launcher.h"
-#include "chrome/test/fuzzing/in_process_fuzz_test.h"
-#include "chrome/test/fuzzing/in_process_fuzzing_buildflags.h"
+#include "chrome/test/fuzzing/in_process_fuzzer.h"
+#include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 #include "content/public/app/content_main.h"
 #include "content/public/test/test_launcher.h"
 
@@ -25,43 +25,43 @@ extern "C" int LLVMFuzzerRunDriver(int* argc,
                                    int (*UserCb)(const uint8_t* Data,
                                                  size_t Size));
 
-InProcessFuzzTestFactoryBase* g_in_process_fuzz_test_factory;
+InProcessFuzzerFactoryBase* g_in_process_fuzzer_factory;
 
-InProcessFuzzTest::InProcessFuzzTest() = default;
+InProcessFuzzer::InProcessFuzzer() = default;
 
-InProcessFuzzTest::~InProcessFuzzTest() = default;
+InProcessFuzzer::~InProcessFuzzer() = default;
 
 base::CommandLine::StringVector
-InProcessFuzzTest::GetChromiumCommandLineArguments() {
+InProcessFuzzer::GetChromiumCommandLineArguments() {
   base::CommandLine::StringVector empty;
   return empty;
 }
 
-void InProcessFuzzTest::Run(
+void InProcessFuzzer::Run(
     const std::vector<std::string>& libfuzzer_command_line) {
   libfuzzer_command_line_ = libfuzzer_command_line;
   SetUp();
   TearDown();
 }
 
-void InProcessFuzzTest::SetUpOnMainThread() {
+void InProcessFuzzer::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
 }
 
-InProcessFuzzTest* g_test;
+InProcessFuzzer* g_test;
 
 class FuzzTestLauncherDelegate : public content::TestLauncherDelegate {
  public:
-  FuzzTestLauncherDelegate(std::unique_ptr<InProcessFuzzTest>&& fuzz_test,
+  FuzzTestLauncherDelegate(std::unique_ptr<InProcessFuzzer>&& fuzzer,
                            std::vector<std::string>&& libfuzzer_arguments)
-      : fuzz_test_(std::move(fuzz_test)),
+      : fuzzer_(std::move(fuzzer)),
         libfuzzer_arguments_(std::move(libfuzzer_arguments)) {
     content_main_delegate_ =
         std::make_unique<ChromeTestChromeMainDelegate>(base::TimeTicks::Now());
   }
 
   int RunTestSuite(int argc, char** argv) override {
-    fuzz_test_->Run(libfuzzer_arguments_);
+    fuzzer_->Run(libfuzzer_arguments_);
     return 0;
   }
 #if !BUILDFLAG(IS_ANDROID)
@@ -73,7 +73,7 @@ class FuzzTestLauncherDelegate : public content::TestLauncherDelegate {
 #endif
 
  private:
-  std::unique_ptr<InProcessFuzzTest> fuzz_test_;
+  std::unique_ptr<InProcessFuzzer> fuzzer_;
   std::unique_ptr<content::ContentMainDelegate>
       content_main_delegate_;  // TODO remove unique_ptr
   std::vector<std::string> libfuzzer_arguments_;
@@ -83,7 +83,7 @@ int fuzz_callback(const uint8_t* data, size_t size) {
   return g_test->Fuzz(data, size);
 }
 
-void InProcessFuzzTest::RunTestOnMainThread() {
+void InProcessFuzzer::RunTestOnMainThread() {
   std::vector<char*> argv;
   for (const auto& arg : libfuzzer_command_line_) {
     argv.push_back((char*)arg.data());
@@ -104,8 +104,8 @@ int main(int argc, char** argv) {
   base::AtExitManager atexit_manager;
   base::CommandLine::Init(argc, argv);
 
-  std::unique_ptr<InProcessFuzzTest> fuzzer =
-      g_in_process_fuzz_test_factory->CreateInProcessFuzzer();
+  std::unique_ptr<InProcessFuzzer> fuzzer =
+      g_in_process_fuzzer_factory->CreateInProcessFuzzer();
 
   // Oh dear, you've got to the part of the code relating to command lines.
   // I'm sorry.
@@ -166,8 +166,8 @@ int main(int argc, char** argv) {
     base::CommandLine::ForCurrentProcess()->InitFromArgv(chromium_arguments);
   }
 
-  FuzzTestLauncherDelegate* fuzz_test_launcher_delegate =
+  FuzzTestLauncherDelegate* fuzzer_launcher_delegate =
       new FuzzTestLauncherDelegate(std::move(fuzzer),
                                    std::move(libfuzzer_arguments));
-  return content::LaunchTests(fuzz_test_launcher_delegate, 1, argc, argv);
+  return content::LaunchTests(fuzzer_launcher_delegate, 1, argc, argv);
 }

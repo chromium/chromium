@@ -4,18 +4,18 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/fuzzing/in_process_fuzz_test.h"
+#include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-// At the moment, this is an example use of the InProcessFuzzTest framework
+// At the moment, this is an example use of the InProcessFuzzer framework
 // that uses Kombucha. It's not yet intended to be an effective fuzzer,
 // but just to be the skeleton of how this framework can be used.
 
-class KombuchaInProcessFuzzTest
-    : virtual public InteractiveBrowserTestT<InProcessFuzzTest> {
+class KombuchaInProcessFuzzer
+    : virtual public InteractiveBrowserTestT<InProcessFuzzer> {
  public:
   void SetUp() override { InteractiveBrowserTestT::SetUp(); }
 
@@ -28,7 +28,7 @@ class KombuchaInProcessFuzzTest
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &KombuchaInProcessFuzzTest::HandleHTTPRequest, base::Unretained(this)));
+        &KombuchaInProcessFuzzer::HandleHTTPRequest, base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
   }
   int Fuzz(const uint8_t* data, size_t size) override;
@@ -38,10 +38,10 @@ class KombuchaInProcessFuzzTest
   std::string current_fuzz_case_;
 };
 
-REGISTER_IN_PROCESS_FUZZER(KombuchaInProcessFuzzTest)
+REGISTER_IN_PROCESS_FUZZER(KombuchaInProcessFuzzer)
 
 std::unique_ptr<net::test_server::HttpResponse>
-KombuchaInProcessFuzzTest::HandleHTTPRequest(
+KombuchaInProcessFuzzer::HandleHTTPRequest(
     const net::test_server::HttpRequest& request) const {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -51,7 +51,7 @@ KombuchaInProcessFuzzTest::HandleHTTPRequest(
   return response;
 }
 
-int KombuchaInProcessFuzzTest::Fuzz(const uint8_t* data, size_t size) {
+int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondaryTabElementId);
   std::string html_string(reinterpret_cast<const char*>(data), size);
