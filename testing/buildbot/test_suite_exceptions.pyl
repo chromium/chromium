@@ -1445,8 +1445,6 @@
             {
               # use 8-core to shorten runtime
               'cores': '8',
-              # TODO(crbug.com/1412588): Move to jammy.
-              'os': 'Ubuntu-18.04',
             },
           ],
         },
@@ -1484,8 +1482,6 @@
             {
               # use 8-core to shorten runtime
               'cores': '8',
-              # TODO(crbug.com/1412588): Move to jammy.
-              'os': 'Ubuntu-18.04',
             },
           ],
         },
