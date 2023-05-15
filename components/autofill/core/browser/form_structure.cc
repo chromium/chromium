@@ -377,6 +377,7 @@ void FormStructure::DetermineHeuristicTypes(
   IdentifySections(/*ignore_autocomplete=*/false);
 
   FormStructureRationalizer rationalizer(&fields_, form_signature_);
+  rationalizer.RationalizeAutocompleteAttributes(log_manager);
   if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
     rationalizer.RationalizeRepeatedFields(form_interactions_ukm_logger,
                                            log_manager);
@@ -700,6 +701,7 @@ void FormStructure::ProcessQueryResponse(
     form->UpdateAutofillCount();
     FormStructureRationalizer rationalizer(&(form->fields_),
                                            form->form_signature_);
+    rationalizer.RationalizeAutocompleteAttributes(log_manager);
     rationalizer.RationalizeRepeatedFields(form_interactions_ukm_logger,
                                            log_manager);
     rationalizer.RationalizeFieldTypePredictions(log_manager);

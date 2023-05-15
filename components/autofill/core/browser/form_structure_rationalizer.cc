@@ -95,6 +95,38 @@ FormStructureRationalizer::FormStructureRationalizer(
     : fields_(*fields), form_signature_(form_signature) {}
 FormStructureRationalizer::~FormStructureRationalizer() = default;
 
+void FormStructureRationalizer::RationalizeAutocompleteAttributes(
+    LogManager* log_manager) {
+  for (const auto& field : *fields_) {
+    auto set_html_type = [&field](HtmlFieldType type) {
+      field->SetHtmlType(type, field->html_mode());
+    };
+    switch (field->html_type()) {
+      case HtmlFieldType::kAdditionalName:
+        if (field->max_length == 1) {
+          set_html_type(HtmlFieldType::kAdditionalNameInitial);
+        }
+        break;
+      case HtmlFieldType::kCreditCardExp:
+        if (field->max_length == 5) {
+          set_html_type(HtmlFieldType::kCreditCardExpDate2DigitYear);
+        } else if (field->max_length == 7) {
+          set_html_type(HtmlFieldType::kCreditCardExpDate4DigitYear);
+        }
+        break;
+      case HtmlFieldType::kCreditCardExpYear:
+        if (field->max_length == 2) {
+          set_html_type(HtmlFieldType::kCreditCardExp2DigitYear);
+        } else if (field->max_length == 4) {
+          set_html_type(HtmlFieldType::kCreditCardExp4DigitYear);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
     LogManager* log_manager) {
   bool cc_first_name_found = false;
