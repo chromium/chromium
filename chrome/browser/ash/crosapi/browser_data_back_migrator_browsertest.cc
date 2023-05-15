@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -105,12 +105,12 @@ class BrowserDataBackMigratorOnSignIn : public ash::LoginManagerTest {
 IN_PROC_BROWSER_TEST_F(BrowserDataBackMigratorOnSignIn, BackMigrateOnSignIn) {
   CreateLacrosDirectoryForProfile(regular_user_.account_id);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> waiter;
   ScopedBackMigratorRestartAttemptForTesting
       scoped_back_migrator_restart_attempt(
-          base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+          base::BindLambdaForTesting([&]() { waiter.SetValue(); }));
   ASSERT_TRUE(Login());
-  run_loop.Run();
+  EXPECT_TRUE(waiter.Wait());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_backward_migration_called());
 }
@@ -161,13 +161,13 @@ IN_PROC_BROWSER_TEST_F(BrowserDataBackMigratorForKiosk, MigrateOnKioskLaunch) {
   CHECK(KioskAppManager::Get()->GetApp(test_app_id(), &app));
   CreateLacrosDirectoryForProfile(app.account_id);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> waiter;
   ScopedBackMigratorRestartAttemptForTesting
       scoped_back_migrator_restart_attempt(
-          base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+          base::BindLambdaForTesting([&]() { waiter.SetValue(); }));
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  run_loop.Run();
+  EXPECT_TRUE(waiter.Wait());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_backward_migration_called());
 }

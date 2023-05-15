@@ -42,10 +42,10 @@ class DeviceSettingsAshTest : public ::testing::Test {
     session_manager_client_.set_device_policy(device_policy_.GetBlob());
 
     auto* const device_settings_service = ::ash::DeviceSettingsService::Get();
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> waiter;
     device_settings_service->Store(device_policy_.GetCopy(),
-                                   run_loop.QuitClosure());
-    run_loop.Run();
+                                   waiter.GetCallback());
+    EXPECT_TRUE(waiter.Wait());
     ASSERT_EQ(device_settings_service->status(),
               ::ash::DeviceSettingsService::STORE_SUCCESS);
   }

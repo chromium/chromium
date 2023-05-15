@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/location.h"
 #include "base/one_shot_event.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -40,10 +40,10 @@ void AshRequiresLacrosBrowserTestBase::SetUpOnMainThread() {
 
   ash_starter_.StartLacros(this);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> waiter;
   test_controller_ash_->on_standalone_browser_test_controller_bound().Post(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+      FROM_HERE, waiter.GetCallback());
+  EXPECT_TRUE(waiter.Wait());
 }
 
 mojom::StandaloneBrowserTestController*
