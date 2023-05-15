@@ -1574,7 +1574,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   }
 
   // TODO(crbug.com/1429083): record the appropriate metrics.
-  ShowModalDialog(idp->config_url);
+  ShowModalDialog(continue_on);
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
