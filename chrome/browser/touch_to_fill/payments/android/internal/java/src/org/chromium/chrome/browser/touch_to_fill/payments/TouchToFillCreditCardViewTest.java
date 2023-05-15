@@ -147,16 +147,14 @@ public class TouchToFillCreditCardViewTest {
         assertThat(getCreditCardNameAt(0).getText(), is(VISA.getCardNameForAutofillDisplay()));
         assertThat(getCreditCardNumberAt(0).getText(), is(VISA.getObfuscatedLastFourDigits()));
         assertThat(getCreditCardExpirationAt(0).getText(),
-                is(VISA.getFormattedExpirationDateWithTwoDigitYear(
-                        ContextUtils.getApplicationContext())));
+                is(VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
         assertThat(
                 getCreditCardNameAt(1).getText(), is(MASTER_CARD.getCardNameForAutofillDisplay()));
         assertThat(
                 getCreditCardNumberAt(1).getText(), is(MASTER_CARD.getObfuscatedLastFourDigits()));
         assertThat(getCreditCardExpirationAt(1).getText(),
-                is(MASTER_CARD.getFormattedExpirationDateWithTwoDigitYear(
-                        ContextUtils.getApplicationContext())));
+                is(MASTER_CARD.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
         assertThat(
                 getCreditCardNameAt(2).getText(), is(VIRTUAL_CARD.getCardNameForAutofillDisplay()));
@@ -320,8 +318,7 @@ public class TouchToFillCreditCardViewTest {
         } else {
             creditCardModelBuilder.with(
                     TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
-                    card.getFormattedExpirationDateWithTwoDigitYear(
-                            ContextUtils.getApplicationContext()));
+                    card.getFormattedExpirationDate(ContextUtils.getApplicationContext()));
         }
         return creditCardModelBuilder.build();
     }

@@ -161,7 +161,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         ((TextView) v.findViewById(R.id.card_last_four))
                 .setText(mCard.getObfuscatedLastFourDigits());
         ((TextView) v.findViewById(R.id.settings_page_card_expiration))
-                .setText(mCard.getFormattedExpirationDateWithTwoDigitYear(getActivity()));
+                .setText(mCard.getFormattedExpirationDate(getActivity()));
         v.findViewById(R.id.edit_server_card).setOnClickListener(view -> {
             logServerCardEditorButtonClicks(showVirtualCardEnrollmentButton()
                             ? CardType.VIRTUAL_CARD

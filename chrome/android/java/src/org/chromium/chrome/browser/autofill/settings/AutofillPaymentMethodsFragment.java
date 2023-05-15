@@ -182,8 +182,7 @@ public class AutofillPaymentMethodsFragment
                             ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
                 card_pref.setSummary(R.string.autofill_virtual_card_enrolled_text);
             } else {
-                card_pref.setSummary(
-                        card.getFormattedExpirationDateWithTwoDigitYear(getActivity()));
+                card_pref.setSummary(card.getFormattedExpirationDate(getActivity()));
             }
 
             // Set card icon. It can be either a custom card art or a network icon.
