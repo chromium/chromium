@@ -3768,9 +3768,6 @@ extern const char kLibAssistantV2MigrationDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kDesktopCaptureLacrosV2Name[];
-extern const char kDesktopCaptureLacrosV2Description[];
-
 extern const char kExperimentalWebAppProfileIsolationName[];
 extern const char kExperimentalWebAppProfileIsolationDescription[];
 

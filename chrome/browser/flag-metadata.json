@@ -2244,11 +2244,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-desktop-capture-lacros-v2",
-    "owners": [ "alcooper", "mfoltz" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-desktop-pwas-additional-windowing-controls",
     "owners": [ "laurila@google.com", "isandrk@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 122

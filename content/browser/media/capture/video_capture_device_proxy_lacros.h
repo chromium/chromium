@@ -45,12 +45,6 @@ namespace content {
 class CONTENT_EXPORT VideoCaptureDeviceProxyLacros
     : public media::VideoCaptureDevice {
  public:
-  // Helper method to check if the mojom version(s) required to use this class
-  // are available.
-  // May be called from any thread; should be checked before creating (or
-  // posting a task to create) an instance of this class.
-  static bool IsAvailable();
-
   explicit VideoCaptureDeviceProxyLacros(const DesktopMediaID& device_id);
 
   VideoCaptureDeviceProxyLacros(const VideoCaptureDeviceProxyLacros&) = delete;

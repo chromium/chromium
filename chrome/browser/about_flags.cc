@@ -9123,10 +9123,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"enable-desktop-capture-lacros-v2",
-     flag_descriptions::kDesktopCaptureLacrosV2Name,
-     flag_descriptions::kDesktopCaptureLacrosV2Description, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kDesktopCaptureLacrosV2)},
 
     {"enable-lacros-aura-capture", flag_descriptions::kLacrosAuraCaptureName,
      flag_descriptions::kLacrosAuraCaptureDescription, kOsCrOS | kOsLacros,
