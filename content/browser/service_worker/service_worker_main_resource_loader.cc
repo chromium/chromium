@@ -200,6 +200,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   url_loader_client_.Bind(std::move(client));
 
   TransitionToStatus(Status::kStarted);
+  CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
 
   if (!container_host_) {
     // We lost |container_host_| (for the client) somehow before dispatching
@@ -286,6 +287,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
           context, frame_tree_node_id_);
 
   // Perform fetch
+  CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
   mojo::PendingRemote<network::mojom::URLLoader> url_loader;
   factory->CreateLoaderAndStart(
       url_loader.InitWithNewPipeAndPassReceiver(),
@@ -365,7 +367,7 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
   DCHECK(url_loader_client_.is_bound());
   TransitionToStatus(Status::kCompleted);
   if (error_code == net::OK) {
-    switch (fetch_response_from()) {
+    switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
         NOTREACHED();
         break;
@@ -412,33 +414,31 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       blink::ServiceWorkerStatusToString(status), "result",
       ComposeFetchEventResultString(fetch_result, *response));
 
-  // If the response of RaceNetworkRequest is already handled, discard the
-  // fetch handler result.
-  if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
-    return;
-  }
-  // If the RaceNetworkRequest is triggered but the response is not handled
-  // yet, and the fetch handler result is FetchEventResult::kShouldFallback, ask
-  // RaceNetworkRequestURLLoaderClient to handle the response regardless of the
-  // response status not to dispatch additional network request for fallback.
-  if (dispatched_preload_type_ == DispatchedPreloadType::kRaceNetworkRequest &&
-      fetch_result ==
-          ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
-    DCHECK(race_network_request_loader_client_);
-    // Don't ask RaceNetworkRequestURLLoaderClient to handle the response if the
-    // RaceNetworkRequest has already completed because the response from
-    // RaceNetworkRequest is already discarded.
-    if (!race_network_request_loader_client_->request_completed()) {
-      race_network_request_loader_client_->NotifyFetchHandlerFallback();
+  switch (commit_responsibility()) {
+    case FetchResponseFrom::kNoResponseYet:
+      // If the RaceNetworkRequest is triggered but the response is not handled
+      // yet, and the fetch handler result is FetchEventResult::kShouldFallback,
+      // ask RaceNetworkRequestURLLoaderClient to handle the response regardless
+      // of the response status not to dispatch additional network request for
+      // fallback.
+      if (dispatched_preload_type_ ==
+              DispatchedPreloadType::kRaceNetworkRequest &&
+          fetch_result ==
+              ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
+        SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+        return;
+      }
+      SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
+      break;
+    case FetchResponseFrom::kServiceWorker:
+      break;
+    case FetchResponseFrom::kWithoutServiceWorker:
+      // If the response of RaceNetworkRequest is already handled, discard the
+      // fetch handler result.
       return;
-    }
   }
-  // Use the response from ServiceWorker fetch handler, and cancel the
-  // connection for RaceNetworkRequest.
-  // TODO(crbug.com/1420517) RaceNetworkRequrest doesn't support fallback case.
-  // If the response from the fetch handler is fallback, the fallback resource
-  // fetch will start separately without using RaceNetworkRequest's result.
-  SetFetchResponseFrom(FetchResponseFrom::kServiceWorker);
+
+  // Cancel the connection for RaceNetworkRequest.
   race_network_request_url_loader_.reset();
 
   DCHECK_EQ(status_, Status::kStarted);
