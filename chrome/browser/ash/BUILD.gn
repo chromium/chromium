@@ -4506,6 +4506,8 @@ static_library("test_support") {
     "policy/test_support/embedded_policy_test_server_mixin.cc",
     "policy/test_support/embedded_policy_test_server_mixin.h",
     "policy/test_support/policy_test_server_constants.h",
+    "policy/test_support/remote_commands_service_mixin.cc",
+    "policy/test_support/remote_commands_service_mixin.h",
     "printing/history/mock_print_job_history_service.cc",
     "printing/history/mock_print_job_history_service.h",
     "printing/history/test_print_job_database.cc",

@@ -11,8 +11,21 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-RemoteCommandBuilder& RemoteCommandBuilder::SetCommandId(int id) {
-  result_.set_command_id(id);
+// static
+// The initial value is randomly chosen.
+int64_t RemoteCommandBuilder::g_last_command_id_ = 1666;
+
+RemoteCommandBuilder::RemoteCommandBuilder() {
+  result_.set_command_id(g_last_command_id_ + 1);
+}
+
+enterprise_management::RemoteCommand RemoteCommandBuilder::Build() {
+  return std::move(result_);
+}
+
+RemoteCommandBuilder& RemoteCommandBuilder::SetCommandId(int value) {
+  g_last_command_id_ = value;
+  result_.set_command_id(value);
   return *this;
 }
 

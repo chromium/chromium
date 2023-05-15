@@ -12,28 +12,35 @@
 namespace policy {
 
 // Builder class to construct `enterprise_management::RemoteCommand`.
-// Used in unit and browser tests.
+//
+// It also auto-assigns a unique command id to the `RemoteCommand` that is
+// one higher than the last command id it prevously assigned. You can of course
+// assign your own command id if more control is needed.
 class RemoteCommandBuilder {
  public:
-  RemoteCommandBuilder() = default;
-  RemoteCommandBuilder(const RemoteCommandBuilder&) = delete;
-  RemoteCommandBuilder& operator=(const RemoteCommandBuilder&) = delete;
+  RemoteCommandBuilder();
+
+  RemoteCommandBuilder(const RemoteCommandBuilder&) = default;
+  RemoteCommandBuilder& operator=(const RemoteCommandBuilder&) = default;
   RemoteCommandBuilder(RemoteCommandBuilder&&) = default;
   RemoteCommandBuilder& operator=(RemoteCommandBuilder&&) = default;
   ~RemoteCommandBuilder() = default;
 
-  enterprise_management::RemoteCommand Build() { return result_; }
+  enterprise_management::RemoteCommand Build();
 
   RemoteCommandBuilder& SetCommandId(int id);
   RemoteCommandBuilder& ClearCommandId();
-  RemoteCommandBuilder& SetType(
-      enterprise_management::RemoteCommand::Type type);
+  RemoteCommandBuilder& SetType(enterprise_management::RemoteCommand::Type);
   RemoteCommandBuilder& ClearType();
   RemoteCommandBuilder& SetPayload(const std::string& payload);
   RemoteCommandBuilder& SetTargetDeviceId(const std::string& value);
 
  private:
   enterprise_management::RemoteCommand result_;
+
+  // The last assigned command id, which is used to assign a higher command id
+  // to the next created remote command.
+  static int64_t g_last_command_id_;
 };
 
 // Builder class to construct `enterprise_management::SignedData`.
