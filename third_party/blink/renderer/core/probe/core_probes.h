@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace network {
@@ -142,6 +143,12 @@ inline CoreProbeSink* ToCoreProbeSink(Node* node) {
 inline CoreProbeSink* ToCoreProbeSink(EventTarget* event_target) {
   return event_target ? ToCoreProbeSink(event_target->GetExecutionContext())
                       : nullptr;
+}
+
+inline CoreProbeSink* ToCoreProbeSink(OffscreenCanvas* offscreen_canvas) {
+  return offscreen_canvas
+             ? ToCoreProbeSink(offscreen_canvas->GetExecutionContext())
+             : nullptr;
 }
 
 CORE_EXPORT void AllAsyncTasksCanceled(ExecutionContext*);

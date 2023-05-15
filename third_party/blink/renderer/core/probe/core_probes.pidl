@@ -86,6 +86,7 @@ interface CoreProbes {
   void WillPopShadowRoot([Keep] Element* host, ShadowRoot*);
   void WillSendXMLHttpOrFetchNetworkRequest(ExecutionContext*, const String& url);
   void DidCreateCanvasContext(Document*);
+  void DidCreateOffscreenCanvasContext(OffscreenCanvas*);
   void DidFireWebGLError(Element*, const String& error_name);
   void DidFireWebGLWarning(Element*);
   void DidFireWebGLErrorOrWarning(Element*, const String& message);

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
@@ -330,6 +331,10 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
       return nullptr;
     }
   } else {
+    // Tell the debugger about the attempt to create an offscreen
+    // canvas context even if it will fail, to ease debugging.
+    probe::DidCreateOffscreenCanvasContext(this);
+
     CanvasContextCreationAttributesCore recomputed_attributes = attributes;
     if (!allow_high_performance_power_preference_)
       recomputed_attributes.power_preference = "low-power";

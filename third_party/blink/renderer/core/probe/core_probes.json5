@@ -100,6 +100,7 @@
         "BreakableLocation",
         "CharacterDataModified",
         "DidCreateCanvasContext",
+        "DidCreateOffscreenCanvasContext",
         "DidFireWebGLError",
         "DidFireWebGLErrorOrWarning",
         "DidFireWebGLWarning",

@@ -808,6 +808,12 @@ void InspectorDOMDebuggerAgent::DidCreateCanvasContext() {
       true);
 }
 
+void InspectorDOMDebuggerAgent::DidCreateOffscreenCanvasContext() {
+  PauseOnNativeEventIfNeeded(
+      PreparePauseOnNativeEventData(kCanvasContextCreatedEventName, nullptr),
+      true);
+}
+
 void InspectorDOMDebuggerAgent::DidAddBreakpoint() {
   if (enabled_.Get())
     return;
