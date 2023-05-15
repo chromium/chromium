@@ -50,27 +50,25 @@ base::Value::Dict AvailableContentToValue(
   // All pieces of text content downloaded from the web will be base64 encoded
   // to lessen security risks when this dictionary is passed as a string to
   // |ExecuteJavaScript|.
-  auto result =
-      base::Value::Dict()
-          .Set("ID", content->id)
-          .Set("name_space", content->name_space)
-          .Set("title_base64", ConvertToUTF16Base64(content->title))
-          .Set("snippet_base64", ConvertToUTF16Base64(content->snippet))
-          .Set("date_modified", content->date_modified)
-          .Set("attribution_base64", ConvertToUTF16Base64(content->attribution))
-          .Set("thumbnail_data_uri", content->thumbnail_data_uri.spec())
-          .Set("favicon_data_uri", content->favicon_data_uri.spec())
-          .Set("content_type", static_cast<int>(content->content_type));
-  return result;
+  return base::Value::Dict()
+      .Set("ID", content->id)
+      .Set("name_space", content->name_space)
+      .Set("title_base64", ConvertToUTF16Base64(content->title))
+      .Set("snippet_base64", ConvertToUTF16Base64(content->snippet))
+      .Set("date_modified", content->date_modified)
+      .Set("attribution_base64", ConvertToUTF16Base64(content->attribution))
+      .Set("thumbnail_data_uri", content->thumbnail_data_uri.spec())
+      .Set("favicon_data_uri", content->favicon_data_uri.spec())
+      .Set("content_type", static_cast<int>(content->content_type));
 }
 
-base::Value AvailableContentListToValue(
+base::Value::List AvailableContentListToValue(
     const std::vector<AvailableOfflineContentPtr>& content_list) {
   base::Value::List value;
   for (const auto& content : content_list) {
     value.Append(AvailableContentToValue(content));
   }
-  return base::Value(std::move(value));
+  return value;
 }
 
 void RecordSuggestionPresented(

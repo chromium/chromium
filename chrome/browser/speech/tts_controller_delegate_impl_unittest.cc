@@ -107,14 +107,12 @@ TEST(TtsControllerDelegateImplTest, GetPreferredVoiceIdsForUtterance) {
 
   TestingPrefServiceSimple pref_service;
   // Uses default pref voices.
-  base::Value lang_to_voices(base::Value::Type::DICT);
-  lang_to_voices.SetKey(
-      "es", base::Value("{\"name\":\"Voice7\",\"extension\":\"id7\"}"));
-  lang_to_voices.SetKey(
-      "he", base::Value("{\"name\":\"Voice8\",\"extension\":\"id8\"}"));
-  lang_to_voices.SetKey(
-      "noLanguageCode",
-      base::Value("{\"name\":\"Android\",\"extension\":\"x\"}"));
+  auto lang_to_voices =
+      base::Value::Dict()
+          .Set("es", base::Value("{\"name\":\"Voice7\",\"extension\":\"id7\"}"))
+          .Set("he", base::Value("{\"name\":\"Voice8\",\"extension\":\"id8\"}"))
+          .Set("noLanguageCode",
+               base::Value("{\"name\":\"Android\",\"extension\":\"x\"}"));
   pref_service.registry()->RegisterDictionaryPref(
       prefs::kTextToSpeechLangToVoiceName, std::move(lang_to_voices));
   delegate.pref_service_ = &pref_service;

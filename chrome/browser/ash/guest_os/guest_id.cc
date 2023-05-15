@@ -117,16 +117,16 @@ void AddContainerToPrefs(Profile* profile,
                          const GuestId& container_id,
                          base::Value::Dict properties) {
   ScopedListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
-  if (base::ranges::any_of(*updater, [&](const auto& dict) {
+  if (base::ranges::any_of(*updater, [&container_id](const auto& dict) {
         return MatchContainerDict(dict, container_id);
       })) {
     return;
   }
 
-  base::Value new_container{container_id.ToDictValue()};
-  for (const auto item : properties) {
-    if (base::Contains(*kPropertiesAllowList, item.first)) {
-      new_container.SetKey(std::move(item.first), std::move(item.second));
+  base::Value::Dict new_container = container_id.ToDictValue();
+  for (auto [key, value] : properties) {
+    if (base::Contains(*kPropertiesAllowList, key)) {
+      new_container.Set(key, std::move(value));
     }
   }
   updater->Append(std::move(new_container));
@@ -174,7 +174,7 @@ void UpdateContainerPref(Profile* profile,
   });
   if (it != updater->end()) {
     if (base::Contains(*kPropertiesAllowList, key)) {
-      it->SetKey(key, std::move(value));
+      it->GetDict().Set(key, std::move(value));
     } else {
       LOG(ERROR) << "Ignoring disallowed property: " << key;
     }
