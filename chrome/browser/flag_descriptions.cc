@@ -5125,10 +5125,6 @@ const char kArcSyncInstallPriorityDescription[] =
     "priority to Play instead of using default install priority specified "
     "in Play";
 
-const char kArcVmmSwapName[] = "Vmm swap support for ARCVM";
-const char kArcVmmSwapDesc[] =
-    "When enabled, the ARCVM will be launched with vmm swap feature.";
-
 const char kArcVmmSwapKBShortcutName[] =
     "Keyboard shortcut trigger for ARCVM"
     " vmm swap feature";

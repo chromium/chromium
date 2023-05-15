@@ -382,6 +382,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   else
     request.set_vm_memory_psi_period(-1);
 
+  request.set_enable_vmm_swap(
+      base::FeatureList::IsEnabled(kVmmSwapPolicy) ||
+      base::FeatureList::IsEnabled(kVmmSwapKeyboardShortcut));
+
   auto orientation = display::PanelOrientation::kNormal;
   if (auto* screen = display::Screen::GetScreen()) {
     const auto display_id = screen->GetPrimaryDisplay().id();

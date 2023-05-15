@@ -2935,9 +2935,6 @@ extern const char kArcSwitchToKeyMintOnTDesc[];
 extern const char kArcSyncInstallPriorityName[];
 extern const char kArcSyncInstallPriorityDescription[];
 
-extern const char kArcVmmSwapName[];
-extern const char kArcVmmSwapDesc[];
-
 extern const char kArcVmmSwapKBShortcutName[];
 extern const char kArcVmmSwapKBShortcutDesc[];
 
