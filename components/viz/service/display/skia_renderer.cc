@@ -3685,8 +3685,6 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     OverlayCandidate::ApplyClip(*overlay, gfx::RectF(apply_clip));
     overlay->clip_rect = absl::nullopt;
   }
-  // Assume full damage every time the pass is rendered.
-  overlay->damage_rect = gfx::RectF(filter_bounds);
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
   overlay->format = BufferFormat(buffer_format.resource_format());
