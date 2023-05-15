@@ -1,10 +1,10 @@
 This test should trigger a CSP violation by attempting to evaluate a string with setTimeout.
 
-Message[0]: csp-setTimeout-warning-contains-stacktrace.js:16 Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
+Message[0]: csp-setTimeout-warning-contains-stacktrace.js:19 Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
 
 Stack Trace:
 
   url: test://evaluations/0/csp-setTimeout-warning-contains-stacktrace.js
   function: thisTest
-  line: 16
+  line: 19
 
