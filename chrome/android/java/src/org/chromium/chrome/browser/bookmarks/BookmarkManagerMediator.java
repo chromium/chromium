@@ -8,9 +8,6 @@ import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.b
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -18,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -35,13 +31,11 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
@@ -280,6 +274,12 @@ class BookmarkManagerMediator
     private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new Observer() {
         @Override
         public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
+            Resources res = mContext.getResources();
+            mBookmarkImageFetcher.setupFetchProperties(
+                    BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
+                    BookmarkUtils.getDisplayIconSize(res, displayPref),
+                    BookmarkUtils.getFaviconDisplaySize(res, displayPref));
+
             mModelList.clear();
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 search(mSearchText);
@@ -319,11 +319,8 @@ class BookmarkManagerMediator
     private final BookmarkQueryHandler mBookmarkQueryHandler;
     private final ModelList mModelList;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
-    private final RoundedIconGenerator mIconGenerator;
-    private final int mFetchFaviconSize;
-    private final int mDisplayFaviconSize;
     private final Runnable mHideKeyboardRunnable;
-    private final ImageFetcher mImageFetcher;
+    private final BookmarkImageFetcher mBookmarkImageFetcher;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -378,15 +375,14 @@ class BookmarkManagerMediator
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mHideKeyboardRunnable = hideKeyboardRunnable;
-        mImageFetcher = imageFetcher;
 
+        Resources res = mContext.getResources();
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
-        mIconGenerator = BookmarkUtils.getRoundedIconGenerator(
-                mContext, mContext.getResources(), displayPref);
-        mFetchFaviconSize = BookmarkUtils.getFaviconFetchSize(mContext.getResources());
-        mDisplayFaviconSize =
-                BookmarkUtils.getFaviconDisplaySize(mContext.getResources(), displayPref);
+        mBookmarkImageFetcher = new BookmarkImageFetcher(mContext, mBookmarkModel, imageFetcher,
+                mLargeIconBridge, BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
+                BookmarkUtils.getDisplayIconSize(res, displayPref),
+                BookmarkUtils.getFaviconDisplaySize(res, displayPref));
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
@@ -1070,9 +1066,9 @@ class BookmarkManagerMediator
 
                 // TODO(crbug.com/1440863): Support reading list special placeholder case.
                 model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES, new Pair<>(null, null));
-                // TODO(crbug.com/1444251): Extract fetching logic to standalone class.
-                resolveFolderDrawables(model, /*primaryDrawable=*/null, /*secondaryDrawable=*/null,
-                        mBookmarkModel.getChildIds(item.getId()), /*index=*/0);
+                mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(item, imagePair -> {
+                    model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES, imagePair);
+                });
 
             } else {
                 model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE,
@@ -1080,73 +1076,15 @@ class BookmarkManagerMediator
             }
         } else {
             if (useImages) {
-                // TODO(crbug.com/1444251): Extract fetching logic to standalone class.
-                getBookmarkDrawable(item.getId(), (drawable) -> {
-                    if (drawable == null) {
-                        resolveFaviconForBookmark(item, model);
-                    } else {
-                        model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, drawable);
-                    }
+                mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, image -> {
+                    model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, image);
                 });
             } else {
-                resolveFaviconForBookmark(item, model);
-            }
-        }
-    }
-
-    private void resolveFolderDrawables(PropertyModel model, Drawable primaryDrawable,
-            Drawable secondaryDrawable, List<BookmarkId> childIds, int index) {
-        if (index == childIds.size() || (primaryDrawable != null && secondaryDrawable != null)) {
-            model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES,
-                    new Pair<>(primaryDrawable, secondaryDrawable));
-            return;
-        }
-
-        BookmarkItem item = mBookmarkModel.getBookmarkById(childIds.get(index));
-        getBookmarkDrawable(childIds.get(index), (drawable) -> {
-            Drawable newPrimaryDrawable = primaryDrawable;
-            Drawable newSecondaryDrawable = secondaryDrawable;
-            if (newPrimaryDrawable == null) {
-                newPrimaryDrawable = drawable;
-            } else {
-                newSecondaryDrawable = drawable;
-            }
-            resolveFolderDrawables(
-                    model, newPrimaryDrawable, newSecondaryDrawable, childIds, index + 1);
-        });
-    }
-
-    private void getBookmarkDrawable(BookmarkId id, Callback<BitmapDrawable> callback) {
-        BookmarkItem item = mBookmarkModel.getBookmarkById(id);
-        mBookmarkModel.getImageUrlForBookmark(item.getUrl(), (imageUrl) -> {
-            if (imageUrl == null) {
-                callback.onResult(null);
-                return;
-            }
-
-            Resources res = mContext.getResources();
-            int size = BookmarkUtils.getDisplayIconSize(
-                    res, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
-            mImageFetcher.fetchImage(ImageFetcher.Params.create(imageUrl,
-                                             ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME, size, size),
-                    (image) -> {
-                        if (image == null) {
-                            callback.onResult(null);
-                        } else {
-                            callback.onResult(new BitmapDrawable(res, image));
-                        }
-                    });
-        });
-    }
-
-    private void resolveFaviconForBookmark(BookmarkItem item, PropertyModel model) {
-        mLargeIconBridge.getLargeIconForUrl(item.getUrl(), mFetchFaviconSize,
-                (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) -> {
-                    Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(icon,
-                            item.getUrl(), fallbackColor, mIconGenerator, mContext.getResources(),
-                            mDisplayFaviconSize);
-                    model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, iconDrawable);
+                mBookmarkImageFetcher.fetchFaviconForBookmark(item, image -> {
+                    model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, image);
                 });
+            }
+        }
     }
 
     @VisibleForTesting
@@ -1254,6 +1192,7 @@ class BookmarkManagerMediator
     }
 
     // Testing methods.
+
     /** Whether to prevent the bookmark model from fully loading for testing. */
     static void preventLoadingForTesting(boolean preventLoading) {
         sPreventLoadingForTesting = preventLoading;

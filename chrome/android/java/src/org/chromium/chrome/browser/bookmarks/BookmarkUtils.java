@@ -667,14 +667,15 @@ public class BookmarkUtils {
 
     /** Returns the RoundedIconGenerator with the appropriate size. */
     public static RoundedIconGenerator getRoundedIconGenerator(
-            Context context, Resources resources, @BookmarkRowDisplayPref int displayPref) {
+            Context context, @BookmarkRowDisplayPref int displayPref) {
+        Resources res = context.getResources();
         boolean visual = displayPref == BookmarkRowDisplayPref.VISUAL;
-        int displayIconSize = getDisplayIconSize(resources, displayPref);
+        int displayIconSize = getDisplayIconSize(res, displayPref);
 
         return visual
                 ? new RoundedIconGenerator(displayIconSize, displayIconSize, displayIconSize / 2,
                         context.getColor(R.color.default_favicon_background_color),
-                        getDisplayTextSize(resources, displayPref))
+                        getDisplayTextSize(res, displayPref))
                 : FaviconUtils.createCircularIconGenerator(context);
     }
 
