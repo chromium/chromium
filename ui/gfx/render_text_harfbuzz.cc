@@ -1807,6 +1807,15 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
       if (IsNewlineSegment(display_text, segment))
         continue;
 
+      const size_t crash_report_size = 256;
+      DEBUG_ALIAS_FOR_U16CSTR(alias_display_text, display_text.c_str(),
+                              crash_report_size);
+      DEBUG_ALIAS_FOR_U16CSTR(alias_text, text().c_str(), crash_report_size);
+      const size_t run_list_size = run_list->runs().size();
+      base::debug::Alias(&run_list_size);
+      const size_t segment_run_size = segment.run;
+      base::debug::Alias(&segment_run_size);
+
       const internal::TextRunHarfBuzz& run = *run_list->runs()[segment.run];
       renderer->SetTypeface(run.font_params.skia_face);
       renderer->SetTextSize(SkIntToScalar(run.font_params.font_size));
@@ -1844,10 +1853,6 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
         const int pos_size = positions.size();
         base::debug::Alias(&colored_pos);
         base::debug::Alias(&pos_size);
-        const size_t crash_report_size = 256;
-        DEBUG_ALIAS_FOR_U16CSTR(alias_display_text, display_text.c_str(),
-                                crash_report_size);
-        DEBUG_ALIAS_FOR_U16CSTR(alias_text, text().c_str(), crash_report_size);
 
         renderer->SetForegroundColor(it->second);
         renderer->DrawPosText(
