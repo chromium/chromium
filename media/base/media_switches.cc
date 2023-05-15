@@ -324,7 +324,7 @@ BASE_FEATURE(kShareThisTabDialog,
 // The length of the initial delay during which the "Allow"-button is disabled
 // in the share-this-tab dialog.
 const base::FeatureParam<int> kShareThisTabDialogActivationDelayMs{
-    &kShareThisTabDialog, "activation_delay_ms", 1500};
+    &kShareThisTabDialog, "activation_delay_ms", 500};
 
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
