@@ -31,9 +31,10 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
     return false;
   }
 
-  // `credential` is only stored in the profile store. Unfortunately this has
-  // different meanings depending whether sync-the-feature is enabled or not.
-  if (sync_service->IsSyncFeatureEnabled()) {
+  // Syncing and signed-out users shouldn't see the icon.
+  if (sync_service->IsSyncFeatureEnabled() ||
+      sync_service->HasDisableReason(
+          syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
     return false;
   }
   return base::FeatureList::IsEnabled(
