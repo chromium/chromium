@@ -11,11 +11,13 @@ DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
 Dictation*
 ExtensionKeeplistTest*
+NonKioskAcceleratorLacrosTest*
 SelectToSpeak*
 SwitchAccess*
 VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
 WebAppProviderBridgeBrowserTest*
+WebKioskAcceleratorLacrosTest*
 WebKioskAshRequiresLacrosTest*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
@@ -60,6 +62,37 @@ WebKioskAshRequiresLacrosTest*
 -ChromeVoxBackgroundTest.GestureOnPopUpButton
 -ChromeVoxBackgroundTest.HitTestOnExoSurface
 -ChromeVoxEditingTest.JumpCommandsSyncSelection
+-ChromeVoxBackgroundTest.MixedNavWithRangeInvalidation
+-ChromeVoxBackgroundTest.NavigateOutOfMultiline
+-ChromeVoxBackgroundTest.ShowContextMenu
+-ChromeVoxBackgroundTestWithTestServer.InPageLinks
+-ChromeVoxBackgroundTest.UseEditableState
+# TODO(crbug.com/1424533): Flaky
+-ChromeVoxEditingTest.GiantTextAreaPerformance
+-ChromeVoxEditingTest.EditableLineTwoStaticTexts
+-ChromeVoxEditingTest.MoveByLineIntent
+-ChromeVoxEditingTest.RichTextImageByCharacter
+-ChromeVoxEditingTest.SelectAllBareTextContent
+-ChromeVoxEditingTest.TelTrimsWhitespace
+-ChromeVoxEditingTest.TextAreaBrailleEmptyLine
+-ChromeVoxEditingTest.TextAreaEvents
+-ChromeVoxEditingTest.RichTextExtendByCharacter
+-ChromeVoxEditingTest.InputEvents
+-ChromeVoxEditingTest.SelectAll
+-ChromeVoxEditingTest.BackwardWordDeleteAcrossParagraphs
+-ChromeVoxTutorialTest.BasicTest
+-ChromeVoxTutorialTest.EarconLesson
+-ChromeVoxBackgroundTest.NavigationIgnoresLabels
+-ChromeVoxBackgroundTest.GroupNavigation
+-ChromeVoxBackgroundTest.MenuItemRadio
+-ChromeVoxBackgroundTest.NestedListNavigationMixed
+-ChromeVoxBackgroundTest.ShowContextMenuOnViewsTab
+-ChromeVoxBackgroundTest.NewTabRead
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
+-ChromeVoxAutoScrollHandlerTest.ScrollForward
+-ChromeVoxPanelTest.TouchGesturesMenuAvailableWhenInTouchMode
+-ChromeVoxPanelTest.ActionsMenu
+-ChromeVoxPanelTest.SearchMenu
 # TODO(b/268051293) Flaky
 -SelectToSpeakKeystrokeSelectionTest.NonReorderedSvgPreservesSelectionStartEnd
 -SelectToSpeakKeystrokeSelectionTest.OmniboxPartiallySelectedInMid
@@ -68,5 +101,22 @@ WebKioskAshRequiresLacrosTest*
 -SelectToSpeakKeystrokeSelectionTest.TwoTextFieldsFullySelected
 -SelectToSpeakKeystrokeSelectionTest.contentEditableExternallySelected
 -SelectToSpeakMouseSelectionTest.SpeaksNodeWhenClicked
+-SelectToSpeakMouseSelectionTest.VoiceSwitching
 # TODO(b/268056158) Flaky
 -SelectToSpeakTestWithVoiceSwitching.BreaksAtLanguageBounds
+# TODO(b/277821091) Flaky
+-ChromeVoxBackgroundTest.NavigationEscapesEdit
+-ChromeVoxBackgroundTest.NavigationIgnoresLabels
+-ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
+-ChromeVoxEditingTest.MoveByWordSuggestions
+-ChromeVoxTutorialTest.ResourcesTest
+-ChromeVoxBackgroundTest.EarconsForControls
+-ChromeVoxBackgroundTest.NavigationIgnoresDescriptions
+-ChromeVoxBackgroundTest.NavigationEscapesEdit
+-ChromeVoxBackgroundTest.NavigationIgnoresLabels
+-ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
+# TODO(crbug.com/1432222): Flaky
+-DictationE2ETest.SilencesSpokenFeedbackWhenStarting
+-DictationUIE2ETest.HintsTimeoutWithChromeVox
+# TODO(b/262789941): Flaky
+-MagnifierE2ETest.IgnoresRootNodeFocus
