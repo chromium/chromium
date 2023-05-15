@@ -2590,6 +2590,9 @@ TEST_P(OverviewSessionTest, ShadowVisibilityDragging) {
   ASSERT_TRUE(drop_target_item);
   EXPECT_TRUE(GetShadowBounds(drop_target_item).IsEmpty());
 
+  window1->layer()->GetAnimator()->StopAnimating();
+  window2->layer()->GetAnimator()->StopAnimating();
+
   generator->MoveMouseTo(start_drag);
   generator->ReleaseLeftButton();
   EXPECT_TRUE(window1->layer()->GetAnimator()->is_animating());

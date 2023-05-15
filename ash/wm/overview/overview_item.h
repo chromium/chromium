@@ -311,6 +311,11 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // from the current bounds to the new bounds as per the |animation_type|.
   void UpdateHeaderLayout(OverviewAnimationType animation_type);
 
+  // Updates the bounds of `item_widget` if the feature flag Jellyroll is
+  // enabled. Once the feature is fully launched, this function will be renamed
+  // to `UpdateHeaderLayout` and the function above should be removed.
+  void UpdateHeaderLayoutCrOSNext(OverviewAnimationType animation_type);
+
   // Animates opacity of the |transform_window_| and its caption to |opacity|
   // using |animation_type|.
   void AnimateOpacity(float opacity, OverviewAnimationType animation_type);

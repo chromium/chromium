@@ -350,12 +350,12 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
     return;
   }
 
-  // Do not animate if the resulting bounds does not change. The original
-  // window may change bounds so we still need to call `SetItemBounds()` to
-  // update the window transform.
+  // Do not animate if the resulting bounds does not change or current animation
+  // is still in progress. The original window may change bounds so we still
+  // need to call `SetItemBounds()` to update the window transform.
   OverviewAnimationType new_animation_type = animation_type;
-  if (target_bounds == target_bounds_ &&
-      !GetWindow()->layer()->GetAnimator()->is_animating()) {
+  if (GetWindow()->layer()->GetAnimator()->is_animating() ||
+      target_bounds == target_bounds_) {
     new_animation_type = OVERVIEW_ANIMATION_NONE;
   }
 
@@ -1326,6 +1326,11 @@ void OverviewItem::CreateItemWidget() {
 }
 
 void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
+  if (chromeos::features::IsJellyrollEnabled()) {
+    UpdateHeaderLayoutCrOSNext(animation_type);
+    return;
+  }
+
   aura::Window* widget_window = item_widget_->GetNativeWindow();
   ScopedOverviewAnimationSettings animation_settings(animation_type,
                                                      widget_window);
@@ -1348,6 +1353,52 @@ void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
   gfx::Transform label_transform;
   label_transform.Translate(origin.x(), origin.y());
   widget_window->SetTransform(label_transform);
+}
+
+void OverviewItem::UpdateHeaderLayoutCrOSNext(
+    OverviewAnimationType animation_type) {
+  gfx::RectF current_item_bounds(item_widget_->GetWindowBoundsInScreen());
+  gfx::RectF target_item_bounds = target_bounds_;
+  wm::TranslateRectFromScreen(root_window_, &target_item_bounds);
+
+  aura::Window* widget_window = item_widget_->GetNativeWindow();
+  if (current_item_bounds.IsEmpty()) {
+    widget_window->SetBounds(ToStableSizeRoundedRect(target_item_bounds));
+    return;
+  }
+
+  const gfx::Transform item_bounds_transform =
+      gfx::TransformBetweenRects(target_item_bounds, current_item_bounds);
+  widget_window->SetBounds(ToStableSizeRoundedRect(target_item_bounds));
+  widget_window->SetTransform(item_bounds_transform);
+
+  ScopedOverviewAnimationSettings item_animation_settings(animation_type,
+                                                          widget_window);
+  // Create a start animation observer if this is an enter overview layout
+  // animation.
+  if (animation_type == OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER ||
+      animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER) {
+    auto enter_observer = std::make_unique<EnterAnimationObserver>();
+    item_animation_settings.AddObserver(enter_observer.get());
+    Shell::Get()->overview_controller()->AddEnterAnimationObserver(
+        std::move(enter_observer));
+  }
+  widget_window->SetTransform(gfx::Transform());
+
+  // Since header view is a child of the overview item view, the bounds
+  // animation is appled to the header as well when it's applied to the overview
+  // item. However, when calculating the target bounds for the window, it's
+  // always assumed that the header's height is 40, there's a gap between the
+  // header and the window during the animation. In order to neutralize the gap,
+  // apply the reversed vertical transform to the header separately.
+  ui::Layer* header_layer = overview_item_view_->header_view()->layer();
+  float vertical_scale = item_bounds_transform.To2dScale().y();
+  gfx::Transform vertical_reverse_transform =
+      gfx::Transform::MakeScale(1.f, 1.f / vertical_scale);
+  header_layer->SetTransform(vertical_reverse_transform);
+  ScopedOverviewAnimationSettings header_animation_settings(
+      animation_type, header_layer->GetAnimator());
+  header_layer->SetTransform(gfx::Transform());
 }
 
 OverviewAnimationType
