@@ -61,6 +61,13 @@ class ScrollTimelineTest : public RenderingTest {
     GetPage().Animator().ServiceScriptedAnimations(new_time);
   }
 
+  wtf_size_t TimelinesCount() const {
+    return GetDocument()
+        .GetDocumentAnimations()
+        .GetTimelinesForTesting()
+        .size();
+  }
+
   wtf_size_t AnimationsCount() const {
     wtf_size_t count = 0;
     for (auto timeline :
@@ -761,6 +768,60 @@ TEST_F(ScrollTimelineTest, WeakReferences) {
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(0u, scroll_timeline->GetAnimations().size());
+}
+
+TEST_F(ScrollTimelineTest, WeakViewTimelines) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='scroller'>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  wtf_size_t base_count = TimelinesCount();
+
+  StaticElementList* list = GetDocument().QuerySelectorAll("#scroller > div");
+  ASSERT_TRUE(list);
+  EXPECT_EQ(10u, list->length());
+
+  HeapVector<Member<Animation>> animations;
+
+  for (wtf_size_t i = 0; i < list->length(); ++i) {
+    Element* element = list->item(i);
+    Animation* animation = CreateTestAnimation(
+        MakeGarbageCollected<TestViewTimeline>(&GetDocument(), element));
+    animation->play();
+    animations.push_back(animation);
+  }
+
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(base_count + 10u, TimelinesCount());
+
+  // With all animations canceled, there should be no reason for the timelines
+  // to persist anymore.
+  for (const Member<Animation>& animation : animations) {
+    animation->cancel();
+  }
+  animations.clear();
+
+  // SimulateFrame needed to lose all strong references the animations,
+  // see ScrollTimelineTest.WeakReferences.
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_EQ(base_count, TimelinesCount());
 }
 
 TEST_F(ScrollTimelineTest, ScrollTimelineOffsetZoom) {

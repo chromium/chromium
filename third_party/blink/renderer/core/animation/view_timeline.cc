@@ -235,11 +235,7 @@ ViewTimeline::ViewTimeline(Document* document,
               ? nullptr
               : MakeGarbageCollected<ViewTimelineAttachment>(subject,
                                                              axis,
-                                                             inset)) {
-  // Ensure that the timeline stays alive as long as the subject.
-  if (subject)
-    subject->RegisterScrollTimeline(this);
-}
+                                                             inset)) {}
 
 AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
     const Animation* animation,
@@ -299,10 +295,11 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   // Do not call this method with an unresolved timeline.
   // Called from ScrollTimeline::ComputeTimelineState, which has safeguard.
   // Any new call sites will require a similar safeguard.
-  DCHECK(IsResolved());
+  DCHECK(state->resolved_source);
+  DCHECK(ComputeIsResolved(state->resolved_source));
   DCHECK(subject());
 
-  subject_position_ = SubjectPosition();
+  subject_position_ = SubjectPosition(state->resolved_source);
   subject_size_ = SubjectSize();
 
   DCHECK(subject_position_);
@@ -372,12 +369,13 @@ absl::optional<LayoutSize> ViewTimeline::SubjectSize() const {
   return subject_layout_box->Size();
 }
 
-absl::optional<gfx::PointF> ViewTimeline::SubjectPosition() const {
-  if (!subject() || !ResolvedSource()) {
+absl::optional<gfx::PointF> ViewTimeline::SubjectPosition(
+    Node* resolved_source) const {
+  if (!subject() || !resolved_source) {
     return absl::nullopt;
   }
   LayoutBox* subject_layout_box = subject()->GetLayoutBox();
-  LayoutBox* source_layout_box = ResolvedSource()->GetLayoutBox();
+  LayoutBox* source_layout_box = resolved_source->GetLayoutBox();
   if (!subject_layout_box || !source_layout_box) {
     return absl::nullopt;
   }
@@ -514,20 +512,9 @@ bool ViewTimeline::ValidateTimelineOffsets() {
   return !has_keyframe_update;
 }
 
-bool ViewTimeline::CheckIfNeedsValidation() {
-  if (ScrollTimeline::CheckIfNeedsValidation()) {
-    return true;
-  }
-
-  if (subject_size_ != SubjectSize()) {
-    return true;
-  }
-
-  if (subject_position_ != SubjectPosition()) {
-    return true;
-  }
-
-  return false;
+bool ViewTimeline::CheckIfSubjectNeedsValidation(Node* resolved_source) const {
+  return subject_size_ != SubjectSize() ||
+         subject_position_ != SubjectPosition(resolved_source);
 }
 
 bool ViewTimeline::ResolveTimelineOffsets() const {

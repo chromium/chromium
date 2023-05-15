@@ -77,12 +77,12 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;
-  bool CheckIfNeedsValidation() override;
 
   bool ValidateTimelineOffsets() override;
+  bool CheckIfSubjectNeedsValidation(Node* resolved_source) const override;
 
   absl::optional<LayoutSize> SubjectSize() const;
-  absl::optional<gfx::PointF> SubjectPosition() const;
+  absl::optional<gfx::PointF> SubjectPosition(Node* resolved_source) const;
 
  private:
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;

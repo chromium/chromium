@@ -111,20 +111,14 @@ ScrollTimeline::ScrollTimeline(Document* document,
   if (attachment) {
     attachments_.push_back(attachment);
   }
-  UpdateResolvedSource();
+}
+
+bool ScrollTimeline::IsResolved() const {
+  return ComputeIsResolved(ResolvedSource());
 }
 
 bool ScrollTimeline::IsActive() const {
   return timeline_state_snapshotted_.phase != TimelinePhase::kInactive;
-}
-
-bool ScrollTimeline::ComputeIsResolved() const {
-  if (!CurrentAttachment()) {
-    return false;
-  }
-  LayoutBox* layout_box =
-      resolved_source_ ? resolved_source_->GetLayoutBox() : nullptr;
-  return layout_box && layout_box->IsScrollContainer();
 }
 
 absl::optional<ScrollOffsets> ScrollTimeline::GetResolvedScrollOffsets() const {
@@ -164,22 +158,40 @@ V8CSSNumberish* ScrollTimeline::duration() {
   return MakeGarbageCollected<V8CSSNumberish>(CSSUnitValues::percent(100));
 }
 
+Element* ScrollTimeline::RetainingElement() const {
+  if (attachment_type_ == TimelineAttachment::kLocal) {
+    return CurrentAttachment()->GetReferenceElement();
+  }
+  // TODO(crbug.com/1425939): Remove this branch.
+  //
+  // The attachment concept is going away [1], at which point only local
+  // timelines will be reachable from JS, so we don't care about non-local
+  // timelines.
+  //
+  // A new concept similar to non-local timelines will be introduced, but such
+  // timelines will not be exposed to JS, and therefore the strong reference in
+  // blink::CSSAnimations is enough to keep the timeline alive.
+  //
+  // [1] https://github.com/w3c/csswg-drafts/issues/7759
+  return nullptr;
+}
+
 // TODO(crbug.com/1060384): This section is missing from the spec rewrite.
 // Resolved to remove the before and after phases in
 // https://github.com/w3c/csswg-drafts/issues/7240.
 // https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
 ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
   TimelineState state;
-  UpdateResolvedSource();
+  state.resolved_source = ComputeResolvedSource();
 
   // 1. If scroll timeline is inactive, return an unresolved time value.
   // https://github.com/WICG/scroll-animations/issues/31
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
-  if (!IsResolved()) {
+  if (!ComputeIsResolved(state.resolved_source)) {
     return state;
   }
-  DCHECK(resolved_source_);
-  LayoutBox* layout_box = resolved_source_->GetLayoutBox();
+  DCHECK(state.resolved_source);
+  LayoutBox* layout_box = state.resolved_source->GetLayoutBox();
 
   // Layout box and scrollable area must exist since the timeline is active.
   DCHECK(layout_box);
@@ -304,33 +316,26 @@ bool ScrollTimeline::ShouldScheduleNextService() {
 }
 
 bool ScrollTimeline::CheckIfNeedsValidation() {
-  bool resolved = ComputeIsResolved();
-  if (resolved != is_resolved_) {
+  Node* resolved_source = ComputeResolvedSource();
+
+  if (CheckIfSubjectNeedsValidation(resolved_source)) {
     return true;
   }
 
-  Node* source =
-      CurrentAttachment()
-          ? ResolveSource(CurrentAttachment()->ComputeSourceNoLayout())
-          : nullptr;
-  if (source != resolved_source_) {
-    return true;
-  }
-  DCHECK(!resolved || source);
+  absl::optional<ScrollOffset> min_scroll_offset;
+  absl::optional<ScrollOffset> max_scroll_offset;
 
-  if (resolved) {
-    LayoutBox* layout_box = source->GetLayoutBox();
+  if (ComputeIsResolved(resolved_source)) {
+    LayoutBox* layout_box = resolved_source->GetLayoutBox();
     PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
-    ScrollOffset min_scroll_offset = scrollable_area->MinimumScrollOffset();
-    ScrollOffset max_scroll_offset = scrollable_area->MaximumScrollOffset();
-    // Scroll range is cached during the snapshot update. If the values do not
-    // align, the timeline state is no longer valid.
-    if (min_scroll_offset != minimum_scroll_offset_ ||
-        max_scroll_offset != maximum_scroll_offset_) {
-      return true;
-    }
+    min_scroll_offset = scrollable_area->MinimumScrollOffset();
+    max_scroll_offset = scrollable_area->MaximumScrollOffset();
   }
-  return false;
+
+  // Scroll range is cached during the snapshot update. If the values do not
+  // align, the timeline state is no longer valid.
+  return min_scroll_offset != minimum_scroll_offset_ ||
+         max_scroll_offset != maximum_scroll_offset_;
 }
 
 void ScrollTimeline::ScheduleNextService() {
@@ -355,8 +360,9 @@ Element* ScrollTimeline::source() const {
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {
-  if (resolved_source_ && !HasAnimations())
-    resolved_source_->RegisterScrollTimeline(this);
+  if (RetainingElement() && !HasAnimations()) {
+    RetainingElement()->RegisterScrollTimeline(this);
+  }
 
   AnimationTimeline::AnimationAttached(animation);
 }
@@ -364,39 +370,33 @@ void ScrollTimeline::AnimationAttached(Animation* animation) {
 void ScrollTimeline::AnimationDetached(Animation* animation) {
   AnimationTimeline::AnimationDetached(animation);
 
-  if (resolved_source_ && !HasAnimations())
-    resolved_source_->UnregisterScrollTimeline(this);
+  if (RetainingElement() && !HasAnimations()) {
+    RetainingElement()->UnregisterScrollTimeline(this);
+  }
 }
 
 void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
-  if (!resolved_source_)
+  if (!ResolvedSource()) {
     return;
+  }
   attached_worklet_animations_.insert(worklet);
 }
 
-void ScrollTimeline::UpdateResolvedSource() {
+Node* ScrollTimeline::ComputeResolvedSource() const {
   if (!CurrentAttachment()) {
-    is_resolved_ = ComputeIsResolved();
-    return;
+    return nullptr;
   }
+  return ResolveSource(CurrentAttachment()->ComputeSourceNoLayout());
+}
 
-  Node* old_resolved_source = resolved_source_.Get();
-  resolved_source_ =
-      ResolveSource(CurrentAttachment()->ComputeSourceNoLayout());
-  is_resolved_ = ComputeIsResolved();
-
-  if (old_resolved_source == resolved_source_.Get() || !HasAnimations())
-    return;
-
-  if (old_resolved_source)
-    old_resolved_source->UnregisterScrollTimeline(this);
-
-  if (resolved_source_)
-    resolved_source_->RegisterScrollTimeline(this);
+bool ScrollTimeline::ComputeIsResolved(Node* resolved_source) {
+  LayoutBox* layout_box =
+      resolved_source ? resolved_source->GetLayoutBox() : nullptr;
+  return layout_box && layout_box->IsScrollContainer();
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
-  visitor->Trace(resolved_source_);
+  visitor->Trace(timeline_state_snapshotted_);
   visitor->Trace(attached_worklet_animations_);
   visitor->Trace(attachments_);
   AnimationTimeline::Trace(visitor);
@@ -493,7 +493,7 @@ void ScrollTimeline::UpdateCompositorTimeline() {
 
   ToScrollTimeline(compositor_timeline_.get())
       ->UpdateScrollerIdAndScrollOffsets(
-          scroll_timeline_util::GetCompositorScrollElementId(resolved_source_),
+          scroll_timeline_util::GetCompositorScrollElementId(ResolvedSource()),
           GetResolvedScrollOffsets());
 }
 

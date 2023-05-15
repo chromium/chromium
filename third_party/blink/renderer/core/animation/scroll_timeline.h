@@ -68,7 +68,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   // ScrollTimeline is not resolved if source is null, does not currently
   // have a CSS layout box, or if its layout box is not a scroll container.
-  bool IsResolved() const override { return is_resolved_; }
+  bool IsResolved() const override;
 
   // ScrollTimeline is not active if not resolved or if the current time is
   // unresolved (e.g. before the timeline ticks).
@@ -108,7 +108,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // exists). This can differ from |source| when defaulting to the
   // Document's scrollingElement, and it may be null if the document was
   // removed before the ScrollTimeline was created.
-  Node* ResolvedSource() const { return resolved_source_; }
+  Node* ResolvedSource() const {
+    return timeline_state_snapshotted_.resolved_source;
+  }
 
   // Return the latest resolved scroll/view offsets. This will be empty when
   // timeline is inactive.
@@ -168,9 +170,13 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   PhaseAndTime CurrentPhaseAndTime() override;
 
-  void UpdateResolvedSource();
+  Node* ComputeResolvedSource() const;
+  static bool ComputeIsResolved(Node* resolved_source);
 
   struct TimelineState {
+    DISALLOW_NEW();
+
+   public:
     // TODO(crbug.com/1338167): Remove phase as it can be inferred from
     // current_time.
     TimelinePhase phase = TimelinePhase::kInactive;
@@ -180,6 +186,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     absl::optional<ScrollOffsets> view_offsets;
     // Zoom factor applied to the scroll offsets.
     float zoom = 1.0f;
+    // The scroller driving the timeline.
+    Member<Node> resolved_source;
 
     bool HasConsistentLayout(const TimelineState& other) const {
       return scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
@@ -189,7 +197,12 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     bool operator==(const TimelineState& other) const {
       return phase == other.phase && current_time == other.current_time &&
              scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
-             view_offsets == other.view_offsets;
+             view_offsets == other.view_offsets &&
+             resolved_source == other.resolved_source;
+    }
+
+    void Trace(blink::Visitor* visitor) const {
+      visitor->Trace(resolved_source);
     }
   };
 
@@ -209,6 +222,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   bool CheckIfNeedsValidation() override;
 
   virtual bool ValidateTimelineOffsets() { return true; }
+  virtual bool CheckIfSubjectNeedsValidation(Node* resolved_source) const {
+    return false;
+  }
 
   bool ComputeIsResolved() const;
 
@@ -216,11 +232,15 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
 
+  // The retaining element is the element responsible for keeping
+  // the timeline alive while animations are attached.
+  //
+  // See Node::[Un]RegisterScrollTimeline.
+  Element* RetainingElement() const;
+
   TimelineState ComputeTimelineState();
 
   TimelineAttachment attachment_type_;
-  Member<Node> resolved_source_;
-  bool is_resolved_ = false;
   absl::optional<ScrollOffset> minimum_scroll_offset_;
   absl::optional<ScrollOffset> maximum_scroll_offset_;
 
