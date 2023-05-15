@@ -55,13 +55,11 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
       const PermissionPromptBubbleBaseView&) = delete;
   ~PermissionPromptBubbleBaseView() override;
 
-  virtual void Show();
+  void Show();
 
   // Anchors the bubble to the view or rectangle returned from
   // bubble_anchor_util::GetPageInfoAnchorConfiguration.
   void UpdateAnchorPosition();
-
-  void ShowWidget();
 
   void SetPromptStyle(PermissionPromptStyle prompt_style);
 
@@ -82,8 +80,6 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
   void ClosingPermission();
 
  protected:
-  void CreateWidget();
-
   UrlIdentity GetUrlIdentityObject() { return url_identity_; }
 
   // Determines whether the current request should also display an
