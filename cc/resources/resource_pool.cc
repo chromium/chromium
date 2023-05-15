@@ -580,8 +580,7 @@ base::TimeTicks ResourcePool::GetUsageTimeForLRUResource() const {
 void ResourcePool::FlushEvictedResources() {
   flush_evicted_resources_deadline_ = base::TimeTicks::Max();
   if (context_provider_) {
-    // Flush any ContextGL work as well as any SharedImageInterface work.
-    context_provider_->ContextGL()->OrderingBarrierCHROMIUM();
+    // Flush any raster + shared image work.
     context_provider_->ContextSupport()->FlushPendingWork();
   }
 }
