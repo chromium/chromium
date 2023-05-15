@@ -507,5 +507,39 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       assertTrue(!!moduleElement.cart);
       assertEquals(1, questTiles.length);
     });
+
+    test('Cart tile clicking metrics are collected', async () => {
+      loadTimeData.overrideValues({
+        modulesChromeCartInHistoryClustersModuleEnabled: true,
+      });
+
+      const cart: Cart = Object.assign({
+        domain: 'foo.com',
+        merchant: 'Foo',
+        cartUrl: {url: 'https://foo.com'},
+        productImageUrls: [],
+        discountText: '',
+        relativeDate: '6 mins ago',
+      });
+      const moduleElement = await initializeModule(
+          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_1)], cart);
+
+      assertEquals(1, handler.getCallCount('getCartForCluster'));
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+      const cartTile = moduleElement.shadowRoot!.getElementById('cartTile');
+      assertTrue(!!cartTile);
+      assertTrue(!!moduleElement.cart);
+
+      // Act.
+      cartTile.click();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.HistoryClusters.Layout1.Click`,
+              HistoryClusterElementType.CART));
+    });
   });
 });
