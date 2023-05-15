@@ -563,6 +563,13 @@ bool AshTestBase::ExitOverview(OverviewEnterExitType type) {
       OverviewEndAction::kTests, type);
 }
 
+void AshTestBase::SetShelfAnimationDuration(base::TimeDelta duration) {
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    ShelfViewTestAPI(root_window_controller->shelf()->GetShelfViewForTesting())
+        .SetAnimationDuration(duration);
+  }
+}
+
 void AshTestBase::WaitForShelfAnimation() {
   for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
     ShelfViewTestAPI(root_window_controller->shelf()->GetShelfViewForTesting())
