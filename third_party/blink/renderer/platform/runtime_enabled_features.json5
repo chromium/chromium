@@ -2077,6 +2077,10 @@
       status: "stable",
     },
     {
+      name: "LayoutNewTextAreaScrollbar",
+      status: "stable",
+    },
+    {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
       depends_on: ["RemoveConvertToLayerCoords"],
