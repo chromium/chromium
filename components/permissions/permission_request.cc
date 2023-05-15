@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -244,7 +245,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
 #endif
 
 bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
-  return request_type_ == RequestType::kStorageAccess;
+  return request_type_ == RequestType::kStorageAccess &&
+         base::FeatureList::IsEnabled(
+             permissions::features::kPermissionStorageAccessAPI);
 }
 
 void PermissionRequest::PermissionGranted(bool is_one_time) {

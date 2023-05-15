@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -509,7 +509,7 @@ void ChipController::OpenPermissionPromptBubble() {
       PermissionPromptStyle::kChip) {
     // Loud prompt bubble
     raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
-        new PermissionPromptBubbleOneOriginView(
+        CreatePermissionPromptBubbleView(
             browser_,
             permission_prompt_model_->GetDelegate().value()->GetWeakPtr(),
             request_chip_shown_time_, PermissionPromptStyle::kChip);

@@ -28,6 +28,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -1148,42 +1149,6 @@ IN_PROC_BROWSER_TEST_F(
             std::make_tuple("", "None", "cross-site=b.test"));
 }
 
-// Validate that in a A(B) frame tree, the embedded B iframe can obtain cookie
-// access if requested and got accepted.
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       EmbeddedCrossSiteCookieAccess_Accept) {
-  SetBlockThirdPartyCookies(true);
-
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(EchoCookiesURL(kHostB));
-
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
-  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-  EXPECT_EQ(1, prompt_factory()->RequestTypeSeen(
-                   permissions::RequestType::kStorageAccess));
-}
-
-// Validate that in a A(B) frame tree, the embedded B iframe can not obtain
-// cookie access if requested and got denied.
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       EmbeddedCrossSiteCookieAccess_Deny) {
-  SetBlockThirdPartyCookies(true);
-
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(EchoCookiesURL(kHostB));
-
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::DENY_ALL);
-
-  EXPECT_FALSE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-  EXPECT_EQ(1, prompt_factory()->RequestTypeSeen(
-                   permissions::RequestType::kStorageAccess));
-}
-
 // Validate that in a A(A) frame tree, the inner A iframe can obtain cookie
 // access by default.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -1267,6 +1232,82 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostASubdomain),
             CookieBundle("cross-site=a.test"));
 }
+
+class StorageAccessAPIPromptBrowserTest
+    : public StorageAccessAPIBaseBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  StorageAccessAPIPromptBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(
+            /*is_storage_partitioned=*/false),
+        is_storage_access_new_UI_(GetParam()) {}
+
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
+        StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
+
+    if (is_storage_access_new_UI_) {
+      enabled.push_back(
+          {permissions::features::kPermissionStorageAccessAPI, {}});
+    }
+
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled =
+        StorageAccessAPIBaseBrowserTest::GetDisabledFeatures();
+
+    if (!is_storage_access_new_UI_) {
+      disabled.push_back(permissions::features::kPermissionStorageAccessAPI);
+    }
+
+    return disabled;
+  }
+
+ private:
+  const bool is_storage_access_new_UI_;
+};
+
+// Validate that in a A(B) frame tree, the embedded B iframe can obtain cookie
+// access if requested and got accepted.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIPromptBrowserTest,
+                       EmbeddedCrossSiteCookieAccess_Accept) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+  EXPECT_EQ(1, prompt_factory()->RequestTypeSeen(
+                   permissions::RequestType::kStorageAccess));
+}
+
+// Validate that in a A(B) frame tree, the embedded B iframe can not obtain
+// cookie access if requested and got denied.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIPromptBrowserTest,
+                       EmbeddedCrossSiteCookieAccess_Deny) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  EXPECT_FALSE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+  EXPECT_EQ(1, prompt_factory()->RequestTypeSeen(
+                   permissions::RequestType::kStorageAccess));
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         StorageAccessAPIPromptBrowserTest,
+                         testing::Bool());
 
 class StorageAccessAPIStorageBrowserTest
     : public StorageAccessAPIBaseBrowserTest,
