@@ -34,8 +34,12 @@ class BookmarkModelTypeProcessor;
 // This service owns the BookmarkModelTypeProcessor.
 class BookmarkSyncService : public KeyedService {
  public:
-  // |bookmark_undo_service| must not be null and must outlive this object.
-  explicit BookmarkSyncService(BookmarkUndoService* bookmark_undo_service);
+  // If `wipe_model_on_stopping_sync_with_clear_data` is `true`, then the
+  // `bookmark_undo_service` must not be null and must outlive this object.
+  // lifetime of bookmarks in the associated storage is coupled with sync
+  // metadata's, so disabling sync will delete bookmarks in the storage.
+  BookmarkSyncService(BookmarkUndoService* bookmark_undo_service,
+                      bool wipe_model_on_stopping_sync_with_clear_data);
 
   BookmarkSyncService(const BookmarkSyncService&) = delete;
   BookmarkSyncService& operator=(const BookmarkSyncService&) = delete;
@@ -51,7 +55,7 @@ class BookmarkSyncService : public KeyedService {
       bookmarks::BookmarkModel* model);
 
   // Returns the ModelTypeControllerDelegate for syncer::BOOKMARKS.
-  // |favicon_service| is the favicon service used when processing updates in
+  // `favicon_service` is the favicon service used when processing updates in
   // the underlying processor. It could have been a separate a setter in
   // BookmarkSyncService instead of passing it as a parameter to
   // GetBookmarkSyncControllerDelegate(). However, this would incur the risk of
