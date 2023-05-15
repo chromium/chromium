@@ -31,9 +31,9 @@ namespace content {
 // registrable domains.
 //
 // This class defines interface to build filters for various kinds of browsing
-// data. |BuildOriginFilter()| is useful for most browsing data storage backends,
-// but some backends, such as website settings and cookies, use other formats of
-// filter.
+// data. |BuildStorageKeyFilter()| is useful for most browsing data storage
+// backends, but some backends, such as website settings and cookies, use other
+// formats of filter.
 class CONTENT_EXPORT BrowsingDataFilterBuilder {
  public:
   enum class Mode {
@@ -122,7 +122,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Partitioned cookies are unaffected by this setting.
   virtual void SetPartitionedStateAllowedOnly(bool value) = 0;
 
-  // Deprecated: Prefer `BuildOriginFilter()` instead.
+  // Deprecated: Prefer `BuildStorageKeyFilter()` instead.
   // Builds a filter that matches URLs that are in the list to delete, or aren't
   // in the list to preserve.
   virtual base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() = 0;
