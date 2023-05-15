@@ -44,11 +44,13 @@ RUST_URL = 'https://api.github.com/repos/rust-lang/rust/git/refs/heads/master'
 HEAD_SHA_REGEX = b'"sha":"([^"]+)"'
 
 # Bots where we build Clang + Rust.
-BOTS = [
+BUILD_CLANG_BOTS = [
     'linux_upload_clang',
     'mac_upload_clang',
     'mac_upload_clang_arm',
     'win_upload_clang',
+]
+BUILD_RUST_BOTS = [
     'linux_upload_rust',
     'mac_upload_rust',
     'mac_upload_rust_arm',
@@ -300,28 +302,33 @@ def main():
     print('Cannot set both --skip-clang and --skip-rust.')
     sys.exit(1)
 
-  if args.clang_git_hash:
-    clang_git_hash = args.clang_git_hash
+  if not args.skip_clang:
+    if args.clang_git_hash:
+      clang_git_hash = args.clang_git_hash
+    else:
+      clang_git_hash = GetLatestGitHash(CLANG_URL)
+    # To `GetCommitDescription()`, we need a checkout. On success, the
+    # CheckoutLLVM() makes `LLVM_DIR` be the current working directory, so that
+    # we can GetCommitDescription() without changing directory.
+    CheckoutGitRepo("LLVM", LLVM_GIT_URL, clang_git_hash, LLVM_DIR)
+    clang_version = ClangVersion(GetCommitDescription(clang_git_hash),
+                                 args.clang_sub_revision)
+    os.chdir(CHROMIUM_DIR)
   else:
-    clang_git_hash = GetLatestGitHash(CLANG_URL)
+    clang_version = '-skipped-'
 
-  # To `GetCommitDescription()`, we need a checkout. On success, the
-  # CheckoutLLVM() makes `LLVM_DIR` be the current working directory, so that
-  # we can GetCommitDescription() without changing directory.
-  CheckoutGitRepo("LLVM", LLVM_GIT_URL, clang_git_hash, LLVM_DIR)
-  clang_version = ClangVersion(GetCommitDescription(clang_git_hash),
-                               args.clang_sub_revision)
-  os.chdir(CHROMIUM_DIR)
-
-  if args.rust_git_hash:
-    rust_git_hash = args.rust_git_hash
+  if not args.skip_rust:
+    if args.rust_git_hash:
+      rust_git_hash = args.rust_git_hash
+    else:
+      rust_git_hash = GetLatestGitHash(RUST_URL)
+    CheckoutGitRepo("Rust", RUST_GIT_URL, rust_git_hash, RUST_SRC_DIR)
+    rust_version = RustVersion(rust_git_hash, args.rust_sub_revision)
+    os.chdir(CHROMIUM_DIR)
   else:
-    rust_git_hash = GetLatestGitHash(RUST_URL)
-  CheckoutGitRepo("Rust", RUST_GIT_URL, rust_git_hash, RUST_SRC_DIR)
-  rust_version = RustVersion(rust_git_hash, args.rust_sub_revision)
-  os.chdir(CHROMIUM_DIR)
+    rust_version = '-skipped-'
 
-  print((f'Making a patch for Clang {clang_version} and Rust {rust_version}'))
+  print(f'Making a patch for Clang {clang_version} and Rust {rust_version}')
 
   branch_name = f'clang-{clang_version}_rust-{rust_version}'
   Git('checkout', 'origin/main', '-b', branch_name, no_run=args.no_git)
@@ -379,12 +386,20 @@ def main():
       no_run=args.no_git)
   Git('commit', '-m', commit_message, no_run=args.no_git)
   Git('cl', 'upload', '-f', '--bypass-hooks', no_run=args.no_git)
-  Git('cl',
-      'try',
-      '-B',
-      "chromium/try",
-      *itertools.chain(*[['-b', bot] for bot in BOTS]),
-      no_run=args.no_git)
+  if not args.skip_clang:
+    Git('cl',
+        'try',
+        '-B',
+        "chromium/try",
+        *itertools.chain(*[['-b', bot] for bot in BUILD_CLANG_BOTS]),
+        no_run=args.no_git)
+  if not args.skip_rust:
+    Git('cl',
+        'try',
+        '-B',
+        "chromium/try",
+        *itertools.chain(*[['-b', bot] for bot in BUILD_RUST_BOTS]),
+        no_run=args.no_git)
 
   print('Please, wait until the try bots succeeded '
         'and then push the binaries to goma.')
