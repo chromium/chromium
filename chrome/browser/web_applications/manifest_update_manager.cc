@@ -229,6 +229,13 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
+  if (registrar_->IsIsolated(*app_id)) {
+    // Manifests of Isolated Web Apps are only updated when a new version of the
+    // app is installed.
+    NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsIsolatedWebApp);
+    return;
+  }
+
   if (base::Contains(update_stages_, *app_id)) {
     return;
   }

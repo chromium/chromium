@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 
 #include <ios>
@@ -44,10 +43,13 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -268,7 +270,7 @@ class UpdateCheckResultAwaiter {
   }
 
   void OnResult(const GURL& url, ManifestUpdateResult result) {
-    if (url != *url_) {
+    if (url != url_) {
       SetCallback();
       return;
     }
@@ -277,7 +279,7 @@ class UpdateCheckResultAwaiter {
   }
 
  private:
-  const raw_ref<const GURL> url_;
+  const GURL url_;
   base::RunLoop run_loop_;
   absl::optional<ManifestUpdateResult> result_;
 };
@@ -2267,6 +2269,34 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerSystemAppBrowserTest,
             SK_ColorGREEN);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+class ManifestUpdateManagerIsolatedWebAppBrowserTest
+    : public IsolatedWebAppBrowserTestHarness {
+ public:
+  ManifestUpdateManagerIsolatedWebAppBrowserTest() {
+    isolated_web_app_dev_server_ =
+        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  }
+
+ protected:
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIsolatedWebAppBrowserTest,
+                       CheckUpdateSkipped) {
+  IsolatedWebAppUrlInfo url_info_ = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server_->GetOrigin());
+
+  UpdateCheckResultAwaiter awaiter(
+      url_info_.origin().GetURL().Resolve("/index.html"));
+  EXPECT_TRUE(OpenApp(url_info_.app_id()));
+  EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
+            ManifestUpdateResult::kAppIsIsolatedWebApp);
+
+  histogram_tester_.ExpectBucketCount(
+      kUpdateHistogramName, ManifestUpdateResult::kAppIsIsolatedWebApp, 1);
+}
 
 using ManifestUpdateManagerWebAppsBrowserTest =
     ManifestUpdateManagerBrowserTest;

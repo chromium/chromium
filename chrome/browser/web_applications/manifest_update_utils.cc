@@ -52,6 +52,8 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result) {
       return os << "kSystemShutdown";
     case ManifestUpdateResult::kAppIdentityUpdateRejectedAndUninstalled:
       return os << "kAppIdentityUpdateRejectedAndUninstalled";
+    case ManifestUpdateResult::kAppIsIsolatedWebApp:
+      return os << "kAppIsIsolatedWebApp";
   }
 }
 

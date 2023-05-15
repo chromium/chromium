@@ -39,7 +39,8 @@ enum class ManifestUpdateResult {
   // kAppAssociationsUpdated = 14,
   kSystemShutdown = 15,
   kAppIdentityUpdateRejectedAndUninstalled = 16,
-  kMaxValue = kAppIdentityUpdateRejectedAndUninstalled,
+  kAppIsIsolatedWebApp = 17,
+  kMaxValue = kAppIsIsolatedWebApp,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result);
