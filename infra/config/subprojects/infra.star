@@ -63,5 +63,12 @@ builders.builder(
         category = "autosharder",
         short_name = "auto",
     ),
+    notifies = [
+        luci.notifier(
+            name = "chromium-autosharder-notifier",
+            notify_emails = ["chrome-browser-infra-team@google.com"],
+            on_occurrence = ["FAILURE", "INFRA_FAILURE"],
+        ),
+    ],
     service_account = "chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com",
 )
