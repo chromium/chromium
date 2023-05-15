@@ -100,6 +100,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
                   QuadList::ConstIterator quad_list_begin,
                   QuadList::ConstIterator quad_list_end) const;
 
+  gfx::Rect GetUnassignedDamage() { return unassigned_surface_damage_; }
+
  private:
   CandidateStatus FromDrawQuadResource(const DrawQuad* quad,
                                        ResourceId resource_id,
@@ -131,6 +133,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   // containing |display_rect| in target space.
   gfx::RectF GetDamageRect(const DrawQuad* quad,
                            const OverlayCandidate& candidate) const;
+
+  gfx::RectF GetDamageEstimate(const OverlayCandidate& candidate) const;
 
   raw_ptr<const AggregatedRenderPass> render_pass_;
   raw_ptr<DisplayResourceProvider> resource_provider_;

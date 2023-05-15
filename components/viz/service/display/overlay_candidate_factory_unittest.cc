@@ -469,6 +469,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
     OverlayCandidate::CandidateStatus result =
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+    EXPECT_TRUE(candidate.damage_rect.IsEmpty());
     QuadList quad_list;
     EXPECT_EQ(factory.EstimateVisibleDamage(&quad, candidate, quad_list.begin(),
                                             quad_list.end()),
@@ -486,7 +487,10 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
     OverlayCandidate::CandidateStatus result =
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+    // Damage should not be assigned to transformed quads.
+    EXPECT_TRUE(candidate.damage_rect.IsEmpty());
     QuadList quad_list;
+    // But we can still estimate damage for sorting purposes.
     EXPECT_GT(factory.EstimateVisibleDamage(&quad, candidate, quad_list.begin(),
                                             quad_list.end()),
               0);

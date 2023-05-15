@@ -223,7 +223,7 @@ float OverlayCandidateFactory::EstimateVisibleDamage(
     const OverlayCandidate& candidate,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end) const {
-  gfx::Rect quad_damage = gfx::ToEnclosingRect(GetDamageRect(quad, candidate));
+  gfx::Rect quad_damage = gfx::ToEnclosingRect(GetDamageEstimate(candidate));
   float occluded_damage_estimate_total = 0.f;
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
@@ -661,7 +661,23 @@ void OverlayCandidateFactory::AssignDamage(const DrawQuad* quad,
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
-  candidate.damage_area_estimate = candidate.damage_rect.size().GetArea();
+  if (!is_delegated_context_) {
+    candidate.damage_area_estimate =
+        GetDamageEstimate(candidate).size().GetArea();
+  }
+}
+
+gfx::RectF OverlayCandidateFactory::GetDamageEstimate(
+    const OverlayCandidate& candidate) const {
+  // If we have assigned damage we can trust that.
+  if (!candidate.damage_rect.IsEmpty()) {
+    return candidate.damage_rect;
+  }
+
+  // Otherwise we will see how much unassigned damage covers the display_rect.
+  return gfx::IntersectRects(
+      OverlayCandidate::DisplayRectInTargetSpace(candidate),
+      gfx::RectF(unassigned_surface_damage_));
 }
 
 gfx::RectF OverlayCandidateFactory::GetDamageRect(
@@ -669,15 +685,7 @@ gfx::RectF OverlayCandidateFactory::GetDamageRect(
     const OverlayCandidate& candidate) const {
   const SharedQuadState* sqs = quad->shared_quad_state;
   if (!sqs->overlay_damage_index.has_value()) {
-    // This is a special case where an overlay candidate may have damage but it
-    // does not have a damage index since it was not the only quad in the
-    // original surface. Here the |unassigned_surface_damage_| will contain all
-    // unassigned damage and we use it to conservatively estimate the damage for
-    // this quad. We limit the damage to the candidates quad rect in question.
-    gfx::RectF intersection =
-        OverlayCandidate::DisplayRectInTargetSpace(candidate);
-    intersection.Intersect(gfx::RectF(unassigned_surface_damage_));
-    return intersection;
+    return gfx::RectF();
   }
 
   size_t overlay_damage_index = sqs->overlay_damage_index.value();
@@ -687,7 +695,22 @@ gfx::RectF OverlayCandidateFactory::GetDamageRect(
     return gfx::RectF();
   }
 
-  return gfx::RectF((*surface_damage_rect_list_)[overlay_damage_index]);
+  // Assigned damage assumes that |candidate.display_rect| is already in target
+  // space, but that isn't true for transformation matrices.
+  if (absl::holds_alternative<gfx::Transform>(candidate.transform)) {
+    return gfx::RectF();
+  }
+
+  // Ash can't overlay candidates that aren't pixel-aligned so don't bother
+  // assigning damage to them. This would also be a challenge because
+  // |OverlayCandidate.damage_rect| is only a gfx::Rect.
+  if (!candidate.display_rect.IsExpressibleAsRect()) {
+    return gfx::RectF();
+  }
+
+  auto damage = gfx::RectF((*surface_damage_rect_list_)[overlay_damage_index]);
+  DBG_DRAW_RECT("damage_assigned", damage);
+  return damage;
 }
 
 }  // namespace viz

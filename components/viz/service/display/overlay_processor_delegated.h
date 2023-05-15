@@ -65,6 +65,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   void AdjustOutputSurfaceOverlay(
       absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
+  gfx::RectF GetUnassignedDamage() const override;
+
  private:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. For some cases in
@@ -110,6 +112,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
   bool supports_clip_rect_ = false;
   bool needs_background_image_ = false;
+  gfx::RectF unassigned_damage_;
 };
 }  // namespace viz
 

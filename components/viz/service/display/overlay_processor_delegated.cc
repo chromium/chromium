@@ -163,6 +163,8 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       &render_pass_filters, is_delegated_context,
       supports_clip_rect_ && enable_clip_rect());
 
+  unassigned_damage_ = gfx::RectF(candidate_factory.GetUnassignedDamage());
+
   const auto kExtraCandiates = needs_background_image_ ? 1 : 0;
   candidates->reserve(quad_list->size() + kExtraCandiates);
   int num_quads_skipped = 0;
@@ -296,6 +298,8 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     // Add in all the damage from all fully delegated frames.
     damage_rect->Union(previous_frame_overlay_rect_);
     previous_frame_overlay_rect_ = gfx::Rect();
+    // This is only relevant when delegating.
+    unassigned_damage_ = gfx::RectF();
   }
 
   UMA_HISTOGRAM_ENUMERATION("Viz.DelegatedCompositing.Status",
@@ -321,6 +325,10 @@ void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
   // fullscreen overlay code.
   if (delegated_status_ == DelegationStatus::kFullDelegation)
     output_surface_plane->reset();
+}
+
+gfx::RectF OverlayProcessorDelegated::GetUnassignedDamage() const {
+  return unassigned_damage_;
 }
 
 }  // namespace viz

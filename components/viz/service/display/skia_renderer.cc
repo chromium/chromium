@@ -3863,6 +3863,11 @@ void SkiaRenderer::MaybeScheduleBackgroundImage(
   // ScheduleOverlays() will convert this to a buffer-backed solid color overlay
   // if necessary.
   background_candidate.is_solid_color = true;
+  if (overlay_processor_) {
+    background_candidate.damage_rect =
+        overlay_processor_->GetUnassignedDamage();
+    DBG_DRAW_RECT("damage_not_assigned", background_candidate.damage_rect);
+  }
 
   overlay_list.push_back(background_candidate);
 }
