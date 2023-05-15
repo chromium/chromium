@@ -14467,23 +14467,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name = "IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME" desc="Label for combobox option for an enabled variation that will have a description describing what variation is enabled in the placeholder.">
       Enabled – <ph name="VARIATION_NAME">$1<ex>tabs shrink to pinned tab width</ex></ph>
     </message>
-
-    <!-- ChromeLabs Tab Search Media Tabs -->
-    <message name='IDS_TAB_SEARCH_MEDIA_TABS_EXPERIMENT_NAME' desc="Name for the Tab Search Media Tabs experiment">
-      Media Tabs Section in Tab Search
+    <!-- ChromeLabs ChromeRefresh2023-->
+    <message name="IDS_CHROMEREFRESH2023_EXPERIMENT_NAME" desc="The name of the project for Chrome's desktop UI redesign.">
+      Chrome Refresh 2023
     </message>
-    <message name='IDS_TAB_SEARCH_MEDIA_TABS_EXPERIMENT_DESCRIPTION' desc='Description for the Tab Search Media Tabs experiment'>
-       Adds a new section in 'Search Tabs' to easily find your tabs playing audio or video. Access through the button on the top corner of your browser.
+    <message name="IDS_CHROMEREFRESH2023_DESCRIPTION" desc="The description of the project for Chrome's desktop UI redesign.">
+      Enables the new desktop design.
     </message>
-    <message name='IDS_MEDIA_TABS_ALSO_SHOWN_IN_OPEN_TABS_SECTION' desc='Label describing behavior that media tabs will also show up in the open tabs section'>
-      Media tabs also shown in Open Tabs section
-    </message>
-    <!-- ChromeLabs Side Panel-->
-    <message name="IDS_SIDE_PANEL_EXPERIMENT_NAME" desc="Name for Side Panel experiment">
-      Side Panel
-    </message>
-    <message name="IDS_SIDE_PANEL_EXPERIMENT_DESCRIPTION" desc="Description for Side Panel experiment">
-      Enables a browser-level side panel for a useful and persistent way to access your Reading List and Bookmarks.
+     <message name="IDS_CHROMEREFRESH2023_WITHOUT_OMNIBOX" desc="Indicates no omnibox design changes in Chrome's desktop UI redesign.">
+      without Omnibox
     </message>
     <!-- ChromeLabs Tab Scrolling -->
     <message name="IDS_TAB_SCROLLING_EXPERIMENT_NAME" desc="Name for Tab Scrolling experiment">
@@ -14503,20 +14495,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_TABS_DO_NOT_SHRINK" desc="Label describing tab behavior will not shrink">
       Tabs don't shrink
-    </message>
-    <!-- ChromeLabs Tab Search -->
-    <message name="IDS_TAB_SEARCH_EXPERIMENT_NAME" desc="Name for Tab Search experiment">
-      Tab Search
-    </message>
-    <message name="IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Tab Search experiment">
-      Enable a popup bubble in Top Chrome UI to search over currently open tabs.
-    </message>
-    <!-- ChromeLabs Lens Region Search -->
-    <message name="IDS_LENS_REGION_SEARCH_EXPERIMENT_NAME" desc="Name for Lens Region Search experiment">
-      Search your screen with Google Lens
-    </message>
-    <message name="IDS_LENS_REGION_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Lens Region Search experiment">
-      Right click and select “Search images with Google Lens” to search any region of the site to learn more about the visual content you see while you browse and shop on the web.
     </message>
     <!-- Lens Region Search bubble dialog -->
     <message name="IDS_LENS_REGION_SEARCH_BUBBLE_TEXT" desc="Text that is shown in the Lens Region Search education bubble when starting the feature. Informs the user to drag over the screen to select a region to search with Google Lens.">

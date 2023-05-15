@@ -8278,7 +8278,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeLabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeLabs)},
 
-    {"chrome-refresh-2023", flag_descriptions::kChromeRefresh2023Name,
+    {flag_descriptions::kChromeRefresh2023Id,
+     flag_descriptions::kChromeRefresh2023Name,
      flag_descriptions::kChromeRefresh2023Description, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kChromeRefresh2023,
                                     kChromeRefresh2023Variations,
