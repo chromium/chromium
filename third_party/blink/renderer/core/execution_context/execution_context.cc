@@ -105,39 +105,6 @@ ExecutionContext* ExecutionContext::From(v8::Local<v8::Context> context) {
 }
 
 // static
-ExecutionContext* ExecutionContext::ForCurrentRealm(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  return ToExecutionContext(info.GetIsolate()->GetCurrentContext());
-}
-
-// static
-ExecutionContext* ExecutionContext::ForCurrentRealm(
-    const v8::PropertyCallbackInfo<v8::Value>& info) {
-  auto ctx = info.GetIsolate()->GetCurrentContext();
-  if (ctx.IsEmpty())
-    return nullptr;
-  return ToExecutionContext(ctx);
-}
-
-// static
-ExecutionContext* ExecutionContext::ForRelevantRealm(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Context> context;
-  if (!info.Holder()->GetCreationContext().ToLocal(&context))
-    return nullptr;
-  return ToExecutionContext(context);
-}
-
-// static
-ExecutionContext* ExecutionContext::ForRelevantRealm(
-    const v8::PropertyCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Context> context;
-  if (!info.Holder()->GetCreationContext().ToLocal(&context))
-    return nullptr;
-  return ToExecutionContext(context);
-}
-
-// static
 CodeCacheHost* ExecutionContext::GetCodeCacheHostFromContext(
     ExecutionContext* execution_context) {
   DCHECK_NE(execution_context, nullptr);

@@ -469,7 +469,6 @@ component("platform") {
     "bindings/v8_binding.cc",
     "bindings/v8_binding.h",
     "bindings/v8_binding_macros.h",
-    "bindings/v8_cross_origin_callback_info.h",
     "bindings/v8_cross_origin_property_support.cc",
     "bindings/v8_cross_origin_property_support.h",
     "bindings/v8_dom_activity_logger.cc",

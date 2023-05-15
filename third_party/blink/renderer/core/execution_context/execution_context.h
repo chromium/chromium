@@ -147,17 +147,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   static ExecutionContext* From(const ScriptState*);
   static ExecutionContext* From(v8::Local<v8::Context>);
 
-  // Returns the ExecutionContext of the current realm.
-  static ExecutionContext* ForCurrentRealm(
-      const v8::FunctionCallbackInfo<v8::Value>&);
-  static ExecutionContext* ForCurrentRealm(
-      const v8::PropertyCallbackInfo<v8::Value>&);
-  // Returns the ExecutionContext of the relevant realm for the receiver object.
-  static ExecutionContext* ForRelevantRealm(
-      const v8::FunctionCallbackInfo<v8::Value>&);
-  static ExecutionContext* ForRelevantRealm(
-      const v8::PropertyCallbackInfo<v8::Value>&);
-
   // Returns the CodeCacheHost interface associated with the execution
   // context. This could return nullptr if there is no CodeCacheHost associated
   // with the current execution context.

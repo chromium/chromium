@@ -11,7 +11,6 @@
 #include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
-#include "third_party/blink/renderer/platform/bindings/v8_cross_origin_callback_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -147,25 +146,6 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
   static ScriptState* ForCurrentRealm(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
     return From(info.GetIsolate()->GetCurrentContext());
-  }
-
-  static ScriptState* ForRelevantRealm(
-      const v8::FunctionCallbackInfo<v8::Value>& info) {
-    return ForRelevantRealm(info.Holder());
-  }
-
-  static ScriptState* ForRelevantRealm(const V8CrossOriginCallbackInfo& info) {
-    return ForRelevantRealm(info.Holder());
-  }
-
-  static ScriptState* ForRelevantRealm(
-      const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return ForRelevantRealm(info.Holder());
-  }
-
-  static ScriptState* ForRelevantRealm(
-      const v8::PropertyCallbackInfo<void>& info) {
-    return ForRelevantRealm(info.Holder());
   }
 
   static ScriptState* ForRelevantRealm(v8::Local<v8::Object> object) {
