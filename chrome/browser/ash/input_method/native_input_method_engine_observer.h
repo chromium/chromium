@@ -106,7 +106,8 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void RequestSuggestions(ime::mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override;
   void DisplaySuggestions(
-      const std::vector<ime::AssistiveSuggestion>& suggestions) override;
+      const std::vector<ime::AssistiveSuggestion>& suggestions,
+      const absl::optional<ime::SuggestionsTextContext>& context) override;
   void UpdateCandidatesWindow(ime::mojom::CandidatesWindowPtr window) override;
   void RecordUkm(ime::mojom::UkmEntryPtr entry) override;
   void ReportKoreanAction(ime::mojom::KoreanAction action) override;

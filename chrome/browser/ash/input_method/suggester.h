@@ -26,7 +26,8 @@ class Suggester : public SuggestionsSource {
 
   // Called when suggestions are generated outside of the assisitve framework.
   virtual void OnExternalSuggestionsUpdated(
-      const std::vector<ime::AssistiveSuggestion>& suggestions) = 0;
+      const std::vector<ime::AssistiveSuggestion>& suggestions,
+      const absl::optional<ime::SuggestionsTextContext>& context) = 0;
 
   // Called when suggestion is being shown.
   // Returns SuggestionStatus as suggester handles the event.

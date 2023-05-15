@@ -27,6 +27,7 @@ namespace {
 using ime::AssistiveSuggestion;
 using ime::AssistiveSuggestionMode;
 using ime::AssistiveSuggestionType;
+using ime::SuggestionsTextContext;
 
 // Used for UmaHistogramExactLinear, should remain <= 101.
 constexpr size_t kMaxSuggestionLength = 101;
@@ -211,7 +212,8 @@ void MultiWordSuggester::OnSurroundingTextChanged(
 }
 
 void MultiWordSuggester::OnExternalSuggestionsUpdated(
-    const std::vector<AssistiveSuggestion>& suggestions) {
+    const std::vector<AssistiveSuggestion>& suggestions,
+    const absl::optional<SuggestionsTextContext>& context) {
   if (state_.IsSuggestionShowing() || !state_.IsCursorAtEndOfText())
     return;
 

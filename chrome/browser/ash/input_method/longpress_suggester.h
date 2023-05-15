@@ -25,7 +25,8 @@ class LongpressSuggester : public Suggester {
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnExternalSuggestionsUpdated(
-      const std::vector<ime::AssistiveSuggestion>& suggestions) override;
+      const std::vector<ime::AssistiveSuggestion>& suggestions,
+      const absl::optional<ime::SuggestionsTextContext>& context) override;
   bool HasSuggestions() override;
   std::vector<ime::AssistiveSuggestion> GetSuggestions() override;
 

@@ -43,6 +43,14 @@ struct AssistiveSuggestion {
   }
 };
 
+// Holds the surrounding text context used to generate some suggestions.
+struct SuggestionsTextContext {
+  // The last N chars found in the surrounding text.
+  std::string last_n_chars;
+  // The full surrounding text length.
+  size_t surrounding_text_length;
+};
+
 // Encapsulates a completion candidate emitted by a decoder.
 struct DecoderCompletionCandidate {
   std::string text;

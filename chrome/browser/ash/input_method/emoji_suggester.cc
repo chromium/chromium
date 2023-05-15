@@ -36,6 +36,7 @@ namespace {
 using AssistiveSuggestion = ime::AssistiveSuggestion;
 using AssistiveSuggestionMode = ime::AssistiveSuggestionMode;
 using AssistiveSuggestionType = ime::AssistiveSuggestionType;
+using SuggestionsTextContext = ime::SuggestionsTextContext;
 
 constexpr char kEmojiSuggesterShowSettingCount[] =
     "emoji_suggester.show_setting_count";
@@ -163,7 +164,8 @@ void EmojiSuggester::OnBlur() {
 }
 
 void EmojiSuggester::OnExternalSuggestionsUpdated(
-    const std::vector<AssistiveSuggestion>& suggestions) {
+    const std::vector<AssistiveSuggestion>& suggestions,
+    const absl::optional<SuggestionsTextContext>& context) {
   // EmojiSuggester doesn't utilize any suggestions produced externally, so
   // ignore this call.
 }

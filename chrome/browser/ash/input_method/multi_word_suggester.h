@@ -31,7 +31,8 @@ class MultiWordSuggester : public Suggester {
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnExternalSuggestionsUpdated(
-      const std::vector<ime::AssistiveSuggestion>& suggestions) override;
+      const std::vector<ime::AssistiveSuggestion>& suggestions,
+      const absl::optional<ime::SuggestionsTextContext>& context) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool TrySuggestWithSurroundingText(const std::u16string& text,
                                      gfx::Range selection_range) override;

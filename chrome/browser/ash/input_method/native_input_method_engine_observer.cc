@@ -1380,10 +1380,11 @@ void NativeInputMethodEngineObserver::RequestSuggestions(
 }
 
 void NativeInputMethodEngineObserver::DisplaySuggestions(
-    const std::vector<ime::AssistiveSuggestion>& suggestions) {
+    const std::vector<ime::AssistiveSuggestion>& suggestions,
+    const absl::optional<ime::SuggestionsTextContext>& context) {
   if (!IsTextClientActive())
     return;
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions, context);
 }
 
 void NativeInputMethodEngineObserver::UpdateCandidatesWindow(

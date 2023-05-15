@@ -41,6 +41,7 @@ namespace {
 using ime::AssistiveSuggestion;
 using ime::AssistiveSuggestionMode;
 using ime::AssistiveSuggestionType;
+using ime::SuggestionsTextContext;
 
 constexpr int kModifierKeysMask = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
@@ -492,18 +493,20 @@ void AssistiveSuggester::OnClipboardHistoryMenuClosing(bool will_paste_item) {
 }
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
-    const std::vector<AssistiveSuggestion>& suggestions) {
+    const std::vector<AssistiveSuggestion>& suggestions,
+    const absl::optional<SuggestionsTextContext>& context) {
   if (!IsMultiWordSuggestEnabled())
     return;
 
   suggester_switch_->FetchEnabledSuggestionsThen(
       base::BindOnce(&AssistiveSuggester::ProcessExternalSuggestions,
-                     weak_ptr_factory_.GetWeakPtr(), suggestions),
+                     weak_ptr_factory_.GetWeakPtr(), suggestions, context),
       context_);
 }
 
 void AssistiveSuggester::ProcessExternalSuggestions(
     const std::vector<AssistiveSuggestion>& suggestions,
+    const absl::optional<SuggestionsTextContext>& context,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   RecordSuggestionsMatch(suggestions);
 
@@ -516,13 +519,13 @@ void AssistiveSuggester::ProcessExternalSuggestions(
   }
 
   if (current_suggester_) {
-    current_suggester_->OnExternalSuggestionsUpdated(suggestions);
+    current_suggester_->OnExternalSuggestionsUpdated(suggestions, context);
     return;
   }
 
   if (IsTopResultMultiWord(suggestions)) {
     current_suggester_ = &multi_word_suggester_;
-    current_suggester_->OnExternalSuggestionsUpdated(suggestions);
+    current_suggester_->OnExternalSuggestionsUpdated(suggestions, context);
     RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
   }
 }

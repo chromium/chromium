@@ -18,6 +18,9 @@ using CompletionCandidateDataView =
 using AssistiveSuggestionMode = ash::ime::AssistiveSuggestionMode;
 using SuggestionMode = ash::ime::mojom::SuggestionMode;
 using SuggestionType = ash::ime::mojom::SuggestionType;
+using SuggestionsTextContextDataView =
+    ash::ime::mojom::SuggestionsTextContextDataView;
+using SuggestionsTextContext = ash::ime::SuggestionsTextContext;
 using SuggestionCandidateDataView =
     ash::ime::mojom::SuggestionCandidateDataView;
 using DecoderCompletionCandidate = ash::ime::DecoderCompletionCandidate;
@@ -112,6 +115,16 @@ bool StructTraits<SuggestionCandidateDataView, AssistiveSuggestion>::Read(
   if (!input.ReadText(&output->text))
     return false;
   output->confirmed_length = input.confirmed_length();
+  return true;
+}
+
+bool StructTraits<SuggestionsTextContextDataView, SuggestionsTextContext>::Read(
+    SuggestionsTextContextDataView input,
+    SuggestionsTextContext* output) {
+  if (!input.ReadLastNChars(&output->last_n_chars)) {
+    return false;
+  }
+  output->surrounding_text_length = input.surrounding_text_length();
   return true;
 }
 

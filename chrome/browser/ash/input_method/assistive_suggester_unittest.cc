@@ -45,12 +45,14 @@ namespace {
 using ime::AssistiveSuggestion;
 using ime::AssistiveSuggestionMode;
 using ime::AssistiveSuggestionType;
+using ime::SuggestionsTextContext;
 using EnabledSuggestions = AssistiveSuggesterSwitch::EnabledSuggestions;
 
 const char kUsEnglishEngineId[] = "xkb:us::eng";
 const char kSpainSpanishEngineId[] = "xkb:es::spa";
 const char kEmojiData[] = "arrow,←;↑;→";
 const TextInputMethod::InputContext empty_context(ui::TEXT_INPUT_TYPE_NONE);
+constexpr size_t kTakeLastNChars = 100;
 
 ui::KeyEvent GenerateKeyEvent(const ui::DomCode& code,
                               const ui::EventType& event_type,
@@ -98,6 +100,15 @@ void SetInputMethodOptions(Profile& profile,
                           base::Value(std::move(input_method_setting)));
   profile.GetPrefs()->Set(::ash::prefs::kLongPressDiacriticsEnabled,
                           base::Value(diacritics_on_longpress_enabled));
+}
+
+SuggestionsTextContext TextContext(const std::string& surrounding_text) {
+  const size_t text_length = surrounding_text.length();
+  const size_t trim_from =
+      text_length > kTakeLastNChars ? text_length - kTakeLastNChars : 0;
+  return SuggestionsTextContext{
+      .last_n_chars = surrounding_text.substr(trim_from),
+      .surrounding_text_length = text_length};
 }
 
 }  // namespace
@@ -944,7 +955,7 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
 
 TEST_F(AssistiveSuggesterMultiWordTest,
        MatchMetricNotRecordedWhenZeroSuggestions) {
-  assistive_suggester_->OnExternalSuggestionsUpdated({});
+  assistive_suggester_->OnExternalSuggestionsUpdated({}, TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
 }
@@ -958,7 +969,8 @@ TEST_F(AssistiveSuggesterMultiWordTest, OnSuggestionExistShowSuggestion) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"hello there");
@@ -977,7 +989,8 @@ TEST_F(AssistiveSuggesterMultiWordTest, OnDisabledFlagShouldNotShowSuggestion) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
@@ -997,7 +1010,8 @@ TEST_F(AssistiveSuggesterMultiWordTest, ShouldNotSuggestWhenSwitchDisabled) {
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
 
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
@@ -1012,7 +1026,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 1);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Match",
@@ -1033,7 +1048,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
 }
@@ -1048,7 +1064,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated({});
+  assistive_suggester_->OnExternalSuggestionsUpdated({}, TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.MultiWord",
                                      0);
@@ -1068,7 +1084,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.MultiWord",
                                      1);
@@ -1082,7 +1099,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated({});
+  assistive_suggester_->OnExternalSuggestionsUpdated({}, TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 0);
 }
@@ -1097,7 +1114,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 1);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
@@ -1114,13 +1132,17 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"he", gfx::Range(2));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"hel", gfx::Range(3));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 1);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
@@ -1141,13 +1163,17 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions,
+                                                     TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
-  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions,
+                                                     TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"he", gfx::Range(2));
-  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions,
+                                                     TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"he ", gfx::Range(3));
-  assistive_suggester_->OnExternalSuggestionsUpdated(second_suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(second_suggestions,
+                                                     TextContext(""));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 2);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
@@ -1163,7 +1189,8 @@ TEST_F(AssistiveSuggesterMultiWordTest, PressingTabShouldAcceptSuggestion) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   EXPECT_EQ(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::TAB)),
             AssistiveSuggesterKeyResult::kHandled);
@@ -1178,7 +1205,8 @@ TEST_F(AssistiveSuggesterMultiWordTest, AltPlusTabShouldNotAcceptSuggestion) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   EXPECT_EQ(assistive_suggester_->OnKeyEvent(PressKeyWithAlt(ui::DomCode::TAB)),
             AssistiveSuggesterKeyResult::kNotHandled);
@@ -1193,7 +1221,8 @@ TEST_F(AssistiveSuggesterMultiWordTest, CtrlPlusTabShouldNotAcceptSuggestion) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   EXPECT_EQ(
       assistive_suggester_->OnKeyEvent(PressKeyWithCtrl(ui::DomCode::TAB)),
@@ -1209,7 +1238,8 @@ TEST_F(AssistiveSuggesterMultiWordTest, ShiftPlusTabShouldNotAcceptSuggestion) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
-  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                                     TextContext(""));
 
   EXPECT_EQ(
       assistive_suggester_->OnKeyEvent(PressKeyWithShift(ui::DomCode::TAB)),
