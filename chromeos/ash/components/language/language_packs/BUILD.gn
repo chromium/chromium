@@ -12,6 +12,8 @@ static_library("language_packs") {
     "language_pack_manager.h",
     "language_packs_impl.cc",
     "language_packs_impl.h",
+    "language_packs_util.cc",
+    "language_packs_util.h",
   ]
   deps = [
     "//base",
@@ -25,6 +27,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "language_pack_manager_unittest.cc",
+    "language_packs_util_unittest.cc",
     "metrics_unittest.cc",
   ]
   deps = [
