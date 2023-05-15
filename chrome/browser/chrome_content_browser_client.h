@@ -207,7 +207,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool CanCommitURL(content::RenderProcessHost* process_host,
                     const GURL& url) override;
   void OverrideNavigationParams(
-      content::SiteInstance* site_instance,
+      absl::optional<GURL> source_process_site_url,
       ui::PageTransition* transition,
       bool* is_renderer_initiated,
       content::Referrer* referrer,

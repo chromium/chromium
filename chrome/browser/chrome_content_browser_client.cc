@@ -2216,7 +2216,7 @@ bool ChromeContentBrowserClient::CanCommitURL(
 }
 
 void ChromeContentBrowserClient::OverrideNavigationParams(
-    SiteInstance* site_instance,
+    absl::optional<GURL> source_process_site_url,
     ui::PageTransition* transition,
     bool* is_renderer_initiated,
     content::Referrer* referrer,
@@ -2224,10 +2224,10 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
   DCHECK(transition);
   DCHECK(is_renderer_initiated);
   DCHECK(referrer);
-  // While using SiteInstance::GetSiteURL() is unreliable and the wrong thing to
-  // use for making security decisions 99.44% of the time, for detecting the NTP
-  // it is reliable and the correct way. See http://crbug.com/624410.
-  if (site_instance && search::IsNTPURL(site_instance->GetSiteURL()) &&
+  // IsNTPURL only looks at the origin of the parameter, so it is safe to use
+  // the effective site URL for the source process.
+  if (source_process_site_url &&
+      search::IsNTPURL(source_process_site_url.value()) &&
       ui::PageTransitionCoreTypeIs(*transition, ui::PAGE_TRANSITION_LINK)) {
     // Clicks on tiles of the new tab page should be treated as if a user
     // clicked on a bookmark.  This is consistent with native implementations

@@ -62,6 +62,7 @@
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -536,9 +537,9 @@ std::unique_ptr<NavigationEntry> NavigationController::CreateNavigationEntry(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory) {
   return NavigationControllerImpl::CreateNavigationEntry(
       url, referrer, std::move(initiator_origin), std::move(initiator_base_url),
-      nullptr /* source_site_instance */, transition, is_renderer_initiated,
-      extra_headers, browser_context, std::move(blob_url_loader_factory),
-      true /* rewrite_virtual_urls */);
+      absl::nullopt /* source_process_site_url */, transition,
+      is_renderer_initiated, extra_headers, browser_context,
+      std::move(blob_url_loader_factory), true /* rewrite_virtual_urls */);
 }
 
 // static
@@ -548,7 +549,7 @@ NavigationControllerImpl::CreateNavigationEntry(
     Referrer referrer,
     absl::optional<url::Origin> initiator_origin,
     absl::optional<GURL> initiator_base_url,
-    SiteInstance* source_site_instance,
+    absl::optional<GURL> source_process_site_url,
     ui::PageTransition transition,
     bool is_renderer_initiated,
     const std::string& extra_headers,
@@ -565,7 +566,7 @@ NavigationControllerImpl::CreateNavigationEntry(
   // Let the NTP override the navigation params and pretend that this is a
   // browser-initiated, bookmark-like navigation.
   GetContentClient()->browser()->OverrideNavigationParams(
-      source_site_instance, &transition, &is_renderer_initiated, &referrer,
+      source_process_site_url, &transition, &is_renderer_initiated, &referrer,
       &initiator_origin);
 
   auto entry = std::make_unique<NavigationEntryImpl>(
@@ -2781,9 +2782,14 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     // fenced frames or subframes, they don't rewrite urls as the urls are not
     // input urls by users.
     bool rewrite_virtual_urls = node->IsOutermostMainFrame();
+    absl::optional<GURL> source_process_site_url = absl::nullopt;
+    if (source_site_instance && source_site_instance->HasProcess()) {
+      source_process_site_url =
+          source_site_instance->GetProcess()->GetProcessLock().site_url();
+    }
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
         url, referrer, initiator_origin, initiator_base_url,
-        source_site_instance, page_transition, is_renderer_initiated,
+        source_process_site_url, page_transition, is_renderer_initiated,
         extra_headers, browser_context_, blob_url_loader_factory,
         rewrite_virtual_urls));
     entry->root_node()->frame_entry->set_source_site_instance(
@@ -3739,9 +3745,16 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
     // fenced frames or subframes, they don't rewrite urls as the urls are not
     // input urls by users.
     bool rewrite_virtual_urls = node->IsOutermostMainFrame();
+    scoped_refptr<SiteInstance> source_site_instance =
+        params.source_site_instance;
+    absl::optional<GURL> source_process_site_url = absl::nullopt;
+    if (source_site_instance && source_site_instance->HasProcess()) {
+      source_process_site_url =
+          source_site_instance->GetProcess()->GetProcessLock().site_url();
+    }
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
         params.url, params.referrer, params.initiator_origin,
-        params.initiator_base_url, params.source_site_instance.get(),
+        params.initiator_base_url, source_process_site_url,
         params.transition_type, params.is_renderer_initiated,
         extra_headers_crlf, browser_context_, blob_url_loader_factory,
         rewrite_virtual_urls));

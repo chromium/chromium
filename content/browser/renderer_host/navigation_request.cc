@@ -1848,8 +1848,9 @@ NavigationRequest::NavigationRequest(
     ui::PageTransition transition =
         ui::PageTransitionFromInt(common_params_->transition);
     GetContentClient()->browser()->OverrideNavigationParams(
-        source_site_instance_.get(), &transition, &is_renderer_initiated,
-        &referrer, &common_params_->initiator_origin);
+        source_site_instance_->GetProcess()->GetProcessLock().site_url(),
+        &transition, &is_renderer_initiated, &referrer,
+        &common_params_->initiator_origin);
     common_params_->transition = transition;
     common_params_->referrer =
         blink::mojom::Referrer::New(referrer.url, referrer.policy);

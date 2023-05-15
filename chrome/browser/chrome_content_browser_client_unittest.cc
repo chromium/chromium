@@ -238,15 +238,13 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   content::Referrer referrer = content::Referrer();
   absl::optional<url::Origin> initiator_origin = absl::nullopt;
 
-  scoped_refptr<content::SiteInstance> site_instance =
-      content::SiteInstance::CreateForURL(browser()->profile(),
-                                          GURL("chrome-search://remote-ntp"));
+  GURL remote_ntp_url("chrome-search://remote-ntp");
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   // The origin is a placeholder to test that |initiator_origin| is set to
   // absl::nullopt and is not meant to represent what would happen in practice.
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
-  client.OverrideNavigationParams(site_instance.get(), &transition,
+  client.OverrideNavigationParams(remote_ntp_url, &transition,
                                   &is_renderer_initiated, &referrer,
                                   &initiator_origin);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
@@ -254,34 +252,29 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   EXPECT_FALSE(is_renderer_initiated);
   EXPECT_EQ(absl::nullopt, initiator_origin);
 
-  site_instance = content::SiteInstance::CreateForURL(
-      browser()->profile(), GURL("chrome://new-tab-page"));
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
-  client.OverrideNavigationParams(site_instance.get(), &transition,
-                                  &is_renderer_initiated, &referrer,
-                                  &initiator_origin);
+  client.OverrideNavigationParams(GURL(chrome::kChromeUINewTabPageURL),
+                                  &transition, &is_renderer_initiated,
+                                  &referrer, &initiator_origin);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                            transition));
   EXPECT_FALSE(is_renderer_initiated);
   EXPECT_EQ(absl::nullopt, initiator_origin);
 
   // No change for transitions that are not PAGE_TRANSITION_LINK.
-  site_instance = content::SiteInstance::CreateForURL(
-      browser()->profile(), GURL("chrome://new-tab-page"));
   transition = ui::PAGE_TRANSITION_TYPED;
-  client.OverrideNavigationParams(site_instance.get(), &transition,
-                                  &is_renderer_initiated, &referrer,
-                                  &initiator_origin);
+  client.OverrideNavigationParams(GURL(chrome::kChromeUINewTabPageURL),
+                                  &transition, &is_renderer_initiated,
+                                  &referrer, &initiator_origin);
   EXPECT_TRUE(
       ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_TYPED, transition));
 
   // No change for transitions on a non-NTP page.
-  site_instance = content::SiteInstance::CreateForURL(
-      browser()->profile(), GURL("https://www.example.com"));
+  GURL example_url("https://www.example.com");
   transition = ui::PAGE_TRANSITION_LINK;
-  client.OverrideNavigationParams(site_instance.get(), &transition,
+  client.OverrideNavigationParams(example_url, &transition,
                                   &is_renderer_initiated, &referrer,
                                   &initiator_origin);
   EXPECT_TRUE(

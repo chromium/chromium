@@ -414,7 +414,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                            const blink::PageState& page_state);
 
   // Like NavigationController::CreateNavigationEntry, but takes an extra
-  // argument, |source_site_instance|.
+  // argument, |source_process_site_url|.
   // `rewrite_virtual_urls` is true when it needs to rewrite virtual urls
   // (e.g., for outermost frames).
   static std::unique_ptr<NavigationEntryImpl> CreateNavigationEntry(
@@ -422,7 +422,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       Referrer referrer,
       absl::optional<url::Origin> initiator_origin,
       absl::optional<GURL> initiator_base_url,
-      SiteInstance* source_site_instance,
+      absl::optional<GURL> source_process_site_url,
       ui::PageTransition transition,
       bool is_renderer_initiated,
       const std::string& extra_headers,

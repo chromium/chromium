@@ -542,8 +542,12 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to override parameters when navigating. Called for both
   // opening new URLs and when transferring URLs across processes.
+  // If the initiator of the navigation is set, `source_process_site_url` is
+  // the site URL that the initiator's process is locked to. Generally the
+  // initiator is set on renderer-initiated navigations, but not on
+  // browser-initiated navigations.
   virtual void OverrideNavigationParams(
-      SiteInstance* site_instance,
+      absl::optional<GURL> source_process_site_url,
       ui::PageTransition* transition,
       bool* is_renderer_initiated,
       content::Referrer* referrer,

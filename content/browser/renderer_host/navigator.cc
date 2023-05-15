@@ -1335,7 +1335,11 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
   // therefore that |current_site_instance| is also the |source_site_instance|.
   SiteInstance* current_site_instance =
       frame_tree_node->current_frame_host()->GetSiteInstance();
-  SiteInstance* source_site_instance = current_site_instance;
+  absl::optional<GURL> source_process_site_url = absl::nullopt;
+  if (current_site_instance && current_site_instance->HasProcess()) {
+    source_process_site_url =
+        current_site_instance->GetProcess()->GetProcessLock().site_url();
+  }
   // If `frame_tree_node` is the outermost main frame, it rewrites a virtual
   // url in order to adjust the original input url if needed. For inner frames
   // such as fenced frames or subframes, they don't rewrite urls as the urls
@@ -1346,7 +1350,7 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
           NavigationControllerImpl::CreateNavigationEntry(
               common_params.url, content::Referrer(),
               common_params.initiator_origin, common_params.initiator_base_url,
-              source_site_instance, ui::PAGE_TRANSITION_LINK,
+              source_process_site_url, ui::PAGE_TRANSITION_LINK,
               true /* is_renderer_initiated */,
               std::string() /* extra_headers */,
               controller_.GetBrowserContext(),
